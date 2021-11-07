@@ -43390,8 +43390,7 @@
 весси  vv je ss i
 вессири  vv i ss i rr ii
 вессон  vv je s ay n
-вест  vv jo s t
-вест2  vv je s t
+вест  vv je s t
 веста  vv je s t ay
 вестал  vv i s t aa l
 весталка  vv i s t aa l k ay
@@ -451553,10 +451552,12 @@
 уместились  u mm i ss tt ii ll i ss
 уместилось  u mm i ss tt ii l ay ss
 уместился  u mm i ss tt ii l ss i
+уместим  u mm i ss tt ii m
 уместимся  u mm i ss tt ii m ss i
 уместится  u mm i ss tt ii c ay
 уместить  u mm i ss tt ii tt
 уместиться  u mm i ss tt ii c ay
+уместишь  u mm i ss tt ii sh
 уместна  u mm je s n ay
 уместная  u mm je s n ay j a
 уместнее  u mm je s nn i i
@@ -451575,6 +451576,7 @@
 уместными  u mm je s n y mm i
 уместных  u mm je s n y h
 уместятся  u mm i ss tt ja c ay
+уместят  u mm i ss tt ja t
 умет  uu mm i t
 уметь  u mm je tt
 умещавшийся  u mm i sch ja f sh y j ss i
