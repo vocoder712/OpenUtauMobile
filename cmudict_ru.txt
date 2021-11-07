@@ -79900,6 +79900,7 @@
 головогрудь  g ay l ay v a g r uu tt
 головой  g ay l a v oo j
 головок  g a l oo v ay k
+головою  g ay l a v oo j uj
 головокружение  g ay l ay v ay k r u zh ee nn i j e
 головокружением  g ay l ay v ay k r u zh ee nn i i m
 головокружении  g ay l ay v ay k r u zh ee nn i i
@@ -220545,6 +220546,7 @@
 надышаться  n ay d y sh aa c ay
 надышится  n a d yy sh y c ay
 надышишься  n a d yy sh y sh ss ay
+над  n aa t
 надь  n ay tt
 надька  n aa tt k ay
 надьке  n aa tt kk i
