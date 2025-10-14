@@ -124,7 +124,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
 如果你想让这个项目变得更好：
 
-- 如果你发现了BUG或者有想实现的功能，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题](./issue)提出BUG，[讨论](./discussion)提建议。
+- 如果你发现了BUG或者有想实现的功能，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题]([./issue](https://github.com/vocoder712/OpenUtauMobile/issues))提出BUG，[讨论](https://github.com/vocoder712/OpenUtauMobile/discussion)提建议。
 
 - 贡献代码：克隆本项目到本地后，使用 Visual Studio 打开项目根目录 `OpenUtauMobile.sln` 即可进入开发环境。建议新建分支操作。可以参考[开发计划与已知BUG](#开发计划与已知BUG)中的任务列表实现功能或修复BUG。完成后可以发起 Pull Request。
 
