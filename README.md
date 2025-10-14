@@ -11,7 +11,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 一个基于 [OpenUtau内核](https://github.com/stakira/OpenUtau/tree/master/OpenUtau.Core) ，并进行了一些修补的编辑器。因此理论上可以使用 OpenUtau 的 USTX 工程文件。
 ## 快速开始
 
-1. 在本项目的[release](./release/lastest)下载对应平台和架构的安装包并安装
+1. 在本项目的[release](https://github.com/vocoder712/OpenUtauMobile/release)下载对应平台和架构的安装包并安装
 2. 下载一个声库。通常你可以在[DiffSinger自制声库分享页面](https://docs.qq.com/sheet/DQXNDY0pPaEpOc3JN?tab=BB08J2)找到下载地址。声库通常以zip格式打包。
 3. 打开软件 → 点击首页的 `歌手` 按钮 → 点击右下角 `+` → 选择上一步下载的声库安装包，然后按照指引安装。
 4. 返回首页，点击 `新建` 进入主界面，开始你的创作吧！
@@ -124,7 +124,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
 如果你想让这个项目变得更好：
 
-- 如果你发现了BUG或者有想实现的功能，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题]([./issue](https://github.com/vocoder712/OpenUtauMobile/issues))提出BUG，[讨论](https://github.com/vocoder712/OpenUtauMobile/discussion)提建议。
+- 如果你发现了BUG或者有想实现的功能，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题](https://github.com/vocoder712/OpenUtauMobile/issues)提出BUG，[讨论](https://github.com/vocoder712/OpenUtauMobile/discussion)提建议。
 
 - 贡献代码：克隆本项目到本地后，使用 Visual Studio 打开项目根目录 `OpenUtauMobile.sln` 即可进入开发环境。建议新建分支操作。可以参考[开发计划与已知BUG](#开发计划与已知BUG)中的任务列表实现功能或修复BUG。完成后可以发起 Pull Request。
 
