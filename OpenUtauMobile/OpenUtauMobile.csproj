@@ -25,11 +25,11 @@
 		<ApplicationTitle>OpenUtau Mobile</ApplicationTitle>
 
 		<!-- 应用ID -->
-		<ApplicationId>pers.yimin.openutaumobile</ApplicationId>
+		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.2</ApplicationDisplayVersion>
+		<ApplicationVersion>3</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -49,6 +49,7 @@
 	  <AndroidKeyStore>False</AndroidKeyStore>
 	  <Debugger>Xamarin</Debugger>
 	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
+	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
@@ -60,12 +61,13 @@
 	  <Debugger>Xamarin</Debugger>
 	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
 	  <AndroidLinkTool>r8</AndroidLinkTool>
+	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
 	</PropertyGroup>
 
 	<!-- 资源 -->
 	<ItemGroup>
 		<!-- 应用图标 -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#ffffff" BaseSize="160,160"/>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#ffffff" BaseSize="160,160" />
 
 		<!-- 开屏图片 -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" BaseSize="256,256" Color="#ffffff" />
