@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.SingerManagePage"
+             x:DataType="vm:SingerManageViewModel"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:ustx="clr-namespace:OpenUtau.Core.Ustx;assembly=OpenUtau.Core"
+             xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
+             Title="歌手管理">
+    <ContentPage.BindingContext>
+        <vm:SingerManageViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <converters:ByteDataImageSourceConverter x:Key="ByteDataImageSourceConverter" />
+        <converters:SingerToTypeColorConverter x:Key="SingerToTypeColorConverter" />
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- 自定义标题栏 -->
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
+            <Label Text="歌手管理" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+
+        <!-- 页面内容 -->
+        <AbsoluteLayout Grid.Row="1">
+            <!-- 歌手列表 -->
+            <ScrollView AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All" >
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Singers}" Margin="0,0,10,0" MinimumHeightRequest="300">
+                    <BindableLayout.EmptyView>
+                        <Label Text="{Static res:AppResources.NoSingerPrompt}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center"/>
+                    </BindableLayout.EmptyView>
+                    <BindableLayout.ItemTemplate>
+                        <!-- 歌手卡片 -->
+                        <DataTemplate x:DataType="ustx:USinger">
+                            <Border Margin="2" HeightRequest="80" StrokeShape="RoundRectangle 25" StrokeThickness="0">
+                                <Grid>
+                                    <Grid ColumnDefinitions="15,80,*,50">
+                                        <!-- 歌手类型颜色tag -->
+                                        <BoxView Grid.Column="0" BackgroundColor="{Binding ., Converter={StaticResource SingerToTypeColorConverter}}" />
+                                        <Border Grid.Column="1" StrokeShape="Ellipse" Margin="5" StrokeThickness="0">
+                                            <Image Source="{Binding AvatarData, Converter={StaticResource ByteDataImageSourceConverter}}" />
+                                        </Border>
+                                        <Grid Grid.Column="2" RowDefinitions="40, 20" Margin="10,5,5,15">
+                                            <Label Grid.Row="0" Text="{Binding LocalizedName}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+                                            <HorizontalStackLayout Grid.Row="1" >
+                                                <Label Text="ID：" FontSize="15" HorizontalOptions="Start" VerticalTextAlignment="Center"  />
+                                                <Label Text="{Binding Id}" FontSize="15" HorizontalOptions="Start" VerticalTextAlignment="Center" />
+                                            </HorizontalStackLayout>
+                                        </Grid>
+                                        <Image Grid.Column="3" Source="{DynamicResource forward-ios}" HorizontalOptions="Center" Margin="10"/>
+                                    </Grid>
+                                    <Button CornerRadius="0" BackgroundColor="{DynamicResource SingerCardBackground}" x:Name="ButtonOpenDetail" Clicked="ButtonOpenDetail_Clicked"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
+            <!-- 圆形添加按钮 -->
+            <Button ImageSource="{DynamicResource add}" x:Name="ButtonAddSinger" Clicked="ButtonAddSinger_Clicked"
+                    WidthRequest="70" HeightRequest="70" CornerRadius="35" BackgroundColor="{StaticResource SemiTransparentPrimary}"
+                    AbsoluteLayout.LayoutBounds="0.89, 0.92, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <!-- 阴影 -->
+                <Button.Shadow>
+                    <Shadow Brush="{DynamicResource ItemDivider}" Opacity="0.4" Offset="2, 2" Radius="9" />
+                </Button.Shadow>
+            </Button>
+        </AbsoluteLayout>
+    </Grid>
+</ContentPage>

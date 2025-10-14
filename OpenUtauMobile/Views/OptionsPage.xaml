@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             x:Class="OpenUtauMobile.Views.OptionsPage"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
+             Title="选项">
+    <ContentPage.BindingContext>
+        <vm:OptionsViewModel/>
+    </ContentPage.BindingContext>
+    <!-- 根控件 -->
+    <Grid RowDefinitions="60,300,*">
+        <!-- 自定义标题栏 -->
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
+            <Label Text="{Static res:AppResources.Options}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+        <!-- 主体 -->
+        <Border Grid.Row="1" Margin="10" StrokeShape="RoundRectangle 10">
+            <ScrollView>
+                <VerticalStackLayout>
+                    <Grid RowDefinitions="50, .5">
+                        <Label Text="{Static res:AppResources.Settings}" Margin="10,0,10,0"/>
+                        <Button x:Name="ButtonSettings" BackgroundColor="Transparent" Clicked="ButtonSettings_Clicked"/>
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
+                    <Grid RowDefinitions="50, .5">
+                        <Label Text="{Static res:AppResources.About}" Margin="10,0,10,0" />
+                        <Button x:Name="ButtonAbout" BackgroundColor="Transparent" Clicked="ButtonAbout_Clicked"/>
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
+                    <Grid RowDefinitions="50, .5">
+                        <Label Text="{Static res:AppResources.HelpAndTutorial}" Margin="10,0,10,0" />
+                        <Button x:Name="ButtonHelp" BackgroundColor="Transparent" Clicked="ButtonHelp_Clicked"/>
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
+                    <Grid RowDefinitions="50, .5">
+                        <Label Text="{Static res:AppResources.ExportLog}" Margin="10,0,10,0" />
+                        <Button x:Name="ButtonExportLog" BackgroundColor="Transparent" Clicked="ButtonExportLog_Clicked"/>
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+        <!-- 剩下一块儿干什么呢？ -->
+        <!-- 8(:D -->
+    </Grid>
+</ContentPage>

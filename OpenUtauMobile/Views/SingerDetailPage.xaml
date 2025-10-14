@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.SingerDetailPage"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             Title="歌手详情页">
+    <ContentPage.BindingContext>
+        <vm:SingerDetailViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- 根控件 -->
+    <Grid RowDefinitions="60,*">
+        <!-- 自定义标题栏 -->
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" Text="返回" Clicked="ButtonBack_Clicked" Grid.Column="0" />
+            <Label Text="歌手" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+        <!-- 主体 -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout>
+                <Border Margin="10" Padding="10" StrokeShape="RoundRectangle 10" StrokeThickness="1">
+                    <Grid ColumnDefinitions="100, *" RowDefinitions="100, Auto, Auto, Auto, Auto, Auto, Auto">
+                        <Label Margin="20" Text="{Binding Singer.LocalizedName}" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" VerticalTextAlignment="Center" FontSize="30"/>
+                        <Label Text="名称：" Grid.Column="0" Grid.Row="1" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="{Binding Singer.Name}" Grid.Column="1" Grid.Row="1" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="ID：" Grid.Column="0" Grid.Row="2" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="{Binding Singer.Id}" Grid.Column="1" Grid.Row="2" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="作者：" Grid.Column="0" Grid.Row="3" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="{Binding Singer.Author}" Grid.Column="1" Grid.Row="3" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="版本：" Grid.Column="0" Grid.Row="4" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="{Binding Singer.Version}" Grid.Column="1" Grid.Row="4" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="安装路径：" Grid.Column="0" Grid.Row="5" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="{Binding Singer.Location}" Grid.Column="1" Grid.Row="5" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="网站：" Grid.Column="0" Grid.Row="6" VerticalTextAlignment="Center" FontSize="15"/>
+                        <Label Text="{Binding Singer.Web}" Grid.Column="1" Grid.Row="6" VerticalTextAlignment="Center" FontSize="15"/>
+                    </Grid>
+                </Border>
+                <Button Text="删除" x:Name="ButtonRemoveSinger" Margin="10" BackgroundColor="Red" Clicked="ButtonRemoveSinger_Clicked" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

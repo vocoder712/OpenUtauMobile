@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<linker>
+	<assembly fullname="Microsoft.Maui.Controls" preserve="all" />
+	<assembly fullname="Microsoft.Maui.Controls">
+		<type fullname="Microsoft.Maui.Controls.ShadowTypeConverter" preserve="all" />
+		<type fullname="Microsoft.Maui.Controls.Shadow" preserve="all" />
+	</assembly>
+	<assembly fullname="OpenUtauMobile">
+		<type fullname="*" preserve="all" />
+	</assembly>
+</linker>

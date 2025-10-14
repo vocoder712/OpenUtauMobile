@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:sys="clr-namespace:System.Text;assembly=System.Runtime"
+             x:Class="OpenUtauMobile.Views.InstallSingerPage"
+             x:DataType="vm:InstallSingerViewModel"
+             xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+             Title="歌手安装">
+    <!-- 不 在隐藏代码设置绑定 -->
+    <ContentPage.BindingContext>
+        <vm:InstallSingerViewModel/>
+    </ContentPage.BindingContext>
+    <!-- 在 ContentPage 的资源字典中添加了一个 EncodingNameConverter 实例，并将其键设置为 EncodingNameConverter。这样可以在整个 XAML 文件中通过这个键引用该转换器。 -->
+    <ContentPage.Resources>
+        <converters:EncodingNameConverter x:Key="EncodingNameConverter" />
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- 自定义标题栏 -->
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
+            <Label Text="歌手安装向导" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+        
+        <!-- 页面内容 -->
+        <Grid Grid.Row="1" x:Name="MainContentLayout">
+
+            <!-- 第1页-选择压缩包编码方式 -->
+            <Grid Padding="10" RowDefinitions="80,*,100">
+
+                <Label Text="请选择一种 压缩包 编码方式，使得右侧文字显示正常" Grid.Row="0" />
+                <Border Grid.Row="1" BackgroundColor="LightGrey" StrokeShape="RoundRectangle 30">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+                        <!-- 左侧编码列表 -->
+                        <ScrollView Grid.Column="0">
+                            <CollectionView x:Name="ArchiveEncodingListView" SelectionMode="Single" ItemsSource="{Binding Encodings}" SelectedItem="{Binding ArchiveEncoding}" SelectionChanged="ArchiveEncodingListView_SelectionChanged">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="sys:Encoding">
+                                        <Grid Padding="10">
+                                            <Label Text="{Binding Converter={StaticResource EncodingNameConverter}}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </ScrollView>
+
+                        <!-- 右侧样例 -->
+                        <ScrollView Grid.Column="1">
+                            <CollectionView x:Name="ArchiveEntryItemsList" SelectionMode="None" ItemsSource="{Binding ArchiveEntryItems}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Grid Padding="10">
+                                            <Label Text="{Binding .}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </ScrollView>
+
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 第2页-选择文本文件编码方式 -->
+            <Grid Padding="10" RowDefinitions="80,*,100">
+
+                <Label Text="请选择一种 文本 编码方式，使得右侧文字显示正常" Grid.Row="0" />
+                <Border Grid.Row="1" BackgroundColor="LightGrey" StrokeShape="RoundRectangle 30">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+                        <!-- 左侧编码列表 -->
+                        <ScrollView Grid.Column="0">
+                            <CollectionView x:Name="TextEncodingListView" SelectionMode="Single" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}" SelectionChanged="TextEncodingListView_SelectionChanged">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="sys:Encoding">
+                                        <Grid Padding="10">
+                                            <Label Text="{Binding Converter={StaticResource EncodingNameConverter}}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                                <!-- 选中时背景色 todo -->
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroupList>
+                                        <VisualStateGroup>
+                                            <VisualState x:Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Blue" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateGroupList>
+                                </VisualStateManager.VisualStateGroups>
+                            </CollectionView>
+                        </ScrollView>
+
+                        <!-- 右侧样例 -->
+                        <ScrollView Grid.Column="1">
+                            <CollectionView x:Name="TextEntryItemsList" SelectionMode="None" ItemsSource="{Binding TextItems}">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <Grid Padding="10">
+                                            <Label Text="{Binding .}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </ScrollView>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 第3页-完善歌手信息 -->
+            <Grid Padding="10" RowDefinitions="*,80,*" ColumnDefinitions="Auto,*">
+
+                <Label x:Name="LabelPrepareInstallPrompt" Text="歌手信息缺失，请选择歌手类型：" Grid.Column="0" Grid.Row="1"/>
+                <Picker x:Name="PickerSingerType" ItemsSource="{Binding SingerTypes}" Grid.Row="1" SelectedItem="{Binding SingerType}" Grid.Column="1" />
+
+            </Grid>
+
+            <!-- 第4页-确认安装信息 -->
+            <Grid Padding="10" RowDefinitions="80,*,80,100">
+                <Label Text="安装信息摘要" Grid.Row="0" />
+                <Border Grid.Row="1" StrokeShape="RoundRectangle 10">
+                    <ScrollView>
+                        <VerticalStackLayout>
+                            <Grid RowDefinitions="50,.5">
+                                <Grid ColumnDefinitions="Auto, *" Margin="15,5">
+                                    <Label Text="歌手名称"/>
+                                    <Label Text="{Binding VoicebankConfig.Name}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                                </Grid>
+                                <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                            </Grid>
+                            <Grid RowDefinitions="50,.5">
+                                <Grid ColumnDefinitions="Auto, *" Margin="15,5">
+                                    <Label Text="歌手类型"/>
+                                    <Label Text="{Binding SingerType}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                                </Grid>
+                                <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                            </Grid>
+                            <Grid RowDefinitions="50,.5">
+                                <Grid ColumnDefinitions="Auto, *" Margin="15,5">
+                                    <Label Text="安装目录"/>
+                                    <Label LineBreakMode="MiddleTruncation" Text="{Binding InstallPath}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                                </Grid>
+                                <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                            </Grid>
+                            <Grid RowDefinitions="50,.5">
+                                <Grid ColumnDefinitions="Auto, *" Margin="15,5">
+                                    <Label Text="安装大小"/>
+                                    <Label Text="{Binding InstallSize}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
+                                </Grid>
+                                <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </Border>
+                <Button x:Name="ButtonBeginInstall" Margin="10" CornerRadius="10" Text="开始安装" Grid.Row="2" Clicked="ButtonBeginInstall_Clicked"/>
+            </Grid>
+            
+            <!-- 第5页-安装过程 -->
+            <Grid 
+                  Padding="20, 120, 20, 220">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+
+                    <Label Text="安装中" Grid.Row="0" />
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" LineBreakMode="HeadTruncation" Text="{Binding InstallProgressDetail}"/>
+                        <Label Grid.Column="1" Text="{Binding InstallProgressText}" />
+                    </Grid>
+                    <ProgressBar x:Name="ProgressBarInstall" Progress="{Binding InstallProgress}" Grid.Row="2" />
+                </Grid>
+            </Grid>
+
+            <!-- 第6页-安装结果 -->
+            <Grid 
+                  Padding="20, 120, 20, 220">
+                <VerticalStackLayout VerticalOptions="Center" Spacing="50">
+                    <Label Text="安装完成" HorizontalTextAlignment="Center" FontSize="30"/>
+                    <Button Text="返回" x:Name="ButtonFinish" Clicked="ButtonFinish_Clicked" Margin="10" CornerRadius="10"/>
+                </VerticalStackLayout>
+
+            </Grid>
+        </Grid>
+
+        
+        <!-- 步骤控制按钮 -->
+        <AbsoluteLayout Grid.Row="1" x:Name="StepControlLayout">
+            
+            <!-- 圆形上一步按钮 -->
+            <Button ImageSource="{DynamicResource back}" x:Name="ButtonBackStep" Clicked="ButtonBackStep_Clicked"
+                    WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="{StaticResource SemiTransparentPrimary}"
+                    AbsoluteLayout.LayoutBounds="0.06, 0.9, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <!-- 阴影 -->
+                <Button.Shadow>
+                    <Shadow Brush="Gray"  Opacity="0.4" Offset="2, 2" Radius="9" />
+                </Button.Shadow>
+            </Button>
+            
+            <!-- 圆形下一步按钮 -->
+            <Button ImageSource="{DynamicResource forward}" x:Name="ButtonNextStep" Clicked="ButtonNextStep_Clicked"
+                    WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="{StaticResource SemiTransparentPrimary}"
+                    AbsoluteLayout.LayoutBounds="0.94, 0.9, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <!-- 阴影 -->
+                <Button.Shadow>
+                    <Shadow Brush="Gray"  Opacity="0.4" Offset="2, 2" Radius="9" />
+                </Button.Shadow>
+            </Button>
+            
+            
+            <!-- busy -->
+            <ActivityIndicator x:Name="BusyIndicator" IsRunning="{Binding Busy}" Color="{StaticResource SemiTransparentPrimary}"
+                               AbsoluteLayout.LayoutBounds="0.5, 0.5, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" />
+        </AbsoluteLayout>
+        
+        <!-- 安装进度 -->
+        <AbsoluteLayout VerticalOptions="End" Grid.Row="1" x:Name="InstallingLayout">
+
+        </AbsoluteLayout>
+        
+        <!-- 安装结果 -->
+        <AbsoluteLayout VerticalOptions="End" Grid.Row="1" x:Name="InstallResultLayout">
+
+        </AbsoluteLayout>
+        
+    </Grid>
+</ContentPage>

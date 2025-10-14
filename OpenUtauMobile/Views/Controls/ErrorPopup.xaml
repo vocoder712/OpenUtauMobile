@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               CanBeDismissedByTappingOutsideOfPopup="False"
+               x:Class="OpenUtauMobile.Views.Controls.ErrorPopup"
+               Color="Transparent"
+               HorizontalOptions="Center"
+               VerticalOptions="Center">
+
+    <!-- 根控件 -->
+    <Border Stroke="Gray"
+            StrokeThickness="1"
+            Background="Gray"
+            Padding="10, 10, 10, 10"
+            WidthRequest="400"
+            MaximumHeightRequest="600"
+            StrokeShape="RoundRectangle 10">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <!-- 阴影 -->
+            <!--<Grid.Shadow>
+                <Shadow Radius="5"
+                        Brush="Gray"
+                        Offset="3, 3"
+                        Opacity="0.5" />
+            </Grid.Shadow>-->
+
+            <!-- 标题 -->
+            <Label 
+                x:Name="LabelTitle"
+                Text="OpenUtau Mobile 运行时异常"
+                Grid.Column="0" Grid.Row="0"
+                VerticalOptions="Start" 
+                HorizontalOptions="Start"
+                FontSize="20"
+                FontAttributes="Bold" />
+
+            <!-- 分割线 -->
+            <BoxView
+                HeightRequest="1"
+                Grid.Column="0" Grid.Row="1"
+                Color="Black"
+                VerticalOptions="Start" />
+
+            <!-- 错误信息 -->
+            <ScrollView
+                Grid.Column="0" Grid.Row="2"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                HeightRequest="200"
+                Margin="0,10,0,10">
+                <Label
+                    x:Name="LabelErrorDetail"
+                    LineBreakMode="WordWrap"
+                    Text="错误信息"
+                    VerticalOptions="Start" 
+                    HorizontalOptions="Start" />
+            </ScrollView>
+
+            <!-- 按钮容器 -->
+            <HorizontalStackLayout
+                x:Name="ButtonsContainer"
+                Grid.Column="0" Grid.Row="3"
+                VerticalOptions="End"
+                HorizontalOptions="End">
+                <Button x:Name="ButtonRelaunch" Text="重启程序" Margin="5,0" Clicked="ButtonRelaunch_Clicked" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
+                <Button x:Name="ButtonClose" Text="关闭" Margin="5,0" Clicked="ButtonClose_Clicked" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
+                <Button x:Name="ButtonCopy" Text="复制错误信息" Margin="5,0" Clicked="ButtonCopy_Clicked" CornerRadius="25"/>
+
+            </HorizontalStackLayout>
+        </Grid>
+    </Border>
+</toolkit:Popup>

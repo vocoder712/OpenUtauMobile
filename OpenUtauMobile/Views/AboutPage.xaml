@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.AboutPage"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
+             xmlns:utils="clr-namespace:OpenUtau.Core.Util;assembly=OpenUtau.Core"
+             Title="AboutPage">
+    <Grid RowDefinitions="60,Auto,*">
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
+            <Label Text="{Static res:AppResources.About}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+        <!-- logo -->
+        <Grid RowDefinitions="80,30,Auto" Grid.Row="1" Padding="20" RowSpacing="5">
+            <Image Source="openutau.png" Aspect="AspectFit"/>
+            <Image Grid.Row="1" Source="{DynamicResource logotype}" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <Label Grid.Row="2" x:Name="LabelLyrics" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" FontAttributes="Italic"/>
+        </Grid>
+        <Border Grid.Row="2" Margin="10,0" StrokeShape="RoundRectangle 10" MaximumHeightRequest="500">
+            <ScrollView>
+                <VerticalStackLayout>
+                    <Grid RowDefinitions="50,.5">
+                        <Grid ColumnDefinitions="Auto, *, 200" Margin="15,5">
+                            <Label Text="OpenUtau Mobile 版本" />
+                            <Label x:Name="LabelVersion" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
+                    <Grid RowDefinitions="50,.5">
+                        <Grid ColumnDefinitions="Auto, *, 200" Margin="15,5">
+                            <Label Text="OpenUtau 内核版本"/>
+                            <Label x:Name="LabelCoreVersion" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center"/>
+                        </Grid>
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
+                    <Grid RowDefinitions="Auto,.5">
+                        <Grid RowDefinitions="Auto, Auto" RowSpacing="5">
+                            <Label Margin="15,5" Text="帮助 OpenUtau Mobile 变得更好" HorizontalTextAlignment="Center"/>
+                            <Label Grid.Row="1" Margin="15,5" Text="去 GitHub 给项目提建议、贡献代码或者给个星标吧" HorizontalTextAlignment="Center"/>
+                        </Grid>
+                        <Button CornerRadius="0" BackgroundColor="Transparent" x:Name="ButtonToGitHub" Clicked="ButtonToGitHub_Clicked" />
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+    </Grid>
+</ContentPage>

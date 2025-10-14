@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
+               xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+               Color="Transparent"
+               x:Class="OpenUtauMobile.Views.Controls.FileSaverPopup">
+    <toolkit:Popup.BindingContext>
+        <vm:FileSaverPopupViewModel/>
+    </toolkit:Popup.BindingContext>
+    <toolkit:Popup.Resources>
+        <ResourceDictionary>
+            <converters:FileSystemInfoToTypeConverter x:Key="FileSystemInfoToTypeConverter" />
+        </ResourceDictionary>
+    </toolkit:Popup.Resources>
+
+    <!-- 主体 -->
+    <Border Background="{DynamicResource PopupBackground}"
+            Padding="10, 10, 10, 10"
+            WidthRequest="400"
+            StrokeShape="RoundRectangle 10">
+        <Grid RowSpacing="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="400" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+
+            <!-- 标题栏 -->
+            <Grid Grid.Row="0" ColumnDefinitions="60,*">
+                <Button Margin="2,2,2,2" Grid.Column="0" ImageSource="{DynamicResource back}" Padding="10" Clicked="OnCancelClicked" BackgroundColor="Transparent"/>
+                <Label Grid.Column="1" Text="保存文件" FontSize="18" HorizontalOptions="Center" />
+            </Grid>
+
+            <!-- 路径输入和操作按钮 -->
+            <Grid Grid.Row="1" Padding="3,3,3,3" ColumnDefinitions="60,*,60" ColumnSpacing="5">
+                <Button Margin="2,2,2,2" Text=".." Clicked="OnGoUpClicked" CornerRadius="25" BorderWidth="1" BorderColor="{DynamicResource Primary}" Padding="0" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
+                <Entry Grid.Column="1" Text="{Binding CurrentDirectory}" />
+                <Button x:Name="ButtonRefresh" Margin="2,2,2,2" Grid.Column="2" CornerRadius="25" Text="刷新" Clicked="ButtonRefresh_Clicked"/>
+            </Grid>
+
+            <!-- 文件列表 -->
+            <Border Grid.Row="2" StrokeShape="RoundRectangle 10">
+            <ScrollView>
+                <CollectionView x:Name="DirectoryListView" SelectionChanged="OnItemSelected" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="io:FileSystemInfo">
+                            <Grid RowDefinitions="50,1">
+                                <Grid Grid.Row="0" ColumnDefinitions="60,*">
+                                    <Image Grid.Column="0" Source="{DynamicResource folder}" Margin="10">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                <Style.Triggers>
+                                                    <DataTrigger TargetType="Image" Binding="{Binding .,Converter={StaticResource FileSystemInfoToTypeConverter}}" Value="File">
+                                                            <Setter Property="Source" Value="{DynamicResource file}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Image.Style>
+                                    </Image>
+                                    <Label Grid.Column="1" Text="{Binding Name}" />
+                                </Grid>
+                                <BoxView Grid.Row="1" Color="{DynamicResource ItemDivider}" Margin="60,0,0,0"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </ScrollView>
+            </Border>
+            <!-- 异常信息 -->
+            <Label x:Name="LabelError" Grid.Row="2" TextColor="Red" Text="{Binding ErrorMessage}" />
+            <Label x:Name="LabelWarning" Grid.Row="2" TextColor="Orange" Text="{Binding WarningMessage}" />
+
+
+            <!-- 底部操作 -->
+            <Grid Grid.Row="3" Padding="3,3,3,3" ColumnDefinitions="*, 80" ColumnSpacing="5">
+                <Entry Text="{Binding FileName}" Placeholder="输入文件名" />
+                <Button Grid.Column="1" Text="保存" x:Name="ButtonSave" Clicked="ButtonSave_Clicked" CornerRadius="25"/>
+            </Grid>
+        </Grid>
+    </Border>
+</toolkit:Popup>

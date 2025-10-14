@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
+               xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:ustx="clr-namespace:OpenUtau.Core.Ustx;assembly=OpenUtau.Core"
+                xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+               Color="Transparent"
+               x:Name="PopupSnapDivs"
+               x:Class="OpenUtauMobile.Views.Controls.PianoRollSnapDivPopup">
+    <toolkit:Popup.BindingContext>
+        <vm:PianoRollSnapDivPopupViewModel/>
+    </toolkit:Popup.BindingContext>
+    <toolkit:Popup.Resources>
+        <converters:EqualityConverter x:Key="EqualityConverter" />
+    </toolkit:Popup.Resources>
+
+    <!-- 主体 -->
+    <Border StrokeThickness="0"
+            Background="{DynamicResource PopupBackground}"
+            Padding="0"
+            WidthRequest="400"
+            StrokeShape="RoundRectangle 10">
+        <Grid RowDefinitions="40, 400">
+            <!-- 标题栏 -->
+            <Border BackgroundColor="#66CCFF" Padding="10,2,10,2">
+                <Label x:Name="LabelTitle" Text="量化" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+            </Border>
+            <!-- 列表 -->
+            <ScrollView Grid.Row="1" >
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding SnapDivs}">
+                    <BindableLayout.EmptyView>
+                        <Label Text="还没有量化！请向社区报告问题。" />
+                    </BindableLayout.EmptyView>
+                    <BindableLayout.ItemTemplate>
+                        <!-- 量化卡片 -->
+                        <DataTemplate x:DataType="x:Int32">
+                            <Border Margin="5,5,10,0" Padding="0" HeightRequest="40" StrokeShape="RoundRectangle 25" StrokeThickness="1" BackgroundColor="Transparent" Stroke="{DynamicResource Primary}">
+                                <Grid ColumnDefinitions="50,*">
+                                    <Button x:Name="ButtonSelect" Grid.ColumnSpan="2" Clicked="ButtonSelect_Clicked" CornerRadius="0" Background="Transparent"/>
+                                    <Label Grid.Column="0" Text="√" VerticalTextAlignment="Center" HorizontalTextAlignment="Center">
+                                        <Label.IsVisible>
+                                            <MultiBinding Converter="{StaticResource EqualityConverter}">
+                                                <Binding Path="."/>
+                                                <Binding Source="{x:Reference PopupSnapDivs}" Path="BindingContext.CurrentSnapDiv" />
+                                            </MultiBinding>
+                                        </Label.IsVisible>
+                                    </Label>
+                                    <Label Grid.Column="1" Text="{Binding ., StringFormat='1/ {0}小节（{0}分音符）'}" VerticalTextAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+    </Border>
+</toolkit:Popup>

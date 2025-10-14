@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.SplashScreenPage">
+
+    <Grid x:Name="RootView">
+        <VerticalStackLayout VerticalOptions="Center">
+            <Border StrokeShape="RoundRectangle 15" StrokeThickness="0" HeightRequest="192" WidthRequest="192">
+                <Image Source="openutau.png" HorizontalOptions="Center" Aspect="AspectFit"/>
+            </Border>
+        </VerticalStackLayout>
+        <VerticalStackLayout VerticalOptions="End" Margin="0,0,0,30">
+            <Label Text="OpenUtau Mobile" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="24"/>
+            <Label x:Name="LabelDisplayVersion" Text="Version 0.0.0" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="14"/>
+            <Label x:Name="LabelInitDetail" Text="" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="18"/>
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

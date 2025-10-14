@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.HomePage"
+             xmlns:local="clr-namespace:OpenUtauMobile.Views"
+             xmlns:control="clr-namespace:OpenUtauMobile.Views.Controls"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings">
+
+    <ContentPage.BindingContext>
+        <vm:HomePageViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="100,*,100" VerticalOptions="Center">
+
+        <Grid Grid.Row="0" ColumnDefinitions="60,60,60,60" RowDefinitions="60,50" MaximumWidthRequest="700" HorizontalOptions="Center" ColumnSpacing="50" Padding="10">
+
+            <Button x:Name="ButtonNewProject" Grid.Column="0" Grid.Row="0" ImageSource="{DynamicResource add}" Clicked="ButtonNewProject_Clicked" Padding="15" CornerRadius="10"/>
+            <Button x:Name="ButtonOpenProject" Grid.Column="1" Grid.Row="0" ImageSource="{DynamicResource open}" Clicked="ButtonOpenProject_Clicked" Padding="15" CornerRadius="10"/>
+            <Button x:Name="ButtonOpenSingerManage" Grid.Column="2" Grid.Row="0" ImageSource="{DynamicResource microphone}" Clicked="ButtonOpenSingerManage_Clicked" Padding="15" CornerRadius="10" />
+            <Button x:Name="ButtonOpenOptions" Grid.Column="3" Grid.Row="0" ImageSource="{DynamicResource options}" Clicked="ButtonOpenOptions_Clicked" Padding="15" CornerRadius="10" />
+
+            <Label Grid.Column="0" Grid.Row="1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Static res:AppResources.New}" />
+            <Label Grid.Column="1" Grid.Row="1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Static res:AppResources.Open}" />
+            <Label Grid.Column="2" Grid.Row="1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Static res:AppResources.Singers}" />
+            <Label Grid.Column="3" Grid.Row="1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Static res:AppResources.Options}" />
+        </Grid>
+
+        <!-- 最近打开 -->
+        <Grid Grid.Row="1" Padding="30,0" RowDefinitions="50, *">
+            <Label Text="{Static res:AppResources.RecentProjects}" FontSize="Large" />
+            <Border Grid.Row="1" StrokeShape="RoundRectangle 10" >
+                <ScrollView>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding RecentProjectsPaths}" x:DataType="vm:HomePageViewModel">
+                        <BindableLayout.EmptyView>
+                            <Label Text="这里还没有打开过的工程" HorizontalTextAlignment="Center"/>
+                        </BindableLayout.EmptyView>
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Grid RowDefinitions="*,1">
+                                    <Button x:Name="ButtonOpenRecent" Text="" CornerRadius="0" BackgroundColor="Transparent" Clicked="ButtonOpenRecent_Clicked"/>
+                                    <Label HorizontalTextAlignment="Start" VerticalTextAlignment="Center" Text="{Binding .}" Margin="10,0,10,0"/>
+                                    <BoxView Grid.Row="1" BackgroundColor="{DynamicResource ItemDivider}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+        </Grid>
+
+        <!-- 底部信息 -->
+        <Grid Grid.Row="2" ColumnDefinitions="40,250" HorizontalOptions="Center" ColumnSpacing="20" RowDefinitions="40" VerticalOptions="Center">
+            <Border Grid.Column="0" StrokeThickness="0" StrokeShape="RoundRectangle 5">
+                <Image Source="openutau.png" />
+            </Border>
+            <!-- logotype -->
+            <Image Aspect="AspectFit" Grid.Column="1" Source="{DynamicResource logotype}" HorizontalOptions="Center" VerticalOptions="Center" >
+
+            </Image>
+        </Grid>
+    </Grid>
+</ContentPage>

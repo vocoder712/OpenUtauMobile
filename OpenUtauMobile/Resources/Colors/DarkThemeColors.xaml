@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Resources.Colors.DarkThemeColors">
+    <Color x:Key="DividerColor">#303030</Color>
+    <!--<Color x:Key="ActiveNoteEditModeButton">#FF4081</Color>-->
+    <Color x:Key="TrackNote">#eeeeee</Color>
+    <Color x:Key="SnapDivOptionCardBackground">#ff4081</Color>
+    <Color x:Key="PopupTitleBackground">#303030</Color>
+    <Color x:Key="PopupBackground">#303030</Color>
+    <Color x:Key="TrackHeaderBackground">#303030</Color>
+    <Color x:Key="TrackHeaderTopBackground">#202020</Color>
+    <Color x:Key="TitleBarBackground">#303030</Color>
+    <Color x:Key="TrackHeaderTopItemBackground">#303030</Color>
+    <Color x:Key="ExpBackground">#30808080</Color>
+    <Color x:Key="ExpBackGroundAlpha">#a0808080</Color>
+    <Color x:Key="Icon">#FFFFFF</Color>
+    <Color x:Key="TransparentButtonText">#f0f0f0</Color>
+    <Color x:Key="TabBackground">#505050</Color>
+    <Color x:Key="ItemDivider">#505050</Color>
+    <Color x:Key="SingerCardBackground">#11ffffff</Color>
+    <Color x:Key="Handle">#707070</Color>
+    <Color x:Key="HandleGrain">#303030</Color>
+
+    <FileImageSource x:Key="file" File="ic_sharp_insert_drive_file_dark.png"></FileImageSource>
+    <FileImageSource x:Key="folder" File="ic_sharp_folder_dark.png"></FileImageSource>
+    <FileImageSource x:Key="add" File="ic_sharp_add_dark.png"></FileImageSource>
+    <FileImageSource x:Key="open" File="ic_sharp_folder_open_dark.png"></FileImageSource>
+    <FileImageSource x:Key="microphone" File="mingcute_microphone_fill_dark.png"></FileImageSource>
+    <FileImageSource x:Key="options" File="ion_options_sharp_dark.png"></FileImageSource>
+    <FileImageSource x:Key="back" File="ic_sharp_arrow_back_dark.png"></FileImageSource>
+    <FileImageSource x:Key="delete" File="ic_sharp_delete_dark.png"></FileImageSource>
+    <FileImageSource x:Key="edit" File="ic_sharp_edit_dark.png"></FileImageSource>
+    <FileImageSource x:Key="pause" File="ic_sharp_pause_dark.png"></FileImageSource>
+    <FileImageSource x:Key="play" File="ic_sharp_play_arrow_dark.png"></FileImageSource>
+    <FileImageSource x:Key="redo" File="ic_sharp_redo_dark.png"></FileImageSource>
+    <FileImageSource x:Key="save" File="ic_sharp_save_dark.png"></FileImageSource>
+    <FileImageSource x:Key="undo" File="ic_sharp_undo_dark.png"></FileImageSource>
+    <FileImageSource x:Key="settings" File="ic_sharp_settings_dark.png"></FileImageSource>
+    <FileImageSource x:Key="anchor" File="iconamoon_cursor_fill_dark.png"></FileImageSource>
+    <FileImageSource x:Key="logotype" File="logotype_dark.png"></FileImageSource>
+    <FileImageSource x:Key="sine" File="ph_wave_sine_dark.png"></FileImageSource>
+    <FileImageSource x:Key="magnet" File="tabler_magnet_dark.png"></FileImageSource>
+    <FileImageSource x:Key="magnet-off" File="tabler_magnet_off_dark.png"></FileImageSource>
+    <FileImageSource x:Key="rename" File="bxs_rename_dark.png"></FileImageSource>
+    <FileImageSource x:Key="note" File="ic_sharp_music_note_dark.png"></FileImageSource>
+    <FileImageSource x:Key="edit-off" File="edit_off_dark.png"></FileImageSource>
+    <FileImageSource x:Key="edit-pit" File="edit_pit_dark.png"></FileImageSource>
+    <FileImageSource x:Key="forward" File="ic_sharp_arrow_forward_dark.png"></FileImageSource>
+    <FileImageSource x:Key="forward-ios" File="ic_sharp_arrow_forward_ios_dark.png"></FileImageSource>
+</ResourceDictionary>

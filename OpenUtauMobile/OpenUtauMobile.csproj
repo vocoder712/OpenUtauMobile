@@ -1,0 +1,342 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
+
+		<!-- Note for MacCatalyst:
+		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
+		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
+		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
+		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
+		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+
+		<OutputType>Exe</OutputType>
+		<RootNamespace>OpenUtauMobile</RootNamespace>
+		<UseMaui>true</UseMaui>
+		<SingleProject>true</SingleProject>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<!--<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>-->
+
+		<!-- 外显名称 -->
+		<ApplicationTitle>OpenUtau Mobile</ApplicationTitle>
+
+		<!-- 应用ID -->
+		<ApplicationId>pers.yimin.openutaumobile</ApplicationId>
+
+		<!-- 版本 -->
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
+		<ApplicationVersion>1</ApplicationVersion>
+
+		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
+		<WindowsPackageType>None</WindowsPackageType>
+
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
+		<RuntimeIdentifiers>android-arm64;android-arm;android-x86;android-x64</RuntimeIdentifiers>
+	  <EnableLLVM>False</EnableLLVM>
+	  <AndroidKeyStore>False</AndroidKeyStore>
+	  <Debugger>Xamarin</Debugger>
+	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
+	  <AndroidPackageFormat>apk</AndroidPackageFormat>
+	  <EnableLLVM>False</EnableLLVM>
+	  <AndroidKeyStore>False</AndroidKeyStore>
+	  <RunAOTCompilation>True</RunAOTCompilation>
+	  <Debugger>Xamarin</Debugger>
+	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
+	  <AndroidLinkTool>r8</AndroidLinkTool>
+	</PropertyGroup>
+
+	<!-- 资源 -->
+	<ItemGroup>
+		<!-- 应用图标 -->
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#ffffff" BaseSize="160,160"/>
+
+		<!-- 开屏图片 -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" BaseSize="256,256" Color="#ffffff" />
+
+		<!-- 图片资源 -->
+		<MauiImage Include="Resources\Images\*" />
+		<!--<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />-->
+
+		<!-- 自定义字体 -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- 原始资源 Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_dark.svg" />
+	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_ios_dark.svg" />
+	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_ios_light.svg" />
+	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_light.svg" />
+	</ItemGroup>
+
+
+	<!-- nuget依赖项 -->
+	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.100" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.8" />
+		<PackageReference Include="ReactiveUI" Version="20.2.45" />
+		<PackageReference Include="ReactiveUI.Fody" Version="19.5.41" />
+		<PackageReference Include="ReactiveUI.Maui" Version="20.2.45" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.0-stable.1" />
+		<PackageReference Include="Vapolia.Svg" Version="1.0.5" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Compile Update="Platforms\iOS\Utils\iOSAppLifeCycleHelper.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Platforms\Windows\Utils\WindowsAppLifeCycleHelper.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="Resources\Strings\AppResources.en-US.Designer.cs">
+	    <DependentUpon>AppResources.en-US.resx</DependentUpon>
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	  </Compile>
+	  <Compile Update="Resources\Strings\AppResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AppResources.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\ChooseTrackColorPopup.xaml.cs">
+	    <DependentUpon>ChooseTrackColorPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\EditKeyPopup.xaml.cs">
+	    <DependentUpon>EditKeyPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\EditBeatPopup.xaml.cs">
+	    <DependentUpon>EditBeatPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\PianoRollSnapDivPopup.xaml.cs">
+	    <DependentUpon>PianoRollSnapDivPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\FileSaverPopup.xaml.cs">
+	    <DependentUpon>FileSaverPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\EditLyricsPopup.xaml.cs">
+	    <DependentUpon>EditLyricsPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\ChooseSingerPopup.xaml.cs">
+	    <DependentUpon>ChooseSingerPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\InsertTempoSignaturePopup.xaml.cs">
+	    <DependentUpon>InsertTempoSignaturePopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\EditMenuPopup.xaml.cs">
+	    <DependentUpon>EditMenuPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\ExitPopup.xaml.cs">
+	    <DependentUpon>ExitPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\ExportAudioPopup.xaml.cs">
+	    <DependentUpon>ExportAudioPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\EditBpmPopup.xaml.cs">
+	    <DependentUpon>EditBpmPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\ErrorPopup.xaml.cs">
+	    <DependentUpon>ErrorPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\SettingsPage.xaml.cs">
+	    <DependentUpon>SettingsPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Resources\Strings\AppResources.en-US.resx">
+	    <LastGenOutput>AppResources.en-US.Designer.cs</LastGenOutput>
+	    <Generator>ResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Resources\Strings\AppResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Resources\Images\" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\Icons\dark\bxs_rename_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\edit_off_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\edit_pit_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\iconamoon_cursor_fill_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_add_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_arrow_back_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_arrow_forward_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_arrow_forward_ios_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_delete_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_edit_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_folder_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_folder_open_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_insert_drive_file_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_music_note_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_pause_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_play_arrow_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_redo_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_save_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_settings_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_undo_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ion_options_sharp_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\logotype_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\mingcute_microphone_fill_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ph_wave_sine_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\tabler_magnet_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\tabler_magnet_off_dark.svg" />
+	  <MauiImage Include="Resources\Icons\light\bxs_rename_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\edit_off_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\edit_pit_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\iconamoon_cursor_fill_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_add_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_arrow_back_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_arrow_forward_ios_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_arrow_forward_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_delete_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_edit_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_folder_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_folder_open_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_insert_drive_file_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_music_note_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_pause_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_play_arrow_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_redo_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_save_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_settings_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_undo_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ion_options_sharp_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\logotype_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\mingcute_microphone_fill_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ph_wave_sine_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\tabler_magnet_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\tabler_magnet_off_light.svg" />
+	  <MauiImage Include="Resources\Icons\openutau.svg" />
+	</ItemGroup>
+
+
+	<!-- Android项目引用 -->
+	<!-- <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+      <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+    </ItemGroup> -->
+
+	<!-- iOS -->
+	<!-- <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-ios'">
+      <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+    </ItemGroup> -->
+
+	<!-- Windows -->
+	<!-- <ItemGroup Condition="'$(TargetFramework)' == 'net9.0-windows10.0.19041.0'">
+      <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+    </ItemGroup> -->
+
+	<ItemGroup>
+      <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+      <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
+    </ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Resources\Colors\DarkThemeColors.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Resources\Colors\LightThemeColors.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\AboutPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\ChooseTrackColorPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\EditKeyPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\EditBeatPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\PianoRollSnapDivPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\FileSaverPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\EditLyricsPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\ChooseSingerPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\InsertTempoSignaturePopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\EditMenuPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\ExitPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\ExportAudioPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\EditBpmPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\RenamePopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\EditPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\HomePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\ErrorPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\InstallSingerPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\SettingsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\OptionsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\SingerDetailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\SingerManagePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\SplashScreenPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
+</Project>

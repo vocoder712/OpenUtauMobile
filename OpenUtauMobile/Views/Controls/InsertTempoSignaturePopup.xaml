@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
+               xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+                xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+               Color="Transparent"
+               x:Class="OpenUtauMobile.Views.Controls.InsertTempoOrTimeSignaturePopup">
+    <toolkit:Popup.BindingContext>
+        <vm:InsertTempoSignaturePopupViewModel/>
+    </toolkit:Popup.BindingContext>
+
+    <!-- 主体 -->
+    <Border StrokeThickness="0"
+            Background="{DynamicResource PopupBackground}"
+            Padding="0"
+            WidthRequest="400"
+            StrokeShape="RoundRectangle 10">
+        <Grid RowDefinitions="40, Auto, Auto, 50" ColumnDefinitions="*, 120">
+            <!-- 标题栏 -->
+            <Border BackgroundColor="#66CCFF" Padding="10,2,10,2" Grid.ColumnSpan="2">
+                <Label x:Name="LabelTitle" Text="插入曲速或节拍标记" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+            </Border>
+            <!-- 曲速 -->
+            <HorizontalStackLayout Grid.Row="1" Margin="5">
+                <Label Text="在" VerticalTextAlignment="Center"/>
+                <Entry x:Name="EntryPosition" Placeholder="tick时间单位" Keyboard="Numeric" WidthRequest="80"/>
+                <Label Text="tick标记曲速为" VerticalTextAlignment="Center" />
+                <Entry x:Name="EntryBpm" Text="120.00" Placeholder="输入BPM" Keyboard="Numeric" WidthRequest="80"/>
+            </HorizontalStackLayout>
+            <Button x:Name="ButtonInsertTempoSignature" Text="插入曲速标记" Clicked="ButtonInsertTempoSignature_Clicked"  Grid.Row="1" Grid.Column="1" Margin="5" Padding="0" CornerRadius="25"/>
+            <!-- 节拍 -->
+            <HorizontalStackLayout Grid.Row="2" Margin="5">
+                <Label Text="在第" VerticalTextAlignment="Center" />
+                <Entry x:Name="EntryBar" Placeholder="小节" Keyboard="Numeric" WidthRequest="50"/>
+                <Label Text="小节标记节拍为" VerticalTextAlignment="Center" />
+                <Entry x:Name="EntryBeatPerBar" Text="4" Placeholder="每小节拍数" Keyboard="Numeric" WidthRequest="30"/>
+                <Label Text="/" VerticalTextAlignment="Center" />
+                <Entry x:Name="EntryBeatUnit" Text="4" Placeholder="以几分音符为一拍" Keyboard="Numeric" WidthRequest="30"/>
+            </HorizontalStackLayout>
+            <Button x:Name="ButtonInsertTimeSignature" Text="插入节拍标记" Clicked="ButtonInsertTimeSignature_Clicked" Grid.Row="2" Grid.Column="1" Margin="5" Padding="0" CornerRadius="25"/>
+            <!-- 按钮栏 -->
+            <Button Text="取消" Grid.Row="3" Clicked="OnCancelClicked" Grid.ColumnSpan="2" CornerRadius="0"/>
+            </Grid>
+    </Border>
+</toolkit:Popup>

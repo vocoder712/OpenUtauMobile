@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
+               xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+                xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+               Color="Transparent"
+               x:Class="OpenUtauMobile.Views.Controls.EditMenuPopup">
+    <toolkit:Popup.BindingContext>
+        <vm:RenamePopupViewModel/>
+    </toolkit:Popup.BindingContext>
+    <toolkit:Popup.Resources>
+        <Style x:Key="StyleTabButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="WidthRequest" Value="100" />
+            <Setter Property="TextColor" Value="{DynamicResource TransparentButtonText}" />
+        </Style>
+    </toolkit:Popup.Resources>
+
+    <!-- 主体 -->
+    <Border StrokeThickness="0"
+            Background="{AppThemeBinding Dark=#444444, Light=White}"
+            Padding="0"
+            WidthRequest="400"
+            StrokeShape="RoundRectangle 10">
+        <!-- 伪tab页 -->
+        <Grid RowDefinitions="50, 500" >
+            <!-- 选项卡 -->
+            <ScrollView Orientation="Horizontal" Grid.Row="0" >
+                <HorizontalStackLayout>
+                    <Button x:Name="ButtonTabImport" Text="导入" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}"/>
+                    <Button x:Name="ButtonTabExport" Text="导出" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}"/>
+                    <Button x:Name="ButtonTabAuxiliary" Text="辅助工具" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}" />
+                    <Button x:Name="ButtonTabMore" Text="更多" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}" />
+                </HorizontalStackLayout>
+            </ScrollView>
+            <!-- 选项卡内容 -->
+            <!-- 导入 -->
+            <Grid Grid.Row="1" x:Name="GridImport">
+                <ScrollView>
+                    <VerticalStackLayout>
+                        <Grid>
+                            <Label Text="导入音频" />
+                            <Button BackgroundColor="Transparent" x:Name="ButtonImportAudio" Clicked="ButtonImportAudio_Clicked"/>
+                        </Grid>
+                        <Grid>
+                            <Label Text="导入MIDI" />
+                            <Button BackgroundColor="Transparent" x:Name="ButtonImportMidi" Clicked="ButtonImportMidi_Clicked"/>
+                        </Grid>
+                        <Grid>
+                            <Label Text="导入轨道" />
+                            <Button BackgroundColor="Transparent" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+            <!-- 导出 -->
+            <Grid Grid.Row="1" x:Name="GridExport" IsVisible="False">
+                <ScrollView>
+                    <VerticalStackLayout>
+                        <Grid>
+                            <Label Text="导出音频" />
+                            <Button BackgroundColor="Transparent" x:Name="ButtonExportAudio" Clicked="ButtonExportAudio_Clicked"/>
+                        </Grid>
+                        <Grid>
+                            <Label Text="导出工程" />
+                            <Button BackgroundColor="Transparent" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+            <!-- 辅助工具 -->
+            <Grid Grid.Row="1" x:Name="GridAuxiliary" IsVisible="False">
+                <ScrollView>
+                    <VerticalStackLayout>
+                        <Grid>
+                            <Label Text="伴奏分离" />
+                            <Button BackgroundColor="Transparent" />
+                        </Grid>
+                        <Grid>
+                            <Label Text="干声转换" />
+                            <Button BackgroundColor="Transparent" />
+                        </Grid>
+                        <Grid>
+                            <Label Text="曲速测定" />
+                            <Button BackgroundColor="Transparent" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+            <!-- 更多 -->
+            <Grid Grid.Row="1" x:Name="GridMore" IsVisible="False">
+                <ScrollView>
+                    <VerticalStackLayout>
+                        <Grid>
+                            <Label Text="工程另存为" />
+                            <Button BackgroundColor="Transparent" x:Name="ButtonSaveAs" Clicked="ButtonSaveAs_Clicked"/>
+                        </Grid>
+                        <Grid>
+                            <Label Text="表情管理" />
+                            <Button BackgroundColor="Transparent"/>
+                        </Grid>
+                        <Grid>
+                            <Label Text="全部设置" />
+                            <Button BackgroundColor="Transparent" x:Name="ButtonSettings" Clicked="ButtonSettings_Clicked"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+        </Grid>
+    </Border>
+</toolkit:Popup>

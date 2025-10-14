@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.EditPage"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+             xmlns:ustx="clr-namespace:OpenUtau.Core.Ustx;assembly=OpenUtau.Core"
+             xmlns:utils="clr-namespace:OpenUtauMobile.Views.Utils"
+             xmlns:u="clr-namespace:OpenUtauMobile.Utils"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="vm:EditViewModel"
+             xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+             x:Name="Page"
+             Title="编辑页面">
+    <ContentPage.BindingContext>
+        <vm:EditViewModel />
+    </ContentPage.BindingContext>
+
+    <!-- 页面级样式 -->
+    <ContentPage.Resources>
+        <!-- converter资源 -->
+        <ResourceDictionary>
+            <converters:TrackColorConverter x:Key="TrackColorConverter" />
+            <converters:InvertBoolConverter x:Key="InvertBoolConverter" />
+            <converters:ByteDataImageSourceConverter x:Key="ByteDataImageSourceConverter" />
+            <converters:VolumeLayoutBoundConverter x:Key="VolumeLayoutBoundConverter" />
+            <toolkit:MathExpressionConverter x:Key="MathExpressionConverter" />
+            <converters:NullToStrokeThicknessConverter x:Key="NullToStrokeThicknessConverter" />
+            <converters:DoubleGridLengthConverter x:Key="DoubleGridLengthConverter" />
+        </ResourceDictionary>
+        <!-- 圆形按钮样式 -->
+        <Style x:Key="CircularToolbarButtonStyle" TargetType="Button">
+            <!--<Setter Property="HeightRequest" Value="10" />
+            <Setter Property="WidthRequest" Value="10" />-->
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        </Style>
+        <!-- 标题栏按钮样式 -->
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextColor" Value="{DynamicResource TransparentButtonText}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+        </Style>
+        <!-- 工具栏编辑模式按钮样式 -->
+        <Style x:Key="NoteEditModeButtonStyle" TargetType="Button">
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="BorderWidth" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <!-- 根控件 -->
+    <Grid x:Name="RootLayout" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- 标题栏 -->
+        <Grid ColumnDefinitions="Auto, *, Auto" BackgroundColor="{DynamicResource TitleBarBackground}">
+            <!-- 返回 -->
+            <Button x:Name="ButtonBack" Grid.Column="0" ImageSource="{DynamicResource back}" Style="{StaticResource TitleBarButtonStyle}" Clicked="ButtonBack_Clicked" Padding="8"/>
+            <!-- 标题 -->
+            <Label Grid.Column="1" LineBreakMode="HeadTruncation" Text="{Binding Path}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"></Label>
+            <!-- 保存 撤销 重做-->
+            <Grid Grid.Column="2" HorizontalOptions="End" ColumnDefinitions="30,30,30,30" RowDefinitions="30" VerticalOptions="Center" ColumnSpacing="10">
+                <Button Grid.Column="0" ImageSource="{DynamicResource save}" x:Name="ButtonSave" Clicked="ButtonSave_Clicked" Style="{StaticResource TitleBarButtonStyle}"/>
+                <Button Grid.Column="1" ImageSource="{DynamicResource undo}" x:Name="ButtonUndo" Clicked="ButtonUndo_Clicked" Style="{StaticResource TitleBarButtonStyle}"/>
+                <Button Grid.Column="2" ImageSource="{DynamicResource redo}" x:Name="ButtonRedo" Clicked="ButtonRedo_Clicked" Style="{StaticResource TitleBarButtonStyle}"/>
+                <Button Grid.Column="3" Text="…" x:Name="ButtonMore" Clicked="ButtonMore_Clicked" Style="{StaticResource TitleBarButtonStyle}"/>
+            </Grid>
+        </Grid>
+        <!-- 主体 -->
+        <AbsoluteLayout x:Name="MainLayout" Grid.Row="1">
+            <!-- 走带 -->
+            <Grid x:Name="Track" AbsoluteLayout.LayoutBounds="{Binding BoundTrack}" AbsoluteLayout.LayoutFlags="WidthProportional">
+                <AbsoluteLayout>
+                    <!-- 分成四份 -->
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="20, *" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional">
+                        <!-- 左上角 -->
+                        <HorizontalStackLayout Grid.Column="0" Grid.Row="0" HorizontalOptions="Start" BackgroundColor="{x:DynamicResource TrackHeaderTopBackground}">
+                            <!-- 左上角按钮切换详细的轨道头部面板开闭 -->
+                            <Button x:Name="ButtonToggleDetailedTrackHeader" WidthRequest="80" Grid.Row="0" Grid.Column="0" Text=">>>" Clicked="ButtonToggleDetailedTrackHeader_Clicked" Margin="0" Padding="0">
+                                <Button.Style>
+                                    <!-- 通过触发器改变文字 -->
+                                    <Style TargetType="Button" BasedOn="{StaticResource TitleBarButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger TargetType="Button" Binding="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader}" Value="True" x:DataType="ustx:UTrack">
+                                                <Setter Property="Text" Value="&lt;&lt;&lt;" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <!-- 曲速与节拍 -->
+                            <Grid ColumnDefinitions="80,70,70" IsVisible="False" WidthRequest="220">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger TargetType="Grid" Binding="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader}" Value="True" x:DataType="ustx:UTrack">
+                                                <Setter Property="IsVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <!-- 曲速 -->
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 4" Margin="5,1,5,1" BackgroundColor="{DynamicResource TrackHeaderTopItemBackground}">
+                                    <Grid>
+                                        <Label x:Name="LabelBpm" FontSize="12" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                                        <Button x:Name="ButtonEditBpm" BackgroundColor="Transparent" Clicked="ButtonEditBpm_Clicked"/>
+                                    </Grid>
+                                </Border>
+                                <!-- 节拍 -->
+                                <Border Grid.Column="1" StrokeShape="RoundRectangle 4" Margin="5,1,5,1" BackgroundColor="{DynamicResource TrackHeaderTopItemBackground}">
+                                    <Grid ColumnDefinitions="*,10,*">
+                                        <Label x:Name="LabelBeatPerBar" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Column="0" FontSize="12"/>
+                                        <Label VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Column="1" Text="/" FontSize="12" />
+                                        <Label x:Name="LabelBeatUnit" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" Grid.Column="2" FontSize="12"/>
+                                        <Button x:Name="ButtonEditBeat" BackgroundColor="Transparent" Grid.ColumnSpan="3" Clicked="ButtonEditBeat_Clicked"/>
+                                    </Grid>
+                                </Border>
+                                <!-- 调性 -->
+                                <Border Grid.Column="2" StrokeShape="RoundRectangle 4" Margin="5,1,5,1" BackgroundColor="{DynamicResource TrackHeaderTopItemBackground}">
+                                    <Grid>
+                                        <Label x:Name="LabelKeyName" FontSize="12" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                                        <Button x:Name="ButtonEditKey" BackgroundColor="Transparent" Clicked="ButtonEditKey_Clicked"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </HorizontalStackLayout>
+
+                        <!-- canvas -->
+                        <skia:SKCanvasView x:Name="PlaybackTickBackgroundCanvas" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" PaintSurface="PlaybackTickBackgroundCanvas_PaintSurface"/>
+                        <skia:SKCanvasView x:Name="PlaybackPosCanvas" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" PaintSurface="PlaybackPosCanvas_PaintSurface" />
+                        <skia:SKCanvasView x:Name="TrackCanvas" Grid.Row="1" Grid.Column="1" EnableTouchEvents="True" PaintSurface="TrackCanvas_PaintSurface" Touch="TrackCanvas_Touch"/>
+                        <!-- 基本时间信息 -->
+                        <!-- 时间轴 -->
+                        <skia:SKCanvasView x:Name="TimeLineCanvas" Grid.Row="0" Grid.Column="1" EnableTouchEvents="True" PaintSurface="TimeLineCanvas_PaintSurface" Touch="TimeLineCanvas_Touch" />
+                        <!-- 左侧head -->
+                        <ScrollView x:Name="ScrollTrckHeaders" Grid.Row="1" Grid.Column="0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="{Binding HeightPerTrack, Converter={StaticResource DoubleGridLengthConverter}}"/>
+                                </Grid.RowDefinitions>
+                                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Tracks}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="ustx:UTrack">
+                                            <Border Margin="0" Padding="0" StrokeThickness=".2" HeightRequest="{Binding Source={x:Reference Page}, Path=BindingContext.HeightPerTrack}" BackgroundColor="{DynamicResource TrackHeaderBackground}" x:DataType="ustx:UTrack">
+                                                <HorizontalStackLayout Margin="0" Padding="0" HorizontalOptions="Start">
+                                                    <!-- 1.左侧彩色轨道标签 -->
+                                                    <Border WidthRequest="20" BackgroundColor="{Binding TrackColor, Converter={StaticResource TrackColorConverter}}" StrokeThickness="0">
+                                                        <Grid>
+                                                            <Label Grid.RowSpan="3" FontSize="12" Text="{Binding TrackNo}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"/>
+                                                            <Button x:Name="ButtonMuted"  Padding="0" Margin="0" CornerRadius="0" FontSize="8" BackgroundColor="Transparent" Clicked="ButtonMuted_Clicked"/>
+                                                            <Border x:Name="MutedLayer" StrokeThickness="0" BackgroundColor="Gray" IsVisible="{Binding Muted}" Grid.RowSpan="3" />
+                                                        </Grid>
+                                                    </Border>
+                                                    <!-- 2.头像和轨道名 -->
+                                                    <VerticalStackLayout WidthRequest="60" VerticalOptions="Center">
+                                                        <!-- 头像 -->
+                                                        <Border HeightRequest="{Binding Source={x:Reference Page}, Path=BindingContext.AvatarSize}" WidthRequest="{Binding Source={x:Reference Page}, Path=BindingContext.AvatarSize}" Margin="3,3,3,3" StrokeThickness="{Binding Singer, Converter={StaticResource NullToStrokeThicknessConverter}}" StrokeShape="Ellipse" StrokeDashArray="3,5">
+                                                            <!--<Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger TargetType="Border" Binding="{Binding Singer.AvatarData}" Value="{x:Null}">
+                                                                            <Setter Property="StrokeThickness" Value="1"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>-->
+                                                            <Grid>
+                                                                <!-- ImageButton二合一 -->
+                                                                <ImageButton Source="{Binding Singer.AvatarData, Converter={StaticResource ByteDataImageSourceConverter}}" Aspect="AspectFill" x:Name="ButtonSingerAvatar" Clicked="ButtonSingerAvatar_Clicked" />
+                                                            </Grid>
+                                                        </Border>
+                                                        <Label Text="{Binding TrackName}" IsVisible="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader, Converter={StaticResource InvertBoolConverter}}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="10"/>
+                                                    </VerticalStackLayout>
+                                                    <!-- 展开的详细轨道头部 -->
+                                                    <Grid x:Name="DetailedTrackHeader" ColumnDefinitions="1*,3*, 20" RowDefinitions="3*,2*,2*,3*" WidthRequest="220" IsVisible="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader}">
+                                                        <!-- 颜色 -->
+                                                        <Grid RowDefinitions="15" ColumnDefinitions="15" HorizontalOptions="Center" VerticalOptions="Center">
+                                                            <Button x:Name="ButtonChangeTrackColor" CornerRadius="25" BackgroundColor="{Binding TrackColor, Converter={StaticResource TrackColorConverter}}" Clicked="ButtonChangeTrackColor_Clicked" />
+                                                        </Grid>
+                                                        <!-- 名称 -->
+                                                        <Button x:Name="ButtonChangeTrackName" Grid.Column="1" Grid.Row="0" CornerRadius="0" BackgroundColor="Transparent" Text="{Binding TrackName}" Padding="0" TextColor="{DynamicResource TransparentButtonText}" Clicked="ButtonChangeTrackName_Clicked"/>
+                                                        <!-- 音素器和声码器 -->
+                                                        <Label Grid.Column="0" Grid.Row="1" Text="素" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource TransparentButtonText}"/>
+                                                        <Button x:Name="ButtonChangePhonemizer" Grid.Column="1" Grid.Row="1" Text="{Binding Phonemizer.Tag}" Padding="0" CornerRadius="0" BackgroundColor="Transparent"  TextColor="{DynamicResource TransparentButtonText}"/>
+                                                        <Label Grid.Column="0" Grid.Row="2" Text="渲" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource TransparentButtonText}" />
+                                                        <Button x:Name="ButtonChangeRender" Grid.Column="1" Grid.Row="2" Text="{Binding RendererSettings.Renderer}" Padding="0" CornerRadius="0" Background="Transparent" TextColor="{DynamicResource TransparentButtonText}" />
+                                                        <!-- 电平 -->
+                                                        <Slider Grid.Column="1" Grid.Row="3" Value="{Binding Volume}" Maximum="12.0" Minimum="-24.0" MinimumTrackColor="AliceBlue" MaximumTrackColor="AliceBlue">
+                                                            <Slider.GestureRecognizers>
+                                                                <TapGestureRecognizer x:Name="GestureResetVolume" NumberOfTapsRequired="2" Tapped="GestureResetVolume_Tapped" />
+                                                                <PanGestureRecognizer x:Name="GestureChangeVolume" PanUpdated="GestureChangeVolume_PanUpdated" />
+                                                            </Slider.GestureRecognizers>
+                                                        </Slider>
+                                                        <!-- 声像 -->
+                                                        <Slider Grid.Column="0" Grid.Row="3" Value="{Binding Pan}" Maximum="100.0" Minimum="-100.0" MinimumTrackColor="White" MaximumTrackColor="White">
+                                                            <Slider.GestureRecognizers>
+                                                                <TapGestureRecognizer x:Name="GestureResetPan" NumberOfTapsRequired="2" Tapped="GestureResetPan_Tapped" />
+                                                                <PanGestureRecognizer x:Name="GestureChangePan" PanUpdated="GestureChangePan_PanUpdated" />
+                                                            </Slider.GestureRecognizers>
+                                                        </Slider>
+                                                        <!-- 右侧 -->
+                                                        <Grid Grid.Column="2" Grid.RowSpan="4" RowDefinitions="40,*,40">
+                                                            <Button x:Name="ButtonMoveUp" Grid.Row="0" Text="↑" Padding="0" Margin="0" CornerRadius="0" FontSize="8" BackgroundColor="Transparent" Clicked="ButtonMoveUp_Clicked" TextColor="{DynamicResource TransparentButtonText}"/>
+                                                            <Button x:Name="ButtonRemoveTrack" Grid.Row="1" ImageSource="{DynamicResource delete}" Padding="2" Margin="0" CornerRadius="0" Background="Transparent" Clicked="ButtonRemoveTrack_Clicked"/>
+                                                            <Button x:Name="ButtonMoveDown" Grid.Row="2" Text="↓" Padding="0" Margin="0" CornerRadius="0" FontSize="8" BackgroundColor="Transparent" Clicked="ButtonMoveDown_Clicked" TextColor="{DynamicResource TransparentButtonText}"/>
+                                                        </Grid>
+                                                    </Grid>
+                                                </HorizontalStackLayout>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                                <Button Grid.Row="1" Text="+" FontSize="30" x:Name="ButtonAddTrack" Margin="10,10,10,10" Padding="0,0,0,0" Clicked="ButtonAddTrack_Clicked" BackgroundColor="Transparent" TextColor="{DynamicResource TransparentButtonText}"/>
+                            </Grid>
+                        </ScrollView>                        
+                    </Grid>
+                    <!-- 走带工具栏 -->
+                    <Grid AbsoluteLayout.LayoutBounds="1,0,AutoSize,AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" 
+                          RowDefinitions="40,40,40" ColumnDefinitions="Auto, 40">
+                        <!-- 编辑模式相关 -->
+                        <HorizontalStackLayout IsVisible="False" Grid.Row="0" Grid.Column="0">
+                            <HorizontalStackLayout.Triggers>
+                                <DataTrigger TargetType="HorizontalStackLayout" Binding="{Binding CurrentTrackEditMode}" Value="Edit">
+                                    <Setter Property="IsVisible" Value="True"/>
+                                </DataTrigger>
+                            </HorizontalStackLayout.Triggers>
+                            <Grid ColumnDefinitions="40">
+                                <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemovePart" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemovePart_Clicked"/>
+                            </Grid>
+                            <Grid ColumnDefinitions="40" >
+                                <Button ImageSource="{DynamicResource rename}" x:Name="ButtonRenamePart" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRenamePart_Clicked"/>
+                            </Grid>
+                        </HorizontalStackLayout>
+                        <!-- 轨道编辑模式切换 -->
+                        <Button Grid.Row="0" Grid.Column="1" ImageSource="{DynamicResource edit-off}" x:Name="ButtonSwitchEditMode" Clicked="ButtonSwitchEditMode_Clicked">
+                            <Button.Style>
+                                <!-- 通过触发器改变文字 -->
+                                <Style TargetType="Button" BasedOn="{StaticResource CircularToolbarButtonStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding CurrentTrackEditMode}" Value="Edit">
+                                            <Setter Property="ImageSource" Value="{DynamicResource edit}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <!-- 磁吸到网格 -->
+                        <Button ImageSource="{DynamicResource magnet}" Grid.Row="1" Grid.Column="1" Style="{StaticResource CircularToolbarButtonStyle}" x:Name="ButtonTrackSnapToGrid" Clicked="ButtonTrackSnapToGrid_Clicked">
+                            <Button.Behaviors>
+                                <toolkit:TouchBehavior x:Name="TouchBehaviorTrackSnapToGrid" LongPressCompleted="TouchBehaviorTrackSnapToGrid_LongPressCompleted" />
+                            </Button.Behaviors>
+                        </Button>
+                            <!-- 缩放 -->
+                        <!--<HorizontalStackLayout Grid.Row="2" Margin="5,0,5,5" HorizontalOptions="End">
+                            <Button Text="大" Style="{StaticResource CircularToolbarButtonStyle}" x:Name="ButtonZoomIn" Clicked="ButtonZoomIn_Clicked"/>
+                            <Button Text="小" Style="{StaticResource CircularToolbarButtonStyle}" x:Name="ButtonZoomOut" Clicked="ButtonZoomOut_Clicked"/>
+                        </HorizontalStackLayout>-->
+                    </Grid>
+                </AbsoluteLayout>
+            </Grid>
+            <!-- 主编辑区 -->
+            <Border StrokeThickness="0" x:Name="MainEdit" AbsoluteLayout.LayoutBounds="{Binding BoundPianoRoll}" AbsoluteLayout.LayoutFlags="WidthProportional" >
+                <!-- 钢琴卷帘 -->
+                <AbsoluteLayout Grid.Row="0">
+                    <Grid x:Name="GridPianoRoll" ColumnDefinitions="60, *" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
+                        <!-- 横向网格 -->
+                        <skia:SKCanvasView x:Name="PianoRollKeysBackgroundCanvas" Grid.Column="1" PaintSurface="PianoRollKeysBackgroundCanvas_PaintSurface" />
+                        <!-- 立绘 -->
+                        <Image x:Name="ImageSingerPortrait" Grid.Column="1" HorizontalOptions="End" Aspect="AspectFit" Source="{Binding CurrentPortrait, Converter={StaticResource ByteDataImageSourceConverter}}" Opacity="{Binding PortraitOpacity}"/>
+                        <!-- 时间网格 -->
+                        <skia:SKCanvasView x:Name="PianoRollTickBackgroundCanvas" Grid.Column="1" PaintSurface="PianoRollTickBackgroundCanvas_PaintSurface" />
+                        <!-- 音符 -->
+                        <skia:SKCanvasView x:Name="PianoRollCanvas" Grid.Column="1" EnableTouchEvents="True" PaintSurface="PianoRollCanvas_PaintSurface" Touch="PianoRollCanvas_Touch"/>
+                        <!-- 音高线 -->
+                        <skia:SKCanvasView x:Name="PianoRollPitchCanvas" Grid.Column="1" PaintSurface="PianoRollPitchCanvas_PaintSurface"/>
+                        <!-- 左侧钢琴键 -->
+                        <skia:SKCanvasView x:Name="PianoKeysCanvas" Grid.Column="0" EnableTouchEvents="True" PaintSurface="PianoKeysCanvas_PaintSurface" Touch="PianoKeysCanvas_Touch">
+                            <!-- 阴影 -->
+                            <skia:SKCanvasView.Shadow>
+                                <Shadow Brush="{DynamicResource ItemDivider}" Opacity="0.4" Offset="2, 2" Radius="9" />
+                            </skia:SKCanvasView.Shadow>
+                        </skia:SKCanvasView>
+
+                    </Grid>
+                    <!-- 钢琴卷帘工具栏 -->
+                    <VerticalStackLayout AbsoluteLayout.LayoutBounds="1,0,AutoSize,AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional"
+                                         VerticalOptions="Start" WidthRequest="40">
+                        <!-- 渲染音高 -->
+                        <Grid RowDefinitions="40" IsVisible="{Binding IsShowRenderPitchButton}">
+                            <Button Text="AI" x:Name="ButtonRenderPitch" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRenderPitch_Clicked"/>
+                        </Grid>
+                        <!-- 磁吸到网格 -->
+                        <Grid RowDefinitions="40">
+                            <Button ImageSource="{DynamicResource magnet}" x:Name="ButtonPianoRollSnapToGrid" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonPianoRollSnapToGrid_Clicked">
+                                <Button.Behaviors>
+                                    <toolkit:TouchBehavior LongPressCompleted="TouchBehaviorPianoRollSnapToGrid_LongPressCompleted" />
+                                </Button.Behaviors>
+                            </Button>                        
+                        </Grid>
+                        <!-- 删除 -->
+                        <Grid RowDefinitions="40" IsVisible="{Binding IsShowRemoveNoteButton}">
+                            <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemoveNote" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemoveNote_Clicked"/>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- 可拖拽分隔 -->
+                    <Border x:Name="DivExp" AbsoluteLayout.LayoutBounds="{Binding BoundExpDiv}" AbsoluteLayout.LayoutFlags="WidthProportional" BackgroundColor="{DynamicResource ExpBackGroundAlpha}" StrokeThickness="0">
+                        <Grid ColumnDefinitions="60,*" Padding="0" >
+                            <!-- 拖拽手柄 -->
+                            <Border Grid.Column="0" Margin="5,10" BackgroundColor="{DynamicResource Handle}" StrokeShape="RoundRectangle 3">
+                                <Grid RowDefinitions="*,1,*,1,*" Margin="3,0,3,0">
+                                    <BoxView Grid.Row="1" Color="{DynamicResource HandleGrain}" />
+                                    <BoxView Grid.Row="3" Color="{DynamicResource HandleGrain}" />
+                                </Grid>
+                            </Border>
+                            <!-- 音素 -->
+                            <skia:SKCanvasView x:Name="PhonemeCanvas" Grid.Column="1" EnableTouchEvents="True" PaintSurface="PhonemeCanvas_PaintSurface" Touch="PhonemeCanvas_Touch"/>
+                        </Grid>
+                    </Border>
+                    <!-- 扩展区模糊层 -->
+                    <!--<BoxView x:Name="ExpBlurLayer" AbsoluteLayout.LayoutBounds="{Binding BoundExp}" AbsoluteLayout.LayoutFlags="WidthProportional" Color="#80000000"/>-->
+                    <!--<materialFrame:MaterialFrame x:Name="ExpBlurLayer" AbsoluteLayout.LayoutBounds="{Binding BoundExp}" AbsoluteLayout.LayoutFlags="WidthProportional"
+                                                 Padding="0" MaterialTheme="Dark"  MaterialBlurStyle="Light"  Background="Transparent" AcrylicGlowColor="Transparent" BackgroundColor="Transparent">-->
+                    <!-- 扩展区 -->
+                    <Grid x:Name="BorderExtend" ColumnDefinitions="60,*"  AbsoluteLayout.LayoutBounds="{Binding BoundExp}" AbsoluteLayout.LayoutFlags="WidthProportional" BackgroundColor="{DynamicResource ExpBackground}">
+                        <!-- 表情选择 -->
+                        <ScrollView Grid.Column="0" BackgroundColor="{DynamicResource ExpBackGroundAlpha}">
+                            <Grid RowDefinitions="20,20,20" ColumnDefinitions="20,20,20" >
+                                <Button x:Name="ButtonExchangeExp" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="换" Padding="0" Clicked="ButtonExchangeExp_Clicked"/>
+                                <Button x:Name="ButtonPrimaryExp" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding PrimaryExpressionAbbr}" Padding="0" TextTransform="Uppercase"/>
+                                <Button x:Name="ButtonSecondaryExp" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SecondaryExpressionAbbr}" Padding="0" TextTransform="Uppercase" BackgroundColor="{DynamicResource PrimaryDerive}"/>
+                                <Button x:Name="ButtonSwitchExpressionEditHandMode" Grid.Row="2" Grid.Column="0" Text="手" Padding="0"/>
+                                <Button x:Name="ButtonSwitchExpressionEditMode" Grid.Row="2" Grid.Column="1" Text="编" Padding="0" BackgroundColor="Transparent"/>
+                                <Button x:Name="ButtonSwitchExpressionEaraserMode" Grid.Row="2" Grid.Column="2" Text="橡" Padding="0" BackgroundColor="Transparent"/>
+                            </Grid>
+                        </ScrollView>
+                        <!-- 表情绘制 -->
+                        <skia:SKCanvasView x:Name="ExpressionCanvas" Grid.Column="1" EnableTouchEvents="True" PaintSurface="ExpressionCanvas_PaintSurface" Touch="ExpressionCanvas_Touch" />
+                    </Grid>
+                    <!--</materialFrame:MaterialFrame>-->
+                    <!-- 控制层 -->
+                    <!-- 拖拽手柄 -->
+                    <Border x:Name="DivExpControl" AbsoluteLayout.LayoutBounds="{Binding BoundExpDivControl}" AbsoluteLayout.LayoutFlags="None" Margin="5,10" Background="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 3">
+                        <Border.GestureRecognizers>
+                            <PanGestureRecognizer x:Name="PanExpDivider" PanUpdated="PanExpDivider_PanUpdated" />
+                        </Border.GestureRecognizers>
+                    </Border>
+
+                </AbsoluteLayout>
+            </Border>
+            <!-- 可拖拽分隔 -->
+            <Border x:Name="Div" AbsoluteLayout.LayoutBounds="{Binding BoundDiv}" AbsoluteLayout.LayoutFlags="WidthProportional" BackgroundColor="{DynamicResource DividerColor}" StrokeThickness="0">
+                <Grid ColumnDefinitions="60,8,*,Auto,100" Padding="0" >
+                    <!-- 拖拽手柄 -->
+                    <Border Grid.Column="0" Margin="5,10" BackgroundColor="{DynamicResource Handle}" StrokeShape="RoundRectangle 3">
+                        <Grid RowDefinitions="*,1,*,1,*" Margin="3,0,3,0">
+                            <BoxView Grid.Row="1" Color="{DynamicResource HandleGrain}"/>
+                            <BoxView Grid.Row="3" Color="{DynamicResource HandleGrain}" />
+                        </Grid>
+                    </Border>
+                    <!-- 编辑区分片名称 -->
+                    <BoxView Grid.Column="1" BackgroundColor="{Binding EditingPartColor}"/>
+                    <Label Margin="10,5,5,10" Grid.Column="2" Text="{Binding EditingPartName}" HorizontalTextAlignment="Start" VerticalTextAlignment="Center" LineBreakMode="MiddleTruncation"/>
+                    <!-- 钢琴卷帘音符编辑模式 -->
+                    <HorizontalStackLayout Grid.Column="3"  Margin="10,0,10,0" >
+                        <!--<Button Text="普" Grid.Column="0" x:Name="ButtonSwitchNormalMode" Style="{StaticResource NoteEditModeButtonStyle}" Clicked="ButtonSwitchNoteMode_Clicked"/>-->
+                        <Button ImageSource="{DynamicResource note}" WidthRequest="25" Grid.Column="1" x:Name="ButtonSwitchEditNoteMode" Style="{StaticResource NoteEditModeButtonStyle}" Clicked="ButtonSwitchNoteMode_Clicked" Padding="12"/>
+                        <Button ImageSource="{DynamicResource edit-pit}" WidthRequest="25" Grid.Column="2" x:Name="ButtonSwitchEditPitchCurveMode" Style="{StaticResource NoteEditModeButtonStyle}" Clicked="ButtonSwitchNoteMode_Clicked" Padding="12" />
+                        <Button ImageSource="{DynamicResource anchor}" WidthRequest="25" Grid.Column="3" x:Name="ButtonSwitchEditPitchAnchorMode" Style="{StaticResource NoteEditModeButtonStyle}" Clicked="ButtonSwitchNoteMode_Clicked" Padding="12"/>
+                        <Button ImageSource="{DynamicResource sine}" WidthRequest="25" Grid.Column="4" x:Name="ButtonSwitchEditVibratoMode" Style="{StaticResource NoteEditModeButtonStyle}" Clicked="ButtonSwitchNoteMode_Clicked" Padding="12" />
+                    </HorizontalStackLayout>
+                    <Border Grid.Column="4" Margin="5,8" Padding="0" StrokeShape="RoundRectangle 25" StrokeThickness="0">
+                        <Grid ColumnDefinitions="60, *">
+                            <!-- 播放键 -->
+                            <Button ImageSource="{DynamicResource play}" CornerRadius="0" x:Name="ButtonPlayOrPause" Clicked="ButtonPlayOrPause_Clicked" Margin="0" Padding="10,5,5,5" />
+                            <!-- 停止键 -->
+                            <Button Grid.Column="1" Text="■" BackgroundColor="{DynamicResource PrimaryDerive}" CornerRadius="0" x:Name="ButtonStop" Clicked="ButtonStop_Clicked" Margin="0" Padding="5,5,10,5" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- 控制层 -->
+            <!-- 拖拽手柄 -->
+            <Border x:Name="DivControl" AbsoluteLayout.LayoutBounds="{Binding BoundDivControl}" AbsoluteLayout.LayoutFlags="None" Margin="5,10" Background="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 3">
+                <Border.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="DivControlPanUpdated" />
+                </Border.GestureRecognizers>
+            </Border>
+            
+            <!-- 等待渲染 -->
+            <Grid BackgroundColor="#55000000" IsVisible="{Binding PlayPosWaitingRendering}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" InputTransparent="False">
+                <VerticalStackLayout VerticalOptions="Center" Padding="20">
+                    <Label Text="AI正在推理..." 
+                               HorizontalTextAlignment="Center" 
+                               VerticalTextAlignment="Center" 
+                               FontSize="30" />
+                    <Grid ColumnDefinitions="*,50">
+                        <ProgressBar x:Name="ProgressbarWaitingRender" Margin="20"/>
+                        <Label x:Name="LabelProgress" Grid.Column="1"/>
+                    </Grid>
+                    <Label x:Name="LabelProgressMsg"/>
+                </VerticalStackLayout>
+            </Grid>
+
+
+            <!-- 工作列表 -->
+            <ScrollView InputTransparent="True" x:Name="WorkListLayer" AbsoluteLayout.LayoutBounds="1,0,200,AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <VerticalStackLayout Padding="5" Margin="5" BindableLayout.ItemsSource="{Binding RunningWorks}" Spacing="10">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="u:RunningWork">
+                        <Border BackgroundColor="{Binding Color}" StrokeShape="RoundRectangle 5" StrokeThickness="0" Padding="5">
+                            <Grid RowDefinitions="30,Auto,Auto,Auto" ColumnDefinitions="*, 30">
+                                <Label Text="{Binding Title}" />
+                                <!-- 后面再搞，running work加个属性来标识 -->
+                                <ActivityIndicator Grid.Row="0" Grid.Column="1"/>
+                                <Label Text="{Binding Detail}" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="False"/>
+                                <ProgressBar Progress="{Binding Progress}" Grid.Row="2" Grid.Column="0" HeightRequest="40" IsVisible="False" />
+                                <Label Text="{Binding Progress, StringFormat='{0:F2}'}" Grid.Column="1" Grid.Row="2" HeightRequest="40" IsVisible="False" />
+                                <Button Text="中止" Grid.Row="3" Grid.RowSpan="2" CornerRadius="25" BorderWidth=".5" BackgroundColor="Transparent" BorderColor="{DynamicResource Primary}" TextColor="{DynamicResource Primary}" IsVisible="True" x:Name="ButtonTryCancelWork" Clicked="ButtonTryCancelWork_Clicked" HeightRequest="20"/>
+                            </Grid>
+                        </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
+        </AbsoluteLayout>
+    </Grid>
+    
+</ContentPage>

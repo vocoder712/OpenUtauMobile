@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
+               xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+                xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+               Color="Transparent"
+               x:Class="OpenUtauMobile.Views.Controls.ExitPopup">
+
+    <!-- 主体 -->
+    <Border Stroke="{AppThemeBinding Dark=#66ccff, Light=White}"
+            StrokeThickness="0"
+            Background="{AppThemeBinding Dark=#444444, Light=White}"
+            Padding="0"
+            WidthRequest="400"
+            StrokeShape="RoundRectangle 10">
+        <Grid RowDefinitions="40, Auto, 60">
+            <!-- 标题栏 -->
+            <Border BackgroundColor="#66CCFF" Padding="10,2,10,2">
+                <Label x:Name="LabelTitle" Text="关闭项目" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+            </Border>
+            <!-- 提示语 -->
+            <ScrollView Grid.Row="1" MinimumHeightRequest="50">
+                <Label Text="有尚未保存的更改，是否保存后退出？" Margin="10" LineBreakMode="WordWrap" FontSize="16" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+            </ScrollView>
+            <!-- 按钮栏 -->
+            <HorizontalStackLayout Grid.Row="3" Spacing="10" HorizontalOptions="End" Margin="10">
+                <Button Grid.Column="2" Text="取消" x:Name="ButtonCancel" Clicked="ButtonCancel_Clicked" WidthRequest="80" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}" BorderWidth="0" />
+                <Button Text="不保存" x:Name="ButtonDiscard" Clicked="ButtonDiscard_Clicked" WidthRequest="80" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}" BorderColor="{DynamicResource Primary}" BorderWidth="0.5"/>
+                <Button Grid.Column="1" Text="保存" x:Name="ButtonSave" Clicked="ButtonSave_Clicked" WidthRequest="80" CornerRadius="25" BackgroundColor="{DynamicResource Primary}" BorderWidth="0" />
+            </HorizontalStackLayout>
+        </Grid>
+    </Border>
+</toolkit:Popup>
