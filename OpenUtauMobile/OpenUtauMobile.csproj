@@ -28,8 +28,8 @@
 		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.0.2</ApplicationDisplayVersion>
-		<ApplicationVersion>3</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.3</ApplicationDisplayVersion>
+		<ApplicationVersion>4</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -44,7 +44,6 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
-		<RuntimeIdentifiers>android-arm64;android-arm;android-x86;android-x64</RuntimeIdentifiers>
 	  <EnableLLVM>False</EnableLLVM>
 	  <AndroidKeyStore>False</AndroidKeyStore>
 	  <Debugger>Xamarin</Debugger>
@@ -64,6 +63,22 @@
 	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
 	</PropertyGroup>
 
+	<!-- 原生库 -->
+	<!--<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+		<NativeLibrary Include="Platforms/Android/Lib/arm64-v8a/libworldline.so">
+			<Abi>arm64-v8a</Abi>
+		</NativeLibrary>
+		<NativeLibrary Include="Platforms/Android/Lib/armeabi-v7a/libworldline.so">
+			<Abi>armeabi-v7a</Abi>
+		</NativeLibrary>
+		<NativeLibrary Include="Platforms/Android/Lib/x86/libworldline.so">
+			<Abi>x86</Abi>
+		</NativeLibrary>
+		<NativeLibrary Include="Platforms/Android/Lib/x86_64/libworldline.so">
+			<Abi>x86_64</Abi>
+		</NativeLibrary>
+	</ItemGroup>-->
+
 	<!-- 资源 -->
 	<ItemGroup>
 		<!-- 应用图标 -->
@@ -82,11 +97,21 @@
 		<!-- 原始资源 Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
+
 	<ItemGroup>
+	  <None Remove="Platforms\Android\Lib\arm64-v8a\libworldline.so" />
+	  <None Remove="Platforms\Android\Lib\armeabi-v7a\libworldline.so" />
+	  <None Remove="Platforms\Android\Lib\x86_64\libworldline.so" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_dark.svg" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_ios_dark.svg" />
 	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_ios_light.svg" />
 	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_light.svg" />
+	</ItemGroup>
+	<ItemGroup>
+	  <AndroidNativeLibrary Include="Platforms\Android\Lib\arm64-v8a\libworldline.so" />
+	  <AndroidNativeLibrary Include="Platforms\Android\Lib\armeabi-v7a\libworldline.so" />
+	  <AndroidNativeLibrary Include="Platforms\Android\Lib\x86_64\libworldline.so" />
+	  <AndroidNativeLibrary Include="Platforms\Android\Lib\x86\libworldline.so" />
 	</ItemGroup>
 
 
