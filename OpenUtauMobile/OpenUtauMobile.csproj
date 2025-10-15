@@ -28,8 +28,8 @@
 		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.0.2</ApplicationDisplayVersion>
-		<ApplicationVersion>3</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.3</ApplicationDisplayVersion>
+		<ApplicationVersion>4</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -44,7 +44,6 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
-		<RuntimeIdentifiers>android-arm64;android-arm;android-x86;android-x64</RuntimeIdentifiers>
 	  <EnableLLVM>False</EnableLLVM>
 	  <AndroidKeyStore>False</AndroidKeyStore>
 	  <Debugger>Xamarin</Debugger>
@@ -65,7 +64,7 @@
 	</PropertyGroup>
 
 	<!-- 原生库 -->
-	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
+	<!--<ItemGroup Condition="'$(TargetFramework)' == 'net9.0-android'">
 		<NativeLibrary Include="Platforms/Android/Lib/arm64-v8a/libworldline.so">
 			<Abi>arm64-v8a</Abi>
 		</NativeLibrary>
@@ -78,7 +77,7 @@
 		<NativeLibrary Include="Platforms/Android/Lib/x86_64/libworldline.so">
 			<Abi>x86_64</Abi>
 		</NativeLibrary>
-	</ItemGroup>
+	</ItemGroup>-->
 
 	<!-- 资源 -->
 	<ItemGroup>
@@ -98,14 +97,7 @@
 		<!-- 原始资源 Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
-	<ItemGroup>
-	  <AndroidResource Remove="Platforms\Android\Lib\x86_32\**" />
-	  <Compile Remove="Platforms\Android\Lib\x86_32\**" />
-	  <EmbeddedResource Remove="Platforms\Android\Lib\x86_32\**" />
-	  <MauiCss Remove="Platforms\Android\Lib\x86_32\**" />
-	  <MauiXaml Remove="Platforms\Android\Lib\x86_32\**" />
-	  <None Remove="Platforms\Android\Lib\x86_32\**" />
-	</ItemGroup>
+
 	<ItemGroup>
 	  <None Remove="Platforms\Android\Lib\arm64-v8a\libworldline.so" />
 	  <None Remove="Platforms\Android\Lib\armeabi-v7a\libworldline.so" />
