@@ -111,6 +111,7 @@
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\arm64-v8a\libworldline.so" />
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\armeabi-v7a\libworldline.so" />
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\x86_64\libworldline.so" />
+	  <AndroidNativeLibrary Include="Platforms\Android\Lib\x86\libworldline.so" />
 	</ItemGroup>
 
 
