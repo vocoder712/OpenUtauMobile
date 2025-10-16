@@ -138,6 +138,52 @@
   <data name="HelpAndTutorial" xml:space="preserve">
     <value>Help &amp; Tutorial</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Languages_de" xml:space="preserve">
+    <value>German</value>
+  </data>
+  <data name="Languages_en" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Languages_es" xml:space="preserve">
+    <value>Spanish</value>
+  </data>
+  <data name="Languages_fr" xml:space="preserve">
+    <value>French</value>
+  </data>
+  <data name="Languages_invariant" xml:space="preserve">
+    <value>Do not translate</value>
+  </data>
+  <data name="Languages_it" xml:space="preserve">
+    <value>Italian</value>
+  </data>
+  <data name="Languages_ja" xml:space="preserve">
+    <value>Japanese</value>
+  </data>
+  <data name="Languages_ko" xml:space="preserve">
+    <value>Korean</value>
+  </data>
+  <data name="Languages_pl" xml:space="preserve">
+    <value>Polish</value>
+  </data>
+  <data name="Languages_pt" xml:space="preserve">
+    <value>Portuguese</value>
+  </data>
+  <data name="Languages_ru" xml:space="preserve">
+    <value>Russian</value>
+  </data>
+  <data name="Languages_th" xml:space="preserve">
+    <value>Thai</value>
+  </data>
+  <data name="Languages_vi" xml:space="preserve">
+    <value>Vietnamese</value>
+  </data>
+  <data name="Languages_zh" xml:space="preserve">
+    <value>Chinese</value>
+  </data>
+  <data name="Languages_zh_yue" xml:space="preserve">
+    <value>Cantonese</value>
+  </data>
   <data name="New" xml:space="preserve">
     <value>New</value>
   </data>
@@ -149,6 +195,9 @@
   </data>
   <data name="Options" xml:space="preserve">
     <value>Options</value>
+  </data>
+  <data name="Recent" xml:space="preserve">
+    <value>Rencent</value>
   </data>
   <data name="RecentProjects" xml:space="preserve">
     <value>Recent Projects</value>

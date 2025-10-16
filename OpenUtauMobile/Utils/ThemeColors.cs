@@ -12,6 +12,7 @@ namespace OpenUtauMobile.Utils
     /// </summary>
     public abstract class ThemeColors
     {
+        public abstract SKColor Primary { get; set; }
         #region 钢琴键
         /// <summary>
         /// 钢琴卷帘左侧白键
@@ -209,6 +210,7 @@ namespace OpenUtauMobile.Utils
         };
         public override SKColor PianoRollShadow { get; set; } = SKColor.Parse("#f0f0f0");
         public override SKColor PartLabel { get; set; } = SKColor.Parse("#000000");
+        public override SKColor Primary { get; set; } = SKColor.Parse("#fe71a3");
     }
     public class DarkThemeColors : ThemeColors
     {
@@ -282,6 +284,7 @@ namespace OpenUtauMobile.Utils
         };
         public override SKColor PianoRollShadow { get; set; } = SKColor.Parse("#d0909090");
         public override SKColor PartLabel { get; set; } = SKColor.Parse("#FFFFFF");
+        public override SKColor Primary { get; set; } = SKColor.Parse("#fe71a3");
     }
 }
 

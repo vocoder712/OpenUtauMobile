@@ -49,4 +49,5 @@
     <FileImageSource x:Key="edit-pit" File="edit_pit_light.png"></FileImageSource>
     <FileImageSource x:Key="forward" File="ic_sharp_arrow_forward_light.png"></FileImageSource>
     <FileImageSource x:Key="forward-ios" File="ic_sharp_arrow_forward_ios_light.png"></FileImageSource>
+    <FileImageSource x:Key="phonemizer" File="phonemizer_light.svg"></FileImageSource>
 </ResourceDictionary>
