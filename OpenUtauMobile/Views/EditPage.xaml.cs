@@ -2644,7 +2644,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 try
                 {
                     Phonemizer phonemizer = factory.Create();
-                    if (phonemizer == track.Phonemizer)
+                    if (track.Phonemizer != null && track.Phonemizer.GetType() == phonemizer.GetType())
                     {
                         return;
                     }
