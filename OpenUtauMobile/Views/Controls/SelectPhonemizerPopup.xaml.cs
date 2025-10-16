@@ -17,7 +17,7 @@ public partial class SelectPhonemizerPopup : Popup
         ViewModel.Load();
         if (ViewModel.Groups.Count > 0 && LayoutGroups.Children.Count > 0)
         {
-            // Ä¬ÈÏÑ¡ÖĞµÚÒ»¸ö·Ö×é
+            // é»˜è®¤é€‰ä¸­ç¬¬ä¸€ä¸ªåˆ†ç»„
             if (LayoutGroups.Children[0] is Grid grid)
             {
                 if (grid.Children.Count > 0)
@@ -36,7 +36,7 @@ public partial class SelectPhonemizerPopup : Popup
 
     private void ButtonSelectGroup_Clicked(object sender, EventArgs e)
     {
-        // ÖØÖÃËùÓĞ°´Å¥±³¾°É«
+        // é‡ç½®æ‰€æœ‰æŒ‰é’®èƒŒæ™¯è‰²
         foreach (IView view in LayoutGroups.Children)
         {
             if (view is Grid grid)
