@@ -9,6 +9,21 @@
 OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
 一个基于 [OpenUtau内核](https://github.com/stakira/OpenUtau/tree/master/OpenUtau.Core) ，并进行了一些修补的编辑器。因此理论上可以使用 OpenUtau 的 USTX 工程文件。
+
+## 兼容性
+
+### 运行平台
+
+- Android5以上且处理器架构为arm64或x64
+
+### 歌手类型
+
+- DiffSinger
+- UTAU
+- Vogen
+
+其他未测试的类型不能保证正常工作
+
 ## 快速开始
 
 1. 在本项目的[release](https://github.com/vocoder712/OpenUtauMobile/releases)下载对应平台和架构的安装包并安装
@@ -78,7 +93,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 			- ~~颤音编辑状态：~~
 				- ~~双指缩放缩放视图~~
 				- ~~单指移动绘制颤音线~~
-				- ~~唔，剩下的还没想好(:8D~~
+				- ~~唔，剩下的还没想好8(:D~~
  - 悬浮按钮
   - `AI` ：加载音高渲染结果。在渲染器支持自动音高时展示
   - `磁铁` ：单击启用/禁用吸附到网格；长按更改网格密度
@@ -91,6 +106,10 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
 - [x] 支持 MIDI 导入
 - [x] 卸载已安装的歌手
+- [ ] 支持打开除ustx以外的OpenUtau兼容工程文件
+- [ ] 钢琴卷帘平移限制计算不正确
+- [ ] 导入midi没有同步曲速
+- [ ] 低版本Android没有正确处理外部存储权限
 - [ ] 图标没设计好，周围被裁剪了，先忍一下吧
 - [ ] 内建Plugin不能加载
 - [ ] 还没做安装oudep，不过可以root释放文件，记得修复权限
@@ -99,7 +118,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 - [ ] 表情参数编辑
 - [ ] 音素时长调整
 - [ ] 音符属性编辑
-- [ ] 更改音素器
+- [x] 更改音素器
 - [ ] 更改渲染器
 - [ ] 内核版本较旧，不支持打开USTX版本0.7及以上的工程文件
 - [ ] 替换歌声分片的音频源
@@ -109,7 +128,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 - [ ] 为 Windows 平台构建
 - [ ] English翻译尚不完全
 - [ ] 日本語翻译
-- [ ] 编译 Android 平台的 worlline 库
+- [x] 编译 Android 平台的 worlline 库
 - [ ] 实现 Android 平台 onnx 推理硬件加速
 - [ ] 双击分隔栏手柄最大化
 - [ ] 滑动摩擦力
@@ -122,13 +141,12 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 - [ ] 声像电平Slider自定义
 - [ ] 总线电平表
 - [ ] 仅Android10及以上可用放大镜
-- [ ] UI可以改进
 
 ## 自行构建与贡献
 
 如果你想让这个项目变得更好：
 
-- 如果你发现了BUG或者有想实现的功能，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题](https://github.com/vocoder712/OpenUtauMobile/issues)提出BUG，[讨论](https://github.com/vocoder712/OpenUtauMobile/discussion)提建议。
+- 如果你发现了BUG或者有想实现的功能或者对操作逻辑UI有好的建议，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题](https://github.com/vocoder712/OpenUtauMobile/issues)提出BUG，[讨论](https://github.com/vocoder712/OpenUtauMobile/discussion)提建议。
 
 - 贡献代码：克隆本项目到本地后，使用 Visual Studio 打开项目根目录 `OpenUtauMobile.sln` 即可进入开发环境。建议新建分支操作。可以参考[开发计划与已知BUG](#开发计划与已知BUG)中的任务列表实现功能或修复BUG。完成后可以发起 Pull Request。
 
