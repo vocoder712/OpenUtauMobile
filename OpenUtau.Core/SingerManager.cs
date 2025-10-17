@@ -148,7 +148,7 @@ namespace OpenUtau.Core {
             try
             {
                 // 1。 先修改内存状态
-                Singers.Remove(singer.Id); // 删歌手字典
+                Singers.Remove(singer.Id); // 从歌手字典中删除
                 if (SingerGroups.TryGetValue(singer.SingerType, out var singerGroup)) // 删分组
                 {
                     singerGroup.Remove(singer);
