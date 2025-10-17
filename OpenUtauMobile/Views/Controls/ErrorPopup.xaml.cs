@@ -6,12 +6,14 @@ namespace OpenUtauMobile.Views.Controls;
 
 public partial class ErrorPopup : Popup
 {
-    public ErrorPopup(string errorDetail)
+    public ErrorPopup(Exception? exception, string message)
 	{
 		InitializeComponent();
         LabelErrorDetail.Text = "很抱歉， OpenUtau Mobile 捕获到了异常，部分功能可能无法正常使用。\n";
         LabelErrorDetail.Text += "建议您将以下错误信息复制并反馈给开发者，并重启应用程序。\n\n";
-        LabelErrorDetail.Text += errorDetail;
+        LabelErrorDetail.Text += message;
+        LabelErrorDetail.Text += "\n异常详情：\n";
+        LabelErrorDetail.Text += exception?.ToString();
     }
 
     private async void ButtonCopy_Clicked(object sender, EventArgs e)

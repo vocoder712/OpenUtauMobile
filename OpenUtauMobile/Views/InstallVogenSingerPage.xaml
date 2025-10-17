@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:sys="clr-namespace:System.Text;assembly=System.Runtime"
+             x:Class="OpenUtauMobile.Views.InstallVogenSingerPage"
+             x:DataType="vm:InstallSingerViewModel"
+             xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+             Title="Vogen歌手安装">
+    <ContentPage.BindingContext>
+        <vm:InstallVogenSingerViewModel/>
+    </ContentPage.BindingContext>
+
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- 自定义标题栏 -->
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
+            <Label Text="Vogen歌手安装向导" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+        
+        <!-- 页面内容 -->
+        <Grid Grid.Row="1" x:Name="MainContentLayout">
+
+            <!-- 第1页 安装信息 -->
+            <VerticalStackLayout Padding="10" VerticalOptions="Center" Spacing="50">
+
+                <Label Text="即将安装Vogen歌手" HorizontalTextAlignment="Center" FontSize="30"/>
+                <Button Text="安装" x:Name="ButtonInstall" Clicked="ButtonInstall_Clicked" Margin="10" CornerRadius="10"/>
+
+            </VerticalStackLayout>
+
+            <!-- 第2页 安装过程 -->
+            <VerticalStackLayout Padding="10" VerticalOptions="Center" Spacing="20">
+
+                <Label Text="安装中" />
+                <Grid ColumnDefinitions="*,150">
+
+                    <Label Grid.Column="0" LineBreakMode="HeadTruncation" Text="{Binding InstallProgressDetail}"/>
+                    <Label Grid.Column="1" Text="{Binding InstallProgressText}" />
+                </Grid>
+                <ProgressBar x:Name="ProgressBarInstall" Progress="{Binding InstallProgress}" />
+
+            </VerticalStackLayout>
+
+            <!-- 第3页-安装结果 -->
+            <Grid Padding="10">
+                <VerticalStackLayout VerticalOptions="Center" Spacing="50">
+                    <Label Text="安装完成" HorizontalTextAlignment="Center" FontSize="30"/>
+                    <Button Text="返回" x:Name="ButtonFinish" Clicked="ButtonFinish_Clicked" Margin="10" CornerRadius="10"/>
+                </VerticalStackLayout>
+
+            </Grid>
+        </Grid>
+
+    </Grid>
+</ContentPage>

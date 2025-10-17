@@ -193,6 +193,9 @@
 	  <Compile Update="Views\Controls\ErrorPopup.xaml.cs">
 	    <DependentUpon>ErrorPopup.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\InstallVogenSingerPage.xaml.cs">
+	    <DependentUpon>InstallVogenSingerPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\SettingsPage.xaml.cs">
 	    <DependentUpon>SettingsPage.xaml</DependentUpon>
 	  </Compile>
@@ -354,6 +357,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Controls\ErrorPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\InstallVogenSingerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\InstallSingerPage.xaml">

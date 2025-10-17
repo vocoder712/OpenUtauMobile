@@ -40,10 +40,17 @@ public partial class SingerManagePage : ContentPage
     /// <param name="e"></param>
     private async void ButtonAddSinger_Clicked(object sender, EventArgs e)
     {
-        string installPackagePath = await ObjectProvider.PickFile([".zip"], this);
+        string installPackagePath = await ObjectProvider.PickFile([".zip", ".rar", ".uar", ".vogeon"], this);
         if (!string.IsNullOrEmpty(installPackagePath))
         {
-            await Navigation.PushModalAsync(new InstallSingerPage(installPackagePath));
+            if (installPackagePath.EndsWith(".vogeon"))
+            {
+                await Navigation.PushModalAsync(new InstallVogenSingerPage(installPackagePath));
+            }
+            else
+            {
+                await Navigation.PushModalAsync(new InstallSingerPage(installPackagePath));
+            }
         }
     }
 
