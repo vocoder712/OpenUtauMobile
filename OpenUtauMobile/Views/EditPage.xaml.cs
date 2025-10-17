@@ -2657,6 +2657,10 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     Log.Error(ex, "未能更改音素器");
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
                 }
+                finally
+                {
+                    DocManager.Inst.EndUndoGroup();
+                }
             }
         }
     }
