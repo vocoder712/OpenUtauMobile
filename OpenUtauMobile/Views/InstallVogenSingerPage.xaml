@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:sys="clr-namespace:System.Text;assembly=System.Runtime"
              x:Class="OpenUtauMobile.Views.InstallVogenSingerPage"
-             x:DataType="vm:InstallSingerViewModel"
+             x:DataType="vm:InstallVogenSingerViewModel"
              xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
              Title="Vogen歌手安装">
     <ContentPage.BindingContext>
