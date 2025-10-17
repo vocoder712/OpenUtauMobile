@@ -193,8 +193,8 @@
                                                         <!-- 名称 -->
                                                         <Button x:Name="ButtonChangeTrackName" Grid.Column="1" Grid.Row="0" CornerRadius="0" BackgroundColor="Transparent" Text="{Binding TrackName}" Padding="0" TextColor="{DynamicResource TransparentButtonText}" Clicked="ButtonChangeTrackName_Clicked"/>
                                                         <!-- 音素器和声码器 -->
-                                                        <Label Grid.Column="0" Grid.Row="1" Text="素" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource TransparentButtonText}"/>
-                                                        <Button x:Name="ButtonChangePhonemizer" Grid.Column="1" Grid.Row="1" Text="{Binding Phonemizer.Tag}" Padding="0" CornerRadius="0" BackgroundColor="Transparent"  TextColor="{DynamicResource TransparentButtonText}"/>
+                                                        <Image Grid.Column="0" Grid.Row="1" Source="{DynamicResource phonemizer}" />
+                                                        <Button x:Name="ButtonChangePhonemizer" Grid.Column="1" Grid.Row="1" Text="{Binding Phonemizer.Tag}" Padding="0" CornerRadius="0" BackgroundColor="Transparent"  TextColor="{DynamicResource TransparentButtonText}" Clicked="ButtonChangePhonemizer_Clicked"/>
                                                         <Label Grid.Column="0" Grid.Row="2" Text="渲" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource TransparentButtonText}" />
                                                         <Button x:Name="ButtonChangeRender" Grid.Column="1" Grid.Row="2" Text="{Binding RendererSettings.Renderer}" Padding="0" CornerRadius="0" Background="Transparent" TextColor="{DynamicResource TransparentButtonText}" />
                                                         <!-- 电平 -->

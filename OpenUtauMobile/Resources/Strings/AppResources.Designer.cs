@@ -124,6 +124,141 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 德语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_de {
+            get {
+                return ResourceManager.GetString("Languages_de", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 英语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_en {
+            get {
+                return ResourceManager.GetString("Languages_en", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 西班牙语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_es {
+            get {
+                return ResourceManager.GetString("Languages_es", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 法语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_fr {
+            get {
+                return ResourceManager.GetString("Languages_fr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 不翻译 的本地化字符串。
+        /// </summary>
+        internal static string Languages_invariant {
+            get {
+                return ResourceManager.GetString("Languages_invariant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 意大利语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_it {
+            get {
+                return ResourceManager.GetString("Languages_it", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_ja {
+            get {
+                return ResourceManager.GetString("Languages_ja", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 韩语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_ko {
+            get {
+                return ResourceManager.GetString("Languages_ko", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 波兰语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_pl {
+            get {
+                return ResourceManager.GetString("Languages_pl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 葡萄牙语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_pt {
+            get {
+                return ResourceManager.GetString("Languages_pt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 俄语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_ru {
+            get {
+                return ResourceManager.GetString("Languages_ru", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 泰语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_th {
+            get {
+                return ResourceManager.GetString("Languages_th", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 越南语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_vi {
+            get {
+                return ResourceManager.GetString("Languages_vi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 中文 的本地化字符串。
+        /// </summary>
+        internal static string Languages_zh {
+            get {
+                return ResourceManager.GetString("Languages_zh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 粤语 的本地化字符串。
+        /// </summary>
+        internal static string Languages_zh_yue {
+            get {
+                return ResourceManager.GetString("Languages_zh_yue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 新建 的本地化字符串。
         /// </summary>
         internal static string New {
@@ -156,6 +291,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string Options {
             get {
                 return ResourceManager.GetString("Options", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最近 的本地化字符串。
+        /// </summary>
+        internal static string Recent {
+            get {
+                return ResourceManager.GetString("Recent", resourceCulture);
             }
         }
         

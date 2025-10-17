@@ -28,8 +28,8 @@
 		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.0.3</ApplicationDisplayVersion>
-		<ApplicationVersion>4</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.4</ApplicationDisplayVersion>
+		<ApplicationVersion>5</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -104,8 +104,10 @@
 	  <None Remove="Platforms\Android\Lib\x86_64\libworldline.so" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_dark.svg" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_ios_dark.svg" />
+	  <None Remove="Resources\Icons\dark\phonemizer_dark.svg" />
 	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_ios_light.svg" />
 	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_light.svg" />
+	  <None Remove="Resources\Icons\light\phonemizer_light.svg" />
 	</ItemGroup>
 	<ItemGroup>
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\arm64-v8a\libworldline.so" />
@@ -157,6 +159,9 @@
 	  </Compile>
 	  <Compile Update="Views\Controls\EditBeatPopup.xaml.cs">
 	    <DependentUpon>EditBeatPopup.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Controls\SelectPhonemizerPopup.xaml.cs">
+	    <DependentUpon>SelectPhonemizerPopup.xaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Controls\PianoRollSnapDivPopup.xaml.cs">
 	    <DependentUpon>PianoRollSnapDivPopup.xaml</DependentUpon>
@@ -235,6 +240,7 @@
 	  <MauiImage Include="Resources\Icons\dark\ion_options_sharp_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\logotype_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\mingcute_microphone_fill_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\phonemizer_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\ph_wave_sine_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\tabler_magnet_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\tabler_magnet_off_dark.svg" />
@@ -261,6 +267,7 @@
 	  <MauiImage Include="Resources\Icons\light\ion_options_sharp_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\logotype_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\mingcute_microphone_fill_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\phonemizer_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\ph_wave_sine_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\tabler_magnet_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\tabler_magnet_off_light.svg" />
@@ -305,6 +312,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Controls\EditBeatPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\SelectPhonemizerPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Controls\PianoRollSnapDivPopup.xaml">

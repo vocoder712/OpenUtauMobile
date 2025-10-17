@@ -2,6 +2,7 @@
 using CommunityToolkit.Maui.Views;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 using NAudio.CoreAudioApi;
+using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
@@ -1218,6 +1219,10 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             TrackCanvas.InvalidateSurface(); // 重绘走带画布
             PlaybackTickBackgroundCanvas.InvalidateSurface();
             RefreshProjectInfoDisplay();
+        }
+        else if (cmd is TrackChangePhonemizerCommand phonemizerCommand)
+        {
+            _viewModel.RefreshTrack(phonemizerCommand.track);
         }
         else if (cmd is ExportingNotification exportingNotification)
         {
@@ -2626,5 +2631,37 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     private void ButtonStop_Clicked(object sender, EventArgs e)
     {
         PlaybackManager.Inst.StopPlayback();
+    }
+
+    private async void ButtonChangePhonemizer_Clicked(object sender, EventArgs e)
+    {
+        if (sender is Button button && button.BindingContext is UTrack track)
+        {
+            Popup popup = new SelectPhonemizerPopup();
+            object? result = await this.ShowPopupAsync(popup);
+            if (result is PhonemizerFactory factory)
+            {
+                try
+                {
+                    Phonemizer phonemizer = factory.Create();
+                    if (track.Phonemizer != null && track.Phonemizer.GetType() == phonemizer.GetType())
+                    {
+                        return;
+                    }
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
+                    DocManager.Inst.EndUndoGroup();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "未能更改音素器");
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+                }
+                finally
+                {
+                    DocManager.Inst.EndUndoGroup();
+                }
+            }
+        }
     }
 }
