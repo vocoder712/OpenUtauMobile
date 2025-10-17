@@ -13,11 +13,11 @@ namespace OpenUtau.Core.Vogen {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"{destName} already exist!"));
                 return;
             }
-            progress.Invoke(0.5, $"复制文件{fileName}……");
+            progress.Invoke(50, $"复制文件{fileName}……");
             File.Copy(filePath, destName);
             new Task(() => {
                 DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
-                progress.Invoke(1, "安装完成！");
+                progress.Invoke(100, "安装完成！");
             }).Start(DocManager.Inst.MainScheduler);
         }
     }

@@ -17,7 +17,7 @@ namespace OpenUtauMobile.ViewModels
         /// <summary>
         /// 更新安装进度信息，作为回调委托给安装器
         /// </summary>
-        /// <param name="progress"></param>
+        /// <param name="progress">0-100</param>
         /// <param name="detail"></param>
         public void UpdateInstallProgress(double progress, string detail)
         {
