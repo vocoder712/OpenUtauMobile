@@ -105,7 +105,7 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
             {
                 Log.Error($"OpenUtauºó¶Ë³õÊ¼»¯Ê§°Ü: {e}");
                 // ³õÊ¼»¯Ê§°Üµ¯´°
-                var popup = new ErrorPopup(e.ToString());
+                var popup = new ErrorPopup(e, "OpenUtauºó¶Ë³õÊ¼»¯Ê§°Ü");
                 object? result = await MainThread.InvokeOnMainThreadAsync(() => this.ShowPopupAsync(popup));
 
                 if (result is string id)
@@ -146,8 +146,8 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
     {
         if (cmd is ErrorMessageNotification errorCmd)
         {
-            Debug.WriteLine(errorCmd.e.ToString());
-            Popup popup = new ErrorPopup(errorCmd.e.ToString());
+            Debug.WriteLine(errorCmd.e?.ToString());
+            Popup popup = new ErrorPopup(errorCmd.e, errorCmd.message);
             MainThread.BeginInvokeOnMainThread(async () => await this.ShowPopupAsync(popup));
         }
     }

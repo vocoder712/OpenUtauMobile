@@ -13,7 +13,7 @@ namespace OpenUtau.Core {
 
     public class ErrorMessageNotification : UNotification {
         public readonly string message = string.Empty;
-        public readonly Exception e;
+        public readonly Exception? e;
         public ErrorMessageNotification(Exception e) {
             this.e = e;
         }

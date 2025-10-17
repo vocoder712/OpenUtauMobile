@@ -137,31 +137,48 @@ namespace OpenUtau.Core {
                 return false;
             }
 
+            // 保存状态用于回滚
+            bool wasInSingers = Singers.ContainsKey(singer.Id);
+            bool wasInGroup = SingerGroups.TryGetValue(singer.SingerType, out var group) && group.Contains(singer);
+            bool wasInUsed = singersUsed.Contains(singer);
+
+            // 回滚标识
+            bool canRollback = true; // 当进入到删除文件资源阶段后，设置为false，不得回滚
+
             try
             {
-                // 从内存中移除
-                Singers.Remove(singer.Id);
-
-                // 从分组中移除
-                if (SingerGroups.TryGetValue(singer.SingerType, out var group))
+                // 1. 先修改内存状态
+                Singers.Remove(singer.Id); // 从歌手字典中删除
+                if (SingerGroups.TryGetValue(singer.SingerType, out var singerGroup)) // 从分组中删除
                 {
-                    group.Remove(singer);
-                    if (group.Count == 0)
+                    singerGroup.Remove(singer);
+                    if (singerGroup.Count == 0)
                     {
                         SingerGroups.Remove(singer.SingerType);
                     }
                 }
+                singersUsed.Remove(singer); // 从最近使用列表中移除
+                singer.FreeMemory(); // 释放内存
 
-                // 从使用列表中移除
-                singersUsed.Remove(singer);
-
-                // 释放内存
-                singer.FreeMemory();
-
-                // 异步删除目录
-                await Task.Run(() => Directory.Delete(singer.Location, recursive: true));
-                Log.Information($"已删除声库文件: {singer.Location}");
-
+                // 2. 再删除文件系统资源
+                canRollback = false;
+                await Task.Run(() =>
+                {
+                    if (File.Exists(singer.Location)) // vogen单文件声库
+                    {
+                        File.Delete(singer.Location);
+                        Log.Information($"已删除声库文件: {singer.Location}");
+                    }
+                    else if (Directory.Exists(singer.Location)) // 传统文件夹声库
+                    {
+                        Directory.Delete(singer.Location, recursive: true);
+                        Log.Information($"已删除声库目录: {singer.Location}");
+                    }
+                    else
+                    {
+                        Log.Warning($"声库位置不存在: {singer.Location}");
+                    }
+                });
 
                 Log.Information($"已卸载声库 {singer.Id}");
                 return true;
@@ -170,6 +187,35 @@ namespace OpenUtau.Core {
             {
                 Log.Error(e, $"未能卸载声库 {singer.Id}");
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"未能卸载声库 {singer.Id}", e));
+                if (!canRollback)
+                {
+                    Log.Warning("声库文件删除失败，无法回滚内存状态");
+                    return false;
+                }
+
+                // 回滚内存状态
+                if (wasInSingers && !Singers.ContainsKey(singer.Id))
+                {
+                    Singers[singer.Id] = singer;
+                }
+                if (wasInGroup && SingerGroups.TryGetValue(singer.SingerType, out var singerGroup))
+                {
+                    if (!singerGroup.Contains(singer))
+                    {
+                        singerGroup.Add(singer);
+                    }
+                }
+                else if (wasInGroup && !SingerGroups.ContainsKey(singer.SingerType))
+                {
+                    SingerGroups[singer.SingerType] = new List<USinger> { singer };
+                }
+                if (wasInUsed && !singersUsed.Contains(singer))
+                {
+                    singersUsed.Add(singer);
+                }
+
+                Log.Information($"已回滚声库 {singer.Id} 的删除操作");
+
                 return false;
             }
         }
