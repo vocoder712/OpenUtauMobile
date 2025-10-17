@@ -15,48 +15,48 @@ public partial class SelectPhonemizerPopup : Popup
 		InitializeComponent();
         ViewModel = (SelectPhonemizerPopupViewModel)BindingContext;
         ViewModel.Load();
-        if (ViewModel.Groups.Count > 0 && LayoutGroups.Children.Count > 0)
-        {
-            // 默认选中第一个分组
-            if (LayoutGroups.Children[0] is Grid grid)
-            {
-                if (grid.Children.Count > 0)
-                {
-                    foreach (IView child in grid.Children)
-                    {
-                        if (child is Button btn)
-                        {
-                            btn.BackgroundColor = Color.Parse(ThemeColorsManager.Current.Primary.ToString());
-                        }
-                    }
-                }
-            }
-        }
+        //if (ViewModel.Groups.Count > 0 && LayoutGroups.Children.Count > 0)
+        //{
+        //    // 默认选中第一个分组
+        //    if (LayoutGroups.Children[0] is Grid grid)
+        //    {
+        //        if (grid.Children.Count > 0)
+        //        {
+        //            foreach (IView child in grid.Children)
+        //            {
+        //                if (child is Button btn)
+        //                {
+        //                    btn.BackgroundColor = Color.Parse(ThemeColorsManager.Current.Primary.ToString());
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
     }
 
     private void ButtonSelectGroup_Clicked(object sender, EventArgs e)
     {
         // 重置所有按钮背景色
-        foreach (IView view in LayoutGroups.Children)
-        {
-            if (view is Grid grid)
-            {
-                if (grid.Children.Count > 0)
-                {
-                    foreach (IView child in grid.Children)
-                    {
-                        if (child is Button btn)
-                        {
-                            btn.BackgroundColor = Colors.Transparent;
-                        }
-                    }
-                }
-            }
-        }
+        //foreach (IView view in LayoutGroups.Children)
+        //{
+        //    if (view is Grid grid)
+        //    {
+        //        if (grid.Children.Count > 0)
+        //        {
+        //            foreach (IView child in grid.Children)
+        //            {
+        //                if (child is Button btn)
+        //                {
+        //                    btn.BackgroundColor = Colors.Transparent;
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
         if (sender is Button button && button.BindingContext is KeyValuePair<IGrouping<string, PhonemizerFactory>, string> keyValuePair)
         {
-            button.BackgroundColor = Color.Parse(ThemeColorsManager.Current.Primary.ToString());
-            ViewModel.CurrentGroup = keyValuePair.Key;
+            //button.BackgroundColor = Color.Parse(ThemeColorsManager.Current.Primary.ToString());
+            ViewModel.CurrentGroup = keyValuePair;
             ViewModel.LoadGroup();
         }
     }

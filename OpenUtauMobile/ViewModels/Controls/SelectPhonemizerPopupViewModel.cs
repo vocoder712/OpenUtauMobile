@@ -21,7 +21,7 @@ namespace OpenUtauMobile.ViewModels.Controls
         /// <summary>
         /// 当前选中的分组名称
         /// </summary>
-        [Reactive] public IGrouping<string, PhonemizerFactory>? CurrentGroup { get; set; } = null!;
+        [Reactive] public KeyValuePair<IGrouping<string, PhonemizerFactory>, string> CurrentGroup { get; set; }
 
         public SelectPhonemizerPopupViewModel()
         {
@@ -35,7 +35,7 @@ namespace OpenUtauMobile.ViewModels.Controls
             Groups.AddRange(DocManager.Inst.PhonemizerFactories.GroupBy(f => f.language).OrderBy(g => g.Key).Select(g => new KeyValuePair<IGrouping<string, PhonemizerFactory>, string>(g, GetLocalizedGroupName(g.Key))));
             if (Groups.Count > 0)
             {
-                CurrentGroup = Groups.FirstOrDefault().Key;
+                CurrentGroup = Groups.FirstOrDefault();
                 LoadGroup();
             }
         }
@@ -45,13 +45,8 @@ namespace OpenUtauMobile.ViewModels.Controls
         /// </summary>
         public void LoadGroup()
         {
-            if (CurrentGroup == null)
-            {
-                PhonemizerFactories.Clear();
-                return;
-            }
             PhonemizerFactories.Clear();
-            PhonemizerFactories.AddRange(CurrentGroup.Select(f => new KeyValuePair<PhonemizerFactory, string>(f, f.ToString())));
+            PhonemizerFactories.AddRange(CurrentGroup.Key.Select(f => new KeyValuePair<PhonemizerFactory, string>(f, f.ToString())));
         }
 
         /// <summary>
@@ -67,12 +62,7 @@ namespace OpenUtauMobile.ViewModels.Controls
             }
             string l = language.Replace("-", "_").Replace(" ", "_").Replace(".", "_").ToLower();
             string propertyName = $"Languages_{l}";
-            // 使用 ResourceManager 获取资源
-            ResourceManager resourceManager = new(
-                typeof(AppResources).FullName ?? "",
-                typeof(AppResources).Assembly);
-
-            string displayName = resourceManager.GetString(propertyName) ?? language;
+            string displayName = AppResources.ResourceManager.GetString(propertyName) ?? language;
             return displayName;
         }
 

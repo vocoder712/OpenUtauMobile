@@ -138,7 +138,6 @@
   <data name="HelpAndTutorial" xml:space="preserve">
     <value>Help &amp; Tutorial</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Languages_de" xml:space="preserve">
     <value>German</value>
   </data>
@@ -197,7 +196,7 @@
     <value>Options</value>
   </data>
   <data name="Recent" xml:space="preserve">
-    <value>Rencent</value>
+    <value>Recent</value>
   </data>
   <data name="RecentProjects" xml:space="preserve">
     <value>Recent Projects</value>
