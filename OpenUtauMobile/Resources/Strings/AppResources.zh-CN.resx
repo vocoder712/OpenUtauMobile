@@ -138,7 +138,6 @@
   <data name="HelpAndTutorial" xml:space="preserve">
     <value>帮助与教程</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Languages_de" xml:space="preserve">
     <value>德语</value>
   </data>
