@@ -3,8 +3,6 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.ViewModels.Controls;
-using SkiaSharp;
-
 namespace OpenUtauMobile.Views.Controls;
 
 public partial class SelectPhonemizerPopup : Popup
