@@ -4,8 +4,6 @@ using OpenUtau.Core;
 using OpenUtauMobile.Resources.Strings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System.Resources;
-
 namespace OpenUtauMobile.ViewModels.Controls
 {
     public partial class SelectPhonemizerPopupViewModel : ReactiveObject
