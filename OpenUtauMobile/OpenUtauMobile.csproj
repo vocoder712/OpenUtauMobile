@@ -28,8 +28,8 @@
 		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.0.4</ApplicationDisplayVersion>
-		<ApplicationVersion>5</ApplicationVersion>
+		<ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
+		<ApplicationVersion>6</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -42,10 +42,13 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
+	<!-- 导入签名配置（如果文件存在） -->
+	<Import Project="signing.props" Condition="Exists('signing.props')" />
+	
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 	  <EnableLLVM>False</EnableLLVM>
-	  <AndroidKeyStore>False</AndroidKeyStore>
+	  <AndroidKeyStore>True</AndroidKeyStore>
 	  <Debugger>Xamarin</Debugger>
 	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
 	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
@@ -55,7 +58,6 @@
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 	  <AndroidPackageFormat>apk</AndroidPackageFormat>
 	  <EnableLLVM>False</EnableLLVM>
-	  <AndroidKeyStore>False</AndroidKeyStore>
 	  <RunAOTCompilation>True</RunAOTCompilation>
 	  <Debugger>Xamarin</Debugger>
 	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
@@ -98,17 +100,7 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Remove="Platforms\Android\Lib\arm64-v8a\libworldline.so" />
-	  <None Remove="Platforms\Android\Lib\armeabi-v7a\libworldline.so" />
-	  <None Remove="Platforms\Android\Lib\x86_64\libworldline.so" />
-	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_dark.svg" />
-	  <None Remove="Resources\Icons\dark\ic_sharp_arrow_forward_ios_dark.svg" />
-	  <None Remove="Resources\Icons\dark\phonemizer_dark.svg" />
-	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_ios_light.svg" />
-	  <None Remove="Resources\Icons\light\ic_sharp_arrow_forward_light.svg" />
-	  <None Remove="Resources\Icons\light\phonemizer_light.svg" />
-	</ItemGroup>
+
 	<ItemGroup>
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\arm64-v8a\libworldline.so" />
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\armeabi-v7a\libworldline.so" />
