@@ -276,4 +276,73 @@
   <data name="BackText" xml:space="preserve">
     <value>返回</value>
   </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称：</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>作者：</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本：</value>
+  </data>
+  <data name="InstallationPath" xml:space="preserve">
+    <value>安装路径：</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>网站：</value>
+  </data>
+  <data name="VogenSingerSetupWizard" xml:space="preserve">
+    <value>Vogen歌手安装向导</value>
+  </data>
+  <data name="VogenSingerInstalledSoon" xml:space="preserve">
+    <value>即将安装Vogen歌手</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="AutomaticPageTurning" xml:space="preserve">
+    <value>走带自动翻页</value>
+  </data>
+  <data name="CancelText" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="SaveText" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="PlaybackRefreshRate" xml:space="preserve">
+    <value>回放刷新率</value>
+  </data>
+  <data name="PitchDisplayPrecision" xml:space="preserve">
+    <value>音高线显示精度</value>
+  </data>
+  <data name="DisplaySingerPortrait" xml:space="preserve">
+    <value>显示歌手立绘</value>
+  </data>
+  <data name="GlobalPortraitTransparency" xml:space="preserve">
+    <value>全局立绘透明度</value>
+  </data>
+  <data name="Transparency" xml:space="preserve">
+    <value>透明度</value>
+  </data>
+  <data name="KeepScreenOn" xml:space="preserve">
+    <value>保持屏幕常亮</value>
+  </data>
+  <data name="OnPianoClick" xml:space="preserve">
+    <value>点击钢琴键时</value>
+  </data>
+  <data name="OutputDevice" xml:space="preserve">
+    <value>输出设备</value>
+  </data>
+  <data name="PreRender" xml:space="preserve">
+    <value>预渲染</value>
+  </data>
+  <data name="DontRenderMutedTracks" xml:space="preserve">
+    <value>不渲染静音的轨道</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
 </root>

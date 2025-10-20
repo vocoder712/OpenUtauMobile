@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
@@ -18,10 +18,10 @@
     <Grid RowDefinitions="60, 40, 1, *">
         <!-- 自定义标题栏 -->
         <Grid BackgroundColor="{DynamicResource TitleBarBackground}" ColumnDefinitions="80,*,80,80" Padding="10">
-            <Button x:Name="ButtonConfirm" Text="确定" Clicked="ButtonConfirm_Clicked"  Grid.Column="0" />
-            <Label Text="设置" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
-            <Button x:Name="ButtonCancel" Text="取消" Clicked="ButtonCancel_Clicked" Grid.Column="2" />
-            <Button x:Name="ButtonSave" Text="保存" Clicked="ButtonSave_Clicked" Grid.Column="3" />
+            <Button x:Name="ButtonConfirm" Text="{Static res:AppResources.Confirm}" Clicked="ButtonConfirm_Clicked"  Grid.Column="0" />
+            <Label Text="{Static res:AppResources.Settings}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            <Button x:Name="ButtonCancel" Text="{Static res:AppResources.CancelText}" Clicked="ButtonCancel_Clicked" Grid.Column="2" />
+            <Button x:Name="ButtonSave" Text="{Static res:AppResources.SaveText}" Clicked="ButtonSave_Clicked" Grid.Column="3" />
         </Grid>
         <!-- 主体 -->
         <!-- 选项卡 -->
@@ -41,7 +41,7 @@
                 <VerticalStackLayout>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
-                            <Label Text="走带自动翻页" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.AutomaticPageTurning}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="若打开，将在播放指针到达页面右侧时自动翻页" />
                             <Switch x:Name="SwitchAutoScroll" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding AutoScroll}"/>
                         </Grid>
@@ -49,7 +49,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200,30">
-                            <Label Text="回放刷新率" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.PlaybackRefreshRate}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="设置更新播放指针的频率，1 ~ 60 FPS。请根据设备性能调整。过大的刷新率可能导致卡顿。更改此项设置后，重新打开编辑页面生效。" />
                             <Slider Grid.Column="3" Value="{Binding PlaybackRefreshRate}" Minimum="1" Maximum="60"/>
                             <Label Grid.Column="4" Text="{Binding PlaybackRefreshRate}" HorizontalOptions="Center"/>
@@ -58,7 +58,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 50">
-                            <Label Text="音高线显示精度" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.PitchDisplayPrecision}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="更高的精度更能准确刻画实际音高，但可能导致性能问题。" />
                             <Picker Grid.Column="3" ItemsSource="{Binding PitchDisplayPrecision}" ItemDisplayBinding="{Binding Value}" SelectedItem="{Binding SelectedPitchDisplayPrecision}"/>
                         </Grid>
@@ -66,7 +66,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
-                            <Label Text="显示歌手立绘" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.DisplaySingerPortrait}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="打开后，将在钢琴卷帘中显示歌手的立绘。" />
                             <Switch x:Name="SwitchShowPortrait" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding ShowPortrait}"/>
                         </Grid>
@@ -74,12 +74,12 @@
                     </Grid>
                     <Grid RowDefinitions="50, Auto, .5" IsVisible="{Binding ShowPortrait}">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
-                            <Label Text="全局立绘透明度" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.GlobalPortraitTransparency}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="打开该选项可覆盖所有歌手立绘透明度预设。" />
                             <Switch x:Name="SwitchCustomPortraitOpacity" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding CustomPortraitOptions}"/>
                         </Grid>
                         <Grid Row="1" ColumnDefinitions="Auto, *, 200,30" IsVisible="{Binding CustomPortraitOptions}">
-                            <Label Text="透明度" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.Transparency}" Margin="20,0,20,0"/>
                             <Slider Grid.Column="2" Value="{Binding PortraitOpacity}" Minimum="0" Maximum="1"/>
                             <Label Grid.Column="3" Text="{Binding PortraitOpacity, StringFormat='{0:F2}'}" HorizontalOptions="Center"/>
                         </Grid>
@@ -87,7 +87,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
-                            <Label Text="保持屏幕常亮" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.KeepScreenOn}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="打开后，将在编辑页面中保持屏幕常亮。" />
                             <Switch x:Name="SwitchKeepScreenOn" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding KeepScreenOn}"/>
                         </Grid>
@@ -95,7 +95,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 50">
-                            <Label Text="点击钢琴键时" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.OnPianoClick}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="设置点击钢琴卷帘左侧琴键的行为" />
                             <Picker Margin="5,0,15,0" Grid.Column="3" ItemsSource="{Binding PianoSampleTypes}" ItemDisplayBinding="{Binding Value}" SelectedItem="{Binding SelectedPianoSample}"/>
                         </Grid>
@@ -110,7 +110,7 @@
                 <VerticalStackLayout>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
-                            <Label Text="输出设备" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.OutputDevice}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="Android只能看不能改" />
                             <Picker Grid.Column="3" ItemsSource="{Binding AudioOutputDevices}" ItemDisplayBinding="{Binding .}"/>
                         </Grid>
@@ -118,7 +118,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
-                            <Label Text="预渲染" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.PreRender}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="在回放前后台预渲染音频。" />
                             <Switch x:Name="SwitchPreRender" Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding PreRender}"/>
                         </Grid>
@@ -126,7 +126,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
-                            <Label Text="不渲染静音的轨道" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.DontRenderMutedTracks}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="渲染时跳过静音的轨道。" />
                             <Switch x:Name="SwitchSkipRenderingMutedTracks" Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding SkipRenderingMutedTracks}"/>
                         </Grid>
@@ -149,7 +149,7 @@
                 <VerticalStackLayout>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
-                            <Label Text="主题" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.Theme}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="深色或浅色主题" />
                             <Picker Grid.Column="3" ItemsSource="{Binding Themes}" ItemDisplayBinding="{Binding Value}" SelectedItem="{Binding SelectedTheme}"/>
                         </Grid>
@@ -157,7 +157,7 @@
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
-                            <Label Text="语言" Margin="20,0,20,0"/>
+                            <Label Text="{Static res:AppResources.Language}" Margin="20,0,20,0"/>
                             <Label Grid.Column="1" Text="?" ToolTipProperties.Text="语言" />
                             <Picker Grid.Column="3" ItemsSource="{Binding LanguageOptions}" ItemDisplayBinding="{Binding DisplayName}" SelectedItem="{Binding SelectedLanguageOption}"/>
                         </Grid>

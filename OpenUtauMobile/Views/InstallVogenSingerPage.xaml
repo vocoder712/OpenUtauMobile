@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
@@ -6,7 +6,8 @@
              x:Class="OpenUtauMobile.Views.InstallVogenSingerPage"
              x:DataType="vm:InstallVogenSingerViewModel"
              xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
-             Title="Vogen歌手安装">
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
+             Title="InstallVogenSingerPage">
     <ContentPage.BindingContext>
         <vm:InstallVogenSingerViewModel/>
     </ContentPage.BindingContext>
@@ -24,7 +25,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
-            <Label Text="Vogen歌手安装向导" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            <Label Text="{Static res:AppResources.VogenSingerSetupWizard}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
         </Grid>
         
         <!-- 页面内容 -->
@@ -33,15 +34,15 @@
             <!-- 第1页 安装信息 -->
             <VerticalStackLayout Padding="10" VerticalOptions="Center" Spacing="50">
 
-                <Label Text="即将安装Vogen歌手" HorizontalTextAlignment="Center" FontSize="30"/>
-                <Button Text="安装" x:Name="ButtonInstall" Clicked="ButtonInstall_Clicked" Margin="10" CornerRadius="10"/>
+                <Label Text="{Static res:AppResources.VogenSingerInstalledSoon}" HorizontalTextAlignment="Center" FontSize="30"/>
+                <Button Text="{Static res:AppResources.Install}" x:Name="ButtonInstall" Clicked="ButtonInstall_Clicked" Margin="10" CornerRadius="10"/>
 
             </VerticalStackLayout>
 
             <!-- 第2页 安装过程 -->
             <VerticalStackLayout Padding="10" VerticalOptions="Center" Spacing="20">
 
-                <Label Text="安装中" />
+                <Label Text="{Static res:AppResources.InstallingText}" />
                 <Grid ColumnDefinitions="*,150">
 
                     <Label Grid.Column="0" LineBreakMode="HeadTruncation" Text="{Binding InstallProgressDetail}"/>
@@ -54,8 +55,8 @@
             <!-- 第3页-安装结果 -->
             <Grid Padding="10">
                 <VerticalStackLayout VerticalOptions="Center" Spacing="50">
-                    <Label Text="安装完成" HorizontalTextAlignment="Center" FontSize="30"/>
-                    <Button Text="返回" x:Name="ButtonFinish" Clicked="ButtonFinish_Clicked" Margin="10" CornerRadius="10"/>
+                    <Label Text="{Static res:AppResources.InstallationComplete}" HorizontalTextAlignment="Center" FontSize="30"/>
+                    <Button Text="{Static res:AppResources.BackText}" x:Name="ButtonFinish" Clicked="ButtonFinish_Clicked" Margin="10" CornerRadius="10"/>
                 </VerticalStackLayout>
 
             </Grid>
