@@ -222,4 +222,58 @@
   <data name="WrongFileTypeToast" xml:space="preserve">
     <value>请选择正确的文件 *{0}</value>
   </data>
+  <data name="OpenUtauMobileVersion" xml:space="preserve">
+    <value>OpenUtau Mobile 版本</value>
+  </data>
+  <data name="OpenUtauCoreVersion" xml:space="preserve">
+    <value>OpenUtau 内核版本</value>
+  </data>
+  <data name="GitHubSuggestionsText" xml:space="preserve">
+    <value>去 GitHub 给项目提建议、贡献代码或者给个星标吧</value>
+  </data>
+  <data name="HelpGetBetterText" xml:space="preserve">
+    <value>帮助 OpenUtau Mobile 变得更好</value>
+  </data>
+  <data name="NoProjectsOpened" xml:space="preserve">
+    <value>这里还没有打开过的工程</value>
+  </data>
+  <data name="SingerSetupWizard" xml:space="preserve">
+    <value>歌手安装向导</value>
+  </data>
+  <data name="CompressionEncodingMethodPrompt" xml:space="preserve">
+    <value>请选择一种 压缩包 编码方式，使得右侧文字显示正常</value>
+  </data>
+  <data name="TextEncodingMethodPrompt" xml:space="preserve">
+    <value>请选择一种 文本 编码方式，使得右侧文字显示正常</value>
+  </data>
+  <data name="SingerInformationMissing" xml:space="preserve">
+    <value>歌手信息缺失，请选择歌手类型：</value>
+  </data>
+  <data name="InstallationSummary" xml:space="preserve">
+    <value>安装信息摘要</value>
+  </data>
+  <data name="SingerNameText" xml:space="preserve">
+    <value>歌手名称</value>
+  </data>
+  <data name="SingerTypeText" xml:space="preserve">
+    <value>歌手类型</value>
+  </data>
+  <data name="InstallationDirectoryText" xml:space="preserve">
+    <value>安装目录</value>
+  </data>
+  <data name="InstallationSizeText" xml:space="preserve">
+    <value>安装大小</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>开始安装</value>
+  </data>
+  <data name="InstallingText" xml:space="preserve">
+    <value>安装中</value>
+  </data>
+  <data name="InstallationComplete" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="BackText" xml:space="preserve">
+    <value>返回</value>
+  </data>
 </root>

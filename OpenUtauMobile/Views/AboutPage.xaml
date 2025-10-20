@@ -25,22 +25,22 @@
                 <VerticalStackLayout>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, *, 200" Margin="15,5">
-                            <Label Text="OpenUtau Mobile 版本" />
+                            <Label Text="{Static res:AppResources.OpenUtauMobileVersion}" />
                             <Label x:Name="LabelVersion" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                     </Grid>
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, *, 200" Margin="15,5">
-                            <Label Text="OpenUtau 内核版本"/>
+                            <Label Text="{Static res:AppResources.OpenUtauCoreVersion}"/>
                             <Label x:Name="LabelCoreVersion" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                     </Grid>
                     <Grid RowDefinitions="Auto,.5">
                         <Grid RowDefinitions="Auto, Auto" RowSpacing="5">
-                            <Label Margin="15,5" Text="帮助 OpenUtau Mobile 变得更好" HorizontalTextAlignment="Center"/>
-                            <Label Grid.Row="1" Margin="15,5" Text="去 GitHub 给项目提建议、贡献代码或者给个星标吧" HorizontalTextAlignment="Center"/>
+                            <Label Margin="15,5" Text="{Static res:AppResources.HelpGetBetterText}" HorizontalTextAlignment="Center"/>
+                            <Label Grid.Row="1" Margin="15,5" Text="{Static res:AppResources.GitHubSuggestionsText}" HorizontalTextAlignment="Center"/>
                         </Grid>
                         <Button CornerRadius="0" BackgroundColor="Transparent" x:Name="ButtonToGitHub" Clicked="ButtonToGitHub_Clicked" />
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>

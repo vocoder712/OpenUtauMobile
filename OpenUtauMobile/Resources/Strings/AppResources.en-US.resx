@@ -208,7 +208,7 @@
     <value>Settings</value>
   </data>
   <data name="SingerManage" xml:space="preserve">
-    <value>Singer Manage</value>
+    <value>Manage Singers</value>
   </data>
   <data name="Singers" xml:space="preserve">
     <value>Singers</value>
@@ -221,5 +221,59 @@
   </data>
   <data name="WrongFileTypeToast" xml:space="preserve">
     <value>Please select a valid file *{0}</value>
+  </data>
+  <data name="OpenUtauMobileVersion" xml:space="preserve">
+    <value>OpenUtau Mobile version</value>
+  </data>
+  <data name="OpenUtauCoreVersion" xml:space="preserve">
+    <value>OpenUtau Core version</value>
+  </data>
+  <data name="GitHubSuggestionsText" xml:space="preserve">
+    <value>Head over to GitHub to suggest improvements, contribute code, or give the project a star.</value>
+  </data>
+  <data name="HelpGetBetterText" xml:space="preserve">
+    <value>Help make OpenUtau Mobile better!</value>
+  </data>
+  <data name="NoProjectsOpened" xml:space="preserve">
+    <value>No projects have been opened yet.</value>
+  </data>
+  <data name="SingerSetupWizard" xml:space="preserve">
+    <value>Singer Setup Wizard</value>
+  </data>
+  <data name="CompressionEncodingMethodPrompt" xml:space="preserve">
+    <value>Please select the compression file encoding method to ensure the text on the right displays correctly.</value>
+  </data>
+  <data name="TextEncodingMethodPrompt" xml:space="preserve">
+    <value>Please select the text encoding method to ensure the text on the right displays correctly.</value>
+  </data>
+  <data name="SingerInformationMissing" xml:space="preserve">
+    <value>Singer information is missing. Please select the singer type:</value>
+  </data>
+  <data name="InstallationSummary" xml:space="preserve">
+    <value>Installation Summary</value>
+  </data>
+  <data name="SingerNameText" xml:space="preserve">
+    <value>Singer Name</value>
+  </data>
+  <data name="SingerTypeText" xml:space="preserve">
+    <value>Singer Type</value>
+  </data>
+  <data name="InstallationDirectoryText" xml:space="preserve">
+    <value>Installation Directory</value>
+  </data>
+  <data name="InstallationSizeText" xml:space="preserve">
+    <value>Installation Size</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallingText" xml:space="preserve">
+    <value>Installing...</value>
+  </data>
+  <data name="InstallationComplete" xml:space="preserve">
+    <value>Installation complete!</value>
+  </data>
+  <data name="BackText" xml:space="preserve">
+    <value>Back</value>
   </data>
 </root>
