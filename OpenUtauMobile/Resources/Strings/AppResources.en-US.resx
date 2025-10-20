@@ -298,7 +298,7 @@
     <value>Vogen Singer will be installed soon...</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Confrim</value>
+    <value>Confirm</value>
   </data>
   <data name="AutomaticPageTurning" xml:space="preserve">
     <value>Automatic Page Turning</value>
@@ -377,5 +377,59 @@
   </data>
   <data name="ThemeTooltip" xml:space="preserve">
     <value>Dark or light theme</value>
+  </data>
+  <data name="SettingsSavedToast" xml:space="preserve">
+    <value>Settings saved!</value>
+  </data>
+  <data name="SettingsSaveErrorToast" xml:space="preserve">
+    <value>An error occurred while saving settings.</value>
+  </data>
+  <data name="AIProcessing" xml:space="preserve">
+    <value>AI is processing...</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>Abort</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="RenamePart" xml:space="preserve">
+    <value>Rename Part</value>
+  </data>
+  <data name="PianoRollQuantization" xml:space="preserve">
+    <value>Piano Roll Quantization</value>
+  </data>
+  <data name="LoadPitchRenderingResult" xml:space="preserve">
+    <value>Load Pitch Rendering Result</value>
+  </data>
+  <data name="LoadPitchRenderingResultPrompt" xml:space="preserve">
+    <value>Retrieve the renderer's recommended pitch curve. However, the rendered result will overwrite existing pitch data. Proceed?</value>
+  </data>
+  <data name="RenameTrack" xml:space="preserve">
+    <value>Rename Track</value>
+  </data>
+  <data name="RemoveSinger" xml:space="preserve">
+    <value>Remove Singer</value>
+  </data>
+  <data name="RemoveSingerPrompt" xml:space="preserve">
+    <value>Are you sure you want to remove singer {0}?</value>
+  </data>
+  <data name="RemovingSingerToast" xml:space="preserve">
+    <value>Removing singer {0}...</value>
+  </data>
+  <data name="RemoveSingerSuccessToast" xml:space="preserve">
+    <value>Successfully removed singer {0}</value>
+  </data>
+  <data name="RemoveSingerFailureToast" xml:space="preserve">
+    <value>Failed to remove singer {0}</value>
+  </data>
+  <data name="IncorrectProjectFileToast" xml:space="preserve">
+    <value>Please select the correct project file.</value>
+  </data>
+  <data name="InstallationCancelledToast" xml:space="preserve">
+    <value>Installation cancelled!</value>
+  </data>
+  <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
+    <value>Press back again to cancel the singer installation.</value>
   </data>
 </root>

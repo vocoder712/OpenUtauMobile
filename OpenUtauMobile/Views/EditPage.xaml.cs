@@ -14,6 +14,7 @@ using OpenUtauMobile.ViewModels.Converters;
 using OpenUtauMobile.Views.Controls;
 using OpenUtauMobile.Views.DrawableObjects;
 using OpenUtauMobile.Views.Utils;
+using OpenUtauMobile.Resources.Strings;
 using ReactiveUI;
 using Serilog;
 using SkiaSharp;
@@ -1275,7 +1276,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             OpenUtau.Core.Util.Preferences.AddRecentFileIfEnabled(saveProjectNotification.Path);
             _viewModel.Path = OpenUtau.Core.DocManager.Inst.Project.FilePath;
 #if !WINDOWS
-            CommunityToolkit.Maui.Alerts.Toast.Make("已保存", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            CommunityToolkit.Maui.Alerts.Toast.Make(AppResources.Saved, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
 #endif
         }
     }
@@ -1767,7 +1768,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         if (_viewModel.SelectedParts.Count > 0)
         {
             UPart part = _viewModel.SelectedParts[0];
-            Popup popup = new RenamePopup(part.DisplayName, "重命名分片");
+            Popup popup = new RenamePopup(part.DisplayName, AppResources.RenamePart);
             object? result = await this.ShowPopupAsync(popup);
             if (result != null)
             {
@@ -2038,7 +2039,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         // 阻止单击事件
         isPianoRollSnapDivButtonLongPressed = true;
         // 弹出选择菜单
-        Popup popup = new PianoRollSnapDivPopup(_viewModel.PianoRollSnapDiv, _viewModel.SnapDivs, "钢琴卷帘量化");
+        Popup popup = new PianoRollSnapDivPopup(_viewModel.PianoRollSnapDiv, _viewModel.SnapDivs, AppResources.PianoRollQuantization);
         object? result = await this.ShowPopupAsync(popup);
         if (result is int newSnapDiv)
         {
@@ -2535,7 +2536,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         bool isContinue = true;
         if (Preferences.Default.WarnOnRenderPitch)
         {
-            isContinue = await DisplayAlert("加载音高渲染结果", "获取渲染器推荐音高曲线。但渲染结果会覆盖已有音高数据，是否继续？", "继续", "取消");
+            isContinue = await DisplayAlert(AppResources.LoadPitchRenderingResult, AppResources.LoadPitchRenderingResultPrompt, AppResources.Confirm, AppResources.CancelText);
         }
         if (!isContinue)
         {
@@ -2617,7 +2618,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     {
         if (sender is Button button && button.BindingContext is UTrack track)
         {
-            Popup popup = new RenamePopup(track.TrackName, "重命名音轨");
+            Popup popup = new RenamePopup(track.TrackName, AppResources.RenameTrack);
             object? result = await this.ShowPopupAsync(popup);
             if (result is string newName && !string.IsNullOrEmpty(newName) && newName != track.TrackName)
             {

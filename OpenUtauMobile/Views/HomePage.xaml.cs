@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Alerts;
+ï»¿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Views;
 using DynamicData.Binding;
 using OpenUtauMobile.Views.Controls;
@@ -14,7 +14,7 @@ namespace OpenUtauMobile.Views;
 public partial class HomePage : ContentPage
 {
     private HomePageViewModel _viewModel;
-    private bool _isExit = false; // ÍË³ö±êÖ¾
+    private bool _isExit = false; // é€€å‡ºæ ‡å¿—
     public HomePage()
 	{
 		InitializeComponent();
@@ -22,7 +22,7 @@ public partial class HomePage : ContentPage
     }
 
     /// <summary>
-    /// ÖØĞ´·µ»Ø¼ü°´ÏÂÊÂ¼ş£¬ÊµÏÖÔÙ´Î°´ÏÂ·µ»Ø¼üÍË³öÓ¦ÓÃ
+    /// é‡å†™è¿”å›é”®æŒ‰ä¸‹äº‹ä»¶ï¼Œå®ç°å†æ¬¡æŒ‰ä¸‹è¿”å›é”®é€€å‡ºåº”ç”¨
     /// </summary>
     /// <returns></returns>
     protected override bool OnBackButtonPressed()
@@ -37,11 +37,11 @@ public partial class HomePage : ContentPage
 
             Task.Run(async () =>
             {
-                await Task.Delay(2000); // 2Ãë
+                await Task.Delay(2000); // 2ç§’
                 _isExit = false;
             });
 
-            Toast.Make(AppResources.StringPressBackAgainToExit, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show(); // toastÏÔÊ¾ÌáÊ¾
+            Toast.Make(AppResources.StringPressBackAgainToExit, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show(); // toastæ˜¾ç¤ºæç¤º
         }
 
         return true;
@@ -70,16 +70,16 @@ public partial class HomePage : ContentPage
 
     private void ButtonOpenSingerManage_Clicked(object sender, EventArgs e)
     {
-        Navigation.PushModalAsync(new SingerManagePage()); // Ìø×ªµ½¸èÊÖ¹ÜÀíÒ³Ãæ
+        Navigation.PushModalAsync(new SingerManagePage()); // è·³è½¬åˆ°æ­Œæ‰‹ç®¡ç†é¡µé¢
     }
 
     private void ButtonOpenOptions_Clicked(object sender, EventArgs e)
     {
-        Navigation.PushModalAsync(new OptionsPage()); // Ìø×ªµ½Ñ¡ÏîÒ³Ãæ
+        Navigation.PushModalAsync(new OptionsPage()); // è·³è½¬åˆ°é€‰é¡¹é¡µé¢
     }
 
     /// <summary>
-    /// ´ò¿ª×î½üµÄ¹¤³Ì
+    /// æ‰“å¼€æœ€è¿‘çš„å·¥ç¨‹
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -93,7 +93,7 @@ public partial class HomePage : ContentPage
             }
             else if (!projectPath.EndsWith(".ustx"))
             {
-                Toast.Make("ÇëÑ¡ÔñÕıÈ·µÄ¹¤³ÌÎÄ¼ş", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                Toast.Make(AppResources.IncorrectProjectFileToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return;
             }
             else

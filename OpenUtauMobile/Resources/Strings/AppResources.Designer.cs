@@ -61,11 +61,29 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 中止.
+        /// </summary>
+        internal static string Abort {
+            get {
+                return ResourceManager.GetString("Abort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 关于.
         /// </summary>
         internal static string About {
             get {
                 return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AI正在推理....
+        /// </summary>
+        internal static string AIProcessing {
+            get {
+                return ResourceManager.GetString("AIProcessing", resourceCulture);
             }
         }
         
@@ -147,6 +165,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string Confirm {
             get {
                 return ResourceManager.GetString("Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 再次操作以取消歌手安装.
+        /// </summary>
+        internal static string ConfirmCancelSingerInstallToast {
+            get {
+                return ResourceManager.GetString("ConfirmCancelSingerInstallToast", resourceCulture);
             }
         }
         
@@ -259,11 +286,29 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 请选择正确的工程文件.
+        /// </summary>
+        internal static string IncorrectProjectFileToast {
+            get {
+                return ResourceManager.GetString("IncorrectProjectFileToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 开始安装.
         /// </summary>
         internal static string Install {
             get {
                 return ResourceManager.GetString("Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 安装已取消！.
+        /// </summary>
+        internal static string InstallationCancelledToast {
+            get {
+                return ResourceManager.GetString("InstallationCancelledToast", resourceCulture);
             }
         }
         
@@ -484,6 +529,24 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 加载音高渲染结果.
+        /// </summary>
+        internal static string LoadPitchRenderingResult {
+            get {
+                return ResourceManager.GetString("LoadPitchRenderingResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 获取渲染器推荐音高曲线。但渲染结果会覆盖已有音高数据，是否继续？.
+        /// </summary>
+        internal static string LoadPitchRenderingResultPrompt {
+            get {
+                return ResourceManager.GetString("LoadPitchRenderingResultPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 名称.
         /// </summary>
         internal static string Name {
@@ -592,6 +655,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 钢琴卷帘量化.
+        /// </summary>
+        internal static string PianoRollQuantization {
+            get {
+                return ResourceManager.GetString("PianoRollQuantization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 音高线显示精度.
         /// </summary>
         internal static string PitchDisplayPrecision {
@@ -664,11 +736,83 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 卸载歌手.
+        /// </summary>
+        internal static string RemoveSinger {
+            get {
+                return ResourceManager.GetString("RemoveSinger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 卸载歌手 {0} 失败.
+        /// </summary>
+        internal static string RemoveSingerFailureToast {
+            get {
+                return ResourceManager.GetString("RemoveSingerFailureToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 确认要卸载歌手 {0} 吗？.
+        /// </summary>
+        internal static string RemoveSingerPrompt {
+            get {
+                return ResourceManager.GetString("RemoveSingerPrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 成功卸载歌手 {0}.
+        /// </summary>
+        internal static string RemoveSingerSuccessToast {
+            get {
+                return ResourceManager.GetString("RemoveSingerSuccessToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 正在卸载歌手 {0}....
+        /// </summary>
+        internal static string RemovingSingerToast {
+            get {
+                return ResourceManager.GetString("RemovingSingerToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 重命名分片.
+        /// </summary>
+        internal static string RenamePart {
+            get {
+                return ResourceManager.GetString("RenamePart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 重命名音轨.
+        /// </summary>
+        internal static string RenameTrack {
+            get {
+                return ResourceManager.GetString("RenameTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 渲染与性能.
         /// </summary>
         internal static string RenderAndPerformance {
             get {
                 return ResourceManager.GetString("RenderAndPerformance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 已保存.
+        /// </summary>
+        internal static string Saved {
+            get {
+                return ResourceManager.GetString("Saved", resourceCulture);
             }
         }
         
@@ -687,6 +831,24 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 设置已保存.
+        /// </summary>
+        internal static string SettingsSavedToast {
+            get {
+                return ResourceManager.GetString("SettingsSavedToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 保存设置时出现错误.
+        /// </summary>
+        internal static string SettingsSaveErrorToast {
+            get {
+                return ResourceManager.GetString("SettingsSaveErrorToast", resourceCulture);
             }
         }
         

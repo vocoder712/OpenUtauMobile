@@ -378,4 +378,58 @@
   <data name="ThemeTooltip" xml:space="preserve">
     <value>深色或浅色主题</value>
   </data>
+  <data name="SettingsSavedToast" xml:space="preserve">
+    <value>设置已保存</value>
+  </data>
+  <data name="SettingsSaveErrorToast" xml:space="preserve">
+    <value>保存设置时出现错误</value>
+  </data>
+  <data name="AIProcessing" xml:space="preserve">
+    <value>AI正在推理...</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>中止</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>已保存</value>
+  </data>
+  <data name="RenamePart" xml:space="preserve">
+    <value>重命名分片</value>
+  </data>
+  <data name="PianoRollQuantization" xml:space="preserve">
+    <value>钢琴卷帘量化</value>
+  </data>
+  <data name="LoadPitchRenderingResult" xml:space="preserve">
+    <value>加载音高渲染结果</value>
+  </data>
+  <data name="LoadPitchRenderingResultPrompt" xml:space="preserve">
+    <value>获取渲染器推荐音高曲线。但渲染结果会覆盖已有音高数据，是否继续？</value>
+  </data>
+  <data name="RenameTrack" xml:space="preserve">
+    <value>重命名音轨</value>
+  </data>
+  <data name="RemoveSinger" xml:space="preserve">
+    <value>卸载歌手</value>
+  </data>
+  <data name="RemoveSingerPrompt" xml:space="preserve">
+    <value>确认要卸载歌手 {0} 吗？</value>
+  </data>
+  <data name="RemovingSingerToast" xml:space="preserve">
+    <value>正在卸载歌手 {0}...</value>
+  </data>
+  <data name="RemoveSingerSuccessToast" xml:space="preserve">
+    <value>成功卸载歌手 {0}</value>
+  </data>
+  <data name="RemoveSingerFailureToast" xml:space="preserve">
+    <value>卸载歌手 {0} 失败</value>
+  </data>
+  <data name="IncorrectProjectFileToast" xml:space="preserve">
+    <value>请选择正确的工程文件</value>
+  </data>
+  <data name="InstallationCancelledToast" xml:space="preserve">
+    <value>安装已取消！</value>
+  </data>
+  <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
+    <value>再次操作以取消歌手安装</value>
+  </data>
 </root>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="OpenUtauMobile.Views.EditPage"
@@ -10,8 +10,9 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="vm:EditViewModel"
              xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
              x:Name="Page"
-             Title="编辑页面">
+             Title="EditPage">
     <ContentPage.BindingContext>
         <vm:EditViewModel />
     </ContentPage.BindingContext>
@@ -404,7 +405,7 @@
             <!-- 等待渲染 -->
             <Grid BackgroundColor="#55000000" IsVisible="{Binding PlayPosWaitingRendering}" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All" InputTransparent="False">
                 <VerticalStackLayout VerticalOptions="Center" Padding="20">
-                    <Label Text="AI正在推理..." 
+                    <Label Text="{Static res:AppResources.AIProcessing}" 
                                HorizontalTextAlignment="Center" 
                                VerticalTextAlignment="Center" 
                                FontSize="30" />
@@ -430,7 +431,7 @@
                                 <Label Text="{Binding Detail}" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="False"/>
                                 <ProgressBar Progress="{Binding Progress}" Grid.Row="2" Grid.Column="0" HeightRequest="40" IsVisible="False" />
                                 <Label Text="{Binding Progress, StringFormat='{0:F2}'}" Grid.Column="1" Grid.Row="2" HeightRequest="40" IsVisible="False" />
-                                <Button Text="中止" Grid.Row="3" Grid.RowSpan="2" CornerRadius="25" BorderWidth=".5" BackgroundColor="Transparent" BorderColor="{DynamicResource Primary}" TextColor="{DynamicResource Primary}" IsVisible="True" x:Name="ButtonTryCancelWork" Clicked="ButtonTryCancelWork_Clicked" HeightRequest="20"/>
+                                <Button Text="{Static res:AppResources.Abort}" Grid.Row="3" Grid.RowSpan="2" CornerRadius="25" BorderWidth=".5" BackgroundColor="Transparent" BorderColor="{DynamicResource Primary}" TextColor="{DynamicResource Primary}" IsVisible="True" x:Name="ButtonTryCancelWork" Clicked="ButtonTryCancelWork_Clicked" HeightRequest="20"/>
                             </Grid>
                         </Border>
                         </DataTemplate>

@@ -1,7 +1,8 @@
-using CommunityToolkit.Maui.Alerts;
+ï»¿using CommunityToolkit.Maui.Alerts;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.ViewModels;
+using OpenUtauMobile.Resources.Strings;
 
 namespace OpenUtauMobile.Views;
 
@@ -16,29 +17,29 @@ public partial class SingerDetailPage : ContentPage
     }
 
     /// <summary>
-    /// °´Å¥ÊÂ¼þ-·µ»Ø
+    /// æŒ‰é’®äº‹ä»¶-è¿”å›ž
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void ButtonBack_Clicked(object sender, EventArgs e)
     {
-        Navigation.PopModalAsync(); // ·µ»ØÉÏÒ»Ò³
+        Navigation.PopModalAsync(); // è¿”å›žä¸Šä¸€é¡µ
     }
 
     private async void ButtonRemoveSinger_Clicked(object sender, EventArgs e)
     {
-        if (await this.DisplayAlert("Ð¶ÔØ¸èÊÖ", $"È·ÈÏÒªÐ¶ÔØ¸èÊÖ {ViewModel.Singer.LocalizedName} Âð£¿", "ÊÇ", "·ñ"))
+        if (await this.DisplayAlert(AppResources.RemoveSinger, string.Format(AppResources.RemoveSingerPrompt, 0, ViewModel.Singer.LocalizedName), AppResources.Confirm, AppResources.CancelText))
         {
-            await Toast.Make($"ÕýÔÚÐ¶ÔØ¸èÊÖ {ViewModel.Singer.LocalizedName}...").Show();
+            await Toast.Make(string.Format(AppResources.RemovingSingerToast, 0, ViewModel.Singer.LocalizedName)).Show();
             if (await SingerManager.Inst.UninstallSingerAsync(ViewModel.Singer))
             {
-                await Toast.Make($"³É¹¦Ð¶ÔØ¸èÊÖ {ViewModel.Singer.LocalizedName}").Show();
+                await Toast.Make(string.Format(AppResources.RemoveSingerSuccessToast, 0, ViewModel.Singer.LocalizedName)).Show();
             }
             else
             {
-                await Toast.Make($"Ð¶ÔØ¸èÊÖ {ViewModel.Singer.LocalizedName} Ê§°Ü").Show();
+                await Toast.Make(string.Format(AppResources.RemoveSingerFailureToast, 0, ViewModel.Singer.LocalizedName)).Show();
             }
-            await Navigation.PopModalAsync(); // ·µ»ØÉÏÒ»Ò³
+            await Navigation.PopModalAsync(); // è¿”å›žä¸Šä¸€é¡µ
         }
     }
 }
