@@ -345,4 +345,37 @@
   <data name="Language" xml:space="preserve">
     <value>语言</value>
   </data>
+  <data name="AutomaticPageTurningTooltip" xml:space="preserve">
+    <value>若打开，将在播放指针到达页面右侧时自动翻页</value>
+  </data>
+  <data name="PlaybackRefreshRateTooltip" xml:space="preserve">
+    <value>设置更新播放指针的频率，1 ~ 60 FPS。请根据设备性能调整。过大的刷新率可能导致卡顿。更改此项设置后，重新打开编辑页面生效。</value>
+  </data>
+  <data name="PitchDisplayPrecisionTooltip" xml:space="preserve">
+    <value>更高的精度更能准确刻画实际音高，但可能导致性能问题。</value>
+  </data>
+  <data name="DisplaySingerPortraitTooltip" xml:space="preserve">
+    <value>打开后，将在钢琴卷帘中显示歌手的立绘。</value>
+  </data>
+  <data name="GlobalPortraitTransparencyTooltip" xml:space="preserve">
+    <value>打开该选项可覆盖所有歌手立绘透明度预设。</value>
+  </data>
+  <data name="KeepScreenOnTooltip" xml:space="preserve">
+    <value>打开后，将在编辑页面中保持屏幕常亮。</value>
+  </data>
+  <data name="OnPianoClickTooltip" xml:space="preserve">
+    <value>设置点击钢琴卷帘左侧琴键的行为</value>
+  </data>
+  <data name="OutputDeviceTooltip" xml:space="preserve">
+    <value>Android只能看不能改</value>
+  </data>
+  <data name="PreRenderTooltip" xml:space="preserve">
+    <value>在回放前后台预渲染音频。</value>
+  </data>
+  <data name="DontRenderMutedTracksTooltip" xml:space="preserve">
+    <value>渲染时跳过静音的轨道。</value>
+  </data>
+  <data name="ThemeTooltip" xml:space="preserve">
+    <value>深色或浅色主题</value>
+  </data>
 </root>

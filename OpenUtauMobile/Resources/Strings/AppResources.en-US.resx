@@ -345,4 +345,37 @@
   <data name="Language" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="AutomaticPageTurningTooltip" xml:space="preserve">
+    <value>If enabled, the page will automatically turn when the playback pointer reaches the right edge of the page.</value>
+  </data>
+  <data name="PlaybackRefreshRateTooltip" xml:space="preserve">
+    <value>Set the refresh rate for the playback pointer, ranging from 1 to 60 FPS. Adjust this setting based on your device's performance. Excessively high refresh rates may cause stuttering. Changes to this setting take effect after reopening the editing page.</value>
+  </data>
+  <data name="PitchDisplayPrecisionTooltip" xml:space="preserve">
+    <value>Higher precision can more accurately depict actual pitch, but may lead to performance issues.</value>
+  </data>
+  <data name="DisplaySingerPortraitTooltip" xml:space="preserve">
+    <value>Upon enabling, the singer's portrait will appear in the piano roll.</value>
+  </data>
+  <data name="GlobalPortraitTransparencyTooltip" xml:space="preserve">
+    <value>Enable this option to override the transparency presets for all artist portraits.</value>
+  </data>
+  <data name="KeepScreenOnTooltip" xml:space="preserve">
+    <value>After enabling, the screen will remain on when editing.</value>
+  </data>
+  <data name="OnPianoClickTooltip" xml:space="preserve">
+    <value>Set the behavior for clicking the keys on the left side of the piano roll</value>
+  </data>
+  <data name="OutputDeviceTooltip" xml:space="preserve">
+    <value>Android: view only, can't edit.</value>
+  </data>
+  <data name="PreRenderTooltip" xml:space="preserve">
+    <value>Pre-render audio in the background before playback.</value>
+  </data>
+  <data name="DontRenderMutedTracksTooltip" xml:space="preserve">
+    <value>Skip muted tracks during rendering.</value>
+  </data>
+  <data name="ThemeTooltip" xml:space="preserve">
+    <value>Dark or light theme</value>
+  </data>
 </root>

@@ -106,6 +106,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 若打开，将在播放指针到达页面右侧时自动翻页.
+        /// </summary>
+        internal static string AutomaticPageTurningTooltip {
+            get {
+                return ResourceManager.GetString("AutomaticPageTurningTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 返回.
         /// </summary>
         internal static string BackText {
@@ -151,11 +160,29 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 打开后，将在钢琴卷帘中显示歌手的立绘。.
+        /// </summary>
+        internal static string DisplaySingerPortraitTooltip {
+            get {
+                return ResourceManager.GetString("DisplaySingerPortraitTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 不渲染静音的轨道.
         /// </summary>
         internal static string DontRenderMutedTracks {
             get {
                 return ResourceManager.GetString("DontRenderMutedTracks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 渲染时跳过静音的轨道。.
+        /// </summary>
+        internal static string DontRenderMutedTracksTooltip {
+            get {
+                return ResourceManager.GetString("DontRenderMutedTracksTooltip", resourceCulture);
             }
         }
         
@@ -201,6 +228,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string GlobalPortraitTransparency {
             get {
                 return ResourceManager.GetString("GlobalPortraitTransparency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 打开该选项可覆盖所有歌手立绘透明度预设。.
+        /// </summary>
+        internal static string GlobalPortraitTransparencyTooltip {
+            get {
+                return ResourceManager.GetString("GlobalPortraitTransparencyTooltip", resourceCulture);
             }
         }
         
@@ -291,6 +327,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string KeepScreenOn {
             get {
                 return ResourceManager.GetString("KeepScreenOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 打开后，将在编辑页面中保持屏幕常亮。.
+        /// </summary>
+        internal static string KeepScreenOnTooltip {
+            get {
+                return ResourceManager.GetString("KeepScreenOnTooltip", resourceCulture);
             }
         }
         
@@ -484,6 +529,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 设置点击钢琴卷帘左侧琴键的行为.
+        /// </summary>
+        internal static string OnPianoClickTooltip {
+            get {
+                return ResourceManager.GetString("OnPianoClickTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 打开.
         /// </summary>
         internal static string Open {
@@ -529,11 +583,29 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Android只能看不能改.
+        /// </summary>
+        internal static string OutputDeviceTooltip {
+            get {
+                return ResourceManager.GetString("OutputDeviceTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 音高线显示精度.
         /// </summary>
         internal static string PitchDisplayPrecision {
             get {
                 return ResourceManager.GetString("PitchDisplayPrecision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 更高的精度更能准确刻画实际音高，但可能导致性能问题。.
+        /// </summary>
+        internal static string PitchDisplayPrecisionTooltip {
+            get {
+                return ResourceManager.GetString("PitchDisplayPrecisionTooltip", resourceCulture);
             }
         }
         
@@ -547,11 +619,29 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 设置更新播放指针的频率，1 ~ 60 FPS。请根据设备性能调整。过大的刷新率可能导致卡顿。更改此项设置后，重新打开编辑页面生效。.
+        /// </summary>
+        internal static string PlaybackRefreshRateTooltip {
+            get {
+                return ResourceManager.GetString("PlaybackRefreshRateTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 预渲染.
         /// </summary>
         internal static string PreRender {
             get {
                 return ResourceManager.GetString("PreRender", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 在回放前后台预渲染音频。.
+        /// </summary>
+        internal static string PreRenderTooltip {
+            get {
+                return ResourceManager.GetString("PreRenderTooltip", resourceCulture);
             }
         }
         
@@ -687,6 +777,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string Theme {
             get {
                 return ResourceManager.GetString("Theme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 深色或浅色主题.
+        /// </summary>
+        internal static string ThemeTooltip {
+            get {
+                return ResourceManager.GetString("ThemeTooltip", resourceCulture);
             }
         }
         

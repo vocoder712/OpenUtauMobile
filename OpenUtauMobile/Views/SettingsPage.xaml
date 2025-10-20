@@ -42,7 +42,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
                             <Label Text="{Static res:AppResources.AutomaticPageTurning}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="若打开，将在播放指针到达页面右侧时自动翻页" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.AutomaticPageTurningTooltip}" />
                             <Switch x:Name="SwitchAutoScroll" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding AutoScroll}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -50,7 +50,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200,30">
                             <Label Text="{Static res:AppResources.PlaybackRefreshRate}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="设置更新播放指针的频率，1 ~ 60 FPS。请根据设备性能调整。过大的刷新率可能导致卡顿。更改此项设置后，重新打开编辑页面生效。" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.PlaybackRefreshRateTooltip}" />
                             <Slider Grid.Column="3" Value="{Binding PlaybackRefreshRate}" Minimum="1" Maximum="60"/>
                             <Label Grid.Column="4" Text="{Binding PlaybackRefreshRate}" HorizontalOptions="Center"/>
                         </Grid>
@@ -59,7 +59,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 50">
                             <Label Text="{Static res:AppResources.PitchDisplayPrecision}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="更高的精度更能准确刻画实际音高，但可能导致性能问题。" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.PitchDisplayPrecisionTooltip}" />
                             <Picker Grid.Column="3" ItemsSource="{Binding PitchDisplayPrecision}" ItemDisplayBinding="{Binding Value}" SelectedItem="{Binding SelectedPitchDisplayPrecision}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -67,7 +67,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
                             <Label Text="{Static res:AppResources.DisplaySingerPortrait}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="打开后，将在钢琴卷帘中显示歌手的立绘。" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.DisplaySingerPortraitTooltip}" />
                             <Switch x:Name="SwitchShowPortrait" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding ShowPortrait}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -75,7 +75,7 @@
                     <Grid RowDefinitions="50, Auto, .5" IsVisible="{Binding ShowPortrait}">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
                             <Label Text="{Static res:AppResources.GlobalPortraitTransparency}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="打开该选项可覆盖所有歌手立绘透明度预设。" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.GlobalPortraitTransparencyTooltip}" />
                             <Switch x:Name="SwitchCustomPortraitOpacity" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding CustomPortraitOptions}"/>
                         </Grid>
                         <Grid Row="1" ColumnDefinitions="Auto, *, 200,30" IsVisible="{Binding CustomPortraitOptions}">
@@ -88,7 +88,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 30">
                             <Label Text="{Static res:AppResources.KeepScreenOn}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="打开后，将在编辑页面中保持屏幕常亮。" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.KeepScreenOnTooltip}" />
                             <Switch x:Name="SwitchKeepScreenOn" Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding KeepScreenOn}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -96,7 +96,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 50">
                             <Label Text="{Static res:AppResources.OnPianoClick}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="设置点击钢琴卷帘左侧琴键的行为" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.OnPianoClickTooltip}" />
                             <Picker Margin="5,0,15,0" Grid.Column="3" ItemsSource="{Binding PianoSampleTypes}" ItemDisplayBinding="{Binding Value}" SelectedItem="{Binding SelectedPianoSample}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -111,7 +111,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
                             <Label Text="{Static res:AppResources.OutputDevice}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="Android只能看不能改" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.OutputDeviceTooltip}" />
                             <Picker Grid.Column="3" ItemsSource="{Binding AudioOutputDevices}" ItemDisplayBinding="{Binding .}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -119,7 +119,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
                             <Label Text="{Static res:AppResources.PreRender}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="在回放前后台预渲染音频。" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.PreRenderTooltip}" />
                             <Switch x:Name="SwitchPreRender" Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding PreRender}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -127,7 +127,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
                             <Label Text="{Static res:AppResources.DontRenderMutedTracks}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="渲染时跳过静音的轨道。" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.DontRenderMutedTracksTooltip}" />
                             <Switch x:Name="SwitchSkipRenderingMutedTracks" Grid.Column="3" HorizontalOptions="End" VerticalOptions="Center" IsToggled="{Binding SkipRenderingMutedTracks}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -150,7 +150,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
                             <Label Text="{Static res:AppResources.Theme}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="深色或浅色主题" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.ThemeTooltip}" />
                             <Picker Grid.Column="3" ItemsSource="{Binding Themes}" ItemDisplayBinding="{Binding Value}" SelectedItem="{Binding SelectedTheme}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="#80404040"/>
@@ -158,7 +158,7 @@
                     <Grid RowDefinitions="50,.5">
                         <Grid ColumnDefinitions="Auto, 50, *, 200">
                             <Label Text="{Static res:AppResources.Language}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="语言" />
+                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.Language}" />
                             <Picker Grid.Column="3" ItemsSource="{Binding LanguageOptions}" ItemDisplayBinding="{Binding DisplayName}" SelectedItem="{Binding SelectedLanguageOption}"/>
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="#80404040"/>
