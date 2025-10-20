@@ -48,7 +48,9 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 	  <EnableLLVM>False</EnableLLVM>
-	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <!-- <AndroidKeyStore>True</AndroidKeyStore> -->
+	  <!-- To enable keystore signing for Debug, set UseAndroidKeyStore=true in your environment or build properties -->
+	  <AndroidKeyStore Condition="'$(UseAndroidKeyStore)'=='true'">True</AndroidKeyStore>
 	  <Debugger>Xamarin</Debugger>
 	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
 	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
