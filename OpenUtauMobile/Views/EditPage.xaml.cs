@@ -822,6 +822,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _pianoRollGestureProcessor.YZoomUpdate += (sender, e) =>
             {
                 _viewModel.PianoRollTransformer.UpdateYZoom(e.Point1, e.Point2);
+                UpdatePianoRollCanvasPanLimit();
             };
         #endregion
         #region 时间轴画布手势事件
