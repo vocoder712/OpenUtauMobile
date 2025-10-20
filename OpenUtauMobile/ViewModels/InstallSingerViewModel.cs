@@ -103,18 +103,34 @@ namespace OpenUtauMobile.ViewModels
             {
                 ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
-            using (var archive = ArchiveFactory.Open(InstallPackagePath, readerOptions))
+            using var archive = ArchiveFactory.Open(InstallPackagePath, readerOptions);
+            ArchiveEntryItems.Clear();
+
+            // 只取前50个有效条目作为样本，避免加载所有文件
+            const int MaxSampleSize = 50;
+            int count = 0;
+
+            foreach (var entry in archive.Entries)
             {
-                ArchiveEntryItems.Clear();
-                ArchiveEntryItems.AddRange(
-                    archive.Entries
-                        .Select(entry => entry.Key)
-                        .Where(key => key != null)
-                        .Select(key => key!)
-                        .ToArray()
-                );
-                Busy = false; // 空闲
+                if (entry.Key != null)
+                {
+                    ArchiveEntryItems.Add(entry.Key);
+                    count++;
+
+                    if (count >= MaxSampleSize)
+                    {
+                        break;
+                    }
+                }
             }
+
+            // 如果文件数量超过样本大小，添加提示信息
+            if (count >= MaxSampleSize)
+            {
+                ArchiveEntryItems.Add($"... (已显示前 {MaxSampleSize} 个条目)");
+            }
+
+            Busy = false; // 空闲
         }
 
         /// <summary>
@@ -129,45 +145,71 @@ namespace OpenUtauMobile.ViewModels
                 Busy = false; // 空闲
                 return;
             }
-            var readerOptions = new ReaderOptions
+            ReaderOptions readerOptions = new()
             {
                 ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
-            using (var archive = ArchiveFactory.Open(InstallPackagePath, readerOptions))
+            using var archive = ArchiveFactory.Open(InstallPackagePath, readerOptions);
+            try
             {
-                try
+                TextItems.Clear();
+
+                // 限制读取的文本文件数量
+                const int MaxTextFiles = 5; // 最多读取5个文本文件作为样本
+                int processedFiles = 0;
+
+                foreach (IArchiveEntry entry in archive.Entries)
                 {
-                    TextItems.Clear();
-                    foreach (var entry in archive.Entries
-                        .Where(entry => entry.Key != null && (entry.Key.EndsWith("character.txt") || entry.Key.EndsWith("oto.ini"))))
+                    // 达到最大文件数后停止
+                    if (processedFiles >= MaxTextFiles)
                     {
-                        using (var stream = entry.OpenEntryStream())
+                        TextItems.Add($"... (已显示前 {MaxTextFiles} 个文本文件)");
+                        break;
+                    }
+
+                    // 检查 Key 是否为空，避免不必要的字符串操作
+                    if (entry.Key == null)
+                    {
+                        continue;
+                    }
+
+                    // 使用更高效的后缀检查
+                    if (!entry.Key.EndsWith("character.txt") && !entry.Key.EndsWith("oto.ini"))
+                    {
+                        continue;
+                    }
+
+                    using (Stream stream = entry.OpenEntryStream())
+                    {
+                        using var reader = new StreamReader(stream, TextEncoding);
+                        TextItems.Add($"------ {entry.Key} ------");
+                        int count = 0;
+                        const int MaxLinesPerFile = 64; // 每个文件读取的行数
+
+                        while (count < MaxLinesPerFile && !reader.EndOfStream)
                         {
-                            using var reader = new StreamReader(stream, TextEncoding);
-                            TextItems.Add($"------ {entry.Key} ------");
-                            int count = 0;
-                            while (count < 256 && !reader.EndOfStream)
+                            string? line = reader.ReadLine();
+                            if (!string.IsNullOrWhiteSpace(line))
                             {
-                                string? line = reader.ReadLine();
-                                if (!string.IsNullOrWhiteSpace(line))
-                                {
-                                    TextItems.Add(line);
-                                    count++;
-                                }
-                            }
-                            if (!reader.EndOfStream)
-                            {
-                                TextItems.Add($"...");
+                                TextItems.Add(line);
+                                count++;
                             }
                         }
+                        if (!reader.EndOfStream)
+                        {
+                            TextItems.Add($"...");
+                        }
                     }
-                    Busy = false; // 空闲
+
+                    processedFiles++;
                 }
-                catch (Exception ex)
-                {
-                    Busy = false; // 空闲
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
-                }
+
+                Busy = false; // 空闲
+            }
+            catch (Exception ex)
+            {
+                Busy = false; // 空闲
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
             }
         }
 
@@ -180,7 +222,7 @@ namespace OpenUtauMobile.ViewModels
         {
             InstallProgress = progress / 100;
             InstallProgressText = $"进度：{progress:0.##}%";
-            InstallProgressDetail = $"解压条目：{detail}";
+            InstallProgressDetail = detail;
         }
 
         public void Install()
