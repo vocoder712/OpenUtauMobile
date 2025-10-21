@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Views;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.ViewModels.Controls;
 using ReactiveUI;

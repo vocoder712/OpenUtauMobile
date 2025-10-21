@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Alerts;
+ï»¿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Views;
 using OpenUtauMobile.Views.Controls;
 using OpenUtauMobile.Utils;
@@ -20,21 +20,21 @@ public partial class SingerManagePage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        ViewModel.RefreshSingers(); // Ë¢ĞÂ¸èÊÖÁĞ±í
+        ViewModel.RefreshSingers(); // åˆ·æ–°æ­Œæ‰‹åˆ—è¡¨
     }
 
     /// <summary>
-    /// °´Å¥ÊÂ¼ş-·µ»Ø
+    /// æŒ‰é’®äº‹ä»¶-è¿”å›
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void ButtonBack_Clicked(object sender, EventArgs e)
     {
-        Navigation.PopModalAsync(); // ·µ»ØÉÏÒ»Ò³
+        Navigation.PopModalAsync(); // è¿”å›ä¸Šä¸€é¡µ
     }
 
     /// <summary>
-    /// °´Å¥ÊÂ¼ş-Ìí¼Ó¸èÊÖ
+    /// æŒ‰é’®äº‹ä»¶-æ·»åŠ æ­Œæ‰‹
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -58,7 +58,7 @@ public partial class SingerManagePage : ContentPage
     {
         if (sender is Button button && button.BindingContext is USinger singer)
         {
-            Navigation.PushModalAsync(new SingerDetailPage(singer)); // Ìø×ªµ½¸èÊÖÏêÇéÒ³Ãæ
+            Navigation.PushModalAsync(new SingerDetailPage(singer)); // è·³è½¬åˆ°æ­Œæ‰‹è¯¦æƒ…é¡µé¢
         }
     }
 }

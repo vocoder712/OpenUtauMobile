@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Views;
+ï»¿using CommunityToolkit.Maui.Views;
 using OpenUtauMobile.ViewModels.Controls;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -22,24 +22,24 @@ namespace OpenUtauMobile.Views.Controls
 
 
         /// <summary>
-        /// Ñ¡ÖÐÎÄ¼þ»òÄ¿Â¼
+        /// é€‰ä¸­æ–‡ä»¶æˆ–ç›®å½•
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnItemSelected(object sender, SelectionChangedEventArgs e)
         {
-            if (_viewModel.SelectedItem is DirectoryInfo directory) // Ñ¡ÖÐµÄÊÇÄ¿Â¼
+            if (_viewModel.SelectedItem is DirectoryInfo directory) // é€‰ä¸­çš„æ˜¯ç›®å½•
             {
                 _viewModel.CurrentDirectory = directory.FullName;
             }
-            else if (_viewModel.SelectedItem is FileInfo file) // Ñ¡ÖÐµÄÊÇÎÄ¼þ
+            else if (_viewModel.SelectedItem is FileInfo file) // é€‰ä¸­çš„æ˜¯æ–‡ä»¶
             {
                 CloseAsync(file.FullName);
             }
         }
 
         /// <summary>
-        /// ·µ»ØÉÏÒ»¼¶Ä¿Â¼
+        /// è¿”å›žä¸Šä¸€çº§ç›®å½•
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

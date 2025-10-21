@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Alerts;
+ï»¿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Views;
 using OpenUtau.Core;
 using OpenUtauMobile.ViewModels.Controls;
@@ -25,19 +25,19 @@ public partial class InsertTempoOrTimeSignaturePopup : Popup
         {
             if (position < 0)
             {
-                Toast.Make("Î»ÖÃ²»ÄÜÎª¸º", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                Toast.Make("ä½ç½®ä¸èƒ½ä¸ºè´Ÿ", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return;
             }
             if (bpm <= 0)
             {
-                Toast.Make("BPM²»ÄÜÐ¡ÓÚµÈÓÚ0", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                Toast.Make("BPMä¸èƒ½å°äºŽç­‰äºŽ0", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return;
             }
             CloseAsync(new Tuple<int, double>(position, bpm));
         }
         else
         {
-            Toast.Make("ÇëÊäÈëÓÐÐ§µÄÊý×Ö", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            Toast.Make("è¯·è¾“å…¥æœ‰æ•ˆçš„æ•°å­—", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
         }
     }
 
@@ -47,24 +47,24 @@ public partial class InsertTempoOrTimeSignaturePopup : Popup
         {
             if (bar < 0)
             {
-                Toast.Make("Ð¡½Ú²»ÄÜÎª¸º", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                Toast.Make("å°èŠ‚ä¸èƒ½ä¸ºè´Ÿ", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return;
             }
             if (beatPerBar <= 0)
             {
-                Toast.Make("Ã¿Ð¡½ÚÅÄÊý²»ÄÜÐ¡ÓÚµÈÓÚ0", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                Toast.Make("æ¯å°èŠ‚æ‹æ•°ä¸èƒ½å°äºŽç­‰äºŽ0", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return;
             }
             if (beatUnit <= 0)
             {
-                Toast.Make("ÒÔ¼¸·ÖÒô·ûÎªÒ»ÅÄ²»ÄÜÐ¡ÓÚµÈÓÚ0", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                Toast.Make("ä»¥å‡ åˆ†éŸ³ç¬¦ä¸ºä¸€æ‹ä¸èƒ½å°äºŽç­‰äºŽ0", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return;
             }
             CloseAsync(new Tuple<int, int, int>(bar, beatPerBar, beatUnit));
         }
         else
         {
-            Toast.Make("ÇëÊäÈëÓÐÐ§µÄÊý×Ö", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            Toast.Make("è¯·è¾“å…¥æœ‰æ•ˆçš„æ•°å­—", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
         }
     }
 }

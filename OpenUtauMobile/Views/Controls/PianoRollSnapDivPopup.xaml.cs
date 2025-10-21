@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Views;
+﻿using CommunityToolkit.Maui.Views;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.ViewModels.Controls;
 

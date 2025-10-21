@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Views;
+ï»¿using CommunityToolkit.Maui.Views;
 using OpenUtauMobile.ViewModels.Controls;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -13,9 +13,9 @@ namespace OpenUtauMobile.Views.Controls
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="types">ÏŞÖÆÎÄ¼şÀàĞÍ£¬ÀıÈç[*.ustx, *.wav]</param>
-        /// <param name="initialDirectory">³õÊ¼¼ÓÔØÄ¿Â¼</param>
-        /// <param name="initialFileName">Ä¬ÈÏÎÄ¼şÃû</param>
+        /// <param name="types">é™åˆ¶æ–‡ä»¶ç±»å‹ï¼Œä¾‹å¦‚[*.ustx, *.wav]</param>
+        /// <param name="initialDirectory">åˆå§‹åŠ è½½ç›®å½•</param>
+        /// <param name="initialFileName">é»˜è®¤æ–‡ä»¶å</param>
         public FileSaverPopup(string[] types, string initialDirectory = "", string initialFileName = "")
         {
             InitializeComponent();
@@ -27,24 +27,24 @@ namespace OpenUtauMobile.Views.Controls
         }
 
         /// <summary>
-        /// UIµã»÷ÏîÄ¿ÊÂ¼ş
+        /// UIç‚¹å‡»é¡¹ç›®äº‹ä»¶
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OnItemSelected(object sender, SelectionChangedEventArgs e)
         {
-            if (_viewModel.SelectedItem is DirectoryInfo directory) // Ñ¡ÖĞµÄÊÇÄ¿Â¼
+            if (_viewModel.SelectedItem is DirectoryInfo directory) // é€‰ä¸­çš„æ˜¯ç›®å½•
             {
                 _viewModel.CurrentDirectory = directory.FullName;
             }
-            else if (_viewModel.SelectedItem is FileInfo file) // Ñ¡ÖĞµÄÊÇÎÄ¼ş
+            else if (_viewModel.SelectedItem is FileInfo file) // é€‰ä¸­çš„æ˜¯æ–‡ä»¶
             {
                 _viewModel.FileName = file.Name;
             }
         }
 
         /// <summary>
-        /// ·µ»ØÉÏÒ»¼¶Ä¿Â¼
+        /// è¿”å›ä¸Šä¸€çº§ç›®å½•
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -58,7 +58,7 @@ namespace OpenUtauMobile.Views.Controls
         }
 
         /// <summary>
-        /// È¡Ïû°´Å¥µã»÷ÊÂ¼ş
+        /// å–æ¶ˆæŒ‰é’®ç‚¹å‡»äº‹ä»¶
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -68,7 +68,7 @@ namespace OpenUtauMobile.Views.Controls
         }
 
         /// <summary>
-        /// Ë¢ĞÂµ±Ç°Ä¿Â¼
+        /// åˆ·æ–°å½“å‰ç›®å½•
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -78,13 +78,13 @@ namespace OpenUtauMobile.Views.Controls
         }
 
         /// <summary>
-        /// ±£´æ
+        /// ä¿å­˜
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ButtonSave_Clicked(object sender, EventArgs e)
         {
-            // ÏÈÅĞ¶ÏÎÄ¼şÃûÊÇ·ñ·ûºÏtypes
+            // å…ˆåˆ¤æ–­æ–‡ä»¶åæ˜¯å¦ç¬¦åˆtypes
             if (_viewModel.Types.Length > 0 && _viewModel.Types[0] != "*")
             {
                 bool isValid = false;
@@ -96,7 +96,7 @@ namespace OpenUtauMobile.Views.Controls
                         break;
                     }
                 }
-                // Èç¹û²»·ûºÏÀàĞÍÒªÇó£¬×Ô¶¯Ìí¼ÓµÚÒ»¸öÀàĞÍºó×º
+                // å¦‚æœä¸ç¬¦åˆç±»å‹è¦æ±‚ï¼Œè‡ªåŠ¨æ·»åŠ ç¬¬ä¸€ä¸ªç±»å‹åç¼€
                 if (!isValid)
                 {
                     _viewModel.FileName = _viewModel.FileName + (_viewModel.Types[0].StartsWith('*') ? _viewModel.Types[0].TrimStart('*') : _viewModel.Types[0]);
