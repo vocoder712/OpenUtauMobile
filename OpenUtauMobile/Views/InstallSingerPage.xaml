@@ -1,12 +1,13 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:sys="clr-namespace:System.Text;assembly=System.Runtime"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
              x:Class="OpenUtauMobile.Views.InstallSingerPage"
              x:DataType="vm:InstallSingerViewModel"
              xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
-             Title="歌手安装">
+             Title="InstallSingerPage">
     <!-- 不 在隐藏代码设置绑定 -->
     <ContentPage.BindingContext>
         <vm:InstallSingerViewModel/>
@@ -28,7 +29,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
-            <Label Text="歌手安装向导" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            <Label Text= "{Static res:AppResources.SingerSetupWizard}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
         </Grid>
         
         <!-- 页面内容 -->
@@ -37,7 +38,7 @@
             <!-- 第1页-选择压缩包编码方式 -->
             <Grid Padding="10" RowDefinitions="80,*,120">
 
-                <Label Text="请选择一种 压缩包 编码方式，使得右侧文字显示正常" Grid.Row="0" />
+                <Label Text="{Static res:AppResources.CompressionEncodingMethodPrompt}" Grid.Row="0" />
                 <Border Grid.Row="1" BackgroundColor="#60808080" StrokeShape="RoundRectangle 20">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -77,7 +78,7 @@
             <!-- 第2页-选择文本文件编码方式 -->
             <Grid Padding="10" RowDefinitions="80,*,120">
 
-                <Label Text="请选择一种 文本 编码方式，使得右侧文字显示正常" Grid.Row="0" />
+                <Label Text="{Static res:AppResources.TextEncodingMethodPrompt}" Grid.Row="0" />
                 <Border Grid.Row="1" BackgroundColor="#60808080" StrokeShape="RoundRectangle 20">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -128,7 +129,7 @@
             <!-- 第3页-完善歌手信息 -->
             <Grid Padding="10" RowDefinitions="*,120" >
                 <VerticalStackLayout Grid.Row="0" Spacing="10" VerticalOptions="Center">
-                    <Label x:Name="LabelPrepareInstallPrompt" Text="歌手信息缺失，请选择歌手类型：" Grid.Column="0" Grid.Row="1"/>
+                    <Label x:Name="LabelPrepareInstallPrompt" Text="{Static res:AppResources.SingerInformationMissing}" Grid.Column="0" Grid.Row="1"/>
                     <Picker x:Name="PickerSingerType" ItemsSource="{Binding SingerTypes}" Grid.Row="1" SelectedItem="{Binding SingerType}" Grid.Column="1" />
                 </VerticalStackLayout>
 
@@ -136,34 +137,34 @@
 
             <!-- 第4页-确认安装信息 -->
             <Grid Padding="10" RowDefinitions="80,*,80,120">
-                <Label Text="安装信息摘要" Grid.Row="0" />
+                <Label Text="{Static res:AppResources.InstallationSummary}" Grid.Row="0" />
                 <Border Grid.Row="1" StrokeShape="RoundRectangle 10">
                     <ScrollView>
                         <VerticalStackLayout>
                             <Grid RowDefinitions="50,.5">
                                 <Grid ColumnDefinitions="Auto, *" Margin="15,5">
-                                    <Label Text="歌手名称"/>
+                                    <Label Text="{Static res:AppResources.SingerNameText}"/>
                                     <Label Text="{Binding VoicebankConfig.Name}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
                                 </Grid>
                                 <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                             </Grid>
                             <Grid RowDefinitions="50,.5">
                                 <Grid ColumnDefinitions="Auto, *" Margin="15,5">
-                                    <Label Text="歌手类型"/>
+                                    <Label Text="{Static res:AppResources.SingerTypeText}"/>
                                     <Label Text="{Binding SingerType}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
                                 </Grid>
                                 <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                             </Grid>
                             <Grid RowDefinitions="50,.5">
                                 <Grid ColumnDefinitions="Auto, *" Margin="15,5">
-                                    <Label Text="安装目录"/>
+                                    <Label Text="{Static res:AppResources.InstallationDirectoryText}"/>
                                     <Label LineBreakMode="MiddleTruncation" Text="{Binding InstallPath}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
                                 </Grid>
                                 <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                             </Grid>
                             <Grid RowDefinitions="50,.5">
                                 <Grid ColumnDefinitions="Auto, *" Margin="15,5">
-                                    <Label Text="安装大小"/>
+                                    <Label Text="{Static res:AppResources.InstallationSizeText}"/>
                                     <Label Text="{Binding InstallSize}" Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center"/>
                                 </Grid>
                                 <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
@@ -171,7 +172,7 @@
                         </VerticalStackLayout>
                     </ScrollView>
                 </Border>
-                <Button x:Name="ButtonBeginInstall" Margin="10" CornerRadius="10" Text="开始安装" Grid.Row="2" Clicked="ButtonBeginInstall_Clicked"/>
+                <Button x:Name="ButtonBeginInstall" Margin="10" CornerRadius="10" Text="{Static res:AppResources.Install}" Grid.Row="2" Clicked="ButtonBeginInstall_Clicked"/>
             </Grid>
             
             <!-- 第5页-安装过程 -->
@@ -179,7 +180,7 @@
 
                 <VerticalStackLayout Grid.Row="0" VerticalOptions="Center" Margin="20" Spacing="10">
 
-                    <Label Text="安装中" FontSize="30"/>
+                    <Label Text="{Static res:AppResources.InstallingText}" FontSize="30"/>
                     <Grid ColumnDefinitions="Auto, *, 100">
 
                         <Label Grid.Column="0" Text="解压条目：" />
@@ -193,8 +194,8 @@
             <!-- 第6页-安装结果 -->
             <Grid RowDefinitions="*,120">
                 <VerticalStackLayout VerticalOptions="Center" Spacing="50">
-                    <Label Text="安装完成" HorizontalTextAlignment="Center" FontSize="30"/>
-                    <Button Text="返回" x:Name="ButtonFinish" Clicked="ButtonFinish_Clicked" Margin="10" CornerRadius="10"/>
+                    <Label Text="{Static res:AppResources.InstallationComplete}" HorizontalTextAlignment="Center" FontSize="30"/>
+                    <Button Text="{Static res:AppResources.BackText}" x:Name="ButtonFinish" Clicked="ButtonFinish_Clicked" Margin="10" CornerRadius="10"/>
                 </VerticalStackLayout>
 
             </Grid>

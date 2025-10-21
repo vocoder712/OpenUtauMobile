@@ -34,7 +34,7 @@
                 <ScrollView>
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding RecentProjectsPaths}" x:DataType="vm:HomePageViewModel">
                         <BindableLayout.EmptyView>
-                            <Label Text="这里还没有打开过的工程" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Static res:AppResources.NoProjectsOpened}" HorizontalTextAlignment="Center"/>
                         </BindableLayout.EmptyView>
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="x:String">

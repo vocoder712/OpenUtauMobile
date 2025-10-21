@@ -1,6 +1,7 @@
-using CommunityToolkit.Maui.Alerts;
+锘縰sing CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using OpenUtauMobile.ViewModels;
+using OpenUtauMobile.Resources.Strings;
 using Serilog;
 
 namespace OpenUtauMobile.Views;
@@ -98,12 +99,12 @@ public partial class SettingsPage : ContentPage
         try
         {
             Viewmodel.Save();
-            Toast.Make("设置已保存", ToastDuration.Short).Show();
+            Toast.Make(AppResources.SettingsSavedToast, ToastDuration.Short).Show();
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "保存设置时出现未处理异常");
-            Toast.Make("保存设置时出现错误", ToastDuration.Short).Show();
+            Log.Error(ex, "淇濆瓨璁剧疆鏃跺嚭鐜版湭澶勭悊寮傚父");
+            Toast.Make(AppResources.SettingsSaveErrorToast, ToastDuration.Short).Show();
         }
     }
 

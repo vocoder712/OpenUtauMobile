@@ -1,7 +1,8 @@
-using CommunityToolkit.Maui.Alerts;
+ï»¿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Messaging;
 using OpenUtau.Core;
+using OpenUtauMobile.Resources.Strings;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.ViewModels.Messages;
 using OpenUtauMobile.Views.Controls;
@@ -13,7 +14,7 @@ public partial class InstallVogenSingerPage : ContentPage
 {
     private InstallVogenSingerViewModel ViewModel { get; }
 
-    private bool _isExit = false; // ÍË³ö±êÖ¾
+    private bool _isExit = false; // é€€å‡ºæ ‡å¿—
     private List<View> StepViews { get; set; } = [];
     private int _currentStep = 0;
 
@@ -29,7 +30,7 @@ public partial class InstallVogenSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ·µ»Ø°´Å¥µã»÷ÊÂ¼ş
+    /// è¿”å›æŒ‰é’®ç‚¹å‡»äº‹ä»¶
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -40,7 +41,7 @@ public partial class InstallVogenSingerPage : ContentPage
 
 
     /// <summary>
-    /// ²½ÖèÊÓÍ¼Ìí¼Óµ½ÁĞ±í
+    /// æ­¥éª¤è§†å›¾æ·»åŠ åˆ°åˆ—è¡¨
     /// </summary>
     private void InitializeStepViews()
     {
@@ -54,7 +55,7 @@ public partial class InstallVogenSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ¸üĞÂ²½ÖèÊÓÍ¼µÄ¿É¼ûĞÔ
+    /// æ›´æ–°æ­¥éª¤è§†å›¾çš„å¯è§æ€§
     /// </summary>
     private void UpdateStepViews()
     {
@@ -66,19 +67,19 @@ public partial class InstallVogenSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ·µ»Ø°´Å¥°´ÏÂÊÂ¼ş
+    /// è¿”å›æŒ‰é’®æŒ‰ä¸‹äº‹ä»¶
     /// </summary>
     /// <returns></returns>
     protected override bool OnBackButtonPressed()
     {
-        if (_currentStep >= 2) // °²×°Íê³ÉºóÖ±½Ó·µ»Ø
+        if (_currentStep >= 2) // å®‰è£…å®Œæˆåç›´æ¥è¿”å›
         {
             return base.OnBackButtonPressed();
         }
         if (_isExit)
         {
             Navigation.PopModalAsync();
-            Toast.Make("°²×°ÒÑÈ¡Ïû£¡", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            Toast.Make(AppResources.InstallationCancelledToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
             return false;
         }
         else
@@ -87,11 +88,11 @@ public partial class InstallVogenSingerPage : ContentPage
 
             Task.Run(async () =>
             {
-                await Task.Delay(2000); // 2Ãë
+                await Task.Delay(2000); // 2ç§’
                 _isExit = false;
             });
 
-            Toast.Make("ÔÙ´Î²Ù×÷ÒÔÈ¡Ïû¸èÊÖ°²×°", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show(); // toastÏÔÊ¾ÌáÊ¾
+            Toast.Make(AppResources.ConfirmCancelSingerInstallToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show(); // toastæ˜¾ç¤ºæç¤º
         }
 
         return true;
@@ -107,7 +108,7 @@ public partial class InstallVogenSingerPage : ContentPage
         _currentStep++;
         UpdateStepViews();
 
-        // ´ı½â¾ö£º¶Ïµãµ½´ïÕâÀïÊ±£¬Ã»ÓĞ¸üĞÂÒ³Ãæ¿É¼ûĞÔ£¬°²×°½ø¶ÈÎŞ·¨Õ¹Ê¾
+        // å¾…è§£å†³ï¼šæ–­ç‚¹åˆ°è¾¾è¿™é‡Œæ—¶ï¼Œæ²¡æœ‰æ›´æ–°é¡µé¢å¯è§æ€§ï¼Œå®‰è£…è¿›åº¦æ— æ³•å±•ç¤º
 
         Task.Run(() =>
         {
@@ -117,13 +118,13 @@ public partial class InstallVogenSingerPage : ContentPage
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Éù¿â°²×°Ê§°Ü£¡");
+                Log.Error(ex, "å£°åº“å®‰è£…å¤±è´¥ï¼");
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
             }
         }).ContinueWith(task => MainThread.InvokeOnMainThreadAsync(() =>
         {
             DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
-            Toast.Make("°²×°Íê³É£¡", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            Toast.Make(AppResources.InstallationComplete, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
             _currentStep++;
             UpdateStepViews();
         }));

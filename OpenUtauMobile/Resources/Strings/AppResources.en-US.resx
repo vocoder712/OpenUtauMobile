@@ -208,7 +208,7 @@
     <value>Settings</value>
   </data>
   <data name="SingerManage" xml:space="preserve">
-    <value>Singer Manage</value>
+    <value>Manage Singers</value>
   </data>
   <data name="Singers" xml:space="preserve">
     <value>Singers</value>
@@ -221,5 +221,215 @@
   </data>
   <data name="WrongFileTypeToast" xml:space="preserve">
     <value>Please select a valid file *{0}</value>
+  </data>
+  <data name="OpenUtauMobileVersion" xml:space="preserve">
+    <value>OpenUtau Mobile version</value>
+  </data>
+  <data name="OpenUtauCoreVersion" xml:space="preserve">
+    <value>OpenUtau Core version</value>
+  </data>
+  <data name="GitHubSuggestionsText" xml:space="preserve">
+    <value>Head over to GitHub to suggest improvements, contribute code, or give the project a star.</value>
+  </data>
+  <data name="HelpGetBetterText" xml:space="preserve">
+    <value>Help make OpenUtau Mobile better!</value>
+  </data>
+  <data name="NoProjectsOpened" xml:space="preserve">
+    <value>No projects have been opened yet.</value>
+  </data>
+  <data name="SingerSetupWizard" xml:space="preserve">
+    <value>Singer Setup Wizard</value>
+  </data>
+  <data name="CompressionEncodingMethodPrompt" xml:space="preserve">
+    <value>Please select the compression file encoding method to ensure the text on the right displays correctly.</value>
+  </data>
+  <data name="TextEncodingMethodPrompt" xml:space="preserve">
+    <value>Please select the text encoding method to ensure the text on the right displays correctly.</value>
+  </data>
+  <data name="SingerInformationMissing" xml:space="preserve">
+    <value>Singer information is missing. Please select the singer type:</value>
+  </data>
+  <data name="InstallationSummary" xml:space="preserve">
+    <value>Installation Summary</value>
+  </data>
+  <data name="SingerNameText" xml:space="preserve">
+    <value>Singer Name</value>
+  </data>
+  <data name="SingerTypeText" xml:space="preserve">
+    <value>Singer Type</value>
+  </data>
+  <data name="InstallationDirectoryText" xml:space="preserve">
+    <value>Installation Directory</value>
+  </data>
+  <data name="InstallationSizeText" xml:space="preserve">
+    <value>Installation Size</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="InstallingText" xml:space="preserve">
+    <value>Installing...</value>
+  </data>
+  <data name="InstallationComplete" xml:space="preserve">
+    <value>Installation complete!</value>
+  </data>
+  <data name="BackText" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Author:</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version:</value>
+  </data>
+  <data name="InstallationPath" xml:space="preserve">
+    <value>Installation Path:</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website:</value>
+  </data>
+  <data name="VogenSingerSetupWizard" xml:space="preserve">
+    <value>Vogen Singer Setup Wizard</value>
+  </data>
+  <data name="VogenSingerInstalledSoon" xml:space="preserve">
+    <value>Vogen Singer will be installed soon...</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="AutomaticPageTurning" xml:space="preserve">
+    <value>Automatic Page Turning</value>
+  </data>
+  <data name="CancelText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="SaveText" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="PlaybackRefreshRate" xml:space="preserve">
+    <value>Playback refresh rate</value>
+  </data>
+  <data name="PitchDisplayPrecision" xml:space="preserve">
+    <value>Pitch display precision</value>
+  </data>
+  <data name="DisplaySingerPortrait" xml:space="preserve">
+    <value>Display Singer Portrait</value>
+  </data>
+  <data name="GlobalPortraitTransparency" xml:space="preserve">
+    <value>Global Portrait Transparency</value>
+  </data>
+  <data name="Transparency" xml:space="preserve">
+    <value>Transparency</value>
+  </data>
+  <data name="KeepScreenOn" xml:space="preserve">
+    <value>Keep screen on</value>
+  </data>
+  <data name="OnPianoClick" xml:space="preserve">
+    <value>On piano click</value>
+  </data>
+  <data name="OutputDevice" xml:space="preserve">
+    <value>Output device</value>
+  </data>
+  <data name="PreRender" xml:space="preserve">
+    <value>Pre-render</value>
+  </data>
+  <data name="DontRenderMutedTracks" xml:space="preserve">
+    <value>Do not render muted tracks</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="AutomaticPageTurningTooltip" xml:space="preserve">
+    <value>If enabled, the page will automatically turn when the playback pointer reaches the right edge of the page.</value>
+  </data>
+  <data name="PlaybackRefreshRateTooltip" xml:space="preserve">
+    <value>Set the refresh rate for the playback pointer, ranging from 1 to 60 FPS. Adjust this setting based on your device's performance. Excessively high refresh rates may cause stuttering. Changes to this setting take effect after reopening the editing page.</value>
+  </data>
+  <data name="PitchDisplayPrecisionTooltip" xml:space="preserve">
+    <value>Higher precision can more accurately depict actual pitch, but may lead to performance issues.</value>
+  </data>
+  <data name="DisplaySingerPortraitTooltip" xml:space="preserve">
+    <value>Upon enabling, the singer's portrait will appear in the piano roll.</value>
+  </data>
+  <data name="GlobalPortraitTransparencyTooltip" xml:space="preserve">
+    <value>Enable this option to override the transparency presets for all artist portraits.</value>
+  </data>
+  <data name="KeepScreenOnTooltip" xml:space="preserve">
+    <value>After enabling, the screen will remain on when editing.</value>
+  </data>
+  <data name="OnPianoClickTooltip" xml:space="preserve">
+    <value>Set the behavior for clicking the keys on the left side of the piano roll</value>
+  </data>
+  <data name="OutputDeviceTooltip" xml:space="preserve">
+    <value>Android: view only, can't edit.</value>
+  </data>
+  <data name="PreRenderTooltip" xml:space="preserve">
+    <value>Pre-render audio in the background before playback.</value>
+  </data>
+  <data name="DontRenderMutedTracksTooltip" xml:space="preserve">
+    <value>Skip muted tracks during rendering.</value>
+  </data>
+  <data name="ThemeTooltip" xml:space="preserve">
+    <value>Dark or light theme</value>
+  </data>
+  <data name="SettingsSavedToast" xml:space="preserve">
+    <value>Settings saved!</value>
+  </data>
+  <data name="SettingsSaveErrorToast" xml:space="preserve">
+    <value>An error occurred while saving settings.</value>
+  </data>
+  <data name="AIProcessing" xml:space="preserve">
+    <value>AI is processing...</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>Abort</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="RenamePart" xml:space="preserve">
+    <value>Rename Part</value>
+  </data>
+  <data name="PianoRollQuantization" xml:space="preserve">
+    <value>Piano Roll Quantization</value>
+  </data>
+  <data name="LoadPitchRenderingResult" xml:space="preserve">
+    <value>Load Pitch Rendering Result</value>
+  </data>
+  <data name="LoadPitchRenderingResultPrompt" xml:space="preserve">
+    <value>Retrieve the renderer's recommended pitch curve. However, the rendered result will overwrite existing pitch data. Proceed?</value>
+  </data>
+  <data name="RenameTrack" xml:space="preserve">
+    <value>Rename Track</value>
+  </data>
+  <data name="RemoveSinger" xml:space="preserve">
+    <value>Remove Singer</value>
+  </data>
+  <data name="RemoveSingerPrompt" xml:space="preserve">
+    <value>Are you sure you want to remove singer {0}?</value>
+  </data>
+  <data name="RemovingSingerToast" xml:space="preserve">
+    <value>Removing singer {0}...</value>
+  </data>
+  <data name="RemoveSingerSuccessToast" xml:space="preserve">
+    <value>Successfully removed singer {0}</value>
+  </data>
+  <data name="RemoveSingerFailureToast" xml:space="preserve">
+    <value>Failed to remove singer {0}</value>
+  </data>
+  <data name="IncorrectProjectFileToast" xml:space="preserve">
+    <value>Please select the correct project file.</value>
+  </data>
+  <data name="InstallationCancelledToast" xml:space="preserve">
+    <value>Installation cancelled!</value>
+  </data>
+  <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
+    <value>Press back again to cancel the singer installation.</value>
   </data>
 </root>

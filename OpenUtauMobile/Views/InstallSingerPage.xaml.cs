@@ -1,7 +1,8 @@
-using CommunityToolkit.Maui.Alerts;
+ï»¿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Messaging;
 using OpenUtau.Core;
+using OpenUtauMobile.Resources.Strings;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.ViewModels.Messages;
 using OpenUtauMobile.Views.Controls;
@@ -13,7 +14,7 @@ public partial class InstallSingerPage : ContentPage
 {
     private InstallSingerViewModel _viewModel;
 
-    private bool _isExit = false; // ÍË³ö±êÖ¾
+    private bool _isExit = false; // é€€å‡ºæ ‡å¿—
     private List<View> StepViews { get; set; } = [];
     private int _currentStep = 0;
 
@@ -29,7 +30,7 @@ public partial class InstallSingerPage : ContentPage
 
         //WeakReferenceMessenger.Default.Register<SimpleMessage>(this, async (sender, message) =>
         //{
-        //    var popup = new SimplePopup("¾¯¸æ", message.Value, new Dictionary<string, string> { { "ok", "È·¶¨" } });
+        //    var popup = new SimplePopup("è­¦å‘Š", message.Value, new Dictionary<string, string> { { "ok", "ç¡®å®š" } });
         //    object? result = await MainThread.InvokeOnMainThreadAsync(() => this.ShowPopupAsync(popup));
 
         //    if (result is string action && action == "ok")
@@ -42,11 +43,11 @@ public partial class InstallSingerPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        Task.Run(() => { _viewModel.Init(); }); // ´ı½â¾ö
+        Task.Run(() => { _viewModel.Init(); }); // å¾…è§£å†³
     }
 
     /// <summary>
-    /// ·µ»Ø°´Å¥µã»÷ÊÂ¼ş
+    /// è¿”å›æŒ‰é’®ç‚¹å‡»äº‹ä»¶
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -56,7 +57,7 @@ public partial class InstallSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ÉÏÒ»²½°´Å¥µã»÷ÊÂ¼ş
+    /// ä¸Šä¸€æ­¥æŒ‰é’®ç‚¹å‡»äº‹ä»¶
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -75,7 +76,7 @@ public partial class InstallSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ÏÂÒ»²½°´Å¥µã»÷ÊÂ¼ş
+    /// ä¸‹ä¸€æ­¥æŒ‰é’®ç‚¹å‡»äº‹ä»¶
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -94,7 +95,7 @@ public partial class InstallSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ²½ÖèÊÓÍ¼Ìí¼Óµ½ÁĞ±í
+    /// æ­¥éª¤è§†å›¾æ·»åŠ åˆ°åˆ—è¡¨
     /// </summary>
     private void InitializeStepViews()
     {
@@ -108,7 +109,7 @@ public partial class InstallSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ¸üĞÂ²½ÖèÊÓÍ¼µÄ¿É¼ûĞÔ
+    /// æ›´æ–°æ­¥éª¤è§†å›¾çš„å¯è§æ€§
     /// </summary>
     private void UpdateStepViews()
     {
@@ -121,7 +122,7 @@ public partial class InstallSingerPage : ContentPage
 
     private void UpdateStepButton()
     {
-        // ÉÏÒ»²½°´Å¥¿É¼ûĞÔ
+        // ä¸Šä¸€æ­¥æŒ‰é’®å¯è§æ€§
         if (_currentStep >= 1 && _currentStep <= 3)
         {
             ButtonBackStep.IsVisible = true;
@@ -130,7 +131,7 @@ public partial class InstallSingerPage : ContentPage
         {
             ButtonBackStep.IsVisible = false;
         }
-        // ÏÂÒ»²½°´Å¥¿É¼ûĞÔ
+        // ä¸‹ä¸€æ­¥æŒ‰é’®å¯è§æ€§
         if (_currentStep <= 2)
         {
             ButtonNextStep.IsVisible = true;
@@ -142,19 +143,19 @@ public partial class InstallSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ·µ»Ø°´Å¥°´ÏÂÊÂ¼ş
+    /// è¿”å›æŒ‰é’®æŒ‰ä¸‹äº‹ä»¶
     /// </summary>
     /// <returns></returns>
     protected override bool OnBackButtonPressed()
     {
-        if (_currentStep >= 5) // °²×°Íê³ÉºóÖ±½Ó·µ»Ø
+        if (_currentStep >= 5) // å®‰è£…å®Œæˆåç›´æ¥è¿”å›
         {
             return base.OnBackButtonPressed();
         }
         if (_isExit)
         {
             Navigation.PopModalAsync();
-            Toast.Make("°²×°ÒÑÈ¡Ïû£¡", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            Toast.Make(AppResources.InstallationCancelledToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
             return false;
         }
         else
@@ -163,11 +164,11 @@ public partial class InstallSingerPage : ContentPage
 
             Task.Run(async () =>
             {
-                await Task.Delay(2000); // 2Ãë
+                await Task.Delay(2000); // 2ç§’
                 _isExit = false;
             });
 
-            Toast.Make("ÔÙ´Î²Ù×÷ÒÔÈ¡Ïû¸èÊÖ°²×°", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show(); // toastÏÔÊ¾ÌáÊ¾
+            Toast.Make(AppResources.ConfirmCancelSingerInstallToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show(); // toastæ˜¾ç¤ºæç¤º
         }
 
         return true;
@@ -192,7 +193,7 @@ public partial class InstallSingerPage : ContentPage
     }
 
     /// <summary>
-    /// ¿ªÊ¼°²×°°´Å¥µã»÷ÊÂ¼ş
+    /// å¼€å§‹å®‰è£…æŒ‰é’®ç‚¹å‡»äº‹ä»¶
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
@@ -210,13 +211,13 @@ public partial class InstallSingerPage : ContentPage
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Éù¿â°²×°Ê§°Ü£¡");
+                Log.Error(ex, "å£°åº“å®‰è£…å¤±è´¥ï¼");
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
             }
         }).ContinueWith(task => MainThread.InvokeOnMainThreadAsync(() =>
         {
             DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
-            Toast.Make("°²×°Íê³É£¡", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            Toast.Make(AppResources.InstallationComplete, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
             _currentStep++;
             UpdateStepViews();
             UpdateStepButton();

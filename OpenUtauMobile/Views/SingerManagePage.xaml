@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="OpenUtauMobile.Views.SingerManagePage"
@@ -7,7 +7,7 @@
              xmlns:ustx="clr-namespace:OpenUtau.Core.Ustx;assembly=OpenUtau.Core"
              xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
              xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
-             Title="歌手管理">
+             Title="SingerManagePage">
     <ContentPage.BindingContext>
         <vm:SingerManageViewModel />
     </ContentPage.BindingContext>
@@ -28,7 +28,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
-            <Label Text="歌手管理" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            <Label Text="{Static res:AppResources.SingerManage}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
         </Grid>
 
         <!-- 页面内容 -->
@@ -53,7 +53,7 @@
                                         <Grid Grid.Column="2" RowDefinitions="40, 20" Margin="10,5,5,15">
                                             <Label Grid.Row="0" Text="{Binding LocalizedName}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
                                             <HorizontalStackLayout Grid.Row="1" >
-                                                <Label Text="ID：" FontSize="15" HorizontalOptions="Start" VerticalTextAlignment="Center"  />
+                                                <Label Text="ID:" FontSize="15" HorizontalOptions="Start" VerticalTextAlignment="Center"  />
                                                 <Label Text="{Binding Id}" FontSize="15" HorizontalOptions="Start" VerticalTextAlignment="Center" />
                                             </HorizontalStackLayout>
                                         </Grid>

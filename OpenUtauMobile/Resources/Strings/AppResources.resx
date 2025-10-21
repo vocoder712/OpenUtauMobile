@@ -222,4 +222,214 @@
   <data name="WrongFileTypeToast" xml:space="preserve">
     <value>请选择正确的文件 *{0}</value>
   </data>
+  <data name="OpenUtauMobileVersion" xml:space="preserve">
+    <value>OpenUtau Mobile 版本</value>
+  </data>
+  <data name="OpenUtauCoreVersion" xml:space="preserve">
+    <value>OpenUtau 内核版本</value>
+  </data>
+  <data name="GitHubSuggestionsText" xml:space="preserve">
+    <value>去 GitHub 给项目提建议、贡献代码或者给个星标吧</value>
+  </data>
+  <data name="HelpGetBetterText" xml:space="preserve">
+    <value>帮助 OpenUtau Mobile 变得更好</value>
+  </data>
+  <data name="NoProjectsOpened" xml:space="preserve">
+    <value>这里还没有打开过的工程</value>
+  </data>
+  <data name="SingerSetupWizard" xml:space="preserve">
+    <value>歌手安装向导</value>
+  </data>
+  <data name="CompressionEncodingMethodPrompt" xml:space="preserve">
+    <value>请选择一种 压缩包 编码方式，使得右侧文字显示正常</value>
+  </data>
+  <data name="TextEncodingMethodPrompt" xml:space="preserve">
+    <value>请选择一种 文本 编码方式，使得右侧文字显示正常</value>
+  </data>
+  <data name="SingerInformationMissing" xml:space="preserve">
+    <value>歌手信息缺失，请选择歌手类型：</value>
+  </data>
+  <data name="InstallationSummary" xml:space="preserve">
+    <value>安装信息摘要</value>
+  </data>
+  <data name="SingerNameText" xml:space="preserve">
+    <value>歌手名称</value>
+  </data>
+  <data name="SingerTypeText" xml:space="preserve">
+    <value>歌手类型</value>
+  </data>
+  <data name="InstallationDirectoryText" xml:space="preserve">
+    <value>安装目录</value>
+  </data>
+  <data name="InstallationSizeText" xml:space="preserve">
+    <value>安装大小</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>开始安装</value>
+  </data>
+  <data name="InstallingText" xml:space="preserve">
+    <value>安装中</value>
+  </data>
+  <data name="InstallationComplete" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="BackText" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>作者</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>版本：</value>
+  </data>
+  <data name="InstallationPath" xml:space="preserve">
+    <value>安装路径：</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>网站：</value>
+  </data>
+  <data name="VogenSingerSetupWizard" xml:space="preserve">
+    <value>Vogen歌手安装向导</value>
+  </data>
+  <data name="VogenSingerInstalledSoon" xml:space="preserve">
+    <value>即将安装Vogen歌手</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="AutomaticPageTurning" xml:space="preserve">
+    <value>走带自动翻页</value>
+  </data>
+  <data name="CancelText" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="SaveText" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="PlaybackRefreshRate" xml:space="preserve">
+    <value>回放刷新率</value>
+  </data>
+  <data name="PitchDisplayPrecision" xml:space="preserve">
+    <value>音高线显示精度</value>
+  </data>
+  <data name="DisplaySingerPortrait" xml:space="preserve">
+    <value>显示歌手立绘</value>
+  </data>
+  <data name="GlobalPortraitTransparency" xml:space="preserve">
+    <value>全局立绘透明度</value>
+  </data>
+  <data name="Transparency" xml:space="preserve">
+    <value>透明度</value>
+  </data>
+  <data name="KeepScreenOn" xml:space="preserve">
+    <value>保持屏幕常亮</value>
+  </data>
+  <data name="OnPianoClick" xml:space="preserve">
+    <value>点击钢琴键时</value>
+  </data>
+  <data name="OutputDevice" xml:space="preserve">
+    <value>输出设备</value>
+  </data>
+  <data name="PreRender" xml:space="preserve">
+    <value>预渲染</value>
+  </data>
+  <data name="DontRenderMutedTracks" xml:space="preserve">
+    <value>不渲染静音的轨道</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="AutomaticPageTurningTooltip" xml:space="preserve">
+    <value>若打开，将在播放指针到达页面右侧时自动翻页</value>
+  </data>
+  <data name="PlaybackRefreshRateTooltip" xml:space="preserve">
+    <value>设置更新播放指针的频率，1 ~ 60 FPS。请根据设备性能调整。过大的刷新率可能导致卡顿。更改此项设置后，重新打开编辑页面生效。</value>
+  </data>
+  <data name="PitchDisplayPrecisionTooltip" xml:space="preserve">
+    <value>更高的精度更能准确刻画实际音高，但可能导致性能问题。</value>
+  </data>
+  <data name="DisplaySingerPortraitTooltip" xml:space="preserve">
+    <value>打开后，将在钢琴卷帘中显示歌手的立绘。</value>
+  </data>
+  <data name="GlobalPortraitTransparencyTooltip" xml:space="preserve">
+    <value>打开该选项可覆盖所有歌手立绘透明度预设。</value>
+  </data>
+  <data name="KeepScreenOnTooltip" xml:space="preserve">
+    <value>打开后，将在编辑页面中保持屏幕常亮。</value>
+  </data>
+  <data name="OnPianoClickTooltip" xml:space="preserve">
+    <value>设置点击钢琴卷帘左侧琴键的行为</value>
+  </data>
+  <data name="OutputDeviceTooltip" xml:space="preserve">
+    <value>Android只能看不能改</value>
+  </data>
+  <data name="PreRenderTooltip" xml:space="preserve">
+    <value>在回放前后台预渲染音频。</value>
+  </data>
+  <data name="DontRenderMutedTracksTooltip" xml:space="preserve">
+    <value>渲染时跳过静音的轨道。</value>
+  </data>
+  <data name="ThemeTooltip" xml:space="preserve">
+    <value>深色或浅色主题</value>
+  </data>
+  <data name="SettingsSavedToast" xml:space="preserve">
+    <value>设置已保存</value>
+  </data>
+  <data name="SettingsSaveErrorToast" xml:space="preserve">
+    <value>保存设置时出现错误</value>
+  </data>
+  <data name="AIProcessing" xml:space="preserve">
+    <value>AI正在推理...</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>中止</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>已保存</value>
+  </data>
+  <data name="RenamePart" xml:space="preserve">
+    <value>重命名分片</value>
+  </data>
+  <data name="PianoRollQuantization" xml:space="preserve">
+    <value>钢琴卷帘量化</value>
+  </data>
+  <data name="LoadPitchRenderingResult" xml:space="preserve">
+    <value>加载音高渲染结果</value>
+  </data>
+  <data name="LoadPitchRenderingResultPrompt" xml:space="preserve">
+    <value>获取渲染器推荐音高曲线。但渲染结果会覆盖已有音高数据，是否继续？</value>
+  </data>
+  <data name="RenameTrack" xml:space="preserve">
+    <value>重命名音轨</value>
+  </data>
+  <data name="RemoveSinger" xml:space="preserve">
+    <value>卸载歌手</value>
+  </data>
+  <data name="RemoveSingerPrompt" xml:space="preserve">
+    <value>确认要卸载歌手 {0} 吗？</value>
+  </data>
+  <data name="RemovingSingerToast" xml:space="preserve">
+    <value>正在卸载歌手 {0}...</value>
+  </data>
+  <data name="RemoveSingerSuccessToast" xml:space="preserve">
+    <value>成功卸载歌手 {0}</value>
+  </data>
+  <data name="RemoveSingerFailureToast" xml:space="preserve">
+    <value>卸载歌手 {0} 失败</value>
+  </data>
+  <data name="IncorrectProjectFileToast" xml:space="preserve">
+    <value>请选择正确的工程文件</value>
+  </data>
+  <data name="InstallationCancelledToast" xml:space="preserve">
+    <value>安装已取消！</value>
+  </data>
+  <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
+    <value>再次操作以取消歌手安装</value>
+  </data>
 </root>
