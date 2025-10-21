@@ -1,4 +1,5 @@
-﻿using DynamicData.Binding;
+﻿using DynamicData;
+using DynamicData.Binding;
 using NAudio.CoreAudioApi;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -81,7 +82,7 @@ namespace OpenUtauMobile.ViewModels
         /// <summary>
         /// 由SelectedNotes决定，请不要直接修改
         /// </summary>
-        [Reactive] public UNote? EditingNote { get; set; } = null; // 正在编辑的音符
+        [Reactive] public UNote? EditingNote { get; set; } = null; // 正在编辑的音符，用于将来的属性面板
         #region 走带量化相关
         [Reactive] public bool IsTrackSnapToGrid { get; set; } = true; // 走带是否启用对齐网格
         [Reactive] public int TrackSnapDiv { get; set; } = 4; // 走带网格吸附密度 1/x 小节
@@ -169,8 +170,6 @@ namespace OpenUtauMobile.ViewModels
         public DrawableNotes? EditingNotes { get; set; }
         [Reactive] public bool PlayPosWaitingRendering { get; set; } = false; // 等待渲染
         public double OriginalPan { get; internal set; }
-        //[Reactive] public ReactiveCommand<Unit, Unit> SwitchPianoRollSnapDivCommand { get; } // 切换钢琴卷帘量化单位命令
-        //[Reactive] public Interaction<int, int> PianoRollSnapDivInteraction { get; } = new(); // 请求UI层选择钢琴卷帘量化单位的交互
         [Reactive] public ObservableCollectionExtended<RunningWork> RunningWorks { get; set; } = []; // 正在运行的工作列表
         [Reactive] public UExpressionDescriptor PrimaryExpressionDescriptor { get; set; } = null!;
         [Reactive] public UExpressionDescriptor SecondaryExpressionDescriptor { get; set; } = null!;
@@ -310,18 +309,6 @@ namespace OpenUtauMobile.ViewModels
             {
                 HandleSelectedNotesChanged();
             };
-            // 切换钢琴卷帘量化单位命令
-            //SwitchPianoRollSnapDivCommand = ReactiveCommand.CreateFromTask(async () =>
-            //{
-            //    PianoRollSnapDiv = await PianoRollSnapDivInteraction.Handle(PianoRollSnapDiv);
-            //});
-            // 订阅表情变化
-            //this.WhenAnyValue(x => x.PrimaryExpressionDescriptor, x => x.SecondaryExpressionDescriptor)
-            //    .Subscribe(_ =>
-            //    {
-            //        PrimaryExpressionAbbr = PrimaryExpressionDescriptor.abbr;
-            //        SecondaryExpressionAbbr = SecondaryExpressionDescriptor.abbr;
-            //    });
         }
 
         public void UpdateIsShowRenderPitchButton()
@@ -344,30 +331,31 @@ namespace OpenUtauMobile.ViewModels
         }
         public void UpdatePianoRollExpBoundaries()
         {
-            //BoundPianoRoll = new Rect(0d, 0d, 1, DivExpPosY); // 高度为 DivExpPosY
             BoundExpDiv = new Rect(BoundExpDiv.X, DivExpPosY, BoundExpDiv.Width, BoundExpDiv.Height); // 上边界为 DivExpPosY
             BoundExp = new Rect(BoundExp.X, DivExpPosY + 50d, BoundExp.Width, MainEditHeight - DivExpPosY - 50d); // 上边界为 DivExpPosY + 拖拽间隔高度（50），高度为 TotalHeight - DivExpPosY - 50d
         }
 
         public void HandleSelectedNotesChanged()
         {
-            if (SelectedNotes.Count == 0)
+            // 检查一遍选中的音符是否已经被删除
+            SelectedNotes.RemoveMany([.. SelectedNotes
+                    .Where(note =>
+                    {
+                        if (EditingPart == null)
+                        {
+                            return true; // 如果没有正在编辑的分片，则音符一定是无效的
+                        }
+                        return !EditingPart.notes.Contains(note); // 如果音符不在正在编辑的分片中，则认为它是无效的
+                    })]);
+            if (SelectedNotes.Count == 0) // 没有选中任何音符
             {
                 EditingNote = null; // 清空正在编辑的音符
-                //EditingNotes = null; // 清空正在编辑的音符组
                 IsShowRemoveNoteButton = false; // 不显示删除音符按钮
             }
             else
             {
                 EditingNote = SelectedNotes[0]; // 设置正在编辑的音符为第一个选中的音符
                 IsShowRemoveNoteButton = true; // 显示删除音符按钮
-                if (EditingPart != null)
-                {
-                    // 创建一个新的 DrawableNotes 对象用于编辑
-                    // 这里有问题，待解决
-                    Log.Warning("触发异常点");
-                    //EditingNotes = new DrawableNotes(null!, EditingPart, this, SKColors.Orange);
-                }
             }
         }
 
@@ -846,11 +834,10 @@ namespace OpenUtauMobile.ViewModels
                     note.lyric = "lu";
                     // 清除选中的音符
                     SelectedNotes.Clear();
-                    SelectedNotes.Add(note);
                     // 启动一个撤销组
                     DocManager.Inst.StartUndoGroup();
-
                     DocManager.Inst.ExecuteCmd(new AddNoteCommand(voicePart, note));
+                    SelectedNotes.Add(note);
                 }
             }
             catch (Exception ex)
@@ -1035,9 +1022,7 @@ namespace OpenUtauMobile.ViewModels
             }
             _startMoveNotesPosition = sKPoint; // 记录开始拖动音符时的起始位置
             IsMovingNotes = true; // 标记正在移动音符
-            //_originalPositions = SelectedNotes.Select(note => note.position).ToList(); // 记录调整开始时的音符原始位置
             _originalPosition = SelectedNotes[0].position; // 记录调整开始时的第一个音符原始位置
-            //_originalNoteTones = SelectedNotes.Select(note => note.tone).ToList(); // 记录调整开始时的音符原始音高
             _startMoveNoteToneReversed = (int)Math.Floor(sKPoint.Y / Density / HeightPerPianoKey);
             _offsetPosition = 0; // 重置位置偏移量
             _offsetTone = 0; // 重置音高偏移量

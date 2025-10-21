@@ -323,7 +323,6 @@ namespace OpenUtauMobile.Views.Utils
         }
         private float InvalidateZoomX(float value)
         {
-            Debug.WriteLine($"当前ZoomX限制：minZoomX {MinZoomX} maxZoomX {MaxZoomX} value {value}");
             return Math.Clamp(value, MinZoomX, MaxZoomX);
         }
         private float InvalidateZoomY(float value)

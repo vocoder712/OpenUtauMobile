@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /OpenUtauMobile/Platforms/Android/Lib/x86/libworldline.so
+/OpenUtauMobile/XieYimin3.keystore
+/OpenUtauMobile/signing.props

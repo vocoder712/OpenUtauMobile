@@ -367,7 +367,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     {
                         if (part.IsPointInside(_viewModel.TrackTransformer.ActualToLogical(e.Position)))
                         {
-                            //Debug.WriteLine($"点击了可编辑对象: {part.Part.DisplayName}");
                             if (_viewModel.SelectedParts.Contains(part.Part))
                             {
                                 // 如果已经选中，更新播放指针
@@ -376,6 +375,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                             }
                             _viewModel.SelectedParts.Clear(); // 清空当前选中状态，改为单选
                             _viewModel.SelectedParts.Add(part.Part); // 添加当前点击的分片
+                            _viewModel.HandleSelectedNotesChanged();
                             TrackCanvas.InvalidateSurface();
                             PianoRollCanvas.InvalidateSurface();
                             PianoRollPitchCanvas.InvalidateSurface();
@@ -396,14 +396,17 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     {
                         if (part.IsPointInside(_viewModel.TrackTransformer.ActualToLogical(e.Position)))
                         {
-                            Debug.WriteLine($"点击了可编辑对象: {part.Part.DisplayName}");
+                            Debug.WriteLine($"点击了Part: {part.Part.DisplayName}");
                             if (_viewModel.SelectedParts.Contains(part.Part))
                             {
-                                // 如果已经选中，返回
-                                Debug.WriteLine("已经选中，返回");
-                                return;
+                                // 如果已经选中，取消选中
+                                _viewModel.SelectedParts.Remove(part.Part);
                             }
-                            _viewModel.SelectedParts.Add(part.Part); // 添加当前点击的分片
+                            else
+                            {
+                                _viewModel.SelectedParts.Add(part.Part); // 添加当前点击的分片
+                            }
+                            _viewModel.HandleSelectedNotesChanged();
                             TrackCanvas.InvalidateSurface();
                             PianoRollCanvas.InvalidateSurface();
                             PianoRollPitchCanvas.InvalidateSurface();
@@ -798,6 +801,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _pianoRollGestureProcessor.ZoomUpdate += (sender, e) =>
             {
                 _viewModel.PianoRollTransformer.UpdateZoom(e.Point1, e.Point2);
+                UpdatePianoRollCanvasPanLimit();
             };
         // 订阅X轴缩放开始事件
         _pianoRollGestureProcessor.XZoomStart += (sender, e) =>
@@ -808,6 +812,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _pianoRollGestureProcessor.XZoomUpdate += (sender, e) =>
             {
                 _viewModel.PianoRollTransformer.UpdateXZoom(e.Point1, e.Point2);
+                UpdatePianoRollCanvasPanLimit();
             };
         // 订阅Y轴缩放开始事件
         _pianoRollGestureProcessor.YZoomStart += (sender, e) =>
@@ -818,6 +823,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _pianoRollGestureProcessor.YZoomUpdate += (sender, e) =>
             {
                 _viewModel.PianoRollTransformer.UpdateYZoom(e.Point1, e.Point2);
+                UpdatePianoRollCanvasPanLimit();
             };
         #endregion
         #region 时间轴画布手势事件
@@ -1072,6 +1078,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
         else if (cmd is AddNoteCommand addNoteCommand)
         {
+            _viewModel.HandleSelectedNotesChanged();
             PianoRollCanvas.InvalidateSurface();
             TrackCanvas.InvalidateSurface(); // 重绘走带画布
             PianoRollPitchCanvas.InvalidateSurface();
@@ -1092,6 +1099,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         else if (cmd is MovePartCommand movePartCommand)
         {
             UpdateTrackCanvasPanLimit();
+            UpdatePianoRollCanvasPanLimit();
             TrackCanvas.InvalidateSurface(); // 重绘走带画布
             PianoRollCanvas.InvalidateSurface(); // 重绘钢琴卷帘画布
             PianoRollPitchCanvas.InvalidateSurface();
@@ -1105,6 +1113,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         else if (cmd is ResizePartCommand resizePartCommand)
         {
             UpdateTrackCanvasPanLimit();
+            UpdatePianoRollCanvasPanLimit();
             TrackCanvas.InvalidateSurface();
             PianoRollCanvas.InvalidateSurface(); // 重绘钢琴卷帘画布
             PianoRollTickBackgroundCanvas.InvalidateSurface();
@@ -1121,6 +1130,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             _viewModel.SelectedParts.Remove(removePartCommand.part);
             _viewModel.UpdateIsShowRenderPitchButton();
             UpdateTrackCanvasPanLimit();
+            UpdatePianoRollCanvasPanLimit();
             TrackCanvas.InvalidateSurface(); // 重绘走带画布
             PianoRollCanvas.InvalidateSurface(); // 重绘钢琴卷帘画布
             PianoRollPitchCanvas.InvalidateSurface();
@@ -1171,6 +1181,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
         else if (cmd is RemoveNoteCommand removeNoteCommand)
         {
+            _viewModel.HandleSelectedNotesChanged();
             PianoRollCanvas.InvalidateSurface();
             TrackCanvas.InvalidateSurface();
             PianoRollPitchCanvas.InvalidateSurface();
@@ -1363,6 +1374,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         float minY = (float)Math.Min((_viewModel.MainLayoutHeight - _viewModel.DivPosY - _viewModel.HeightPerPianoKey * ViewConstants.TotalPianoKeys) * _viewModel.Density, 0f);
         float maxY = 0f;
         _viewModel.PianoRollTransformer.SetPanLimit(minX, maxX, minY, maxY);
+        Debug.WriteLine($"PianoRoll PanLimit updated: minX={minX}, lastTick={lastTick}");
     }
 
     private void UpdateTrackCanvasZoomLimit()

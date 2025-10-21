@@ -36,10 +36,10 @@
         <Grid Grid.Row="1" x:Name="MainContentLayout">
 
             <!-- 第1页-选择压缩包编码方式 -->
-            <Grid Padding="10" RowDefinitions="80,*,100">
+            <Grid Padding="10" RowDefinitions="80,*,120">
 
                 <Label Text="{Static res:AppResources.CompressionEncodingMethodPrompt}" Grid.Row="0" />
-                <Border Grid.Row="1" BackgroundColor="LightGrey" StrokeShape="RoundRectangle 30">
+                <Border Grid.Row="1" BackgroundColor="#60808080" StrokeShape="RoundRectangle 20">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
@@ -76,10 +76,10 @@
             </Grid>
 
             <!-- 第2页-选择文本文件编码方式 -->
-            <Grid Padding="10" RowDefinitions="80,*,100">
+            <Grid Padding="10" RowDefinitions="80,*,120">
 
                 <Label Text="{Static res:AppResources.TextEncodingMethodPrompt}" Grid.Row="0" />
-                <Border Grid.Row="1" BackgroundColor="LightGrey" StrokeShape="RoundRectangle 30">
+                <Border Grid.Row="1" BackgroundColor="#60808080" StrokeShape="RoundRectangle 20">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*" />
@@ -127,15 +127,16 @@
             </Grid>
 
             <!-- 第3页-完善歌手信息 -->
-            <Grid Padding="10" RowDefinitions="*,80,*" ColumnDefinitions="Auto,*">
-
-                <Label x:Name="LabelPrepareInstallPrompt" Text="{Static res:AppResources.SingerInformationMissing}" Grid.Column="0" Grid.Row="1"/>
-                <Picker x:Name="PickerSingerType" ItemsSource="{Binding SingerTypes}" Grid.Row="1" SelectedItem="{Binding SingerType}" Grid.Column="1" />
+            <Grid Padding="10" RowDefinitions="*,120" >
+                <VerticalStackLayout Grid.Row="0" Spacing="10" VerticalOptions="Center">
+                    <Label x:Name="LabelPrepareInstallPrompt" Text="{Static res:AppResources.SingerInformationMissing}" Grid.Column="0" Grid.Row="1"/>
+                    <Picker x:Name="PickerSingerType" ItemsSource="{Binding SingerTypes}" Grid.Row="1" SelectedItem="{Binding SingerType}" Grid.Column="1" />
+                </VerticalStackLayout>
 
             </Grid>
 
             <!-- 第4页-确认安装信息 -->
-            <Grid Padding="10" RowDefinitions="80,*,80,100">
+            <Grid Padding="10" RowDefinitions="80,*,80,120">
                 <Label Text="{Static res:AppResources.InstallationSummary}" Grid.Row="0" />
                 <Border Grid.Row="1" StrokeShape="RoundRectangle 10">
                     <ScrollView>
@@ -175,38 +176,23 @@
             </Grid>
             
             <!-- 第5页-安装过程 -->
-            <Grid 
-                  Padding="20, 120, 20, 220">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*" />
-                    <RowDefinition Height="3*" />
-                    <RowDefinition Height="1*" />
-                </Grid.RowDefinitions>
+            <Grid RowDefinitions="*,120">
 
-                <Grid Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="1*" />
-                    </Grid.RowDefinitions>
+                <VerticalStackLayout Grid.Row="0" VerticalOptions="Center" Margin="20" Spacing="10">
 
-                    <Label Text="{Static res:AppResources.InstallingText}" Grid.Row="0" />
-                    <Grid Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*" />
-                            <ColumnDefinition Width="1*" />
-                        </Grid.ColumnDefinitions>
+                    <Label Text="{Static res:AppResources.InstallingText}" FontSize="30"/>
+                    <Grid ColumnDefinitions="Auto, *, 100">
 
-                        <Label Grid.Column="0" LineBreakMode="HeadTruncation" Text="{Binding InstallProgressDetail}"/>
-                        <Label Grid.Column="1" Text="{Binding InstallProgressText}" />
+                        <Label Grid.Column="0" Text="解压条目：" />
+                        <Label Grid.Column="1" LineBreakMode="HeadTruncation" Text="{Binding InstallProgressDetail}"/>
+                        <Label Grid.Column="2" Text="{Binding InstallProgressText}" />
                     </Grid>
-                    <ProgressBar x:Name="ProgressBarInstall" Progress="{Binding InstallProgress}" Grid.Row="2" />
-                </Grid>
+                    <ProgressBar x:Name="ProgressBarInstall" Progress="{Binding InstallProgress}" />
+                </VerticalStackLayout>
             </Grid>
 
             <!-- 第6页-安装结果 -->
-            <Grid 
-                  Padding="20, 120, 20, 220">
+            <Grid RowDefinitions="*,120">
                 <VerticalStackLayout VerticalOptions="Center" Spacing="50">
                     <Label Text="{Static res:AppResources.InstallationComplete}" HorizontalTextAlignment="Center" FontSize="30"/>
                     <Button Text="{Static res:AppResources.BackText}" x:Name="ButtonFinish" Clicked="ButtonFinish_Clicked" Margin="10" CornerRadius="10"/>
