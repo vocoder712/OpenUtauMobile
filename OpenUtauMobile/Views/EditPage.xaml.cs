@@ -333,7 +333,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 magnifier = null;
                 magnifier = new Android.Widget.Magnifier.Builder(pianoRollAndroidView)
                     .SetInitialZoom(1.5f)              // 增加缩放倍数
-                    .SetSize(600, 450)               // 设置为正方形尺寸 (宽度, 高度)
+                    .SetSize(600, 450)               // 设置为矩形尺寸 (宽度, 高度)
                     .SetCornerRadius(16f)            // 稍微增加圆角
                     .SetElevation(12f)               // 添加阴影效果
                     .SetClippingEnabled(true)      // 启用裁剪以防止内容溢出
