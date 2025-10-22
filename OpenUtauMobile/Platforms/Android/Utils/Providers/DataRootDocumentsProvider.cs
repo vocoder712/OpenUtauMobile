@@ -108,7 +108,7 @@ namespace OpenUtauMobile.Platforms.Android.Providers
         }
 
         /// <summary>
-        /// 列出的子文档
+        /// 列出指定父文档的子文档
         /// </summary>
         /// <param name="parentDocumentId"></param>
         /// <param name="projection"></param>
