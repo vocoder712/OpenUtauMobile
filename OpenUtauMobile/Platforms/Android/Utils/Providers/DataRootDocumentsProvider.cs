@@ -103,7 +103,7 @@ namespace OpenUtauMobile.Platforms.Android.Providers
                 return result;
             }
 
-            IncludeFile(result, documentId, null!); // 添加指定文档信息
+            IncludeFileById(result, documentId); // 添加指定文档信息
             return result;
         }
 
@@ -132,7 +132,7 @@ namespace OpenUtauMobile.Platforms.Android.Providers
                 }
                 foreach (Java.IO.File file in files)
                 {
-                    IncludeFile(result, null!, file);
+                    IncludeFile(result, file);
                 }
             }
 
@@ -199,22 +199,34 @@ namespace OpenUtauMobile.Platforms.Android.Providers
         }
 
         /// <summary>
-        /// 填充文件信息到结果集中
+        /// 通过 文档ID 填充文件信息到结果集中
         /// </summary>
         /// <param name="result">返回的结果集</param>
-        /// <param name="docId"></param>
-        /// <param name="file"></param>
-        private void IncludeFile(MatrixCursor result, string docId, Java.IO.File file)
+        /// <param name="docId">文档ID</param>
+        private void IncludeFileById(MatrixCursor result, string docId)
         {
-            if (docId == null)
-            {
-                docId = GetDocIdForFile(file);
-            }
-            else
-            {
-                file = GetFileForDocId(docId);
-            }
+            Java.IO.File file = GetFileForDocId(docId);
+            IncludeFileCore(result, docId, file);
+        }
+        /// <summary>
+        /// 通过 文件对象 填充文件信息到结果集中
+        /// </summary>
+        /// <param name="result">返回的结果集</param>
+        /// <param name="file">文件对象</param>
+        private void IncludeFile(MatrixCursor result, Java.IO.File file)
+        {
+            string docId = GetDocIdForFile(file);
+            IncludeFileCore(result, docId, file);
+        }
 
+        /// <summary>
+        /// 核心：填充文件信息到结果集
+        /// </summary>
+        /// <param name="result">返回的结果集</param>
+        /// <param name="docId">文档ID</param>
+        /// <param name="file">文件对象</param>
+        private static void IncludeFileCore(MatrixCursor result, string docId, Java.IO.File file)
+        {
             int flags = 0;
 
             if (file.IsDirectory) // 如果是目录
@@ -235,6 +247,7 @@ namespace OpenUtauMobile.Platforms.Android.Providers
             {
                 return;
             }
+
             rowBuilder.Add(DocumentsContract.Document.ColumnDocumentId, docId);
             rowBuilder.Add(DocumentsContract.Document.ColumnDisplayName, file.Name);
             rowBuilder.Add(DocumentsContract.Document.ColumnSize, file.Length());
