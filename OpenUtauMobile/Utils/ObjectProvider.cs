@@ -60,7 +60,7 @@ namespace OpenUtauMobile.Utils
                     }
                     foreach (string type in types)
                     {
-                        if (selectedPath.EndsWith(type))
+                        if (selectedPath.EndsWith(type, StringComparison.OrdinalIgnoreCase)) // 忽略大小写比较
                         {
                             return selectedPath;
                         }

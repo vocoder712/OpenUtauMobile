@@ -423,17 +423,26 @@
                 <VerticalStackLayout Padding="5" Margin="5" BindableLayout.ItemsSource="{Binding RunningWorks}" Spacing="10">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="u:RunningWork">
-                        <Border BackgroundColor="{Binding Color}" StrokeShape="RoundRectangle 5" StrokeThickness="0" Padding="5">
-                            <Grid RowDefinitions="30,Auto,Auto,Auto" ColumnDefinitions="*, 30">
-                                <Label Text="{Binding Title}" />
-                                <!-- 后面再搞，running work加个属性来标识 -->
-                                <ActivityIndicator Grid.Row="0" Grid.Column="1"/>
-                                <Label Text="{Binding Detail}" Grid.Row="1" Grid.ColumnSpan="2" IsVisible="False"/>
-                                <ProgressBar Progress="{Binding Progress}" Grid.Row="2" Grid.Column="0" HeightRequest="40" IsVisible="False" />
-                                <Label Text="{Binding Progress, StringFormat='{0:F2}'}" Grid.Column="1" Grid.Row="2" HeightRequest="40" IsVisible="False" />
-                                <Button Text="{Static res:AppResources.Abort}" Grid.Row="3" Grid.RowSpan="2" CornerRadius="25" BorderWidth=".5" BackgroundColor="Transparent" BorderColor="{DynamicResource Primary}" TextColor="{DynamicResource Primary}" IsVisible="True" x:Name="ButtonTryCancelWork" Clicked="ButtonTryCancelWork_Clicked" HeightRequest="20"/>
-                            </Grid>
-                        </Border>
+                            <Border BackgroundColor="{Binding Color}" StrokeShape="RoundRectangle 5" StrokeThickness="0" Padding="5">
+                                <VerticalStackLayout>
+                                    <Grid ColumnDefinitions="*,40" >
+                                        <!-- 工作类型标题 -->
+                                        <Label Text="{Binding Title}" />
+                                        <!-- 后面再搞，running work加个属性来标识 -->
+                                        <ActivityIndicator  Grid.Column="1"/>
+                                    </Grid>
+                                    <!-- 详细信息 -->
+                                    <Label Text="{Binding Detail}" IsVisible="False"/>
+                                    <!-- 进度 -->
+                                    <Grid ColumnDefinitions="*,30">
+                                        <ProgressBar Progress="{Binding Progress}" Grid.Column="0" HeightRequest="40" IsVisible="False" />
+                                        <Label Text="{Binding Progress, StringFormat='{0:F2}'}" Grid.Column="1" HeightRequest="40" IsVisible="False" />
+                                    </Grid>
+                                    <Grid RowDefinitions="30" IsVisible="True">
+                                        <Button Text="{Static res:AppResources.Abort}" CornerRadius="25" BorderWidth=".5" BackgroundColor="Transparent" BorderColor="{DynamicResource Primary}" TextColor="{DynamicResource Primary}" x:Name="ButtonTryCancelWork" Clicked="ButtonTryCancelWork_Clicked" Padding="0"/>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </VerticalStackLayout>

@@ -31,7 +31,7 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public Rect BoundDivControl { get; set; } = new Rect(0d, 100d, 60d, 50d);
         #endregion
         #region 钢琴卷帘 - 扩展区 拖拽间隔
-        [Reactive] public double ExpHeight { get; set; } = 150d; // 不能直接用，因为是相对底部的高度
+        [Reactive] public double ExpHeight { get; set; } = 50d; // 不能直接用，因为是相对底部的高度
         [Reactive] public double DivExpPosY { get; set; } // 根据 ExpHeight 动态计算
         [Reactive] public Rect BoundExpDiv { get; set; } = new Rect(0d, 0d, 1, 50d); // 拖拽间隔
         [Reactive] public Rect BoundExp { get; set; } = new Rect(0d, 0d, 1, 0d); // 扩展区
@@ -70,7 +70,13 @@ namespace OpenUtauMobile.ViewModels
             // 颤音编辑模式
             EditVibrato,
         };
+        /// <summary>
+        /// 走带编辑模式
+        /// </summary>
         [Reactive] public TrackEditMode CurrentTrackEditMode { get; set; } = TrackEditMode.Normal; // 默认为只读模式
+        /// <summary>
+        /// 当前钢琴卷帘音符编辑模式
+        /// </summary>
         [Reactive] public NoteEditMode CurrentNoteEditMode { get; set; } = NoteEditMode.EditNote; // 默认为音符编辑模式
         [Reactive] public ObservableCollectionExtended<UPart> PhonemizingParts { get; set; } = []; // 正在进行音素化的分片集合
         [Reactive] public string PhonemizingPartName { get; set; } = string.Empty; // 正在音素化的分片名称
@@ -158,7 +164,7 @@ namespace OpenUtauMobile.ViewModels
         /* 后端数据相关属性 */
         [Reactive] public string Path { get; set; } = string.Empty;
         [Reactive] public ObservableCollectionExtended<UTrack> Tracks { get; set; } = [];
-        [Reactive] public ObservableCollectionExtended<UPart> Parts { get; set; } = [];
+        //[Reactive] public ObservableCollectionExtended<UPart> Parts { get; set; } = [];
         [Reactive] public int PlayPosTick { get; set; } = 0;
         [Reactive] public bool Playing { get; set; } = false;
         [Reactive] public byte[] CurrentPortrait { get; set; } = [];
@@ -311,6 +317,28 @@ namespace OpenUtauMobile.ViewModels
             };
         }
 
+        public void ValidateSelectedParts()
+        {
+            // 检查一遍选中的分片是否已经被删除
+            SelectedParts.RemoveMany([.. SelectedParts
+                    .Where(part =>
+                    {
+                        if (DocManager.Inst.Project.parts.Contains(part))
+                        {
+                            return false; // 如果分片还在项目中，则认为它是有效的
+                        }
+                        return true; // 如果分片不在项目中，则认为它是无效的
+                    })]);
+            if (SelectedParts.Count == 0)
+            {
+                EditingPart = null; // 清空正在编辑的分片
+                EditingPartName = string.Empty; // 清空编辑分片名称
+                EditingNotes = null; // 清空正在编辑的音符组
+                CurrentPortrait = []; // 清空当前立绘
+                EditingPartColor = Colors.Transparent;
+            }
+        }
+
         public void UpdateIsShowRenderPitchButton()
         {
             if (SelectedParts.Count == 0 || EditingPart == null)
@@ -364,32 +392,29 @@ namespace OpenUtauMobile.ViewModels
             await LoadProject(Path);
         }
 
-        public async Task LoadProject(string path)
+        public static async Task LoadProject(string path)
         {
             await Task.Run(() =>
             {
-                MainThread.BeginInvokeOnMainThread(() =>
+                try
                 {
-                    try
+                    // 新建
+                    if (string.IsNullOrEmpty(path))
                     {
-                        // 新建
-                        if (string.IsNullOrEmpty(path))
-                        {
-                            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Format.Ustx.Create()));
-                        }
-                        else
-                        {
-                            // 打开
-                            string[] files = { path };
-                            OpenUtau.Core.Format.Formats.LoadProject(files);
-                        }
+                        DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Format.Ustx.Create()));
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Log.Error(ex, "Failed to load project.");
-                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("无法打开项目文件，可能格式不受支持或文件已损坏。", ex));
+                        // 打开
+                        string[] files = { path };
+                        OpenUtau.Core.Format.Formats.LoadProject(files);
                     }
-                });
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Failed to load project.");
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("无法打开项目文件，可能格式不受支持或文件已损坏。", ex));
+                }
             });
         }
 

@@ -47,13 +47,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     private double OriginTrackMainEditDivPosY { get; set; }
     // 记录钢琴卷帘-扩展区分隔初始高度
     private double OriginExpHeight { get; set; }
-    //public double Density => DeviceDisplay.MainDisplayInfo.Density;
-    // 走带画布变换信息
-    //private readonly Transformer _viewModel.TrackTransformer = new(zoomX: 0.1f);
-    // 钢琴卷帘画布变换信息
-    //private readonly Transformer _viewModel.PianoRollTransformer = new(zoomX: 0.5f, zoomY: 0.5f, panY: -2000f);
-    // 钢琴键画布变换信息
-    //private readonly Transformer pianoKeysTransformer = new(zoomX: 1f, panX: 0f, zoomY: 0.5f, panY: -2000f);
     // 添加变量跟踪是否正在处理滚动同步，避免无限循环
     private bool isScrollingSyncInProgress = false;
     // 钢琴卷帘量化按钮长按标志
@@ -64,6 +57,14 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     // 放大镜
     private Android.Widget.Magnifier? magnifier = null;
 #endif
+    /// <summary>
+    /// 标记用户是否正在绘制音高曲线、表情曲线等
+    /// </summary>
+    private bool IsUserDrawingCurve { get; set; } = false;
+    /// <summary>
+    /// 触摸点位置（实际坐标）
+    /// </summary>
+    private SKPoint TouchingPoint { get; set; } = new();
 
     public EditPage(string path)
     {
@@ -75,7 +76,11 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             // 确保在UI绘制完成后的下一个UI线程周期执行
             Dispatcher.Dispatch(async () =>
             {
+                // 添加加载项目work
+                _viewModel.SetWork(WorkType.LoadingProject, path, detail:path);
                 await _viewModel.Init();
+                // 移除加载项目work
+                _viewModel.RemoveWork(path);
                 InitMagnifier();
                 //EnableAndroidBlur();
             });
@@ -327,12 +332,12 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 }
                 magnifier = null;
                 magnifier = new Android.Widget.Magnifier.Builder(pianoRollAndroidView)
-                    .SetInitialZoom(2f)              // 增加缩放倍数
-                    .SetSize(400, 300)               // 设置为正方形尺寸 (宽度, 高度)
+                    .SetInitialZoom(1.5f)              // 增加缩放倍数
+                    .SetSize(600, 450)               // 设置为正方形尺寸 (宽度, 高度)
                     .SetCornerRadius(16f)            // 稍微增加圆角
                     .SetElevation(12f)               // 添加阴影效果
                     .SetClippingEnabled(true)      // 启用裁剪以防止内容溢出
-                    .SetDefaultSourceToMagnifierOffset(-200, -200) // 设置放大镜相对于触摸点的默认偏移
+                    .SetDefaultSourceToMagnifierOffset(-270, -270) // 设置放大镜相对于触摸点的默认偏移
                     .Build();
             }
             else
@@ -683,6 +688,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                         return; // 如果没有选中歌声分片或音符，直接返回
                     }
                     _viewModel.StartDrawPitch(e.StartPosition);
+                    IsUserDrawingCurve = true;
 #if ANDROID29_0_OR_GREATER
                     //Android.Views.View? pianoRollAndroidView = sender as Android.Views.View;
                     if (magnifier == null)
@@ -726,6 +732,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                         return; // 如果没有选中歌声分片或音符，直接返回
                     }
                     _viewModel.UpdateDrawPitch(_viewModel.PianoRollTransformer.ActualToLogical(e.Position));
+                    TouchingPoint = e.Position;
 #if ANDROID29_0_OR_GREATER
                     if (magnifier == null)
                     {
@@ -775,6 +782,8 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                         break;
                     case EditViewModel.NoteEditMode.EditPitchCurve:
                         _viewModel.EndDrawPitch();
+                        IsUserDrawingCurve = false;
+                        PianoRollPitchCanvas.InvalidateSurface();
 #if ANDROID29_0_OR_GREATER
                         if (magnifier == null)
                         {
@@ -1107,7 +1116,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
         else if (cmd is AddPartCommand addPartCommand)
         {
-            _viewModel.Parts = [.. DocManager.Inst.Project.parts];
             TrackCanvas.InvalidateSurface(); // 重绘走带画布
         }
         else if (cmd is ResizePartCommand resizePartCommand)
@@ -1120,7 +1128,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
         else if (cmd is RemovePartCommand removePartCommand)
         {
-            _viewModel.Parts = [.. DocManager.Inst.Project.parts];
             if (_viewModel.EditingPart == removePartCommand.part)
             {
                 _viewModel.EditingPart = null;
@@ -1138,7 +1145,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
         else if (cmd is RenamePartCommand renamePartCommand)
         {
-            _viewModel.Parts = [.. DocManager.Inst.Project.parts];
             TrackCanvas.InvalidateSurface(); // 重绘走带画布
         }
         else if (cmd is AddTrackCommand addTrackCommand)
@@ -1190,6 +1196,9 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
         else if (cmd is RemoveTrackCommand removeTrackCommand)
         {
+            _viewModel.ValidateSelectedParts(); // 验证选中分片中是否有被删除的分片
+            _viewModel.RefreshTrack();
+            _viewModel.HandleSelectedNotesChanged();
             TrackCanvas.InvalidateSurface();
             PianoRollCanvas.InvalidateSurface(); // 重绘钢琴卷帘画布
             UpdateTrackCanvasZoomLimit();
@@ -1268,7 +1277,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         {
             OpenUtau.Core.Util.Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             _viewModel.Tracks = [.. OpenUtau.Core.DocManager.Inst.Project.tracks];
-            _viewModel.Parts = [.. OpenUtau.Core.DocManager.Inst.Project.parts];
             _viewModel.Path = OpenUtau.Core.DocManager.Inst.Project.FilePath;
             PianoKeysCanvas.InvalidateSurface();
             PianoRollCanvas.InvalidateSurface();
@@ -1348,7 +1356,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     {
         int lastTick = 0;
         // 找到所有轨道中最右边的分片的结束位置
-        foreach (UPart part in _viewModel.Parts)
+        foreach (UPart part in DocManager.Inst.Project.parts)
         {
             lastTick = Math.Max(lastTick, part.End);
         }
@@ -1364,7 +1372,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     {
         int lastTick = 0;
         // 找到所有轨道中最右边的分片的结束位置
-        foreach (UPart part in _viewModel.Parts)
+        foreach (UPart part in DocManager.Inst.Project.parts)
         {
             lastTick = Math.Max(lastTick, part.End);
         }
@@ -1465,15 +1473,13 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         DrawableTrackBackground drawableTrackBackground = new(e.Surface.Canvas, _viewModel.HeightPerTrack * _viewModel.Density);
         drawableTrackBackground.Draw();
         // 绘制分片
-        foreach (UPart part in _viewModel.Parts)
+        foreach (UPart part in DocManager.Inst.Project.parts)
         {
             bool isResizeable = _viewModel.SelectedParts.Contains(part) && _viewModel.CurrentTrackEditMode == EditViewModel.TrackEditMode.Edit;
             DrawablePart drawablePart = new(
                 e.Surface.Canvas,
                 part,
-                _viewModel, 
-                transformer: _viewModel.TrackTransformer,
-                _viewModel.HeightPerTrack * _viewModel.Density,
+                _viewModel,
                 isSelected: _viewModel.SelectedParts.Contains(part),
                 isResizable: isResizeable);
             _viewModel.DrawableParts.Add(drawablePart);
@@ -2008,6 +2014,19 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             }
             canvas.DrawPoints(SKPointMode.Polygon, [.. points], paint);
         }
+        // 绘制触摸中心
+        if (IsUserDrawingCurve)
+        {
+            SKPaint centerPaint = new()
+            {
+                Color = SKColors.Yellow,
+                StrokeWidth = 2,
+                IsAntialias = true,
+                Style = SKPaintStyle.Stroke,
+            };
+            float radius = 10f;
+            canvas.DrawCircle(TouchingPoint, radius, centerPaint);
+        }
     }
 
     public void Dispose()
@@ -2220,15 +2239,15 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     /// <param name="e"></param>
     private void PhonemeCanvas_PaintSurface(object sender, SkiaSharp.Views.Maui.SKPaintSurfaceEventArgs e)
     {
+        SKCanvas canvas = e.Surface.Canvas;
+        // 清空画布
+        canvas.Clear();
         UVoicePart? part = _viewModel.EditingPart;
         if (part == null)
         {
             return;
         }
-        SKCanvas canvas = e.Surface.Canvas;
         UProject project = DocManager.Inst.Project;
-        // 清空画布
-        canvas.Clear();
 
         int leftTick = (int)(-_viewModel.PianoRollTransformer.PanX / _viewModel.PianoRollTransformer.ZoomX);
         int rightTick = (int)(canvas.DeviceClipBounds.Size.Width / _viewModel.PianoRollTransformer.ZoomX + leftTick);
@@ -2327,6 +2346,11 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     {
         SKCanvas canvas = e.Surface.Canvas;
         canvas.Clear();
+        if (e.Surface.Canvas.DeviceClipBounds.Height < 5)
+        {
+            // 提高性能
+            return;
+        }
         // 1. 初始化和验证
         // 2. 计算可视区域
         // 3. 根据表情类型分别处理：
