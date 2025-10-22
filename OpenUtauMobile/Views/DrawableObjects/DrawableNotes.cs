@@ -20,7 +20,8 @@ namespace OpenUtauMobile.Views.DrawableObjects
         /// <summary>
         /// 实际坐标而非逻辑坐标
         /// </summary>
-        public float HalfHandleSize => (float)(16 * ViewModel.Density);
+        private const int DefaultTouchTargetSize = 16;
+        public float HalfHandleSize => (float)(DefaultTouchTargetSize * ViewModel.Density);
         private float HandleSize => HalfHandleSize * 2;
         /// <summary>
         /// 当前分片的起始位置tick
