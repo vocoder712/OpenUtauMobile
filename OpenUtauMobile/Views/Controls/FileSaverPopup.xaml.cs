@@ -90,7 +90,7 @@ namespace OpenUtauMobile.Views.Controls
                 bool isValid = false;
                 foreach (string type in _viewModel.Types)
                 {
-                    if (_viewModel.FileName.EndsWith(type.TrimStart('*')))
+                    if (_viewModel.FileName.EndsWith(type.TrimStart('*'), StringComparison.OrdinalIgnoreCase)) // 忽略大小写比较
                     {
                         isValid = true;
                         break;

@@ -432,4 +432,28 @@
   <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
     <value>再次操作以取消歌手安装</value>
   </data>
+  <data name="FileNotFoundToast" xml:space="preserve">
+    <value>找不到指定文件</value>
+  </data>
+  <data name="WorkTitlePhonemize" xml:space="preserve">
+    <value>正在音素化</value>
+  </data>
+  <data name="WorkTitleRender" xml:space="preserve">
+    <value>正在渲染</value>
+  </data>
+  <data name="WorkTitleExport" xml:space="preserve">
+    <value>正在导出</value>
+  </data>
+  <data name="WorkTitleReadWave" xml:space="preserve">
+    <value>正在渲染音频波形</value>
+  </data>
+  <data name="WorkTitleOther" xml:space="preserve">
+    <value>工作中</value>
+  </data>
+  <data name="WorkTitleRenderPitch" xml:space="preserve">
+    <value>正在渲染音高</value>
+  </data>
+  <data name="WorkTitleLoadingProject" xml:space="preserve">
+    <value>正在加载项目，请勿操作</value>
+  </data>
 </root>

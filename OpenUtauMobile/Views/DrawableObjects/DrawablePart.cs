@@ -29,8 +29,8 @@ namespace OpenUtauMobile.Views.DrawableObjects
         public SKCanvas Canvas { get; set; } = null!;
         public EditViewModel ViewModel { get; set; } = null!;
         public float HeightPerTrack => (float)ViewModel.HeightPerTrack * (float)ViewModel.Density;
-        public Transformer CurrentTransformer {  get; set; } = null!;
-        public double ResolutionX { get; set; } = 480d;
+        //public Transformer ViewModel.TrackTransformer {  get; set; } = null!;
+        //public double ResolutionX { get; set; } = 480d;
         public bool IsSelected { get; set; } = false; // 是否被选中
         public bool IsResizable { get; set; } = true; // 是否可调整长度
         private float RightHandleX { get; set; } // 逻辑坐标
@@ -46,16 +46,15 @@ namespace OpenUtauMobile.Views.DrawableObjects
         /// </summary>
         /// <param name="canvas">要绘制的目标画布</param>
         /// <param name="part">关联的UPart对象</param>
-        /// <param name="resolutionX">UProject类中定义了resolution = 480，这是常见的MIDI文件刻度分辨率</param>
-        public DrawablePart(SKCanvas canvas, UPart part,EditViewModel viewModel, Transformer transformer, double resolutionX = 480, bool isSelected = false, bool isResizable = false)
+        public DrawablePart(SKCanvas canvas, UPart part,EditViewModel viewModel, bool isSelected = false, bool isResizable = false)
         {
             Canvas = canvas;
             Part = part;
-            ResolutionX = resolutionX;
+            //ResolutionX = resolutionX;
             IsSelected = isSelected;
             IsResizable = isResizable;
             ViewModel = viewModel;
-            CurrentTransformer = transformer;
+            //ViewModel.TrackTransformer = transformer;
             // 计算右侧手柄位置
             if (isResizable)
             {
@@ -82,12 +81,12 @@ namespace OpenUtauMobile.Views.DrawableObjects
         public bool IsPointInHandle(SKPoint point)
         {
             // 将手柄中心点转换为实际坐标
-            float handleActualX = RightHandleX * CurrentTransformer.ZoomX + CurrentTransformer.PanX;
-            float handleActualY = RightHandleY * CurrentTransformer.ZoomY + CurrentTransformer.PanY;
+            float handleActualX = RightHandleX * ViewModel.TrackTransformer.ZoomX + ViewModel.TrackTransformer.PanX;
+            float handleActualY = RightHandleY * ViewModel.TrackTransformer.ZoomY + ViewModel.TrackTransformer.PanY;
             
             // 将检测点从逻辑坐标转换为实际坐标
-            float pointActualX = point.X * CurrentTransformer.ZoomX + CurrentTransformer.PanX;
-            float pointActualY = point.Y * CurrentTransformer.ZoomY + CurrentTransformer.PanY;
+            float pointActualX = point.X * ViewModel.TrackTransformer.ZoomX + ViewModel.TrackTransformer.PanX;
+            float pointActualY = point.Y * ViewModel.TrackTransformer.ZoomY + ViewModel.TrackTransformer.PanY;
             
             // 在实际坐标系中计算距离
             float distance = (float)Math.Sqrt(
@@ -310,8 +309,8 @@ namespace OpenUtauMobile.Views.DrawableObjects
             float height = (float)ViewModel.HeightPerTrack * (float)ViewModel.Density; // 总高度
             float monoChnlAmp = height / 2; // 如果是单声道的振幅高度（画布）
             float stereoChnlAmp = height / 4; // 如果是双声道的振幅高度（画布）
-            float tickOffset = (float)(-CurrentTransformer.PanX / CurrentTransformer.ZoomX); // 当前视图的Tick偏移位置
-            float tickWidth = (float)CurrentTransformer.ZoomX; // 每个Tick对应的像素宽度
+            float tickOffset = (float)(-ViewModel.TrackTransformer.PanX / ViewModel.TrackTransformer.ZoomX); // 当前视图的Tick偏移位置
+            float tickWidth = (float)ViewModel.TrackTransformer.ZoomX; // 每个Tick对应的像素宽度
 
             TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
             DiscreteSignal[] peaks = wavePart.Peaks.Result;

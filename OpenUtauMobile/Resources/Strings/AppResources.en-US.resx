@@ -432,4 +432,28 @@
   <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
     <value>Press back again to cancel the singer installation.</value>
   </data>
+  <data name="FileNotFoundToast" xml:space="preserve">
+    <value>Could not find such file</value>
+  </data>
+  <data name="WorkTitlePhonemize" xml:space="preserve">
+    <value>Phonemizing...</value>
+  </data>
+  <data name="WorkTitleRender" xml:space="preserve">
+    <value>Rendering...</value>
+  </data>
+  <data name="WorkTitleExport" xml:space="preserve">
+    <value>Exporting...</value>
+  </data>
+  <data name="WorkTitleReadWave" xml:space="preserve">
+    <value>Rendering waveform...</value>
+  </data>
+  <data name="WorkTitleOther" xml:space="preserve">
+    <value>Working...</value>
+  </data>
+  <data name="WorkTitleRenderPitch" xml:space="preserve">
+    <value>Rendering the pitch...</value>
+  </data>
+  <data name="WorkTitleLoadingProject" xml:space="preserve">
+    <value>Loading project, Don't touch</value>
+  </data>
 </root>

@@ -56,15 +56,18 @@ public partial class HomePage : ContentPage
 
     private async void ButtonNewProject_Clicked(object sender, EventArgs e)
     {
-        await Navigation.PushModalAsync(new EditPage(string.Empty));
+        await Navigation.PushModalAsync(new EditPage(string.Empty), false);
     }
-
+    /// <summary>
+    /// 支持的工程文件后缀名
+    /// </summary>
+    public string[] ProjectFileSuffix { get; } = [".ustx", ".vsqx", ".ust", ".mid", ".midi", ".ufdata", ".musicxml"];
     private async void ButtonOpenProject_Clicked(object sender, EventArgs e)
     {
-        string projectPath = await ObjectProvider.PickFile([".ustx"], this);
+        string projectPath = await ObjectProvider.PickFile(ProjectFileSuffix, this);
         if (!string.IsNullOrEmpty(projectPath))
         {
-            await Navigation.PushModalAsync(new EditPage(projectPath));
+            await Navigation.PushModalAsync(new EditPage(projectPath), false);
         }
     }
 
@@ -91,15 +94,20 @@ public partial class HomePage : ContentPage
             {
                 return;
             }
-            else if (!projectPath.EndsWith(".ustx"))
+            if (!File.Exists(projectPath))
             {
-                Toast.Make(AppResources.IncorrectProjectFileToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                Toast.Make(AppResources.FileNotFoundToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return;
             }
-            else
+            foreach (string suffix in ProjectFileSuffix)
             {
-                Navigation.PushModalAsync(new EditPage(projectPath));
+                if (projectPath.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) // 忽略大小写比较
+                {
+                    Navigation.PushModalAsync(new EditPage(projectPath), false);
+                    return;
+                }
             }
+            Toast.Make(AppResources.IncorrectProjectFileToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
         }
     }
 }

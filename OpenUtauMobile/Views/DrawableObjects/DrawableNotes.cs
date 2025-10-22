@@ -5,12 +5,6 @@ using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Views.Utils;
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace OpenUtauMobile.Views.DrawableObjects
 {
     public class DrawableNotes
@@ -18,7 +12,6 @@ namespace OpenUtauMobile.Views.DrawableObjects
         public SKCanvas Canvas { get; set; } = null!;
         public UVoicePart Part { get; set; } = null!;
         public float HeightPerPianoKey { get; set; }
-        //public Transformer Transformer { get; set; }
         public SKColor NotesColor { get; set; }
         /// <summary>
         /// 实际坐标而非逻辑坐标
@@ -27,13 +20,18 @@ namespace OpenUtauMobile.Views.DrawableObjects
         /// <summary>
         /// 实际坐标而非逻辑坐标
         /// </summary>
-        public float HalfHandleSize => (float)(8 * ViewModel.Density);
+        private const int DefaultTouchTargetSize = 16;
+        public float HalfHandleSize => (float)(DefaultTouchTargetSize * ViewModel.Density);
         private float HandleSize => HalfHandleSize * 2;
         /// <summary>
         /// 当前分片的起始位置tick
         /// </summary>
         public float PositionX { get; set; }
         public EditViewModel ViewModel { get; set; } = null!;
+        // 计算可视区域的左右边界（逻辑坐标）
+        private int LeftTick { get; set; }
+        private int RightTick { get; set; }
+
         public DrawableNotes(SKCanvas canvas, UVoicePart part, EditViewModel viewModel, SKColor notesColor)
         {
             Part = part;
@@ -43,6 +41,10 @@ namespace OpenUtauMobile.Views.DrawableObjects
             PositionX = part.position;
             ViewModel = viewModel;
             NotesColor = notesColor;
+            // 计算可视区域的左右边界（逻辑坐标）
+            LeftTick = (int)(-ViewModel.PianoRollTransformer.PanX / ViewModel.PianoRollTransformer.ZoomX);
+            RightTick = (int)(Canvas.DeviceClipBounds.Width / ViewModel.PianoRollTransformer.ZoomX + LeftTick);
+
         }
         public void Draw()
         {
@@ -64,6 +66,22 @@ namespace OpenUtauMobile.Views.DrawableObjects
             };
             foreach (UNote note in Part.notes)
             {
+                // 计算音符的绝对位置
+                int noteStart = (int)(PositionX + note.position);
+                int noteEnd = noteStart + note.duration;
+
+                // 跳过左侧不可见的音符
+                if (noteEnd < LeftTick)
+                {
+                    continue;
+                }
+
+                // 跳过右侧不可见的音符 notes按position排序
+                if (noteStart > RightTick)
+                {
+                    break;
+                }
+
                 // 如果是错误音符，颜色增加透明度
                 if (note.Error)
                 {
@@ -85,25 +103,46 @@ namespace OpenUtauMobile.Views.DrawableObjects
                     Color = SKColors.Yellow,
                     Style = SKPaintStyle.Fill
                 };
+                SKPaint trianglePaint = new()
+                {
+                    Color = SKColors.White,
+                    Style = SKPaintStyle.Fill
+                };
                 foreach (UNote note in ViewModel.SelectedNotes)
                 {
                     float left = (PositionX + note.position + note.duration) * ViewModel.PianoRollTransformer.ZoomX + ViewModel.PianoRollTransformer.PanX + Spacing;
+                    float right = left + HandleSize;
+                    float top = (ViewConstants.TotalPianoKeys - note.tone - 0.5f) * HeightPerPianoKey * ViewModel.PianoRollTransformer.ZoomY - HalfHandleSize + ViewModel.PianoRollTransformer.PanY;
+                    float centerY = top + HalfHandleSize;
+                    float centerX = left + HalfHandleSize;
+                    float bottom = top + HandleSize;
                     // 右侧手柄
-                    Canvas.DrawRect(left,
-                        (ViewConstants.TotalPianoKeys - note.tone - 0.5f) * HeightPerPianoKey * ViewModel.PianoRollTransformer.ZoomY - HalfHandleSize + ViewModel.PianoRollTransformer.PanY,
+                    Canvas.DrawRoundRect(left,
+                        top,
                         HandleSize,
                         HandleSize,
+                        4,
+                        4,
                         handlePaint);
+                    // 里面画两个小三角形，表示可拖拽
+                    SKPath trianglePath = new();
+                    trianglePath.MoveTo(left + 4, centerY);
+                    trianglePath.LineTo(centerX - 2, bottom - 6);
+                    trianglePath.LineTo(centerX - 2, top + 6);
+                    trianglePath.Close();
+                    Canvas.DrawPath(trianglePath, trianglePaint);
+                    trianglePath.Reset();
+                    trianglePath.MoveTo(right - 4, centerY);
+                    trianglePath.LineTo(centerX + 2, bottom - 6);
+                    trianglePath.LineTo(centerX + 2, top + 6);
+                    trianglePath.Close();
+                    Canvas.DrawPath(trianglePath, trianglePaint);
                 }
             }
         }
 
         public void DrawLyrics()
         {
-            // 保存当前的变换矩阵
-            //SKMatrix originalMatrix = Canvas.TotalMatrix;
-            // 恢复到默认矩阵，使文字不受缩放影响
-            //Canvas.ResetMatrix();
             // 设置歌词文本画笔
             using SKPaint lyricPaint = new()
             {
@@ -114,8 +153,23 @@ namespace OpenUtauMobile.Views.DrawableObjects
             // 绘制歌词文本
             foreach (UNote note in Part.notes)
             {
+                // 计算音符的绝对位置
+                int noteStart = (int)(PositionX + note.position);
+                int noteEnd = noteStart + note.duration;
+
+                // 跳过左侧不可见的音符
+                if (noteEnd < LeftTick)
+                {
+                    continue;
+                }
+
+                // 跳过右侧不可见的音符 notes按position排序
+                if (noteStart > RightTick)
+                {
+                    break;
+                }
                 // 计算文本位置
-                float x = (PositionX + note.position + 5) * ViewModel.PianoRollTransformer.ZoomX + ViewModel.PianoRollTransformer.PanX;
+                float x = noteStart * ViewModel.PianoRollTransformer.ZoomX + ViewModel.PianoRollTransformer.PanX;
                 float y = (ViewConstants.TotalPianoKeys - note.tone - 1.5f) * HeightPerPianoKey * ViewModel.PianoRollTransformer.ZoomY + ViewModel.PianoRollTransformer.PanY;
                 // 绘制歌词
                 if (!string.IsNullOrEmpty(note.lyric))
@@ -123,16 +177,14 @@ namespace OpenUtauMobile.Views.DrawableObjects
                     Canvas.DrawText(note.lyric, x, y, lyricsFont, lyricPaint);
                 }
             }
-            // 恢复原始矩阵
-            //Canvas.SetMatrix(originalMatrix);
         }
 
         public UNote? IsPointInNote(SKPoint point)
         {
-            float left = 0f;
-            float right = 0f;
-            float top = 0f;
-            float bottom = 0f;
+            float left;
+            float right;
+            float top;
+            float bottom;
             foreach (UNote note in Part.notes)
             {
                 left = PositionX + note.position;
