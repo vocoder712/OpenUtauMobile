@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Alerts;
+ï»¿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Views;
 using OpenUtauMobile.Utils;
 
@@ -9,10 +9,10 @@ public partial class ErrorPopup : Popup
     public ErrorPopup(Exception? exception, string message)
 	{
 		InitializeComponent();
-        LabelErrorDetail.Text = "ºÜ±§Ç¸£¬ OpenUtau Mobile ²¶»ñµ½ÁËÒì³££¬²¿·Ö¹¦ÄÜ¿ÉÄÜÎŞ·¨Õı³£Ê¹ÓÃ¡£\n";
-        LabelErrorDetail.Text += "½¨ÒéÄú½«ÒÔÏÂ´íÎóĞÅÏ¢¸´ÖÆ²¢·´À¡¸ø¿ª·¢Õß£¬²¢ÖØÆôÓ¦ÓÃ³ÌĞò¡£\n\n";
+        LabelErrorDetail.Text = "å¾ˆæŠ±æ­‰ï¼Œ OpenUtau Mobile æ•è·åˆ°äº†å¼‚å¸¸ï¼Œéƒ¨åˆ†åŠŸèƒ½å¯èƒ½æ— æ³•æ­£å¸¸ä½¿ç”¨ã€‚\n";
+        LabelErrorDetail.Text += "å»ºè®®æ‚¨å°†ä»¥ä¸‹é”™è¯¯ä¿¡æ¯å¤åˆ¶å¹¶åé¦ˆç»™å¼€å‘è€…ï¼Œå¹¶é‡å¯åº”ç”¨ç¨‹åºã€‚\n\n";
         LabelErrorDetail.Text += message;
-        LabelErrorDetail.Text += "\nÒì³£ÏêÇé£º\n";
+        LabelErrorDetail.Text += "\nå¼‚å¸¸è¯¦æƒ…ï¼š\n";
         LabelErrorDetail.Text += exception?.ToString();
     }
 
@@ -20,7 +20,7 @@ public partial class ErrorPopup : Popup
     {
         await Clipboard.Default.SetTextAsync(LabelErrorDetail.Text);
 #if !ANDROID33_0_OR_GREATER
-        await Toast.Make("ÒÑ¸´ÖÆµ½¼ôÌù°å", CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
+        await Toast.Make("å·²å¤åˆ¶åˆ°å‰ªè´´æ¿", CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
 #endif
     }
 

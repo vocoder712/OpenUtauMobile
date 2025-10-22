@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Alerts;
+﻿using CommunityToolkit.Maui.Alerts;
 using OpenUtau.Core.Util;
 
 namespace OpenUtauMobile.Views;

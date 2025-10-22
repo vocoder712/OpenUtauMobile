@@ -28,16 +28,16 @@ public partial class SingerDetailPage : ContentPage
 
     private async void ButtonRemoveSinger_Clicked(object sender, EventArgs e)
     {
-        if (await this.DisplayAlert(AppResources.RemoveSinger, string.Format(AppResources.RemoveSingerPrompt, 0, ViewModel.Singer.LocalizedName), AppResources.Confirm, AppResources.CancelText))
+        if (await this.DisplayAlert(AppResources.RemoveSinger, string.Format(AppResources.RemoveSingerPrompt, ViewModel.Singer.LocalizedName), AppResources.Confirm, AppResources.CancelText))
         {
-            await Toast.Make(string.Format(AppResources.RemovingSingerToast, 0, ViewModel.Singer.LocalizedName)).Show();
+            await Toast.Make(string.Format(AppResources.RemovingSingerToast, ViewModel.Singer.LocalizedName)).Show();
             if (await SingerManager.Inst.UninstallSingerAsync(ViewModel.Singer))
             {
-                await Toast.Make(string.Format(AppResources.RemoveSingerSuccessToast, 0, ViewModel.Singer.LocalizedName)).Show();
+                await Toast.Make(string.Format(AppResources.RemoveSingerSuccessToast, ViewModel.Singer.LocalizedName)).Show();
             }
             else
             {
-                await Toast.Make(string.Format(AppResources.RemoveSingerFailureToast, 0, ViewModel.Singer.LocalizedName)).Show();
+                await Toast.Make(string.Format(AppResources.RemoveSingerFailureToast, ViewModel.Singer.LocalizedName)).Show();
             }
             await Navigation.PopModalAsync(); // 返回上一页
         }

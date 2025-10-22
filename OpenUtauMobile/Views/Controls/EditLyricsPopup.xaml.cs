@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Views;
+Ôªøusing CommunityToolkit.Maui.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Utils.Messages;
@@ -14,7 +14,7 @@ public partial class EditLyricsPopup : Popup
     public EditLyricsPopup(UVoicePart part, UNote targetNote)
 	{
 		InitializeComponent();
-		LabelTitle.Text = "±‡º≠∏Ë¥ ";
+		LabelTitle.Text = "ÁºñËæëÊ≠åËØç";
         EntryLyrics.Text = targetNote.lyric;
 		EntryLyrics.Focus();
 		EntryLyrics.CursorPosition = 0;

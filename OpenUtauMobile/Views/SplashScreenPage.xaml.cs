@@ -1,4 +1,4 @@
-using CommunityToolkit.Maui.Views;
+ï»¿using CommunityToolkit.Maui.Views;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -20,108 +20,108 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
 		InitializeComponent();
         string version = AppInfo.VersionString;
         LabelDisplayVersion.Text = $"Version {version}";
-        DocManager.Inst.AddSubscriber(this); // ¶©ÔÄDocManagerµÄÃüÁî
-        //CheckPermission(); // ¼ì²éÈ¨ÏŞ
-        InitApp(); // ³õÊ¼»¯OpenUtauºó¶Ë
+        DocManager.Inst.AddSubscriber(this); // è®¢é˜…DocManagerçš„å‘½ä»¤
+        //CheckPermission(); // æ£€æŸ¥æƒé™
+        InitApp(); // åˆå§‹åŒ–OpenUtauåç«¯
     }
 
 
     /// <summary>
-    /// ³õÊ¼»¯OpenUtauºó¶Ë
+    /// åˆå§‹åŒ–OpenUtauåç«¯
     /// </summary>
     public void InitApp()
     {
         var mainThread = Thread.CurrentThread;
         var mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-        Task.Run(async () => // Òì²½³õÊ¼»¯
+        Task.Run(async () => // å¼‚æ­¥åˆå§‹åŒ–
         {
-            Log.Information("==========¿ªÊ¼³õÊ¼»¯OpenUtauºó¶Ë==========");
+            Log.Information("==========å¼€å§‹åˆå§‹åŒ–OpenUtauåç«¯==========");
             try
             {
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯¶ÔÏóÌá¹©Æ÷";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–å¯¹è±¡æä¾›å™¨";
                 });
-                // throw new Exception("²âÊÔÒì³£");
-                ObjectProvider.Initialize(); // ³õÊ¼»¯¶ÔÏóÌá¹©Æ÷
-                Log.Information("¶ÔÏóÌá¹©Æ÷³õÊ¼»¯Íê³É");
+                // throw new Exception("æµ‹è¯•å¼‚å¸¸");
+                ObjectProvider.Initialize(); // åˆå§‹åŒ–å¯¹è±¡æä¾›å™¨
+                Log.Information("å¯¹è±¡æä¾›å™¨åˆå§‹åŒ–å®Œæˆ");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯ToolsManager";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–ToolsManager";
                 });
-                ToolsManager.Inst.Initialize(); // ³õÊ¼»¯ToolsManager
-                Log.Information("ToolsManager³õÊ¼»¯Íê³É");
+                ToolsManager.Inst.Initialize(); // åˆå§‹åŒ–ToolsManager
+                Log.Information("ToolsManageråˆå§‹åŒ–å®Œæˆ");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯SingerManager";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–SingerManager";
                 });
-                SingerManager.Inst.Initialize(); // ³õÊ¼»¯SingerManager
-                Log.Information("SingerManager³õÊ¼»¯Íê³É");
+                SingerManager.Inst.Initialize(); // åˆå§‹åŒ–SingerManager
+                Log.Information("SingerManageråˆå§‹åŒ–å®Œæˆ");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯DocManager";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–DocManager";
                 });
-                DocManager.Inst.Initialize(mainThread, mainScheduler); // ³õÊ¼»¯DocManager
-                DocManager.Inst.PostOnUIThread = action => MainThread.BeginInvokeOnMainThread(action); // ÉèÖÃDocManagerµÄPostOnUIThread
-                Log.Information("DocManager³õÊ¼»¯Íê³É");
+                DocManager.Inst.Initialize(mainThread, mainScheduler); // åˆå§‹åŒ–DocManager
+                DocManager.Inst.PostOnUIThread = action => MainThread.BeginInvokeOnMainThread(action); // è®¾ç½®DocManagerçš„PostOnUIThread
+                Log.Information("DocManageråˆå§‹åŒ–å®Œæˆ");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯PlaybackManager";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–PlaybackManager";
                 });
-                PlaybackManager.Inst.AudioOutput = ObjectProvider.AudioOutput?? new DummyAudioOutput(); // ÉèÖÃPlaybackManagerµÄAudioOutput
-                Log.Information("PlaybackManager³õÊ¼»¯Íê³É");
+                PlaybackManager.Inst.AudioOutput = ObjectProvider.AudioOutput?? new DummyAudioOutput(); // è®¾ç½®PlaybackManagerçš„AudioOutput
+                Log.Information("PlaybackManageråˆå§‹åŒ–å®Œæˆ");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯¸ÖÇÙ¾íÁ±";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–é’¢ç´å·å¸˜";
                 });
                 ViewConstants.PianoKeys = [.. Enumerable.Range(0, ViewConstants.TotalPianoKeys).Reverse().Select(n => new PianoKey(n))];
-                Log.Information("¸ÖÇÙ¾íÁ±³õÊ¼»¯Íê³É");
+                Log.Information("é’¢ç´å·å¸˜åˆå§‹åŒ–å®Œæˆ");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯ÓïÑÔ±¾µØ»¯";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–è¯­è¨€æœ¬åœ°åŒ–";
                 });
                 string lang = Preferences.Default.Language;
                 if (string.IsNullOrEmpty(lang))
                 {
-                    lang = CultureInfo.CurrentCulture.Name; // »ñÈ¡ÏµÍ³ÓïÑÔ
+                    lang = CultureInfo.CurrentCulture.Name; // è·å–ç³»ç»Ÿè¯­è¨€
                 }
                 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(Preferences.Default.Language);
                 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(Preferences.Default.Language);
-                Log.Information($"ÓïÑÔÆ«ºÃ£º{Preferences.Default.Language}");
-                Log.Information("ÓïÑÔ±¾µØ»¯³õÊ¼»¯Íê³É");
+                Log.Information($"è¯­è¨€åå¥½ï¼š{Preferences.Default.Language}");
+                Log.Information("è¯­è¨€æœ¬åœ°åŒ–åˆå§‹åŒ–å®Œæˆ");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "³õÊ¼»¯Íê±Ï£¡";
+                    LabelInitDetail.Text = "åˆå§‹åŒ–å®Œæ¯•ï¼";
                 });
             }
             catch (Exception e)
             {
-                Log.Error($"OpenUtauºó¶Ë³õÊ¼»¯Ê§°Ü: {e}");
-                // ³õÊ¼»¯Ê§°Üµ¯´°
-                var popup = new ErrorPopup(e, "OpenUtauºó¶Ë³õÊ¼»¯Ê§°Ü");
+                Log.Error($"OpenUtauåç«¯åˆå§‹åŒ–å¤±è´¥: {e}");
+                // åˆå§‹åŒ–å¤±è´¥å¼¹çª—
+                var popup = new ErrorPopup(e, "OpenUtauåç«¯åˆå§‹åŒ–å¤±è´¥");
                 object? result = await MainThread.InvokeOnMainThreadAsync(() => this.ShowPopupAsync(popup));
 
                 if (result is string id)
                 {
                     if (id == "exit")
                     {
-                        Log.Information("ÍË³öÓ¦ÓÃ");
+                        Log.Information("é€€å‡ºåº”ç”¨");
                         Application.Current?.Quit();
                     }
                 }
             }
             await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                Navigation.PushModalAsync(new HomePage(), false); // Ä£Ê½µ¼º½µ½Ö÷Ò³
+                Navigation.PushModalAsync(new HomePage(), false); // æ¨¡å¼å¯¼èˆªåˆ°ä¸»é¡µ
             });
-            Log.Information("==========OpenUtauºó¶Ë³õÊ¼»¯Íê³É==========");
+            Log.Information("==========OpenUtauåç«¯åˆå§‹åŒ–å®Œæˆ==========");
         });
     }
 
@@ -129,14 +129,14 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
     {
         if (DeviceInfo.Current.Platform == DevicePlatform.Android) // Android
         {
-            PermissionStatus storage_read_status = await Permissions.CheckStatusAsync<Permissions.StorageRead>(); // ¼ì²é´æ´¢¶ÁÈ¡È¨ÏŞ
+            PermissionStatus storage_read_status = await Permissions.CheckStatusAsync<Permissions.StorageRead>(); // æ£€æŸ¥å­˜å‚¨è¯»å–æƒé™
             if (true)
             {
-                storage_read_status = await Permissions.RequestAsync<Permissions.StorageRead>(); // ÇëÇó´æ´¢¶ÁÈ¡È¨ÏŞ
+                storage_read_status = await Permissions.RequestAsync<Permissions.StorageRead>(); // è¯·æ±‚å­˜å‚¨è¯»å–æƒé™
                 if (storage_read_status != PermissionStatus.Granted)
                 {
-                    Log.Error("Ã»ÓĞ´æ´¢È¨ÏŞ");
-                    throw new Exception("Ã»ÓĞ´æ´¢È¨ÏŞ");
+                    Log.Error("æ²¡æœ‰å­˜å‚¨æƒé™");
+                    throw new Exception("æ²¡æœ‰å­˜å‚¨æƒé™");
                 }
             }
         }

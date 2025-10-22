@@ -1,4 +1,4 @@
-namespace OpenUtauMobile.Views;
+﻿namespace OpenUtauMobile.Views;
 
 public partial class OptionsPage : ContentPage
 {
