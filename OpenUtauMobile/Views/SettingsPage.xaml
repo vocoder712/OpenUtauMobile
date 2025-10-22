@@ -11,7 +11,6 @@
     <ContentPage.Resources>
         <Style x:Key="StyleTabButton" TargetType="Button">
             <Setter Property="BackgroundColor" Value="Transparent" />
-            <Setter Property="WidthRequest" Value="100" />
         </Style>
     </ContentPage.Resources>
     <!-- 根控件 -->
