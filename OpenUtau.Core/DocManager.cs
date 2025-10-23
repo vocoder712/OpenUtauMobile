@@ -69,17 +69,57 @@ namespace OpenUtau.Core {
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
             var files = new List<string>();
-            try {
+            // 首先尝试从已加载的程序集中查找 Phonemizer
+            try
+            {
+                Assembly[]? loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in loadedAssemblies)
+                {
+                    try
+                    {
+                        Debug.WriteLine($"检查已加载程序集: {assembly.GetName().Name}");
+                        // 检查是否是 Builtin 插件程序集或其他插件程序集
+                        if (assembly.GetName().Name?.Contains("Plugin", StringComparison.OrdinalIgnoreCase) == true ||
+                            assembly.GetName().Name?.Contains("Builtin", StringComparison.OrdinalIgnoreCase) == true)
+                        {
+                            Debug.WriteLine($"找到本地插件程序集: {assembly.GetName().Name}");
+
+                            foreach (var type in assembly.GetExportedTypes())
+                            {
+                                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
+                                {
+                                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                                    Log.Information($"Loaded phonemizer {type.Name} from loaded assembly {assembly.GetName().Name}");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Warning(e, $"Failed to load from assembly {assembly.GetName().Name}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Failed to search loaded assemblies.");
+            }
+            // 然后从插件目录加载插件程序集 外部dll（原本的逻辑）
+            // 搜索插件目录
+            try
+            {
                 files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
                 Directory.CreateDirectory(PathManager.Inst.PluginsPath);
                 string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
-                if (File.Exists(oldBuiltin)) {
+                if (File.Exists(oldBuiltin))
+                {
                     File.Delete(oldBuiltin);
                 }
                 files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
             } catch (Exception e) {
                 Log.Error(e, "Failed to search plugins.");
             }
+            // 逐一加载程序集并添加 Phonemizer
             foreach (var file in files) {
                 Assembly assembly;
                 try {
@@ -98,6 +138,7 @@ namespace OpenUtau.Core {
                     continue;
                 }
             }
+            // 再从当前程序集查找一次 Phonemizer
             foreach (var type in GetType().Assembly.GetExportedTypes()) {
                 if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
                     phonemizerFactories.Add(PhonemizerFactory.Get(type));
