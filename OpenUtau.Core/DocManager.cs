@@ -89,20 +89,20 @@ namespace OpenUtau.Core {
                                 if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
                                 {
                                     phonemizerFactories.Add(PhonemizerFactory.Get(type));
-                                    Log.Information($"Loaded phonemizer {type.Name} from loaded assembly {assembly.GetName().Name}");
+                                    Log.Information($"加载了音素器 {type.Name} 来自程序集： {assembly.GetName().Name}");
                                 }
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Warning(e, $"Failed to load from assembly {assembly.GetName().Name}");
+                        Log.Warning(e, $"未能加载程序集： {assembly.GetName().Name}");
                     }
                 }
             }
             catch (Exception e)
             {
-                Log.Error(e, "Failed to search loaded assemblies.");
+                Log.Error(e, "未能搜索已加载的程序集。");
             }
             // 然后从插件目录加载插件程序集 外部dll（原本的逻辑）
             // 搜索插件目录
@@ -124,7 +124,7 @@ namespace OpenUtau.Core {
                 Assembly assembly;
                 try {
                     if (!LibraryLoader.IsManagedAssembly(file)) {
-                        Log.Information($"Skipping {file}");
+                        Log.Information($"跳过 {file}（不是托管的程序集）");
                         continue;
                     }
                     assembly = Assembly.LoadFile(file);
@@ -134,7 +134,7 @@ namespace OpenUtau.Core {
                         }
                     }
                 } catch (Exception e) {
-                    Log.Warning(e, $"Failed to load {file}.");
+                    Log.Warning(e, $"未能加载 {file}.");
                     continue;
                 }
             }
@@ -146,7 +146,7 @@ namespace OpenUtau.Core {
             }
             PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
             stopWatch.Stop();
-            Log.Information($"Search all plugins: {stopWatch.Elapsed}");
+            Log.Information($"已完成插件查找，用时: {stopWatch.Elapsed}");
         }
 
         #region Command Queue
