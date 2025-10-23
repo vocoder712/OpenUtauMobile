@@ -1,9 +1,6 @@
 ﻿using OpenUtauMobile.Resources.Colors;
 using OpenUtauMobile.Views;
 using OpenUtauMobile.Views.Controls;
-using Serilog;
-using System.Diagnostics;
-using System.Reflection;
 using Preferences = OpenUtau.Core.Util.Preferences;
 
 namespace OpenUtauMobile
