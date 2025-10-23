@@ -4,6 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                 xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Class="OpenUtauMobile.Views.Controls.EditMenuPopup">
@@ -29,10 +30,10 @@
             <!-- 选项卡 -->
             <ScrollView Orientation="Horizontal" Grid.Row="0" >
                 <HorizontalStackLayout>
-                    <Button x:Name="ButtonTabImport" Text="导入" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}"/>
-                    <Button x:Name="ButtonTabExport" Text="导出" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}"/>
-                    <Button x:Name="ButtonTabAuxiliary" Text="辅助工具" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}" />
-                    <Button x:Name="ButtonTabMore" Text="更多" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}" />
+                    <Button x:Name="ButtonTabImport" Text="{Static res:AppResources.Import}" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}"/>
+                    <Button x:Name="ButtonTabExport" Text="{Static res:AppResources.Export}" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}"/>
+                    <Button x:Name="ButtonTabAuxiliary" Text="{Static res:AppResources.AuxiliaryTools}" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}" />
+                    <Button x:Name="ButtonTabMore" Text="{Static res:AppResources.More}" Clicked="ButtonTab_Clicked" Style="{StaticResource StyleTabButton}" />
                 </HorizontalStackLayout>
             </ScrollView>
             <!-- 选项卡内容 -->
@@ -41,15 +42,15 @@
                 <ScrollView>
                     <VerticalStackLayout>
                         <Grid>
-                            <Label Text="导入音频" />
+                            <Label Text="{Static res:AppResources.ImportAudio}" />
                             <Button BackgroundColor="Transparent" x:Name="ButtonImportAudio" Clicked="ButtonImportAudio_Clicked"/>
                         </Grid>
                         <Grid>
-                            <Label Text="导入MIDI" />
+                            <Label Text="{Static res:AppResources.ImportMidi}" />
                             <Button BackgroundColor="Transparent" x:Name="ButtonImportMidi" Clicked="ButtonImportMidi_Clicked"/>
                         </Grid>
                         <Grid>
-                            <Label Text="导入轨道" />
+                            <Label Text="{Static res:AppResources.ImportTrack}" />
                             <Button BackgroundColor="Transparent" />
                         </Grid>
                     </VerticalStackLayout>
@@ -60,11 +61,11 @@
                 <ScrollView>
                     <VerticalStackLayout>
                         <Grid>
-                            <Label Text="导出音频" />
+                            <Label Text="{Static res:AppResources.ExportAudio}" />
                             <Button BackgroundColor="Transparent" x:Name="ButtonExportAudio" Clicked="ButtonExportAudio_Clicked"/>
                         </Grid>
                         <Grid>
-                            <Label Text="导出工程" />
+                            <Label Text="{Static res:AppResources.ExportProject}" />
                             <Button BackgroundColor="Transparent" />
                         </Grid>
                     </VerticalStackLayout>
@@ -75,15 +76,15 @@
                 <ScrollView>
                     <VerticalStackLayout>
                         <Grid>
-                            <Label Text="伴奏分离" />
+                            <Label Text="{Static res:AppResources.SeparateStems}" />
                             <Button BackgroundColor="Transparent" />
                         </Grid>
                         <Grid>
-                            <Label Text="干声转换" />
+                            <Label Text="{Static res:AppResources.DryWetConversion}" />
                             <Button BackgroundColor="Transparent" />
                         </Grid>
                         <Grid>
-                            <Label Text="曲速测定" />
+                            <Label Text="{Static res:AppResources.DetectTempo}" />
                             <Button BackgroundColor="Transparent" />
                         </Grid>
                     </VerticalStackLayout>
@@ -94,15 +95,15 @@
                 <ScrollView>
                     <VerticalStackLayout>
                         <Grid>
-                            <Label Text="工程另存为" />
+                            <Label Text="{Static res:AppResources.SaveProjectAs}" />
                             <Button BackgroundColor="Transparent" x:Name="ButtonSaveAs" Clicked="ButtonSaveAs_Clicked"/>
                         </Grid>
                         <Grid>
-                            <Label Text="表情管理" />
+                            <Label Text="{Static res:AppResources.ManageExpressions}" />
                             <Button BackgroundColor="Transparent"/>
                         </Grid>
                         <Grid>
-                            <Label Text="全部设置" />
+                            <Label Text="{Static res:AppResources.Settings}" />
                             <Button BackgroundColor="Transparent" x:Name="ButtonSettings" Clicked="ButtonSettings_Clicked"/>
                         </Grid>
                     </VerticalStackLayout>

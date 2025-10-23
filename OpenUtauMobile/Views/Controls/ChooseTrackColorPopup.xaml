@@ -4,6 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                 xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Class="OpenUtauMobile.Views.Controls.ChooseTrackColorPopup">
@@ -20,7 +21,7 @@
         <Grid RowDefinitions="40, Auto, 60">
             <!-- 标题栏 -->
             <Border BackgroundColor="#66CCFF" Padding="10,2,10,2">
-                <Label x:Name="LabelTitle" Text="改变轨道颜色" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+                <Label x:Name="LabelTitle" Text="{Static res:AppResources.ChangeTrackColor}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
             </Border>
             <!-- 选择器 -->
             <FlexLayout AlignContent="Stretch" 
@@ -29,7 +30,7 @@
                         BindableLayout.ItemsSource="{Binding TrackColors}" 
                         Grid.Row="1">
                 <BindableLayout.EmptyView>
-                    <Label Text="没有可用的颜色" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Label Text="{Static res:AppResources.NoColorsAvailable}" HorizontalOptions="Center" VerticalOptions="Center"/>
                 </BindableLayout.EmptyView>
                 <BindableLayout.ItemTemplate>
                     <!-- 颜色选项卡 -->
@@ -43,7 +44,7 @@
             </FlexLayout>
             <!-- 按钮栏 -->
             <HorizontalStackLayout Grid.Row="2" Margin="10" HorizontalOptions="End" Spacing="10">
-                <Button Text="取消" Clicked="OnCancelClicked" CornerRadius="25" WidthRequest="80" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
+                <Button Text="{Static res:AppResources.CancelText}" Clicked="OnCancelClicked" CornerRadius="25" WidthRequest="80" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
             </HorizontalStackLayout>
         </Grid>
     </Border>

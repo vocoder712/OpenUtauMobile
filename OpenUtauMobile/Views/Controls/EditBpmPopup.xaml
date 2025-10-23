@@ -4,6 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                 xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Class="OpenUtauMobile.Views.Controls.EditBpmPopup">
@@ -18,14 +19,14 @@
         <Grid RowDefinitions="40, Auto, 60">
             <!-- 标题栏 -->
             <Border BackgroundColor="#66CCFF" Padding="10,2,10,2">
-                <Label x:Name="LabelTitle" Text="设置BPM" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+                <Label x:Name="LabelTitle" Text="{Static res:AppResources.SetBPM}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
             </Border>
             <!-- 输入框 -->
             <Entry Grid.Row="1" x:Name="EntryName" Margin="10,20,10,20"/>
             <!-- 按钮栏 -->
             <HorizontalStackLayout Grid.Row="2" Margin="10" HorizontalOptions="End" Spacing="10">
-                <Button Text="取消" Clicked="OnCancelClicked" CornerRadius="25" WidthRequest="80" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
-                <Button Text="确认" Clicked="OnConfirmClicked" CornerRadius="25" WidthRequest="80"/>
+                <Button Text="{Static res:AppResources.CancelText}" Clicked="OnCancelClicked" CornerRadius="25" WidthRequest="80" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
+                <Button Text="{Static res:AppResources.Confirm}" Clicked="OnConfirmClicked" CornerRadius="25" WidthRequest="80"/>
             </HorizontalStackLayout>
         </Grid>
     </Border>

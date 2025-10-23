@@ -5,6 +5,7 @@
                x:DataType="vm:FilePickerPopupViewModel"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                x:Class="OpenUtauMobile.Views.Controls.FilePickerPopup"
                Color="Transparent">
@@ -34,13 +35,13 @@
             <!-- 标题栏 -->
             <Grid Grid.Row="0" ColumnDefinitions="60,*">
                 <Button Margin="2,2,2,2" Grid.Column="0" ImageSource="{DynamicResource back}" Padding="10" Clicked="OnCancelClicked" BackgroundColor="Transparent"/>
-                <Label Grid.Column="1" Text="选择文件" FontSize="18" HorizontalOptions="Center" />
+                <Label Grid.Column="1" Text="{Static res:AppResources.SelectFile}" FontSize="18" HorizontalOptions="Center" />
             </Grid>
 
             <Grid Grid.Row="1" Padding="3,3,3,3" ColumnDefinitions="60,*,60" ColumnSpacing="5">
                 <Button Margin="2,2,2,2" Text=".." Clicked="OnGoUpClicked" CornerRadius="25" BorderWidth="1" BorderColor="{DynamicResource Primary}" Padding="0" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}" />
                 <Entry Grid.Column="1" Text="{Binding CurrentDirectory}" />
-                <Button x:Name="ButtonRefresh" Margin="2,2,2,2" Grid.Column="2" Text="刷新" CornerRadius="25" Clicked="ButtonRefresh_Clicked"/>
+                <Button x:Name="ButtonRefresh" Margin="2,2,2,2" Grid.Column="2" Text="{Static res:AppResources.Refresh}" CornerRadius="25" Clicked="ButtonRefresh_Clicked"/>
             </Grid>
 
             <Border Grid.Row="2" StrokeShape="RoundRectangle 10">

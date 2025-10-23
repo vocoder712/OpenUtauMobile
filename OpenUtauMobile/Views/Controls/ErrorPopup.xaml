@@ -2,6 +2,7 @@
 <toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                CanBeDismissedByTappingOutsideOfPopup="False"
                x:Class="OpenUtauMobile.Views.Controls.ErrorPopup"
                Color="Transparent"
@@ -39,7 +40,7 @@
             <!-- 标题 -->
             <Label 
                 x:Name="LabelTitle"
-                Text="OpenUtau Mobile 运行时异常"
+                Text="{Static res:AppResources.AppRuntimeException}"
                 Grid.Column="0" Grid.Row="0"
                 VerticalOptions="Start" 
                 HorizontalOptions="Start"
@@ -63,7 +64,7 @@
                 <Label
                     x:Name="LabelErrorDetail"
                     LineBreakMode="WordWrap"
-                    Text="错误信息"
+                    Text="{Static res:AppResources.ErrorMessage}"
                     VerticalOptions="Start" 
                     HorizontalOptions="Start" />
             </ScrollView>
@@ -74,9 +75,9 @@
                 Grid.Column="0" Grid.Row="3"
                 VerticalOptions="End"
                 HorizontalOptions="End">
-                <Button x:Name="ButtonRelaunch" Text="重启程序" Margin="5,0" Clicked="ButtonRelaunch_Clicked" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
-                <Button x:Name="ButtonClose" Text="关闭" Margin="5,0" Clicked="ButtonClose_Clicked" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
-                <Button x:Name="ButtonCopy" Text="复制错误信息" Margin="5,0" Clicked="ButtonCopy_Clicked" CornerRadius="25"/>
+                <Button x:Name="ButtonRelaunch" Text="{Static res:AppResources.RestartProgram}" Margin="5,0" Clicked="ButtonRelaunch_Clicked" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
+                <Button x:Name="ButtonClose" Text="{Static res:AppResources.Close}" Margin="5,0" Clicked="ButtonClose_Clicked" CornerRadius="25" BackgroundColor="Transparent" TextColor="{DynamicResource Primary}"/>
+                <Button x:Name="ButtonCopy" Text="{Static res:AppResources.CopyErrorMessage}" Margin="5,0" Clicked="ButtonCopy_Clicked" CornerRadius="25"/>
 
             </HorizontalStackLayout>
         </Grid>

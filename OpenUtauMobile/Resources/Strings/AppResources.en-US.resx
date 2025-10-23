@@ -358,7 +358,7 @@
     <value>Upon enabling, the singer's portrait will appear in the piano roll.</value>
   </data>
   <data name="GlobalPortraitTransparencyTooltip" xml:space="preserve">
-    <value>Enable this option to override the transparency presets for all artist portraits.</value>
+    <value>Enable this option to override the transparency presets for all singer portraits.</value>
   </data>
   <data name="KeepScreenOnTooltip" xml:space="preserve">
     <value>After enabling, the screen will remain on when editing.</value>
@@ -455,5 +455,170 @@
   </data>
   <data name="WorkTitleLoadingProject" xml:space="preserve">
     <value>Loading project, Don't touch</value>
+  </data>
+  <data name="SelectSinger" xml:space="preserve">
+    <value>Select Singer</value>
+  </data>
+  <data name="NoSingersText" xml:space="preserve">
+    <value>No singers have been added yet. Please go to the singer management page to add them!</value>
+  </data>
+  <data name="ChangeTrackColor" xml:space="preserve">
+    <value>Change track color</value>
+  </data>
+  <data name="NoColorsAvailable" xml:space="preserve">
+    <value>No colors are available</value>
+  </data>
+  <data name="SetBeat" xml:space="preserve">
+    <value>Set beat</value>
+  </data>
+  <data name="SetBPM" xml:space="preserve">
+    <value>Set BPM</value>
+  </data>
+  <data name="SetKey" xml:space="preserve">
+    <value>Set key</value>
+  </data>
+  <data name="NoSelectableKeys" xml:space="preserve">
+    <value>Can't select keys yet! Please report the issue to the community.</value>
+  </data>
+  <data name="EditLyrics" xml:space="preserve">
+    <value>Edit Lyrics</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="AppRuntimeException" xml:space="preserve">
+    <value>OpenUtau Mobile Runtime Exception</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>Error Message</value>
+  </data>
+  <data name="RestartProgram" xml:space="preserve">
+    <value>Restart the program</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="CopyErrorMessage" xml:space="preserve">
+    <value>Copy error message</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>Select File</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="SaveFile" xml:space="preserve">
+    <value>Save File</value>
+  </data>
+  <data name="InsertTempoSignatureMarker" xml:space="preserve">
+    <value>Insert tempo or signature marker</value>
+  </data>
+  <data name="SetTempoTickMarker" xml:space="preserve">
+    <value>Set tempo for tick marker to</value>
+  </data>
+  <data name="TickTime" xml:space="preserve">
+    <value>Tick Time</value>
+  </data>
+  <data name="InsertTempoMarker" xml:space="preserve">
+    <value>Insert tempo marker</value>
+  </data>
+  <data name="AtBarText" xml:space="preserve">
+    <value>At bar</value>
+  </data>
+  <data name="Bar" xml:space="preserve">
+    <value>Bar</value>
+  </data>
+  <data name="MarkBeatsAs" xml:space="preserve">
+    <value>Mark beats as</value>
+  </data>
+  <data name="BeatsPerMeasure" xml:space="preserve">
+    <value>Beats per measure</value>
+  </data>
+  <data name="NotesPerBeat" xml:space="preserve">
+    <value>Notes per beat</value>
+  </data>
+  <data name="InsertSignatureMarker" xml:space="preserve">
+    <value>Insert signature marker</value>
+  </data>
+  <data name="QuantizeText" xml:space="preserve">
+    <value>Quantize</value>
+  </data>
+  <data name="NoQuantization" xml:space="preserve">
+    <value>Can't quantize yet! Please report this issue to the community.</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="SelectPhonemizer" xml:space="preserve">
+    <value>Select Phonemizer</value>
+  </data>
+  <data name="CloseProject" xml:space="preserve">
+    <value>Close project</value>
+  </data>
+  <data name="UnsavedProjectChangesPrompt" xml:space="preserve">
+    <value>There are unsaved changes. Do you want to save and exit?</value>
+  </data>
+  <data name="DontSave" xml:space="preserve">
+    <value>Don't save</value>
+  </data>
+  <data name="AudioExportOptions" xml:space="preserve">
+    <value>Audio Export Options</value>
+  </data>
+  <data name="SampleRate" xml:space="preserve">
+    <value>Sample Rate</value>
+  </data>
+  <data name="BitDepth" xml:space="preserve">
+    <value>Bit Depth</value>
+  </data>
+  <data name="MixingMode" xml:space="preserve">
+    <value>Mixing Mode</value>
+  </data>
+  <data name="VocalTrackOnly" xml:space="preserve">
+    <value>Vocal track only</value>
+  </data>
+  <data name="MixDown" xml:space="preserve">
+    <value>MixDown</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="AuxiliaryTools" xml:space="preserve">
+    <value>Auxiliary Tools</value>
+  </data>
+  <data name="More" xml:space="preserve">
+    <value>More</value>
+  </data>
+  <data name="ImportAudio" xml:space="preserve">
+    <value>Import Audio</value>
+  </data>
+  <data name="ImportMidi" xml:space="preserve">
+    <value>Import MIDI</value>
+  </data>
+  <data name="ImportTrack" xml:space="preserve">
+    <value>Import Track</value>
+  </data>
+  <data name="ExportAudio" xml:space="preserve">
+    <value>Export Audio</value>
+  </data>
+  <data name="ExportProject" xml:space="preserve">
+    <value>Export Project</value>
+  </data>
+  <data name="SeparateStems" xml:space="preserve">
+    <value>Separate Stems</value>
+  </data>
+  <data name="DryWetConversion" xml:space="preserve">
+    <value>Dry-to-Wet Conversion</value>
+  </data>
+  <data name="DetectTempo" xml:space="preserve">
+    <value>Detect Tempo</value>
+  </data>
+  <data name="SaveProjectAs" xml:space="preserve">
+    <value>Save Project As</value>
+  </data>
+  <data name="ManageExpressions" xml:space="preserve">
+    <value>Manage Expressions</value>
   </data>
 </root>

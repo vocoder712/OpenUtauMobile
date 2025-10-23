@@ -4,6 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Name="PopupKeys"
@@ -25,13 +26,13 @@
         <Grid RowDefinitions="40, 400">
             <!-- 标题栏 -->
             <Border BackgroundColor="#66CCFF" Padding="10,2,10,2">
-                <Label x:Name="LabelTitle" Text="设置调性" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+                <Label x:Name="LabelTitle" Text="{Static res:AppResources.SetKey}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
             </Border>
             <!-- 列表 -->
             <ScrollView Grid.Row="1" >
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Keys}">
                     <BindableLayout.EmptyView>
-                        <Label Text="还没有可选的调！请向社区报告问题。" />
+                        <Label Text="{Static res:AppResources.NoSelectableKeys}" />
                     </BindableLayout.EmptyView>
                     <BindableLayout.ItemTemplate>
                         <!-- 调性卡片 -->
