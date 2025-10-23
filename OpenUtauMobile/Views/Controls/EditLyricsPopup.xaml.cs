@@ -14,7 +14,6 @@ public partial class EditLyricsPopup : Popup
     public EditLyricsPopup(UVoicePart part, UNote targetNote)
 	{
 		InitializeComponent();
-		LabelTitle.Text = "编辑歌词";
         EntryLyrics.Text = targetNote.lyric;
 		EntryLyrics.Focus();
 		EntryLyrics.CursorPosition = 0;

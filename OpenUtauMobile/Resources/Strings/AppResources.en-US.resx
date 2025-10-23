@@ -621,4 +621,34 @@
   <data name="ManageExpressions" xml:space="preserve">
     <value>Manage Expressions</value>
   </data>
+  <data name="PositionNegativeToast" xml:space="preserve">
+    <value>Position can't be negative</value>
+  </data>
+  <data name="InvalidBPMToast" xml:space="preserve">
+    <value>BPM can't be less than or equal to 0</value>
+  </data>
+  <data name="EnterValidNumberToast" xml:space="preserve">
+    <value>Please enter a valid number</value>
+  </data>
+  <data name="BarNegativeToast" xml:space="preserve">
+    <value>Bar can't be negative</value>
+  </data>
+  <data name="InvalidBeatsPerMeasureToast" xml:space="preserve">
+    <value>Beats per measure can't be less than or equal to 0</value>
+  </data>
+  <data name="InvalidNotesPerBeatToast" xml:space="preserve">
+    <value>Notes per beat can't be less than or equal to 0</value>
+  </data>
+  <data name="ErrorPopupTemplate" xml:space="preserve">
+    <value>Unfortunately, OpenUtau Mobile has encountered an exception, and some features may not function properly.
+We recommend copying the following error message and providing it to the developer, then restarting the application.
+
+{0}
+
+Exception Details:
+{1}</value>
+  </data>
+  <data name="CopiedToClipboardToast" xml:space="preserve">
+    <value>Copied to clipboard</value>
+  </data>
 </root>

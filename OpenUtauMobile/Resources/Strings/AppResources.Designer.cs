@@ -187,6 +187,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 小节不能为负.
+        /// </summary>
+        internal static string BarNegativeToast {
+            get {
+                return ResourceManager.GetString("BarNegativeToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 每小节拍数.
         /// </summary>
         internal static string BeatsPerMeasure {
@@ -264,6 +273,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string ConfirmCancelSingerInstallToast {
             get {
                 return ResourceManager.GetString("ConfirmCancelSingerInstallToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 已复制到剪贴板.
+        /// </summary>
+        internal static string CopiedToClipboardToast {
+            get {
+                return ResourceManager.GetString("CopiedToClipboardToast", resourceCulture);
             }
         }
         
@@ -358,11 +376,35 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 请输入有效的数字.
+        /// </summary>
+        internal static string EnterValidNumberToast {
+            get {
+                return ResourceManager.GetString("EnterValidNumberToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 错误信息.
         /// </summary>
         internal static string ErrorMessage {
             get {
                 return ResourceManager.GetString("ErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 很抱歉， OpenUtau Mobile 捕获到了异常，部分功能可能无法正常使用。
+        ///建议您将以下错误信息复制并反馈给开发者，并重启应用程序。
+        ///
+        ///{0}
+        ///
+        ///异常详情：
+        ///{1}.
+        /// </summary>
+        internal static string ErrorPopupTemplate {
+            get {
+                return ResourceManager.GetString("ErrorPopupTemplate", resourceCulture);
             }
         }
         
@@ -606,6 +648,33 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string InstallingText {
             get {
                 return ResourceManager.GetString("InstallingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 每小节拍数不能小于等于0.
+        /// </summary>
+        internal static string InvalidBeatsPerMeasureToast {
+            get {
+                return ResourceManager.GetString("InvalidBeatsPerMeasureToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BPM不能小于等于0.
+        /// </summary>
+        internal static string InvalidBPMToast {
+            get {
+                return ResourceManager.GetString("InvalidBPMToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 以几分音符为一拍不能小于等于0.
+        /// </summary>
+        internal static string InvalidNotesPerBeatToast {
+            get {
+                return ResourceManager.GetString("InvalidNotesPerBeatToast", resourceCulture);
             }
         }
         
@@ -1038,6 +1107,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string PlaybackRefreshRateTooltip {
             get {
                 return ResourceManager.GetString("PlaybackRefreshRateTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 位置不能为负.
+        /// </summary>
+        internal static string PositionNegativeToast {
+            get {
+                return ResourceManager.GetString("PositionNegativeToast", resourceCulture);
             }
         }
         

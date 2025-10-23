@@ -621,4 +621,34 @@
   <data name="ManageExpressions" xml:space="preserve">
     <value>表情管理</value>
   </data>
+  <data name="PositionNegativeToast" xml:space="preserve">
+    <value>位置不能为负</value>
+  </data>
+  <data name="InvalidBPMToast" xml:space="preserve">
+    <value>BPM不能小于等于0</value>
+  </data>
+  <data name="EnterValidNumberToast" xml:space="preserve">
+    <value>请输入有效的数字</value>
+  </data>
+  <data name="BarNegativeToast" xml:space="preserve">
+    <value>小节不能为负</value>
+  </data>
+  <data name="InvalidBeatsPerMeasureToast" xml:space="preserve">
+    <value>每小节拍数不能小于等于0</value>
+  </data>
+  <data name="InvalidNotesPerBeatToast" xml:space="preserve">
+    <value>以几分音符为一拍不能小于等于0</value>
+  </data>
+  <data name="ErrorPopupTemplate" xml:space="preserve">
+    <value>很抱歉， OpenUtau Mobile 捕获到了异常，部分功能可能无法正常使用。
+建议您将以下错误信息复制并反馈给开发者，并重启应用程序。
+
+{0}
+
+异常详情：
+{1}</value>
+  </data>
+  <data name="CopiedToClipboardToast" xml:space="preserve">
+    <value>已复制到剪贴板</value>
+  </data>
 </root>
