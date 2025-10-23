@@ -46,7 +46,6 @@ namespace OpenUtauMobile
                     mergedDictionaries?.Add(new DarkThemeColors());
                     break;
             }
-
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
