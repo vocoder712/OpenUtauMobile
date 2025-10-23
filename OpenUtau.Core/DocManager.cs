@@ -139,7 +139,7 @@ namespace OpenUtau.Core {
                 }
             }
             PhonemizerFactories = [.. phonemizerFactories
-                .Distinct() // 去重,避免同一个 Phonemizer 被多次加载
+                .DistinctBy(factory => factory.type) // 去重,避免同一个 Phonemizer 被多次加载
                 .OrderBy(factory => factory.tag)];
             stopWatch.Stop();
             Log.Information($"已完成插件查找，用时: {stopWatch.Elapsed}");
