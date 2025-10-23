@@ -109,7 +109,7 @@ namespace OpenUtau.Core {
                 }
                 catch (Exception e)
                 {
-                    Log.Warning(e, $"程序集文件 {file}加载失败。");
+                    Log.Warning(e, $"程序集文件 {file} 加载失败。");
                     continue;
                 }
             }
