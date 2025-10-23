@@ -64,48 +64,15 @@ namespace OpenUtau.Core {
             }
         }
 
-        public void SearchAllPlugins() {
+        /// <summary>
+        /// 从 插件目录、内置程序集 和 当前程序集 加载所有插件并添加音素器
+        /// </summary>
+        public void SearchAllPlugins()
+        {
             const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
             var files = new List<string>();
-            // 首先尝试从已加载的程序集中查找 Phonemizer
-            try
-            {
-                Assembly[]? loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-                foreach (Assembly assembly in loadedAssemblies)
-                {
-                    try
-                    {
-                        Debug.WriteLine($"检查已加载程序集: {assembly.GetName().Name}");
-                        // 检查是否是 Builtin 插件程序集或其他插件程序集
-                        if (assembly.GetName().Name?.Contains("Plugin", StringComparison.OrdinalIgnoreCase) == true ||
-                            assembly.GetName().Name?.Contains("Builtin", StringComparison.OrdinalIgnoreCase) == true)
-                        {
-                            Debug.WriteLine($"找到本地插件程序集: {assembly.GetName().Name}");
-
-                            foreach (var type in assembly.GetExportedTypes())
-                            {
-                                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
-                                {
-                                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
-                                    Log.Information($"加载了音素器 {type.Name} 来自程序集： {assembly.GetName().Name}");
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Warning(e, $"未能加载程序集： {assembly.GetName().Name}");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "未能搜索已加载的程序集。");
-            }
-            // 然后从插件目录加载插件程序集 外部dll（原本的逻辑）
-            // 搜索插件目录
             try
             {
                 files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
@@ -116,35 +83,64 @@ namespace OpenUtau.Core {
                     File.Delete(oldBuiltin);
                 }
                 files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
-            } catch (Exception e) {
-                Log.Error(e, "Failed to search plugins.");
             }
-            // 逐一加载程序集并添加 Phonemizer
-            foreach (var file in files) {
+            catch (Exception e)
+            {
+                Log.Error(e, "扫描插件失败");
+            }
+            foreach (var file in files)
+            {
                 Assembly assembly;
-                try {
-                    if (!LibraryLoader.IsManagedAssembly(file)) {
-                        Log.Information($"跳过 {file}（不是托管的程序集）");
+                try
+                {
+                    if (!LibraryLoader.IsManagedAssembly(file))
+                    {
+                        Log.Information($"跳过 {file}，因为不是托管程序集");
                         continue;
                     }
                     assembly = Assembly.LoadFile(file);
-                    foreach (var type in assembly.GetExportedTypes()) {
-                        if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+                    foreach (var type in assembly.GetExportedTypes())
+                    {
+                        if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
+                        {
                             phonemizerFactories.Add(PhonemizerFactory.Get(type));
                         }
                     }
-                } catch (Exception e) {
-                    Log.Warning(e, $"未能加载 {file}.");
+                }
+                catch (Exception e)
+                {
+                    Log.Warning(e, $"程序集文件 {file}加载失败。");
                     continue;
                 }
             }
-            // 再从当前程序集查找一次 Phonemizer
-            foreach (var type in GetType().Assembly.GetExportedTypes()) {
-                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+            try
+            {
+                // 对于Android平台，内置音素器插件程序集不是单独的DLL文件，需从当前域加载
+                Assembly assemblyPluginBuiltin = Assembly.Load("OpenUtau.Plugin.Builtin");
+                foreach (Type type in assemblyPluginBuiltin.GetExportedTypes())
+                {
+                    if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
+                    {
+                        phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                    }
+                }
+                Log.Information($"成功加载内建插件程序集 {assemblyPluginBuiltin}");
+            }
+            catch (Exception e)
+            {
+                Log.Warning(e, "无法加载内建插件程序集 OpenUtau.Plugin.Builtin");
+            }
+            // 加载当前程序集（Core）中的内置音素化器
+            foreach (var type in GetType().Assembly.GetExportedTypes())
+            {
+                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
+                {
                     phonemizerFactories.Add(PhonemizerFactory.Get(type));
                 }
             }
-            PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
+            PhonemizerFactories = [.. phonemizerFactories
+                .Distinct() // 去重,避免同一个 Phonemizer 被多次加载
+                .OrderBy(factory => factory.tag)];
             stopWatch.Stop();
             Log.Information($"已完成插件查找，用时: {stopWatch.Elapsed}");
         }

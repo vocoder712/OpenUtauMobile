@@ -3,6 +3,7 @@ using OpenUtauMobile.Views;
 using OpenUtauMobile.Views.Controls;
 using Serilog;
 using System.Diagnostics;
+using System.Reflection;
 using Preferences = OpenUtau.Core.Util.Preferences;
 
 namespace OpenUtauMobile
@@ -48,19 +49,6 @@ namespace OpenUtauMobile
                     mergedDictionaries?.Add(new DarkThemeColors());
                     break;
             }
-            // ===== 显式触发 OpenUtau.Plugin.Builtin 程序集加载 =====!!!循环依赖坑人
-            try
-            {
-                // 引用 Builtin 中的任意类型来强制加载程序集
-                // 这会触发 CLR 加载 OpenUtau.Plugin.Builtin.dll
-                Type builtinType = typeof(OpenUtau.Plugin.Builtin.ChineseCVVCPhonemizer); // 不太优雅，以后研究别的方法
-                Log.Information($"成功触发内建插件程序集: {builtinType.Assembly.FullName}");
-            }
-            catch (Exception e)
-            {
-                Log.Warning(e, "无法触发内建插件程序集加载");
-            }
-
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
