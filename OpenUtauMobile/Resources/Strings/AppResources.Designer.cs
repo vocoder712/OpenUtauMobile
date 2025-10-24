@@ -1003,6 +1003,33 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 钢琴采样TODO.
+        /// </summary>
+        internal static string OnPianoClickPianoSample {
+            get {
+                return ResourceManager.GetString("OnPianoClickPianoSample", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 无声.
+        /// </summary>
+        internal static string OnPianoClickSilence {
+            get {
+                return ResourceManager.GetString("OnPianoClickSilence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 正弦波TODO.
+        /// </summary>
+        internal static string OnPianoClickSineWave {
+            get {
+                return ResourceManager.GetString("OnPianoClickSineWave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 设置点击钢琴卷帘左侧琴键的行为.
         /// </summary>
         internal static string OnPianoClickTooltip {
@@ -1093,6 +1120,42 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 精细.
+        /// </summary>
+        internal static string PitchPrecisionFine {
+            get {
+                return ResourceManager.GetString("PitchPrecisionFine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 中等.
+        /// </summary>
+        internal static string PitchPrecisionMedium {
+            get {
+                return ResourceManager.GetString("PitchPrecisionMedium", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 原始.
+        /// </summary>
+        internal static string PitchPrecisionOriginal {
+            get {
+                return ResourceManager.GetString("PitchPrecisionOriginal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 粗略.
+        /// </summary>
+        internal static string PitchPrecisionRough {
+            get {
+                return ResourceManager.GetString("PitchPrecisionRough", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 回放刷新率.
         /// </summary>
         internal static string PlaybackRefreshRate {
@@ -1134,6 +1197,60 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string PreRenderTooltip {
             get {
                 return ResourceManager.GetString("PreRenderTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 等待波形处理....
+        /// </summary>
+        internal static string ProcessingWaveform {
+            get {
+                return ResourceManager.GetString("ProcessingWaveform", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 波形处理被取消.
+        /// </summary>
+        internal static string ProcessingWaveformCancelled {
+            get {
+                return ResourceManager.GetString("ProcessingWaveformCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 波形数据为空.
+        /// </summary>
+        internal static string ProcessingWaveformEmpty {
+            get {
+                return ResourceManager.GetString("ProcessingWaveformEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 波形处理错误: {0}.
+        /// </summary>
+        internal static string ProcessingWaveformError {
+            get {
+                return ResourceManager.GetString("ProcessingWaveformError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 波形处理未开始.
+        /// </summary>
+        internal static string ProcessingWaveformNotStarted {
+            get {
+                return ResourceManager.GetString("ProcessingWaveformNotStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 进度：.
+        /// </summary>
+        internal static string Progress {
+            get {
+                return ResourceManager.GetString("Progress", resourceCulture);
             }
         }
         
@@ -1251,6 +1368,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string RenderAndPerformance {
             get {
                 return ResourceManager.GetString("RenderAndPerformance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 波形文件渲染中....
+        /// </summary>
+        internal static string RenderingWaveformFile {
+            get {
+                return ResourceManager.GetString("RenderingWaveformFile", resourceCulture);
             }
         }
         
@@ -1408,6 +1534,24 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ... (已显示前 {0} 个条目).
+        /// </summary>
+        internal static string ShowingFirstNEntries {
+            get {
+                return ResourceManager.GetString("ShowingFirstNEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ... (已显示前 {0} 个文本文件).
+        /// </summary>
+        internal static string ShowingFirstNTextFiles {
+            get {
+                return ResourceManager.GetString("ShowingFirstNTextFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 歌手信息缺失，请选择歌手类型：.
         /// </summary>
         internal static string SingerInformationMissing {
@@ -1480,6 +1624,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 系统.
+        /// </summary>
+        internal static string System {
+            get {
+                return ResourceManager.GetString("System", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 请选择一种 文本 编码方式，使得右侧文字显示正常.
         /// </summary>
         internal static string TextEncodingMethodPrompt {
@@ -1494,6 +1647,24 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string Theme {
             get {
                 return ResourceManager.GetString("Theme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 深色.
+        /// </summary>
+        internal static string ThemeDark {
+            get {
+                return ResourceManager.GetString("ThemeDark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 浅色.
+        /// </summary>
+        internal static string ThemeLight {
+            get {
+                return ResourceManager.GetString("ThemeLight", resourceCulture);
             }
         }
         
@@ -1521,6 +1692,33 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string Transparency {
             get {
                 return ResourceManager.GetString("Transparency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 未知.
+        /// </summary>
+        internal static string Unknown {
+            get {
+                return ResourceManager.GetString("Unknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 未知错误.
+        /// </summary>
+        internal static string UnknownError {
+            get {
+                return ResourceManager.GetString("UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 未知状态: {0}.
+        /// </summary>
+        internal static string UnknownStatus {
+            get {
+                return ResourceManager.GetString("UnknownStatus", resourceCulture);
             }
         }
         

@@ -651,4 +651,70 @@ Exception Details:
   <data name="CopiedToClipboardToast" xml:space="preserve">
     <value>Copied to clipboard</value>
   </data>
+  <data name="ProcessingWaveform" xml:space="preserve">
+    <value>Processing waveform...</value>
+  </data>
+  <data name="ProcessingWaveformCancelled" xml:space="preserve">
+    <value>Waveform processing has been canceled.</value>
+  </data>
+  <data name="ProcessingWaveformError" xml:space="preserve">
+    <value>Waveform Processing Error: {0}</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Unknown Error</value>
+  </data>
+  <data name="RenderingWaveformFile" xml:space="preserve">
+    <value>Rendering waveform file...</value>
+  </data>
+  <data name="ProcessingWaveformNotStarted" xml:space="preserve">
+    <value>Waveform processing hasn't yet started.</value>
+  </data>
+  <data name="ProcessingWaveformEmpty" xml:space="preserve">
+    <value>Waveform data is empty.</value>
+  </data>
+  <data name="UnknownStatus" xml:space="preserve">
+    <value>Unknown status: {0}</value>
+  </data>
+  <data name="PitchPrecisionOriginal" xml:space="preserve">
+    <value>Original</value>
+  </data>
+  <data name="PitchPrecisionFine" xml:space="preserve">
+    <value>Fine</value>
+  </data>
+  <data name="PitchPrecisionMedium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="PitchPrecisionRough" xml:space="preserve">
+    <value>Rough</value>
+  </data>
+  <data name="OnPianoClickSilence" xml:space="preserve">
+    <value>Silence</value>
+  </data>
+  <data name="OnPianoClickSineWave" xml:space="preserve">
+    <value>Sine Wave TODO</value>
+  </data>
+  <data name="OnPianoClickPianoSample" xml:space="preserve">
+    <value>Piano Sample TODO</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Progress:</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="ShowingFirstNEntries" xml:space="preserve">
+    <value>... (Showing first {0} entries)</value>
+  </data>
+  <data name="ShowingFirstNTextFiles" xml:space="preserve">
+    <value>... (Showing first {0} text files)</value>
+  </data>
 </root>

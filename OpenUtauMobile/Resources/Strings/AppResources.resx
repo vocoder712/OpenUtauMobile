@@ -651,4 +651,70 @@
   <data name="CopiedToClipboardToast" xml:space="preserve">
     <value>已复制到剪贴板</value>
   </data>
+  <data name="ProcessingWaveform" xml:space="preserve">
+    <value>等待波形处理...</value>
+  </data>
+  <data name="ProcessingWaveformCancelled" xml:space="preserve">
+    <value>波形处理被取消</value>
+  </data>
+  <data name="ProcessingWaveformError" xml:space="preserve">
+    <value>波形处理错误: {0}</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>未知错误</value>
+  </data>
+  <data name="RenderingWaveformFile" xml:space="preserve">
+    <value>波形文件渲染中...</value>
+  </data>
+  <data name="ProcessingWaveformNotStarted" xml:space="preserve">
+    <value>波形处理未开始</value>
+  </data>
+  <data name="ProcessingWaveformEmpty" xml:space="preserve">
+    <value>波形数据为空</value>
+  </data>
+  <data name="UnknownStatus" xml:space="preserve">
+    <value>未知状态: {0}</value>
+  </data>
+  <data name="PitchPrecisionOriginal" xml:space="preserve">
+    <value>原始</value>
+  </data>
+  <data name="PitchPrecisionFine" xml:space="preserve">
+    <value>精细</value>
+  </data>
+  <data name="PitchPrecisionMedium" xml:space="preserve">
+    <value>中等</value>
+  </data>
+  <data name="PitchPrecisionRough" xml:space="preserve">
+    <value>粗略</value>
+  </data>
+  <data name="OnPianoClickSilence" xml:space="preserve">
+    <value>无声</value>
+  </data>
+  <data name="OnPianoClickSineWave" xml:space="preserve">
+    <value>正弦波TODO</value>
+  </data>
+  <data name="OnPianoClickPianoSample" xml:space="preserve">
+    <value>钢琴采样TODO</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>系统</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>进度：</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="ShowingFirstNEntries" xml:space="preserve">
+    <value>... (已显示前 {0} 个条目)</value>
+  </data>
+  <data name="ShowingFirstNTextFiles" xml:space="preserve">
+    <value>... (已显示前 {0} 个文本文件)</value>
+  </data>
 </root>
