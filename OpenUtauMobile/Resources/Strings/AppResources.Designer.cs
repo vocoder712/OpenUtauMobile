@@ -385,6 +385,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 无法打开项目文件，可能格式不受支持或文件已损坏。.
+        /// </summary>
+        internal static string ErrorFailLoadProject {
+            get {
+                return ResourceManager.GetString("ErrorFailLoadProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 错误信息.
         /// </summary>
         internal static string ErrorMessage {
@@ -922,6 +931,24 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 新分片.
+        /// </summary>
+        internal static string NewPart {
+            get {
+                return ResourceManager.GetString("NewPart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 新轨道.
+        /// </summary>
+        internal static string NewTrack {
+            get {
+                return ResourceManager.GetString("NewTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 下一个.
         /// </summary>
         internal static string Next {
@@ -990,6 +1017,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string NotesPerBeat {
             get {
                 return ResourceManager.GetString("NotesPerBeat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} 个分片被选中.
+        /// </summary>
+        internal static string NPartsSelected {
+            get {
+                return ResourceManager.GetString("NPartsSelected", resourceCulture);
             }
         }
         
@@ -1089,6 +1125,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string OutputDeviceTooltip {
             get {
                 return ResourceManager.GetString("OutputDeviceTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 正在音素化：.
+        /// </summary>
+        internal static string PhonemizingInProgress {
+            get {
+                return ResourceManager.GetString("PhonemizingInProgress", resourceCulture);
             }
         }
         

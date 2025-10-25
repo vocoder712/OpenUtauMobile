@@ -717,4 +717,19 @@ Exception Details:
   <data name="ShowingFirstNTextFiles" xml:space="preserve">
     <value>... (Showing first {0} text files)</value>
   </data>
+  <data name="PhonemizingInProgress" xml:space="preserve">
+    <value>Phonemizing in progress:</value>
+  </data>
+  <data name="NPartsSelected" xml:space="preserve">
+    <value>{0} parts selected</value>
+  </data>
+  <data name="ErrorFailLoadProject" xml:space="preserve">
+    <value>The project file can't be opened. It may be due to an unsupported format or a corrupted file.</value>
+  </data>
+  <data name="NewPart" xml:space="preserve">
+    <value>New Part</value>
+  </data>
+  <data name="NewTrack" xml:space="preserve">
+    <value>New Track</value>
+  </data>
 </root>

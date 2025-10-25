@@ -717,4 +717,19 @@
   <data name="ShowingFirstNTextFiles" xml:space="preserve">
     <value>... (已显示前 {0} 个文本文件)</value>
   </data>
+  <data name="PhonemizingInProgress" xml:space="preserve">
+    <value>正在音素化：</value>
+  </data>
+  <data name="NPartsSelected" xml:space="preserve">
+    <value>{0} 个分片被选中</value>
+  </data>
+  <data name="ErrorFailLoadProject" xml:space="preserve">
+    <value>无法打开项目文件，可能格式不受支持或文件已损坏。</value>
+  </data>
+  <data name="NewPart" xml:space="preserve">
+    <value>新分片</value>
+  </data>
+  <data name="NewTrack" xml:space="preserve">
+    <value>新轨道</value>
+  </data>
 </root>
