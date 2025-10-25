@@ -732,4 +732,16 @@
   <data name="NewTrack" xml:space="preserve">
     <value>新轨道</value>
   </data>
+  <data name="NewFile" xml:space="preserve">
+    <value>新文件</value>
+  </data>
+  <data name="WarningNoDirOrFilesMatchingCriteria" xml:space="preserve">
+    <value>该目录下没有子目录和符合条件的文件</value>
+  </data>
+  <data name="WarningNoDirectoryPermission" xml:space="preserve">
+    <value>没有权限访问该目录</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误：{0}</value>
+  </data>
 </root>

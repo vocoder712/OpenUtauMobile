@@ -385,6 +385,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 错误：{0}.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 无法打开项目文件，可能格式不受支持或文件已损坏。.
         /// </summary>
         internal static string ErrorFailLoadProject {
@@ -927,6 +936,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string New {
             get {
                 return ResourceManager.GetString("New", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 新文件.
+        /// </summary>
+        internal static string NewFile {
+            get {
+                return ResourceManager.GetString("NewFile", resourceCulture);
             }
         }
         
@@ -1809,6 +1827,24 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string VogenSingerSetupWizard {
             get {
                 return ResourceManager.GetString("VogenSingerSetupWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 没有权限访问该目录.
+        /// </summary>
+        internal static string WarningNoDirectoryPermission {
+            get {
+                return ResourceManager.GetString("WarningNoDirectoryPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 该目录下没有子目录和符合条件的文件.
+        /// </summary>
+        internal static string WarningNoDirOrFilesMatchingCriteria {
+            get {
+                return ResourceManager.GetString("WarningNoDirOrFilesMatchingCriteria", resourceCulture);
             }
         }
         

@@ -732,4 +732,16 @@ Exception Details:
   <data name="NewTrack" xml:space="preserve">
     <value>New Track</value>
   </data>
+  <data name="NewFile" xml:space="preserve">
+    <value>New File</value>
+  </data>
+  <data name="WarningNoDirOrFilesMatchingCriteria" xml:space="preserve">
+    <value>There are no directories or files matching the criteria in this directory.</value>
+  </data>
+  <data name="WarningNoDirectoryPermission" xml:space="preserve">
+    <value>You don't have permission to access this directory.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
 </root>
