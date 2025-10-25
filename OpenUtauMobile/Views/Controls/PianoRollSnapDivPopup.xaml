@@ -48,7 +48,7 @@
                                             </MultiBinding>
                                         </Label.IsVisible>
                                     </Label>
-                                    <Label Grid.Column="1" Text="{Binding ., StringFormat='1/ {0}小节（{0}分音符）'}" VerticalTextAlignment="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding ., StringFormat={x:Static res:AppResources.RhythmMeasureNoteTemplate}}" VerticalTextAlignment="Center"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>

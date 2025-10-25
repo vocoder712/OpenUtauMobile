@@ -786,4 +786,22 @@
   <data name="Singer" xml:space="preserve">
     <value>歌手</value>
   </data>
+  <data name="RhythmMeasureNoteTemplate" xml:space="preserve">
+    <value>1/ {0}小节（{0}分音符）</value>
+  </data>
+  <data name="Render" xml:space="preserve">
+    <value>渲</value>
+  </data>
+  <data name="Swap" xml:space="preserve">
+    <value>换</value>
+  </data>
+  <data name="Hand" xml:space="preserve">
+    <value>手</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编</value>
+  </data>
+  <data name="Eraser" xml:space="preserve">
+    <value>橡</value>
+  </data>
 </root>

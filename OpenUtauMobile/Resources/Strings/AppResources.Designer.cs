@@ -367,6 +367,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 编.
+        /// </summary>
+        internal static string Edit {
+            get {
+                return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 编辑与行为.
         /// </summary>
         internal static string EditAndBehaviour {
@@ -390,6 +399,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string EnterValidNumberToast {
             get {
                 return ResourceManager.GetString("EnterValidNumberToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 橡.
+        /// </summary>
+        internal static string Eraser {
+            get {
+                return ResourceManager.GetString("Eraser", resourceCulture);
             }
         }
         
@@ -522,6 +540,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string GlobalPortraitTransparencyTooltip {
             get {
                 return ResourceManager.GetString("GlobalPortraitTransparencyTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 手.
+        /// </summary>
+        internal static string Hand {
+            get {
+                return ResourceManager.GetString("Hand", resourceCulture);
             }
         }
         
@@ -1516,6 +1543,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 渲.
+        /// </summary>
+        internal static string Render {
+            get {
+                return ResourceManager.GetString("Render", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 渲染与性能.
         /// </summary>
         internal static string RenderAndPerformance {
@@ -1539,6 +1575,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string RestartProgram {
             get {
                 return ResourceManager.GetString("RestartProgram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1/ {0}小节（{0}分音符）.
+        /// </summary>
+        internal static string RhythmMeasureNoteTemplate {
+            get {
+                return ResourceManager.GetString("RhythmMeasureNoteTemplate", resourceCulture);
             }
         }
         
@@ -1809,6 +1854,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string StringPressBackAgainToExit {
             get {
                 return ResourceManager.GetString("StringPressBackAgainToExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 换.
+        /// </summary>
+        internal static string Swap {
+            get {
+                return ResourceManager.GetString("Swap", resourceCulture);
             }
         }
         
