@@ -8,13 +8,13 @@
 
 OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
-一个基于 [OpenUtau内核](https://github.com/stakira/OpenUtau/tree/master/OpenUtau.Core) ，并进行了一些修补的编辑器。因此理论上可以使用 OpenUtau 的 USTX 工程文件。
+一个基于 [OpenUtau内核](https://github.com/stakira/OpenUtau/tree/master/OpenUtau.Core) ，并进行了一些修补的编辑器。完全支持 OpenUtau 的 USTX 工程文件。
 
 ## 兼容性
 
 ### 运行平台
 
-- Android5以上且处理器架构为arm64或x64
+- Android5及以上
 
 ### 歌手类型
 
@@ -108,12 +108,12 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 - [x] 卸载已安装的歌手
 - [ ] 画布中日语文字不能显示
 - [ ] 音高曲线渲染性能问题
-- [ ] 支持打开除ustx以外的OpenUtau兼容工程文件
-- [ ] 钢琴卷帘平移限制计算不正确
+- [x] 支持打开除ustx以外的OpenUtau兼容工程文件
+- [x] 钢琴卷帘平移限制计算不正确
 - [ ] 导入midi没有同步曲速
-- [ ] 低版本Android没有正确处理外部存储权限
+- [x] 低版本Android没有正确处理外部存储权限
 - [ ] 图标没设计好，周围被裁剪了，先忍一下吧
-- [ ] 内建Plugin不能加载
+- [x] 内建Plugin不能加载
 - [ ] 还没做安装oudep，不过可以root释放文件，记得修复权限
 - [ ] 锚点音高
 - [ ] 颤音
@@ -123,7 +123,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 - [x] 更改音素器
 - [ ] 更改渲染器
 - [ ] 内核版本较旧，不支持打开USTX版本0.7及以上的工程文件
-- [ ] 替换歌声分片的音频源
+- [ ] 替换音频分片的音频源
 - [ ] 干声转换
 - [ ] 测定音频 BPM
 - [ ] 为 iOS 平台构建（门槛高，不一定成功）
@@ -140,9 +140,12 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 - [ ] 多选音符
 - [ ] 多选分片（Part）
 - [ ] 删除时间与曲速标记
-- [ ] 声像电平Slider自定义
+- [ ] 声像电平Slider控件优化
 - [ ] 总线电平表
 - [ ] 仅Android10及以上可用放大镜
+- [ ] 复制粘贴part
+- [ ] 复制粘贴track
+- [ ] 复制粘贴note(s)
 
 ## 自行构建与贡献
 
