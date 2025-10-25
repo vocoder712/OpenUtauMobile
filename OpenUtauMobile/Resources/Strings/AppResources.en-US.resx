@@ -787,7 +787,7 @@ Exception Details:
     <value>Singer</value>
   </data>
   <data name="RhythmMeasureNoteTemplate" xml:space="preserve">
-    <value>1/{0} measure ({0} note)</value>
+    <value>1/{0} measure ({0}th note)</value>
   </data>
   <data name="Render" xml:space="preserve">
     <value>Render</value>
