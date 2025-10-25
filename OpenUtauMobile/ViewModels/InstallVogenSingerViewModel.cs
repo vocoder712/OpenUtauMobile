@@ -2,6 +2,7 @@
 using ReactiveUI.Fody.Helpers;
 using OpenUtau.Core.Vogen;
 using OpenUtau.Core;
+using OpenUtauMobile.Resources.Strings;
 using System.Diagnostics;
 
 namespace OpenUtauMobile.ViewModels
@@ -10,7 +11,7 @@ namespace OpenUtauMobile.ViewModels
     {
         [Reactive] public string InstallPackagePath { get; set; } = string.Empty;
 
-        [Reactive] public string InstallProgressText { get; set; } = "进度："; // 安装进度
+        [Reactive] public string InstallProgressText { get; set; } = AppResources.Progress; // 安装进度
         [Reactive] public string InstallProgressDetail { get; set; } = ""; // 安装进度消息
         [Reactive] public double InstallProgress { get; set; } = 0.0; // 安装进度, 0.0-1.0
 
@@ -23,7 +24,7 @@ namespace OpenUtauMobile.ViewModels
         {
             Debug.WriteLine($"Install Progress: {progress}, Detail: {detail}");
             InstallProgress = progress / 100;
-            InstallProgressText = $"进度：{progress:0.##}%";
+            InstallProgressText = $"{AppResources.Progress}{progress:0.##}%";
             InstallProgressDetail = $"{detail}";
         }
 

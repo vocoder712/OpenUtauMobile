@@ -651,4 +651,157 @@
   <data name="CopiedToClipboardToast" xml:space="preserve">
     <value>已复制到剪贴板</value>
   </data>
+  <data name="ProcessingWaveform" xml:space="preserve">
+    <value>等待波形处理...</value>
+  </data>
+  <data name="ProcessingWaveformCancelled" xml:space="preserve">
+    <value>波形处理被取消</value>
+  </data>
+  <data name="ProcessingWaveformError" xml:space="preserve">
+    <value>波形处理错误: {0}</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>未知错误</value>
+  </data>
+  <data name="RenderingWaveformFile" xml:space="preserve">
+    <value>波形文件渲染中...</value>
+  </data>
+  <data name="ProcessingWaveformNotStarted" xml:space="preserve">
+    <value>波形处理未开始</value>
+  </data>
+  <data name="ProcessingWaveformEmpty" xml:space="preserve">
+    <value>波形数据为空</value>
+  </data>
+  <data name="UnknownStatus" xml:space="preserve">
+    <value>未知状态: {0}</value>
+  </data>
+  <data name="PitchPrecisionOriginal" xml:space="preserve">
+    <value>原始</value>
+  </data>
+  <data name="PitchPrecisionFine" xml:space="preserve">
+    <value>精细</value>
+  </data>
+  <data name="PitchPrecisionMedium" xml:space="preserve">
+    <value>中等</value>
+  </data>
+  <data name="PitchPrecisionRough" xml:space="preserve">
+    <value>粗略</value>
+  </data>
+  <data name="OnPianoClickSilence" xml:space="preserve">
+    <value>无声</value>
+  </data>
+  <data name="OnPianoClickSineWave" xml:space="preserve">
+    <value>正弦波TODO</value>
+  </data>
+  <data name="OnPianoClickPianoSample" xml:space="preserve">
+    <value>钢琴采样TODO</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>浅色</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>深色</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>系统</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>进度：</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="ShowingFirstNEntries" xml:space="preserve">
+    <value>... (已显示前 {0} 个条目)</value>
+  </data>
+  <data name="ShowingFirstNTextFiles" xml:space="preserve">
+    <value>... (已显示前 {0} 个文本文件)</value>
+  </data>
+  <data name="PhonemizingInProgress" xml:space="preserve">
+    <value>正在音素化：</value>
+  </data>
+  <data name="NPartsSelected" xml:space="preserve">
+    <value>{0} 个分片被选中</value>
+  </data>
+  <data name="ErrorFailLoadProject" xml:space="preserve">
+    <value>无法打开项目文件，可能格式不受支持或文件已损坏。</value>
+  </data>
+  <data name="NewPart" xml:space="preserve">
+    <value>新分片</value>
+  </data>
+  <data name="NewTrack" xml:space="preserve">
+    <value>新轨道</value>
+  </data>
+  <data name="NewFile" xml:space="preserve">
+    <value>新文件</value>
+  </data>
+  <data name="WarningNoDirOrFilesMatchingCriteria" xml:space="preserve">
+    <value>该目录下没有子目录和符合条件的文件</value>
+  </data>
+  <data name="WarningNoDirectoryPermission" xml:space="preserve">
+    <value>没有权限访问该目录</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>错误：{0}</value>
+  </data>
+  <data name="SelectFileToast" xml:space="preserve">
+    <value>请选择文件</value>
+  </data>
+  <data name="StoragePermissionDeniedToast" xml:space="preserve">
+    <value>存储权限被拒绝</value>
+  </data>
+  <data name="SelectSaveLocationToast" xml:space="preserve">
+    <value>请选择文件保存位置</value>
+  </data>
+  <data name="AtWork" xml:space="preserve">
+    <value>工作中</value>
+  </data>
+  <data name="InitializingObjectProvider" xml:space="preserve">
+    <value>初始化对象提供器</value>
+  </data>
+  <data name="InitializingToolsManager" xml:space="preserve">
+    <value>初始化ToolsManager</value>
+  </data>
+  <data name="InitializingSingerManager" xml:space="preserve">
+    <value>初始化SingerManager</value>
+  </data>
+  <data name="InitializingDocManager" xml:space="preserve">
+    <value>初始化DocManager</value>
+  </data>
+  <data name="InitializingPlaybackManager" xml:space="preserve">
+    <value>初始化PlaybackManager</value>
+  </data>
+  <data name="InitializingPianoRoll" xml:space="preserve">
+    <value>初始化钢琴卷帘</value>
+  </data>
+  <data name="InitializingLanguageLocalization" xml:space="preserve">
+    <value>初始化语言本地化</value>
+  </data>
+  <data name="InitializationComplete" xml:space="preserve">
+    <value>初始化完毕！</value>
+  </data>
+  <data name="ErrorOpenUtauBackendInitializationFailed" xml:space="preserve">
+    <value>OpenUtau后端初始化失败</value>
+  </data>
+  <data name="Singer" xml:space="preserve">
+    <value>歌手</value>
+  </data>
+  <data name="RhythmMeasureNoteTemplate" xml:space="preserve">
+    <value>1/ {0}小节（{0}分音符）</value>
+  </data>
+  <data name="Render" xml:space="preserve">
+    <value>渲</value>
+  </data>
+  <data name="Swap" xml:space="preserve">
+    <value>换</value>
+  </data>
+  <data name="Hand" xml:space="preserve">
+    <value>手</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编</value>
+  </data>
+  <data name="Eraser" xml:space="preserve">
+    <value>橡</value>
+  </data>
 </root>

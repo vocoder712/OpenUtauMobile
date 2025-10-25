@@ -4,7 +4,7 @@
              x:Class="OpenUtauMobile.Views.SingerDetailPage"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
-             Title="歌手详情页">
+             Title="SingerDetailPage">
     <ContentPage.BindingContext>
         <vm:SingerDetailViewModel />
     </ContentPage.BindingContext>
@@ -17,8 +17,8 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="ButtonBack" Text="返回" Clicked="ButtonBack_Clicked" Grid.Column="0" />
-            <Label Text="歌手" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            <Button x:Name="ButtonBack" Text="{Static res:AppResources.BackText}" Clicked="ButtonBack_Clicked" Grid.Column="0" />
+            <Label Text="{Static res:AppResources.Singer}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
         </Grid>
         <!-- 主体 -->
         <ScrollView Grid.Row="1">
@@ -40,7 +40,7 @@
                         <Label Text="{Binding Singer.Web}" Grid.Column="1" Grid.Row="6" VerticalTextAlignment="Center" FontSize="15"/>
                     </Grid>
                 </Border>
-                <Button Text="删除" x:Name="ButtonRemoveSinger" Margin="10" BackgroundColor="Red" Clicked="ButtonRemoveSinger_Clicked" />
+                <Button Text="{Static res:AppResources.RemoveSinger}" x:Name="ButtonRemoveSinger" Margin="10" BackgroundColor="Red" Clicked="ButtonRemoveSinger_Clicked" />
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

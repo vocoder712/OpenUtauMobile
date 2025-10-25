@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenUtauMobile.Resources.Strings;
 
 namespace OpenUtauMobile.Utils
 {
@@ -40,7 +41,7 @@ namespace OpenUtauMobile.Utils
             { WorkType.LoadingProject, Resources.Strings.AppResources.WorkTitleLoadingProject },
         };
         public string Id { get; set; } = new Guid().ToString();
-        public string Title => WorkNames.GetValueOrDefault(Type, "工作中");
+        public string Title => WorkNames.GetValueOrDefault(Type, AppResources.AtWork);
         public WorkType Type { get; set; }
         public double? Progress { get; set; } // 0 - 1
         public string Detail { get; set; } = string.Empty;

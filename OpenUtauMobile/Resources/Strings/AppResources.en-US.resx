@@ -651,4 +651,157 @@ Exception Details:
   <data name="CopiedToClipboardToast" xml:space="preserve">
     <value>Copied to clipboard</value>
   </data>
+  <data name="ProcessingWaveform" xml:space="preserve">
+    <value>Processing waveform...</value>
+  </data>
+  <data name="ProcessingWaveformCancelled" xml:space="preserve">
+    <value>Waveform processing has been canceled.</value>
+  </data>
+  <data name="ProcessingWaveformError" xml:space="preserve">
+    <value>Waveform Processing Error: {0}</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Unknown Error</value>
+  </data>
+  <data name="RenderingWaveformFile" xml:space="preserve">
+    <value>Rendering waveform file...</value>
+  </data>
+  <data name="ProcessingWaveformNotStarted" xml:space="preserve">
+    <value>Waveform processing hasn't yet started.</value>
+  </data>
+  <data name="ProcessingWaveformEmpty" xml:space="preserve">
+    <value>Waveform data is empty.</value>
+  </data>
+  <data name="UnknownStatus" xml:space="preserve">
+    <value>Unknown status: {0}</value>
+  </data>
+  <data name="PitchPrecisionOriginal" xml:space="preserve">
+    <value>Original</value>
+  </data>
+  <data name="PitchPrecisionFine" xml:space="preserve">
+    <value>Fine</value>
+  </data>
+  <data name="PitchPrecisionMedium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="PitchPrecisionRough" xml:space="preserve">
+    <value>Rough</value>
+  </data>
+  <data name="OnPianoClickSilence" xml:space="preserve">
+    <value>Silence</value>
+  </data>
+  <data name="OnPianoClickSineWave" xml:space="preserve">
+    <value>Sine Wave TODO</value>
+  </data>
+  <data name="OnPianoClickPianoSample" xml:space="preserve">
+    <value>Piano Sample TODO</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Progress:</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="ShowingFirstNEntries" xml:space="preserve">
+    <value>... (Showing first {0} entries)</value>
+  </data>
+  <data name="ShowingFirstNTextFiles" xml:space="preserve">
+    <value>... (Showing first {0} text files)</value>
+  </data>
+  <data name="PhonemizingInProgress" xml:space="preserve">
+    <value>Phonemizing in progress:</value>
+  </data>
+  <data name="NPartsSelected" xml:space="preserve">
+    <value>{0} parts selected</value>
+  </data>
+  <data name="ErrorFailLoadProject" xml:space="preserve">
+    <value>The project file can't be opened. It may be due to an unsupported format or a corrupted file.</value>
+  </data>
+  <data name="NewPart" xml:space="preserve">
+    <value>New Part</value>
+  </data>
+  <data name="NewTrack" xml:space="preserve">
+    <value>New Track</value>
+  </data>
+  <data name="NewFile" xml:space="preserve">
+    <value>New File</value>
+  </data>
+  <data name="WarningNoDirOrFilesMatchingCriteria" xml:space="preserve">
+    <value>There are no directories or files matching the criteria in this directory.</value>
+  </data>
+  <data name="WarningNoDirectoryPermission" xml:space="preserve">
+    <value>You don't have permission to access this directory.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="SelectFileToast" xml:space="preserve">
+    <value>Please select a file</value>
+  </data>
+  <data name="StoragePermissionDeniedToast" xml:space="preserve">
+    <value>Storage permission denied</value>
+  </data>
+  <data name="SelectSaveLocationToast" xml:space="preserve">
+    <value>Please select where to save the file</value>
+  </data>
+  <data name="AtWork" xml:space="preserve">
+    <value>At work</value>
+  </data>
+  <data name="InitializingObjectProvider" xml:space="preserve">
+    <value>Initializing ObjectProvider</value>
+  </data>
+  <data name="InitializingToolsManager" xml:space="preserve">
+    <value>Initializing ToolsManager</value>
+  </data>
+  <data name="InitializingSingerManager" xml:space="preserve">
+    <value>Initializing SingerManager</value>
+  </data>
+  <data name="InitializingDocManager" xml:space="preserve">
+    <value>Initializing DocManager</value>
+  </data>
+  <data name="InitializingPlaybackManager" xml:space="preserve">
+    <value>Initializing PlaybackManager</value>
+  </data>
+  <data name="InitializingPianoRoll" xml:space="preserve">
+    <value>Initializing PianoRoll</value>
+  </data>
+  <data name="InitializingLanguageLocalization" xml:space="preserve">
+    <value>Initializing Language Localization</value>
+  </data>
+  <data name="InitializationComplete" xml:space="preserve">
+    <value>Initialization complete!</value>
+  </data>
+  <data name="ErrorOpenUtauBackendInitializationFailed" xml:space="preserve">
+    <value>OpenUtau backend initialization failed</value>
+  </data>
+  <data name="Singer" xml:space="preserve">
+    <value>Singer</value>
+  </data>
+  <data name="RhythmMeasureNoteTemplate" xml:space="preserve">
+    <value>1/{0} measure ({0}th note)</value>
+  </data>
+  <data name="Render" xml:space="preserve">
+    <value>Render</value>
+  </data>
+  <data name="Swap" xml:space="preserve">
+    <value>Swap</value>
+  </data>
+  <data name="Hand" xml:space="preserve">
+    <value>Hand</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Eraser" xml:space="preserve">
+    <value>Eraser</value>
+  </data>
 </root>

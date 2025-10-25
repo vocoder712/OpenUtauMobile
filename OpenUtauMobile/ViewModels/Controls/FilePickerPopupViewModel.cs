@@ -1,5 +1,6 @@
 ﻿using DynamicData.Binding;
 using OpenUtau.Core.Util;
+using OpenUtauMobile.Resources.Strings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -56,7 +57,7 @@ namespace OpenUtauMobile.ViewModels.Controls
             CurrentDirectory = defaultPath;
             if (string.IsNullOrEmpty(FileName))
             {
-                FileName = "新文件";
+                FileName = AppResources.NewFile;
             }
             FileName = FileName + (Types.Length > 0 && Types[0] != "*" ? Types[0].TrimStart('*') : "");
         }
@@ -101,18 +102,18 @@ namespace OpenUtauMobile.ViewModels.Controls
 
                 if (Items.Count == 0)
                 {
-                    WarningMessage = "该目录下没有子目录和符合条件的文件";
+                    WarningMessage = AppResources.WarningNoDirOrFilesMatchingCriteria;
                 }
             }
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
                 {
-                    ErrorMessage = "没有权限访问该目录";
+                    ErrorMessage = AppResources.WarningNoDirectoryPermission;
                 }
                 else
                 {
-                    ErrorMessage = "错误：" + ex.Message;
+                    ErrorMessage = string.Format(AppResources.Error, ex.Message);
                 }
             }
         }

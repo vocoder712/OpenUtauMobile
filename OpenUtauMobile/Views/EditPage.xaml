@@ -196,7 +196,7 @@
                                                         <!-- 音素器和声码器 -->
                                                         <Image Grid.Column="0" Grid.Row="1" Source="{DynamicResource phonemizer}" />
                                                         <Button x:Name="ButtonChangePhonemizer" Grid.Column="1" Grid.Row="1" Text="{Binding Phonemizer.Tag}" Padding="0" CornerRadius="0" BackgroundColor="Transparent"  TextColor="{DynamicResource TransparentButtonText}" Clicked="ButtonChangePhonemizer_Clicked"/>
-                                                        <Label Grid.Column="0" Grid.Row="2" Text="渲" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource TransparentButtonText}" />
+                                                        <Label Grid.Column="0" Grid.Row="2" Text="{Static res:AppResources.Render}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" TextColor="{DynamicResource TransparentButtonText}" />
                                                         <Button x:Name="ButtonChangeRender" Grid.Column="1" Grid.Row="2" Text="{Binding RendererSettings.Renderer}" Padding="0" CornerRadius="0" Background="Transparent" TextColor="{DynamicResource TransparentButtonText}" />
                                                         <!-- 电平 -->
                                                         <Slider Grid.Column="1" Grid.Row="3" Value="{Binding Volume}" Maximum="12.0" Minimum="-24.0" MinimumTrackColor="AliceBlue" MaximumTrackColor="AliceBlue">
@@ -340,12 +340,12 @@
                         <!-- 表情选择 -->
                         <ScrollView Grid.Column="0" BackgroundColor="{DynamicResource ExpBackGroundAlpha}">
                             <Grid RowDefinitions="20,20,20" ColumnDefinitions="20,20,20" >
-                                <Button x:Name="ButtonExchangeExp" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="换" Padding="0" Clicked="ButtonExchangeExp_Clicked"/>
+                                <Button x:Name="ButtonExchangeExp" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="{Static res:AppResources.Swap}" Padding="0" Clicked="ButtonExchangeExp_Clicked"/>
                                 <Button x:Name="ButtonPrimaryExp" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding PrimaryExpressionAbbr}" Padding="0" TextTransform="Uppercase"/>
                                 <Button x:Name="ButtonSecondaryExp" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SecondaryExpressionAbbr}" Padding="0" TextTransform="Uppercase" BackgroundColor="{DynamicResource PrimaryDerive}"/>
-                                <Button x:Name="ButtonSwitchExpressionEditHandMode" Grid.Row="2" Grid.Column="0" Text="手" Padding="0"/>
-                                <Button x:Name="ButtonSwitchExpressionEditMode" Grid.Row="2" Grid.Column="1" Text="编" Padding="0" BackgroundColor="Transparent"/>
-                                <Button x:Name="ButtonSwitchExpressionEaraserMode" Grid.Row="2" Grid.Column="2" Text="橡" Padding="0" BackgroundColor="Transparent"/>
+                                <Button x:Name="ButtonSwitchExpressionEditHandMode" Grid.Row="2" Grid.Column="0" Text="{Static res:AppResources.Hand}" Padding="0"/>
+                                <Button x:Name="ButtonSwitchExpressionEditMode" Grid.Row="2" Grid.Column="1" Text="{Static res:AppResources.Edit}" Padding="0" BackgroundColor="Transparent"/>
+                                <Button x:Name="ButtonSwitchExpressionEaraserMode" Grid.Row="2" Grid.Column="2" Text="{Static res:AppResources.Eraser}" Padding="0" BackgroundColor="Transparent"/>
                             </Grid>
                         </ScrollView>
                         <!-- 表情绘制 -->

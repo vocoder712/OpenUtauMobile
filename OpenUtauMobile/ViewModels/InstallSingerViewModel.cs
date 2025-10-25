@@ -5,6 +5,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using SharpCompress.Archives;
 using OpenUtauMobile.ViewModels.Messages;
+using OpenUtauMobile.Resources.Strings;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -31,7 +32,7 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public string SingerType { get; set; } = "diffsinger"; // 歌手类型，默认为diffsinger
         public List<string> SingerTypes { get; set; } = new List<string> { "diffsinger", "utau", "enunu" }; // 支持的歌手类型
         [Reactive] public string InstallPath { get; set; } = PathManager.Inst.SingersInstallPath; // 安装路径
-        [Reactive] public string InstallSize { get; set; } = "未知"; // 安装包大小
+        [Reactive] public string InstallSize { get; set; } = AppResources.Unknown; // 安装包大小
 
         public Encoding[] Encodings { get; set; } = new Encoding[] { // 可能的编码
             Encoding.GetEncoding("shift_jis"),
@@ -47,7 +48,7 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public ObservableCollectionExtended<string> ArchiveEntryItems { get; set; } = []; // 压缩包条目样本
         [Reactive] public ObservableCollectionExtended<string> TextItems { get; set; } = []; // 文本样本
 
-        [Reactive] public string InstallProgressText { get; set; } = "进度："; // 安装进度
+        [Reactive] public string InstallProgressText { get; set; } = AppResources.Progress; // 安装进度
         [Reactive] public string InstallProgressDetail { get; set; } = ""; // 安装进度消息
         [Reactive] public double InstallProgress { get; set; } = 0.0; // 安装进度, 0.0-1.0
 
@@ -127,7 +128,7 @@ namespace OpenUtauMobile.ViewModels
             // 如果文件数量超过样本大小，添加提示信息
             if (count >= MaxSampleSize)
             {
-                ArchiveEntryItems.Add($"... (已显示前 {MaxSampleSize} 个条目)");
+                ArchiveEntryItems.Add(string.Format(AppResources.ShowingFirstNEntries, MaxSampleSize));
             }
 
             Busy = false; // 空闲
@@ -163,7 +164,7 @@ namespace OpenUtauMobile.ViewModels
                     // 达到最大文件数后停止
                     if (processedFiles >= MaxTextFiles)
                     {
-                        TextItems.Add($"... (已显示前 {MaxTextFiles} 个文本文件)");
+                        TextItems.Add(string.Format(AppResources.ShowingFirstNTextFiles, MaxTextFiles));
                         break;
                     }
 
@@ -221,7 +222,7 @@ namespace OpenUtauMobile.ViewModels
         public void UpdateInstallProgress(double progress, string detail)
         {
             InstallProgress = progress / 100;
-            InstallProgressText = $"进度：{progress:0.##}%";
+            InstallProgressText = $"{AppResources.Progress}{progress:0.##}%";
             InstallProgressDetail = detail;
         }
 
