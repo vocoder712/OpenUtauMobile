@@ -5,6 +5,7 @@
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
                xmlns:ustx="clr-namespace:OpenUtau.Core.Ustx;assembly=OpenUtau.Core"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                 xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Name="PopupSnapDivs"
@@ -25,13 +26,13 @@
         <Grid RowDefinitions="40, 400">
             <!-- 标题栏 -->
             <Border BackgroundColor="#66CCFF" Padding="10,2,10,2">
-                <Label x:Name="LabelTitle" Text="量化" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+                <Label x:Name="LabelTitle" Text="{Static res:AppResources.QuantizeText}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
             </Border>
             <!-- 列表 -->
             <ScrollView Grid.Row="1" >
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding SnapDivs}">
                     <BindableLayout.EmptyView>
-                        <Label Text="还没有量化！请向社区报告问题。" />
+                        <Label Text="{Static res:AppResources.NoQuantization}" />
                     </BindableLayout.EmptyView>
                     <BindableLayout.ItemTemplate>
                         <!-- 量化卡片 -->

@@ -4,6 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                 xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Class="OpenUtauMobile.Views.Controls.EditLyricsPopup">
@@ -21,15 +22,15 @@
         <Grid RowDefinitions="40, Auto, 50">
             <!-- 标题栏 -->
             <Border BackgroundColor="#66CCFF" Padding="10,2,10,2">
-                <Label x:Name="LabelTitle" Text="编辑歌词" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+                <Label x:Name="LabelTitle" Text="{Static res:AppResources.EditLyrics}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
             </Border>
             <!-- 输入框 -->
             <Entry Grid.Row="1" x:Name="EntryLyrics" ClearButtonVisibility="WhileEditing" ReturnType="Next" Margin="10,20,10,20"/>
             <!-- 按钮栏 -->
             <Grid Grid.Row="3" ColumnDefinitions="*, *, *" ColumnSpacing="10" Margin="10,5,10,5">
-                <Button x:Name="ButtonCancel" Text="取消" Clicked="ButtonCancel_Clicked"/>
-                <Button x:Name="ButtonConfirm" Text="确定" Grid.Column="2" Clicked="ButtonConfirm_Clicked"/>
-                <Button x:Name="ButtonNext" Text="下一个" Grid.Column="1" Clicked="ButtonNext_Clicked"/>
+                <Button x:Name="ButtonCancel" Text="{Static res:AppResources.CancelText}" Clicked="ButtonCancel_Clicked"/>
+                <Button x:Name="ButtonConfirm" Text="{Static res:AppResources.Confirm}" Grid.Column="2" Clicked="ButtonConfirm_Clicked"/>
+                <Button x:Name="ButtonNext" Text="{Static res:AppResources.Next}" Grid.Column="1" Clicked="ButtonNext_Clicked"/>
             </Grid>
         </Grid>
     </Border>

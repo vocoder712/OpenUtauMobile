@@ -456,4 +456,199 @@
   <data name="WorkTitleLoadingProject" xml:space="preserve">
     <value>正在加载项目，请勿操作</value>
   </data>
+  <data name="SelectSinger" xml:space="preserve">
+    <value>选择歌手</value>
+  </data>
+  <data name="NoSingersText" xml:space="preserve">
+    <value>还没有歌手，请前往歌手管理页面添加！</value>
+  </data>
+  <data name="ChangeTrackColor" xml:space="preserve">
+    <value>改变轨道颜色</value>
+  </data>
+  <data name="NoColorsAvailable" xml:space="preserve">
+    <value>没有可用的颜色</value>
+  </data>
+  <data name="SetBeat" xml:space="preserve">
+    <value>设置节拍</value>
+  </data>
+  <data name="SetBPM" xml:space="preserve">
+    <value>设置BPM</value>
+  </data>
+  <data name="SetKey" xml:space="preserve">
+    <value>设置调性</value>
+  </data>
+  <data name="NoSelectableKeys" xml:space="preserve">
+    <value>还没有可选的调！请向社区报告问题。</value>
+  </data>
+  <data name="EditLyrics" xml:space="preserve">
+    <value>编辑歌词</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>下一个</value>
+  </data>
+  <data name="AppRuntimeException" xml:space="preserve">
+    <value>OpenUtau Mobile 运行时异常</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>错误信息</value>
+  </data>
+  <data name="RestartProgram" xml:space="preserve">
+    <value>重启程序</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="CopyErrorMessage" xml:space="preserve">
+    <value>复制错误信息</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>选择文件</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="SaveFile" xml:space="preserve">
+    <value>保存文件</value>
+  </data>
+  <data name="InsertTempoSignatureMarker" xml:space="preserve">
+    <value>插入曲速或节拍标记</value>
+  </data>
+  <data name="SetTempoTickMarker" xml:space="preserve">
+    <value>tick标记曲速为</value>
+  </data>
+  <data name="TickTime" xml:space="preserve">
+    <value>tick时间单位</value>
+  </data>
+  <data name="InsertTempoMarker" xml:space="preserve">
+    <value>插入曲速标记</value>
+  </data>
+  <data name="AtBarText" xml:space="preserve">
+    <value>在第</value>
+  </data>
+  <data name="Bar" xml:space="preserve">
+    <value>小节</value>
+  </data>
+  <data name="MarkBeatsAs" xml:space="preserve">
+    <value>小节标记节拍为</value>
+  </data>
+  <data name="BeatsPerMeasure" xml:space="preserve">
+    <value>每小节拍数</value>
+  </data>
+  <data name="NotesPerBeat" xml:space="preserve">
+    <value>以几分音符为一拍</value>
+  </data>
+  <data name="InsertSignatureMarker" xml:space="preserve">
+    <value>插入节拍标记</value>
+  </data>
+  <data name="QuantizeText" xml:space="preserve">
+    <value>量化</value>
+  </data>
+  <data name="NoQuantization" xml:space="preserve">
+    <value>还没有量化！请向社区报告问题。</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>重命名</value>
+  </data>
+  <data name="SelectPhonemizer" xml:space="preserve">
+    <value>选择音素器</value>
+  </data>
+  <data name="CloseProject" xml:space="preserve">
+    <value>关闭项目</value>
+  </data>
+  <data name="UnsavedProjectChangesPrompt" xml:space="preserve">
+    <value>有尚未保存的更改，是否保存后退出？</value>
+  </data>
+  <data name="DontSave" xml:space="preserve">
+    <value>不保存</value>
+  </data>
+  <data name="AudioExportOptions" xml:space="preserve">
+    <value>导出音频选项</value>
+  </data>
+  <data name="SampleRate" xml:space="preserve">
+    <value>采样率</value>
+  </data>
+  <data name="BitDepth" xml:space="preserve">
+    <value>位深</value>
+  </data>
+  <data name="MixingMode" xml:space="preserve">
+    <value>混音模式</value>
+  </data>
+  <data name="VocalTrackOnly" xml:space="preserve">
+    <value>分轨（仅歌声轨道）</value>
+  </data>
+  <data name="MixDown" xml:space="preserve">
+    <value>缩混</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="AuxiliaryTools" xml:space="preserve">
+    <value>辅助工具</value>
+  </data>
+  <data name="More" xml:space="preserve">
+    <value>更多</value>
+  </data>
+  <data name="ImportAudio" xml:space="preserve">
+    <value>导入音频</value>
+  </data>
+  <data name="ImportMidi" xml:space="preserve">
+    <value>导入MIDI</value>
+  </data>
+  <data name="ImportTrack" xml:space="preserve">
+    <value>导入轨道</value>
+  </data>
+  <data name="ExportAudio" xml:space="preserve">
+    <value>导出音频</value>
+  </data>
+  <data name="ExportProject" xml:space="preserve">
+    <value>导出工程</value>
+  </data>
+  <data name="SeparateStems" xml:space="preserve">
+    <value>伴奏分离</value>
+  </data>
+  <data name="DryWetConversion" xml:space="preserve">
+    <value>干声转换</value>
+  </data>
+  <data name="DetectTempo" xml:space="preserve">
+    <value>曲速测定</value>
+  </data>
+  <data name="SaveProjectAs" xml:space="preserve">
+    <value>工程另存为</value>
+  </data>
+  <data name="ManageExpressions" xml:space="preserve">
+    <value>表情管理</value>
+  </data>
+  <data name="PositionNegativeToast" xml:space="preserve">
+    <value>位置不能为负</value>
+  </data>
+  <data name="InvalidBPMToast" xml:space="preserve">
+    <value>BPM不能小于等于0</value>
+  </data>
+  <data name="EnterValidNumberToast" xml:space="preserve">
+    <value>请输入有效的数字</value>
+  </data>
+  <data name="BarNegativeToast" xml:space="preserve">
+    <value>小节不能为负</value>
+  </data>
+  <data name="InvalidBeatsPerMeasureToast" xml:space="preserve">
+    <value>每小节拍数不能小于等于0</value>
+  </data>
+  <data name="InvalidNotesPerBeatToast" xml:space="preserve">
+    <value>以几分音符为一拍不能小于等于0</value>
+  </data>
+  <data name="ErrorPopupTemplate" xml:space="preserve">
+    <value>很抱歉， OpenUtau Mobile 捕获到了异常，部分功能可能无法正常使用。
+建议您将以下错误信息复制并反馈给开发者，并重启应用程序。
+
+{0}
+
+异常详情：
+{1}</value>
+  </data>
+  <data name="CopiedToClipboardToast" xml:space="preserve">
+    <value>已复制到剪贴板</value>
+  </data>
 </root>

@@ -4,6 +4,7 @@
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
                xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
+               xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
                 xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Class="OpenUtauMobile.Views.Controls.InsertTempoOrTimeSignaturePopup">
@@ -20,28 +21,28 @@
         <Grid RowDefinitions="40, Auto, Auto, 50" ColumnDefinitions="*, 120">
             <!-- 标题栏 -->
             <Border BackgroundColor="#66CCFF" Padding="10,2,10,2" Grid.ColumnSpan="2">
-                <Label x:Name="LabelTitle" Text="插入曲速或节拍标记" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
+                <Label x:Name="LabelTitle" Text="{Static res:AppResources.InsertTempoSignatureMarker}" FontSize="20" HorizontalTextAlignment="Start" VerticalTextAlignment="Center"/>
             </Border>
             <!-- 曲速 -->
             <HorizontalStackLayout Grid.Row="1" Margin="5">
                 <Label Text="在" VerticalTextAlignment="Center"/>
-                <Entry x:Name="EntryPosition" Placeholder="tick时间单位" Keyboard="Numeric" WidthRequest="80"/>
-                <Label Text="tick标记曲速为" VerticalTextAlignment="Center" />
+                <Entry x:Name="EntryPosition" Placeholder="{Static res:AppResources.TickTime}" Keyboard="Numeric" WidthRequest="80"/>
+                <Label Text="{Static res:AppResources.SetTempoTickMarker}" VerticalTextAlignment="Center" />
                 <Entry x:Name="EntryBpm" Text="120.00" Placeholder="输入BPM" Keyboard="Numeric" WidthRequest="80"/>
             </HorizontalStackLayout>
-            <Button x:Name="ButtonInsertTempoSignature" Text="插入曲速标记" Clicked="ButtonInsertTempoSignature_Clicked"  Grid.Row="1" Grid.Column="1" Margin="5" Padding="0" CornerRadius="25"/>
+            <Button x:Name="ButtonInsertTempoSignature" Text="{Static res:AppResources.InsertTempoMarker}" Clicked="ButtonInsertTempoSignature_Clicked"  Grid.Row="1" Grid.Column="1" Margin="5" Padding="0" CornerRadius="25"/>
             <!-- 节拍 -->
             <HorizontalStackLayout Grid.Row="2" Margin="5">
-                <Label Text="在第" VerticalTextAlignment="Center" />
-                <Entry x:Name="EntryBar" Placeholder="小节" Keyboard="Numeric" WidthRequest="50"/>
-                <Label Text="小节标记节拍为" VerticalTextAlignment="Center" />
-                <Entry x:Name="EntryBeatPerBar" Text="4" Placeholder="每小节拍数" Keyboard="Numeric" WidthRequest="30"/>
+                <Label Text="{Static res:AppResources.AtBarText}" VerticalTextAlignment="Center" />
+                <Entry x:Name="EntryBar" Placeholder="{Static res:AppResources.Bar}" Keyboard="Numeric" WidthRequest="50"/>
+                <Label Text="{Static res:AppResources.MarkBeatsAs}" VerticalTextAlignment="Center" />
+                <Entry x:Name="EntryBeatPerBar" Text="4" Placeholder="{Static res:AppResources.BeatsPerMeasure}" Keyboard="Numeric" WidthRequest="30"/>
                 <Label Text="/" VerticalTextAlignment="Center" />
-                <Entry x:Name="EntryBeatUnit" Text="4" Placeholder="以几分音符为一拍" Keyboard="Numeric" WidthRequest="30"/>
+                <Entry x:Name="EntryBeatUnit" Text="4" Placeholder="{Static res:AppResources.NotesPerBeat}" Keyboard="Numeric" WidthRequest="30"/>
             </HorizontalStackLayout>
-            <Button x:Name="ButtonInsertTimeSignature" Text="插入节拍标记" Clicked="ButtonInsertTimeSignature_Clicked" Grid.Row="2" Grid.Column="1" Margin="5" Padding="0" CornerRadius="25"/>
+            <Button x:Name="ButtonInsertTimeSignature" Text="{Static res:AppResources.InsertSignatureMarker}" Clicked="ButtonInsertTimeSignature_Clicked" Grid.Row="2" Grid.Column="1" Margin="5" Padding="0" CornerRadius="25"/>
             <!-- 按钮栏 -->
-            <Button Text="取消" Grid.Row="3" Clicked="OnCancelClicked" Grid.ColumnSpan="2" CornerRadius="0"/>
+            <Button Text="{Static res:AppResources.CancelText}" Grid.Row="3" Clicked="OnCancelClicked" Grid.ColumnSpan="2" CornerRadius="0"/>
             </Grid>
     </Border>
 </toolkit:Popup>
