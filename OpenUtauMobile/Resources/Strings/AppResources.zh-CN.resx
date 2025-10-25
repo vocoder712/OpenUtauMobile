@@ -783,4 +783,7 @@
   <data name="ErrorOpenUtauBackendInitializationFailed" xml:space="preserve">
     <value>OpenUtau后端初始化失败</value>
   </data>
+  <data name="Singer" xml:space="preserve">
+    <value>歌手</value>
+  </data>
 </root>

@@ -1723,6 +1723,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 歌手.
+        /// </summary>
+        internal static string Singer {
+            get {
+                return ResourceManager.GetString("Singer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 歌手信息缺失，请选择歌手类型：.
         /// </summary>
         internal static string SingerInformationMissing {
