@@ -744,4 +744,43 @@
   <data name="Error" xml:space="preserve">
     <value>错误：{0}</value>
   </data>
+  <data name="SelectFileToast" xml:space="preserve">
+    <value>请选择文件</value>
+  </data>
+  <data name="StoragePermissionDeniedToast" xml:space="preserve">
+    <value>存储权限被拒绝</value>
+  </data>
+  <data name="SelectSaveLocationToast" xml:space="preserve">
+    <value>请选择文件保存位置</value>
+  </data>
+  <data name="AtWork" xml:space="preserve">
+    <value>工作中</value>
+  </data>
+  <data name="InitializingObjectProvider" xml:space="preserve">
+    <value>初始化对象提供器</value>
+  </data>
+  <data name="InitializingToolsManager" xml:space="preserve">
+    <value>初始化ToolsManager</value>
+  </data>
+  <data name="InitializingSingerManager" xml:space="preserve">
+    <value>初始化SingerManager</value>
+  </data>
+  <data name="InitializingDocManager" xml:space="preserve">
+    <value>初始化DocManager</value>
+  </data>
+  <data name="InitializingPlaybackManager" xml:space="preserve">
+    <value>初始化PlaybackManager</value>
+  </data>
+  <data name="InitializingPianoRoll" xml:space="preserve">
+    <value>初始化钢琴卷帘</value>
+  </data>
+  <data name="InitializingLanguageLocalization" xml:space="preserve">
+    <value>初始化语言本地化</value>
+  </data>
+  <data name="InitializationComplete" xml:space="preserve">
+    <value>初始化完毕！</value>
+  </data>
+  <data name="ErrorOpenUtauBackendInitializationFailed" xml:space="preserve">
+    <value>OpenUtau后端初始化失败</value>
+  </data>
 </root>

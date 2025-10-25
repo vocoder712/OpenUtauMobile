@@ -744,4 +744,43 @@ Exception Details:
   <data name="Error" xml:space="preserve">
     <value>Error: {0}</value>
   </data>
+  <data name="SelectFileToast" xml:space="preserve">
+    <value>Please select a file</value>
+  </data>
+  <data name="StoragePermissionDeniedToast" xml:space="preserve">
+    <value>Storage permission denied</value>
+  </data>
+  <data name="SelectSaveLocationToast" xml:space="preserve">
+    <value>Please select where to save the file</value>
+  </data>
+  <data name="AtWork" xml:space="preserve">
+    <value>At work</value>
+  </data>
+  <data name="InitializingObjectProvider" xml:space="preserve">
+    <value>Initializing ObjectProvider</value>
+  </data>
+  <data name="InitializingToolsManager" xml:space="preserve">
+    <value>Initializing ToolsManager</value>
+  </data>
+  <data name="InitializingSingerManager" xml:space="preserve">
+    <value>Initializing SingerManager</value>
+  </data>
+  <data name="InitializingDocManager" xml:space="preserve">
+    <value>Initializing DocManager</value>
+  </data>
+  <data name="InitializingPlaybackManager" xml:space="preserve">
+    <value>Initializing PlaybackManager</value>
+  </data>
+  <data name="InitializingPianoRoll" xml:space="preserve">
+    <value>Initializing PianoRoll</value>
+  </data>
+  <data name="InitializingLanguageLocalization" xml:space="preserve">
+    <value>Initializing Language Localization</value>
+  </data>
+  <data name="InitializationComplete" xml:space="preserve">
+    <value>Initialization complete!</value>
+  </data>
+  <data name="ErrorOpenUtauBackendInitializationFailed" xml:space="preserve">
+    <value>OpenUtau backend initialization failed</value>
+  </data>
 </root>

@@ -6,6 +6,7 @@ using OpenUtau.Core.Util;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.Views.Controls;
 using OpenUtauMobile.Views.Utils;
+using OpenUtauMobile.Resources.Strings;
 using Serilog;
 using System.Diagnostics;
 using System.Globalization;
@@ -40,7 +41,7 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
             {
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化对象提供器";
+                    LabelInitDetail.Text = AppResources.InitializingObjectProvider;
                 });
                 // throw new Exception("测试异常");
                 ObjectProvider.Initialize(); // 初始化对象提供器
@@ -48,21 +49,21 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化ToolsManager";
+                    LabelInitDetail.Text = AppResources.InitializingToolsManager;
                 });
                 ToolsManager.Inst.Initialize(); // 初始化ToolsManager
                 Log.Information("ToolsManager初始化完成");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化SingerManager";
+                    LabelInitDetail.Text = AppResources.InitializingSingerManager;
                 });
                 SingerManager.Inst.Initialize(); // 初始化SingerManager
                 Log.Information("SingerManager初始化完成");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化DocManager";
+                    LabelInitDetail.Text = AppResources.InitializingDocManager;
                 });
                 DocManager.Inst.Initialize(mainThread, mainScheduler); // 初始化DocManager
                 DocManager.Inst.PostOnUIThread = action => MainThread.BeginInvokeOnMainThread(action); // 设置DocManager的PostOnUIThread
@@ -70,21 +71,21 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化PlaybackManager";
+                    LabelInitDetail.Text = AppResources.InitializingPlaybackManager;
                 });
                 PlaybackManager.Inst.AudioOutput = ObjectProvider.AudioOutput?? new DummyAudioOutput(); // 设置PlaybackManager的AudioOutput
                 Log.Information("PlaybackManager初始化完成");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化钢琴卷帘";
+                    LabelInitDetail.Text = AppResources.InitializingPianoRoll;
                 });
                 ViewConstants.PianoKeys = [.. Enumerable.Range(0, ViewConstants.TotalPianoKeys).Reverse().Select(n => new PianoKey(n))];
                 Log.Information("钢琴卷帘初始化完成");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化语言本地化";
+                    LabelInitDetail.Text = AppResources.InitializingLanguageLocalization;
                 });
                 string lang = Preferences.Default.Language;
                 if (string.IsNullOrEmpty(lang))
@@ -98,14 +99,14 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
 
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
-                    LabelInitDetail.Text = "初始化完毕！";
+                    LabelInitDetail.Text = AppResources.InitializationComplete;
                 });
             }
             catch (Exception e)
             {
                 Log.Error($"OpenUtau后端初始化失败: {e}");
                 // 初始化失败弹窗
-                var popup = new ErrorPopup(e, "OpenUtau后端初始化失败");
+                var popup = new ErrorPopup(e, AppResources.ErrorOpenUtauBackendInitializationFailed);
                 object? result = await MainThread.InvokeOnMainThreadAsync(() => this.ShowPopupAsync(popup));
 
                 if (result is string id)

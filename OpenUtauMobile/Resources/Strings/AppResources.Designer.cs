@@ -124,6 +124,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 工作中.
+        /// </summary>
+        internal static string AtWork {
+            get {
+                return ResourceManager.GetString("AtWork", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 导出音频选项.
         /// </summary>
         internal static string AudioExportOptions {
@@ -412,6 +421,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenUtau后端初始化失败.
+        /// </summary>
+        internal static string ErrorOpenUtauBackendInitializationFailed {
+            get {
+                return ResourceManager.GetString("ErrorOpenUtauBackendInitializationFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 很抱歉， OpenUtau Mobile 捕获到了异常，部分功能可能无法正常使用。
         ///建议您将以下错误信息复制并反馈给开发者，并重启应用程序。
         ///
@@ -567,6 +585,78 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string IncorrectProjectFileToast {
             get {
                 return ResourceManager.GetString("IncorrectProjectFileToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化完毕！.
+        /// </summary>
+        internal static string InitializationComplete {
+            get {
+                return ResourceManager.GetString("InitializationComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化DocManager.
+        /// </summary>
+        internal static string InitializingDocManager {
+            get {
+                return ResourceManager.GetString("InitializingDocManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化语言本地化.
+        /// </summary>
+        internal static string InitializingLanguageLocalization {
+            get {
+                return ResourceManager.GetString("InitializingLanguageLocalization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化对象提供器.
+        /// </summary>
+        internal static string InitializingObjectProvider {
+            get {
+                return ResourceManager.GetString("InitializingObjectProvider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化钢琴卷帘.
+        /// </summary>
+        internal static string InitializingPianoRoll {
+            get {
+                return ResourceManager.GetString("InitializingPianoRoll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化PlaybackManager.
+        /// </summary>
+        internal static string InitializingPlaybackManager {
+            get {
+                return ResourceManager.GetString("InitializingPlaybackManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化SingerManager.
+        /// </summary>
+        internal static string InitializingSingerManager {
+            get {
+                return ResourceManager.GetString("InitializingSingerManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 初始化ToolsManager.
+        /// </summary>
+        internal static string InitializingToolsManager {
+            get {
+                return ResourceManager.GetString("InitializingToolsManager", resourceCulture);
             }
         }
         
@@ -1507,11 +1597,29 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 请选择文件.
+        /// </summary>
+        internal static string SelectFileToast {
+            get {
+                return ResourceManager.GetString("SelectFileToast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 选择音素器.
         /// </summary>
         internal static string SelectPhonemizer {
             get {
                 return ResourceManager.GetString("SelectPhonemizer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 请选择文件保存位置.
+        /// </summary>
+        internal static string SelectSaveLocationToast {
+            get {
+                return ResourceManager.GetString("SelectSaveLocationToast", resourceCulture);
             }
         }
         
@@ -1665,6 +1773,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string SingerTypeText {
             get {
                 return ResourceManager.GetString("SingerTypeText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 存储权限被拒绝.
+        /// </summary>
+        internal static string StoragePermissionDeniedToast {
+            get {
+                return ResourceManager.GetString("StoragePermissionDeniedToast", resourceCulture);
             }
         }
         
