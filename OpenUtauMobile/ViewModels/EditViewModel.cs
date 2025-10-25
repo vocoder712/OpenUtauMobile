@@ -857,7 +857,7 @@ namespace OpenUtauMobile.ViewModels
                         posTick: position - voicePart.position,
                         durTick: PianoRollSnapUnitTick
                         );
-                    note.lyric = "lu";
+                    note.lyric = "a";
                     // 清除选中的音符
                     SelectedNotes.Clear();
                     // 启动一个撤销组
