@@ -125,6 +125,7 @@
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+		<PackageReference Include="SharpCompress" Version="0.41.0" />
 		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.0-stable.1" />
 		<PackageReference Include="Vapolia.Svg" Version="1.0.5" />
 	</ItemGroup>
