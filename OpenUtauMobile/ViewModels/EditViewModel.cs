@@ -7,6 +7,7 @@ using OpenUtau.Core.Util;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.Views.DrawableObjects;
 using OpenUtauMobile.Views.Utils;
+using OpenUtauMobile.Resources.Strings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -258,7 +259,7 @@ namespace OpenUtauMobile.ViewModels
                 IsPhonemizing = (PhonemizingParts.Count != 0);
                 if (IsPhonemizing)
                 {
-                    PhonemizingPartName = "正在音素化：";
+                    PhonemizingPartName = AppResources.PhonemizingInProgress;
                     foreach (var part in PhonemizingParts)
                     {
                         if (part != null)
@@ -306,7 +307,7 @@ namespace OpenUtauMobile.ViewModels
                     }
                     else
                     {
-                        EditingPartName = $"{SelectedParts.Count} 个分片被选中"; // 多个分片被选中时显示数量
+                        EditingPartName = string.Format(AppResources.NPartsSelected, SelectedParts.Count); // 多个分片被选中时显示数量
                     }
                 }
             };
@@ -413,7 +414,7 @@ namespace OpenUtauMobile.ViewModels
                 catch (Exception ex)
                 {
                     Log.Error(ex, "Failed to load project.");
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("无法打开项目文件，可能格式不受支持或文件已损坏。", ex));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(AppResources.ErrorFailLoadProject, ex));
                 }
             });
         }
@@ -563,7 +564,7 @@ namespace OpenUtauMobile.ViewModels
                 // 初始持续时间为一个网格对应的tick长度
                 Duration = TrackSnapUnitTick,
                 trackNo = trackNo,
-                name = "新分片"
+                name = AppResources.NewPart
             };
             // 清除选中的分片
             SelectedParts.Clear();
@@ -664,7 +665,7 @@ namespace OpenUtauMobile.ViewModels
             UTrack track = new UTrack(DocManager.Inst.Project)
             {
                 TrackNo = DocManager.Inst.Project.tracks.Count,
-                TrackName = "新轨道",
+                TrackName = AppResources.NewTrack,
                 TrackColor = ViewConstants.TrackMauiColors.ElementAt(ObjectProvider.Random.Next(ViewConstants.TrackMauiColors.Count)).Key,
             };
             // 开启撤销组
@@ -856,7 +857,7 @@ namespace OpenUtauMobile.ViewModels
                         posTick: position - voicePart.position,
                         durTick: PianoRollSnapUnitTick
                         );
-                    note.lyric = "lu";
+                    note.lyric = "a";
                     // 清除选中的音符
                     SelectedNotes.Clear();
                     // 启动一个撤销组
@@ -1443,7 +1444,7 @@ namespace OpenUtauMobile.ViewModels
                     TrackNo = project.tracks.Count
                 };
                 part.trackNo = track.TrackNo;
-                if (part.name != "New Part")
+                if (part.name != AppResources.NewPart)
                 {
                     track.TrackName = part.name;
                 }

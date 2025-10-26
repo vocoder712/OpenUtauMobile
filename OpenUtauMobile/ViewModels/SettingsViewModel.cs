@@ -26,10 +26,10 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public bool AutoScroll { get; set; } = Preferences.Default.PlaybackAutoScroll == 2;
         [Reactive] public int PlaybackRefreshRate { get; set; } = Preferences.Default.PlaybackRefreshRate;
         [Reactive] public ObservableCollectionExtended<KeyValuePair<float, string>> PitchDisplayPrecision { get; set; } = [
-            new KeyValuePair<float, string>(0f, "原始"),
-            new KeyValuePair<float, string>(1f, "精细"),
-            new KeyValuePair<float, string>(2f, "中等"),
-            new KeyValuePair<float, string>(5f, "粗略"),
+            new KeyValuePair<float, string>(0f, AppResources.PitchPrecisionOriginal),
+            new KeyValuePair<float, string>(1f, AppResources.PitchPrecisionFine),
+            new KeyValuePair<float, string>(2f, AppResources.PitchPrecisionMedium),
+            new KeyValuePair<float, string>(5f, AppResources.PitchPrecisionRough),
         ];
         [Reactive] public KeyValuePair<float, string> SelectedPitchDisplayPrecision { get; set; }
         [Reactive] public bool ShowPortrait { get; set; } = Preferences.Default.ShowPortrait;
@@ -37,9 +37,9 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public double PortraitOpacity { get; set; } = Preferences.Default.PortraitOpacity;
         [Reactive] public bool KeepScreenOn { get; set; } = Preferences.Default.KeepScreenOn;
         [Reactive] public ObservableCollectionExtended<KeyValuePair<int, string>> PianoSampleTypes { get; set; } = [
-            new KeyValuePair<int, string>(0, "无声"),
-            new KeyValuePair<int, string>(1, "正弦波TODO"),
-            new KeyValuePair<int, string>(2, "钢琴采样TODO"),
+            new KeyValuePair<int, string>(0, AppResources.OnPianoClickSilence),
+            new KeyValuePair<int, string>(1, AppResources.OnPianoClickSineWave),
+            new KeyValuePair<int, string>(2, AppResources.OnPianoClickPianoSample),
         ];
         [Reactive] public KeyValuePair<int, string> SelectedPianoSample { get; set; }
         [Reactive] public ObservableCollectionExtended<AudioOutputDevice> AudioOutputDevices { get; set; } = [.. PlaybackManager.Inst.AudioOutput.GetOutputDevices()];
@@ -47,9 +47,9 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public bool PreRender { get; set; } = Preferences.Default.PreRender;
         [Reactive] public bool SkipRenderingMutedTracks { get; set; } = Preferences.Default.SkipRenderingMutedTracks;
         [Reactive] public List<KeyValuePair<int, string>> Themes { get; set; } = [
-            new KeyValuePair<int, string>(0, "浅色"),
-            new KeyValuePair<int, string>(1, "深色"),
-            new KeyValuePair<int, string>(2, "系统"),
+            new KeyValuePair<int, string>(0, AppResources.ThemeLight),
+            new KeyValuePair<int, string>(1, AppResources.ThemeDark),
+            new KeyValuePair<int, string>(2, AppResources.System),
         ];
         [Reactive] public KeyValuePair<int, string> SelectedTheme { get; set; }
         public List<LanguageOption> LanguageOptions { get; set; } = ViewConstants.LanguageOptions;

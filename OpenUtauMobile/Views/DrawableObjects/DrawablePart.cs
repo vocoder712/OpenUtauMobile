@@ -6,6 +6,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Views.Utils;
+using OpenUtauMobile.Resources.Strings;
 using Serilog;
 using SkiaSharp;
 using System;
@@ -120,31 +121,31 @@ namespace OpenUtauMobile.Views.DrawableObjects
                 // 增强波形状态显示逻辑
                 if (wavePart.Peaks == null)
                 {
-                    DrawWaveLoadingInfo("等待波形处理...");
+                    DrawWaveLoadingInfo(AppResources.ProcessingWaveform);
                     return;
                 }
 
                 switch (wavePart.Peaks.Status)
                 {
                     case TaskStatus.Canceled:
-                        DrawWaveLoadingInfo("波形处理被取消");
+                        DrawWaveLoadingInfo(AppResources.ProcessingWaveformCancelled);
                         break;
                     case TaskStatus.Faulted:
-                        DrawWaveLoadingInfo($"波形处理错误: {wavePart.Peaks.Exception?.Message ?? "未知错误"}");
+                        DrawWaveLoadingInfo(string.Format(AppResources.ProcessingWaveformError, wavePart.Peaks.Exception?.Message ?? AppResources.UnknownError));
                         break;
                     case TaskStatus.Running:
-                        DrawWaveLoadingInfo("波形文件渲染中...");
+                        DrawWaveLoadingInfo(AppResources.RenderingWaveformFile);
                         break;
                     case TaskStatus.WaitingForActivation:
                         break;
                     case TaskStatus.WaitingToRun:
-                        DrawWaveLoadingInfo("波形文件渲染中...");
+                        DrawWaveLoadingInfo(AppResources.RenderingWaveformFile);
                         break;
                     case TaskStatus.Created:
-                        DrawWaveLoadingInfo("波形处理未开始");
+                        DrawWaveLoadingInfo(AppResources.ProcessingWaveformNotStarted);
                         break;
                     case TaskStatus.RanToCompletion when wavePart.Peaks.Result == null:
-                        DrawWaveLoadingInfo("波形数据为空");
+                        DrawWaveLoadingInfo(AppResources.ProcessingWaveformEmpty);
                         break;
                     case TaskStatus.RanToCompletion:
                         try 
@@ -153,11 +154,11 @@ namespace OpenUtauMobile.Views.DrawableObjects
                         }
                         catch (Exception ex)
                         {
-                            DrawWaveLoadingInfo($"波形处理错误: {ex.Message}");
+                            DrawWaveLoadingInfo(string.Format(AppResources.ProcessingWaveformError, ex.Message));
                         }
                         break;
                     default:
-                        DrawWaveLoadingInfo($"未知状态: {wavePart.Peaks.Status}");
+                        DrawWaveLoadingInfo(string.Format(AppResources.UnknownStatus, wavePart.Peaks.Status));
                         break;
                 }
             }

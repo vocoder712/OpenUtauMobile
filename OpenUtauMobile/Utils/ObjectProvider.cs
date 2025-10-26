@@ -47,7 +47,7 @@ namespace OpenUtauMobile.Utils
             if (await RequestStoragePermissionAsync())
             {
 #if !WINDOWS
-            await Toast.Make("请选择文件", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            await Toast.Make(AppResources.SelectFileToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
 #endif
                 // 选择路径
                 var filePickPopup = new FilePickerPopup(types);
@@ -73,7 +73,7 @@ namespace OpenUtauMobile.Utils
             }
             else
             {
-                await Toast.Make("存储权限被拒绝", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                await Toast.Make(AppResources.StoragePermissionDeniedToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return string.Empty;
             }
         }
@@ -87,7 +87,7 @@ namespace OpenUtauMobile.Utils
             if (await RequestStoragePermissionAsync())
             {
 #if !WINDOWS
-            await Toast.Make("请选择文件保存位置", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+            await Toast.Make(AppResources.SelectSaveLocationToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
 #endif
                 var fileSaverPopup = new FileSaverPopup(types, initialDirectory, initialFileName);
                 object? result = await context.ShowPopupAsync(fileSaverPopup);
@@ -103,7 +103,7 @@ namespace OpenUtauMobile.Utils
             }
             else
             {
-                await Toast.Make("存储权限被拒绝", CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
+                await Toast.Make(AppResources.StoragePermissionDeniedToast, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
                 return string.Empty;
             }
         }
