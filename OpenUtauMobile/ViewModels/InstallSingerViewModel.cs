@@ -94,36 +94,37 @@ namespace OpenUtauMobile.ViewModels
         public void RefreshArchiveItems()
         {
             Busy = true; // 忙碌
-            if (string.IsNullOrEmpty(InstallPackagePath))
+            ArchiveEntryItems.Clear();
+            if (string.IsNullOrEmpty(InstallPackagePath)) // 路径为空
             {
-                ArchiveEntryItems.Clear();
                 Busy = false; // 空闲
                 return;
             }
-            var readerOptions = new ReaderOptions
+            try
             {
-                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
-            };
-            using var archive = ArchiveFactory.Open(InstallPackagePath, readerOptions);
-            ArchiveEntryItems.Clear();
-
-            // 只取前50个有效条目作为样本，避免加载所有文件
-            const int MaxSampleSize = 50;
-            int count = 0;
-
-            foreach (var entry in archive.Entries)
-            {
-                if (entry.Key != null)
+                ReaderOptions readerOptions = new()
                 {
-                    ArchiveEntryItems.Add(entry.Key);
-                    count++;
+                    ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding }, // 使用指定的编码方式
+                };
+                using IArchive archive = ArchiveFactory.Open(InstallPackagePath, readerOptions);
 
-                    if (count >= MaxSampleSize)
+                // 只取前50个有效条目作为样本，避免加载所有文件
+                const int MaxSampleSize = 50;
+                int count = 0;
+
+                foreach (IArchiveEntry entry in archive.Entries)
+                {
+                    if (entry.Key != null)
                     {
-                        break;
+                        ArchiveEntryItems.Add(entry.Key);
+                        count++;
+
+                        if (count >= MaxSampleSize)
+                        {
+                            break;
+                        }
                     }
                 }
-            }
 
             // 如果文件数量超过样本大小，添加提示信息
             if (count >= MaxSampleSize)
@@ -131,7 +132,14 @@ namespace OpenUtauMobile.ViewModels
                 ArchiveEntryItems.Add(string.Format(AppResources.ShowingFirstNEntries, MaxSampleSize));
             }
 
-            Busy = false; // 空闲
+                Busy = false; // 空闲
+            }
+            catch (Exception ex)
+            {
+                Busy = false; // 空闲
+                Log.Error(ex, "刷新压缩包编码样本时出错");
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
+            }
         }
 
         /// <summary>
@@ -140,20 +148,19 @@ namespace OpenUtauMobile.ViewModels
         public void RefreshTextItems()
         {
             Busy = true; // 忙碌
-            if (string.IsNullOrEmpty(InstallPackagePath))
+            TextItems.Clear();
+            if (string.IsNullOrEmpty(InstallPackagePath)) // 路径为空
             {
-                TextItems.Clear();
                 Busy = false; // 空闲
                 return;
             }
-            ReaderOptions readerOptions = new()
-            {
-                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
-            };
-            using var archive = ArchiveFactory.Open(InstallPackagePath, readerOptions);
             try
             {
-                TextItems.Clear();
+                ReaderOptions readerOptions = new()
+                {
+                    ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding }, // 使用指定的编码方式
+                };
+                using IArchive archive = ArchiveFactory.Open(InstallPackagePath, readerOptions);
 
                 // 限制读取的文本文件数量
                 const int MaxTextFiles = 5; // 最多读取5个文本文件作为样本
@@ -174,7 +181,7 @@ namespace OpenUtauMobile.ViewModels
                         continue;
                     }
 
-                    // 使用更高效的后缀检查
+                    // 后缀筛选
                     if (!entry.Key.EndsWith("character.txt") && !entry.Key.EndsWith("oto.ini"))
                     {
                         continue;
@@ -210,6 +217,7 @@ namespace OpenUtauMobile.ViewModels
             catch (Exception ex)
             {
                 Busy = false; // 空闲
+                Log.Error(ex, "刷新文本编码样本时出错");
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
             }
         }
