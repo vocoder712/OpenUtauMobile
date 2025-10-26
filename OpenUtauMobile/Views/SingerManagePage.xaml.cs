@@ -49,7 +49,7 @@ public partial class SingerManagePage : ContentPage
             }
             else
             {
-                await Navigation.PushModalAsync(new InstallSingerPage(installPackagePath));
+                await Navigation.PushModalAsync(new InstallSingerPage(installPackagePath), false);
             }
         }
     }

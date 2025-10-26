@@ -1,11 +1,7 @@
 ﻿using CommunityToolkit.Maui.Alerts;
-using CommunityToolkit.Maui.Views;
-using CommunityToolkit.Mvvm.Messaging;
 using OpenUtau.Core;
 using OpenUtauMobile.Resources.Strings;
 using OpenUtauMobile.ViewModels;
-using OpenUtauMobile.ViewModels.Messages;
-using OpenUtauMobile.Views.Controls;
 using Serilog;
 
 namespace OpenUtauMobile.Views;
@@ -27,23 +23,12 @@ public partial class InstallSingerPage : ContentPage
         InitializeStepViews();
         UpdateStepViews();
         UpdateStepButton();
-
-        //WeakReferenceMessenger.Default.Register<SimpleMessage>(this, async (sender, message) =>
-        //{
-        //    var popup = new SimplePopup("警告", message.Value, new Dictionary<string, string> { { "ok", "确定" } });
-        //    object? result = await MainThread.InvokeOnMainThreadAsync(() => this.ShowPopupAsync(popup));
-
-        //    if (result is string action && action == "ok")
-        //    {
-        //        await Navigation.PopModalAsync();
-        //    }
-        //});
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        Task.Run(() => { _viewModel.Init(); }); // 待解决
+        Task.Run(_viewModel.Init); // 待解决
     }
 
     /// <summary>
@@ -189,7 +174,7 @@ public partial class InstallSingerPage : ContentPage
         {
             return;
         }
-        Task.Run(() => { _viewModel.RefreshTextItems(); });
+        Task.Run(_viewModel.RefreshTextItems);
     }
 
     /// <summary>

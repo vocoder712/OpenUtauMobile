@@ -58,12 +58,12 @@ namespace OpenUtauMobile.ViewModels
         {
             Busy = true;
             VoicebankConfig = LoadCharacterYaml(InstallPackagePath); // 从压缩包解出character.yaml以获取歌手信息
-            Debug.WriteLine($"Name: {VoicebankConfig?.Name}");
+            //Debug.WriteLine($"Name: {VoicebankConfig?.Name}");
             MissingInfo = string.IsNullOrEmpty(VoicebankConfig?.SingerType); // 判断是否缺少信息
             RefreshArchiveItems(); // 刷新压缩包编码样本
             RefreshTextItems(); // 刷新文本编码样本
             using var archive = ArchiveFactory.Open(InstallPackagePath);
-            long totalUncompressSize = archive.Entries
+            long totalUncompressSize = archive.Entries // 计算解压后总大小
                 .Where(entry => !entry.IsDirectory)
                 .Sum(entry => entry.Size);
             InstallSize = Utils.FormatTools.FormatSize(totalUncompressSize);
@@ -174,19 +174,15 @@ namespace OpenUtauMobile.ViewModels
                         TextItems.Add(string.Format(AppResources.ShowingFirstNTextFiles, MaxTextFiles));
                         break;
                     }
-
-                    // 检查 Key 是否为空，避免不必要的字符串操作
                     if (entry.Key == null)
                     {
                         continue;
                     }
-
                     // 后缀筛选
                     if (!entry.Key.EndsWith("character.txt") && !entry.Key.EndsWith("oto.ini"))
                     {
                         continue;
                     }
-
                     using (Stream stream = entry.OpenEntryStream())
                     {
                         using var reader = new StreamReader(stream, TextEncoding);
@@ -208,10 +204,8 @@ namespace OpenUtauMobile.ViewModels
                             TextItems.Add($"...");
                         }
                     }
-
                     processedFiles++;
                 }
-
                 Busy = false; // 空闲
             }
             catch (Exception ex)
