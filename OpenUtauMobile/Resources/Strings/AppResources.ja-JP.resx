@@ -1,0 +1,807 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>Openutau Mobileについて</value>
+  </data>
+  <data name="AppearanceAndLanguage" xml:space="preserve">
+    <value>テーマと言語</value>
+  </data>
+  <data name="AppName" xml:space="preserve">
+    <value>OpenUtau Mobile</value>
+  </data>
+  <data name="EditAndBehaviour" xml:space="preserve">
+    <value>編集と再生</value>
+  </data>
+  <data name="ExportLog" xml:space="preserve">
+    <value>ログをエクスポート</value>
+  </data>
+  <data name="FileAndStorage" xml:space="preserve">
+    <value>ファイルとストレージ</value>
+  </data>
+  <data name="HelpAndTutorial" xml:space="preserve">
+    <value>ヘルプとチュートリアル</value>
+  </data>
+  <data name="Languages_de" xml:space="preserve">
+    <value>ドイツ語</value>
+  </data>
+  <data name="Languages_en" xml:space="preserve">
+    <value>英語</value>
+  </data>
+  <data name="Languages_es" xml:space="preserve">
+    <value>スペイン語</value>
+  </data>
+  <data name="Languages_fr" xml:space="preserve">
+    <value>フランス語</value>
+  </data>
+  <data name="Languages_invariant" xml:space="preserve">
+    <value>翻訳しない</value>
+  </data>
+  <data name="Languages_it" xml:space="preserve">
+    <value>イタリア語</value>
+  </data>
+  <data name="Languages_ja" xml:space="preserve">
+    <value>日本語</value>
+  </data>
+  <data name="Languages_ko" xml:space="preserve">
+    <value>韓国語</value>
+  </data>
+  <data name="Languages_pl" xml:space="preserve">
+    <value>ポーランド語</value>
+  </data>
+  <data name="Languages_pt" xml:space="preserve">
+    <value>ポルトガル語</value>
+  </data>
+  <data name="Languages_ru" xml:space="preserve">
+    <value>ロシア語</value>
+  </data>
+  <data name="Languages_th" xml:space="preserve">
+    <value>タイ語</value>
+  </data>
+  <data name="Languages_vi" xml:space="preserve">
+    <value>ベトナム語</value>
+  </data>
+  <data name="Languages_zh" xml:space="preserve">
+    <value>中国語（普通話）</value>
+  </data>
+  <data name="Languages_zh_yue" xml:space="preserve">
+    <value>中国語（広東話）</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>新規</value>
+  </data>
+  <data name="NoSingerPrompt" xml:space="preserve">
+    <value>インストールしたシンガーはありません。"+"ボタンで追加できます。</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>開く</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>オプション</value>
+  </data>
+  <data name="Recent" xml:space="preserve">
+    <value>最近</value>
+  </data>
+  <data name="RecentProjects" xml:space="preserve">
+    <value>最近開いたプロジェクト</value>
+  </data>
+  <data name="RenderAndPerformance" xml:space="preserve">
+    <value>レンダリングと性能</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="SingerManage" xml:space="preserve">
+    <value>シンガーを管理</value>
+  </data>
+  <data name="Singers" xml:space="preserve">
+    <value>シンガー</value>
+  </data>
+  <data name="StringHomePage" xml:space="preserve">
+    <value>ホームページ</value>
+  </data>
+  <data name="StringPressBackAgainToExit" xml:space="preserve">
+    <value>もう一度戻るとOpenutau Mobileが終了します</value>
+  </data>
+  <data name="WrongFileTypeToast" xml:space="preserve">
+    <value>正しいファイルを選択してください *{0}</value>
+  </data>
+  <data name="OpenUtauMobileVersion" xml:space="preserve">
+    <value>OpenUtau Mobile バージョン</value>
+  </data>
+  <data name="OpenUtauCoreVersion" xml:space="preserve">
+    <value>OpenUtau Core バージョン</value>
+  </data>
+  <data name="GitHubSuggestionsText" xml:space="preserve">
+    <value>GitHubでプロジェクトに提案やコード貢献をしたり、スターを付けましょう！</value>
+  </data>
+  <data name="HelpGetBetterText" xml:space="preserve">
+    <value>より良いOpenUtau Mobileを共に作り上げましょう</value>
+  </data>
+  <data name="NoProjectsOpened" xml:space="preserve">
+    <value>最近開いたプロジェクトがありません</value>
+  </data>
+  <data name="SingerSetupWizard" xml:space="preserve">
+    <value>シンガーインストールウィザード</value>
+  </data>
+  <data name="CompressionEncodingMethodPrompt" xml:space="preserve">
+    <value>右のファイルリスト、文字化けしないように圧縮ファイルのエンコードを選択してください</value>
+  </data>
+  <data name="TextEncodingMethodPrompt" xml:space="preserve">
+    <value>右のテキスト、文字化けしないようにテキストのエンコードを選択してください</value>
+  </data>
+  <data name="SingerInformationMissing" xml:space="preserve">
+    <value>シンガーのタイプを選択してください：</value>
+  </data>
+  <data name="InstallationSummary" xml:space="preserve">
+    <value>シンガープロファイル</value>
+  </data>
+  <data name="SingerNameText" xml:space="preserve">
+    <value>シンガーの名前</value>
+  </data>
+  <data name="SingerTypeText" xml:space="preserve">
+    <value>シンガータイプ</value>
+  </data>
+  <data name="InstallationDirectoryText" xml:space="preserve">
+    <value>インストール先</value>
+  </data>
+  <data name="InstallationSizeText" xml:space="preserve">
+    <value>ファイルサイズ</value>
+  </data>
+  <data name="Install" xml:space="preserve">
+    <value>インストールする</value>
+  </data>
+  <data name="InstallingText" xml:space="preserve">
+    <value>インストール中</value>
+  </data>
+  <data name="InstallationComplete" xml:space="preserve">
+    <value>インストール完了</value>
+  </data>
+  <data name="BackText" xml:space="preserve">
+    <value>戻る</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>名前：</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>作者：</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>バージョン：</value>
+  </data>
+  <data name="InstallationPath" xml:space="preserve">
+    <value>インストール先：</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>サイト：</value>
+  </data>
+  <data name="VogenSingerSetupWizard" xml:space="preserve">
+    <value>Vogenシンガーインストールウィザード</value>
+  </data>
+  <data name="VogenSingerInstalledSoon" xml:space="preserve">
+    <value>Vogenシンガーのインストールを開始します</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>はい</value>
+  </data>
+  <data name="AutomaticPageTurning" xml:space="preserve">
+    <value>自動スクロール</value>
+  </data>
+  <data name="CancelText" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="SaveText" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="PlaybackRefreshRate" xml:space="preserve">
+    <value>再生時のフレームレート</value>
+  </data>
+  <data name="PitchDisplayPrecision" xml:space="preserve">
+    <value>ピッチの表示精度</value>
+  </data>
+  <data name="DisplaySingerPortrait" xml:space="preserve">
+    <value>立ち絵の表示</value>
+  </data>
+  <data name="GlobalPortraitTransparency" xml:space="preserve">
+    <value>透明度の一括設定</value>
+  </data>
+  <data name="Transparency" xml:space="preserve">
+    <value>立ち絵の透明度</value>
+  </data>
+  <data name="KeepScreenOn" xml:space="preserve">
+    <value>画面を常時点灯</value>
+  </data>
+  <data name="OnPianoClick" xml:space="preserve">
+    <value>音を鳴らす</value>
+  </data>
+  <data name="OutputDevice" xml:space="preserve">
+    <value>出力デバイス</value>
+  </data>
+  <data name="PreRender" xml:space="preserve">
+    <value>リアルタイムレンダリング</value>
+  </data>
+  <data name="DontRenderMutedTracks" xml:space="preserve">
+    <value>ミュート中のトラックをレンダリングしない</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>テーマ</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="AutomaticPageTurningTooltip" xml:space="preserve">
+    <value>オンにすると再生する時画面が自動に送ります。</value>
+  </data>
+  <data name="PlaybackRefreshRateTooltip" xml:space="preserve">
+    <value>デバイス性能に応じて調整してください。高すぎる値は動作が重くなる可能性があります。設定変更後、編集画面の再起動で有効になります。</value>
+  </data>
+  <data name="PitchDisplayPrecisionTooltip" xml:space="preserve">
+    <value>高精度表示はピッチをより正確に表示しますが、動作が重くなる場合があります。</value>
+  </data>
+  <data name="DisplaySingerPortraitTooltip" xml:space="preserve">
+    <value>オンにすると、ピアノロールでシンガーの立ち絵を表示します。</value>
+  </data>
+  <data name="GlobalPortraitTransparencyTooltip" xml:space="preserve">
+    <value>オンにすると、立ち絵の透明度を一律設定します。</value>
+  </data>
+  <data name="KeepScreenOnTooltip" xml:space="preserve">
+    <value>オンにすると、編集画面が常時点灯した状態になります。</value>
+  </data>
+  <data name="OnPianoClickTooltip" xml:space="preserve">
+    <value>ピアノロールの音階をタップする時鳴らす音が設定できます。</value>
+  </data>
+  <data name="OutputDeviceTooltip" xml:space="preserve">
+    <value>Androidは変更できない、見るだけです。</value>
+  </data>
+  <data name="PreRenderTooltip" xml:space="preserve">
+    <value>オンにすると再生する前にバックグラウンドでレンダリングする。</value>
+  </data>
+  <data name="DontRenderMutedTracksTooltip" xml:space="preserve">
+    <value>オンにするとミュートしたトラックはレンダリングしない。</value>
+  </data>
+  <data name="ThemeTooltip" xml:space="preserve">
+    <value>ライトテーマやダークテーマに変更できます。</value>
+  </data>
+  <data name="SettingsSavedToast" xml:space="preserve">
+    <value>設定の保存しました</value>
+  </data>
+  <data name="SettingsSaveErrorToast" xml:space="preserve">
+    <value>設定の保存中にエラーが発生しました</value>
+  </data>
+  <data name="AIProcessing" xml:space="preserve">
+    <value>レンダリング中...</value>
+  </data>
+  <data name="Abort" xml:space="preserve">
+    <value>中止</value>
+  </data>
+  <data name="Saved" xml:space="preserve">
+    <value>保存しました</value>
+  </data>
+  <data name="RenamePart" xml:space="preserve">
+    <value>パートの名前を変更</value>
+  </data>
+  <data name="PianoRollQuantization" xml:space="preserve">
+    <value>ピアノロールのグリッド</value>
+  </data>
+  <data name="LoadPitchRenderingResult" xml:space="preserve">
+    <value>レンダリング済のピッチの読み込み</value>
+  </data>
+  <data name="LoadPitchRenderingResultPrompt" xml:space="preserve">
+    <value>ピッチをレンダリングします。既存のピッチは上書きされますが、続行しますか？</value>
+  </data>
+  <data name="RenameTrack" xml:space="preserve">
+    <value>トラックの名前を変更</value>
+  </data>
+  <data name="RemoveSinger" xml:space="preserve">
+    <value>シンガーをアンインストール</value>
+  </data>
+  <data name="RemoveSingerPrompt" xml:space="preserve">
+    <value>シンガー {0} をアンインストールしますか？</value>
+  </data>
+  <data name="RemovingSingerToast" xml:space="preserve">
+    <value>シンガー {0} をアンインストール中...</value>
+  </data>
+  <data name="RemoveSingerSuccessToast" xml:space="preserve">
+    <value>シンガー {0} をアンインストールしました</value>
+  </data>
+  <data name="RemoveSingerFailureToast" xml:space="preserve">
+    <value>シンガー {0} アンインストールに失敗しました</value>
+  </data>
+  <data name="IncorrectProjectFileToast" xml:space="preserve">
+    <value>正しいプロジェクトを選択してください</value>
+  </data>
+  <data name="InstallationCancelledToast" xml:space="preserve">
+    <value>インストールをキャンセルした</value>
+  </data>
+  <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
+    <value>もう一度戻るとキャンセルします</value>
+  </data>
+  <data name="FileNotFoundToast" xml:space="preserve">
+    <value>ファイルが見つかりません</value>
+  </data>
+  <data name="WorkTitlePhonemize" xml:space="preserve">
+    <value>音素化中...</value>
+  </data>
+  <data name="WorkTitleRender" xml:space="preserve">
+    <value>レンダリング中...</value>
+  </data>
+  <data name="WorkTitleExport" xml:space="preserve">
+    <value>エクスポート中...</value>
+  </data>
+  <data name="WorkTitleReadWave" xml:space="preserve">
+    <value>オーディオ波形をレンダリング中...</value>
+  </data>
+  <data name="WorkTitleOther" xml:space="preserve">
+    <value>実行中...</value>
+  </data>
+  <data name="WorkTitleRenderPitch" xml:space="preserve">
+    <value>ピッチを読み込み中...</value>
+  </data>
+  <data name="WorkTitleLoadingProject" xml:space="preserve">
+    <value>プロジェクト読み込み中、操作しないでください。</value>
+  </data>
+  <data name="SelectSinger" xml:space="preserve">
+    <value>シンガーを選択してください。</value>
+  </data>
+  <data name="NoSingersText" xml:space="preserve">
+    <value>インストールしたシンガーはありません。ホームページの[シンガー]から追加してください。</value>
+  </data>
+  <data name="ChangeTrackColor" xml:space="preserve">
+    <value>トラックの色を変更</value>
+  </data>
+  <data name="NoColorsAvailable" xml:space="preserve">
+    <value>使える色がありません</value>
+  </data>
+  <data name="SetBeat" xml:space="preserve">
+    <value>拍子設定</value>
+  </data>
+  <data name="SetBPM" xml:space="preserve">
+    <value>BPM設定</value>
+  </data>
+  <data name="SetKey" xml:space="preserve">
+    <value>調性（キー）設定</value>
+  </data>
+  <data name="NoSelectableKeys" xml:space="preserve">
+    <value>選べる調性がありません。問題を報告してください</value>
+  </data>
+  <data name="EditLyrics" xml:space="preserve">
+    <value>歌詞入力</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>次</value>
+  </data>
+  <data name="AppRuntimeException" xml:space="preserve">
+    <value>OpenUtau Mobile Runtimeエラー</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>エラー詳細</value>
+  </data>
+  <data name="RestartProgram" xml:space="preserve">
+    <value>アプリ再起動</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>閉じる</value>
+  </data>
+  <data name="CopyErrorMessage" xml:space="preserve">
+    <value>エラーをコピー</value>
+  </data>
+  <data name="SelectFile" xml:space="preserve">
+    <value>ファイルを選択</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>リフレッシュ</value>
+  </data>
+  <data name="SaveFile" xml:space="preserve">
+    <value>ファイルを保存</value>
+  </data>
+  <data name="InsertTempoSignatureMarker" xml:space="preserve">
+    <value>テンポ、拍子マーカーを挿入</value>
+  </data>
+  <data name="SetTempoTickMarker" xml:space="preserve">
+    <value>Tickでテンポを設定</value>
+  </data>
+  <data name="TickTime" xml:space="preserve">
+    <value>Tick単位</value>
+  </data>
+  <data name="InsertTempoMarker" xml:space="preserve">
+    <value>テンポマーカーを挿入</value>
+  </data>
+  <data name="AtBarText" xml:space="preserve">
+    <value>第</value>
+  </data>
+  <data name="Bar" xml:space="preserve">
+    <value>小節</value>
+  </data>
+  <data name="MarkBeatsAs" xml:space="preserve">
+    <value>小節目の拍子を設定</value>
+  </data>
+  <data name="BeatsPerMeasure" xml:space="preserve">
+    <value>1小節の拍数</value>
+  </data>
+  <data name="NotesPerBeat" xml:space="preserve">.
+    <value>何分音符を1拍子とする</value>
+  </data>
+  <data name="InsertSignatureMarker" xml:space="preserve">
+    <value>拍子マーカーを挿入</value>
+  </data>
+  <data name="QuantizeText" xml:space="preserve">
+    <value>クオンタイズ</value>
+  </data>
+  <data name="NoQuantization" xml:space="preserve">
+    <value>クオンタイズできない、問題を報告してください。</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>名前を変更</value>
+  </data>
+  <data name="SelectPhonemizer" xml:space="preserve">
+    <value>Phonemizer選択</value>
+  </data>
+  <data name="CloseProject" xml:space="preserve">
+    <value>プロジェクトを閉じる</value>
+  </data>
+  <data name="UnsavedProjectChangesPrompt" xml:space="preserve">
+    <value>保存されてない変更があります。保存しますか？</value>
+  </data>
+  <data name="DontSave" xml:space="preserve">
+    <value>いいえ</value>
+  </data>
+  <data name="AudioExportOptions" xml:space="preserve">
+    <value>エクスポートオプション</value>
+  </data>
+  <data name="SampleRate" xml:space="preserve">
+    <value>サンプリングレート</value>
+  </data>
+  <data name="BitDepth" xml:space="preserve">
+    <value>ビット深度</value>
+  </data>
+  <data name="MixingMode" xml:space="preserve">
+    <value>モード</value>
+  </data>
+  <data name="VocalTrackOnly" xml:space="preserve">
+    <value>トラックごと(ボーカルだけ)</value>
+  </data>
+  <data name="MixDown" xml:space="preserve">
+    <value>ミックスダウン</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>エクスポート</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>インポート</value>
+  </data>
+  <data name="AuxiliaryTools" xml:space="preserve">
+    <value>ツール</value>
+  </data>
+  <data name="More" xml:space="preserve">
+    <value>その他</value>
+  </data>
+  <data name="ImportAudio" xml:space="preserve">
+    <value>オーディオインポート</value>
+  </data>
+  <data name="ImportMidi" xml:space="preserve">
+    <value>MIDIインポート</value>
+  </data>
+  <data name="ImportTrack" xml:space="preserve">
+    <value>トラックインポート</value>
+  </data>
+  <data name="ExportAudio" xml:space="preserve">
+    <value>オーディオエクスポートト</value>
+  </data>
+  <data name="ExportProject" xml:space="preserve">
+    <value>プロジェクトエクスポートト</value>
+  </data>
+  <data name="SeparateStems" xml:space="preserve">
+    <value>伴奏・ボーカル抽出</value>
+  </data>
+  <data name="DryWetConversion" xml:space="preserve">
+    <value>オーディオを解析してノートに変換</value>
+  </data>
+  <data name="DetectTempo" xml:space="preserve">
+    <value>BPM測定</value>
+  </data>
+  <data name="SaveProjectAs" xml:space="preserve">
+    <value>別名で保存</value>
+  </data>
+  <data name="ManageExpressions" xml:space="preserve">
+    <value>表情、フラグ管理</value>
+  </data>
+  <data name="PositionNegativeToast" xml:space="preserve">
+    <value>位置をマイナス値に設定することはできません</value>
+  </data>
+  <data name="InvalidBPMToast" xml:space="preserve">
+    <value>BPMは0以下にできません</value>
+  </data>
+  <data name="EnterValidNumberToast" xml:space="preserve">
+    <value>有効な数値を入力してください</value>
+  </data>
+  <data name="BarNegativeToast" xml:space="preserve">
+    <value>小節数は負の値にできません</value>
+  </data>
+  <data name="InvalidBeatsPerMeasureToast" xml:space="preserve">
+    <value>1小節の拍数は0以下にできません</value>
+  </data>
+  <data name="InvalidNotesPerBeatToast" xml:space="preserve">
+    <value>基準音符の数値は0以下にできません</value>
+  </data>
+  <data name="ErrorPopupTemplate" xml:space="preserve">
+    <value>予期せぬエラーが発生しました。一部機能に影響が出る可能性があります。
+以下のエラー情報を開発者にご報告いただき、アプリを再起動してください。
+
+{0}
+
+エラー詳細：
+{1}</value>
+  </data>
+  <data name="CopiedToClipboardToast" xml:space="preserve">
+    <value>クリップボードにコピーしました</value>
+  </data>
+  <data name="ProcessingWaveform" xml:space="preserve">
+    <value>波形処理を待機中...</value>
+  </data>
+  <data name="ProcessingWaveformCancelled" xml:space="preserve">
+    <value>波形処理がキャンセルされました</value>
+  </data>
+  <data name="ProcessingWaveformError" xml:space="preserve">
+    <value>波形処理エラー: {0}</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>予期せぬエラー</value>
+  </data>
+  <data name="RenderingWaveformFile" xml:space="preserve">
+    <value>波形ファイルをレンダリング中...</value>
+  </data>
+  <data name="ProcessingWaveformNotStarted" xml:space="preserve">
+    <value>波形処理が開始されていません</value>
+  </data>
+  <data name="ProcessingWaveformEmpty" xml:space="preserve">
+    <value>波形データが空です</value>
+  </data>
+  <data name="UnknownStatus" xml:space="preserve">
+    <value>不明なステータス: {0}</value>
+  </data>
+  <data name="PitchPrecisionOriginal" xml:space="preserve">
+    <value>オリジナル</value>
+  </data>
+  <data name="PitchPrecisionFine" xml:space="preserve">
+    <value>精細</value>
+  </data>
+  <data name="PitchPrecisionMedium" xml:space="preserve">
+    <value>普通</value>
+  </data>
+  <data name="PitchPrecisionRough" xml:space="preserve">
+    <value>省略.</value>
+  </data>
+  <data name="OnPianoClickSilence" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="OnPianoClickSineWave" xml:space="preserve">
+    <value>正弦波(工事中)</value>
+  </data>
+  <data name="OnPianoClickPianoSample" xml:space="preserve">
+    <value>ピアノ(工事中)</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>ライト</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>ダーク</value>
+  </data>
+  <data name="System" xml:space="preserve">
+    <value>システム</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>プログレス：</value>
+  </data>
+  <data name="Unknown" xml:space="preserve">
+    <value>アンノウン</value>
+  </data>
+  <data name="ShowingFirstNEntries" xml:space="preserve">
+    <value>... (先頭 {0} 件ファイルを表示中)</value>
+  </data>
+  <data name="ShowingFirstNTextFiles" xml:space="preserve">
+    <value>... (先頭 {0} 件テキストを表示中)</value>
+  </data>
+  <data name="PhonemizingInProgress" xml:space="preserve">
+    <value>音素化中：</value>
+  </data>
+  <data name="NPartsSelected" xml:space="preserve">
+    <value>{0} パーツ選択中</value>
+  </data>
+  <data name="ErrorFailLoadProject" xml:space="preserve">
+    <value>プロジェクトファイルを開けません。非対応のファイル形式か、ファイルが破損している可能性があります。</value>
+  </data>
+  <data name="NewPart" xml:space="preserve">
+    <value>新しいパート</value>
+  </data>
+  <data name="NewTrack" xml:space="preserve">
+    <value>新しくトラック</value>
+  </data>
+  <data name="NewFile" xml:space="preserve">
+    <value>新しいファイル</value>
+  </data>
+  <data name="WarningNoDirOrFilesMatchingCriteria" xml:space="preserve">
+    <value>このディレクトリにはサブディレクトリと対応ファイルが見つかりません</value>
+  </data>
+  <data name="WarningNoDirectoryPermission" xml:space="preserve">
+    <value>このディレクトリにアクセスする権限がありません</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>エラー：{0}</value>
+  </data>
+  <data name="SelectFileToast" xml:space="preserve">
+    <value>ファイルを選択してください</value>
+  </data>
+  <data name="StoragePermissionDeniedToast" xml:space="preserve">
+    <value>ストレージ権限が拒否されました</value>
+  </data>
+  <data name="SelectSaveLocationToast" xml:space="preserve">
+    <value>保存先を選択してください</value>
+  </data>
+  <data name="AtWork" xml:space="preserve">
+    <value>実行中</value>
+  </data>
+  <data name="InitializingObjectProvider" xml:space="preserve">
+    <value>ObjectProvider初期化</value>
+  </data>
+  <data name="InitializingToolsManager" xml:space="preserve">
+    <value>ToolsManager初期化</value>
+  </data>
+  <data name="InitializingSingerManager" xml:space="preserve">
+    <value>SingerManager初期化</value>
+  </data>
+  <data name="InitializingDocManager" xml:space="preserve">
+    <value>DocManager初期化</value>
+  </data>
+  <data name="InitializingPlaybackManager" xml:space="preserve">
+    <value>PlaybackManager初期化</value>
+  </data>
+  <data name="InitializingPianoRoll" xml:space="preserve">
+    <value>ピアノロール初期化</value>
+  </data>
+  <data name="InitializingLanguageLocalization" xml:space="preserve">
+    <value>ローカライズ初期化</value>
+  </data>
+  <data name="InitializationComplete" xml:space="preserve">
+    <value>初期化完了！</value>
+  </data>
+  <data name="ErrorOpenUtauBackendInitializationFailed" xml:space="preserve">
+    <value>OpenUtauバックエンド初期化失敗</value>
+  </data>
+  <data name="Singer" xml:space="preserve">
+    <value>シンガー</value>
+  </data>
+  <data name="RhythmMeasureNoteTemplate" xml:space="preserve">
+    <value>1/ {0}小節（{0}分音符）</value>
+  </data>
+  <data name="Render" xml:space="preserve">
+    <value>渲</value>
+  </data>
+  <data name="Swap" xml:space="preserve">
+    <value>換</value>
+  </data>
+  <data name="Hand" xml:space="preserve">
+    <value>手</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>編</value>
+  </data>
+  <data name="Eraser" xml:space="preserve">
+    <value>消</value>
+  </data>
+</root>
