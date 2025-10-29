@@ -80,7 +80,7 @@ namespace OpenUtauMobile.ViewModels
             string lang = SelectedLanguageOption.CultureName;
             if (string.IsNullOrEmpty(lang))
             {
-                lang = CultureInfo.CurrentCulture.Name; // 获取系统语言
+                lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName; // 获取系统语言
             }
             var culture = new CultureInfo(lang);
             CultureInfo.DefaultThreadCurrentCulture = culture;

@@ -20,9 +20,9 @@ namespace OpenUtauMobile
         public const int TimeLineHeight = 20; // 时间线高度，记得乘以Density
         public const int PianoRollPlaybackLinePos = 200; // 播放线相对钢琴卷帘画布左侧的位置，记得乘以Density
         public static List<LanguageOption> LanguageOptions = [
-            new LanguageOption("English(US)", "en-US"),
-            new LanguageOption("简体中文", "zh-CN"),
-            new LanguageOption("日本語", "ja-JP"),
+            new LanguageOption("English(US)", "en"),
+            new LanguageOption("简体中文", "zh"),
+            new LanguageOption("日本語", "ja"),
             new LanguageOption(AppResources.System, ""),
         ];
         //public static Dictionary<int, int> MajorKeyNo = new()

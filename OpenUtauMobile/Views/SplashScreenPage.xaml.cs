@@ -90,7 +90,7 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
                 string lang = Preferences.Default.Language;
                 if (string.IsNullOrEmpty(lang))
                 {
-                    lang = CultureInfo.CurrentCulture.Name; // 获取系统语言
+                    lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName; // 获取系统语言
                 }
                 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(lang);
                 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(lang);
