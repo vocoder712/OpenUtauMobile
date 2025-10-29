@@ -92,9 +92,9 @@ public partial class SplashScreenPage : ContentPage, ICmdSubscriber
                 {
                     lang = CultureInfo.CurrentCulture.Name; // 获取系统语言
                 }
-                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(Preferences.Default.Language);
-                CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(Preferences.Default.Language);
-                Log.Information($"语言偏好：{Preferences.Default.Language}");
+                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(lang);
+                CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(lang);
+                Log.Information($"语言偏好：{lang}");
                 Log.Information("语言本地化初始化完成");
 
                 await MainThread.InvokeOnMainThreadAsync(() =>

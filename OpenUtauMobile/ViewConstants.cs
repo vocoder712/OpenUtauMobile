@@ -1,5 +1,6 @@
 ﻿using OpenUtauMobile.Utils;
 using OpenUtauMobile.Views.Utils;
+using OpenUtauMobile.Resources.Strings;
 using SkiaSharp;
 using System;
 using System.CodeDom.Compiler;
@@ -22,7 +23,7 @@ namespace OpenUtauMobile
             new LanguageOption("English(US)", "en-US"),
             new LanguageOption("简体中文", "zh-CN"),
             new LanguageOption("日本語", "ja-JP"),
-            new LanguageOption("跟随系统", ""),
+            new LanguageOption(AppResources.System, ""),
         ];
         //public static Dictionary<int, int> MajorKeyNo = new()
         //{
