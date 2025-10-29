@@ -21,6 +21,7 @@ namespace OpenUtauMobile
         public static List<LanguageOption> LanguageOptions = [
             new LanguageOption("English(US)", "en-US"),
             new LanguageOption("简体中文", "zh-CN"),
+            new LanguageOption("日本語", "ja-JP"),
             new LanguageOption("跟随系统", ""),
         ];
         //public static Dictionary<int, int> MajorKeyNo = new()
