@@ -61,7 +61,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 中止.
+        ///   Looks up a localized string similar to Abort.
         /// </summary>
         internal static string Abort {
             get {
@@ -70,7 +70,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 关于.
+        ///   Looks up a localized string similar to About.
         /// </summary>
         internal static string About {
             get {
@@ -79,7 +79,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AI正在推理....
+        ///   Looks up a localized string similar to AI is processing....
         /// </summary>
         internal static string AIProcessing {
             get {
@@ -88,7 +88,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 外观与语言.
+        ///   Looks up a localized string similar to Appearance &amp; Language.
         /// </summary>
         internal static string AppearanceAndLanguage {
             get {
@@ -106,7 +106,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OpenUtau Mobile 运行时异常.
+        ///   Looks up a localized string similar to OpenUtau Mobile Runtime Exception.
         /// </summary>
         internal static string AppRuntimeException {
             get {
@@ -115,7 +115,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 在第.
+        ///   Looks up a localized string similar to At bar.
         /// </summary>
         internal static string AtBarText {
             get {
@@ -124,7 +124,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 工作中.
+        ///   Looks up a localized string similar to At work.
         /// </summary>
         internal static string AtWork {
             get {
@@ -133,7 +133,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导出音频选项.
+        ///   Looks up a localized string similar to Audio Export Options.
         /// </summary>
         internal static string AudioExportOptions {
             get {
@@ -142,7 +142,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 作者.
+        ///   Looks up a localized string similar to Author:.
         /// </summary>
         internal static string Author {
             get {
@@ -151,7 +151,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 走带自动翻页.
+        ///   Looks up a localized string similar to Automatic Page Turning.
         /// </summary>
         internal static string AutomaticPageTurning {
             get {
@@ -160,7 +160,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 若打开，将在播放指针到达页面右侧时自动翻页.
+        ///   Looks up a localized string similar to If enabled, the page will automatically turn when the playback pointer reaches the right edge of the page..
         /// </summary>
         internal static string AutomaticPageTurningTooltip {
             get {
@@ -169,7 +169,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 辅助工具.
+        ///   Looks up a localized string similar to Auxiliary Tools.
         /// </summary>
         internal static string AuxiliaryTools {
             get {
@@ -178,7 +178,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 返回.
+        ///   Looks up a localized string similar to Back.
         /// </summary>
         internal static string BackText {
             get {
@@ -187,7 +187,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 小节.
+        ///   Looks up a localized string similar to Bar.
         /// </summary>
         internal static string Bar {
             get {
@@ -196,7 +196,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 小节不能为负.
+        ///   Looks up a localized string similar to Bar can&apos;t be negative.
         /// </summary>
         internal static string BarNegativeToast {
             get {
@@ -205,7 +205,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 每小节拍数.
+        ///   Looks up a localized string similar to Beats per measure.
         /// </summary>
         internal static string BeatsPerMeasure {
             get {
@@ -214,7 +214,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 位深.
+        ///   Looks up a localized string similar to Bit Depth.
         /// </summary>
         internal static string BitDepth {
             get {
@@ -223,7 +223,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 取消.
+        ///   Looks up a localized string similar to Cancel.
         /// </summary>
         internal static string CancelText {
             get {
@@ -232,7 +232,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 改变轨道颜色.
+        ///   Looks up a localized string similar to Change track color.
         /// </summary>
         internal static string ChangeTrackColor {
             get {
@@ -241,7 +241,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 关闭.
+        ///   Looks up a localized string similar to Close.
         /// </summary>
         internal static string Close {
             get {
@@ -250,7 +250,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 关闭项目.
+        ///   Looks up a localized string similar to Close project.
         /// </summary>
         internal static string CloseProject {
             get {
@@ -259,7 +259,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请选择一种 压缩包 编码方式，使得右侧文字显示正常.
+        ///   Looks up a localized string similar to Please select the compression file encoding method to ensure the text on the right displays correctly..
         /// </summary>
         internal static string CompressionEncodingMethodPrompt {
             get {
@@ -268,7 +268,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 确定.
+        ///   Looks up a localized string similar to Confirm.
         /// </summary>
         internal static string Confirm {
             get {
@@ -277,7 +277,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 再次操作以取消歌手安装.
+        ///   Looks up a localized string similar to Press back again to cancel the singer installation..
         /// </summary>
         internal static string ConfirmCancelSingerInstallToast {
             get {
@@ -286,7 +286,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 已复制到剪贴板.
+        ///   Looks up a localized string similar to Copied to clipboard.
         /// </summary>
         internal static string CopiedToClipboardToast {
             get {
@@ -295,7 +295,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 复制错误信息.
+        ///   Looks up a localized string similar to Copy error message.
         /// </summary>
         internal static string CopyErrorMessage {
             get {
@@ -304,7 +304,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 曲速测定.
+        ///   Looks up a localized string similar to Detect Tempo.
         /// </summary>
         internal static string DetectTempo {
             get {
@@ -313,7 +313,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 显示歌手立绘.
+        ///   Looks up a localized string similar to Display Singer Portrait.
         /// </summary>
         internal static string DisplaySingerPortrait {
             get {
@@ -322,7 +322,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 打开后，将在钢琴卷帘中显示歌手的立绘。.
+        ///   Looks up a localized string similar to Upon enabling, the singer&apos;s portrait will appear in the piano roll..
         /// </summary>
         internal static string DisplaySingerPortraitTooltip {
             get {
@@ -331,7 +331,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 不渲染静音的轨道.
+        ///   Looks up a localized string similar to Do not render muted tracks.
         /// </summary>
         internal static string DontRenderMutedTracks {
             get {
@@ -340,7 +340,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 渲染时跳过静音的轨道。.
+        ///   Looks up a localized string similar to Skip muted tracks during rendering..
         /// </summary>
         internal static string DontRenderMutedTracksTooltip {
             get {
@@ -349,7 +349,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 不保存.
+        ///   Looks up a localized string similar to Don&apos;t save.
         /// </summary>
         internal static string DontSave {
             get {
@@ -358,7 +358,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 干声转换.
+        ///   Looks up a localized string similar to Dry-to-Wet Conversion.
         /// </summary>
         internal static string DryWetConversion {
             get {
@@ -367,7 +367,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 编.
+        ///   Looks up a localized string similar to Edit.
         /// </summary>
         internal static string Edit {
             get {
@@ -376,7 +376,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 编辑与行为.
+        ///   Looks up a localized string similar to Edit &amp; Behaviour.
         /// </summary>
         internal static string EditAndBehaviour {
             get {
@@ -385,7 +385,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 编辑歌词.
+        ///   Looks up a localized string similar to Edit Lyrics.
         /// </summary>
         internal static string EditLyrics {
             get {
@@ -394,7 +394,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请输入有效的数字.
+        ///   Looks up a localized string similar to Please enter a valid number.
         /// </summary>
         internal static string EnterValidNumberToast {
             get {
@@ -403,7 +403,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 橡.
+        ///   Looks up a localized string similar to Eraser.
         /// </summary>
         internal static string Eraser {
             get {
@@ -412,7 +412,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 错误：{0}.
+        ///   Looks up a localized string similar to Error: {0}.
         /// </summary>
         internal static string Error {
             get {
@@ -421,7 +421,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 无法打开项目文件，可能格式不受支持或文件已损坏。.
+        ///   Looks up a localized string similar to The project file can&apos;t be opened. It may be due to an unsupported format or a corrupted file..
         /// </summary>
         internal static string ErrorFailLoadProject {
             get {
@@ -430,7 +430,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 错误信息.
+        ///   Looks up a localized string similar to Error Message.
         /// </summary>
         internal static string ErrorMessage {
             get {
@@ -439,7 +439,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OpenUtau后端初始化失败.
+        ///   Looks up a localized string similar to OpenUtau backend initialization failed.
         /// </summary>
         internal static string ErrorOpenUtauBackendInitializationFailed {
             get {
@@ -448,12 +448,12 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 很抱歉， OpenUtau Mobile 捕获到了异常，部分功能可能无法正常使用。
-        ///建议您将以下错误信息复制并反馈给开发者，并重启应用程序。
+        ///   Looks up a localized string similar to Unfortunately, OpenUtau Mobile has encountered an exception, and some features may not function properly.
+        ///We recommend copying the following error message and providing it to the developer, then restarting the application.
         ///
         ///{0}
         ///
-        ///异常详情：
+        ///Exception Details:
         ///{1}.
         /// </summary>
         internal static string ErrorPopupTemplate {
@@ -463,7 +463,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导出.
+        ///   Looks up a localized string similar to Export.
         /// </summary>
         internal static string Export {
             get {
@@ -472,7 +472,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导出音频.
+        ///   Looks up a localized string similar to Export Audio.
         /// </summary>
         internal static string ExportAudio {
             get {
@@ -481,7 +481,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导出日志.
+        ///   Looks up a localized string similar to Export Logs.
         /// </summary>
         internal static string ExportLog {
             get {
@@ -490,7 +490,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导出工程.
+        ///   Looks up a localized string similar to Export Project.
         /// </summary>
         internal static string ExportProject {
             get {
@@ -499,7 +499,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 文件与存储.
+        ///   Looks up a localized string similar to File &amp; Storage.
         /// </summary>
         internal static string FileAndStorage {
             get {
@@ -508,7 +508,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 找不到指定文件.
+        ///   Looks up a localized string similar to Could not find such file.
         /// </summary>
         internal static string FileNotFoundToast {
             get {
@@ -517,7 +517,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 去 GitHub 给项目提建议、贡献代码或者给个星标吧.
+        ///   Looks up a localized string similar to Head over to GitHub to suggest improvements, contribute code, or give the project a star..
         /// </summary>
         internal static string GitHubSuggestionsText {
             get {
@@ -526,7 +526,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 全局立绘透明度.
+        ///   Looks up a localized string similar to Global Portrait Transparency.
         /// </summary>
         internal static string GlobalPortraitTransparency {
             get {
@@ -535,7 +535,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 打开该选项可覆盖所有歌手立绘透明度预设。.
+        ///   Looks up a localized string similar to Enable this option to override the transparency presets for all singer portraits..
         /// </summary>
         internal static string GlobalPortraitTransparencyTooltip {
             get {
@@ -544,7 +544,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 手.
+        ///   Looks up a localized string similar to Hand.
         /// </summary>
         internal static string Hand {
             get {
@@ -553,7 +553,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 帮助与教程.
+        ///   Looks up a localized string similar to Help &amp; Tutorial.
         /// </summary>
         internal static string HelpAndTutorial {
             get {
@@ -562,7 +562,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 帮助 OpenUtau Mobile 变得更好.
+        ///   Looks up a localized string similar to Help make OpenUtau Mobile better!.
         /// </summary>
         internal static string HelpGetBetterText {
             get {
@@ -571,7 +571,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导入.
+        ///   Looks up a localized string similar to Import.
         /// </summary>
         internal static string Import {
             get {
@@ -580,7 +580,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导入音频.
+        ///   Looks up a localized string similar to Import Audio.
         /// </summary>
         internal static string ImportAudio {
             get {
@@ -589,7 +589,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导入MIDI.
+        ///   Looks up a localized string similar to Import MIDI.
         /// </summary>
         internal static string ImportMidi {
             get {
@@ -598,7 +598,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 导入轨道.
+        ///   Looks up a localized string similar to Import Track.
         /// </summary>
         internal static string ImportTrack {
             get {
@@ -607,7 +607,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请选择正确的工程文件.
+        ///   Looks up a localized string similar to Please select the correct project file..
         /// </summary>
         internal static string IncorrectProjectFileToast {
             get {
@@ -616,7 +616,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化完毕！.
+        ///   Looks up a localized string similar to Initialization complete!.
         /// </summary>
         internal static string InitializationComplete {
             get {
@@ -625,7 +625,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化DocManager.
+        ///   Looks up a localized string similar to Initializing DocManager.
         /// </summary>
         internal static string InitializingDocManager {
             get {
@@ -634,7 +634,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化语言本地化.
+        ///   Looks up a localized string similar to Initializing Language Localization.
         /// </summary>
         internal static string InitializingLanguageLocalization {
             get {
@@ -643,7 +643,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化对象提供器.
+        ///   Looks up a localized string similar to Initializing ObjectProvider.
         /// </summary>
         internal static string InitializingObjectProvider {
             get {
@@ -652,7 +652,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化钢琴卷帘.
+        ///   Looks up a localized string similar to Initializing PianoRoll.
         /// </summary>
         internal static string InitializingPianoRoll {
             get {
@@ -661,7 +661,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化PlaybackManager.
+        ///   Looks up a localized string similar to Initializing PlaybackManager.
         /// </summary>
         internal static string InitializingPlaybackManager {
             get {
@@ -670,7 +670,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化SingerManager.
+        ///   Looks up a localized string similar to Initializing SingerManager.
         /// </summary>
         internal static string InitializingSingerManager {
             get {
@@ -679,7 +679,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 初始化ToolsManager.
+        ///   Looks up a localized string similar to Initializing ToolsManager.
         /// </summary>
         internal static string InitializingToolsManager {
             get {
@@ -688,7 +688,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 插入节拍标记.
+        ///   Looks up a localized string similar to Insert signature marker.
         /// </summary>
         internal static string InsertSignatureMarker {
             get {
@@ -697,7 +697,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 插入曲速标记.
+        ///   Looks up a localized string similar to Insert tempo marker.
         /// </summary>
         internal static string InsertTempoMarker {
             get {
@@ -706,7 +706,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 插入曲速或节拍标记.
+        ///   Looks up a localized string similar to Insert tempo or signature marker.
         /// </summary>
         internal static string InsertTempoSignatureMarker {
             get {
@@ -715,7 +715,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 开始安装.
+        ///   Looks up a localized string similar to Install.
         /// </summary>
         internal static string Install {
             get {
@@ -724,7 +724,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 安装已取消！.
+        ///   Looks up a localized string similar to Installation cancelled!.
         /// </summary>
         internal static string InstallationCancelledToast {
             get {
@@ -733,7 +733,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 安装完成.
+        ///   Looks up a localized string similar to Installation complete!.
         /// </summary>
         internal static string InstallationComplete {
             get {
@@ -742,7 +742,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 安装目录.
+        ///   Looks up a localized string similar to Installation Directory.
         /// </summary>
         internal static string InstallationDirectoryText {
             get {
@@ -751,7 +751,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 安装路径：.
+        ///   Looks up a localized string similar to Installation Path:.
         /// </summary>
         internal static string InstallationPath {
             get {
@@ -760,7 +760,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 安装大小.
+        ///   Looks up a localized string similar to Installation Size.
         /// </summary>
         internal static string InstallationSizeText {
             get {
@@ -769,7 +769,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 安装信息摘要.
+        ///   Looks up a localized string similar to Installation Summary.
         /// </summary>
         internal static string InstallationSummary {
             get {
@@ -778,7 +778,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 安装中.
+        ///   Looks up a localized string similar to Installing....
         /// </summary>
         internal static string InstallingText {
             get {
@@ -787,7 +787,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 每小节拍数不能小于等于0.
+        ///   Looks up a localized string similar to Beats per measure can&apos;t be less than or equal to 0.
         /// </summary>
         internal static string InvalidBeatsPerMeasureToast {
             get {
@@ -796,7 +796,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BPM不能小于等于0.
+        ///   Looks up a localized string similar to BPM can&apos;t be less than or equal to 0.
         /// </summary>
         internal static string InvalidBPMToast {
             get {
@@ -805,7 +805,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 以几分音符为一拍不能小于等于0.
+        ///   Looks up a localized string similar to Notes per beat can&apos;t be less than or equal to 0.
         /// </summary>
         internal static string InvalidNotesPerBeatToast {
             get {
@@ -814,7 +814,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 保持屏幕常亮.
+        ///   Looks up a localized string similar to Keep screen on.
         /// </summary>
         internal static string KeepScreenOn {
             get {
@@ -823,7 +823,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 打开后，将在编辑页面中保持屏幕常亮。.
+        ///   Looks up a localized string similar to After enabling, the screen will remain on when editing..
         /// </summary>
         internal static string KeepScreenOnTooltip {
             get {
@@ -832,7 +832,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 语言.
+        ///   Looks up a localized string similar to Language.
         /// </summary>
         internal static string Language {
             get {
@@ -841,7 +841,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 德语.
+        ///   Looks up a localized string similar to German.
         /// </summary>
         internal static string Languages_de {
             get {
@@ -850,7 +850,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 英语.
+        ///   Looks up a localized string similar to English.
         /// </summary>
         internal static string Languages_en {
             get {
@@ -859,7 +859,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 西班牙语.
+        ///   Looks up a localized string similar to Spanish.
         /// </summary>
         internal static string Languages_es {
             get {
@@ -868,7 +868,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 法语.
+        ///   Looks up a localized string similar to French.
         /// </summary>
         internal static string Languages_fr {
             get {
@@ -877,7 +877,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 不翻译.
+        ///   Looks up a localized string similar to Do not translate.
         /// </summary>
         internal static string Languages_invariant {
             get {
@@ -886,7 +886,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 意大利语.
+        ///   Looks up a localized string similar to Italian.
         /// </summary>
         internal static string Languages_it {
             get {
@@ -895,7 +895,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 日语.
+        ///   Looks up a localized string similar to Japanese.
         /// </summary>
         internal static string Languages_ja {
             get {
@@ -904,7 +904,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 韩语.
+        ///   Looks up a localized string similar to Korean.
         /// </summary>
         internal static string Languages_ko {
             get {
@@ -913,7 +913,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 波兰语.
+        ///   Looks up a localized string similar to Polish.
         /// </summary>
         internal static string Languages_pl {
             get {
@@ -922,7 +922,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 葡萄牙语.
+        ///   Looks up a localized string similar to Portuguese.
         /// </summary>
         internal static string Languages_pt {
             get {
@@ -931,7 +931,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 俄语.
+        ///   Looks up a localized string similar to Russian.
         /// </summary>
         internal static string Languages_ru {
             get {
@@ -940,7 +940,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 泰语.
+        ///   Looks up a localized string similar to Thai.
         /// </summary>
         internal static string Languages_th {
             get {
@@ -949,7 +949,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 越南语.
+        ///   Looks up a localized string similar to Vietnamese.
         /// </summary>
         internal static string Languages_vi {
             get {
@@ -958,7 +958,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 中文.
+        ///   Looks up a localized string similar to Chinese.
         /// </summary>
         internal static string Languages_zh {
             get {
@@ -967,7 +967,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 粤语.
+        ///   Looks up a localized string similar to Cantonese.
         /// </summary>
         internal static string Languages_zh_yue {
             get {
@@ -976,7 +976,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 加载音高渲染结果.
+        ///   Looks up a localized string similar to Load Pitch Rendering Result.
         /// </summary>
         internal static string LoadPitchRenderingResult {
             get {
@@ -985,7 +985,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 获取渲染器推荐音高曲线。但渲染结果会覆盖已有音高数据，是否继续？.
+        ///   Looks up a localized string similar to Retrieve the renderer&apos;s recommended pitch curve. However, the rendered result will overwrite existing pitch data. Proceed?.
         /// </summary>
         internal static string LoadPitchRenderingResultPrompt {
             get {
@@ -994,7 +994,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 表情管理.
+        ///   Looks up a localized string similar to Manage Expressions.
         /// </summary>
         internal static string ManageExpressions {
             get {
@@ -1003,7 +1003,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 小节标记节拍为.
+        ///   Looks up a localized string similar to Mark beats as.
         /// </summary>
         internal static string MarkBeatsAs {
             get {
@@ -1012,7 +1012,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 缩混.
+        ///   Looks up a localized string similar to MixDown.
         /// </summary>
         internal static string MixDown {
             get {
@@ -1021,7 +1021,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 混音模式.
+        ///   Looks up a localized string similar to Mixing Mode.
         /// </summary>
         internal static string MixingMode {
             get {
@@ -1030,7 +1030,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 更多.
+        ///   Looks up a localized string similar to More.
         /// </summary>
         internal static string More {
             get {
@@ -1039,7 +1039,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 名称.
+        ///   Looks up a localized string similar to Name:.
         /// </summary>
         internal static string Name {
             get {
@@ -1048,7 +1048,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 新建.
+        ///   Looks up a localized string similar to New.
         /// </summary>
         internal static string New {
             get {
@@ -1057,7 +1057,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 新文件.
+        ///   Looks up a localized string similar to New File.
         /// </summary>
         internal static string NewFile {
             get {
@@ -1066,7 +1066,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 新分片.
+        ///   Looks up a localized string similar to New Part.
         /// </summary>
         internal static string NewPart {
             get {
@@ -1075,7 +1075,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 新轨道.
+        ///   Looks up a localized string similar to New Track.
         /// </summary>
         internal static string NewTrack {
             get {
@@ -1084,7 +1084,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 下一个.
+        ///   Looks up a localized string similar to Next.
         /// </summary>
         internal static string Next {
             get {
@@ -1093,7 +1093,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 没有可用的颜色.
+        ///   Looks up a localized string similar to No colors are available.
         /// </summary>
         internal static string NoColorsAvailable {
             get {
@@ -1102,7 +1102,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 这里还没有打开过的工程.
+        ///   Looks up a localized string similar to No projects have been opened yet..
         /// </summary>
         internal static string NoProjectsOpened {
             get {
@@ -1111,7 +1111,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 还没有量化！请向社区报告问题。.
+        ///   Looks up a localized string similar to Can&apos;t quantize yet! Please report this issue to the community..
         /// </summary>
         internal static string NoQuantization {
             get {
@@ -1120,7 +1120,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 还没有可选的调！请向社区报告问题。.
+        ///   Looks up a localized string similar to Can&apos;t select keys yet! Please report the issue to the community..
         /// </summary>
         internal static string NoSelectableKeys {
             get {
@@ -1129,7 +1129,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 还没有歌手，点击“+”添加！.
+        ///   Looks up a localized string similar to No singer installed, please click &quot;+&quot; to add one!.
         /// </summary>
         internal static string NoSingerPrompt {
             get {
@@ -1138,7 +1138,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 还没有歌手，请前往歌手管理页面添加！.
+        ///   Looks up a localized string similar to No singers have been added yet. Please go to the singer management page to add them!.
         /// </summary>
         internal static string NoSingersText {
             get {
@@ -1147,7 +1147,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 以几分音符为一拍.
+        ///   Looks up a localized string similar to Notes per beat.
         /// </summary>
         internal static string NotesPerBeat {
             get {
@@ -1156,7 +1156,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} 个分片被选中.
+        ///   Looks up a localized string similar to {0} parts selected.
         /// </summary>
         internal static string NPartsSelected {
             get {
@@ -1165,7 +1165,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 点击钢琴键时.
+        ///   Looks up a localized string similar to On piano click.
         /// </summary>
         internal static string OnPianoClick {
             get {
@@ -1174,7 +1174,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 钢琴采样TODO.
+        ///   Looks up a localized string similar to Piano Sample TODO.
         /// </summary>
         internal static string OnPianoClickPianoSample {
             get {
@@ -1183,7 +1183,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 无声.
+        ///   Looks up a localized string similar to Silence.
         /// </summary>
         internal static string OnPianoClickSilence {
             get {
@@ -1192,7 +1192,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正弦波TODO.
+        ///   Looks up a localized string similar to Sine Wave TODO.
         /// </summary>
         internal static string OnPianoClickSineWave {
             get {
@@ -1201,7 +1201,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 设置点击钢琴卷帘左侧琴键的行为.
+        ///   Looks up a localized string similar to Set the behavior for clicking the keys on the left side of the piano roll.
         /// </summary>
         internal static string OnPianoClickTooltip {
             get {
@@ -1210,7 +1210,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 打开.
+        ///   Looks up a localized string similar to Open.
         /// </summary>
         internal static string Open {
             get {
@@ -1219,7 +1219,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OpenUtau 内核版本.
+        ///   Looks up a localized string similar to OpenUtau Core version.
         /// </summary>
         internal static string OpenUtauCoreVersion {
             get {
@@ -1228,7 +1228,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to OpenUtau Mobile 版本.
+        ///   Looks up a localized string similar to OpenUtau Mobile version.
         /// </summary>
         internal static string OpenUtauMobileVersion {
             get {
@@ -1237,7 +1237,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 选项.
+        ///   Looks up a localized string similar to Options.
         /// </summary>
         internal static string Options {
             get {
@@ -1246,7 +1246,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 输出设备.
+        ///   Looks up a localized string similar to Output device.
         /// </summary>
         internal static string OutputDevice {
             get {
@@ -1255,7 +1255,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Android只能看不能改.
+        ///   Looks up a localized string similar to Android: view only, can&apos;t edit..
         /// </summary>
         internal static string OutputDeviceTooltip {
             get {
@@ -1264,7 +1264,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在音素化：.
+        ///   Looks up a localized string similar to Phonemizing in progress:.
         /// </summary>
         internal static string PhonemizingInProgress {
             get {
@@ -1273,7 +1273,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 钢琴卷帘量化.
+        ///   Looks up a localized string similar to Piano Roll Quantization.
         /// </summary>
         internal static string PianoRollQuantization {
             get {
@@ -1282,7 +1282,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 音高线显示精度.
+        ///   Looks up a localized string similar to Pitch display precision.
         /// </summary>
         internal static string PitchDisplayPrecision {
             get {
@@ -1291,7 +1291,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 更高的精度更能准确刻画实际音高，但可能导致性能问题。.
+        ///   Looks up a localized string similar to Higher precision can more accurately depict actual pitch, but may lead to performance issues..
         /// </summary>
         internal static string PitchDisplayPrecisionTooltip {
             get {
@@ -1300,7 +1300,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 精细.
+        ///   Looks up a localized string similar to Fine.
         /// </summary>
         internal static string PitchPrecisionFine {
             get {
@@ -1309,7 +1309,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 中等.
+        ///   Looks up a localized string similar to Medium.
         /// </summary>
         internal static string PitchPrecisionMedium {
             get {
@@ -1318,7 +1318,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 原始.
+        ///   Looks up a localized string similar to Original.
         /// </summary>
         internal static string PitchPrecisionOriginal {
             get {
@@ -1327,7 +1327,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 粗略.
+        ///   Looks up a localized string similar to Rough.
         /// </summary>
         internal static string PitchPrecisionRough {
             get {
@@ -1336,7 +1336,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 回放刷新率.
+        ///   Looks up a localized string similar to Playback refresh rate.
         /// </summary>
         internal static string PlaybackRefreshRate {
             get {
@@ -1345,7 +1345,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 设置更新播放指针的频率，1 ~ 60 FPS。请根据设备性能调整。过大的刷新率可能导致卡顿。更改此项设置后，重新打开编辑页面生效。.
+        ///   Looks up a localized string similar to Set the refresh rate for the playback pointer, ranging from 1 to 60 FPS. Adjust this setting based on your device&apos;s performance. Excessively high refresh rates may cause stuttering. Changes to this setting take effect after reopening the editing page..
         /// </summary>
         internal static string PlaybackRefreshRateTooltip {
             get {
@@ -1354,7 +1354,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 位置不能为负.
+        ///   Looks up a localized string similar to Position can&apos;t be negative.
         /// </summary>
         internal static string PositionNegativeToast {
             get {
@@ -1363,7 +1363,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 预渲染.
+        ///   Looks up a localized string similar to Pre-render.
         /// </summary>
         internal static string PreRender {
             get {
@@ -1372,7 +1372,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 在回放前后台预渲染音频。.
+        ///   Looks up a localized string similar to Pre-render audio in the background before playback..
         /// </summary>
         internal static string PreRenderTooltip {
             get {
@@ -1381,7 +1381,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 等待波形处理....
+        ///   Looks up a localized string similar to Processing waveform....
         /// </summary>
         internal static string ProcessingWaveform {
             get {
@@ -1390,7 +1390,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 波形处理被取消.
+        ///   Looks up a localized string similar to Waveform processing has been canceled..
         /// </summary>
         internal static string ProcessingWaveformCancelled {
             get {
@@ -1399,7 +1399,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 波形数据为空.
+        ///   Looks up a localized string similar to Waveform data is empty..
         /// </summary>
         internal static string ProcessingWaveformEmpty {
             get {
@@ -1408,7 +1408,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 波形处理错误: {0}.
+        ///   Looks up a localized string similar to Waveform Processing Error: {0}.
         /// </summary>
         internal static string ProcessingWaveformError {
             get {
@@ -1417,7 +1417,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 波形处理未开始.
+        ///   Looks up a localized string similar to Waveform processing hasn&apos;t yet started..
         /// </summary>
         internal static string ProcessingWaveformNotStarted {
             get {
@@ -1426,7 +1426,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 进度：.
+        ///   Looks up a localized string similar to Progress:.
         /// </summary>
         internal static string Progress {
             get {
@@ -1435,7 +1435,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 量化.
+        ///   Looks up a localized string similar to Quantize.
         /// </summary>
         internal static string QuantizeText {
             get {
@@ -1444,7 +1444,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 最近.
+        ///   Looks up a localized string similar to Recent.
         /// </summary>
         internal static string Recent {
             get {
@@ -1453,7 +1453,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 最近打开.
+        ///   Looks up a localized string similar to Recent Projects.
         /// </summary>
         internal static string RecentProjects {
             get {
@@ -1462,7 +1462,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 刷新.
+        ///   Looks up a localized string similar to Refresh.
         /// </summary>
         internal static string Refresh {
             get {
@@ -1471,7 +1471,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 卸载歌手.
+        ///   Looks up a localized string similar to Remove Singer.
         /// </summary>
         internal static string RemoveSinger {
             get {
@@ -1480,7 +1480,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 卸载歌手 {0} 失败.
+        ///   Looks up a localized string similar to Failed to remove singer {0}.
         /// </summary>
         internal static string RemoveSingerFailureToast {
             get {
@@ -1489,7 +1489,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 确认要卸载歌手 {0} 吗？.
+        ///   Looks up a localized string similar to Are you sure you want to remove singer {0}?.
         /// </summary>
         internal static string RemoveSingerPrompt {
             get {
@@ -1498,7 +1498,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 成功卸载歌手 {0}.
+        ///   Looks up a localized string similar to Successfully removed singer {0}.
         /// </summary>
         internal static string RemoveSingerSuccessToast {
             get {
@@ -1507,7 +1507,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在卸载歌手 {0}....
+        ///   Looks up a localized string similar to Removing singer {0}....
         /// </summary>
         internal static string RemovingSingerToast {
             get {
@@ -1516,7 +1516,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 重命名.
+        ///   Looks up a localized string similar to Rename.
         /// </summary>
         internal static string Rename {
             get {
@@ -1525,7 +1525,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 重命名分片.
+        ///   Looks up a localized string similar to Rename Part.
         /// </summary>
         internal static string RenamePart {
             get {
@@ -1534,7 +1534,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 重命名音轨.
+        ///   Looks up a localized string similar to Rename Track.
         /// </summary>
         internal static string RenameTrack {
             get {
@@ -1543,7 +1543,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 渲.
+        ///   Looks up a localized string similar to Render.
         /// </summary>
         internal static string Render {
             get {
@@ -1552,7 +1552,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 渲染与性能.
+        ///   Looks up a localized string similar to Render &amp; Performance.
         /// </summary>
         internal static string RenderAndPerformance {
             get {
@@ -1561,7 +1561,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 波形文件渲染中....
+        ///   Looks up a localized string similar to Rendering waveform file....
         /// </summary>
         internal static string RenderingWaveformFile {
             get {
@@ -1570,7 +1570,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 重启程序.
+        ///   Looks up a localized string similar to Restart the program.
         /// </summary>
         internal static string RestartProgram {
             get {
@@ -1579,7 +1579,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 1/ {0}小节（{0}分音符）.
+        ///   Looks up a localized string similar to 1/{0} measure ({0}th note).
         /// </summary>
         internal static string RhythmMeasureNoteTemplate {
             get {
@@ -1588,7 +1588,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 采样率.
+        ///   Looks up a localized string similar to Sample Rate.
         /// </summary>
         internal static string SampleRate {
             get {
@@ -1597,7 +1597,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 已保存.
+        ///   Looks up a localized string similar to Saved.
         /// </summary>
         internal static string Saved {
             get {
@@ -1606,7 +1606,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 保存文件.
+        ///   Looks up a localized string similar to Save File.
         /// </summary>
         internal static string SaveFile {
             get {
@@ -1615,7 +1615,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 工程另存为.
+        ///   Looks up a localized string similar to Save Project As.
         /// </summary>
         internal static string SaveProjectAs {
             get {
@@ -1624,7 +1624,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 保存.
+        ///   Looks up a localized string similar to Save.
         /// </summary>
         internal static string SaveText {
             get {
@@ -1633,7 +1633,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 选择文件.
+        ///   Looks up a localized string similar to Select File.
         /// </summary>
         internal static string SelectFile {
             get {
@@ -1642,7 +1642,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请选择文件.
+        ///   Looks up a localized string similar to Please select a file.
         /// </summary>
         internal static string SelectFileToast {
             get {
@@ -1651,7 +1651,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 选择音素器.
+        ///   Looks up a localized string similar to Select Phonemizer.
         /// </summary>
         internal static string SelectPhonemizer {
             get {
@@ -1660,7 +1660,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请选择文件保存位置.
+        ///   Looks up a localized string similar to Please select where to save the file.
         /// </summary>
         internal static string SelectSaveLocationToast {
             get {
@@ -1669,7 +1669,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 选择歌手.
+        ///   Looks up a localized string similar to Select Singer.
         /// </summary>
         internal static string SelectSinger {
             get {
@@ -1678,7 +1678,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 伴奏分离.
+        ///   Looks up a localized string similar to Separate Stems.
         /// </summary>
         internal static string SeparateStems {
             get {
@@ -1687,7 +1687,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 设置节拍.
+        ///   Looks up a localized string similar to Set beat.
         /// </summary>
         internal static string SetBeat {
             get {
@@ -1696,7 +1696,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 设置BPM.
+        ///   Looks up a localized string similar to Set BPM.
         /// </summary>
         internal static string SetBPM {
             get {
@@ -1705,7 +1705,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 设置调性.
+        ///   Looks up a localized string similar to Set key.
         /// </summary>
         internal static string SetKey {
             get {
@@ -1714,7 +1714,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to tick标记曲速为.
+        ///   Looks up a localized string similar to Set tempo for tick marker to.
         /// </summary>
         internal static string SetTempoTickMarker {
             get {
@@ -1723,7 +1723,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 设置.
+        ///   Looks up a localized string similar to Settings.
         /// </summary>
         internal static string Settings {
             get {
@@ -1732,7 +1732,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 设置已保存.
+        ///   Looks up a localized string similar to Settings saved!.
         /// </summary>
         internal static string SettingsSavedToast {
             get {
@@ -1741,7 +1741,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 保存设置时出现错误.
+        ///   Looks up a localized string similar to An error occurred while saving settings..
         /// </summary>
         internal static string SettingsSaveErrorToast {
             get {
@@ -1750,7 +1750,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ... (已显示前 {0} 个条目).
+        ///   Looks up a localized string similar to ... (Showing first {0} entries).
         /// </summary>
         internal static string ShowingFirstNEntries {
             get {
@@ -1759,7 +1759,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ... (已显示前 {0} 个文本文件).
+        ///   Looks up a localized string similar to ... (Showing first {0} text files).
         /// </summary>
         internal static string ShowingFirstNTextFiles {
             get {
@@ -1768,7 +1768,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 歌手.
+        ///   Looks up a localized string similar to Singer.
         /// </summary>
         internal static string Singer {
             get {
@@ -1777,7 +1777,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 歌手信息缺失，请选择歌手类型：.
+        ///   Looks up a localized string similar to Singer information is missing. Please select the singer type:.
         /// </summary>
         internal static string SingerInformationMissing {
             get {
@@ -1786,7 +1786,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 歌手管理.
+        ///   Looks up a localized string similar to Manage Singers.
         /// </summary>
         internal static string SingerManage {
             get {
@@ -1795,7 +1795,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 歌手名称.
+        ///   Looks up a localized string similar to Singer Name.
         /// </summary>
         internal static string SingerNameText {
             get {
@@ -1804,7 +1804,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 歌手.
+        ///   Looks up a localized string similar to Singers.
         /// </summary>
         internal static string Singers {
             get {
@@ -1813,7 +1813,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 歌手安装向导.
+        ///   Looks up a localized string similar to Singer Setup Wizard.
         /// </summary>
         internal static string SingerSetupWizard {
             get {
@@ -1822,7 +1822,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 歌手类型.
+        ///   Looks up a localized string similar to Singer Type.
         /// </summary>
         internal static string SingerTypeText {
             get {
@@ -1831,7 +1831,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 存储权限被拒绝.
+        ///   Looks up a localized string similar to Storage permission denied.
         /// </summary>
         internal static string StoragePermissionDeniedToast {
             get {
@@ -1840,7 +1840,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 主页.
+        ///   Looks up a localized string similar to Home Page.
         /// </summary>
         internal static string StringHomePage {
             get {
@@ -1849,7 +1849,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 再次按下返回键退出 OpenUtau Mobile.
+        ///   Looks up a localized string similar to Press back button again to exit OpenUtau Mobile.
         /// </summary>
         internal static string StringPressBackAgainToExit {
             get {
@@ -1858,7 +1858,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 换.
+        ///   Looks up a localized string similar to Swap.
         /// </summary>
         internal static string Swap {
             get {
@@ -1867,7 +1867,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 系统.
+        ///   Looks up a localized string similar to System.
         /// </summary>
         internal static string System {
             get {
@@ -1876,7 +1876,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请选择一种 文本 编码方式，使得右侧文字显示正常.
+        ///   Looks up a localized string similar to Please select the text encoding method to ensure the text on the right displays correctly..
         /// </summary>
         internal static string TextEncodingMethodPrompt {
             get {
@@ -1885,7 +1885,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 主题.
+        ///   Looks up a localized string similar to Theme.
         /// </summary>
         internal static string Theme {
             get {
@@ -1894,7 +1894,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 深色.
+        ///   Looks up a localized string similar to Dark.
         /// </summary>
         internal static string ThemeDark {
             get {
@@ -1903,7 +1903,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 浅色.
+        ///   Looks up a localized string similar to Light.
         /// </summary>
         internal static string ThemeLight {
             get {
@@ -1912,7 +1912,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 深色或浅色主题.
+        ///   Looks up a localized string similar to Dark or light theme.
         /// </summary>
         internal static string ThemeTooltip {
             get {
@@ -1921,7 +1921,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to tick时间单位.
+        ///   Looks up a localized string similar to Tick Time.
         /// </summary>
         internal static string TickTime {
             get {
@@ -1930,7 +1930,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 透明度.
+        ///   Looks up a localized string similar to Transparency.
         /// </summary>
         internal static string Transparency {
             get {
@@ -1939,7 +1939,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 未知.
+        ///   Looks up a localized string similar to Unknown.
         /// </summary>
         internal static string Unknown {
             get {
@@ -1948,7 +1948,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 未知错误.
+        ///   Looks up a localized string similar to Unknown Error.
         /// </summary>
         internal static string UnknownError {
             get {
@@ -1957,7 +1957,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 未知状态: {0}.
+        ///   Looks up a localized string similar to Unknown status: {0}.
         /// </summary>
         internal static string UnknownStatus {
             get {
@@ -1966,7 +1966,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 有尚未保存的更改，是否保存后退出？.
+        ///   Looks up a localized string similar to There are unsaved changes. Do you want to save and exit?.
         /// </summary>
         internal static string UnsavedProjectChangesPrompt {
             get {
@@ -1975,7 +1975,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 版本：.
+        ///   Looks up a localized string similar to Version:.
         /// </summary>
         internal static string Version {
             get {
@@ -1984,7 +1984,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 分轨（仅歌声轨道）.
+        ///   Looks up a localized string similar to Vocal track only.
         /// </summary>
         internal static string VocalTrackOnly {
             get {
@@ -1993,7 +1993,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 即将安装Vogen歌手.
+        ///   Looks up a localized string similar to Vogen Singer will be installed soon....
         /// </summary>
         internal static string VogenSingerInstalledSoon {
             get {
@@ -2002,7 +2002,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Vogen歌手安装向导.
+        ///   Looks up a localized string similar to Vogen Singer Setup Wizard.
         /// </summary>
         internal static string VogenSingerSetupWizard {
             get {
@@ -2011,7 +2011,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 没有权限访问该目录.
+        ///   Looks up a localized string similar to You don&apos;t have permission to access this directory..
         /// </summary>
         internal static string WarningNoDirectoryPermission {
             get {
@@ -2020,7 +2020,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 该目录下没有子目录和符合条件的文件.
+        ///   Looks up a localized string similar to There are no directories or files matching the criteria in this directory..
         /// </summary>
         internal static string WarningNoDirOrFilesMatchingCriteria {
             get {
@@ -2029,7 +2029,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 网站：.
+        ///   Looks up a localized string similar to Website:.
         /// </summary>
         internal static string Website {
             get {
@@ -2038,7 +2038,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在导出.
+        ///   Looks up a localized string similar to Exporting....
         /// </summary>
         internal static string WorkTitleExport {
             get {
@@ -2047,7 +2047,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在加载项目，请勿操作.
+        ///   Looks up a localized string similar to Loading project, Don&apos;t touch.
         /// </summary>
         internal static string WorkTitleLoadingProject {
             get {
@@ -2056,7 +2056,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 工作中.
+        ///   Looks up a localized string similar to Working....
         /// </summary>
         internal static string WorkTitleOther {
             get {
@@ -2065,7 +2065,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在音素化.
+        ///   Looks up a localized string similar to Phonemizing....
         /// </summary>
         internal static string WorkTitlePhonemize {
             get {
@@ -2074,7 +2074,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在渲染音频波形.
+        ///   Looks up a localized string similar to Rendering waveform....
         /// </summary>
         internal static string WorkTitleReadWave {
             get {
@@ -2083,7 +2083,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在渲染.
+        ///   Looks up a localized string similar to Rendering....
         /// </summary>
         internal static string WorkTitleRender {
             get {
@@ -2092,7 +2092,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 正在渲染音高.
+        ///   Looks up a localized string similar to Rendering the pitch....
         /// </summary>
         internal static string WorkTitleRenderPitch {
             get {
@@ -2101,7 +2101,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 请选择正确的文件 *{0}.
+        ///   Looks up a localized string similar to Please select a valid file *{0}.
         /// </summary>
         internal static string WrongFileTypeToast {
             get {

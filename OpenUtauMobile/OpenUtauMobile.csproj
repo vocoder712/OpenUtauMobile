@@ -136,15 +136,15 @@
 	  <Compile Update="Platforms\Windows\Utils\WindowsAppLifeCycleHelper.cs">
 	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
 	  </Compile>
-	  <Compile Update="Resources\Strings\AppResources.en-US.Designer.cs">
-	    <DependentUpon>AppResources.en-US.resx</DependentUpon>
+	  <Compile Update="Resources\Strings\AppResources.Designer.cs">
+	    <DependentUpon>AppResources.resx</DependentUpon>
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Update="Resources\Strings\AppResources.Designer.cs">
+	  <Compile Update="Resources\Strings\AppResources.en.Designer.cs">
+	    <DependentUpon>AppResources.en.resx</DependentUpon>
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
-	    <DependentUpon>AppResources.resx</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Controls\ChooseTrackColorPopup.xaml.cs">
 	    <DependentUpon>ChooseTrackColorPopup.xaml</DependentUpon>
@@ -198,13 +198,13 @@
 
 
 	<ItemGroup>
-	  <EmbeddedResource Update="Resources\Strings\AppResources.en-US.resx">
-	    <LastGenOutput>AppResources.en-US.Designer.cs</LastGenOutput>
+	  <EmbeddedResource Update="Resources\Strings\AppResources.resx">
+	    <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
 	    <Generator>ResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Resources\Strings\AppResources.resx">
+	  <EmbeddedResource Update="Resources\Strings\AppResources.en.resx">
+	    <LastGenOutput>AppResources.en.Designer.cs</LastGenOutput>
 	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>AppResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	</ItemGroup>
 
