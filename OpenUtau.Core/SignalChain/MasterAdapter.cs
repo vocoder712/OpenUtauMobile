@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using NAudio.Wave;
 
 namespace OpenUtau.Core.SignalChain {
@@ -22,7 +21,6 @@ namespace OpenUtau.Core.SignalChain {
             }
             if (!source.IsReady(position, count)) {
                 Waited += count;
-                //Debug.WriteLine($"MasterAdapter: waiting at {position} for {Waited} samples");
                 IsWaiting = true;
                 return count;
             } else {

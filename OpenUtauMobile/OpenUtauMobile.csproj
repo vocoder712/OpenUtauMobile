@@ -28,8 +28,8 @@
 		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.0.7</ApplicationDisplayVersion>
-		<ApplicationVersion>8</ApplicationVersion>
+		<ApplicationDisplayVersion>1.1.0</ApplicationDisplayVersion>
+		<ApplicationVersion>9</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -48,9 +48,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 	  <EnableLLVM>False</EnableLLVM>
-	  <!-- <AndroidKeyStore>True</AndroidKeyStore> -->
-	  <!-- To enable keystore signing for Debug, set UseAndroidKeyStore=true in your environment or build properties -->
-	  <AndroidKeyStore Condition="'$(UseAndroidKeyStore)'=='true'">True</AndroidKeyStore>
+	  <AndroidKeyStore>True</AndroidKeyStore>
 	  <Debugger>Xamarin</Debugger>
 	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
 	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
@@ -125,7 +123,7 @@
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 		<PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-		<PackageReference Include="SharpCompress" Version="0.41.0" />
+		<PackageReference Include="SharpCompress" Version="0.38.0" />
 		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.0-stable.1" />
 		<PackageReference Include="Vapolia.Svg" Version="1.0.5" />
 	</ItemGroup>

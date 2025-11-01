@@ -146,8 +146,7 @@ namespace OpenUtauMobile.ViewModels
         #region 调整音符长度字段
         private UNote? _resizingNote; // 用于记录正在调整长度的音符
         public bool IsResizingNote = false; // 是否正在调整音符长度
-        //private List<int> _originalDurations; // 记录调整开始时的音符原始长度
-        //private int _offsetDuration; // 保存上一次调整后的总长度偏移量，用于计算相对调整
+        private int _initialBound2TouchOffset = 0; // 记录开始调整音符长度时，音符右边界到触摸点（逻辑）的初始x偏移量
         #endregion
         #region 移动音符字段
         private SKPoint _startMoveNotesPosition; // 用于记录开始拖动音符时的起始位置
@@ -614,7 +613,7 @@ namespace OpenUtauMobile.ViewModels
             {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new ResizePartCommand(DocManager.Inst.Project, SelectedParts[0], width));
+            DocManager.Inst.ExecuteCmd(new ResizePartCommand(DocManager.Inst.Project, SelectedParts[0], width - SelectedParts[0].Duration, false));
         }
 
         /// <summary>
@@ -703,7 +702,7 @@ namespace OpenUtauMobile.ViewModels
             {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new ResizePartCommand(DocManager.Inst.Project, _resizingPart, newWidth));
+            DocManager.Inst.ExecuteCmd(new ResizePartCommand(DocManager.Inst.Project, _resizingPart, newWidth - _resizingPart.Duration, false));
         }
 
         internal void EndResizePart()
@@ -1028,14 +1027,13 @@ namespace OpenUtauMobile.ViewModels
 
         public void StartResizeNotes(SKPoint sKPoint, UNote resizingNote)
         {
-            if (SelectedNotes.Count == 0 || SelectedNotes == null)
+            if (SelectedNotes.Count == 0 || SelectedNotes == null || EditingPart == null)
             {
                 return;
             }
             _resizingNote = resizingNote; // 记录正在调整长度的音符
             IsResizingNote = true; // 标记正在调整音符长度
-            //_originalDurations = SelectedNotes.Select(note => note.duration).ToList(); // 记录调整开始时的音符原始长度
-            //_offsetDuration = 0; // 重置长度偏移量
+            _initialBound2TouchOffset = (int)sKPoint.X - (EditingPart.position + resizingNote.position + resizingNote.duration);
             // 启动一个撤销组
             DocManager.Inst.StartUndoGroup();
         }
@@ -1089,10 +1087,10 @@ namespace OpenUtauMobile.ViewModels
                 return;
             }
             int rightBound = EditingPart.position + _resizingNote.position + _resizingNote.duration;
-            int deltaDuration = (int)(point.X - rightBound);
+            int deltaDuration = (int)(point.X - rightBound - _initialBound2TouchOffset);
             if (IsPianoRollSnapToGrid)
             {
-                int snapedX = PianoRollTickToLinedTick((int)point.X);
+                int snapedX = PianoRollTickToLinedTick((int)point.X - _initialBound2TouchOffset);
                 deltaDuration = snapedX - rightBound;
             }
             if (deltaDuration == 0)

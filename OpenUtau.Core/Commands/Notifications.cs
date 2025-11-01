@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -134,24 +133,25 @@ namespace OpenUtau.Core {
         public readonly bool pause;
         public override bool Silent => true;
         public SeekPlayPosTickNotification(int tick, bool pause = false) {
-            Debug.WriteLine($"更改播放指针到 {tick} tick");
             playPosTick = tick;
             this.pause = pause;
         }
         public override string ToString() => $"Seek play position to tick {playPosTick}";
     }
 
-    public class ProgressBarNotification : UNotification {
+    public class ProgressBarNotification : UNotification
+    {
         public double Progress;
         public string Info;
         public override bool Silent => true;
-        public ProgressBarNotification(double progress, string info) {
+        public ProgressBarNotification(double progress, string info)
+        {
             Progress = progress;
             Info = info;
         }
         public override string ToString() => $"Set progress {Progress} {Info}";
     }
-
+    
     public class ExportingNotification : UNotification {
         public double Progress { get; set; }
         public string Info { get; set; } = "";
@@ -212,7 +212,11 @@ namespace OpenUtau.Core {
     }
 
     public class SingersRefreshedNotification : UNotification {
+        public readonly USinger? singer;
         public SingersRefreshedNotification() { }
+        public SingersRefreshedNotification(USinger singer) {
+            this.singer = singer;
+        }
         public override string ToString() => "Singers refreshed.";
     }
 

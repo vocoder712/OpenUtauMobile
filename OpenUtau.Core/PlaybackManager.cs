@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -143,7 +142,6 @@ namespace OpenUtau.Core {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && masterMix != null) {
                 double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Waited / 2) * 1000.0 / 44100;
                 int tick = Math.Max(DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs + ms), 0);
-                //Debug.WriteLine($"UpdatePlayPos毫秒: startms{startMs} ms{ms}, 等待渲染：{masterMix.IsWaiting}");
                 if (masterMix.IsWaiting) {
                     tick = DocManager.Inst.playPosTick;
                 }

@@ -3,50 +3,33 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using OpenUtau.Core.Ustx;
-using OpenUtau.Plugin.Builtin;
 using WanaKanaNet;
 
-namespace OpenUtau.Core.Voicevox {
-    [Phonemizer("Simple Voicevox ENtoJA Phonemizer", "S-VOICEVOX EN to JA", "TUBS & ROKU10SHI", language: "EN")]
-    public class SimpleVoicevoxENtoJAPhonemizer : SyllableBasedPhonemizer {
-
-        protected VoicevoxSinger singer;
-
-        public override void SetSinger(USinger singer) {
-            base.SetSinger(singer);
-            this.singer = singer as VoicevoxSinger;
-            if (this.singer != null) {
-                VoicevoxUtils.Loaddic(this.singer);
-            }
-        }
+namespace OpenUtau.Plugin.Builtin {
+    [Phonemizer("Filipino to Japanese Phonemizer", "FIL to JA", "Cadlaxa", language: "FIL")]
+    public class FILtoJAPhonemizer : SyllableBasedPhonemizer {
         protected override string[] GetVowels() => vowels;
-        private static readonly string[] vowels =
-            "a i u e o ay ey oy ow aw".Split();
+        private string[] vowels =
+            "a i u e o ay ey oy uy ow aw ew".Split();
         protected override string[] GetConsonants() => consonants;
-        private static readonly string[] consonants =
+        private string[] consonants =
             "b by ch d dh f g gy h hy j k ky l ly m my n ny ng p py r ry s sh t ts th v w y z zh".Split();
-        protected override string GetDictionaryName() => "cmudict-0_7b.txt";
+        protected override string GetDictionaryName() => "";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryPhonemesReplacement;
         private static readonly Dictionary<string, string> dictionaryPhonemesReplacement = new Dictionary<string, string> {
-            { "aa", "a" },
-            { "ae", "e" },
-            { "ah", "a" },
-            { "ao", "o" },
+            { "a", "a" },
+            { "e", "e" },
+            { "o", "o" },
             { "aw", "aw" },
             { "ay", "ay" },
             { "b", "b" },
             { "ch", "ch" },
             { "d", "d" },
-            { "dh", "dh" },
-            { "eh", "e" },
-            { "er", "o" },
             { "ey", "ey" },
             { "f", "f" },
             { "g", "g" },
             { "hh", "h" },
-            { "ih", "e" },
-            { "iy", "i" },
+            { "i", "i" },
             { "jh", "j" },
             { "k", "k" },
             { "l", "l" },
@@ -56,13 +39,12 @@ namespace OpenUtau.Core.Voicevox {
             { "ow", "ow" },
             { "oy", "oy" },
             { "p", "p" },
+            { "q", "-" },
             { "r", "r" },
             { "s", "s" },
             { "sh", "sh" },
             { "t", "t" },
-            { "th", "th" },
-            { "uh", "o" },
-            { "uw", "u" },
+            { "u", "u" },
             { "v", "v" },
             { "w", "w" },
             { "y", "y" },
@@ -70,7 +52,11 @@ namespace OpenUtau.Core.Voicevox {
             { "zh", "zh" },
         };
 
-        protected override IG2p LoadBaseDictionary() => new ArpabetG2p();
+        protected override IG2p LoadBaseDictionary() {
+            var g2ps = new List<IG2p>();
+            //g2ps.Add(new ArpabetPlusG2p());
+            return new G2pFallbacks(g2ps.ToArray());
+        }
 
         private Dictionary<string, string> StartingConsonant => startingConsonant;
         private static readonly Dictionary<string, string> startingConsonant = new Dictionary<string, string> {
@@ -97,11 +83,12 @@ namespace OpenUtau.Core.Voicevox {
             { "ng", "n" },
             { "p", "p" },
             { "py", "py" },
-            { "r", "rr" },
+            { "r", "r" },
             { "ry", "ry" },
             { "s", "s" },
             { "sh", "sh" },
             { "t", "t" },
+            { "q", "-" },
             { "ts", "ts" },
             { "th", "s" },
             { "v", "v" },
@@ -126,7 +113,7 @@ namespace OpenUtau.Core.Voicevox {
             { "j", "じゅ" },
             { "k", "く" },
             { "ky", "き" },
-            { "l", "う" },
+            { "l", "る" },
             { "ly", "り" },
             { "m", "む" },
             { "my", "み" },
@@ -135,7 +122,7 @@ namespace OpenUtau.Core.Voicevox {
             { "ng", "ん" },
             { "p", "ぷ" },
             { "py", "ぴ" },
-            { "r", "う" },
+            { "r", "る" },
             { "ry", "り" },
             { "s", "す" },
             { "sh", "しゅ" },
@@ -218,21 +205,71 @@ namespace OpenUtau.Core.Voicevox {
         private string[] affricates = "ts ch j".Split();
 
         protected override string[] GetSymbols(Note note) {
-            List<string> modified = new List<string>();
-            if (VoicevoxUtils.phoneme_List.paus.TryGetValue(note.lyric,out string str)) {
-                modified.Add(str);
-            } else {
-                string[] original = base.GetSymbols(note);
-                if (original == null) {
-                    return null;
+            string[] original = base.GetSymbols(note);
+            if (note.lyric == "ng") {
+                return new string[] { "n", "a", "ng" };
+            }
+            if (note.lyric == "mga") {
+                return new string[] { "m", "a", "ng", "a" };
+            }
+            if (original == null) {
+                string lyric = note.lyric.ToLowerInvariant();
+                List<string> fallbackSplit = new List<string>();
+                string[] vowels = GetVowels();
+                string[] consonants = GetConsonants();
+
+                // Handle apostrophes at the start or end
+                bool hasLeadingApostrophe = lyric.StartsWith("'");
+                bool hasTrailingApostrophe = lyric.EndsWith("'");
+
+                if (hasLeadingApostrophe) {
+                    lyric = lyric.Substring(1);
                 }
-                string[] diphthongs = new[] { "ay", "ey", "oy", "ow", "aw" };
-                foreach (string s in original) {
-                    if (diphthongs.Contains(s)) {
-                        modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
-                    } else {
-                        modified.Add(s);
+                if (hasTrailingApostrophe && lyric.Length > 0) {
+                    lyric = lyric.Substring(0, lyric.Length - 1);
+                }
+
+                int ii = 0;
+                while (ii < lyric.Length) {
+                    string match = null;
+                    foreach (var cons in consonants.OrderByDescending(c => c.Length)) {
+                        if (lyric.Substring(ii).StartsWith(cons)) {
+                            match = cons;
+                            break;
+                        }
                     }
+                    if (match == null) {
+                        foreach (var vow in vowels.OrderByDescending(v => v.Length)) {
+                            if (lyric.Substring(ii).StartsWith(vow)) {
+                                match = vow;
+                                break;
+                            }
+                        }
+                    }
+                    if (match != null) {
+                        fallbackSplit.Add(match);
+                        ii += match.Length;
+                    } else {
+                        fallbackSplit.Add(lyric[ii].ToString());
+                        ii++;
+                    }
+                }
+                // Add "q" at the beginning or end if needed
+                if (hasLeadingApostrophe) {
+                    fallbackSplit.Insert(0, "q");
+                }
+                if (hasTrailingApostrophe) {
+                    fallbackSplit.Add("q");
+                }
+                original = fallbackSplit.ToArray();
+            }
+            List<string> modified = new List<string>();
+            string[] diphthongs = new[] { "ay", "ey", "oy", "uy", "aw", "ew", "ow", "iw" };
+            foreach (string s in original) {
+                if (diphthongs.Contains(s)) {
+                    modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
+                } else {
+                    modified.Add(s);
                 }
             }
             return modified.ToArray();
@@ -244,16 +281,18 @@ namespace OpenUtau.Core.Voicevox {
                 return new List<string> { null };
             }
 
+            var prevV = syllable.prevV;
             var cc = syllable.cc;
             var v = syllable.v;
             var phonemes = new List<string>();
-            if (VoicevoxUtils.phoneme_List.paus.TryGetValue(v, out string str)) {
-                phonemes.Add(str);
-                return phonemes;
+            var usingVC = false;
+
+            if (prevV.Length == 0) {
+                prevV = "-";
             }
 
-                // Check CCs for special clusters
-                var adjustedCC = new List<string>();
+            // Check CCs for special clusters
+            var adjustedCC = new List<string>();
             for (var i = 0; i < cc.Length; i++) {
                 if (i == cc.Length - 1) {
                     adjustedCC.Add(cc[i]);
@@ -280,12 +319,28 @@ namespace OpenUtau.Core.Voicevox {
                 finalCons = cc[cc.Length - 1];
 
                 var start = 0;
+                (var hasVc, var vcPhonemes) = HasVc(prevV, cc[0], syllable.tone, cc.Length);
+                usingVC = hasVc;
+                phonemes.AddRange(vcPhonemes);
+
+                if (usingVC) {
+                    start = 1;
+                }
 
                 for (var i = start; i < cc.Length - 1; i++) {
                     var cons = SoloConsonant[cc[i]];
+                    if (!usingVC) {
+                        cons = TryVcv(prevV, cons, syllable.tone);
+                    } else {
+                        usingVC = false;
+                    }
                     if (HasOto(cons, syllable.tone)) {
                         phonemes.Add(cons);
+                    } else if (ConditionalAlt.ContainsKey(cons)) {
+                        cons = ConditionalAlt[cons];
+                        phonemes.Add(TryVcv(prevV, cons, syllable.tone));
                     }
+                    prevV = WanaKana.ToRomaji(cons).Last<char>().ToString();
                 }
             }
 
@@ -293,20 +348,37 @@ namespace OpenUtau.Core.Voicevox {
             var cv = $"{StartingConsonant[finalCons]}{v}";
             cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
             var hiragana = ToHiragana(cv);
+            if (!usingVC) {
+                hiragana = TryVcv(prevV, hiragana, syllable.vowelTone);
+            } else {
+                hiragana = FixCv(hiragana, syllable.vowelTone);
+            }
 
             // Check for nonstandard CV
             var split = false;
             if (HasOto(hiragana, syllable.vowelTone)) {
                 phonemes.Add(hiragana);
+            } else if (ConditionalAlt.ContainsKey(cv)) {
+                cv = ConditionalAlt[cv];
+                hiragana = TryVcv(prevV, ToHiragana(cv), syllable.vowelTone);
+                if (HasOto(hiragana, syllable.vowelTone)) {
+                    phonemes.Add(hiragana);
+                } else {
+                    split = true;
+                }
             } else {
                 split = true;
             }
+
             // Handle nonstandard CV
             if (split && ExtraCv.ContainsKey(cv)) {
                 var splitCv = ExtraCv[cv];
                 for (var i = 0; i < splitCv.Length; i++) {
-                    var converted = ToHiragana(splitCv[i]);
-                    phonemes.Add(converted);
+                    if (splitCv[i] != prevV) {
+                        var converted = ToHiragana(splitCv[i]);
+                        phonemes.Add(TryVcv(prevV, converted, syllable.vowelTone));
+                        prevV = splitCv[i].Last<char>().ToString();
+                    }
                 }
             }
 
@@ -314,6 +386,7 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         protected override List<string> ProcessEnding(Ending ending) {
+            var prevV = ending.prevV;
             var cc = ending.cc;
             var phonemes = new List<string>();
 
@@ -339,25 +412,105 @@ namespace OpenUtau.Core.Voicevox {
             }
             cc = adjustedCC.ToArray();
 
+            var usingVC = false;
             // Convert to hiragana
             for (var i = 0; i < cc.Length; i++) {
                 var symbol = cc[i];
 
+                if (i == 0) {
+                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone, cc.Length + 1);
+                    usingVC = hasVc;
+                    phonemes.AddRange(vcPhonemes);
+                    if (usingVC) {
+                        continue;
+                    }
+                }
+
                 var solo = SoloConsonant[symbol];
+                if (!usingVC) {
+                    solo = TryVcv(prevV, solo, ending.tone);
+                } else {
+                    usingVC = false;
+                    solo = FixCv(solo, ending.tone);
+                }
 
                 if (HasOto(solo, ending.tone)) {
                     phonemes.Add(solo);
                 } else if (ConditionalAlt.ContainsKey(solo)) {
                     solo = ConditionalAlt[solo];
+                    if (!usingVC) {
+                        solo = TryVcv(prevV, solo, ending.tone);
+                    } else {
+                        solo = FixCv(solo, ending.tone);
+                    }
                     phonemes.Add(solo);
                 }
+
+                if (solo.Contains("ん")) {
+                    if (ending.IsEndingVCWithOneConsonant) {
+                        TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                    } else if (ending.IsEndingVCWithMoreThanOneConsonant && cc.Last() == "n" || cc.Last() == "ng") {
+                        TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                    }
+                }
+
+                prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
+            }
+            
+            if (ending.IsEndingV) {
+                TryAddPhoneme(phonemes, ending.tone, $"{prevV} R", $"{prevV} -", $"{prevV}-");
             }
 
             return phonemes;
         }
 
+        private (bool, string[]) HasVc(string vowel, string cons, int tone, int cc) {
+            if (vowel == "" || vowel == "-") {
+                return (false, new string[0]);
+            }
+
+            var phonemes = new List<string>();
+            if (cons == "r") {
+                cons = "w";
+            } else if (cons == "l") {
+                cons = "r";
+            } else if (cons == "ly") {
+                cons = "ry";
+            } else {
+                cons = StartingConsonant[cons];
+            }
+
+            var vc = $"{vowel} {cons}";
+            var altVc = $"{vowel} {cons[0]}";
+            
+            if (HasOto(vc, tone)) {
+                phonemes.Add(vc);
+            } else if (HasOto(altVc, tone)) {
+                phonemes.Add(altVc);
+            } else {
+                return (false, new string[0]);
+            }
+
+            if (affricates.Contains(cons) && cc > 1) {
+                phonemes.Add(FixCv(SoloConsonant[cons], tone));
+            }
+
+            return (phonemes.Count > 0, phonemes.ToArray());
+        }
+
+        private string TryVcv(string vowel, string cv, int tone) {
+            var vcv = $"{vowel} {cv}";
+            return HasOto(vcv, tone) ? vcv : FixCv(cv, tone);
+        }
+
+        private string FixCv(string cv, int tone) {
+            var alt = $"- {cv}";
+            return HasOto(cv, tone) ? cv : HasOto(alt, tone) ? alt : cv;
+        }
+
         private string ToHiragana(string romaji) {
             var hiragana = WanaKana.ToHiragana(romaji);
+            hiragana = hiragana.Replace("ゔ", "ヴ");
             return hiragana;
         }
     }

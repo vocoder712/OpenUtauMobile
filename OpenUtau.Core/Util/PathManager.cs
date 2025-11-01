@@ -17,7 +17,6 @@ namespace OpenUtau.Core {
 
     public class PathManager : SingletonBase<PathManager> {
         public PathManager() {
-
             if (DeviceInfo.Current.Platform == DevicePlatform.Android)
             {
                 RootPath = FileSystem.AppDataDirectory;
@@ -49,53 +48,6 @@ namespace OpenUtau.Core {
                 Log.Error("不支持的操作系统");
                 throw new Exception("不支持的操作系统");
             }
-
-            //RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            //if (OS.IsMacOS()) {
-            //    string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            //    DataPath = Path.Combine(userHome, "Library", "OpenUtau");
-            //    CachePath = Path.Combine(userHome, "Library", "Caches", "OpenUtau");
-            //    HomePathIsAscii = true;
-            //    try {
-            //        // Deletes old cache.
-            //        string oldCache = Path.Combine(DataPath, "Cache");
-            //        if (Directory.Exists(oldCache)) {
-            //            Directory.Delete(oldCache, true);
-            //        }
-            //    } catch { }
-            //} else if (OS.IsLinux()) {
-            //    string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            //    string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
-            //    if (string.IsNullOrEmpty(dataHome)) {
-            //        dataHome = Path.Combine(userHome, ".local", "share");
-            //    }
-            //    DataPath = Path.Combine(dataHome, "OpenUtau");
-            //    string cacheHome = Environment.GetEnvironmentVariable("XDG_CACHE_HOME");
-            //    if (string.IsNullOrEmpty(cacheHome)) {
-            //        cacheHome = Path.Combine(userHome, ".cache");
-            //    }
-            //    CachePath = Path.Combine(cacheHome, "OpenUtau");
-            //    HomePathIsAscii = true;
-            //} else {
-            //    string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-            //    IsInstalled = File.Exists(Path.Combine(exePath, "installed.txt"));
-            //    if (!IsInstalled) {
-            //        DataPath = exePath;
-            //    } else {
-            //        string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-            //        DataPath = Path.Combine(dataHome, "OpenUtau");
-            //    }
-            //    CachePath = Path.Combine(DataPath, "Cache");
-            //    HomePathIsAscii = true;
-            //    var etor = StringInfo.GetTextElementEnumerator(DataPath);
-            //    while (etor.MoveNext()) {
-            //        string s = etor.GetTextElement();
-            //        if (s.Length != 1 || s[0] >= 128) {
-            //            HomePathIsAscii = false;
-            //            break;
-            //        }
-            //    }
-            //}
         }
 
         public string RootPath { get; private set; }
@@ -159,9 +111,6 @@ namespace OpenUtau.Core {
             return Path.Combine(dir, $"{filename}_{trackName}.wav");
         }
 
-        /// <summary>
-        /// 清除缓存
-        /// </summary>
         public void ClearCache() {
             var files = Directory.GetFiles(CachePath);
             foreach (var file in files) {
@@ -182,10 +131,6 @@ namespace OpenUtau.Core {
         }
 
         readonly static string[] sizes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
-        /// <summary>
-        /// 计算缓存大小
-        /// </summary>
-        /// <returns></returns>
         public string GetCacheSize() {
             if (!Directory.Exists(CachePath)) {
                 return "0B";
