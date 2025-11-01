@@ -1,10 +1,10 @@
-﻿using OpenUtau.Core.Ustx;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace OpenUtau.Core.Vogen {
     class VogenSinger : USinger {

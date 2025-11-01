@@ -79,7 +79,7 @@ namespace OpenUtau.Audio {
             }
         }
 
-        public void SelectDevice(Guid guid, int deviceNumber) {
+public void SelectDevice(Guid guid, int deviceNumber) {
 #if WINDOWS
             //Preferences.Default.PlaybackDevice = guid.ToString();
             //Preferences.Default.PlaybackDeviceNumber = deviceNumber;

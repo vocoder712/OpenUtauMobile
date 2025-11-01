@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NAudio.Flac;
@@ -59,11 +58,10 @@ namespace OpenUtau.Core.Format {
             if (provider.WaveFormat.Channels > 2) {
                 provider = provider.ToStereo();
             }
-            return GetSamples(provider, false);
-            //return [];
+            return GetSamples(provider);
         }
 
-        public static float[] GetSamples(ISampleProvider sampleProvider, bool notify = false) {
+        public static float[] GetSamples(ISampleProvider sampleProvider) {
             if (sampleProvider.WaveFormat.SampleRate != 44100) {
                 sampleProvider = new WdlResamplingSampleProvider(sampleProvider, 44100);
             }
@@ -72,10 +70,6 @@ namespace OpenUtau.Core.Format {
             int n;
             while ((n = sampleProvider.Read(buffer, 0, buffer.Length)) > 0) {
                 samples.AddRange(buffer.Take(n));
-                if (notify)
-                {
-                    Debug.WriteLine($"已读取{samples.Count}个样本");
-                }
             }
             return samples.ToArray();
         }

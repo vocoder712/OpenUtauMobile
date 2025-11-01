@@ -106,25 +106,30 @@ namespace OpenUtau.Core {
         }
 
         //Check which singers are in use and free memory for those that are not
-        public void ReleaseSingersNotInUse(UProject project) {
+        public void ReleaseSingersNotInUse(UProject project)
+        {
             //Check which singers are in use
             var singersInUse = new HashSet<USinger>();
-            foreach (var track in project.tracks) {
+            foreach (var track in project.tracks)
+            {
                 var singer = track.Singer;
-                if (singer != null && singer.Found && !singersInUse.Contains(singer)) {
+                if (singer != null && singer.Found && !singersInUse.Contains(singer))
+                {
                     singersInUse.Add(singer);
                 }
             }
             //Release singers that are no longer in use
-            foreach (var singer in singersUsed) {
-                if (!singersInUse.Contains(singer)) {
+            foreach (var singer in singersUsed)
+            {
+                if (!singersInUse.Contains(singer))
+                {
                     singer.FreeMemory();
                 }
             }
             //Update singers used
             singersUsed = singersInUse;
         }
-
+        
         /// <summary>
         /// 卸载指定歌手
         /// </summary>

@@ -117,11 +117,6 @@ namespace OpenUtau.Core {
             }
         }
 
-        /// <summary>
-        /// 获取指定tick位置的BPM
-        /// </summary>
-        /// <param name="tick">要获取BPM的tick位置</param>
-        /// <returns></returns>
         public double GetBpmAtTick(int tick) {
             var segment = tempoSegments.First(seg => seg.tickPos == tick || seg.tickEnd > tick); // TODO: optimize
             return segment.bpm;
@@ -164,13 +159,6 @@ namespace OpenUtau.Core {
                 TickPosToMsPos(refTickPos) + offsetMs);
         }
 
-        /// <summary>
-        /// 将tick位置转换为所在的小节、拍和剩余tick
-        /// </summary>
-        /// <param name="tick">要转换的tick位置</param>
-        /// <param name="bar">输出所在的小节</param>
-        /// <param name="beat">输出所在的拍</param>
-        /// <param name="remainingTicks">输出剩余的tick</param>
         public void TickPosToBarBeat(int tick, out int bar, out int beat, out int remainingTicks) {
             var segment = timeSigSegments.First(seg => seg.tickPos == tick || seg.tickEnd > tick); // TODO: optimize
             bar = segment.barPos + (tick - segment.tickPos) / segment.ticksPerBar;
@@ -179,24 +167,11 @@ namespace OpenUtau.Core {
             remainingTicks = tickInBar - beat * segment.ticksPerBeat;
         }
 
-        /// <summary>
-        /// 获取指定小节和拍的位置的tick位置
-        /// </summary>
-        /// <param name="bar">要获取tick位置的小节</param>
-        /// <param name="beat">要获取tick位置的拍</param>
-        /// <returns></returns>
         public int BarBeatToTickPos(int bar, int beat) {
             var segment = timeSigSegments.First(seg => seg.barPos == bar || seg.barEnd > bar); // TODO: optimize
             return segment.tickPos + segment.ticksPerBar * (bar - segment.barPos) + segment.ticksPerBeat * beat;
         }
 
-        /// <summary>
-        /// 将小节和拍转换为下一个小节和拍
-        /// </summary>
-        /// <param name="bar">输入所在的小节</param>
-        /// <param name="beat">输入所在的拍</param>
-        /// <param name="nextBar">输出下一个小节</param>
-        /// <param name="nextBeat">输出下一个拍</param>
         public void NextBarBeat(int bar, int beat, out int nextBar, out int nextBeat) {
             nextBar = bar;
             nextBeat = beat + 1;

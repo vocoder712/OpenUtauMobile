@@ -364,6 +364,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _trackGestureProcessor.Tap += (sender, e) =>
         {
             Debug.WriteLine($"点击走带事件: {e.Position}");
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification((int)_viewModel.TrackTransformer.ActualToLogical(e.Position).X));
             switch (_viewModel.CurrentTrackEditMode)
             {
                 case EditViewModel.TrackEditMode.Normal: // 只读模式
@@ -375,7 +376,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                             if (_viewModel.SelectedParts.Contains(part.Part))
                             {
                                 // 如果已经选中，更新播放指针
-                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification((int)_viewModel.TrackTransformer.ActualToLogical(e.Position).X));
                                 return;
                             }
                             _viewModel.SelectedParts.Clear(); // 清空当前选中状态，改为单选
@@ -773,10 +773,13 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                             // 结束平移
                             _viewModel.PianoRollTransformer.EndPan();
                             // 更新回放位置
-                            int newPlayPosTick = (int)((ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density - _viewModel.PianoRollTransformer.PanX) / _viewModel.PianoRollTransformer.ZoomX);
-                            if (newPlayPosTick != _viewModel.PlayPosTick)
+                            if (!_viewModel.Playing)
                             {
-                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(newPlayPosTick));
+                                int newPlayPosTick = (int)((ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density - _viewModel.PianoRollTransformer.PanX) / _viewModel.PianoRollTransformer.ZoomX);
+                                if (newPlayPosTick != _viewModel.PlayPosTick)
+                                {
+                                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(newPlayPosTick));
+                                }
                             }
                         }
                         break;
@@ -1008,6 +1011,16 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _expressionGestureProcessor.PanEnd += (sender, e) =>
         {
             _viewModel.PianoRollTransformer.EndPan();
+            if (!_viewModel.Playing)
+            {
+                return;
+            }
+            int newPlayPosTick = (int)((ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density - _viewModel.PianoRollTransformer.PanX) / _viewModel.PianoRollTransformer.ZoomX);
+            if (newPlayPosTick != _viewModel.PlayPosTick)
+            {
+                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(newPlayPosTick));
+            }
+
         };
         // 订阅缩放开始事件
         _expressionGestureProcessor.ZoomStart += (sender, e) =>

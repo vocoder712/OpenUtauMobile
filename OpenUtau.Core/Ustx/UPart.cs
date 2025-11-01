@@ -27,6 +27,7 @@ namespace OpenUtau.Core.Ustx {
         public UPart() { }
 
         public abstract int GetMinDurTick(UProject project);
+        public abstract int GetMaxPosiTick(UProject project);
 
         public virtual void BeforeSave(UProject project, UTrack track) { }
         public virtual void AfterLoad(UProject project, UTrack track) { }
@@ -64,6 +65,12 @@ namespace OpenUtau.Core.Ustx {
             int endTicks = position + (notes.LastOrDefault()?.End ?? 1);
             project.timeAxis.TickPosToBarBeat(endTicks, out int bar, out int beat, out int remainingTicks);
             return project.timeAxis.BarBeatToTickPos(bar, beat + 1) - position;
+        }
+        
+        public override int GetMaxPosiTick(UProject project) {
+            int maxStartTick = position + (notes.FirstOrDefault()?.position ?? Duration);
+            project.timeAxis.TickPosToBarBeat(maxStartTick, out int bar, out int beat, out int remainingTicks);
+            return project.timeAxis.BarBeatToTickPos(bar, beat - 1);
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -314,6 +321,11 @@ namespace OpenUtau.Core.Ustx {
             return end - position;
         }
 
+        public override int GetMaxPosiTick(UProject project) {
+            // TODO
+            return position;
+        }
+
         public override UPart Clone() {
             var part = new UWavePart() {
                 _filePath = _filePath,
@@ -339,19 +351,24 @@ namespace OpenUtau.Core.Ustx {
                     fileDurationMs = 10000;
                 }
             }
-            lock (loadLockObj) {
-                if (Samples != null || Missing) {
+            lock (loadLockObj)
+            {
+                if (Samples != null || Missing)
+                {
                     Peaks = Task.FromResult<DiscreteSignal[]>(null);
                     return;
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadingNotification(typeof(UWavePart), true, DisplayName));
             UpdateDuration(project);
-            Peaks = Task.Run(() => {
+            Peaks = Task.Run(() =>
+            {
                 var stopwatch = Stopwatch.StartNew();
-                using (var waveStream = Format.Wave.OpenFile(FilePath)) {
+                using (var waveStream = Format.Wave.OpenFile(FilePath))
+                {
                     var samples = Format.Wave.GetStereoSamples(waveStream);
-                    lock (loadLockObj) {
+                    lock (loadLockObj)
+                    {
                         sampleRate = 44100; // GetStereoSamples resamples waveStream.
                         Samples = samples;
                     }
@@ -362,21 +379,26 @@ namespace OpenUtau.Core.Ustx {
                 stopwatch.Restart();
                 float[][] channelSamples = new float[channels][];
                 int length = Samples.Length / channels;
-                for (int i = 0; i < channels; ++i) {
+                for (int i = 0; i < channels; ++i)
+                {
                     channelSamples[i] = new float[length];
                 }
                 int pos = 0;
-                for (int i = 0; i < length; ++i) {
-                    for (int j = 0; j < channels; ++j) {
+                for (int i = 0; i < length; ++i)
+                {
+                    for (int j = 0; j < channels; ++j)
+                    {
                         channelSamples[j][i] = Samples[pos++];
                     }
                 }
                 DiscreteSignal[] peaks = new DiscreteSignal[channels];
                 var resampler = new Resampler();
-                for (int i = 0; i < channels; ++i) {
+                for (int i = 0; i < channels; ++i)
+                {
                     peaks[i] = new DiscreteSignal(sampleRate, channelSamples[i], false);
                     peaks[i] = resampler.Decimate(peaks[i], 10);
-                    for (int j = 0; j < peaks[i].Samples.Length; ++j) {
+                    for (int j = 0; j < peaks[i].Samples.Length; ++j)
+                    {
                         peaks[i].Samples[j] = Math.Clamp(peaks[i].Samples[j], -1, 1);
                     }
                 }

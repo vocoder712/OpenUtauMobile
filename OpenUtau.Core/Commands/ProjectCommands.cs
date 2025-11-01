@@ -69,9 +69,9 @@ namespace OpenUtau.Core {
     }
 
     public class AddTimeSigCommand : ProjectCommand {
-        protected int bar; // 标记位置 小节
-        protected int beatPerBar; // 每小节几拍
-        protected int beatUnit; // 以几分音符为一拍
+        protected int bar;
+        protected int beatPerBar;
+        protected int beatUnit;
         public AddTimeSigCommand(UProject project, int bar, int beatPerBar, int beatUnit) : base(project) {
             this.bar = bar;
             this.beatPerBar = beatPerBar;
@@ -129,7 +129,7 @@ namespace OpenUtau.Core {
             newBeatPerBar = beatPerBar;
             newBeatUnit = beatUnit;
         }
-        public override string ToString() => $"更改时间节奏标记 for {oldBeatPerBar}/{oldBeatUnit} to {newBeatPerBar}/{newBeatUnit}";
+        public override string ToString() => $"Change time signature for {oldBeatPerBar}/{oldBeatUnit} to {newBeatPerBar}/{newBeatUnit}";
         public override void Execute() {
             project.timeSignatures[0].beatPerBar = newBeatPerBar;
             project.timeSignatures[0].beatUnit = newBeatUnit;

@@ -144,7 +144,7 @@ namespace OpenUtau.Core {
             stopWatch.Stop();
             Log.Information($"已完成插件查找，用时: {stopWatch.Elapsed}");
         }
-
+        
         #region Command Queue
 
         readonly Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
@@ -152,11 +152,13 @@ namespace OpenUtau.Core {
         UCommandGroup? undoGroup = null;
         UCommandGroup? savedPoint = null;
         UCommandGroup? autosavedPoint = null;
+        public bool Recovered { get; set; } = false; // Flag to not overwrite backup file
 
         public bool ChangesSaved {
             get {
                 return (Project.Saved || (Project.tracks.Count <= 1 && Project.parts.Count == 0)) &&
-                    (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
+                    (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null) &&
+                    !Recovered;
             }
         }
 
@@ -179,7 +181,7 @@ namespace OpenUtau.Core {
                     : Path.GetFileNameWithoutExtension(Project.FilePath);
                 string backup = Path.Join(dir, filename + "-backup.ustx");
                 Log.Information($"Saving backup {backup}.");
-                Format.Ustx.Save(backup, Project);
+                Format.Ustx.AutoSave(backup, Project);
                 Log.Information($"Saved backup {backup}.");
             } catch (Exception e) {
                 Log.Error(e, "Save backup failed.");
@@ -219,7 +221,7 @@ namespace OpenUtau.Core {
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
                 if (!(cmd is ProgressBarNotification)) {
-                    Log.Warning($"命令{cmd} 不在主线程调用，将发送到主线程执行");
+                    Log.Warning($"{cmd} not on main thread");
                 }
                 PostOnUIThread(() => ExecuteCmd(cmd));
                 return;
@@ -259,12 +261,12 @@ namespace OpenUtau.Core {
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
-                    Log.Information($"广播通知： {cmd}");
+                    Log.Information($"Publish notification {cmd}");
                 }
                 return;
             }
             if (undoGroup == null) {
-                Log.Error($"命令 {cmd} 执行失败。该命令需要UndoGroup");
+                Log.Error($"No active UndoGroup {cmd}");
                 return;
             }
             undoGroup.Commands.Add(cmd);
@@ -272,7 +274,7 @@ namespace OpenUtau.Core {
                 cmd.Execute();
             }
             if (!cmd.Silent) {
-                Log.Information($"执行了非silent命令： {cmd}");
+                Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
             if (!undoGroup.DeferValidate) {
