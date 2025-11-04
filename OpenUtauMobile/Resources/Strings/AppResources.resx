@@ -814,7 +814,7 @@ Exception Details:
     <value>DiffSinger Render Steps for Pitch Prediction Model</value>
   </data>
   <data name="DiffSingerStepsTooltip" xml:space="preserve">
-    <value>Configure DiffSinger render steps for acoustic model. Lower value meas faster inference while higher valuer means higher quality.</value>
+    <value>Configure DiffSinger render steps for acoustic model. Lower value means faster inference while higher value means higher quality.</value>
   </data>
   <data name="DiffSingerStepsVarianceTooltip" xml:space="preserve">
     <value>Configure DiffSinger render steps for singing style (variance) model. Lower value means faster inference while higher value means higher quality.</value>
