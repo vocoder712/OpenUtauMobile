@@ -804,7 +804,6 @@
   <data name="Eraser" xml:space="preserve">
     <value>消</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="DiffSingerSteps" xml:space="preserve">
     <value>DiffSinger 音響モデル推論ステップ数</value>
   </data>
