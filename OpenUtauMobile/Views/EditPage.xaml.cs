@@ -74,6 +74,10 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         StrokeWidth = 4,
         IsAntialias = false,
     };
+    private readonly SKPaint _pianoKeysPaint = new()
+    {
+        Style = SKPaintStyle.Fill
+    };
     #endregion
 
     public EditPage(string path)
@@ -95,7 +99,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 //EnableAndroidBlur();
             });
         };
-        // 根据需要设置保持屏幕常亮
+        // 设置屏幕常亮
         if (Preferences.Default.KeepScreenOn)
         {
             DeviceDisplay.Current.KeepScreenOn = true;
@@ -203,7 +207,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             {
                 SKColorMauiColorConverter converter = new();
                 Color? activeColor = converter.Convert(ThemeColorsManager.Current.ActiveNoteEditModeButton, typeof(Color), null, null!) as Color;
-                //ButtonSwitchNormolMode.BackgroundColor = mode == EditViewModel.NoteEditMode.Normal ? activeColor : Colors.Transparent;
                 ButtonSwitchEditNoteMode.BackgroundColor = mode == EditViewModel.NoteEditMode.EditNote ? activeColor : Colors.Transparent;
                 ButtonSwitchEditPitchCurveMode.BackgroundColor = mode == EditViewModel.NoteEditMode.EditPitchCurve ? activeColor : Colors.Transparent;
                 ButtonSwitchEditPitchAnchorMode.BackgroundColor = mode == EditViewModel.NoteEditMode.EditPitchAnchor ? activeColor : Colors.Transparent;
@@ -1569,15 +1572,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         SKCanvas Canvas = e.Surface.Canvas;
         // 清空画布
         Canvas.Clear(SKColors.Transparent);
-        //// 设置画布变换
-        //e.Surface.Canvas.SetMatrix(_viewModel.TrackTransformer.GetTransformMatrix());
-        //// 绘制一条竖线，表示播放位置
-        //DrawableTrackPlayPosLine drawableTrackPlayPosLine = new DrawableTrackPlayPosLine(e.Surface.Canvas, _viewModel.PlayPosTick, _viewModel.MainLayoutHeight);
-        //drawableTrackPlayPosLine.Draw();
-        // 保存当前的变换矩阵
-        //SKMatrix originalMatrix = Canvas.TotalMatrix;
-        // 恢复到默认矩阵，使文字不受缩放影响
-        //Canvas.ResetMatrix();
         // 计算位置
         float x = (float)(_viewModel.PlayPosTick * _viewModel.TrackTransformer.ZoomX + _viewModel.TrackTransformer.PanX);
         // 创建画笔
@@ -1587,8 +1581,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             paint.Color = SKColor.Parse("#B3F353"); // 设置线条颜色为绿色
             Canvas.DrawLine(x, 0f, x, Canvas.DeviceClipBounds.Height, paint);
         }
-        // 恢复原始矩阵
-        //Canvas.SetMatrix(originalMatrix);
     }
 
     private void PianoKeysCanvas_PaintSurface(object sender, SkiaSharp.Views.Maui.SKPaintSurfaceEventArgs e)
@@ -1599,24 +1591,15 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         float heightPerPianoKey = (float)(_viewModel.HeightPerPianoKey * _viewModel.Density);
         float width = Canvas.DeviceClipBounds.Width;
 
-        //DrawablePianoKeys drawablePianoKeys = new(
-        //    canvas: e.Surface.Canvas,
-        //    viewModel: _viewModel
-        //    );
-        //drawablePianoKeys.Draw();
         float viewTop = -_viewModel.PianoRollTransformer.PanY / _viewModel.PianoRollTransformer.ZoomY;
         float viewBottom = viewTop + Canvas.DeviceClipBounds.Size.Height / _viewModel.PianoRollTransformer.ZoomY;
         int topKeyNum = Math.Max(0, (int)Math.Floor(viewTop / heightPerPianoKey));
         int bottomKeyNum = Math.Min(ViewConstants.TotalPianoKeys, (int)Math.Ceiling(viewBottom / heightPerPianoKey));
         float y = topKeyNum * heightPerPianoKey * _viewModel.PianoRollTransformer.ZoomY + _viewModel.PianoRollTransformer.PanY;
-        SKPaint paint = new SKPaint
-        {
-            Style = SKPaintStyle.Fill
-        };
         for (int i = topKeyNum; i < bottomKeyNum; i++)
         {
-            paint.Color = ViewConstants.PianoKeys[i].IsBlackKey ? ThemeColorsManager.Current.BlackPianoKey : ThemeColorsManager.Current.WhitePianoKey;
-            Canvas.DrawRect(0, y, width, heightPerPianoKey * _viewModel.PianoRollTransformer.ZoomY, paint);
+            _pianoKeysPaint.Color = ViewConstants.PianoKeys[i].IsBlackKey ? ThemeColorsManager.Current.BlackPianoKey : ThemeColorsManager.Current.WhitePianoKey;
+            Canvas.DrawRect(0, y, width, heightPerPianoKey * _viewModel.PianoRollTransformer.ZoomY, _pianoKeysPaint);
             y += heightPerPianoKey * _viewModel.PianoRollTransformer.ZoomY;
         }
         // 绘制键名文本
