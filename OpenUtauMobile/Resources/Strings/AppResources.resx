@@ -118,690 +118,690 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="About" xml:space="preserve">
-    <value>关于</value>
+    <value>About</value>
   </data>
   <data name="AppearanceAndLanguage" xml:space="preserve">
-    <value>外观与语言</value>
+    <value>Appearance &amp; Language</value>
   </data>
   <data name="AppName" xml:space="preserve">
     <value>OpenUtau Mobile</value>
   </data>
   <data name="EditAndBehaviour" xml:space="preserve">
-    <value>编辑与行为</value>
+    <value>Edit &amp; Behaviour</value>
   </data>
   <data name="ExportLog" xml:space="preserve">
-    <value>导出日志</value>
+    <value>Export Logs</value>
   </data>
   <data name="FileAndStorage" xml:space="preserve">
-    <value>文件与存储</value>
+    <value>File &amp; Storage</value>
   </data>
   <data name="HelpAndTutorial" xml:space="preserve">
-    <value>帮助与教程</value>
+    <value>Help &amp; Tutorial</value>
   </data>
   <data name="Languages_de" xml:space="preserve">
-    <value>德语</value>
+    <value>German</value>
   </data>
   <data name="Languages_en" xml:space="preserve">
-    <value>英语</value>
+    <value>English</value>
   </data>
   <data name="Languages_es" xml:space="preserve">
-    <value>西班牙语</value>
+    <value>Spanish</value>
   </data>
   <data name="Languages_fr" xml:space="preserve">
-    <value>法语</value>
+    <value>French</value>
   </data>
   <data name="Languages_invariant" xml:space="preserve">
-    <value>不翻译</value>
+    <value>Do not translate</value>
   </data>
   <data name="Languages_it" xml:space="preserve">
-    <value>意大利语</value>
+    <value>Italian</value>
   </data>
   <data name="Languages_ja" xml:space="preserve">
-    <value>日语</value>
+    <value>Japanese</value>
   </data>
   <data name="Languages_ko" xml:space="preserve">
-    <value>韩语</value>
+    <value>Korean</value>
   </data>
   <data name="Languages_pl" xml:space="preserve">
-    <value>波兰语</value>
+    <value>Polish</value>
   </data>
   <data name="Languages_pt" xml:space="preserve">
-    <value>葡萄牙语</value>
+    <value>Portuguese</value>
   </data>
   <data name="Languages_ru" xml:space="preserve">
-    <value>俄语</value>
+    <value>Russian</value>
   </data>
   <data name="Languages_th" xml:space="preserve">
-    <value>泰语</value>
+    <value>Thai</value>
   </data>
   <data name="Languages_vi" xml:space="preserve">
-    <value>越南语</value>
+    <value>Vietnamese</value>
   </data>
   <data name="Languages_zh" xml:space="preserve">
-    <value>中文</value>
+    <value>Chinese</value>
   </data>
   <data name="Languages_zh_yue" xml:space="preserve">
-    <value>粤语</value>
+    <value>Cantonese</value>
   </data>
   <data name="New" xml:space="preserve">
-    <value>新建</value>
+    <value>New</value>
   </data>
   <data name="NoSingerPrompt" xml:space="preserve">
-    <value>还没有歌手，点击“+”添加！</value>
+    <value>No singer installed, please click "+" to add one!</value>
   </data>
   <data name="Open" xml:space="preserve">
-    <value>打开</value>
+    <value>Open</value>
   </data>
   <data name="Options" xml:space="preserve">
-    <value>选项</value>
+    <value>Options</value>
   </data>
   <data name="Recent" xml:space="preserve">
-    <value>最近</value>
+    <value>Recent</value>
   </data>
   <data name="RecentProjects" xml:space="preserve">
-    <value>最近打开</value>
+    <value>Recent Projects</value>
   </data>
   <data name="RenderAndPerformance" xml:space="preserve">
-    <value>渲染与性能</value>
+    <value>Render &amp; Performance</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value>设置</value>
+    <value>Settings</value>
   </data>
   <data name="SingerManage" xml:space="preserve">
-    <value>歌手管理</value>
+    <value>Manage Singers</value>
   </data>
   <data name="Singers" xml:space="preserve">
-    <value>歌手</value>
+    <value>Singers</value>
   </data>
   <data name="StringHomePage" xml:space="preserve">
-    <value>主页</value>
+    <value>Home Page</value>
   </data>
   <data name="StringPressBackAgainToExit" xml:space="preserve">
-    <value>再次按下返回键退出 OpenUtau Mobile</value>
+    <value>Press back button again to exit OpenUtau Mobile</value>
   </data>
   <data name="WrongFileTypeToast" xml:space="preserve">
-    <value>请选择正确的文件 *{0}</value>
+    <value>Please select a valid file *{0}</value>
   </data>
   <data name="OpenUtauMobileVersion" xml:space="preserve">
-    <value>OpenUtau Mobile 版本</value>
+    <value>OpenUtau Mobile version</value>
   </data>
   <data name="OpenUtauCoreVersion" xml:space="preserve">
-    <value>OpenUtau 内核版本</value>
+    <value>OpenUtau Core version</value>
   </data>
   <data name="GitHubSuggestionsText" xml:space="preserve">
-    <value>去 GitHub 给项目提建议、贡献代码或者给个星标吧</value>
+    <value>Head over to GitHub to suggest improvements, contribute code, or give the project a star.</value>
   </data>
   <data name="HelpGetBetterText" xml:space="preserve">
-    <value>帮助 OpenUtau Mobile 变得更好</value>
+    <value>Help make OpenUtau Mobile better!</value>
   </data>
   <data name="NoProjectsOpened" xml:space="preserve">
-    <value>这里还没有打开过的工程</value>
+    <value>No projects have been opened yet.</value>
   </data>
   <data name="SingerSetupWizard" xml:space="preserve">
-    <value>歌手安装向导</value>
+    <value>Singer Setup Wizard</value>
   </data>
   <data name="CompressionEncodingMethodPrompt" xml:space="preserve">
-    <value>请选择一种 压缩包 编码方式，使得右侧文字显示正常</value>
+    <value>Please select the compression file encoding method to ensure the text on the right displays correctly.</value>
   </data>
   <data name="TextEncodingMethodPrompt" xml:space="preserve">
-    <value>请选择一种 文本 编码方式，使得右侧文字显示正常</value>
+    <value>Please select the text encoding method to ensure the text on the right displays correctly.</value>
   </data>
   <data name="SingerInformationMissing" xml:space="preserve">
-    <value>歌手信息缺失，请选择歌手类型：</value>
+    <value>Singer information is missing. Please select the singer type:</value>
   </data>
   <data name="InstallationSummary" xml:space="preserve">
-    <value>安装信息摘要</value>
+    <value>Installation Summary</value>
   </data>
   <data name="SingerNameText" xml:space="preserve">
-    <value>歌手名称</value>
+    <value>Singer Name</value>
   </data>
   <data name="SingerTypeText" xml:space="preserve">
-    <value>歌手类型</value>
+    <value>Singer Type</value>
   </data>
   <data name="InstallationDirectoryText" xml:space="preserve">
-    <value>安装目录</value>
+    <value>Installation Directory</value>
   </data>
   <data name="InstallationSizeText" xml:space="preserve">
-    <value>安装大小</value>
+    <value>Installation Size</value>
   </data>
   <data name="Install" xml:space="preserve">
-    <value>开始安装</value>
+    <value>Install</value>
   </data>
   <data name="InstallingText" xml:space="preserve">
-    <value>安装中</value>
+    <value>Installing...</value>
   </data>
   <data name="InstallationComplete" xml:space="preserve">
-    <value>安装完成</value>
+    <value>Installation complete!</value>
   </data>
   <data name="BackText" xml:space="preserve">
-    <value>返回</value>
+    <value>Back</value>
   </data>
   <data name="Name" xml:space="preserve">
-    <value>名称</value>
+    <value>Name:</value>
   </data>
   <data name="Author" xml:space="preserve">
-    <value>作者</value>
+    <value>Author:</value>
   </data>
   <data name="Version" xml:space="preserve">
-    <value>版本：</value>
+    <value>Version:</value>
   </data>
   <data name="InstallationPath" xml:space="preserve">
-    <value>安装路径：</value>
+    <value>Installation Path:</value>
   </data>
   <data name="Website" xml:space="preserve">
-    <value>网站：</value>
+    <value>Website:</value>
   </data>
   <data name="VogenSingerSetupWizard" xml:space="preserve">
-    <value>Vogen歌手安装向导</value>
+    <value>Vogen Singer Setup Wizard</value>
   </data>
   <data name="VogenSingerInstalledSoon" xml:space="preserve">
-    <value>即将安装Vogen歌手</value>
+    <value>Vogen Singer will be installed soon...</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>确定</value>
+    <value>Confirm</value>
   </data>
   <data name="AutomaticPageTurning" xml:space="preserve">
-    <value>走带自动翻页</value>
+    <value>Automatic Page Turning</value>
   </data>
   <data name="CancelText" xml:space="preserve">
-    <value>取消</value>
+    <value>Cancel</value>
   </data>
   <data name="SaveText" xml:space="preserve">
-    <value>保存</value>
+    <value>Save</value>
   </data>
   <data name="PlaybackRefreshRate" xml:space="preserve">
-    <value>回放刷新率</value>
+    <value>Playback refresh rate</value>
   </data>
   <data name="PitchDisplayPrecision" xml:space="preserve">
-    <value>音高线显示精度</value>
+    <value>Pitch display precision</value>
   </data>
   <data name="DisplaySingerPortrait" xml:space="preserve">
-    <value>显示歌手立绘</value>
+    <value>Display Singer Portrait</value>
   </data>
   <data name="GlobalPortraitTransparency" xml:space="preserve">
-    <value>全局立绘透明度</value>
+    <value>Global Portrait Transparency</value>
   </data>
   <data name="Transparency" xml:space="preserve">
-    <value>透明度</value>
+    <value>Transparency</value>
   </data>
   <data name="KeepScreenOn" xml:space="preserve">
-    <value>保持屏幕常亮</value>
+    <value>Keep screen on</value>
   </data>
   <data name="OnPianoClick" xml:space="preserve">
-    <value>点击钢琴键时</value>
+    <value>On piano click</value>
   </data>
   <data name="OutputDevice" xml:space="preserve">
-    <value>输出设备</value>
+    <value>Output device</value>
   </data>
   <data name="PreRender" xml:space="preserve">
-    <value>预渲染</value>
+    <value>Pre-render</value>
   </data>
   <data name="DontRenderMutedTracks" xml:space="preserve">
-    <value>不渲染静音的轨道</value>
+    <value>Do not render muted tracks</value>
   </data>
   <data name="Theme" xml:space="preserve">
-    <value>主题</value>
+    <value>Theme</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value>语言</value>
+    <value>Language</value>
   </data>
   <data name="AutomaticPageTurningTooltip" xml:space="preserve">
-    <value>若打开，将在播放指针到达页面右侧时自动翻页</value>
+    <value>If enabled, the page will automatically turn when the playback pointer reaches the right edge of the page.</value>
   </data>
   <data name="PlaybackRefreshRateTooltip" xml:space="preserve">
-    <value>设置更新播放指针的频率，1 ~ 60 FPS。请根据设备性能调整。过大的刷新率可能导致卡顿。更改此项设置后，重新打开编辑页面生效。</value>
+    <value>Set the refresh rate for the playback pointer, ranging from 1 to 60 FPS. Adjust this setting based on your device's performance. Excessively high refresh rates may cause stuttering. Changes to this setting take effect after reopening the editing page.</value>
   </data>
   <data name="PitchDisplayPrecisionTooltip" xml:space="preserve">
-    <value>更高的精度更能准确刻画实际音高，但可能导致性能问题。</value>
+    <value>Higher precision can more accurately depict actual pitch, but may lead to performance issues.</value>
   </data>
   <data name="DisplaySingerPortraitTooltip" xml:space="preserve">
-    <value>打开后，将在钢琴卷帘中显示歌手的立绘。</value>
+    <value>Upon enabling, the singer's portrait will appear in the piano roll.</value>
   </data>
   <data name="GlobalPortraitTransparencyTooltip" xml:space="preserve">
-    <value>打开该选项可覆盖所有歌手立绘透明度预设。</value>
+    <value>Enable this option to override the transparency presets for all singer portraits.</value>
   </data>
   <data name="KeepScreenOnTooltip" xml:space="preserve">
-    <value>打开后，将在编辑页面中保持屏幕常亮。</value>
+    <value>After enabling, the screen will remain on when editing.</value>
   </data>
   <data name="OnPianoClickTooltip" xml:space="preserve">
-    <value>设置点击钢琴卷帘左侧琴键的行为</value>
+    <value>Set the behavior for clicking the keys on the left side of the piano roll</value>
   </data>
   <data name="OutputDeviceTooltip" xml:space="preserve">
-    <value>Android只能看不能改</value>
+    <value>Android: view only, can't edit.</value>
   </data>
   <data name="PreRenderTooltip" xml:space="preserve">
-    <value>在回放前后台预渲染音频。</value>
+    <value>Pre-render audio in the background before playback.</value>
   </data>
   <data name="DontRenderMutedTracksTooltip" xml:space="preserve">
-    <value>渲染时跳过静音的轨道。</value>
+    <value>Skip muted tracks during rendering.</value>
   </data>
   <data name="ThemeTooltip" xml:space="preserve">
-    <value>深色或浅色主题</value>
+    <value>Dark or light theme</value>
   </data>
   <data name="SettingsSavedToast" xml:space="preserve">
-    <value>设置已保存</value>
+    <value>Settings saved!</value>
   </data>
   <data name="SettingsSaveErrorToast" xml:space="preserve">
-    <value>保存设置时出现错误</value>
+    <value>An error occurred while saving settings.</value>
   </data>
   <data name="AIProcessing" xml:space="preserve">
-    <value>AI正在推理...</value>
+    <value>AI is processing...</value>
   </data>
   <data name="Abort" xml:space="preserve">
-    <value>中止</value>
+    <value>Abort</value>
   </data>
   <data name="Saved" xml:space="preserve">
-    <value>已保存</value>
+    <value>Saved</value>
   </data>
   <data name="RenamePart" xml:space="preserve">
-    <value>重命名分片</value>
+    <value>Rename Part</value>
   </data>
   <data name="PianoRollQuantization" xml:space="preserve">
-    <value>钢琴卷帘量化</value>
+    <value>Piano Roll Quantization</value>
   </data>
   <data name="LoadPitchRenderingResult" xml:space="preserve">
-    <value>加载音高渲染结果</value>
+    <value>Load Pitch Rendering Result</value>
   </data>
   <data name="LoadPitchRenderingResultPrompt" xml:space="preserve">
-    <value>获取渲染器推荐音高曲线。但渲染结果会覆盖已有音高数据，是否继续？</value>
+    <value>Retrieve the renderer's recommended pitch curve. However, the rendered result will overwrite existing pitch data. Proceed?</value>
   </data>
   <data name="RenameTrack" xml:space="preserve">
-    <value>重命名音轨</value>
+    <value>Rename Track</value>
   </data>
   <data name="RemoveSinger" xml:space="preserve">
-    <value>卸载歌手</value>
+    <value>Remove Singer</value>
   </data>
   <data name="RemoveSingerPrompt" xml:space="preserve">
-    <value>确认要卸载歌手 {0} 吗？</value>
+    <value>Are you sure you want to remove singer {0}?</value>
   </data>
   <data name="RemovingSingerToast" xml:space="preserve">
-    <value>正在卸载歌手 {0}...</value>
+    <value>Removing singer {0}...</value>
   </data>
   <data name="RemoveSingerSuccessToast" xml:space="preserve">
-    <value>成功卸载歌手 {0}</value>
+    <value>Successfully removed singer {0}</value>
   </data>
   <data name="RemoveSingerFailureToast" xml:space="preserve">
-    <value>卸载歌手 {0} 失败</value>
+    <value>Failed to remove singer {0}</value>
   </data>
   <data name="IncorrectProjectFileToast" xml:space="preserve">
-    <value>请选择正确的工程文件</value>
+    <value>Please select the correct project file.</value>
   </data>
   <data name="InstallationCancelledToast" xml:space="preserve">
-    <value>安装已取消！</value>
+    <value>Installation cancelled!</value>
   </data>
   <data name="ConfirmCancelSingerInstallToast" xml:space="preserve">
-    <value>再次操作以取消歌手安装</value>
+    <value>Press back again to cancel the singer installation.</value>
   </data>
   <data name="FileNotFoundToast" xml:space="preserve">
-    <value>找不到指定文件</value>
+    <value>Could not find such file</value>
   </data>
   <data name="WorkTitlePhonemize" xml:space="preserve">
-    <value>正在音素化</value>
+    <value>Phonemizing...</value>
   </data>
   <data name="WorkTitleRender" xml:space="preserve">
-    <value>正在渲染</value>
+    <value>Rendering...</value>
   </data>
   <data name="WorkTitleExport" xml:space="preserve">
-    <value>正在导出</value>
+    <value>Exporting...</value>
   </data>
   <data name="WorkTitleReadWave" xml:space="preserve">
-    <value>正在渲染音频波形</value>
+    <value>Rendering waveform...</value>
   </data>
   <data name="WorkTitleOther" xml:space="preserve">
-    <value>工作中</value>
+    <value>Working...</value>
   </data>
   <data name="WorkTitleRenderPitch" xml:space="preserve">
-    <value>正在渲染音高</value>
+    <value>Rendering the pitch...</value>
   </data>
   <data name="WorkTitleLoadingProject" xml:space="preserve">
-    <value>正在加载项目，请勿操作</value>
+    <value>Loading project, Don't touch</value>
   </data>
   <data name="SelectSinger" xml:space="preserve">
-    <value>选择歌手</value>
+    <value>Select Singer</value>
   </data>
   <data name="NoSingersText" xml:space="preserve">
-    <value>还没有歌手，请前往歌手管理页面添加！</value>
+    <value>No singers have been added yet. Please go to the singer management page to add them!</value>
   </data>
   <data name="ChangeTrackColor" xml:space="preserve">
-    <value>改变轨道颜色</value>
+    <value>Change track color</value>
   </data>
   <data name="NoColorsAvailable" xml:space="preserve">
-    <value>没有可用的颜色</value>
+    <value>No colors are available</value>
   </data>
   <data name="SetBeat" xml:space="preserve">
-    <value>设置节拍</value>
+    <value>Set beat</value>
   </data>
   <data name="SetBPM" xml:space="preserve">
-    <value>设置BPM</value>
+    <value>Set BPM</value>
   </data>
   <data name="SetKey" xml:space="preserve">
-    <value>设置调性</value>
+    <value>Set key</value>
   </data>
   <data name="NoSelectableKeys" xml:space="preserve">
-    <value>还没有可选的调！请向社区报告问题。</value>
+    <value>Can't select keys yet! Please report the issue to the community.</value>
   </data>
   <data name="EditLyrics" xml:space="preserve">
-    <value>编辑歌词</value>
+    <value>Edit Lyrics</value>
   </data>
   <data name="Next" xml:space="preserve">
-    <value>下一个</value>
+    <value>Next</value>
   </data>
   <data name="AppRuntimeException" xml:space="preserve">
-    <value>OpenUtau Mobile 运行时异常</value>
+    <value>OpenUtau Mobile Runtime Exception</value>
   </data>
   <data name="ErrorMessage" xml:space="preserve">
-    <value>错误信息</value>
+    <value>Error Message</value>
   </data>
   <data name="RestartProgram" xml:space="preserve">
-    <value>重启程序</value>
+    <value>Restart the program</value>
   </data>
   <data name="Close" xml:space="preserve">
-    <value>关闭</value>
+    <value>Close</value>
   </data>
   <data name="CopyErrorMessage" xml:space="preserve">
-    <value>复制错误信息</value>
+    <value>Copy error message</value>
   </data>
   <data name="SelectFile" xml:space="preserve">
-    <value>选择文件</value>
+    <value>Select File</value>
   </data>
   <data name="Refresh" xml:space="preserve">
-    <value>刷新</value>
+    <value>Refresh</value>
   </data>
   <data name="SaveFile" xml:space="preserve">
-    <value>保存文件</value>
+    <value>Save File</value>
   </data>
   <data name="InsertTempoSignatureMarker" xml:space="preserve">
-    <value>插入曲速或节拍标记</value>
+    <value>Insert tempo or signature marker</value>
   </data>
   <data name="SetTempoTickMarker" xml:space="preserve">
-    <value>tick标记曲速为</value>
+    <value>Set tempo for tick marker to</value>
   </data>
   <data name="TickTime" xml:space="preserve">
-    <value>tick时间单位</value>
+    <value>Tick Time</value>
   </data>
   <data name="InsertTempoMarker" xml:space="preserve">
-    <value>插入曲速标记</value>
+    <value>Insert tempo marker</value>
   </data>
   <data name="AtBarText" xml:space="preserve">
-    <value>在第</value>
+    <value>At bar</value>
   </data>
   <data name="Bar" xml:space="preserve">
-    <value>小节</value>
+    <value>Bar</value>
   </data>
   <data name="MarkBeatsAs" xml:space="preserve">
-    <value>小节标记节拍为</value>
+    <value>Mark beats as</value>
   </data>
   <data name="BeatsPerMeasure" xml:space="preserve">
-    <value>每小节拍数</value>
+    <value>Beats per measure</value>
   </data>
   <data name="NotesPerBeat" xml:space="preserve">
-    <value>以几分音符为一拍</value>
+    <value>Notes per beat</value>
   </data>
   <data name="InsertSignatureMarker" xml:space="preserve">
-    <value>插入节拍标记</value>
+    <value>Insert signature marker</value>
   </data>
   <data name="QuantizeText" xml:space="preserve">
-    <value>量化</value>
+    <value>Quantize</value>
   </data>
   <data name="NoQuantization" xml:space="preserve">
-    <value>还没有量化！请向社区报告问题。</value>
+    <value>Can't quantize yet! Please report this issue to the community.</value>
   </data>
   <data name="Rename" xml:space="preserve">
-    <value>重命名</value>
+    <value>Rename</value>
   </data>
   <data name="SelectPhonemizer" xml:space="preserve">
-    <value>选择音素器</value>
+    <value>Select Phonemizer</value>
   </data>
   <data name="CloseProject" xml:space="preserve">
-    <value>关闭项目</value>
+    <value>Close project</value>
   </data>
   <data name="UnsavedProjectChangesPrompt" xml:space="preserve">
-    <value>有尚未保存的更改，是否保存后退出？</value>
+    <value>There are unsaved changes. Do you want to save and exit?</value>
   </data>
   <data name="DontSave" xml:space="preserve">
-    <value>不保存</value>
+    <value>Don't save</value>
   </data>
   <data name="AudioExportOptions" xml:space="preserve">
-    <value>导出音频选项</value>
+    <value>Audio Export Options</value>
   </data>
   <data name="SampleRate" xml:space="preserve">
-    <value>采样率</value>
+    <value>Sample Rate</value>
   </data>
   <data name="BitDepth" xml:space="preserve">
-    <value>位深</value>
+    <value>Bit Depth</value>
   </data>
   <data name="MixingMode" xml:space="preserve">
-    <value>混音模式</value>
+    <value>Mixing Mode</value>
   </data>
   <data name="VocalTrackOnly" xml:space="preserve">
-    <value>分轨（仅歌声轨道）</value>
+    <value>Vocal track only</value>
   </data>
   <data name="MixDown" xml:space="preserve">
-    <value>缩混</value>
+    <value>MixDown</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>导出</value>
+    <value>Export</value>
   </data>
   <data name="Import" xml:space="preserve">
-    <value>导入</value>
+    <value>Import</value>
   </data>
   <data name="AuxiliaryTools" xml:space="preserve">
-    <value>辅助工具</value>
+    <value>Auxiliary Tools</value>
   </data>
   <data name="More" xml:space="preserve">
-    <value>更多</value>
+    <value>More</value>
   </data>
   <data name="ImportAudio" xml:space="preserve">
-    <value>导入音频</value>
+    <value>Import Audio</value>
   </data>
   <data name="ImportMidi" xml:space="preserve">
-    <value>导入MIDI</value>
+    <value>Import MIDI</value>
   </data>
   <data name="ImportTrack" xml:space="preserve">
-    <value>导入轨道</value>
+    <value>Import Track</value>
   </data>
   <data name="ExportAudio" xml:space="preserve">
-    <value>导出音频</value>
+    <value>Export Audio</value>
   </data>
   <data name="ExportProject" xml:space="preserve">
-    <value>导出工程</value>
+    <value>Export Project</value>
   </data>
   <data name="SeparateStems" xml:space="preserve">
-    <value>伴奏分离</value>
+    <value>Separate Stems</value>
   </data>
   <data name="DryWetConversion" xml:space="preserve">
-    <value>干声转换</value>
+    <value>Dry-to-Wet Conversion</value>
   </data>
   <data name="DetectTempo" xml:space="preserve">
-    <value>曲速测定</value>
+    <value>Detect Tempo</value>
   </data>
   <data name="SaveProjectAs" xml:space="preserve">
-    <value>工程另存为</value>
+    <value>Save Project As</value>
   </data>
   <data name="ManageExpressions" xml:space="preserve">
-    <value>表情管理</value>
+    <value>Manage Expressions</value>
   </data>
   <data name="PositionNegativeToast" xml:space="preserve">
-    <value>位置不能为负</value>
+    <value>Position can't be negative</value>
   </data>
   <data name="InvalidBPMToast" xml:space="preserve">
-    <value>BPM不能小于等于0</value>
+    <value>BPM can't be less than or equal to 0</value>
   </data>
   <data name="EnterValidNumberToast" xml:space="preserve">
-    <value>请输入有效的数字</value>
+    <value>Please enter a valid number</value>
   </data>
   <data name="BarNegativeToast" xml:space="preserve">
-    <value>小节不能为负</value>
+    <value>Bar can't be negative</value>
   </data>
   <data name="InvalidBeatsPerMeasureToast" xml:space="preserve">
-    <value>每小节拍数不能小于等于0</value>
+    <value>Beats per measure can't be less than or equal to 0</value>
   </data>
   <data name="InvalidNotesPerBeatToast" xml:space="preserve">
-    <value>以几分音符为一拍不能小于等于0</value>
+    <value>Notes per beat can't be less than or equal to 0</value>
   </data>
   <data name="ErrorPopupTemplate" xml:space="preserve">
-    <value>很抱歉， OpenUtau Mobile 捕获到了异常，部分功能可能无法正常使用。
-建议您将以下错误信息复制并反馈给开发者，并重启应用程序。
+    <value>Unfortunately, OpenUtau Mobile has encountered an exception, and some features may not function properly.
+We recommend copying the following error message and providing it to the developer, then restarting the application.
 
 {0}
 
-异常详情：
+Exception Details:
 {1}</value>
   </data>
   <data name="CopiedToClipboardToast" xml:space="preserve">
-    <value>已复制到剪贴板</value>
+    <value>Copied to clipboard</value>
   </data>
   <data name="ProcessingWaveform" xml:space="preserve">
-    <value>等待波形处理...</value>
+    <value>Processing waveform...</value>
   </data>
   <data name="ProcessingWaveformCancelled" xml:space="preserve">
-    <value>波形处理被取消</value>
+    <value>Waveform processing has been canceled.</value>
   </data>
   <data name="ProcessingWaveformError" xml:space="preserve">
-    <value>波形处理错误: {0}</value>
+    <value>Waveform Processing Error: {0}</value>
   </data>
   <data name="UnknownError" xml:space="preserve">
-    <value>未知错误</value>
+    <value>Unknown Error</value>
   </data>
   <data name="RenderingWaveformFile" xml:space="preserve">
-    <value>波形文件渲染中...</value>
+    <value>Rendering waveform file...</value>
   </data>
   <data name="ProcessingWaveformNotStarted" xml:space="preserve">
-    <value>波形处理未开始</value>
+    <value>Waveform processing hasn't yet started.</value>
   </data>
   <data name="ProcessingWaveformEmpty" xml:space="preserve">
-    <value>波形数据为空</value>
+    <value>Waveform data is empty.</value>
   </data>
   <data name="UnknownStatus" xml:space="preserve">
-    <value>未知状态: {0}</value>
+    <value>Unknown status: {0}</value>
   </data>
   <data name="PitchPrecisionOriginal" xml:space="preserve">
-    <value>原始</value>
+    <value>Original</value>
   </data>
   <data name="PitchPrecisionFine" xml:space="preserve">
-    <value>精细</value>
+    <value>Fine</value>
   </data>
   <data name="PitchPrecisionMedium" xml:space="preserve">
-    <value>中等</value>
+    <value>Medium</value>
   </data>
   <data name="PitchPrecisionRough" xml:space="preserve">
-    <value>粗略</value>
+    <value>Rough</value>
   </data>
   <data name="OnPianoClickSilence" xml:space="preserve">
-    <value>无声</value>
+    <value>Silence</value>
   </data>
   <data name="OnPianoClickSineWave" xml:space="preserve">
-    <value>正弦波TODO</value>
+    <value>Sine Wave TODO</value>
   </data>
   <data name="OnPianoClickPianoSample" xml:space="preserve">
-    <value>钢琴采样TODO</value>
+    <value>Piano Sample TODO</value>
   </data>
   <data name="ThemeLight" xml:space="preserve">
-    <value>浅色</value>
+    <value>Light</value>
   </data>
   <data name="ThemeDark" xml:space="preserve">
-    <value>深色</value>
+    <value>Dark</value>
   </data>
   <data name="System" xml:space="preserve">
-    <value>系统</value>
+    <value>System</value>
   </data>
   <data name="Progress" xml:space="preserve">
-    <value>进度：</value>
+    <value>Progress:</value>
   </data>
   <data name="Unknown" xml:space="preserve">
-    <value>未知</value>
+    <value>Unknown</value>
   </data>
   <data name="ShowingFirstNEntries" xml:space="preserve">
-    <value>... (已显示前 {0} 个条目)</value>
+    <value>... (Showing first {0} entries)</value>
   </data>
   <data name="ShowingFirstNTextFiles" xml:space="preserve">
-    <value>... (已显示前 {0} 个文本文件)</value>
+    <value>... (Showing first {0} text files)</value>
   </data>
   <data name="PhonemizingInProgress" xml:space="preserve">
-    <value>正在音素化：</value>
+    <value>Phonemizing in progress:</value>
   </data>
   <data name="NPartsSelected" xml:space="preserve">
-    <value>{0} 个分片被选中</value>
+    <value>{0} parts selected</value>
   </data>
   <data name="ErrorFailLoadProject" xml:space="preserve">
-    <value>无法打开项目文件，可能格式不受支持或文件已损坏。</value>
+    <value>The project file can't be opened. It may be due to an unsupported format or a corrupted file.</value>
   </data>
   <data name="NewPart" xml:space="preserve">
-    <value>新分片</value>
+    <value>New Part</value>
   </data>
   <data name="NewTrack" xml:space="preserve">
-    <value>新轨道</value>
+    <value>New Track</value>
   </data>
   <data name="NewFile" xml:space="preserve">
-    <value>新文件</value>
+    <value>New File</value>
   </data>
   <data name="WarningNoDirOrFilesMatchingCriteria" xml:space="preserve">
-    <value>该目录下没有子目录和符合条件的文件</value>
+    <value>There are no directories or files matching the criteria in this directory.</value>
   </data>
   <data name="WarningNoDirectoryPermission" xml:space="preserve">
-    <value>没有权限访问该目录</value>
+    <value>You don't have permission to access this directory.</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value>错误：{0}</value>
+    <value>Error: {0}</value>
   </data>
   <data name="SelectFileToast" xml:space="preserve">
-    <value>请选择文件</value>
+    <value>Please select a file</value>
   </data>
   <data name="StoragePermissionDeniedToast" xml:space="preserve">
-    <value>存储权限被拒绝</value>
+    <value>Storage permission denied</value>
   </data>
   <data name="SelectSaveLocationToast" xml:space="preserve">
-    <value>请选择文件保存位置</value>
+    <value>Please select where to save the file</value>
   </data>
   <data name="AtWork" xml:space="preserve">
-    <value>工作中</value>
+    <value>At work</value>
   </data>
   <data name="InitializingObjectProvider" xml:space="preserve">
-    <value>初始化对象提供器</value>
+    <value>Initializing ObjectProvider</value>
   </data>
   <data name="InitializingToolsManager" xml:space="preserve">
-    <value>初始化ToolsManager</value>
+    <value>Initializing ToolsManager</value>
   </data>
   <data name="InitializingSingerManager" xml:space="preserve">
-    <value>初始化SingerManager</value>
+    <value>Initializing SingerManager</value>
   </data>
   <data name="InitializingDocManager" xml:space="preserve">
-    <value>初始化DocManager</value>
+    <value>Initializing DocManager</value>
   </data>
   <data name="InitializingPlaybackManager" xml:space="preserve">
-    <value>初始化PlaybackManager</value>
+    <value>Initializing PlaybackManager</value>
   </data>
   <data name="InitializingPianoRoll" xml:space="preserve">
-    <value>初始化钢琴卷帘</value>
+    <value>Initializing PianoRoll</value>
   </data>
   <data name="InitializingLanguageLocalization" xml:space="preserve">
-    <value>初始化语言本地化</value>
+    <value>Initializing Language Localization</value>
   </data>
   <data name="InitializationComplete" xml:space="preserve">
-    <value>初始化完毕！</value>
+    <value>Initialization complete!</value>
   </data>
   <data name="ErrorOpenUtauBackendInitializationFailed" xml:space="preserve">
-    <value>OpenUtau后端初始化失败</value>
+    <value>OpenUtau backend initialization failed</value>
   </data>
   <data name="Singer" xml:space="preserve">
-    <value>歌手</value>
+    <value>Singer</value>
   </data>
   <data name="RhythmMeasureNoteTemplate" xml:space="preserve">
-    <value>1/ {0}小节（{0}分音符）</value>
+    <value>1/{0} measure ({0}th note)</value>
   </data>
   <data name="Render" xml:space="preserve">
-    <value>渲</value>
+    <value>Render</value>
   </data>
   <data name="Swap" xml:space="preserve">
-    <value>换</value>
+    <value>Swap</value>
   </data>
   <data name="Hand" xml:space="preserve">
-    <value>手</value>
+    <value>Hand</value>
   </data>
   <data name="Edit" xml:space="preserve">
-    <value>编</value>
+    <value>Edit</value>
   </data>
   <data name="Eraser" xml:space="preserve">
-    <value>橡</value>
+    <value>Eraser</value>
   </data>
 </root>

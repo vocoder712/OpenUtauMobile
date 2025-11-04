@@ -77,7 +77,12 @@ namespace OpenUtauMobile.ViewModels
             Preferences.Default.Theme = SelectedTheme.Key;
             Preferences.Default.Language = SelectedLanguageOption.CultureName;
             // 应用语言
-            var culture = new CultureInfo(SelectedLanguageOption.CultureName);
+            string lang = SelectedLanguageOption.CultureName;
+            if (string.IsNullOrEmpty(lang))
+            {
+                lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName; // 获取系统语言
+            }
+            var culture = new CultureInfo(lang);
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
             AppResources.Culture = culture;
