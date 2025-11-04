@@ -804,4 +804,22 @@
   <data name="Eraser" xml:space="preserve">
     <value>橡</value>
   </data>
+  <data name="DiffSingerSteps" xml:space="preserve">
+    <value>DiffSinger 声学模型推理步数</value>
+  </data>
+  <data name="DiffSingerStepsVariance" xml:space="preserve">
+    <value>DiffSinger 唱法模型推理步数</value>
+  </data>
+  <data name="DiffSingerStepsPitch" xml:space="preserve">
+    <value>DiffSinger 音高预测模型推理步数</value>
+  </data>
+  <data name="DiffSingerStepsTooltip" xml:space="preserve">
+    <value>配置 DiffSinger 声学模型推理步数。更低的值推理速度更快，更高的值合成质量更高。</value>
+  </data>
+  <data name="DiffSingerStepsVarianceTooltip" xml:space="preserve">
+    <value>配置 DiffSinger 唱法模型推理步数。更低的值推理速度更快，更高的值合成质量更高。</value>
+  </data>
+  <data name="DiffSingerStepsPitchTooltip" xml:space="preserve">
+    <value>配置 DiffSinger 音高预测模型推理步数。更低的值推理速度更快，更高的值合成质量更高。</value>
+  </data>
 </root>

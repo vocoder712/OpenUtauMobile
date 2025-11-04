@@ -20,8 +20,8 @@ using Serilog;
 using SkiaSharp;
 using System.Diagnostics;
 using System.Reactive.Disposables;
-using System.Threading.Tasks;
 using Preferences = OpenUtau.Core.Util.Preferences;
+using System.Reactive.Linq;
 
 namespace OpenUtauMobile.Views;
 
@@ -65,6 +65,16 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     /// 触摸点位置（实际坐标）
     /// </summary>
     private SKPoint TouchingPoint { get; set; } = new();
+    #region 画笔
+    // 音高线画笔
+    private readonly SKPaint _pitchLinePaint = new()
+    {
+        Color = ThemeColorsManager.Current.PitchLine,
+        Style = SKPaintStyle.Stroke,
+        StrokeWidth = 4,
+        IsAntialias = false,
+    };
+    #endregion
 
     public EditPage(string path)
     {
@@ -154,6 +164,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         // 订阅钢琴卷帘TransformerX方向更新事件
         _viewModel.WhenAnyValue(x => x.PianoRollTransformer.PanX,
             x => x.PianoRollTransformer.ZoomX)
+            .Throttle(TimeSpan.FromMilliseconds(16.6)) // 限制更新频率为60FPS
             .Subscribe(_ =>
             {
                 PianoRollCanvas.InvalidateSurface();
@@ -1972,6 +1983,11 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _viewModel.RemoveNotes();
     }
 
+    /// <summary>
+    /// 音高线画布重绘
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void PianoRollPitchCanvas_PaintSurface(object sender, SkiaSharp.Views.Maui.SKPaintSurfaceEventArgs e)
     {        
         SKCanvas canvas = e.Surface.Canvas;
@@ -1984,48 +2000,41 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         {
             return; // 如果当前是编辑音符模式，直接返回
         }
-
-        //canvas.SetMatrix(_viewModel.PianoRollTransformer.GetTransformMatrix());
-
-        float pitchDisplayPrecision = Preferences.Default.PitchDisplayPrecision;
-        int skipPoint = pitchDisplayPrecision != 0f ?(int)Math.Max(1, pitchDisplayPrecision / _viewModel.PianoRollTransformer.ZoomX) : 0; // 根据缩放级别跳过一些点，提升性能
-        //Debug.WriteLine($"绘制音高曲线,{pitchDisplayPrecision} skipPoint: {skipPoint}, ScaleX: {_viewModel.PianoRollTransformer.ZoomX}");
+        float pitchDisplayPrecision = Preferences.Default.PitchDisplayPrecision; // 显示精度
 
         int leftTick = (int)(-_viewModel.PianoRollTransformer.PanX / _viewModel.PianoRollTransformer.ZoomX);
         int rightTick = (int)(canvas.DeviceClipBounds.Size.Width / _viewModel.PianoRollTransformer.ZoomX + leftTick);
-        SKPaint paint = new()
-        {
-            Color = ThemeColorsManager.Current.PitchLine,
-            StrokeWidth = 4,
-            IsAntialias = true,
-        };
-        int interval = 5; // 每5个tick一个点
-        foreach (RenderPhrase phrase in _viewModel.EditingPart.renderPhrases)
+
+        const int interval = 5; // 每5个tick一个点
+        foreach (RenderPhrase phrase in _viewModel.EditingPart.renderPhrases) // 遍历所有Phrase
         {
             if (phrase.position > rightTick || phrase.end < leftTick)
             {
                 continue;
             }
             int pitchStartTick = phrase.position - phrase.leading;
-            int startIdx = (int)Math.Max(0, (leftTick - pitchStartTick) / interval);
-            int endIdx = (int)Math.Min(phrase.pitches.Length, (rightTick - pitchStartTick) / interval + 1);
-            List<SKPoint> points = [];
-            //Debug.WriteLine($"绘制音高曲线: {phrase.hash}, pitchStartTick: {pitchStartTick}, startIdx: {startIdx}, endIdx: {endIdx}");
-            SKPath path = new();
-            for (int i = startIdx; i < endIdx; ++i)
+            int startIdx = Math.Max(0, (leftTick - pitchStartTick) / interval);
+            int endIdx = Math.Min(phrase.pitches.Length, (rightTick - pitchStartTick) / interval + 1);
+            using SKPath path = new();
+            // 计算i步进
+            int step = Math.Max(1, (int)(pitchDisplayPrecision / _viewModel.PianoRollTransformer.ZoomX));
+            bool isFirstPoint = true;
+            for (int i = startIdx; i < endIdx; i += step)
             {
-                if (skipPoint != 0)
-                {
-                    if (i % skipPoint != 0)
-                    {
-                        continue; // 每10个点画一个，减少点数
-                    }
-                }
                 int t = pitchStartTick + i * interval;
                 float p = phrase.pitches[i];
-                points.Add(_viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(t, p)));
+                SKPoint point = _viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(t, p));
+                if (isFirstPoint)
+                {
+                    path.MoveTo(point);
+                    isFirstPoint = false;
+                }
+                else
+                {
+                    path.LineTo(point);
+                }
             }
-            canvas.DrawPoints(SKPointMode.Polygon, [.. points], paint);
+            canvas.DrawPath(path, _pitchLinePaint);
         }
         // 绘制触摸中心
         if (IsUserDrawingCurve)
@@ -2034,7 +2043,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             {
                 Color = SKColors.Yellow,
                 StrokeWidth = 2,
-                IsAntialias = true,
+                IsAntialias = false,
                 Style = SKPaintStyle.Stroke,
             };
             float radius = 10f;

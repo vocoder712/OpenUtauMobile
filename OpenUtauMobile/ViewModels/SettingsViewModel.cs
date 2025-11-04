@@ -1,22 +1,12 @@
 ﻿using DynamicData.Binding;
-using Microsoft.Maui.Handlers;
 using OpenUtau.Audio;
 using OpenUtau.Core;
-using OpenUtau.Core.Util;
 using OpenUtauMobile.Resources.Strings;
 using OpenUtauMobile.Utils;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using Preferences = OpenUtau.Core.Util.Preferences;
 
 namespace OpenUtauMobile.ViewModels
@@ -54,6 +44,18 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public KeyValuePair<int, string> SelectedTheme { get; set; }
         public List<LanguageOption> LanguageOptions { get; set; } = ViewConstants.LanguageOptions;
         public LanguageOption SelectedLanguageOption { get; set; }
+        /// <summary>
+        /// DiffSinger 声学模型推理步数
+        /// </summary>
+        [Reactive] public int DiffSingerSteps { get; set; } = Preferences.Default.DiffSingerSteps;
+        /// <summary>
+        /// DiffSinger 唱法模型推理步数
+        /// </summary>
+        [Reactive] public int DiffSingerStepsVariance { get; set; } = Preferences.Default.DiffSingerStepsVariance;
+        /// <summary>
+        /// DiffSinger 音高模型推理步数
+        /// </summary>
+        [Reactive] public int DiffSingerStepsPitch { get; set; } = Preferences.Default.DiffSingerStepsPitch;
         public SettingsViewModel()
         {
             SelectedPitchDisplayPrecision = PitchDisplayPrecision.FirstOrDefault(p => p.Key == Preferences.Default.PitchDisplayPrecision);
@@ -76,17 +78,21 @@ namespace OpenUtauMobile.ViewModels
             Preferences.Default.SkipRenderingMutedTracks = SkipRenderingMutedTracks;
             Preferences.Default.Theme = SelectedTheme.Key;
             Preferences.Default.Language = SelectedLanguageOption.CultureName;
+
             // 应用语言
             string lang = SelectedLanguageOption.CultureName;
             if (string.IsNullOrEmpty(lang))
             {
-                lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName; // 获取系统语言
+                lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName; // 获取系统语言，例如 "en"
             }
-            var culture = new CultureInfo(lang);
+            CultureInfo culture = new(lang);
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
             AppResources.Culture = culture;
-            Debug.WriteLine($"PitchDisplayPrecision={SelectedPitchDisplayPrecision}");
+
+            Preferences.Default.DiffSingerSteps = DiffSingerSteps;
+            Preferences.Default.DiffSingerStepsVariance = DiffSingerStepsVariance;
+            Preferences.Default.DiffSingerStepsPitch = DiffSingerStepsPitch;
             Preferences.Save();
         }
     }
