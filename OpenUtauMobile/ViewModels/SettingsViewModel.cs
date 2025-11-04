@@ -16,9 +16,9 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public bool AutoScroll { get; set; } = Preferences.Default.PlaybackAutoScroll == 2;
         [Reactive] public int PlaybackRefreshRate { get; set; } = Preferences.Default.PlaybackRefreshRate;
         [Reactive] public ObservableCollectionExtended<KeyValuePair<float, string>> PitchDisplayPrecision { get; set; } = [
-            new KeyValuePair<float, string>(0f, AppResources.PitchPrecisionOriginal),
-            new KeyValuePair<float, string>(1f, AppResources.PitchPrecisionFine),
-            new KeyValuePair<float, string>(2f, AppResources.PitchPrecisionMedium),
+            new KeyValuePair<float, string>(1f, AppResources.PitchPrecisionOriginal),
+            new KeyValuePair<float, string>(2f, AppResources.PitchPrecisionFine),
+            new KeyValuePair<float, string>(3f, AppResources.PitchPrecisionMedium),
             new KeyValuePair<float, string>(5f, AppResources.PitchPrecisionRough),
         ];
         [Reactive] public KeyValuePair<float, string> SelectedPitchDisplayPrecision { get; set; }
