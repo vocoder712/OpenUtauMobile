@@ -534,7 +534,7 @@
   <data name="BeatsPerMeasure" xml:space="preserve">
     <value>1小節の拍数</value>
   </data>
-  <data name="NotesPerBeat" xml:space="preserve">.
+  <data name="NotesPerBeat" xml:space="preserve">
     <value>何分音符を1拍子とする</value>
   </data>
   <data name="InsertSignatureMarker" xml:space="preserve">
@@ -803,5 +803,23 @@
   </data>
   <data name="Eraser" xml:space="preserve">
     <value>消</value>
+  </data>
+  <data name="DiffSingerSteps" xml:space="preserve">
+    <value>DiffSinger 音響モデル推論ステップ数</value>
+  </data>
+  <data name="DiffSingerStepsVariance" xml:space="preserve">
+    <value>DiffSinger 歌唱スタイルモデル推論ステップ数</value>
+  </data>
+  <data name="DiffSingerStepsPitch" xml:space="preserve">
+    <value>DiffSinger ピッチ予測モデル推論ステップ数</value>
+  </data>
+  <data name="DiffSingerStepsTooltip" xml:space="preserve">
+    <value>DiffSinger音響モデルの推論ステップ数を設定します。値を下げると推論が高速化され、値を上げると品質が向上します。</value>
+  </data>
+  <data name="DiffSingerStepsVarianceTooltip" xml:space="preserve">
+    <value>DiffSinger歌唱スタイル（バリアンス）モデルの推論ステップ数を設定します。値を下げると推論が高速化され、値を上げると品質が向上します。</value>
+  </data>
+  <data name="DiffSingerStepsPitchTooltip" xml:space="preserve">
+    <value>DiffSingerピッチ予測モデルの推論ステップ数を設定します。値を下げると推論が高速化され、値を上げると品質が向上します。</value>
   </data>
 </root>

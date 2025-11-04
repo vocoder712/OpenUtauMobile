@@ -1,9 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-using NAudio.CoreAudioApi;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.Views.DrawableObjects;
 using OpenUtauMobile.Views.Utils;
@@ -195,7 +193,7 @@ namespace OpenUtauMobile.ViewModels
         }
         public void SetWork(WorkType type, string id, double progress = 0, string detail = "", CancellationTokenSource? cancellationTokenSource = null)
         {
-            var existingWork = RunningWorks.FirstOrDefault(w => w.Id == id);
+            RunningWork? existingWork = RunningWorks.FirstOrDefault(w => w.Id == id);
             if (existingWork != null)
             {
                 // 如果已经存在相同ID的工作，则更新其属性
@@ -204,6 +202,7 @@ namespace OpenUtauMobile.ViewModels
                 existingWork.Detail = detail;
                 // 触发属性变化通知
                 this.RaisePropertyChanged(nameof(RunningWorks));
+                Debug.WriteLine($"更新工作 {id}：类型={type}, 进度={progress}, 详情={detail}");
             }
             else
             {
@@ -216,6 +215,7 @@ namespace OpenUtauMobile.ViewModels
                     Detail = detail,
                     CancellationTokenSource = cancellationTokenSource
                 });
+                Debug.WriteLine($"添加工作 {id}：类型={type}, 进度={progress}, 详情={detail}");
             }
         }
 
@@ -225,6 +225,7 @@ namespace OpenUtauMobile.ViewModels
             if (workToRemove != null)
             {
                 RunningWorks.Remove(workToRemove);
+                Debug.WriteLine($"移除工作 {id}");
             }
         }
 
@@ -236,6 +237,7 @@ namespace OpenUtauMobile.ViewModels
                 return;
             }
             work.CancellationTokenSource.Cancel();
+            Debug.WriteLine($"取消工作 {id}");
         }
 
 

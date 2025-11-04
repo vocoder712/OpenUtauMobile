@@ -210,11 +210,6 @@
 
 
 	<ItemGroup>
-	  <Folder Include="Resources\Images\" />
-	</ItemGroup>
-
-
-	<ItemGroup>
 	  <MauiImage Include="Resources\Icons\dark\bxs_rename_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\edit_off_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\edit_pit_dark.svg" />
