@@ -826,7 +826,7 @@
     <value>追加歌手フォルダ</value>
   </data>
   <data name="AdditionalSingerPathTooltip" xml:space="preserve">
-    <value>ここでアーティスト マネージャーがスキャンするための追加パスを追加すると、インストール パッケージを外部ストレージ上のに抽出して、アーティストを手動でインストールできるようになります </value>
+    <value>ここでアーティスト マネージャーがスキャンするための追加パスを追加すると、インストール パッケージを外部ストレージ上に抽出して、アーティストを手動でインストールできるようになります </value>
   </data>
   <data name="InstallToAdditionalSingersPath" xml:space="preserve">
     <value>追加の歌手パスに歌手をインストールする</value>
