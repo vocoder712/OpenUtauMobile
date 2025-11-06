@@ -54,9 +54,10 @@ namespace OpenUtauMobile.Views.DrawableObjects
             HeightPerPianoKey = HeightPerPianoKey * originalMatrix.ScaleY;
             PianoKey? drawingKey = null;
             SKPaint textPaint = new();
-            SKFont font = new()
+            using SKFont font = new()
             {
-                Size = (float)(HeightPerPianoKey * 0.5)
+                Size = (float)(HeightPerPianoKey * 0.5),
+                Typeface = ObjectProvider.NotoSansCJKscRegularTypeface
             };
             for (int i = topKeyNum; i < bottomKeyNum; i++)
             {
