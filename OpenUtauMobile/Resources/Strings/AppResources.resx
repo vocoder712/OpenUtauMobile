@@ -826,7 +826,7 @@ Exception Details:
     <value>Additional Singer Search Paths</value>
   </data>
   <data name="AdditionalSingerPathTooltip" xml:space="preserve">
-    <value>Add extra folders for Singer Manager to search singers, so you can extra singer install packages into anywhere you want in External Storage Path.</value>
+    <value>Add extra folders for Singer Manager to search singers, so you can extract singer install packages into anywhere you want in External Storage Path.</value>
   </data>
   <data name="InstallToAdditionalSingersPath" xml:space="preserve">
     <value>Install singers to additional singers path</value>
