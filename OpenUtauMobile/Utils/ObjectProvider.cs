@@ -48,7 +48,7 @@ namespace OpenUtauMobile.Utils
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "无法加载OpenSans字体，使用默认字体代替。");
+                Log.Error(ex, "无法加载NotoSansCJKsc字体，使用默认字体代替。");
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("字体加载失败，使用默认字体代替。", ex));
                 NotoSansCJKscRegularTypeface = SKTypeface.Default;
             }
