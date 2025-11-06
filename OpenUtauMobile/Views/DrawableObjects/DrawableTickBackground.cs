@@ -58,7 +58,6 @@ namespace OpenUtauMobile.Views.DrawableObjects
             {
                 Color = ThemeColorsManager.Current.BarNumber
             };
-            SKFontManager fontManager = SKFontManager.Default;
             SKTypeface typeface = OpenUtauMobile.Utils.FontManager.OpenSans;
             SKFont barNumberFont = new(typeface, size:30f);
             // 节拍线画笔
