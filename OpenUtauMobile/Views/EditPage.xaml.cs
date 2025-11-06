@@ -1973,53 +1973,94 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void PianoRollPitchCanvas_PaintSurface(object sender, SkiaSharp.Views.Maui.SKPaintSurfaceEventArgs e)
-    {        
+    {
         SKCanvas canvas = e.Surface.Canvas;
         canvas.Clear();
+
         if (_viewModel.EditingPart == null || _viewModel.EditingPart is not UVoicePart)
         {
-            return; // 如果没有选中分片，直接返回
+            return;
         }
+
         if (_viewModel.CurrentNoteEditMode == EditViewModel.NoteEditMode.EditNote)
         {
-            return; // 如果当前是编辑音符模式，直接返回
+            return;
         }
-        float pitchDisplayPrecision = Preferences.Default.PitchDisplayPrecision; // 显示精度
 
-        int leftTick = (int)(-_viewModel.PianoRollTransformer.PanX / _viewModel.PianoRollTransformer.ZoomX);
-        int rightTick = (int)(canvas.DeviceClipBounds.Size.Width / _viewModel.PianoRollTransformer.ZoomX + leftTick);
+        // 缓存常用值，减少属性访问
+        var transformer = _viewModel.PianoRollTransformer;
+        var canvasWidth = canvas.DeviceClipBounds.Size.Width;
+        var zoomX = transformer.ZoomX;
+        var zoomY = transformer.ZoomY;
+        var panX = transformer.PanX;
+        var panY = transformer.PanY;
 
-        const int interval = 5; // 每5个tick一个点
-        foreach (RenderPhrase phrase in _viewModel.EditingPart.renderPhrases) // 遍历所有Phrase
+        // 预先计算视口范围
+        int leftTick = (int)(-panX / zoomX);
+        int rightTick = (int)(canvasWidth / zoomX + leftTick);
+
+        // 预计算步长，避免在循环中重复计算
+        float pitchDisplayPrecision = Preferences.Default.PitchDisplayPrecision;
+        int step = Math.Max(1, (int)(pitchDisplayPrecision / zoomX));
+
+        // 缓存变换矩阵
+        var matrix = transformer.GetTransformMatrix();
+        canvas.SetMatrix(matrix);
+
+        const int interval = 5;
+
+        // 使用单个路径批量绘制所有音高线
+        using SKPath combinedPath = new();
+
+        foreach (RenderPhrase phrase in _viewModel.EditingPart.renderPhrases)
         {
+            // 早期退出，减少不必要的计算
             if (phrase.position > rightTick || phrase.end < leftTick)
             {
                 continue;
             }
+
             int pitchStartTick = phrase.position - phrase.leading;
             int startIdx = Math.Max(0, (leftTick - pitchStartTick) / interval);
             int endIdx = Math.Min(phrase.pitches.Length, (rightTick - pitchStartTick) / interval + 1);
-            using SKPath path = new();
-            // 计算i步进
-            int step = Math.Max(1, (int)(pitchDisplayPrecision / _viewModel.PianoRollTransformer.ZoomX));
-            bool isFirstPoint = true;
+
+            // 跳过太小的片段
+            if (endIdx - startIdx < 2)
+            {
+                continue;
+            }
+
+            // 预分配数组，减少内存分配
+            var points = new SKPoint[(endIdx - startIdx + step - 1) / step];
+            int pointCount = 0;
+
+            // 批量计算所有点的坐标
             for (int i = startIdx; i < endIdx; i += step)
             {
+                if (i >= phrase.pitches.Length) break;
+
                 int t = pitchStartTick + i * interval;
-                float p = phrase.pitches[i];
-                SKPoint point = _viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(t, p));
-                if (isFirstPoint)
+                float p = phrase.pitches[i]; // 直接访问，减少重复索引
+
+                // 内联坐标计算，避免方法调用
+                float logicalX = t;
+                float logicalY = (ViewConstants.TotalPianoKeys - p / 100 - 0.5f) * (float)_viewModel.HeightPerPianoKey * (float)_viewModel.Density;
+
+                points[pointCount++] = new SKPoint(logicalX, logicalY);
+            }
+
+            // 批量添加到路径
+            if (pointCount > 1)
+            {
+                combinedPath.MoveTo(points[0]);
+                for (int j = 1; j < pointCount; j++)
                 {
-                    path.MoveTo(point);
-                    isFirstPoint = false;
-                }
-                else
-                {
-                    path.LineTo(point);
+                    combinedPath.LineTo(points[j]);
                 }
             }
-            canvas.DrawPath(path, _pitchLinePaint);
         }
+        // 一次性绘制所有路径
+        canvas.DrawPath(combinedPath, _pitchLinePaint);
         // 绘制触摸中心
         if (IsUserDrawingCurve)
         {
