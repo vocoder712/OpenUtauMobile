@@ -142,7 +142,7 @@ public partial class SettingsPage : ContentPage
         if (result.IsSuccessful)
         {
             string folderPath = result.Folder.Path;
-            if (!Viewmodel.AdditionalSingerPath.Contains(folderPath))
+            if (Viewmodel.AdditionalSingerPath != folderPath)
             {
                 Viewmodel.AdditionalSingerPath = folderPath;
             }
