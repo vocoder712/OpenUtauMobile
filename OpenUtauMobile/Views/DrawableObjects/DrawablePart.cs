@@ -163,7 +163,6 @@ namespace OpenUtauMobile.Views.DrawableObjects
                 paint.Color = SKColors.Black;
                 // 使用合适的字体
                 float fontSize = 30f;
-                SKFontManager fontManager = SKFontManager.Default;
                 SKTypeface typeface = OpenUtauMobile.Utils.FontManager.OpenSans;
                 SKFont font = new(typeface, fontSize);
                 // 绘制信息文本
