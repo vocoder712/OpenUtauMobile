@@ -163,7 +163,7 @@ namespace OpenUtauMobile.Views.DrawableObjects
                 paint.Color = SKColors.Black;
                 // 使用合适的字体
                 float fontSize = 30f;
-                SKTypeface typeface = OpenUtauMobile.Utils.FontManager.OpenSans;
+                SKTypeface typeface = ObjectProvider.OpenSansTypeface;
                 SKFont font = new(typeface, fontSize);
                 // 绘制信息文本
                 Canvas.DrawText(info, x, y, SKTextAlign.Left, font, paint);
@@ -224,7 +224,7 @@ namespace OpenUtauMobile.Views.DrawableObjects
             using (SKPaint paint = new())
             {
                 paint.Color = ThemeColorsManager.Current.PartLabel;
-                SKFont font = new(OpenUtauMobile.Utils.FontManager.OpenSans, 30f);
+                SKFont font = new(ObjectProvider.OpenSansTypeface, 30f);
                 // 绘制标题
                 Canvas.DrawText(Part.DisplayName, x, y, SKTextAlign.Left, font, paint);
             }

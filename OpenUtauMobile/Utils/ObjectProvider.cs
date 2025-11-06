@@ -11,6 +11,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenUtauMobile.Resources.Strings;
+using SkiaSharp;
+using Serilog;
+using OpenUtau.Core;
 
 namespace OpenUtauMobile.Utils
 {
@@ -20,6 +23,7 @@ namespace OpenUtauMobile.Utils
         public static IAudioOutput? AudioOutput { get; private set; }
         public static Random Random { get; } = new Random();
         public static IAppLifeCycleHelper AppLifeCycleHelper { get; set; } = null!;
+        public static SKTypeface OpenSansTypeface { get; set; } = null!;
         public static void Initialize()
         {
 #if ANDROID
@@ -37,6 +41,17 @@ namespace OpenUtauMobile.Utils
 #else
             throw new NotSupportedException("Unsupported platform");
 #endif
+            try
+            {
+                using var stream = FileSystem.OpenAppPackageFileAsync("OpenSans-Regular.ttf").Result;
+                OpenSansTypeface = SKTypeface.FromStream(stream);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "无法加载OpenSans字体，使用默认字体代替。");
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("字体加载失败，使用默认字体代替。", ex));
+                OpenSansTypeface = SKTypeface.Default;
+            }
         }
         public static async Task<string> PickFile(string[] types, ContentPage context)
         {

@@ -1610,7 +1610,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         SKFont font = new()
         {
             Size = (float)(heightPerPianoKey * 0.5 * _viewModel.PianoRollTransformer.ZoomY),
-            Typeface = OpenUtauMobile.Utils.FontManager.OpenSans
+            Typeface = ObjectProvider.OpenSansTypeface
         };
         for (int i = topKeyNum; i < bottomKeyNum; i++)
         {
@@ -2272,7 +2272,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             StrokeWidth = 3,
             Color = ThemeColorsManager.Current.PhonemePosLine
         };
-        SKFont textFont = new(OpenUtauMobile.Utils.FontManager.OpenSans, 12 * (float)_viewModel.Density);
+        SKFont textFont = new(ObjectProvider.OpenSansTypeface, 12 * (float)_viewModel.Density);
         // 遍历音素
         foreach (var phoneme in part.phonemes)
         {
