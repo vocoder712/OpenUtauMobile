@@ -5,7 +5,6 @@ using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Views.Utils;
 using SkiaSharp;
 using System;
-using System.Diagnostics;
 namespace OpenUtauMobile.Views.DrawableObjects
 {
     public class DrawableNotes
