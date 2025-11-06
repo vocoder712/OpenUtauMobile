@@ -822,4 +822,16 @@
   <data name="DiffSingerStepsPitchTooltip" xml:space="preserve">
     <value>DiffSingerピッチ予測モデルの推論ステップ数を設定します。値を下げると推論が高速化され、値を上げると品質が向上します。</value>
   </data>
+  <data name="AdditionalSingerPath" xml:space="preserve">
+    <value>追加歌手フォルダ</value>
+  </data>
+  <data name="AdditionalSingerPathTooltip" xml:space="preserve">
+    <value>ここでアーティスト マネージャーがスキャンするための追加パスを追加すると、インストール パッケージを外部ストレージ上に抽出して、アーティストを手動でインストールできるようになります </value>
+  </data>
+  <data name="InstallToAdditionalSingersPath" xml:space="preserve">
+    <value>追加の歌手パスに歌手をインストールする</value>
+  </data>
+  <data name="InstallToAdditionalSingersPathTooltip" xml:space="preserve">
+    <value>有効にすると、シンガーはデフォルトで上記で設定した追加のシンガー パスにインストールされます。</value>
+  </data>
 </root>

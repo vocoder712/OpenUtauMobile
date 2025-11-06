@@ -3,11 +3,15 @@ using CommunityToolkit.Maui.Core;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Resources.Strings;
 using Serilog;
+using CommunityToolkit.Maui.Storage;
+using ReactiveUI;
+using System.Reactive.Disposables;
 
 namespace OpenUtauMobile.Views;
 
-public partial class SettingsPage : ContentPage
+public partial class SettingsPage : ContentPage, IDisposable
 {
+    private readonly CompositeDisposable _disposables = [];
     private int _currentTabIndex = 0;
     private SettingsViewModel Viewmodel {  get; set; }
     private int CurrentTabIndex
@@ -26,6 +30,18 @@ public partial class SettingsPage : ContentPage
 	{
 		InitializeComponent();
         Viewmodel = (SettingsViewModel)BindingContext;
+        Viewmodel.WhenAnyValue(vm => vm.EnableAdditionalSingerPath).Subscribe(enable =>
+        {
+            if (!enable) // 关闭额外歌手路径
+            {
+                Viewmodel.AdditionalSingerPath = string.Empty;
+            }
+            else if (string.IsNullOrEmpty(Viewmodel.AdditionalSingerPath))// 启用额外歌手路径却未设置路径，弹出选择文件夹对话框
+            {
+                SetAdditionalSingerPath();
+            }
+        })
+        .DisposeWith(_disposables);
     }
 
     protected override bool OnBackButtonPressed()
@@ -112,5 +128,38 @@ public partial class SettingsPage : ContentPage
     {
         Save();
         Navigation.PopModalAsync();
+    }
+
+    private void ButtonSelectAdditionalSingerPath_Clicked(object sender, EventArgs e)
+    {
+        SetAdditionalSingerPath();
+    }
+
+
+    /// <summary>
+    /// 选择额外歌手路径
+    /// </summary>
+    private async void SetAdditionalSingerPath()
+    {
+        FolderPickerResult result = await FolderPicker.Default.PickAsync();
+        if (result.IsSuccessful)
+        {
+            string folderPath = result.Folder.Path;
+            if (Viewmodel.AdditionalSingerPath != folderPath)
+            {
+                Viewmodel.AdditionalSingerPath = folderPath;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _disposables.Dispose();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        Dispose();
     }
 }

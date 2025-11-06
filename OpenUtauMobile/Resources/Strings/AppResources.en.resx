@@ -822,4 +822,16 @@ Exception Details:
   <data name="DiffSingerStepsPitchTooltip" xml:space="preserve">
     <value>Configure DiffSinger render steps for pitch prediction model. Lower value means faster inference while higher value means higher quality.</value>
   </data>
+  <data name="AdditionalSingerPath" xml:space="preserve">
+    <value>Additional Singer Search Paths</value>
+  </data>
+  <data name="AdditionalSingerPathTooltip" xml:space="preserve">
+    <value>Add extra folders for Singer Manager to search singers, so you can extract singer install packages into External Storage Path in order to install singers.</value>
+  </data>
+  <data name="InstallToAdditionalSingersPath" xml:space="preserve">
+    <value>Install singers to additional singers path</value>
+  </data>
+  <data name="InstallToAdditionalSingersPathTooltip" xml:space="preserve">
+    <value>If enabled, singers will be installed into additional singer path that you set above by default.</value>
+  </data>
 </root>

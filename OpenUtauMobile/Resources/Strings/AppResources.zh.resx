@@ -822,4 +822,16 @@
   <data name="DiffSingerStepsPitchTooltip" xml:space="preserve">
     <value>配置 DiffSinger 音高预测模型推理步数。更低的值推理速度更快，更高的值合成质量更高。</value>
   </data>
+  <data name="AdditionalSingerPath" xml:space="preserve">
+    <value>额外歌手文件夹</value>
+  </data>
+  <data name="AdditionalSingerPathTooltip" xml:space="preserve">
+    <value>在这里添加额外路径让歌手管理器扫描，然后您就能把歌手安装包解压到外部存储来手动安装</value>
+  </data>
+  <data name="InstallToAdditionalSingersPath" xml:space="preserve">
+    <value>将歌手安装至额外歌手文件夹</value>
+  </data>
+  <data name="InstallToAdditionalSingersPathTooltip" xml:space="preserve">
+    <value>启用后，默认将歌手安装至您设置的额外歌手目录。</value>
+  </data>
 </root>
