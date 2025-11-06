@@ -5,11 +5,13 @@ using OpenUtauMobile.Resources.Strings;
 using Serilog;
 using CommunityToolkit.Maui.Storage;
 using ReactiveUI;
+using System.Reactive.Disposables;
 
 namespace OpenUtauMobile.Views;
 
-public partial class SettingsPage : ContentPage
+public partial class SettingsPage : ContentPage, IDisposable
 {
+    private readonly CompositeDisposable _disposables = [];
     private int _currentTabIndex = 0;
     private SettingsViewModel Viewmodel {  get; set; }
     private int CurrentTabIndex
@@ -38,7 +40,8 @@ public partial class SettingsPage : ContentPage
             {
                 SetAdditionalSingerPath();
             }
-        });
+        })
+        .DisposeWith(_disposables);
     }
 
     protected override bool OnBackButtonPressed()
@@ -147,5 +150,16 @@ public partial class SettingsPage : ContentPage
                 Viewmodel.AdditionalSingerPath = folderPath;
             }
         }
+    }
+
+    public void Dispose()
+    {
+        _disposables.Dispose();
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        Dispose();
     }
 }
