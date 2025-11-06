@@ -56,6 +56,18 @@ namespace OpenUtauMobile.ViewModels
         /// DiffSinger 音高模型推理步数
         /// </summary>
         [Reactive] public int DiffSingerStepsPitch { get; set; } = Preferences.Default.DiffSingerStepsPitch;
+        /// <summary>
+        /// 额外歌手目录
+        /// </summary>
+        [Reactive] public string AdditionalSingerPath { get; set; } = Preferences.Default.AdditionalSingerPath;
+        /// <summary>
+        /// 是否定义了额外歌手目录
+        /// </summary>
+        [Reactive] public bool EnableAdditionalSingerPath { get; set; } = !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath);
+        /// <summary>
+        /// 是否安装到额外歌手目录
+        /// </summary>
+        [Reactive] public bool InstallToAdditionalSingersPath { get; set; } = Preferences.Default.InstallToAdditionalSingersPath;
         public SettingsViewModel()
         {
             SelectedPitchDisplayPrecision = PitchDisplayPrecision.FirstOrDefault(p => p.Key == Preferences.Default.PitchDisplayPrecision);
@@ -93,6 +105,8 @@ namespace OpenUtauMobile.ViewModels
             Preferences.Default.DiffSingerSteps = DiffSingerSteps;
             Preferences.Default.DiffSingerStepsVariance = DiffSingerStepsVariance;
             Preferences.Default.DiffSingerStepsPitch = DiffSingerStepsPitch;
+            Preferences.Default.AdditionalSingerPath = AdditionalSingerPath;
+            Preferences.Default.InstallToAdditionalSingersPath = InstallToAdditionalSingersPath;
             Preferences.Save();
         }
     }

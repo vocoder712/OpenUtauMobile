@@ -3,6 +3,8 @@ using CommunityToolkit.Maui.Core;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Resources.Strings;
 using Serilog;
+using CommunityToolkit.Maui.Storage;
+using ReactiveUI;
 
 namespace OpenUtauMobile.Views;
 
@@ -26,6 +28,17 @@ public partial class SettingsPage : ContentPage
 	{
 		InitializeComponent();
         Viewmodel = (SettingsViewModel)BindingContext;
+        Viewmodel.WhenAnyValue(vm => vm.EnableAdditionalSingerPath).Subscribe(enable =>
+        {
+            if (!enable) // 关闭额外歌手路径
+            {
+                Viewmodel.AdditionalSingerPath = string.Empty;
+            }
+            else if (string.IsNullOrEmpty(Viewmodel.AdditionalSingerPath))// 启用额外歌手路径却未设置路径，弹出选择文件夹对话框
+            {
+                SetAdditionalSingerPath();
+            }
+        });
     }
 
     protected override bool OnBackButtonPressed()
@@ -112,5 +125,27 @@ public partial class SettingsPage : ContentPage
     {
         Save();
         Navigation.PopModalAsync();
+    }
+
+    private void ButtonSelectAdditionalSingerPath_Clicked(object sender, EventArgs e)
+    {
+        SetAdditionalSingerPath();
+    }
+
+
+    /// <summary>
+    /// 选择额外歌手路径
+    /// </summary>
+    private async void SetAdditionalSingerPath()
+    {
+        FolderPickerResult result = await FolderPicker.Default.PickAsync();
+        if (result.IsSuccessful)
+        {
+            string folderPath = result.Folder.Path;
+            if (!Viewmodel.AdditionalSingerPath.Contains(folderPath))
+            {
+                Viewmodel.AdditionalSingerPath = folderPath;
+            }
+        }
     }
 }

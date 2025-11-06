@@ -79,6 +79,24 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Additional Singer Search Paths 的本地化字符串。
+        /// </summary>
+        internal static string AdditionalSingerPath {
+            get {
+                return ResourceManager.GetString("AdditionalSingerPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Add extra folders for Singer Manager to search singers, so you can extra singer install packages into anywhere you want in External Storage Path. 的本地化字符串。
+        /// </summary>
+        internal static string AdditionalSingerPathTooltip {
+            get {
+                return ResourceManager.GetString("AdditionalSingerPathTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 AI is processing... 的本地化字符串。
         /// </summary>
         internal static string AIProcessing {
@@ -340,7 +358,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Configure DiffSinger render steps for acoustic model. Lower value meas faster inference while higher valuer means higher quality. 的本地化字符串。
+        ///   查找类似 Configure DiffSinger render steps for acoustic model. Lower value means faster inference while higher value means higher quality. 的本地化字符串。
         /// </summary>
         internal static string DiffSingerStepsTooltip {
             get {
@@ -837,6 +855,24 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string InstallingText {
             get {
                 return ResourceManager.GetString("InstallingText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Install singers to additional singers path 的本地化字符串。
+        /// </summary>
+        internal static string InstallToAdditionalSingersPath {
+            get {
+                return ResourceManager.GetString("InstallToAdditionalSingersPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 If enabled, singers will be installed into additional singer path that you set above by default. 的本地化字符串。
+        /// </summary>
+        internal static string InstallToAdditionalSingersPathTooltip {
+            get {
+                return ResourceManager.GetString("InstallToAdditionalSingersPathTooltip", resourceCulture);
             }
         }
         
