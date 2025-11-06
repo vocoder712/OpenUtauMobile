@@ -150,7 +150,7 @@ namespace OpenUtauMobile.Views.DrawableObjects
                 IsAntialias = true
             };
             SKTypeface typeface = OpenUtauMobile.Utils.FontManager.OpenSans;
-            SKFont lyricsFont = new(typeface, 15 * (float)ViewModel.Density);
+            using SKFont lyricsFont = new(typeface, 15 * (float)ViewModel.Density);
             // 绘制歌词文本
             foreach (UNote note in Part.notes)
             {
