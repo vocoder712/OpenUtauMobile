@@ -52,12 +52,12 @@ namespace OpenUtauMobile.Views.DrawableObjects
             Canvas.ResetMatrix();
             y = (float)(topKeyNum + 0.5f) * HeightPerPianoKey * originalMatrix.ScaleY + originalMatrix.TransY;
             HeightPerPianoKey = HeightPerPianoKey * originalMatrix.ScaleY;
-            PianoKey? drawingKey = null;
+            PianoKey? drawingKey;
             SKPaint textPaint = new();
-            SKFont font = new()
+            using SKFont font = new()
             {
                 Size = (float)(HeightPerPianoKey * 0.5),
-                Typeface = ObjectProvider.OpenSansTypeface
+                Typeface = ObjectProvider.NotoSansCJKscRegularTypeface
             };
             for (int i = topKeyNum; i < bottomKeyNum; i++)
             {

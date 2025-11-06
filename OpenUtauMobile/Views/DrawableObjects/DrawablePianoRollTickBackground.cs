@@ -62,7 +62,7 @@ namespace OpenUtauMobile.Views.DrawableObjects
             {
                 Color = ThemeColorsManager.Current.BarNumber
             };
-            SKTypeface typeface = ObjectProvider.OpenSansTypeface;
+            SKTypeface typeface = ObjectProvider.NotoSansCJKscRegularTypeface;
             SKFont font = new(typeface, size: 30f);
 
             #endregion

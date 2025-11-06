@@ -48,41 +48,41 @@ namespace OpenUtauMobile.Views.DrawableObjects
             int barTick = project.timeAxis.BarBeatToTickPos(bar, 0);
             #region 画笔
             // 小节线画笔
-            SKPaint barPaint = new()
+            using SKPaint barPaint = new()
             {
                 Color = ThemeColorsManager.Current.TimeLine,
                 StrokeWidth = 2f // 设置小节线粗细
             };
             // 小节文本画笔
-            SKPaint barTextPaint = new()
+            using SKPaint barTextPaint = new()
             {
                 Color = ThemeColorsManager.Current.BarNumber
             };
-            SKTypeface typeface = ObjectProvider.OpenSansTypeface;
-            SKFont barNumberFont = new(typeface, size:30f);
+            SKTypeface typeface = ObjectProvider.NotoSansCJKscRegularTypeface;
+            using SKFont barNumberFont = new(typeface, size:30f);
             // 节拍线画笔
-            SKPaint linePaint = new()
+            using SKPaint linePaint = new()
             {
                 Color = ThemeColorsManager.Current.TimeLine.WithAlpha(128),
                 StrokeWidth = 2f // 设置节拍线粗细
             };
             // 曲速与节拍标记线画笔
-            SKPaint signaturePaint = new()
+            using SKPaint signaturePaint = new()
             {
                 StrokeWidth = 5f,
                 Color = SKColors.Red // 曲速标记为红色
             };
-            SKPaint tempoTextPaint = new()
+            using SKPaint tempoTextPaint = new()
             {
                 Color = ThemeColorsManager.Current.TempoSignatureText
             };
-            SKFont tempoFont = new(typeface, size:20f);
-            SKPaint timeSigTextPaint = new()
+            using SKFont tempoFont = new(typeface, size:20f);
+            using SKPaint timeSigTextPaint = new()
             {
                 Color = ThemeColorsManager.Current.TimeSignatureText
             };
-            SKFont timeSigFont = new(typeface, size:20f);
-            SKPaint timeLineBackgroudPaint = new()
+            using SKFont timeSigFont = new(typeface, size:20f);
+            using SKPaint timeLineBackgroudPaint = new()
             {
                 Color = ThemeColorsManager.Current.TimeLineBackground.WithAlpha(50),
                 Style = SKPaintStyle.Fill
@@ -163,11 +163,6 @@ namespace OpenUtauMobile.Views.DrawableObjects
                     h / 2, 
                     tempoFont, 
                     tempoTextPaint);
-                //var textLayout = TextLayoutCache.Get(tempo.bpm.ToString("#0.00"), ThemeManager.BarNumberBrush, 10);
-                //using (var state = context.PushTransform(Matrix.CreateTranslation(x + 3, 0)))
-                //{
-                //    textLayout.Draw(context, new Point());
-                //}
             }
 
             int timeSigTick;

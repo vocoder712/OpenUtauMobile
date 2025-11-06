@@ -149,8 +149,8 @@ namespace OpenUtauMobile.Views.DrawableObjects
                 Color = ThemeColorsManager.Current.LyricsText,
                 IsAntialias = true
             };
-            SKTypeface typeface = ObjectProvider.OpenSansTypeface;
-            SKFont lyricsFont = new(typeface, 15 * (float)ViewModel.Density);
+            SKTypeface typeface = ObjectProvider.NotoSansCJKscRegularTypeface;
+            using SKFont lyricsFont = new(typeface, 15 * (float)ViewModel.Density);
             // 绘制歌词文本
             foreach (UNote note in Part.notes)
             {
