@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.LogExportPage"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             Title="LogExportPage">
+    <ContentPage.BindingContext>
+        <vm:LogExportViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="60,*,Auto,Auto,Auto">
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
+            <Label Text="{Static res:AppResources.ExportLog}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+
+        <!-- 日志文件列表 -->
+        <ScrollView Grid.Row="1" Margin="15">
+            <StackLayout>
+                <!-- 操作按钮区域 -->
+                <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="0,0,0,10">
+                    <Button Grid.Column="0" 
+                    Text="全选" 
+                    FontSize="12"
+                    Padding="8,4"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    Clicked="OnSelectAllClicked"/>
+
+                    <Button Grid.Column="1" 
+                    Text="全不选" 
+                    FontSize="12"
+                    Padding="8,4"
+                    Margin="5,0,0,0"
+                    BackgroundColor="{StaticResource Secondary}"
+                    TextColor="White"
+                    Clicked="OnDeselectAllClicked"/>
+
+                    <Button Grid.Column="3" 
+                    Text="刷新" 
+                    FontSize="12"
+                    Padding="8,4"
+                    BackgroundColor="{StaticResource Tertiary}"
+                    TextColor="White"
+                    Clicked="OnRefreshClicked"/>
+                </Grid>
+
+                <!-- 状态信息 -->
+                <Label Text="{Binding StatusMessage}" 
+               FontSize="12"
+               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+               Margin="0,0,0,10"
+               IsVisible="{Binding StatusMessage, Converter={StaticResource StringToBoolConverter}}"/>
+
+                <!-- 文件列表 -->
+                <CollectionView ItemsSource="{Binding LogFiles}"
+                        SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:LogFileInfo">
+                            <Border Margin="0,2"
+                            Padding="10"
+                            BackgroundColor="{Binding IsSelected, Converter={StaticResource BoolToColorConverter}}"
+                            Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                            StrokeThickness="1">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFileItemTapped" 
+                                                  CommandParameter="{Binding}"/>
+                                </Border.GestureRecognizers>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                    <!-- 选择状态指示器 -->
+                                    <Ellipse Grid.Column="0"
+                                     Width="16" Height="16"
+                                     Fill="{Binding IsSelected, Converter={StaticResource BoolToColorConverter}}"
+                                     Stroke="{StaticResource Primary}"
+                                     StrokeThickness="2"
+                                     VerticalOptions="Center"
+                                     Margin="0,0,10,0"/>
+
+                                    <!-- 文件信息 -->
+                                    <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding FileName}" 
+                                       FontSize="14"
+                                       FontAttributes="Bold"/>
+                                        <Label Text="{Binding LastWriteTimeFormatted}" 
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                                    </StackLayout>
+
+                                    <!-- 文件大小 -->
+                                    <Label Grid.Column="2" 
+                                   Text="{Binding SizeFormatted}" 
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End"
+                                   Margin="10,0"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </ScrollView>
+
+        <!-- 导出目录选择 -->
+        <Grid Grid.Row="2" Margin="15,0" ColumnDefinitions="Auto,*,Auto">
+            <Label Grid.Column="0" 
+           Text="导出到:" 
+           VerticalOptions="Center"
+           FontSize="14"
+           Margin="0,0,10,0"/>
+
+            <Entry Grid.Column="1" 
+           Text="{Binding ExportDirectory}"
+           Placeholder="选择导出目录"
+           FontSize="12"/>
+
+            <Button Grid.Column="2" 
+            Text="浏览" 
+            FontSize="12"
+            Padding="8,4"
+            Margin="5,0,0,0"
+            BackgroundColor="{StaticResource Primary}"
+            TextColor="White"
+            Clicked="OnBrowseDirectoryClicked"/>
+        </Grid>
+
+        <!-- 选中文件统计 -->
+        <Label Grid.Row="3" 
+       Text="{Binding SelectedCount, StringFormat='已选择 {0} 个文件'}"
+       FontSize="12"
+       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+       HorizontalOptions="Center"
+       Margin="15,10"/>
+
+        <!-- 底部按钮 -->
+        <Grid Grid.Row="4" 
+      ColumnDefinitions="*,*" 
+      Margin="15"
+      ColumnSpacing="10">
+
+            <Button Grid.Column="1" 
+            Text="{Binding IsExporting, Converter={StaticResource BoolToObjectConverter}, ConverterParameter='导出中...|开始导出'}"
+            BackgroundColor="{StaticResource Success}"
+            TextColor="White"
+            IsEnabled="{Binding IsExporting, Converter={StaticResource InvertedBoolConverter}}"
+            Clicked="OnExportClicked"/>
+        </Grid>
+    </Grid>
+</ContentPage>
