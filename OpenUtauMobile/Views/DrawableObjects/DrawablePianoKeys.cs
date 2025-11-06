@@ -56,7 +56,8 @@ namespace OpenUtauMobile.Views.DrawableObjects
             SKPaint textPaint = new();
             SKFont font = new()
             {
-                Size = (float)(HeightPerPianoKey * 0.5)
+                Size = (float)(HeightPerPianoKey * 0.5),
+                Typeface = OpenUtauMobile.Utils.FontManager.OpenSans
             };
             for (int i = topKeyNum; i < bottomKeyNum; i++)
             {

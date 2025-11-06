@@ -5,6 +5,7 @@ using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Views.Utils;
 using SkiaSharp;
 using System;
+using System.Diagnostics;
 namespace OpenUtauMobile.Views.DrawableObjects
 {
     public class DrawableNotes
@@ -149,7 +150,8 @@ namespace OpenUtauMobile.Views.DrawableObjects
                 Color = ThemeColorsManager.Current.LyricsText,
                 IsAntialias = true
             };
-            SKFont lyricsFont = new(SKFontManager.Default.MatchCharacter('中'), 15 * (float)ViewModel.Density);
+            SKTypeface typeface = OpenUtauMobile.Utils.FontManager.OpenSans;
+            SKFont lyricsFont = new(typeface, 15 * (float)ViewModel.Density);
             // 绘制歌词文本
             foreach (UNote note in Part.notes)
             {

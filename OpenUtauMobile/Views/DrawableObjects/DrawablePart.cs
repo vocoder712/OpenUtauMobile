@@ -1,23 +1,10 @@
-﻿using Microsoft.Maui.ApplicationModel;
-using NAudio.CoreAudioApi;
-using NWaves.Signals;
+﻿using NWaves.Signals;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.ViewModels;
-using OpenUtauMobile.Views.Utils;
 using OpenUtauMobile.Resources.Strings;
-using Serilog;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Color = Microsoft.Maui.Graphics.Color;
 
 namespace OpenUtauMobile.Views.DrawableObjects
@@ -30,8 +17,6 @@ namespace OpenUtauMobile.Views.DrawableObjects
         public SKCanvas Canvas { get; set; } = null!;
         public EditViewModel ViewModel { get; set; } = null!;
         public float HeightPerTrack => (float)ViewModel.HeightPerTrack * (float)ViewModel.Density;
-        //public Transformer ViewModel.TrackTransformer {  get; set; } = null!;
-        //public double ResolutionX { get; set; } = 480d;
         public bool IsSelected { get; set; } = false; // 是否被选中
         public bool IsResizable { get; set; } = true; // 是否可调整长度
         private float RightHandleX { get; set; } // 逻辑坐标
@@ -51,11 +36,9 @@ namespace OpenUtauMobile.Views.DrawableObjects
         {
             Canvas = canvas;
             Part = part;
-            //ResolutionX = resolutionX;
             IsSelected = isSelected;
             IsResizable = isResizable;
             ViewModel = viewModel;
-            //ViewModel.TrackTransformer = transformer;
             // 计算右侧手柄位置
             if (isResizable)
             {
@@ -181,7 +164,7 @@ namespace OpenUtauMobile.Views.DrawableObjects
                 // 使用合适的字体
                 float fontSize = 30f;
                 SKFontManager fontManager = SKFontManager.Default;
-                SKTypeface typeface = fontManager.MatchCharacter('中');
+                SKTypeface typeface = OpenUtauMobile.Utils.FontManager.OpenSans;
                 SKFont font = new(typeface, fontSize);
                 // 绘制信息文本
                 Canvas.DrawText(info, x, y, SKTextAlign.Left, font, paint);
@@ -242,7 +225,7 @@ namespace OpenUtauMobile.Views.DrawableObjects
             using (SKPaint paint = new())
             {
                 paint.Color = ThemeColorsManager.Current.PartLabel;
-                SKFont font = new(SKFontManager.Default.MatchCharacter('中'), 30f);
+                SKFont font = new(OpenUtauMobile.Utils.FontManager.OpenSans, 30f);
                 // 绘制标题
                 Canvas.DrawText(Part.DisplayName, x, y, SKTextAlign.Left, font, paint);
             }

@@ -1609,7 +1609,8 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         SKPaint textPaint = new();
         SKFont font = new()
         {
-            Size = (float)(heightPerPianoKey * 0.5 * _viewModel.PianoRollTransformer.ZoomY)
+            Size = (float)(heightPerPianoKey * 0.5 * _viewModel.PianoRollTransformer.ZoomY),
+            Typeface = OpenUtauMobile.Utils.FontManager.OpenSans
         };
         for (int i = topKeyNum; i < bottomKeyNum; i++)
         {
@@ -2271,13 +2272,12 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             StrokeWidth = 3,
             Color = ThemeColorsManager.Current.PhonemePosLine
         };
-        SKFont textFont = new(SKTypeface.FromFamilyName("OpenSansRegular"), 12 * (float)_viewModel.Density);
+        SKFont textFont = new(OpenUtauMobile.Utils.FontManager.OpenSans, 12 * (float)_viewModel.Density);
         // 遍历音素
         foreach (var phoneme in part.phonemes)
         {
             double leftBound = project.timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter);
             double rightBound = phoneme.End + part.position;
-            //Debug.WriteLine($"音素 {phoneme.phoneme} 左边界: {leftBound}, 右边界: {rightBound}, 位置: {phoneme.position}, 左tick:{leftTick}");
             if (leftBound > rightTick || rightBound < leftTick || phoneme.Parent.OverlapError)
             {
                 continue;
