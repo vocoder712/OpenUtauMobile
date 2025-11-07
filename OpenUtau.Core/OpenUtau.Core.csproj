@@ -19,7 +19,6 @@
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.16.0" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.22.1" />
 	<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.30" />
-	<PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="NAudio.Core" Version="2.2.1" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
