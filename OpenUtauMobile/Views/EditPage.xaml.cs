@@ -1388,7 +1388,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         float minX = Math.Min(0f, (float)PianoRollCanvas.Width * (float)_viewModel.Density - lastTick * _viewModel.PianoRollTransformer.ZoomX);
         float maxX = (float)(ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density);
         float minY = (float)Math.Min(
-            (_viewModel.MainLayoutHeight - _viewModel.DivPosY - 60 - _viewModel.HeightPerPianoKey * ViewConstants.TotalPianoKeys * _viewModel.PianoRollTransformer.ZoomY) * _viewModel.Density,
+            (_viewModel.MainLayoutHeight - _viewModel.DivPosY - 50 - _viewModel.HeightPerPianoKey * ViewConstants.TotalPianoKeys * _viewModel.PianoRollTransformer.ZoomY) * _viewModel.Density,
             0f);
         float maxY = 0f;
         _viewModel.PianoRollTransformer.SetPanLimit(minX, maxX, minY, maxY);
