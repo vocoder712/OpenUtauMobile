@@ -19,6 +19,7 @@ namespace OpenUtauMobile
         public static List<PianoKey> PianoKeys = [];
         public const int TimeLineHeight = 20; // 时间线高度，记得乘以Density
         public const int PianoRollPlaybackLinePos = 200; // 播放线相对钢琴卷帘画布左侧的位置，记得乘以Density
+        public const int DivHeight = 50; // 走带与主编辑区分隔的高度，Canvas里面记得乘以Density
         public static List<LanguageOption> LanguageOptions = [
             new LanguageOption("English(US)", "en"),
             new LanguageOption("简体中文", "zh"),

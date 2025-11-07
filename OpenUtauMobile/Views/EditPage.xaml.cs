@@ -1,12 +1,9 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Views;
-using Microsoft.Maui.Controls.PlatformConfiguration;
-using NAudio.CoreAudioApi;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using OpenUtau.Utils.Messages;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.ViewModels;
@@ -259,22 +256,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _viewModel.PianoRollTransformer.SetPanY(-(float)(48 * _viewModel.HeightPerPianoKey * _viewModel.Density * _viewModel.PianoRollTransformer.ZoomY));
         Debug.WriteLine($"当前走带画布变换器: ZoomX={_viewModel.TrackTransformer.ZoomX}, ZoomY={_viewModel.TrackTransformer.ZoomY}, PanX={_viewModel.TrackTransformer.PanX}, PanY={_viewModel.TrackTransformer.PanY}");
     }
-
-    //protected override void OnAppearing()
-    //{
-    //    base.OnAppearing();
-    //    // 初始設定走带画布变幻器
-    //    _viewModel.TrackTransformer.SetZoomX(0.1f);
-    //    _viewModel.TrackTransformer.SetZoomY(1f);
-    //    _viewModel.TrackTransformer.SetPanX(0f);
-    //    _viewModel.TrackTransformer.SetPanY(0f);
-    //    // 初始设定钢琴卷帘画布变幻器
-    //    _viewModel.PianoRollTransformer.SetZoomX(0.1f);
-    //    _viewModel.PianoRollTransformer.SetZoomY(0.5f);
-    //    _viewModel.PianoRollTransformer.SetPanX(0f);
-    //    _viewModel.PianoRollTransformer.SetPanY(-(float)(36 * _viewModel.HeightPerPianoKey * _viewModel.Density * _viewModel.PianoRollTransformer.ZoomY));
-    //    Debug.WriteLine($"当前走带画布变换器: ZoomX={_viewModel.TrackTransformer.ZoomX}, ZoomY={_viewModel.TrackTransformer.ZoomY}, PanX={_viewModel.TrackTransformer.PanX}, PanY={_viewModel.TrackTransformer.PanY}");
-    //}
 
     private void PlaybackAutoScroll()
     {
@@ -1406,7 +1387,9 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         lastTick += 9600;
         float minX = Math.Min(0f, (float)PianoRollCanvas.Width * (float)_viewModel.Density - lastTick * _viewModel.PianoRollTransformer.ZoomX);
         float maxX = (float)(ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density);
-        float minY = (float)Math.Min((_viewModel.MainLayoutHeight - _viewModel.DivPosY - _viewModel.HeightPerPianoKey * ViewConstants.TotalPianoKeys) * _viewModel.Density, 0f);
+        float minY = (float)Math.Min(
+            (_viewModel.MainLayoutHeight - _viewModel.DivPosY - ViewConstants.DivHeight - _viewModel.HeightPerPianoKey * ViewConstants.TotalPianoKeys * _viewModel.PianoRollTransformer.ZoomY) * _viewModel.Density,
+            0f);
         float maxY = 0f;
         _viewModel.PianoRollTransformer.SetPanLimit(minX, maxX, minY, maxY);
         Debug.WriteLine($"PianoRoll PanLimit updated: minX={minX}, lastTick={lastTick}");
@@ -2037,17 +2020,13 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this); // 防止终结器调用
         Debug.WriteLine("\n\n==============EditPage Dispose===============\n\n");
         PlaybackTimer.Stop();
         DocManager.Inst.RemoveSubscriber(this);
         PlaybackManager.Inst.StopPlayback();
         DeviceDisplay.Current.KeepScreenOn = false; // 解除屏幕常亮
         _disposables.Dispose();
-    }
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-        Dispose();
     }
 
     private void ButtonPianoRollSnapToGrid_Clicked(object sender, EventArgs e)
@@ -2186,13 +2165,14 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     {
         if (DocManager.Inst.ChangesSaved)
         { // 如果已经保存，直接关闭
-            if (OpenUtau.Core.Util.Preferences.Default.ClearCacheOnQuit)
+            if (Preferences.Default.ClearCacheOnQuit)
             {
                 Log.Information("Clearing cache...");
                 PathManager.Inst.ClearCache();
                 Log.Information("Cache cleared.");
             }
             await Navigation.PopModalAsync();
+            Dispose();
             return;
         }
         if (!await AskIfSaveAndContinue())
