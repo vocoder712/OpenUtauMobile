@@ -89,6 +89,24 @@ namespace OpenUtauMobile.Views.Utils
                 (actual.Y - PanY) / ZoomY
             );
         }
+        /// <summary>
+        /// 实际X坐标转逻辑X坐标
+        /// </summary>
+        /// <param name="actualX"></param>
+        /// <returns></returns>
+        public float ActualToLogicalX(float actualX)
+        {
+            return (actualX - PanX) / ZoomX;
+        }
+        /// <summary>
+        /// 实际Y坐标转逻辑Y坐标
+        /// </summary>
+        /// <param name="actualY"></param>
+        /// <returns></returns>
+        public float ActualToLogicalY(float actualY)
+        {
+            return (actualY - PanY) / ZoomY;
+        }
 
         /// <summary>
         /// 逻辑坐标转实际坐标
@@ -99,6 +117,24 @@ namespace OpenUtauMobile.Views.Utils
                 logical.X * ZoomX + PanX,
                 logical.Y * ZoomY + PanY
             );
+        }
+        /// <summary>
+        /// 实际X坐标转逻辑X坐标
+        /// </summary>
+        /// <param name="logicalX"></param>
+        /// <returns></returns>
+        public float LogicalToActualX(float logicalX)
+        {
+            return logicalX * ZoomX + PanX;
+        }
+        /// <summary>
+        /// 实际Y坐标转逻辑Y坐标
+        /// </summary>
+        /// <param name="logicalY"></param>
+        /// <returns></returns>
+        public float LogicalToActualY(float logicalY)
+        {
+            return logicalY * ZoomY + PanY;
         }
         #endregion
         #region 缩放限制

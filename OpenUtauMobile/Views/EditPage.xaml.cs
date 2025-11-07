@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Reactive.Disposables;
 using Preferences = OpenUtau.Core.Util.Preferences;
 using System.Reactive.Linq;
+using DynamicData;
 
 namespace OpenUtauMobile.Views;
 
@@ -88,7 +89,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             Dispatcher.Dispatch(async () =>
             {
                 // 添加加载项目work
-                _viewModel.SetWork(WorkType.LoadingProject, path, detail:path);
+                _viewModel.SetWork(WorkType.LoadingProject, path, detail: path);
                 await _viewModel.Init();
                 // 移除加载项目work
                 _viewModel.RemoveWork(path);
@@ -213,6 +214,17 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 PianoRollPitchCanvas.InvalidateSurface();
             })
             .DisposeWith(_disposables);
+        // 订阅表情编辑模式变化
+        _viewModel.WhenAnyValue(x => x.CurrentExpressionEditMode)
+            .Subscribe(mode =>
+            {
+                SKColorMauiColorConverter converter = new();
+                Color? activeColor = converter.Convert(ThemeColorsManager.Current.ActiveNoteEditModeButton, typeof(Color), null, null!) as Color;
+                ButtonSwitchExpressionHandMode.BackgroundColor = mode == EditViewModel.ExpressionEditMode.Hand ? activeColor : Colors.Transparent;
+                ButtonSwitchExpressionEditMode.BackgroundColor = mode == EditViewModel.ExpressionEditMode.Edit ? activeColor : Colors.Transparent;
+                ButtonSwitchExpressionEraserMode.BackgroundColor = mode == EditViewModel.ExpressionEditMode.Eraser ? activeColor : Colors.Transparent;
+            })
+            .DisposeWith(_disposables);
         // 回放定时器，定时通知回放管理器更新播放位置
         PlaybackTimer = Dispatcher.CreateTimer();
         PlaybackTimer.Interval = TimeSpan.FromSeconds(1 / (double)Preferences.Default.PlaybackRefreshRate);
@@ -279,37 +291,37 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
     }
 
-//    private void EnableAndroidBlur()
-//    {
-//#if ANDROID31_0_OR_GREATER
-//        try
-//        {
-//            object? BorderExtendPlatformView = BorderExtend.Handler?.PlatformView;
-//            Debug.WriteLine($"扩展区模糊层原生视图类型: {BorderExtendPlatformView?.GetType().FullName}");
-//            if (BorderExtendPlatformView is Android.Views.View androidView)
-//            {
-//                if (androidView == null)
-//                {
-//                    Log.Warning("启用模糊效果失败，无法获取扩展区原生视图");
-//                    return;
-//                }
-//                float radius = 20f;
-//                var blurEffect = Android.Graphics.RenderEffect.CreateBlurEffect(radius, radius, Android.Graphics.Shader.TileMode.Decal);
-//                androidView.SetRenderEffect(blurEffect);
-//                Log.Information("启用模糊效果成功");
-//            }
-//            else
-//            {
-//                Log.Warning("不是Android原生视图，无法启用模糊效果");
-//            }
-//        }
-//        catch (Exception ex)
-//        {
-//            Log.Error(ex, "启用模糊效果失败");
-//            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("启用模糊效果失败", ex));
-//        }
-//#endif
-//    }
+    //    private void EnableAndroidBlur()
+    //    {
+    //#if ANDROID31_0_OR_GREATER
+    //        try
+    //        {
+    //            object? BorderExtendPlatformView = BorderExtend.Handler?.PlatformView;
+    //            Debug.WriteLine($"扩展区模糊层原生视图类型: {BorderExtendPlatformView?.GetType().FullName}");
+    //            if (BorderExtendPlatformView is Android.Views.View androidView)
+    //            {
+    //                if (androidView == null)
+    //                {
+    //                    Log.Warning("启用模糊效果失败，无法获取扩展区原生视图");
+    //                    return;
+    //                }
+    //                float radius = 20f;
+    //                var blurEffect = Android.Graphics.RenderEffect.CreateBlurEffect(radius, radius, Android.Graphics.Shader.TileMode.Decal);
+    //                androidView.SetRenderEffect(blurEffect);
+    //                Log.Information("启用模糊效果成功");
+    //            }
+    //            else
+    //            {
+    //                Log.Warning("不是Android原生视图，无法启用模糊效果");
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Log.Error(ex, "启用模糊效果失败");
+    //            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("启用模糊效果失败", ex));
+    //        }
+    //#endif
+    //    }
 
     private void InitMagnifier()
     {
@@ -995,27 +1007,65 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         // 订阅平移开始事件
         _expressionGestureProcessor.PanStart += (sender, e) =>
         {
-            _viewModel.PianoRollTransformer.StartPan(e.StartPosition);
+            Debug.WriteLine($"表情画布平移开始事件: {e.StartPosition}");
+            switch (_viewModel.CurrentExpressionEditMode)
+            {
+                case EditViewModel.ExpressionEditMode.Hand:
+                    _viewModel.PianoRollTransformer.StartPan(e.StartPosition);
+                    break;
+                case EditViewModel.ExpressionEditMode.Edit:
+                    _viewModel.StartDrawExpression(e.StartPosition, (float)ExpressionCanvas.Height);
+                    break;
+                case EditViewModel.ExpressionEditMode.Eraser:
+                    break;
+                default:
+                    break;
+            }
         };
         // 订阅平移更新事件
         _expressionGestureProcessor.PanUpdate += (sender, e) =>
         {
-            _viewModel.PianoRollTransformer.UpdatePan(e.Position);
+            Debug.WriteLine($"表情画布平移更新事件: {e.Position}");
+            switch (_viewModel.CurrentExpressionEditMode)
+            {
+                case EditViewModel.ExpressionEditMode.Hand:
+                    _viewModel.PianoRollTransformer.UpdatePan(e.Position);
+                    break;
+                case EditViewModel.ExpressionEditMode.Edit:
+                    _viewModel.UpdateDrawExpression(e.Position, (float)ExpressionCanvas.Height);
+                    break;
+                case EditViewModel.ExpressionEditMode.Eraser:
+                    break;
+                default:
+                    break;
+            }
         };
         // 订阅平移结束事件
         _expressionGestureProcessor.PanEnd += (sender, e) =>
         {
-            _viewModel.PianoRollTransformer.EndPan();
-            if (!_viewModel.Playing)
+            Debug.WriteLine("表情画布平移结束事件");
+            switch (_viewModel.CurrentExpressionEditMode)
             {
-                return;
+                case EditViewModel.ExpressionEditMode.Hand:
+                    _viewModel.PianoRollTransformer.EndPan();
+                    if (_viewModel.Playing)
+                    {
+                        return;
+                    }
+                    int newPlayPosTick = (int)((ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density - _viewModel.PianoRollTransformer.PanX) / _viewModel.PianoRollTransformer.ZoomX);
+                    if (newPlayPosTick != _viewModel.PlayPosTick)
+                    {
+                        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(newPlayPosTick));
+                    }
+                    break;
+                case EditViewModel.ExpressionEditMode.Edit:
+                    _viewModel.EndDrawExpression();
+                    break;
+                case EditViewModel.ExpressionEditMode.Eraser:
+                    break;
+                default:
+                    break;
             }
-            int newPlayPosTick = (int)((ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density - _viewModel.PianoRollTransformer.PanX) / _viewModel.PianoRollTransformer.ZoomX);
-            if (newPlayPosTick != _viewModel.PlayPosTick)
-            {
-                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(newPlayPosTick));
-            }
-
         };
         // 订阅缩放开始事件
         _expressionGestureProcessor.ZoomStart += (sender, e) =>
@@ -1956,7 +2006,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void PianoRollPitchCanvas_PaintSurface(object sender, SkiaSharp.Views.Maui.SKPaintSurfaceEventArgs e)
-    {        
+    {
         SKCanvas canvas = e.Surface.Canvas;
         canvas.Clear();
         if (_viewModel.EditingPart == null || _viewModel.EditingPart is not UVoicePart)
@@ -2382,6 +2432,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         {
             UCurve? curve = _viewModel.EditingPart.curves.FirstOrDefault(c => c.descriptor == descriptor); // 选出对应表情的curve
             float defaultHeight = (float)Math.Round(canvas.DeviceClipBounds.Height - canvas.DeviceClipBounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
+            float descriptorRange = descriptor.max - descriptor.min;
             // 如果没有绘制过，就画默认值
             if (curve == null)
             {
@@ -2407,13 +2458,13 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 int tick1 = index < 0 ? lTick : curve.xs[index] + _viewModel.EditingPart.position;
                 //tick1 += _viewModel.EditingPart.position;
                 float value1 = index < 0 ? descriptor.defaultValue : curve.ys[index];
-                float x1 = _viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(tick1, 0)).X;
-                float y1 = defaultHeight - canvas.DeviceClipBounds.Height * (value1 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                float x1 = _viewModel.PianoRollTransformer.LogicalToActualX(_viewModel.PitchAndTickToPoint(tick1, 0).X);
+                float y1 = (descriptor.max - value1) * canvas.DeviceClipBounds.Height / descriptorRange;
                 int tick2 = index == curve.xs.Count - 1 ? rTick : curve.xs[index + 1] + _viewModel.EditingPart.position;
                 //tick2 += _viewModel.EditingPart.position;
                 float value2 = index == curve.xs.Count - 1 ? descriptor.defaultValue : curve.ys[index + 1];
-                float x2 = _viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(tick2, 0)).X;
-                float y2 = defaultHeight - canvas.DeviceClipBounds.Height * (value2 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                float x2 = _viewModel.PianoRollTransformer.LogicalToActualX(_viewModel.PitchAndTickToPoint(tick2, 0).X);
+                float y2 = (descriptor.max - value2) * canvas.DeviceClipBounds.Height / descriptorRange;
                 SKPaint paint = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? defaultPaint : editedPaint; // 绘制值用粗线，默认值用细线
                 canvas.DrawLine(new SKPoint(x1, y1), new SKPoint(x2, y2), paint);
                 //using (var state = canvas.PushTransform(Matrix.CreateTranslation(x1, y1))) {
@@ -2684,6 +2735,56 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     DocManager.Inst.EndUndoGroup();
                 }
             }
+        }
+    }
+
+    private async void ButtonPrimaryExp_Clicked(object sender, EventArgs e)
+    {
+        string[] abbrs = [.. DocManager.Inst.Project.expressions.Keys];
+        string result = await DisplayActionSheet(AppResources.SelectExpression, AppResources.CancelText, null, abbrs);
+        if (!string.IsNullOrEmpty(result) &&
+            result != AppResources.CancelText &&
+            DocManager.Inst.Project.expressions.TryGetValue(result, out UExpressionDescriptor? newExpressionDescriptor) &&
+            newExpressionDescriptor != null)
+        {
+            DocManager.Inst.StartUndoGroup();
+            _viewModel.PrimaryExpressionDescriptor = newExpressionDescriptor;
+            _viewModel.UpdateExpressions();
+            ExpressionCanvas.InvalidateSurface();
+            DocManager.Inst.EndUndoGroup();
+        }
+    }
+
+    private async void ButtonSecondaryExp_Clicked(object sender, EventArgs e)
+    {
+        string[] abbrs = [.. DocManager.Inst.Project.expressions.Keys];
+        string result = await DisplayActionSheet(AppResources.SelectExpression, AppResources.CancelText, null, abbrs);
+        if (!string.IsNullOrEmpty(result) &&
+            result != AppResources.CancelText &&
+            DocManager.Inst.Project.expressions.TryGetValue(result, out UExpressionDescriptor? newExpressionDescriptor) &&
+            newExpressionDescriptor != null)
+        {
+            DocManager.Inst.StartUndoGroup();
+            _viewModel.SecondaryExpressionDescriptor = newExpressionDescriptor;
+            _viewModel.UpdateExpressions();
+            ExpressionCanvas.InvalidateSurface();
+            DocManager.Inst.EndUndoGroup();
+        }
+    }
+
+    private void ButtonSwitchExpressionEditMode_Clicked(object sender, EventArgs e)
+    {
+        if (sender == ButtonSwitchExpressionHandMode)
+        {
+            _viewModel.CurrentExpressionEditMode = EditViewModel.ExpressionEditMode.Hand;
+        }
+        else if (sender == ButtonSwitchExpressionEditMode)
+        {
+            _viewModel.CurrentExpressionEditMode = EditViewModel.ExpressionEditMode.Edit;
+        }
+        else if (sender == ButtonSwitchExpressionEraserMode)
+        {
+            _viewModel.CurrentExpressionEditMode = EditViewModel.ExpressionEditMode.Eraser;
         }
     }
 }

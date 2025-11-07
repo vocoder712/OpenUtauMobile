@@ -88,7 +88,7 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 Add extra folders for Singer Manager to search singers, so you can extra singer install packages into anywhere you want in External Storage Path. 的本地化字符串。
+        ///   查找类似 Add extra folders for Singer Manager to search singers, so you can extract singer install packages into anywhere you want in External Storage Path. 的本地化字符串。
         /// </summary>
         internal static string AdditionalSingerPathTooltip {
             get {
@@ -1719,6 +1719,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string SaveText {
             get {
                 return ResourceManager.GetString("SaveText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select an Expression 的本地化字符串。
+        /// </summary>
+        internal static string SelectExpression {
+            get {
+                return ResourceManager.GetString("SelectExpression", resourceCulture);
             }
         }
         

@@ -834,4 +834,7 @@ Exception Details:
   <data name="InstallToAdditionalSingersPathTooltip" xml:space="preserve">
     <value>If enabled, singers will be installed into additional singer path that you set above by default.</value>
   </data>
+  <data name="SelectExpression" xml:space="preserve">
+    <value>Select an Expression</value>
+  </data>
 </root>

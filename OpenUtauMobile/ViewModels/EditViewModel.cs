@@ -1,11 +1,12 @@
-﻿using DynamicData;
+﻿using AndroidX.Lifecycle;
+using DynamicData;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Resources.Strings;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.Views.DrawableObjects;
 using OpenUtauMobile.Views.Utils;
-using OpenUtauMobile.Resources.Strings;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -49,6 +50,7 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public bool IsShowRenderPitchButton { get; set; } = false; // 是否显示渲染音高按钮
         public double OriginalVolume { get; set; } = 0d; // 保存原始音量
         public int[] SnapDivs = [4, 8, 16, 32, 64, 128, 3, 6, 12, 24, 48, 96, 192]; // 常用量化单位数组
+        #region 编辑模式
         public enum TrackEditMode // 定义走带编辑模式（枚举类型）
         {
             // 只读模式
@@ -69,14 +71,28 @@ namespace OpenUtauMobile.ViewModels
             // 颤音编辑模式
             EditVibrato,
         };
+        public enum ExpressionEditMode // 定义表达式编辑模式（枚举类型）
+        {
+            // 只读模式
+            Hand,
+            // 编辑模式
+            Edit,
+            // 橡皮擦模式
+            Eraser,
+        };
         /// <summary>
-        /// 走带编辑模式
+        /// 当前走带编辑模式
         /// </summary>
         [Reactive] public TrackEditMode CurrentTrackEditMode { get; set; } = TrackEditMode.Normal; // 默认为只读模式
         /// <summary>
         /// 当前钢琴卷帘音符编辑模式
         /// </summary>
         [Reactive] public NoteEditMode CurrentNoteEditMode { get; set; } = NoteEditMode.EditNote; // 默认为音符编辑模式
+        /// <summary>
+        /// 当前表情编辑模式
+        /// </summary>
+        [Reactive] public ExpressionEditMode CurrentExpressionEditMode { get; set; } = ExpressionEditMode.Hand; // 默认为手模式
+        #endregion
         [Reactive] public ObservableCollectionExtended<UPart> PhonemizingParts { get; set; } = []; // 正在进行音素化的分片集合
         [Reactive] public string PhonemizingPartName { get; set; } = string.Empty; // 正在音素化的分片名称
         [Reactive] public bool IsPhonemizing { get; set; } = false; // 是否正在音素化
@@ -156,8 +172,12 @@ namespace OpenUtauMobile.ViewModels
                                  //private List<int> _originalNoteTones; // 记录调整开始时的音符原始音高
         #endregion
         #region 音高曲线字段
-        private int? _lastTick; // 记录上一个音高点的tick位置
-        private double? _lastPitch; // 记录上一个音高点的音高值
+        private int? _lastPitchTick; // 记录上一个音高点的tick位置
+        private double? _lastPitchValue; // 记录上一个音高点的音高值
+        #endregion
+        #region 表情参数绘制相关状态字段
+        private int _lastExpTick = 0;
+        private int _lastExpValue = 0;
         #endregion
         /* 后端数据相关属性 */
         [Reactive] public string Path { get; set; } = string.Empty;
@@ -232,7 +252,7 @@ namespace OpenUtauMobile.ViewModels
         public void TryCancelWork(string id)
         {
             RunningWork? work = RunningWorks.FirstOrDefault(work => work.Id == id);
-            if (work ==  null || work.CancellationTokenSource == null)
+            if (work == null || work.CancellationTokenSource == null)
             {
                 return;
             }
@@ -290,7 +310,7 @@ namespace OpenUtauMobile.ViewModels
                         if (part is UVoicePart voicePart)
                         {
                             EditingPart = voicePart;
-                            UpdateIsShowRenderPitchButton(); 
+                            UpdateIsShowRenderPitchButton();
                             LoadPortrait();
                             EditingPartColor = ViewConstants.TrackMauiColors[DocManager.Inst.Project.tracks[voicePart.trackNo].TrackColor];
                             break;
@@ -1182,8 +1202,8 @@ namespace OpenUtauMobile.ViewModels
             {
                 return;
             }
-            _lastPitch = null;
-            _lastTick = null;
+            _lastPitchValue = null;
+            _lastPitchTick = null;
             // 启动一个撤销组
             DocManager.Inst.StartUndoGroup();
         }
@@ -1226,13 +1246,13 @@ namespace OpenUtauMobile.ViewModels
                 OpenUtau.Core.Format.Ustx.PITD,
                 tick,                 // 当前点位置
                 pitchDelta,           // 当前点音高差值
-                _lastTick ?? tick,    // 上一个点位置（首次使用当前点）
-                (int)(_lastPitch != null ? _lastPitch.Value : pitchDelta)  // 上一个点音高差值（首次使用当前差值）
+                _lastPitchTick ?? tick,    // 上一个点位置（首次使用当前点）
+                (int)(_lastPitchValue != null ? _lastPitchValue.Value : pitchDelta)  // 上一个点音高差值（首次使用当前差值）
             ));
 
             // 更新上一个点的信息，存储实际差值而非原始音高
-            _lastTick = tick;
-            _lastPitch = pitchDelta;
+            _lastPitchTick = tick;
+            _lastPitchValue = pitchDelta;
         }
 
         /// <summary>
@@ -1241,8 +1261,8 @@ namespace OpenUtauMobile.ViewModels
         public void EndDrawPitch()
         {
             DocManager.Inst.EndUndoGroup(); // 结束撤销组
-            _lastPitch = null;
-            _lastTick = null;
+            _lastPitchValue = null;
+            _lastPitchTick = null;
         }
 
         public void AddTempoSignature(int tick, double bpm)
@@ -1344,7 +1364,7 @@ namespace OpenUtauMobile.ViewModels
         }
 
         public void RenderPitchAsync(
-            UVoicePart part, List<UNote> selectedNotes, 
+            UVoicePart part, List<UNote> selectedNotes,
             Action<string, int, int> setProgressCallback, CancellationToken cancellationToken, string workId)
         {
             Debug.WriteLine("开始渲染音高");
@@ -1452,6 +1472,53 @@ namespace OpenUtauMobile.ViewModels
                 DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             }
+            DocManager.Inst.EndUndoGroup();
+        }
+        /// <summary>
+        /// 开始绘制表情曲线
+        /// </summary>
+        /// <param name="point">实际坐标</param>
+        /// <param name="canvasHeight">实际画布高度（未乘以Density）</param>
+        public void StartDrawExpression(SKPoint point, float canvasHeight)
+        {
+            if (EditingPart == null)
+            {
+                return;
+            }
+            _lastExpTick = (int)PianoRollTransformer.ActualToLogicalX(point.X) - EditingPart.position;
+            _lastExpValue = (int)(PrimaryExpressionDescriptor.max - point.Y * (PrimaryExpressionDescriptor.max - PrimaryExpressionDescriptor.min) / (float)canvasHeight / (float)Density);
+            DocManager.Inst.StartUndoGroup();
+        }
+        /// <summary>
+        /// 更新绘制表情曲线
+        /// </summary>
+        /// <param name="point">实际坐标</param>
+        /// <param name="canvasHeight">实际画布高度（未乘以Density）</param>
+        public void UpdateDrawExpression(SKPoint point, float canvasHeight)
+        {
+            if (EditingPart == null)
+            {
+                return;
+            }
+            int currentTick = (int)PianoRollTransformer.ActualToLogicalX(point.X) - EditingPart.position;
+            int currentValue = (int)(PrimaryExpressionDescriptor.max - point.Y * (PrimaryExpressionDescriptor.max - PrimaryExpressionDescriptor.min) / (float)canvasHeight / (float)Density);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                DocManager.Inst.Project,
+                EditingPart,
+                PrimaryExpressionAbbr,
+                currentTick,
+                currentValue,
+                _lastExpTick,
+                _lastExpValue
+            ));
+            _lastExpTick = currentTick;
+            _lastExpValue = currentValue;
+        }
+        /// <summary>
+        /// 结束绘制表情曲线
+        /// </summary>
+        public void EndDrawExpression()
+        {
             DocManager.Inst.EndUndoGroup();
         }
     }
