@@ -1578,7 +1578,7 @@ namespace OpenUtauMobile.ViewModels
                 float x = hit.note.position + hit.phoneme.position;
                 // !!!只有在范围内的点才进行插值计算！！！
                 int y = currentValue;
-                if (x > Math.Max(_lastExpTick, currentTick) && x < Math.Min(_lastExpTick, currentTick))
+                if (x >= Math.Min(_lastExpTick, currentTick) && x <= Math.Max(_lastExpTick, currentTick))
                 {
                     y = (int)Lerp(_lastExpTick, _lastExpValue, currentTick, currentValue, x);
                 }
