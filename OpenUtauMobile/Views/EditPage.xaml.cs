@@ -2609,7 +2609,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             {
                 continue; // 跳过不可见音素
             }
-            var note = phoneme.Parent;
             (float value, bool overriden) = phoneme.GetExpression(project, track, descriptor.abbr);
             float x1 = _viewModel.PianoRollTransformer.LogicalToActualX(phoneme.position + _viewModel.EditingPart.position);
             float x2 = _viewModel.PianoRollTransformer.LogicalToActualX(phoneme.End + _viewModel.EditingPart.position);
