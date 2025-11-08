@@ -1045,6 +1045,10 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     _viewModel.EndDrawExpression();
                     break;
                 case EditViewModel.ExpressionEditMode.Eraser:
+                    // 单击也能触发
+                    _viewModel.StartResetExpression(e.Position);
+                    _viewModel.UpdateResetExpression(e.Position);
+                    _viewModel.EndResetExpression();
                     break;
                 default:
                     break;
@@ -1077,6 +1081,17 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
 #endif
                     break;
                 case EditViewModel.ExpressionEditMode.Eraser:
+                    _viewModel.StartResetExpression(e.StartPosition);
+                    isDrawingExpression = true;
+                    drawingExpressionPointer = e.StartPosition;
+#if ANDROID29_0_OR_GREATER
+                    if (expressionMagnifier == null)
+                    {
+                        Debug.WriteLine("放大镜未初始化");
+                        break;
+                    }
+                    expressionMagnifier.Show(e.StartPosition.X, e.StartPosition.Y);
+#endif
                     break;
                 default:
                     break;
@@ -1104,6 +1119,17 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
 #endif
                     break;
                 case EditViewModel.ExpressionEditMode.Eraser:
+                    _viewModel.UpdateResetExpression(e.Position);
+                    isDrawingExpression = true;
+                    drawingExpressionPointer = e.Position;
+#if ANDROID29_0_OR_GREATER
+                    if (expressionMagnifier == null)
+                    {
+                        Debug.WriteLine("放大镜未初始化");
+                        break;
+                    }
+                    expressionMagnifier.Show(e.Position.X, e.Position.Y);
+#endif
                     break;
                 default:
                     break;
@@ -1140,6 +1166,17 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
 #endif
                     break;
                 case EditViewModel.ExpressionEditMode.Eraser:
+                    _viewModel.EndResetExpression();
+                    isDrawingExpression = false;
+                    ExpressionCanvas.InvalidateSurface();
+#if ANDROID29_0_OR_GREATER
+                        if (expressionMagnifier == null)
+                        {
+                            Debug.WriteLine("放大镜未初始化");
+                            break;
+                        }
+                        expressionMagnifier.Dismiss();
+#endif
                     break;
                 default:
                     break;

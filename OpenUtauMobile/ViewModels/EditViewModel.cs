@@ -1529,7 +1529,7 @@ namespace OpenUtauMobile.ViewModels
                 // 四舍五入取整
                 currentValue = (int)Math.Round(currentValueExact);
                 currentExpressionValue = currentValue;
-                UpdatePhonemeExp(currentTick, currentValue);
+                UpdateDrawPhonemeExp(currentTick, currentValue);
             }
             _lastExpTick = currentTick;
             _lastExpValue = currentValue;
@@ -1560,7 +1560,7 @@ namespace OpenUtauMobile.ViewModels
         /// </summary>
         /// <param name="currentTick"></param>
         /// <param name="currentValue"></param>
-        private void UpdatePhonemeExp(int currentTick, int currentValue)
+        private void UpdateDrawPhonemeExp(int currentTick, int currentValue)
         {
             if (EditingPart == null || _editingExpressionDescriptor == null)
             {
@@ -1687,6 +1687,131 @@ namespace OpenUtauMobile.ViewModels
                 this.hitResizeAreaFromStart = hitResizeAreaFromStart;
                 this.hitX = hitX;
             }
+        }
+        /// <summary>
+        /// 开始重置表情曲线
+        /// </summary>
+        /// <param name="point">实际坐标</param>
+        public void StartResetExpression(SKPoint point)
+        {
+            if (EditingPart == null)
+            {
+                return;
+            }
+            UProject project = DocManager.Inst.Project;
+            UTrack track = DocManager.Inst.Project.tracks[EditingPart.trackNo];
+            if (!track.TryGetExpDescriptor(project, PrimaryExpressionAbbr, out _editingExpressionDescriptor)) // 尝试从名称（如DYN）获取描述器
+            {
+                // 失败则清空描述器并返回
+                _editingExpressionDescriptor = null;
+                return;
+            }
+            if (_editingExpressionDescriptor.max <= _editingExpressionDescriptor.min)
+            {
+                // 无效的描述器
+                return;
+            }
+            _lastExpTick = (int)PianoRollTransformer.ActualToLogicalX(point.X) - EditingPart.position;
+            //_lastExpValue = (int)(_editingExpressionDescriptor.max - point.Y * (_editingExpressionDescriptor.max - _editingExpressionDescriptor.min) / (float)canvasHeight / (float)Density);
+            DocManager.Inst.StartUndoGroup();
+        }
+        /// <summary>
+        /// 更新重置表情曲线
+        /// </summary>
+        /// <param name="point">实际坐标</param>
+        public void UpdateResetExpression(SKPoint point)
+        {
+            if (EditingPart == null || _editingExpressionDescriptor == null)
+            {
+                return;
+            }
+            int currentTick = (int)PianoRollTransformer.ActualToLogicalX(point.X) - EditingPart.position;
+            //float currentValueExact = (_editingExpressionDescriptor.max - point.Y * (_editingExpressionDescriptor.max - _editingExpressionDescriptor.min) / (float)canvasHeight / (float)Density);
+            //int currentValue;
+            if (_editingExpressionDescriptor.type == UExpressionType.Curve)
+            {
+                //currentValue = (int)currentValueExact;
+                currentExpressionValue = (int)_editingExpressionDescriptor.defaultValue;
+                UpdateResetCurveExpression(currentTick);
+            }
+            else
+            {
+                // 四舍五入取整
+                //currentValue = (int)Math.Round(currentValueExact);
+                currentExpressionValue = 0;
+                UpdateResetPhonemeExp(currentTick);
+            }
+            _lastExpTick = currentTick;
+            //_lastExpValue = currentValue;
+        }
+        /// <summary>
+        /// 更新曲线型表情重置
+        /// </summary>
+        /// <param name="currentTick"></param>
+        private void UpdateResetCurveExpression(int currentTick)
+        {
+            if (EditingPart == null || _editingExpressionDescriptor == null)
+            {
+                return;
+            }
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                DocManager.Inst.Project,
+                EditingPart,
+                PrimaryExpressionAbbr,
+                currentTick,
+                (int)_editingExpressionDescriptor.defaultValue,
+                _lastExpTick,
+                (int)_editingExpressionDescriptor.defaultValue
+            ));
+        }
+        /// <summary>
+        /// 更新音素表情曲线重置
+        /// </summary>
+        /// <param name="currentTick"></param>
+        private void UpdateResetPhonemeExp(int currentTick)
+        {
+            if (EditingPart == null || _editingExpressionDescriptor == null)
+            {
+                return;
+            }
+            UProject project = DocManager.Inst.Project;
+            UTrack track = DocManager.Inst.Project.tracks[EditingPart.trackNo];
+            List<NoteHitInfo> hits = HitTestExpRange(_lastExpTick, currentTick);
+            foreach (var hit in hits)
+            {
+                if (Preferences.Default.LockUnselectedNotesExpressions && SelectedNotes.Count > 0 && !SelectedNotes.Contains(hit.phoneme.Parent))
+                {
+                    continue;
+                }
+                //float x = hit.note.position + hit.phoneme.position;
+                // !!!只有在范围内的点才进行插值计算！！！
+                //int y = currentValue;
+                //if (x > Math.Max(_lastExpTick, currentTick) && x < Math.Min(_lastExpTick, currentTick))
+                //{
+                //    y = (int)Lerp(_lastExpTick, _lastExpValue, currentTick, currentValue, x);
+                //}
+                //y = Math.Clamp(y, (int)_editingExpressionDescriptor.min, (int)_editingExpressionDescriptor.max);
+
+                //float oldValue = hit.phoneme.GetExpression(DocManager.Inst.Project, track, PrimaryExpressionAbbr).Item1;
+                //if (y == (int)oldValue)
+                //{
+                //    continue;
+                //}
+                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
+                        project,
+                        track,
+                        EditingPart,
+                        hit.phoneme,
+                        PrimaryExpressionAbbr,
+                        null));
+            }
+        }
+        /// <summary>
+        /// 结束重置表情曲线
+        /// </summary>
+        public void EndResetExpression()
+        {
+            DocManager.Inst.EndUndoGroup();
         }
     }
 }
