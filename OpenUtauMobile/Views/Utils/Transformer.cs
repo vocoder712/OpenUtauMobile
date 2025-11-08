@@ -119,7 +119,7 @@ namespace OpenUtauMobile.Views.Utils
             );
         }
         /// <summary>
-        /// 实际X坐标转逻辑X坐标
+        /// 逻辑X坐标转实际X坐标
         /// </summary>
         /// <param name="logicalX"></param>
         /// <returns></returns>
