@@ -339,13 +339,13 @@
                     <Grid x:Name="BorderExtend" ColumnDefinitions="60,*"  AbsoluteLayout.LayoutBounds="{Binding BoundExp}" AbsoluteLayout.LayoutFlags="WidthProportional" BackgroundColor="{DynamicResource ExpBackground}">
                         <!-- 表情选择 -->
                         <ScrollView Grid.Column="0" BackgroundColor="{DynamicResource ExpBackGroundAlpha}">
-                            <Grid RowDefinitions="20,20,20" ColumnDefinitions="20,20,20" >
+                            <Grid RowDefinitions="30,30,30,30,30" ColumnDefinitions="20,20,20" >
                                 <Button x:Name="ButtonExchangeExp" Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Text="{Static res:AppResources.Swap}" Padding="0" Clicked="ButtonExchangeExp_Clicked"/>
                                 <Button x:Name="ButtonPrimaryExp" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding PrimaryExpressionAbbr}" Padding="0" TextTransform="Uppercase" Clicked="ButtonPrimaryExp_Clicked"/>
                                 <Button x:Name="ButtonSecondaryExp" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SecondaryExpressionAbbr}" Padding="0" TextTransform="Uppercase" BackgroundColor="{DynamicResource PrimaryDerive}" Clicked="ButtonSecondaryExp_Clicked"/>
-                                <Button x:Name="ButtonSwitchExpressionHandMode" Grid.Row="2" Grid.Column="0" Text="{Static res:AppResources.Hand}" Padding="0" Clicked="ButtonSwitchExpressionEditMode_Clicked"/>
-                                <Button x:Name="ButtonSwitchExpressionEditMode" Grid.Row="2" Grid.Column="1" Text="{Static res:AppResources.Edit}" Padding="0" BackgroundColor="Transparent" Clicked="ButtonSwitchExpressionEditMode_Clicked"/>
-                                <Button x:Name="ButtonSwitchExpressionEraserMode" Grid.Row="2" Grid.Column="2" Text="{Static res:AppResources.Eraser}" Padding="0" BackgroundColor="Transparent" Clicked="ButtonSwitchExpressionEditMode_Clicked"/>
+                                <Button x:Name="ButtonSwitchExpressionHandMode" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Text="{Static res:AppResources.Hand}" Padding="0" Clicked="ButtonSwitchExpressionEditMode_Clicked"/>
+                                <Button x:Name="ButtonSwitchExpressionEditMode" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Text="{Static res:AppResources.Edit}" Padding="0" BackgroundColor="Transparent" Clicked="ButtonSwitchExpressionEditMode_Clicked"/>
+                                <Button x:Name="ButtonSwitchExpressionEraserMode" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Text="{Static res:AppResources.Eraser}" Padding="0" BackgroundColor="Transparent" Clicked="ButtonSwitchExpressionEditMode_Clicked"/>
                             </Grid>
                         </ScrollView>
                         <!-- 表情绘制 -->
