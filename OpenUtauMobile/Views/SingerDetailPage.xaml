@@ -17,7 +17,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="ButtonBack" Text="{Static res:AppResources.BackText}" Clicked="ButtonBack_Clicked" Grid.Column="0" />
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
             <Label Text="{Static res:AppResources.Singer}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
         </Grid>
         <!-- 主体 -->

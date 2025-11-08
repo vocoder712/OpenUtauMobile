@@ -13,7 +13,7 @@ namespace OpenUtauMobile
 {
     public static class ViewConstants
     {
-        public const string ReleaseVersionLyrics = "每个梦里都有段旋律 每颗心底都有个秘密"; // 发布版本歌词
+        public const string ReleaseVersionLyrics = "歌声冲破夜幕响彻在新的天地\n机械的心律带动血肉的共鸣"; // v1.1.x 发布版本歌词
         public const int MinTicklineWidth = 24; // 最小刻度线宽度
         public const int TotalPianoKeys = 120; // 总钢琴键数
         public static List<PianoKey> PianoKeys = [];
