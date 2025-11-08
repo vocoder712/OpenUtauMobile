@@ -1609,7 +1609,8 @@ namespace OpenUtauMobile.ViewModels
         /// <returns></returns>
         public static float Lerp(float x1, float y1, float x2, float y2, float x)
         {
-            if (x2 - x1 == 0)
+            const float EPSILON = 1e-6f;
+            if (Math.Abs(x2 - x1) < EPSILON)
             {
                 return y1;
             }
