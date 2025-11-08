@@ -2664,7 +2664,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 const float x = 12f;
                 float width = textFont.MeasureText(optionText) + padding + padding;
                 float height = fontSize * (float)_viewModel.Density + padding + padding;
-                canvas.DrawRect(x, y, width, height, ThemeColorsManager.Current.ExpressionOptionBoxPaint);
+                canvas.DrawRect(x, y - height / 2, width, height, ThemeColorsManager.Current.ExpressionOptionBoxPaint);
                 canvas.DrawText(optionText, x + 4, y + 14 * (float)_viewModel.Density, textFont, ThemeColorsManager.Current.ExpressionOptionTextPaint);
             }
         }
