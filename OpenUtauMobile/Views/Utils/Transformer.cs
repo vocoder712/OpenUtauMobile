@@ -128,7 +128,7 @@ namespace OpenUtauMobile.Views.Utils
             return logicalX * ZoomX + PanX;
         }
         /// <summary>
-        /// 实际Y坐标转逻辑Y坐标
+        /// 逻辑Y坐标转实际Y坐标
         /// </summary>
         /// <param name="logicalY"></param>
         /// <returns></returns>
