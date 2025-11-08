@@ -17,10 +17,10 @@
     <Grid RowDefinitions="60, 40, 1, *">
         <!-- 自定义标题栏 -->
         <Grid BackgroundColor="{DynamicResource TitleBarBackground}" ColumnDefinitions="80,*,80,80" Padding="10">
-            <Button x:Name="ButtonConfirm" Text="{Static res:AppResources.Confirm}" Clicked="ButtonConfirm_Clicked"  Grid.Column="0" />
+            <Button x:Name="ButtonConfirm" Text="{Static res:AppResources.Confirm}" Clicked="ButtonConfirm_Clicked"  Grid.Column="0" BackgroundColor="Transparent"/>
             <Label Text="{Static res:AppResources.Settings}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
-            <Button x:Name="ButtonCancel" Text="{Static res:AppResources.CancelText}" Clicked="ButtonCancel_Clicked" Grid.Column="2" />
-            <Button x:Name="ButtonSave" Text="{Static res:AppResources.SaveText}" Clicked="ButtonSave_Clicked" Grid.Column="3" />
+            <Button x:Name="ButtonCancel" Text="{Static res:AppResources.CancelText}" Clicked="ButtonCancel_Clicked" Grid.Column="2" BackgroundColor="Transparent" />
+            <Button x:Name="ButtonSave" Text="{Static res:AppResources.SaveText}" Clicked="ButtonSave_Clicked" Grid.Column="3" BackgroundColor="Transparent" />
         </Grid>
         <!-- 主体 -->
         <!-- 选项卡 -->

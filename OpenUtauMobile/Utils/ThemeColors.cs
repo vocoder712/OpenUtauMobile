@@ -136,6 +136,26 @@ namespace OpenUtauMobile.Utils
         public abstract SKColor PhonemePosLine { get; set; }
         public abstract SKPaint PhonemeTextPaint { get; set; }
         #endregion
+        #region 表情画布
+        /// <summary>
+        /// 表情选项文本画笔
+        /// </summary>
+        public abstract SKPaint ExpressionOptionTextPaint { get; set; }
+        /// <summary>
+        /// 表情选项框画笔
+        /// </summary>
+        public abstract SKPaint ExpressionOptionBoxPaint { get; set; }
+        public abstract SKPaint DefaultExpressionStrokePaint { get; set; }
+        public abstract SKPaint EditedExpressionStrokePaint { get; set; }
+        public abstract SKPaint DefaultExpressionFillPaint { get; set; }
+        public abstract SKPaint EditedExpressionFillPaint { get; set; }
+        #endregion
+        #region 其它
+        /// <summary>
+        /// 正在绘制的光标
+        /// </summary>
+        public abstract SKPaint DrawingCursorPaint { get; set; }
+        #endregion
     }
 
     public class LightThemeColors : ThemeColors
@@ -211,6 +231,46 @@ namespace OpenUtauMobile.Utils
         public override SKColor PianoRollShadow { get; set; } = SKColor.Parse("#f0f0f0");
         public override SKColor PartLabel { get; set; } = SKColor.Parse("#000000");
         public override SKColor Primary { get; set; } = SKColor.Parse("#fe71a3");
+        public override SKPaint ExpressionOptionTextPaint { get; set; } = new SKPaint
+        {
+            Color = SKColor.Parse("#000000"),
+            Style = SKPaintStyle.Fill,
+        };
+        public override SKPaint ExpressionOptionBoxPaint { get; set; } = new SKPaint
+        {
+            Color = SKColor.Parse("#000000").WithAlpha(100),
+            Style = SKPaintStyle.Fill,
+            StrokeWidth = 2,
+        };
+        public override SKPaint DrawingCursorPaint { get; set; } = new()
+        {
+            Color = SKColors.Yellow,
+            StrokeWidth = 2,
+            IsAntialias = false,
+            Style = SKPaintStyle.Stroke,
+        };
+        public override SKPaint DefaultExpressionStrokePaint { get; set; } = new()
+        {
+            StrokeWidth = 2,
+            Color = SKColors.Gray,
+            Style = SKPaintStyle.Stroke
+        };
+        public override SKPaint EditedExpressionStrokePaint { get; set; } = new()
+        {
+            StrokeWidth = 4,
+            Color = SKColor.Parse("#fe71a3"),
+            Style = SKPaintStyle.Stroke
+        };
+        public override SKPaint DefaultExpressionFillPaint { get; set; } = new()
+        {
+            Style = SKPaintStyle.Fill,
+            Color = SKColors.LightGray.WithAlpha(100),
+        };
+        public override SKPaint EditedExpressionFillPaint { get; set; } = new()
+        {
+            Style = SKPaintStyle.Fill,
+            Color = SKColor.Parse("#fe71a3").WithAlpha(150),
+        };
     }
     public class DarkThemeColors : ThemeColors
     {
@@ -285,6 +345,46 @@ namespace OpenUtauMobile.Utils
         public override SKColor PianoRollShadow { get; set; } = SKColor.Parse("#d0909090");
         public override SKColor PartLabel { get; set; } = SKColor.Parse("#FFFFFF");
         public override SKColor Primary { get; set; } = SKColor.Parse("#fe71a3");
+        public override SKPaint ExpressionOptionTextPaint { get; set; } = new SKPaint
+        {
+            Color = SKColor.Parse("#FFFFFF"),
+            Style = SKPaintStyle.Fill,
+        };
+        public override SKPaint ExpressionOptionBoxPaint { get; set; } = new SKPaint
+        {
+            Color = SKColor.Parse("#FFFFFF").WithAlpha(100),
+            Style = SKPaintStyle.Fill,
+            StrokeWidth = 2,
+        };
+        public override SKPaint DrawingCursorPaint { get; set; } = new()
+        {
+            Color = SKColors.Yellow,
+            StrokeWidth = 2,
+            IsAntialias = false,
+            Style = SKPaintStyle.Stroke,
+        };
+        public override SKPaint DefaultExpressionStrokePaint { get; set; } = new()
+        {
+            StrokeWidth = 2,
+            Color = SKColors.Gray,
+            Style = SKPaintStyle.Stroke
+        };
+        public override SKPaint EditedExpressionStrokePaint { get; set; } = new()
+        {
+            StrokeWidth = 4,
+            Color = SKColor.Parse("#fe71a3"),
+            Style = SKPaintStyle.Stroke
+        };
+        public override SKPaint DefaultExpressionFillPaint { get; set; } = new()
+        {
+            Style = SKPaintStyle.Fill,
+            Color = SKColors.LightGray.WithAlpha(100),
+        };
+        public override SKPaint EditedExpressionFillPaint { get; set; } = new()
+        {
+            Style = SKPaintStyle.Fill,
+            Color = SKColor.Parse("#fe71a3").WithAlpha(150),
+        };
     }
 }
 

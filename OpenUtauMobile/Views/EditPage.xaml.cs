@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Reactive.Disposables;
 using Preferences = OpenUtau.Core.Util.Preferences;
 using System.Reactive.Linq;
+using DynamicData;
 
 namespace OpenUtauMobile.Views;
 
@@ -50,9 +51,14 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     private bool isPianoRollSnapDivButtonLongPressed = false;
     // 走带量化按钮长按标志
     private bool isTrackSnapDivButtonLongPressed = false;
+    // 正在绘制表情曲线的指针位置
+    private SKPoint drawingExpressionPointer = new();
+    // 是否正在绘制表情曲线
+    private bool isDrawingExpression = false;
 #if ANDROID29_0_OR_GREATER
     // 放大镜
-    private Android.Widget.Magnifier? magnifier = null;
+    private Android.Widget.Magnifier? magnifier = null; // 音高线放大镜
+    private Android.Widget.Magnifier? expressionMagnifier = null; // 表情放大镜
 #endif
     /// <summary>
     /// 标记用户是否正在绘制音高曲线、表情曲线等
@@ -88,11 +94,12 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             Dispatcher.Dispatch(async () =>
             {
                 // 添加加载项目work
-                _viewModel.SetWork(WorkType.LoadingProject, path, detail:path);
+                _viewModel.SetWork(WorkType.LoadingProject, path, detail: path);
                 await _viewModel.Init();
                 // 移除加载项目work
                 _viewModel.RemoveWork(path);
                 InitMagnifier();
+                InitExpressionMagnifier();
                 //EnableAndroidBlur();
             });
         };
@@ -129,8 +136,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         SetupGestureEvents();
         // 设置ScrollView滚动事件
         ScrollTrckHeaders.Scrolled += ScrollTrckHeaders_Scrolled;
-        // 初始化放大镜微件
-        //InitMagnifier();
         // 订阅播放位置更新事件，重绘指针画布
         this.WhenAnyValue(x => x._viewModel.PlayPosTick)
             .Subscribe(_ =>
@@ -213,6 +218,17 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 PianoRollPitchCanvas.InvalidateSurface();
             })
             .DisposeWith(_disposables);
+        // 订阅表情编辑模式变化
+        _viewModel.WhenAnyValue(x => x.CurrentExpressionEditMode)
+            .Subscribe(mode =>
+            {
+                SKColorMauiColorConverter converter = new();
+                Color? activeColor = converter.Convert(ThemeColorsManager.Current.ActiveNoteEditModeButton, typeof(Color), null, null!) as Color;
+                ButtonSwitchExpressionHandMode.BackgroundColor = mode == EditViewModel.ExpressionEditMode.Hand ? activeColor : Colors.Transparent;
+                ButtonSwitchExpressionEditMode.BackgroundColor = mode == EditViewModel.ExpressionEditMode.Edit ? activeColor : Colors.Transparent;
+                ButtonSwitchExpressionEraserMode.BackgroundColor = mode == EditViewModel.ExpressionEditMode.Eraser ? activeColor : Colors.Transparent;
+            })
+            .DisposeWith(_disposables);
         // 回放定时器，定时通知回放管理器更新播放位置
         PlaybackTimer = Dispatcher.CreateTimer();
         PlaybackTimer.Interval = TimeSpan.FromSeconds(1 / (double)Preferences.Default.PlaybackRefreshRate);
@@ -279,37 +295,37 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
     }
 
-//    private void EnableAndroidBlur()
-//    {
-//#if ANDROID31_0_OR_GREATER
-//        try
-//        {
-//            object? BorderExtendPlatformView = BorderExtend.Handler?.PlatformView;
-//            Debug.WriteLine($"扩展区模糊层原生视图类型: {BorderExtendPlatformView?.GetType().FullName}");
-//            if (BorderExtendPlatformView is Android.Views.View androidView)
-//            {
-//                if (androidView == null)
-//                {
-//                    Log.Warning("启用模糊效果失败，无法获取扩展区原生视图");
-//                    return;
-//                }
-//                float radius = 20f;
-//                var blurEffect = Android.Graphics.RenderEffect.CreateBlurEffect(radius, radius, Android.Graphics.Shader.TileMode.Decal);
-//                androidView.SetRenderEffect(blurEffect);
-//                Log.Information("启用模糊效果成功");
-//            }
-//            else
-//            {
-//                Log.Warning("不是Android原生视图，无法启用模糊效果");
-//            }
-//        }
-//        catch (Exception ex)
-//        {
-//            Log.Error(ex, "启用模糊效果失败");
-//            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("启用模糊效果失败", ex));
-//        }
-//#endif
-//    }
+    //    private void EnableAndroidBlur()
+    //    {
+    //#if ANDROID31_0_OR_GREATER
+    //        try
+    //        {
+    //            object? BorderExtendPlatformView = BorderExtend.Handler?.PlatformView;
+    //            Debug.WriteLine($"扩展区模糊层原生视图类型: {BorderExtendPlatformView?.GetType().FullName}");
+    //            if (BorderExtendPlatformView is Android.Views.View androidView)
+    //            {
+    //                if (androidView == null)
+    //                {
+    //                    Log.Warning("启用模糊效果失败，无法获取扩展区原生视图");
+    //                    return;
+    //                }
+    //                float radius = 20f;
+    //                var blurEffect = Android.Graphics.RenderEffect.CreateBlurEffect(radius, radius, Android.Graphics.Shader.TileMode.Decal);
+    //                androidView.SetRenderEffect(blurEffect);
+    //                Log.Information("启用模糊效果成功");
+    //            }
+    //            else
+    //            {
+    //                Log.Warning("不是Android原生视图，无法启用模糊效果");
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Log.Error(ex, "启用模糊效果失败");
+    //            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("启用模糊效果失败", ex));
+    //        }
+    //#endif
+    //    }
 
     private void InitMagnifier()
     {
@@ -327,6 +343,38 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 }
                 magnifier = null;
                 magnifier = new Android.Widget.Magnifier.Builder(pianoRollAndroidView)
+                    .SetInitialZoom(1.5f)              // 增加缩放倍数
+                    .SetSize(600, 450)               // 设置为矩形尺寸 (宽度, 高度)
+                    .SetCornerRadius(16f)            // 稍微增加圆角
+                    .SetElevation(12f)               // 添加阴影效果
+                    .SetClippingEnabled(true)      // 启用裁剪以防止内容溢出
+                    .SetDefaultSourceToMagnifierOffset(-270, -270) // 设置放大镜相对于触摸点的默认偏移
+                    .Build();
+            }
+            else
+            {
+                Debug.WriteLine("不是Android原生视图");
+            }
+        }
+#endif
+    }
+
+    private void InitExpressionMagnifier()
+    {
+#if ANDROID29_0_OR_GREATER
+        if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.Q)
+        {
+            object? expressionCanvasPlatformView = ExpressionCanvas.Handler?.PlatformView;
+            Debug.WriteLine($"表情画布原生视图类型: {expressionCanvasPlatformView?.GetType().FullName}");
+            if (expressionCanvasPlatformView is Android.Views.View expressionCanvasAndroidView)
+            {
+                if (expressionCanvasPlatformView == null)
+                {
+                    Debug.WriteLine("放大镜初始化失败，无法获取表情画布原生视图");
+                    return;
+                }
+                expressionMagnifier = null;
+                expressionMagnifier = new Android.Widget.Magnifier.Builder(expressionCanvasAndroidView)
                     .SetInitialZoom(1.5f)              // 增加缩放倍数
                     .SetSize(600, 450)               // 设置为矩形尺寸 (宽度, 高度)
                     .SetCornerRadius(16f)            // 稍微增加圆角
@@ -986,6 +1034,25 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _expressionGestureProcessor.Tap += (sender, e) =>
         {
             Debug.WriteLine($"点击表情画布事件: {e.Position}");
+            switch (_viewModel.CurrentExpressionEditMode)
+            {
+                case EditViewModel.ExpressionEditMode.Hand:
+                    break;
+                case EditViewModel.ExpressionEditMode.Edit:
+                    // 数值和选项型可能需要单击也能触发
+                    _viewModel.StartDrawExpression(e.Position, (float)ExpressionCanvas.Height);
+                    _viewModel.UpdateDrawExpression(e.Position, (float)ExpressionCanvas.Height);
+                    _viewModel.EndDrawExpression();
+                    break;
+                case EditViewModel.ExpressionEditMode.Eraser:
+                    // 单击也能触发
+                    _viewModel.StartResetExpression(e.Position);
+                    _viewModel.UpdateResetExpression(e.Position);
+                    _viewModel.EndResetExpression();
+                    break;
+                default:
+                    break;
+            }
         };
         // 订阅双击事件
         _expressionGestureProcessor.DoubleTap += (sender, e) =>
@@ -995,27 +1062,125 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         // 订阅平移开始事件
         _expressionGestureProcessor.PanStart += (sender, e) =>
         {
-            _viewModel.PianoRollTransformer.StartPan(e.StartPosition);
+            switch (_viewModel.CurrentExpressionEditMode)
+            {
+                case EditViewModel.ExpressionEditMode.Hand:
+                    _viewModel.PianoRollTransformer.StartPan(e.StartPosition);
+                    break;
+                case EditViewModel.ExpressionEditMode.Edit:
+                    _viewModel.StartDrawExpression(e.StartPosition, (float)ExpressionCanvas.Height);
+                    isDrawingExpression = true;
+                    drawingExpressionPointer = e.StartPosition;
+#if ANDROID29_0_OR_GREATER
+                    if (expressionMagnifier == null)
+                    {
+                        Debug.WriteLine("放大镜未初始化");
+                        break;
+                    }
+                    expressionMagnifier.Show(e.StartPosition.X, e.StartPosition.Y);
+#endif
+                    break;
+                case EditViewModel.ExpressionEditMode.Eraser:
+                    _viewModel.StartResetExpression(e.StartPosition);
+                    isDrawingExpression = true;
+                    drawingExpressionPointer = e.StartPosition;
+#if ANDROID29_0_OR_GREATER
+                    if (expressionMagnifier == null)
+                    {
+                        Debug.WriteLine("放大镜未初始化");
+                        break;
+                    }
+                    expressionMagnifier.Show(e.StartPosition.X, e.StartPosition.Y);
+#endif
+                    break;
+                default:
+                    break;
+            }
         };
         // 订阅平移更新事件
         _expressionGestureProcessor.PanUpdate += (sender, e) =>
         {
-            _viewModel.PianoRollTransformer.UpdatePan(e.Position);
+            switch (_viewModel.CurrentExpressionEditMode)
+            {
+                case EditViewModel.ExpressionEditMode.Hand:
+                    _viewModel.PianoRollTransformer.UpdatePan(e.Position);
+                    break;
+                case EditViewModel.ExpressionEditMode.Edit:
+                    _viewModel.UpdateDrawExpression(e.Position, (float)ExpressionCanvas.Height);
+                    isDrawingExpression = true;
+                    drawingExpressionPointer = e.Position;
+#if ANDROID29_0_OR_GREATER
+                    if (expressionMagnifier == null)
+                    {
+                        Debug.WriteLine("放大镜未初始化");
+                        break;
+                    }
+                    expressionMagnifier.Show(e.Position.X, e.Position.Y);
+#endif
+                    break;
+                case EditViewModel.ExpressionEditMode.Eraser:
+                    _viewModel.UpdateResetExpression(e.Position);
+                    isDrawingExpression = true;
+                    drawingExpressionPointer = e.Position;
+#if ANDROID29_0_OR_GREATER
+                    if (expressionMagnifier == null)
+                    {
+                        Debug.WriteLine("放大镜未初始化");
+                        break;
+                    }
+                    expressionMagnifier.Show(e.Position.X, e.Position.Y);
+#endif
+                    break;
+                default:
+                    break;
+            }
         };
         // 订阅平移结束事件
         _expressionGestureProcessor.PanEnd += (sender, e) =>
         {
-            _viewModel.PianoRollTransformer.EndPan();
-            if (!_viewModel.Playing)
+            switch (_viewModel.CurrentExpressionEditMode)
             {
-                return;
+                case EditViewModel.ExpressionEditMode.Hand:
+                    _viewModel.PianoRollTransformer.EndPan();
+                    if (_viewModel.Playing)
+                    {
+                        return;
+                    }
+                    int newPlayPosTick = (int)((ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density - _viewModel.PianoRollTransformer.PanX) / _viewModel.PianoRollTransformer.ZoomX);
+                    if (newPlayPosTick != _viewModel.PlayPosTick)
+                    {
+                        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(newPlayPosTick));
+                    }
+                    break;
+                case EditViewModel.ExpressionEditMode.Edit:
+                    _viewModel.EndDrawExpression();
+                    isDrawingExpression = false;
+                    ExpressionCanvas.InvalidateSurface();
+#if ANDROID29_0_OR_GREATER
+                        if (expressionMagnifier == null)
+                        {
+                            Debug.WriteLine("放大镜未初始化");
+                            break;
+                        }
+                        expressionMagnifier.Dismiss();
+#endif
+                    break;
+                case EditViewModel.ExpressionEditMode.Eraser:
+                    _viewModel.EndResetExpression();
+                    isDrawingExpression = false;
+                    ExpressionCanvas.InvalidateSurface();
+#if ANDROID29_0_OR_GREATER
+                        if (expressionMagnifier == null)
+                        {
+                            Debug.WriteLine("放大镜未初始化");
+                            break;
+                        }
+                        expressionMagnifier.Dismiss();
+#endif
+                    break;
+                default:
+                    break;
             }
-            int newPlayPosTick = (int)((ViewConstants.PianoRollPlaybackLinePos * _viewModel.Density - _viewModel.PianoRollTransformer.PanX) / _viewModel.PianoRollTransformer.ZoomX);
-            if (newPlayPosTick != _viewModel.PlayPosTick)
-            {
-                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(newPlayPosTick));
-            }
-
         };
         // 订阅缩放开始事件
         _expressionGestureProcessor.ZoomStart += (sender, e) =>
@@ -1956,7 +2121,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void PianoRollPitchCanvas_PaintSurface(object sender, SkiaSharp.Views.Maui.SKPaintSurfaceEventArgs e)
-    {        
+    {
         SKCanvas canvas = e.Surface.Canvas;
         canvas.Clear();
         if (_viewModel.EditingPart == null || _viewModel.EditingPart is not UVoicePart)
@@ -2353,8 +2518,8 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         {
             return;
         }
-        if (!track.TryGetExpDescriptor(project, _viewModel.PrimaryExpressionAbbr, out var descriptor))
-        { // 尝试从名称（如DYN）获取描述器
+        if (!track.TryGetExpDescriptor(project, _viewModel.PrimaryExpressionAbbr, out var descriptor)) // 尝试从名称（如DYN）获取描述器
+        {
             return;
         }
         if (descriptor.max <= descriptor.min)
@@ -2364,19 +2529,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         // 计算视口
         int leftTick = (int)(-_viewModel.PianoRollTransformer.PanX / _viewModel.PianoRollTransformer.ZoomX);
         int rightTick = (int)(canvas.DeviceClipBounds.Size.Width / _viewModel.PianoRollTransformer.ZoomX + leftTick);
-        float optionHeight = descriptor.type == UExpressionType.Options
-            ? canvas.DeviceClipBounds.Height / descriptor.options.Length
-            : 0f;
-        SKPaint defaultPaint = new()
-        {
-            StrokeWidth = 2,
-            Color = SKColors.Gray
-        };
-        SKPaint editedPaint = new()
-        {
-            StrokeWidth = 4,
-            Color = SKColor.Parse("#fe71a3")
-        };
+        float descriptorRange = descriptor.max - descriptor.min;
         // 曲线型
         if (descriptor.type == UExpressionType.Curve)
         {
@@ -2388,7 +2541,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 //float x1 = (float)Math.Round(_viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(leftTick, 0)).X);
                 //float x2 = (float)Math.Round(_viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(rightTick, 0)).X);
                 //canvas.DrawLine(new SKPoint(x1, defaultHeight), new SKPoint(x2, defaultHeight), defaultPaint);
-                canvas.DrawLine(0, defaultHeight, canvas.DeviceClipBounds.Width, defaultHeight, defaultPaint);
+                canvas.DrawLine(0, defaultHeight, canvas.DeviceClipBounds.Width, defaultHeight, ThemeColorsManager.Current.EditedExpressionStrokePaint);
                 return;
             }
             //int lTick = (int)Math.Floor((double)leftTick / 5) * 5;
@@ -2407,14 +2560,14 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 int tick1 = index < 0 ? lTick : curve.xs[index] + _viewModel.EditingPart.position;
                 //tick1 += _viewModel.EditingPart.position;
                 float value1 = index < 0 ? descriptor.defaultValue : curve.ys[index];
-                float x1 = _viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(tick1, 0)).X;
-                float y1 = defaultHeight - canvas.DeviceClipBounds.Height * (value1 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                float x1 = _viewModel.PianoRollTransformer.LogicalToActualX(tick1);
+                float y1 = (descriptor.max - value1) * canvas.DeviceClipBounds.Height / descriptorRange;
                 int tick2 = index == curve.xs.Count - 1 ? rTick : curve.xs[index + 1] + _viewModel.EditingPart.position;
                 //tick2 += _viewModel.EditingPart.position;
                 float value2 = index == curve.xs.Count - 1 ? descriptor.defaultValue : curve.ys[index + 1];
-                float x2 = _viewModel.PianoRollTransformer.LogicalToActual(_viewModel.PitchAndTickToPoint(tick2, 0)).X;
-                float y2 = defaultHeight - canvas.DeviceClipBounds.Height * (value2 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
-                SKPaint paint = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? defaultPaint : editedPaint; // 绘制值用粗线，默认值用细线
+                float x2 = _viewModel.PianoRollTransformer.LogicalToActualX(tick2);
+                float y2 = (descriptor.max - value2) * canvas.DeviceClipBounds.Height / descriptorRange;
+                SKPaint paint = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? ThemeColorsManager.Current.DefaultExpressionStrokePaint : ThemeColorsManager.Current.EditedExpressionStrokePaint; // 绘制值用粗线，默认值用细线
                 canvas.DrawLine(new SKPoint(x1, y1), new SKPoint(x2, y2), paint);
                 //using (var state = canvas.PushTransform(Matrix.CreateTranslation(x1, y1))) {
                 //    canvas.DrawGeometry(brush, null, pointGeometry);
@@ -2425,88 +2578,104 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     break;
                 }
             }
+            // 绘制触摸中心
+            if (isDrawingExpression)
+            {
+                float radius = 10f;
+                canvas.DrawCircle(drawingExpressionPointer, radius, ThemeColorsManager.Current.DrawingCursorPaint);
+                using SKFont textFont = new(ObjectProvider.NotoSansCJKscRegularTypeface, 12 * (float)_viewModel.Density);
+                // 绘制数值
+                canvas.DrawText($"{_viewModel.currentExpressionValue}", drawingExpressionPointer.X - 12f, drawingExpressionPointer.Y - 12f, textFont, ThemeColorsManager.Current.ExpressionOptionTextPaint);
+            }
             return;
         }
-        //// 遍历音素，包括选项型和数值型
-        //foreach (UPhoneme phoneme in _viewModel.EditingPart.phonemes)
-        //{
-        //    if (phoneme.Error || phoneme.Parent == null)
-        //    {
-        //        continue;
-        //    }
-        //    double leftBound = phoneme.position;
-        //    double rightBound = phoneme.End;
-        //    if (leftBound >= rightTick || rightBound <= leftTick)
-        //    {
-        //        continue;
-        //    }
-        //    var note = phoneme.Parent;
-        //    var hPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
-        //    var vPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
-        //    var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
-        //    var (value, overriden) = phoneme.GetExpression(project, track, Key);
-        //    double x1 = Math.Round(viewModel.TickToneToPoint(phoneme.position, 0).X);
-        //    double x2 = Math.Round(viewModel.TickToneToPoint(phoneme.End, 0).X);
-        //    // 数值型
-        //    if (descriptor.type == UExpressionType.Numerical)
-        //    {
-        //        double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
-        //        double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
-        //        canvas.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-        //        canvas.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-        //        using (var state = canvas.PushTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight)))
-        //        {
-        //            canvas.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
-        //        }
-        //        // 选项型
-        //    }
-        //    else if (descriptor.type == UExpressionType.Options)
-        //    {
-        //        for (int i = 0; i < descriptor.options.Length; ++i)
-        //        {
-        //            double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
-        //            using (var state = canvas.PushTransform(Matrix.CreateTranslation(x1 + 4.5, y)))
-        //            {
-        //                if ((int)value == i)
-        //                {
-        //                    if (overriden)
-        //                    {
-        //                        canvas.DrawGeometry(brush, null, pointGeometry);
-        //                    }
-        //                    canvas.DrawGeometry(null, hPen, circleGeometry);
-        //                }
-        //                else
-        //                {
-        //                    canvas.DrawGeometry(null, ThemeManager.NeutralAccentPenSemi, circleGeometry);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-        //// 选项型的背景框和文字
-        //if (descriptor.type == UExpressionType.Options)
-        //{
-        //    for (int i = 0; i < descriptor.options.Length; ++i)
-        //    {
-        //        string option = descriptor.options[i];
-        //        if (string.IsNullOrEmpty(option))
-        //        {
-        //            option = "\"\"";
-        //        }
-        //        var textLayout = TextLayoutCache.Get(option, ThemeManager.ForegroundBrush, 12);
-        //        double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5) - textLayout.Height * 0.5;
-        //        y = Math.Round(y);
-        //        var size = new Size(textLayout.Width + 8, textLayout.Height + 2);
-        //        using (var state = canvas.PushTransform(Matrix.CreateTranslation(12, y)))
-        //        {
-        //            canvas.DrawRectangle(
-        //                ThemeManager.BackgroundBrush,
-        //                ThemeManager.NeutralAccentPenSemi,
-        //                new Rect(new Point(-4, -0.5), size), 4, 4);
-        //            textLayout.Draw(canvas, new Point());
-        //        }
-        //    }
-        //}
+        float innerRadius = 6 * (float)_viewModel.Density; // 圆圈内半径
+        float outerRadius = 12 * (float)_viewModel.Density; // 圆圈外半径
+        float optionHeight = 0;
+        if (descriptor.type == UExpressionType.Options)
+        {
+            optionHeight = canvas.DeviceClipBounds.Height / descriptor.options.Length; // 每个选项的高度
+        }
+        // 遍历音素，包括选项型和数值型
+        foreach (UPhoneme phoneme in _viewModel.EditingPart.phonemes)
+        {
+            if (phoneme.Error || phoneme.Parent == null) // 跳过错误音素
+            {
+                continue;
+            }
+            double leftBound = phoneme.position + _viewModel.EditingPart.position; // 音素左边界
+            double rightBound = phoneme.End + _viewModel.EditingPart.position; // 音素右边界
+            if (leftBound >= rightTick || rightBound <= leftTick)
+            {
+                continue; // 跳过不可见音素
+            }
+            (float value, bool overriden) = phoneme.GetExpression(project, track, descriptor.abbr);
+            float x1 = _viewModel.PianoRollTransformer.LogicalToActualX(phoneme.position + _viewModel.EditingPart.position);
+            float x2 = _viewModel.PianoRollTransformer.LogicalToActualX(phoneme.End + _viewModel.EditingPart.position);
+            // 数值型
+            if (descriptor.type == UExpressionType.Numerical)
+            {
+                float valueHeight = (descriptor.max - value) * canvas.DeviceClipBounds.Height / descriptorRange;
+                canvas.DrawLine(x1, canvas.DeviceClipBounds.Height, x1, valueHeight, ThemeColorsManager.Current.EditedExpressionStrokePaint);
+                canvas.DrawLine(x1, valueHeight, x2, valueHeight, ThemeColorsManager.Current.EditedExpressionStrokePaint);
+            }
+            // 选项型
+            else if (descriptor.type == UExpressionType.Options)
+            {
+                x1 += outerRadius;
+                for (int i = 0; i < descriptor.options.Length; ++i) // 对于每一个选项
+                {
+                    float y = optionHeight * (descriptor.options.Length - 1 - i + 0.5f);
+                    if ((int)value == i) // 选中的
+                    {
+                        if (overriden) // 被编辑过的
+                        {
+                            canvas.DrawCircle(x1, y, outerRadius, ThemeColorsManager.Current.EditedExpressionStrokePaint);
+                            canvas.DrawCircle(x1, y, innerRadius, ThemeColorsManager.Current.EditedExpressionFillPaint);
+                        }
+                        else // 未被编辑过的
+                        {
+                            canvas.DrawCircle(x1, y, outerRadius, ThemeColorsManager.Current.DefaultExpressionStrokePaint);
+                            canvas.DrawCircle(x1, y, innerRadius, ThemeColorsManager.Current.DefaultExpressionFillPaint);
+                        }
+                    }
+                    else // 未选中的
+                    {
+                        canvas.DrawCircle(x1, y, outerRadius, ThemeColorsManager.Current.DefaultExpressionStrokePaint);
+                    }
+                }
+            }
+        }
+        // 选项型的背景框和文字
+        if (descriptor.type == UExpressionType.Options)
+        {
+            const int fontSize = 12;
+            int padding = (int)(4 * _viewModel.Density);
+            using SKFont textFont = new(ObjectProvider.NotoSansCJKscRegularTypeface, fontSize * (float)_viewModel.Density);
+            for (int i = 0; i < descriptor.options.Length; ++i)
+            {
+                string optionText = descriptor.options[i]; // 选项文字
+                if (string.IsNullOrEmpty(optionText))
+                {
+                    optionText = "\"\"";
+                }
+                float y = optionHeight * (descriptor.options.Length - 1 - i + 0.5f);
+                const float x = 12f;
+                float width = textFont.MeasureText(optionText) + padding + padding;
+                float height = fontSize * (float)_viewModel.Density + padding + padding;
+                canvas.DrawRect(x, y - height / 2, width, height, ThemeColorsManager.Current.ExpressionOptionBoxPaint);
+                canvas.DrawText(optionText, x + 4, y + 14 * (float)_viewModel.Density, textFont, ThemeColorsManager.Current.ExpressionOptionTextPaint);
+            }
+        }
+        // 绘制触摸中心
+        if (isDrawingExpression)
+        {
+            float radius = 10f;
+            canvas.DrawCircle(drawingExpressionPointer, radius, ThemeColorsManager.Current.DrawingCursorPaint);
+            using SKFont textFont = new(ObjectProvider.NotoSansCJKscRegularTypeface, 12 * (float)_viewModel.Density);
+            // 绘制数值
+            canvas.DrawText($"{_viewModel.currentExpressionValue}", drawingExpressionPointer.X - 12f, drawingExpressionPointer.Y - 12f, textFont, ThemeColorsManager.Current.ExpressionOptionTextPaint);
+        }
     }
 
     private void ExpressionCanvas_Touch(object sender, SkiaSharp.Views.Maui.SKTouchEventArgs e)
@@ -2684,6 +2853,56 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     DocManager.Inst.EndUndoGroup();
                 }
             }
+        }
+    }
+
+    private async void ButtonPrimaryExp_Clicked(object sender, EventArgs e)
+    {
+        string[] abbrs = [.. DocManager.Inst.Project.expressions.Keys];
+        string result = await DisplayActionSheet(AppResources.SelectExpression, AppResources.CancelText, null, abbrs);
+        if (!string.IsNullOrEmpty(result) &&
+            result != AppResources.CancelText &&
+            DocManager.Inst.Project.expressions.TryGetValue(result, out UExpressionDescriptor? newExpressionDescriptor) &&
+            newExpressionDescriptor != null)
+        {
+            DocManager.Inst.StartUndoGroup();
+            _viewModel.PrimaryExpressionDescriptor = newExpressionDescriptor;
+            _viewModel.UpdateExpressions();
+            ExpressionCanvas.InvalidateSurface();
+            DocManager.Inst.EndUndoGroup();
+        }
+    }
+
+    private async void ButtonSecondaryExp_Clicked(object sender, EventArgs e)
+    {
+        string[] abbrs = [.. DocManager.Inst.Project.expressions.Keys];
+        string result = await DisplayActionSheet(AppResources.SelectExpression, AppResources.CancelText, null, abbrs);
+        if (!string.IsNullOrEmpty(result) &&
+            result != AppResources.CancelText &&
+            DocManager.Inst.Project.expressions.TryGetValue(result, out UExpressionDescriptor? newExpressionDescriptor) &&
+            newExpressionDescriptor != null)
+        {
+            DocManager.Inst.StartUndoGroup();
+            _viewModel.SecondaryExpressionDescriptor = newExpressionDescriptor;
+            _viewModel.UpdateExpressions();
+            ExpressionCanvas.InvalidateSurface();
+            DocManager.Inst.EndUndoGroup();
+        }
+    }
+
+    private void ButtonSwitchExpressionEditMode_Clicked(object sender, EventArgs e)
+    {
+        if (sender == ButtonSwitchExpressionHandMode)
+        {
+            _viewModel.CurrentExpressionEditMode = EditViewModel.ExpressionEditMode.Hand;
+        }
+        else if (sender == ButtonSwitchExpressionEditMode)
+        {
+            _viewModel.CurrentExpressionEditMode = EditViewModel.ExpressionEditMode.Edit;
+        }
+        else if (sender == ButtonSwitchExpressionEraserMode)
+        {
+            _viewModel.CurrentExpressionEditMode = EditViewModel.ExpressionEditMode.Eraser;
         }
     }
 }

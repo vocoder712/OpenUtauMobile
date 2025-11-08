@@ -834,4 +834,7 @@
   <data name="InstallToAdditionalSingersPathTooltip" xml:space="preserve">
     <value>启用后，默认将歌手安装至您设置的额外歌手目录。</value>
   </data>
+  <data name="SelectExpression" xml:space="preserve">
+    <value>选择一个表情</value>
+  </data>
 </root>

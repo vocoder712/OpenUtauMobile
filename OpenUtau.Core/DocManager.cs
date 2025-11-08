@@ -221,7 +221,7 @@ namespace OpenUtau.Core {
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
                 if (!(cmd is ProgressBarNotification)) {
-                    Log.Warning($"{cmd} not on main thread");
+                    //Log.Warning($"{cmd} not on main thread");
                 }
                 PostOnUIThread(() => ExecuteCmd(cmd));
                 return;
@@ -261,7 +261,7 @@ namespace OpenUtau.Core {
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
-                    Log.Information($"Publish notification {cmd}");
+                    //Log.Information($"Publish notification {cmd}");
                 }
                 return;
             }
@@ -274,7 +274,7 @@ namespace OpenUtau.Core {
                 cmd.Execute();
             }
             if (!cmd.Silent) {
-                Log.Information($"ExecuteCmd {cmd}");
+                //Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
             if (!undoGroup.DeferValidate) {
@@ -288,7 +288,7 @@ namespace OpenUtau.Core {
                 EndUndoGroup();
             }
             undoGroup = new UCommandGroup(deferValidate);
-            Log.Information("undoGroup started");
+            //Log.Information("undoGroup started");
         }
 
         public void EndUndoGroup() {
@@ -308,7 +308,7 @@ namespace OpenUtau.Core {
             }
             undoGroup.Merge();
             undoGroup = null;
-            Log.Information("undoGroup ended");
+            //Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());
         }
 
