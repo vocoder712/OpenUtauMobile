@@ -6,6 +6,7 @@ using Android.Content;
 using Android.App;
 using Serilog;
 using Android.Webkit;
+using Resource = Microsoft.Maui.Resource;
 
 namespace OpenUtauMobile.Platforms.Android.Providers
 {

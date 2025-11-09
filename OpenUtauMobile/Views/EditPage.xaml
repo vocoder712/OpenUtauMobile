@@ -183,7 +183,8 @@
                                                                 <ImageButton Source="{Binding Singer.AvatarData, Converter={StaticResource ByteDataImageSourceConverter}}" Aspect="AspectFill" x:Name="ButtonSingerAvatar" Clicked="ButtonSingerAvatar_Clicked" />
                                                             </Grid>
                                                         </Border>
-                                                        <Label Text="{Binding TrackName}" IsVisible="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader, Converter={StaticResource InvertBoolConverter}}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="10"/>
+                                                        <Label Text="{Binding TrackName}" IsVisible="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader, Converter={StaticResource InvertBoolConverter}}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="10" LineBreakMode="CharacterWrap"/>
+                                                        <Label Text="{Binding Singer.LocalizedName}" IsVisible="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader}" VerticalTextAlignment="Center" HorizontalTextAlignment="Center" FontSize="12" LineBreakMode="CharacterWrap"/>
                                                     </VerticalStackLayout>
                                                     <!-- 展开的详细轨道头部 -->
                                                     <Grid x:Name="DetailedTrackHeader" ColumnDefinitions="1*,3*, 20" RowDefinitions="3*,2*,2*,3*" WidthRequest="220" IsVisible="{Binding Source={x:Reference Page}, Path=BindingContext.IsOpenDetailedTrackHeader}">
