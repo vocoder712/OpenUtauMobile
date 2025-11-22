@@ -310,12 +310,28 @@
                                 <Button.Behaviors>
                                     <toolkit:TouchBehavior LongPressCompleted="TouchBehaviorPianoRollSnapToGrid_LongPressCompleted" />
                                 </Button.Behaviors>
-                            </Button>                        
+                            </Button>
                         </Grid>
                         <!-- 删除 -->
                         <Grid RowDefinitions="40" IsVisible="{Binding IsShowRemoveNoteButton}">
                             <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemoveNote" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemoveNote_Clicked"/>
                         </Grid>
+                        <Border IsVisible="True" Padding="0" Margin="0, 0, 0, 0" StrokeShape="RoundRectangle 20" BackgroundColor="#80000000"  StrokeThickness="0">
+                            <VerticalStackLayout Spacing="0">
+                                <Grid RowDefinitions="40">
+                                    <Button ImageSource="{DynamicResource select}" x:Name="ButtonSelectToggle" Style="{StaticResource CircularToolbarButtonStyle}" />
+                                </Grid>
+                                <VerticalStackLayout IsVisible="False" Spacing="0">
+                                    <BoxView HeightRequest="1" Margin="5, 0"  Color="#30FFFFFF" />
+                                    <Grid RowDefinitions="40">
+                                        <Button ImageSource="{DynamicResource copy}" x:Name="ButtonCopy" Style="{StaticResource CircularToolbarButtonStyle}" />
+                                    </Grid>
+                                    <Grid RowDefinitions="40">
+                                        <Button ImageSource="{DynamicResource paste}" x:Name="ButtonPaste" Style="{StaticResource CircularToolbarButtonStyle}" />
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
                     </VerticalStackLayout>
 
                     <!-- 可拖拽分隔 -->

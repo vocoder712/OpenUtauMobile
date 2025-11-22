@@ -51,4 +51,7 @@
     <FileImageSource x:Key="phonemizer" File="phonemizer_dark.png"></FileImageSource>
     <FileImageSource x:Key="expand-more" File="ic_sharp_expand_more_dark.png"></FileImageSource>
     <FileImageSource x:Key="expand-less" File="ic_sharp_expand_less_dark.png"></FileImageSource>
+    <FileImageSource x:Key="select" File="icon_select_dark.png"></FileImageSource>
+    <FileImageSource x:Key="copy" File="icon_copy_dark.png"></FileImageSource>
+    <FileImageSource x:Key="paste" File="icon_paste_dark.png"></FileImageSource>
 </ResourceDictionary>

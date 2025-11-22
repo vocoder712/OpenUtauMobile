@@ -52,4 +52,7 @@
     <FileImageSource x:Key="phonemizer" File="phonemizer_light.png"></FileImageSource>
     <FileImageSource x:Key="expand-more" File="ic_sharp_expand_more_light.png"></FileImageSource>
     <FileImageSource x:Key="expand-less" File="ic_sharp_expand_less_light.png"></FileImageSource>
+    <FileImageSource x:Key="select" File="icon_select_light.png"></FileImageSource>
+    <FileImageSource x:Key="copy" File="icon_copy_light.png"></FileImageSource>
+    <FileImageSource x:Key="paste" File="icon_paste_light.png"></FileImageSource>
 </ResourceDictionary>
