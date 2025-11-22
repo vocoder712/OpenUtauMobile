@@ -1668,9 +1668,14 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         if (PlaybackManager.Inst.Playing) // 如果正在播放 => 暂停
         {
             PlaybackManager.Inst.PlayOrPause();
+            // When pausing we don't want the playhead to jump to start yet
+            _viewModel.PlaybackWasStoppedManually = false;
         }
         else // 如果没有播放 => 播放
         {
+            // Set start position
+            _viewModel.PlaybackStartPosition = _viewModel.PlayPosTick;
+            _viewModel.PlaybackWasStoppedManually = false;
             PlaybackManager.Inst.StopPlayback();
             PlaybackManager.Inst.PlayOrPause();
         }
@@ -2821,7 +2826,18 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
 
     private void ButtonStop_Clicked(object sender, EventArgs e)
     {
-        PlaybackManager.Inst.StopPlayback();
+        // If the playback wasn't stopped manually (e.g: it was playing or paused), return to the recorded start position
+        if (_viewModel.PlaybackWasStoppedManually == false)
+        {
+            PlaybackManager.Inst.StopPlayback();
+            _viewModel.PlaybackWasStoppedManually = true;
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(_viewModel.PlaybackStartPosition));
+        }
+        else
+        {
+            // If it was already stopped, pressing stop again returns it to the very start (Tick 0)
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+        }
     }
 
     private async void ButtonChangePhonemizer_Clicked(object sender, EventArgs e)
