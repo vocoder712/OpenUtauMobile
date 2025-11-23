@@ -2950,7 +2950,6 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _viewModel.CopySelectedNotes();
         CommunityToolkit.Maui.Alerts.Toast.Make(AppResources.CopiedToClipboardToast, CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
     }
-
     private void ButtonPaste_Clicked(object sender, EventArgs e)
     {
         _viewModel.PasteNotes();
@@ -2958,5 +2957,10 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         PianoRollCanvas.InvalidateSurface();
         PianoRollPitchCanvas.InvalidateSurface();
         PhonemeCanvas.InvalidateSurface();
+    }
+    private void ButtonSelectAll_Clicked(object sender, EventArgs e)
+    {
+        _viewModel.SelectAllNotes();
+        PianoRollCanvas.InvalidateSurface();
     }
 }

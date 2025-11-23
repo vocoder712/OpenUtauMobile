@@ -328,6 +328,9 @@
                                         </DataTrigger>
                                     </HorizontalStackLayout.Triggers>
                                     <Grid RowDefinitions="40" WidthRequest="40">
+                                        <Button ImageSource="{DynamicResource selectall}" x:Name="ButtonSelectAll" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonSelectAll_Clicked" />
+                                    </Grid>
+                                    <Grid RowDefinitions="40" WidthRequest="40">
                                         <Button ImageSource="{DynamicResource copy}" x:Name="ButtonCopy" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonCopy_Clicked" />
                                     </Grid>
                                     <Grid RowDefinitions="40" WidthRequest="40">

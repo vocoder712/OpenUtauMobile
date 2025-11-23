@@ -1921,5 +1921,25 @@ namespace OpenUtauMobile.ViewModels
                 MessageBus.Current.SendMessage(new RefreshCanvasMessage());
             }
         }
+        public void SelectAllNotes()
+        {
+            if (EditingPart is not UVoicePart voicePart)
+            {
+                SelectedNotes.Clear();
+                return;
+            }
+
+            SelectedNotes.Clear();
+
+            // Select all notes from the voice part's note list
+            SelectedNotes.AddRange(voicePart.notes);
+
+            HandleSelectedNotesChanged();
+
+            // Request canvas update
+            MessageBus.Current.SendMessage(new RefreshCanvasMessage());
+
+            Debug.WriteLine($"Selected {SelectedNotes.Count} notes.");
+        }
     }
 }
