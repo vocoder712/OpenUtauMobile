@@ -185,6 +185,8 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public string Path { get; set; } = string.Empty;
         [Reactive] public ObservableCollectionExtended<UTrack> Tracks { get; set; } = [];
         //[Reactive] public ObservableCollectionExtended<UPart> Parts { get; set; } = [];
+        [Reactive] public int PlaybackStartPosition { get; set; } = 0;
+        [Reactive] public bool PlaybackWasStoppedManually { get; set; } = true;
         [Reactive] public int PlayPosTick { get; set; } = 0;
         [Reactive] public bool Playing { get; set; } = false;
         [Reactive] public byte[] CurrentPortrait { get; set; } = [];
