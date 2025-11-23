@@ -2,6 +2,7 @@
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Utils.Messages;
 using OpenUtauMobile.Resources.Strings;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.Views.DrawableObjects;
@@ -204,6 +205,7 @@ namespace OpenUtauMobile.ViewModels
         /// 正在钢琴卷帘窗中编辑的可绘制音符组对象，null表示没有正在编辑的音符组
         /// </summary>
         public DrawableNotes? EditingNotes { get; set; }
+        private static List<UNote> _clipboard = [];
         [Reactive] public bool PlayPosWaitingRendering { get; set; } = false; // 等待渲染
         public double OriginalPan { get; internal set; }
         [Reactive] public ObservableCollectionExtended<RunningWork> RunningWorks { get; set; } = []; // 正在运行的工作列表
@@ -1838,6 +1840,86 @@ namespace OpenUtauMobile.ViewModels
         public void EndResetExpression()
         {
             DocManager.Inst.EndUndoGroup();
+        }
+        public void CopySelectedNotes()
+        {
+            if (SelectedNotes.Count == 0) return;
+            _clipboard.Clear();
+            foreach (var note in SelectedNotes)
+            {
+                // We clone the note so changes to the original don't affect the clipboard
+                _clipboard.Add(note.Clone());
+            }
+            Debug.WriteLine($"Copied {_clipboard.Count} notes.");
+        }
+        public void PasteNotes()
+        {
+            // Validation: Must have data and a valid destination part
+            if (_clipboard.Count == 0 || EditingPart == null) return;
+            if (EditingPart is not UVoicePart voicePart) return;
+
+            // Determine the "Anchor" of the clipboard
+            // We find the earliest start position among the copied notes.
+            // This ensures that if you copy a melody, the FIRST note hits the cursor.
+            int clipboardMinPos = _clipboard.Min(n => n.position);
+
+            // Calculate Target Position in Local Part Time
+            // PlayPosTick is Global Project Time. We must convert it to Local Part Time.
+            // This logic allows copying from Part A and pasting into Part B correctly.
+            int targetLocalTick = PlayPosTick - voicePart.position;
+
+            // Snap to Grid (Quantization)
+            // If snapping is on, we align the paste target to the nearest grid line
+            if (IsPianoRollSnapToGrid)
+            {
+                targetLocalTick = PianoRollTickToLinedTick(targetLocalTick);
+            }
+
+            // Calculate the Shift Offset
+            // How far do we move the notes? 
+            // Target - Anchor = The distance to shift.
+            int offset = targetLocalTick - clipboardMinPos;
+
+            DocManager.Inst.StartUndoGroup();
+
+            List<UNote> newlyPastedNotes = new();
+
+            try
+            {
+                foreach (var clipNote in _clipboard)
+                {
+                    // Clone again so we can paste multiple times without reference issues
+                    var newNote = clipNote.Clone();
+
+                    // Apply the offset to preserve relative rhythm and chords
+                    newNote.position += offset;
+
+                    // Safety: Don't allow notes to exist before the start of the part
+                    if (newNote.position < 0) continue;
+
+                    // Add the command to the queue
+                    DocManager.Inst.ExecuteCmd(new AddNoteCommand(voicePart, newNote));
+                    newlyPastedNotes.Add(newNote);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to paste notes");
+            }
+
+            DocManager.Inst.EndUndoGroup();
+
+            // Update Selection to the new notes
+            // This is standard UI behavior: after pasting, select the new items
+            if (newlyPastedNotes.Count > 0)
+            {
+                SelectedNotes.Clear();
+                SelectedNotes.AddRange(newlyPastedNotes);
+                HandleSelectedNotesChanged();
+
+                // Force the canvas to redraw to show the new notes
+                MessageBus.Current.SendMessage(new RefreshCanvasMessage());
+            }
         }
     }
 }

@@ -2945,4 +2945,18 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _viewModel.SelectedNotes.Clear(); 
         PianoRollCanvas.InvalidateSurface(); 
     }
+    private void ButtonCopy_Clicked(object sender, EventArgs e)
+    {
+        _viewModel.CopySelectedNotes();
+        CommunityToolkit.Maui.Alerts.Toast.Make(AppResources.CopiedToClipboardToast, CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
+    }
+
+    private void ButtonPaste_Clicked(object sender, EventArgs e)
+    {
+        _viewModel.PasteNotes();
+
+        PianoRollCanvas.InvalidateSurface();
+        PianoRollPitchCanvas.InvalidateSurface();
+        PhonemeCanvas.InvalidateSurface();
+    }
 }

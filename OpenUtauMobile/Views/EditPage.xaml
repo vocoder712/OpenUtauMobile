@@ -328,10 +328,10 @@
                                         </DataTrigger>
                                     </HorizontalStackLayout.Triggers>
                                     <Grid RowDefinitions="40" WidthRequest="40">
-                                        <Button ImageSource="{DynamicResource copy}" x:Name="ButtonCopy" Style="{StaticResource CircularToolbarButtonStyle}" />
+                                        <Button ImageSource="{DynamicResource copy}" x:Name="ButtonCopy" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonCopy_Clicked" />
                                     </Grid>
                                     <Grid RowDefinitions="40" WidthRequest="40">
-                                        <Button ImageSource="{DynamicResource paste}" x:Name="ButtonPaste" Style="{StaticResource CircularToolbarButtonStyle}" />
+                                        <Button ImageSource="{DynamicResource paste}" x:Name="ButtonPaste" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonPaste_Clicked" />
                                     </Grid>
                                 </HorizontalStackLayout>
                                 <BoxView WidthRequest="1" HeightRequest="40" IsVisible="False" Margin="0"  Color="#30FFFFFF">
