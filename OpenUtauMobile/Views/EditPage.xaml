@@ -29,6 +29,13 @@
             <converters:NullToStrokeThicknessConverter x:Key="NullToStrokeThicknessConverter" />
             <converters:DoubleGridLengthConverter x:Key="DoubleGridLengthConverter" />
         </ResourceDictionary>
+        <Style x:Key="CircularToolbarContainerStyle" TargetType="Border">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 20" />
+            <Setter Property="BackgroundColor" Value="#80000000" />
+            <Setter Property="StrokeThickness" Value="0" />
+        </Style>
         <!-- 圆形按钮样式 -->
         <Style x:Key="CircularToolbarButtonStyle" TargetType="Button">
             <!--<Setter Property="HeightRequest" Value="10" />
@@ -233,32 +240,45 @@
                     <Grid AbsoluteLayout.LayoutBounds="1,0,AutoSize,AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" 
                           RowDefinitions="40,40,40" ColumnDefinitions="Auto, 40">
                         <!-- 编辑模式相关 -->
-                        <HorizontalStackLayout IsVisible="False" Grid.Row="0" Grid.Column="0">
-                            <HorizontalStackLayout.Triggers>
-                                <DataTrigger TargetType="HorizontalStackLayout" Binding="{Binding CurrentTrackEditMode}" Value="Edit">
-                                    <Setter Property="IsVisible" Value="True"/>
-                                </DataTrigger>
-                            </HorizontalStackLayout.Triggers>
-                            <Grid ColumnDefinitions="40">
-                                <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemovePart" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemovePart_Clicked"/>
-                            </Grid>
-                            <Grid ColumnDefinitions="40" >
-                                <Button ImageSource="{DynamicResource rename}" x:Name="ButtonRenamePart" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRenamePart_Clicked"/>
-                            </Grid>
-                        </HorizontalStackLayout>
-                        <!-- 轨道编辑模式切换 -->
-                        <Button Grid.Row="0" Grid.Column="1" ImageSource="{DynamicResource edit-off}" x:Name="ButtonSwitchEditMode" Clicked="ButtonSwitchEditMode_Clicked">
-                            <Button.Style>
-                                <!-- 通过触发器改变文字 -->
-                                <Style TargetType="Button" BasedOn="{StaticResource CircularToolbarButtonStyle}">
-                                    <Style.Triggers>
-                                        <DataTrigger TargetType="Button" Binding="{Binding CurrentTrackEditMode}" Value="Edit">
-                                            <Setter Property="ImageSource" Value="{DynamicResource edit}" />
+                        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource CircularToolbarContainerStyle}">
+                            <HorizontalStackLayout Spacing="0">
+                                <HorizontalStackLayout IsVisible="False" Spacing="0">
+                                    <HorizontalStackLayout.Triggers>
+                                        <DataTrigger TargetType="HorizontalStackLayout" Binding="{Binding CurrentTrackEditMode}" Value="Edit">
+                                            <Setter Property="IsVisible" Value="True"/>
                                         </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
+                                    </HorizontalStackLayout.Triggers>
+                                    <Grid RowDefinitions="40" WidthRequest="40">
+                                        <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemovePart" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemovePart_Clicked"/>
+                                    </Grid>
+                                    <Grid RowDefinitions="40" WidthRequest="40">
+                                        <Button ImageSource="{DynamicResource rename}" x:Name="ButtonRenamePart" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRenamePart_Clicked"/>
+                                    </Grid>
+                                </HorizontalStackLayout>
+
+                                <BoxView WidthRequest="1" HeightRequest="40" Margin="0" Color="#30FFFFFF" IsVisible="False">
+                                    <BoxView.Triggers>
+                                        <DataTrigger TargetType="BoxView" Binding="{Binding CurrentTrackEditMode}" Value="Edit">
+                                            <Setter Property="IsVisible" Value="True"/>
+                                        </DataTrigger>
+                                    </BoxView.Triggers>
+                                </BoxView>
+
+                                <Grid RowDefinitions="40" WidthRequest="40">
+                                    <Button ImageSource="{DynamicResource edit-off}" x:Name="ButtonSwitchEditMode" Clicked="ButtonSwitchEditMode_Clicked">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource CircularToolbarButtonStyle}">
+                                                <Style.Triggers>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding CurrentTrackEditMode}" Value="Edit">
+                                                        <Setter Property="ImageSource" Value="{DynamicResource edit}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </Grid>
+                            </HorizontalStackLayout>
+                        </Border>
                         <!-- 磁吸到网格 -->
                         <Button ImageSource="{DynamicResource magnet}" Grid.Row="1" Grid.Column="1" Style="{StaticResource CircularToolbarButtonStyle}" x:Name="ButtonTrackSnapToGrid" Clicked="ButtonTrackSnapToGrid_Clicked">
                             <Button.Behaviors>
@@ -298,41 +318,51 @@
 
                     </Grid>
                     <!-- 钢琴卷帘工具栏 -->
-                    <VerticalStackLayout AbsoluteLayout.LayoutBounds="1,0,AutoSize,AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional"
-                                         VerticalOptions="Start" WidthRequest="40">
-                        <!-- 渲染音高 -->
-                        <Grid RowDefinitions="40" IsVisible="{Binding IsShowRenderPitchButton}">
-                            <Button Text="AI" x:Name="ButtonRenderPitch" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRenderPitch_Clicked"/>
-                        </Grid>
-                        <!-- 磁吸到网格 -->
-                        <Grid RowDefinitions="40">
-                            <Button ImageSource="{DynamicResource magnet}" x:Name="ButtonPianoRollSnapToGrid" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonPianoRollSnapToGrid_Clicked">
-                                <Button.Behaviors>
-                                    <toolkit:TouchBehavior LongPressCompleted="TouchBehaviorPianoRollSnapToGrid_LongPressCompleted" />
-                                </Button.Behaviors>
-                            </Button>
-                        </Grid>
-                        <!-- 删除 -->
-                        <Grid RowDefinitions="40" IsVisible="{Binding IsShowRemoveNoteButton}">
-                            <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemoveNote" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemoveNote_Clicked"/>
-                        </Grid>
-                        <Border IsVisible="True" Padding="0" Margin="0, 0, 0, 0" StrokeShape="RoundRectangle 20" BackgroundColor="#80000000"  StrokeThickness="0">
-                            <VerticalStackLayout Spacing="0">
-                                <Grid RowDefinitions="40">
-                                    <Button ImageSource="{DynamicResource select}" x:Name="ButtonSelectToggle" Style="{StaticResource CircularToolbarButtonStyle}" />
-                                </Grid>
-                                <VerticalStackLayout IsVisible="False" Spacing="0">
-                                    <BoxView HeightRequest="1" Margin="5, 0"  Color="#30FFFFFF" />
-                                    <Grid RowDefinitions="40">
+                    <Grid AbsoluteLayout.LayoutBounds="1,0,AutoSize,AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional" VerticalOptions="Start" RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, Auto">
+                        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" IsVisible="{Binding IsShowSelectButton}" Style="{StaticResource CircularToolbarContainerStyle}">
+                            <HorizontalStackLayout Spacing="0">
+                                <HorizontalStackLayout Spacing="0" IsVisible="False">
+                                    <HorizontalStackLayout.Triggers>
+                                        <DataTrigger TargetType="HorizontalStackLayout" Binding="{Binding CurrentSelectMode}" Value="Multi">
+                                            <Setter Property="IsVisible" Value="True"/>
+                                        </DataTrigger>
+                                    </HorizontalStackLayout.Triggers>
+                                    <Grid RowDefinitions="40" WidthRequest="40">
                                         <Button ImageSource="{DynamicResource copy}" x:Name="ButtonCopy" Style="{StaticResource CircularToolbarButtonStyle}" />
                                     </Grid>
-                                    <Grid RowDefinitions="40">
+                                    <Grid RowDefinitions="40" WidthRequest="40">
                                         <Button ImageSource="{DynamicResource paste}" x:Name="ButtonPaste" Style="{StaticResource CircularToolbarButtonStyle}" />
                                     </Grid>
-                                </VerticalStackLayout>
-                            </VerticalStackLayout>
+                                </HorizontalStackLayout>
+                                <BoxView WidthRequest="1" HeightRequest="40" IsVisible="False" Margin="0"  Color="#30FFFFFF">
+                                    <BoxView.Triggers>
+                                        <DataTrigger TargetType="BoxView" Binding="{Binding CurrentSelectMode}" Value="Multi">
+                                            <Setter Property="IsVisible" Value="True"/>
+                                        </DataTrigger>
+                                    </BoxView.Triggers>
+                                </BoxView>
+
+                                <Grid RowDefinitions="40" WidthRequest="40">
+                                    <Button ImageSource="{DynamicResource select}" x:Name="ButtonSelectToggle" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonSelect_Clicked" />
+                                </Grid>
+                            </HorizontalStackLayout>
                         </Border>
-                    </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" HorizontalOptions="End" WidthRequest="40">
+                            <Grid RowDefinitions="40" IsVisible="{Binding IsShowRenderPitchButton}">
+                                <Button Text="AI" x:Name="ButtonRenderPitch" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRenderPitch_Clicked"/>
+                            </Grid>
+                            <Grid RowDefinitions="40">
+                                <Button ImageSource="{DynamicResource magnet}" x:Name="ButtonPianoRollSnapToGrid" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonPianoRollSnapToGrid_Clicked">
+                                    <Button.Behaviors>
+                                        <toolkit:TouchBehavior LongPressCompleted="TouchBehaviorPianoRollSnapToGrid_LongPressCompleted" />
+                                    </Button.Behaviors>
+                                </Button>
+                            </Grid>
+                            <Grid RowDefinitions="40" IsVisible="{Binding IsShowRemoveNoteButton}">
+                                <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemoveNote" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemoveNote_Clicked"/>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Grid>
 
                     <!-- 可拖拽分隔 -->
                     <Border x:Name="DivExp" AbsoluteLayout.LayoutBounds="{Binding BoundExpDiv}" AbsoluteLayout.LayoutFlags="WidthProportional" BackgroundColor="{DynamicResource ExpBackGroundAlpha}" StrokeThickness="0">

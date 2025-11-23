@@ -213,6 +213,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 ButtonSwitchEditPitchCurveMode.BackgroundColor = mode == EditViewModel.NoteEditMode.EditPitchCurve ? activeColor : Colors.Transparent;
                 ButtonSwitchEditPitchAnchorMode.BackgroundColor = mode == EditViewModel.NoteEditMode.EditPitchAnchor ? activeColor : Colors.Transparent;
                 ButtonSwitchEditVibratoMode.BackgroundColor = mode == EditViewModel.NoteEditMode.EditVibrato ? activeColor : Colors.Transparent;
+                _viewModel.IsShowSelectButton = mode == EditViewModel.NoteEditMode.EditNote;
                 // 重绘画布
                 PianoRollCanvas.InvalidateSurface();
                 PianoRollPitchCanvas.InvalidateSurface();
@@ -649,7 +650,21 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     else // 点击到了音符
                     {
                         Debug.WriteLine($"点击了音符: {hitNote.lyric} ({hitNote.tone})");
-                        _viewModel.SelectedNotes = [hitNote];
+                        if (_viewModel.CurrentSelectMode == EditViewModel.SelectionMode.Multi)
+                        {
+                            if (_viewModel.SelectedNotes.Contains(hitNote))
+                            {
+                                _viewModel.SelectedNotes.Remove(hitNote);
+                            }
+                            else
+                            {
+                                _viewModel.SelectedNotes.Add(hitNote);
+                            }
+                        }
+                        else
+                        {
+                            _viewModel.SelectedNotes = [hitNote];
+                        }
                     }
                     PianoRollCanvas.InvalidateSurface();
                     _viewModel.HandleSelectedNotesChanged();
@@ -2920,5 +2935,14 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         {
             _viewModel.CurrentExpressionEditMode = EditViewModel.ExpressionEditMode.Eraser;
         }
+    }
+    private void ButtonSelect_Clicked(object sender, EventArgs e)
+    {
+        _viewModel.CurrentSelectMode = 
+        _viewModel.CurrentSelectMode == EditViewModel.SelectionMode.Multi 
+                ? EditViewModel.SelectionMode.Single 
+                : EditViewModel.SelectionMode.Multi;
+        _viewModel.SelectedNotes.Clear(); 
+        PianoRollCanvas.InvalidateSurface(); 
     }
 }
