@@ -2,6 +2,7 @@
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Utils.Messages;
 using OpenUtauMobile.Resources.Strings;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.Views.DrawableObjects;
@@ -11,6 +12,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using SkiaSharp;
 using System.Diagnostics;
+using System.Net.Sockets;
 using System.Reactive.Linq;
 using Preferences = OpenUtau.Core.Util.Preferences;
 
@@ -47,6 +49,7 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public double AvatarSize { get; set; } = 35d; // 头像大小
         [Reactive] public bool IsShowRemoveNoteButton { get; set; } = false; // 是否显示删除音符按钮
         [Reactive] public bool IsShowRenderPitchButton { get; set; } = false; // 是否显示渲染音高按钮
+        [Reactive] public bool IsShowSelectButton { get; set; } = false;
         public double OriginalVolume { get; set; } = 0d; // 保存原始音量
         public int[] SnapDivs = [4, 8, 16, 32, 64, 128, 3, 6, 12, 24, 48, 96, 192]; // 常用量化单位数组
         #region 编辑模式
@@ -79,6 +82,11 @@ namespace OpenUtauMobile.ViewModels
             // 橡皮擦模式
             Eraser,
         };
+        public enum SelectionMode
+        {
+            Single,
+            Multi,
+        }
         /// <summary>
         /// 当前走带编辑模式
         /// </summary>
@@ -91,6 +99,7 @@ namespace OpenUtauMobile.ViewModels
         /// 当前表情编辑模式
         /// </summary>
         [Reactive] public ExpressionEditMode CurrentExpressionEditMode { get; set; } = ExpressionEditMode.Hand; // 默认为手模式
+        [Reactive] public SelectionMode CurrentSelectMode { get; set; } = SelectionMode.Single;
         #endregion
         [Reactive] public ObservableCollectionExtended<UPart> PhonemizingParts { get; set; } = []; // 正在进行音素化的分片集合
         [Reactive] public string PhonemizingPartName { get; set; } = string.Empty; // 正在音素化的分片名称
@@ -196,6 +205,7 @@ namespace OpenUtauMobile.ViewModels
         /// 正在钢琴卷帘窗中编辑的可绘制音符组对象，null表示没有正在编辑的音符组
         /// </summary>
         public DrawableNotes? EditingNotes { get; set; }
+        private static List<UNote> _clipboard = [];
         [Reactive] public bool PlayPosWaitingRendering { get; set; } = false; // 等待渲染
         public double OriginalPan { get; internal set; }
         [Reactive] public ObservableCollectionExtended<RunningWork> RunningWorks { get; set; } = []; // 正在运行的工作列表
@@ -391,26 +401,41 @@ namespace OpenUtauMobile.ViewModels
 
         public void HandleSelectedNotesChanged()
         {
-            // 检查一遍选中的音符是否已经被删除
-            SelectedNotes.RemoveMany([.. SelectedNotes
-                    .Where(note =>
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                var notesToRemove = new System.Collections.Generic.List<UNote>();
+                foreach (var note in SelectedNotes)
+                {
+                    if (EditingPart == null)
                     {
-                        if (EditingPart == null)
-                        {
-                            return true; // 如果没有正在编辑的分片，则音符一定是无效的
-                        }
-                        return !EditingPart.notes.Contains(note); // 如果音符不在正在编辑的分片中，则认为它是无效的
-                    })]);
-            if (SelectedNotes.Count == 0) // 没有选中任何音符
-            {
-                EditingNote = null; // 清空正在编辑的音符
-                IsShowRemoveNoteButton = false; // 不显示删除音符按钮
-            }
-            else
-            {
-                EditingNote = SelectedNotes[0]; // 设置正在编辑的音符为第一个选中的音符
-                IsShowRemoveNoteButton = true; // 显示删除音符按钮
-            }
+                        notesToRemove.Add(note); // If no part is being edited, the note is invalid
+                        continue;
+                    }
+
+                    // Check if the note still belongs to the current editing part
+                    if (!EditingPart.notes.Contains(note))
+                    {
+                        notesToRemove.Add(note);
+                    }
+                }
+                
+                foreach (var note in notesToRemove)
+                {
+                    SelectedNotes.Remove(note);
+                }
+
+                UNote? firstSelectedNote = SelectedNotes.FirstOrDefault();
+                if (firstSelectedNote == null) // The collection is empty
+                {
+                    EditingNote = null; // Clear the currently edited note
+                    IsShowRemoveNoteButton = false; // Hide the remove note button
+                }
+                else
+                {
+                    EditingNote = firstSelectedNote; // Set the first selected note as the edited note
+                    IsShowRemoveNoteButton = true; // Show the remove note button
+                }
+            });
         }
 
         public async Task Init()
@@ -1815,6 +1840,106 @@ namespace OpenUtauMobile.ViewModels
         public void EndResetExpression()
         {
             DocManager.Inst.EndUndoGroup();
+        }
+        public void CopySelectedNotes()
+        {
+            if (SelectedNotes.Count == 0) return;
+            _clipboard.Clear();
+            foreach (var note in SelectedNotes)
+            {
+                // We clone the note so changes to the original don't affect the clipboard
+                _clipboard.Add(note.Clone());
+            }
+            Debug.WriteLine($"Copied {_clipboard.Count} notes.");
+        }
+        public void PasteNotes()
+        {
+            // Validation: Must have data and a valid destination part
+            if (_clipboard.Count == 0 || EditingPart == null) return;
+            if (EditingPart is not UVoicePart voicePart) return;
+
+            // Determine the "Anchor" of the clipboard
+            // We find the earliest start position among the copied notes.
+            // This ensures that if you copy a melody, the FIRST note hits the cursor.
+            int clipboardMinPos = _clipboard.Min(n => n.position);
+
+            // Calculate Target Position in Local Part Time
+            // PlayPosTick is Global Project Time. We must convert it to Local Part Time.
+            // This logic allows copying from Part A and pasting into Part B correctly.
+            int targetLocalTick = PlayPosTick - voicePart.position;
+
+            // Snap to Grid (Quantization)
+            // If snapping is on, we align the paste target to the nearest grid line
+            if (IsPianoRollSnapToGrid)
+            {
+                targetLocalTick = PianoRollTickToLinedTick(targetLocalTick);
+            }
+
+            // Calculate the Shift Offset
+            // How far do we move the notes? 
+            // Target - Anchor = The distance to shift.
+            int offset = targetLocalTick - clipboardMinPos;
+
+            DocManager.Inst.StartUndoGroup();
+
+            List<UNote> newlyPastedNotes = new();
+
+            try
+            {
+                foreach (var clipNote in _clipboard)
+                {
+                    // Clone again so we can paste multiple times without reference issues
+                    var newNote = clipNote.Clone();
+
+                    // Apply the offset to preserve relative rhythm and chords
+                    newNote.position += offset;
+
+                    // Safety: Don't allow notes to exist before the start of the part
+                    if (newNote.position < 0) continue;
+
+                    // Add the command to the queue
+                    DocManager.Inst.ExecuteCmd(new AddNoteCommand(voicePart, newNote));
+                    newlyPastedNotes.Add(newNote);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to paste notes");
+            }
+
+            DocManager.Inst.EndUndoGroup();
+
+            // Update Selection to the new notes
+            // This is standard UI behavior: after pasting, select the new items
+            if (newlyPastedNotes.Count > 0)
+            {
+                SelectedNotes.Clear();
+                SelectedNotes.AddRange(newlyPastedNotes);
+                HandleSelectedNotesChanged();
+
+                // Force the canvas to redraw to show the new notes
+                MessageBus.Current.SendMessage(new RefreshCanvasMessage());
+            }
+        }
+        public void SelectAllNotes()
+        {
+            if (EditingPart is not UVoicePart voicePart)
+            {
+                SelectedNotes.Clear();
+                return;
+            }
+
+            SelectedNotes.Clear();
+
+            // Select all notes from the voice part's note list
+            SelectedNotes.AddRange(voicePart.notes);
+
+            HandleSelectedNotesChanged();
+
+            // Request canvas update
+            MessageBus.Current.SendMessage(new RefreshCanvasMessage());
+
+            Debug.WriteLine($"Selected {SelectedNotes.Count} notes.");
         }
     }
 }

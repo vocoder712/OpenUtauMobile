@@ -48,7 +48,7 @@
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 	  <EnableLLVM>False</EnableLLVM>
-	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidKeyStore>False</AndroidKeyStore>
 	  <Debugger>Xamarin</Debugger>
 	  <AndroidEnableSGenConcurrent>True</AndroidEnableSGenConcurrent>
 	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
@@ -86,10 +86,7 @@
 	<!-- 资源 -->
 	<ItemGroup>
 		<!-- 应用图标 -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" 
-				  ForegroundFile="Resources\AppIcon\appiconfg.svg" 
-				  ForegroundScale="0.4" 
-				  BaseSize="256,256"/>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.4" BaseSize="256,256" />
 
 		<!-- 开屏图片 -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" BaseSize="256,256" Color="#ffffff" />
@@ -250,6 +247,11 @@
 	  <MauiImage Include="Resources\Icons\dark\ph_wave_sine_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\tabler_magnet_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\tabler_magnet_off_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\icon_select_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\icon_copy_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\icon_paste_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\icon_selectall_dark.svg" />
+
 	  <MauiImage Include="Resources\Icons\light\bxs_rename_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\edit_off_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\edit_pit_light.svg" />
@@ -279,6 +281,11 @@
 	  <MauiImage Include="Resources\Icons\light\ph_wave_sine_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\tabler_magnet_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\tabler_magnet_off_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\icon_select_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\icon_copy_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\icon_paste_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\icon_selectall_light.svg" />
+
 	  <MauiImage Include="Resources\Icons\openutau.svg" />
 	</ItemGroup>
 
