@@ -135,6 +135,7 @@ namespace OpenUtauMobile.Resources.Strings {
         /// <summary>
         ///   查找类似 At bar 的本地化字符串。
         /// </summary>
+        internal static string AskIfImportTempo {
         internal static string AtBarText {
             get {
                 return ResourceManager.GetString("AtBarText", resourceCulture);
