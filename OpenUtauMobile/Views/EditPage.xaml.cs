@@ -2328,7 +2328,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     }
                     _viewModel.ImportTracks(loadedProjects, importTempo);
                 } catch (Exception ex) {
-                    Log.Error(ex, $"导入轨道失败\n文件：{files}\n错误：{ex.Message}");
+                    Log.Error(ex, $"导入轨道失败\n文件：{string.Join(", ", files)}\n错误：{ex.Message}");
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("导入轨道失败：", ex));
                 }
                 break;
