@@ -20,6 +20,7 @@ using System.Reactive.Disposables;
 using Preferences = OpenUtau.Core.Util.Preferences;
 using System.Reactive.Linq;
 using DynamicData;
+using OpenUtau.Core.Format;
 
 namespace OpenUtauMobile.Views;
 
@@ -2288,9 +2289,10 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     {
         Popup popup = new EditMenuPopup();
         object? result = await this.ShowPopupAsync(popup);
-        if (result != null && result is string action)
+        if (result is not string action) return;
+        switch (action)
         {
-            if (action == "import_audio")
+            case "import_audio":
             {
                 string path = await ObjectProvider.PickFile([".wav", ".mp3", ".flac", ".ogg"], this);
                 if (string.IsNullOrEmpty(path))
@@ -2298,12 +2300,43 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     return;
                 }
                 _viewModel.ImportAudio(path);
+                break;
             }
-            else if (action == "save_as")
+            case "import_tracks":
             {
-                await SaveAs();
+                string path = await ObjectProvider.PickFile([".ustx", ".vsqx", ".ust", ".mid", ".midi", ".ufdata", ".musicxml"], this);
+                string[] files = [path]; // 暂且只支持一个一个地选
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
+                try {
+                    UProject[] loadedProjects = Formats.ReadProjects(files);
+                    if (loadedProjects == null || loadedProjects.Length == 0) {
+                        return;
+                    }
+                    // 为新项目导入曲速，否则询问用户
+                    bool importTempo = DocManager.Inst.Project.parts.Count == 0; // 当前是新项目（没有分片）则直接导入曲速
+                    if (!importTempo && loadedProjects[0].tempos.Count > 0) {
+                        var tempoString = string.Join("\n",
+                            loadedProjects[0].tempos
+                                .Select(tempo => $"位于 {tempo.position} 的曲速标记为 {tempo.bpm}")
+                        );
+                        // 询问用户是否导入曲速
+                        importTempo = await DisplayAlert(AppResources.ImportTracksCaption, AppResources.AskIfImportTempo + '\n' + tempoString, AppResources.CancelText,
+                            AppResources.Confirm);
+                    }
+                    _viewModel.ImportTracks(loadedProjects, importTempo);
+                } catch (Exception ex) {
+                    Log.Error(ex, $"导入轨道失败\n文件：{files}\n错误：{ex.Message}");
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("导入轨道失败：", ex));
+                }
+                break;
             }
-            else if (action == "export_audio")
+            case "save_as":
+                await SaveAs();
+                break;
+            case "export_audio":
             {
                 string file = await ObjectProvider.SaveFile([".wav"], this);
                 if (!string.IsNullOrEmpty(file))
@@ -2311,12 +2344,13 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     Popup exportPopup = new ExportAudioPopup(file);
                     await this.ShowPopupAsync(exportPopup);
                 }
+
+                break;
             }
-            else if (action == "settings")
-            {
+            case "settings":
                 await Navigation.PushModalAsync(new SettingsPage());
-            }
-            else if (action == "import_midi")
+                break;
+            case "import_midi":
             {
                 string path = await ObjectProvider.PickFile([".mid", ".midi"], this);
                 if (string.IsNullOrEmpty(path))
@@ -2324,12 +2358,11 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                     return;
                 }
                 _viewModel.ImportMidi(path);
+                break;
             }
-            else
-            {
+            default:
                 Debug.WriteLine($"未知的操作: {action}");
-            }
-
+                break;
         }
     }
 
@@ -2683,7 +2716,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                 const float x = 12f;
                 float width = textFont.MeasureText(optionText) + padding + padding;
                 float height = fontSize * (float)_viewModel.Density + padding + padding;
-                canvas.DrawRect(x, y - height / 2, width, height, ThemeColorsManager.Current.ExpressionOptionBoxPaint);
+                canvas.DrawRect(x, y, width, height, ThemeColorsManager.Current.ExpressionOptionBoxPaint);
                 canvas.DrawText(optionText, x + 4, y + 14 * (float)_viewModel.Density, textFont, ThemeColorsManager.Current.ExpressionOptionTextPaint);
             }
         }

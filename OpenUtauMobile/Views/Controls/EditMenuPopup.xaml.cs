@@ -1,8 +1,4 @@
 ﻿using CommunityToolkit.Maui.Views;
-using OpenUtauMobile.ViewModels;
-using OpenUtauMobile.ViewModels.Controls;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtauMobile.Views.Controls;
 
@@ -11,10 +7,7 @@ public partial class EditMenuPopup : Popup
     private int _currentTabIndex = 0;
     private int CurrentTabIndex
     {
-        get
-        {
-            return _currentTabIndex;
-        }
+        get => _currentTabIndex;
         set
         {
             _currentTabIndex = value;
@@ -101,5 +94,10 @@ public partial class EditMenuPopup : Popup
     private void ButtonImportMidi_Clicked(object sender, EventArgs e)
     {
         CloseAsync("import_midi");
+    }
+
+    private void ButtonImportTracks_OnClicked(object? sender, EventArgs e)
+    {
+        CloseAsync("import_tracks");
     }
 }

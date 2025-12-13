@@ -366,3 +366,6 @@ FodyWeavers.xsd
 /OpenUtauMobile/signing.props
 /OpenUtauMobile/vocoder712.keystore
 /OpenUtauMobile/analyse
+
+# JetBrains Rider
+.idea/
