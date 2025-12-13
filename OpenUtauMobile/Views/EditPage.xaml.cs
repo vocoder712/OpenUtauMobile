@@ -2323,8 +2323,8 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
                                 .Select(tempo => $"位于 {tempo.position} 的曲速标记为 {tempo.bpm}")
                         );
                         // 询问用户是否导入曲速
-                        importTempo = await DisplayAlert(AppResources.ImportTracksCaption, AppResources.AskIfImportTempo + '\n' + tempoString, AppResources.CancelText,
-                            AppResources.Confirm);
+                        importTempo = await DisplayAlert(AppResources.ImportTracksCaption, AppResources.AskIfImportTempo + '\n' + tempoString, AppResources.Confirm,
+                            AppResources.CancelText);
                     }
                     _viewModel.ImportTracks(loadedProjects, importTempo);
                 } catch (Exception ex) {
