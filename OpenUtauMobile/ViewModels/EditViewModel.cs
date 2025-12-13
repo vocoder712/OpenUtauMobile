@@ -12,8 +12,6 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 using SkiaSharp;
 using System.Diagnostics;
-using System.Net.Sockets;
-using System.Reactive.Linq;
 using Preferences = OpenUtau.Core.Util.Preferences;
 
 namespace OpenUtauMobile.ViewModels
@@ -1940,6 +1938,17 @@ namespace OpenUtauMobile.ViewModels
             MessageBus.Current.SendMessage(new RefreshCanvasMessage());
 
             Debug.WriteLine($"Selected {SelectedNotes.Count} notes.");
+        }
+        /// <summary>
+        /// 导入轨道，此操作无法撤销
+        /// </summary>
+        /// <param name="loadedProjects"></param>
+        /// <param name="importTempo"></param>
+        public void ImportTracks(UProject[] loadedProjects, bool importTempo){
+            if (loadedProjects == null || loadedProjects.Length < 1) {
+                return;
+            }
+            OpenUtau.Core.Format.Formats.ImportTracks(DocManager.Inst.Project, loadedProjects, importTempo);
         }
     }
 }

@@ -133,6 +133,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 The imported project contains the following tempo markers. Do you want to use them? 的本地化字符串。
+        /// </summary>
+        internal static string AskIfImportTempo {
+            get {
+                return ResourceManager.GetString("AskIfImportTempo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 At bar 的本地化字符串。
         /// </summary>
         internal static string AtBarText {
@@ -675,6 +684,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string ImportTrack {
             get {
                 return ResourceManager.GetString("ImportTrack", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Importing Tracks 的本地化字符串。
+        /// </summary>
+        internal static string ImportTracksCaption {
+            get {
+                return ResourceManager.GetString("ImportTracksCaption", resourceCulture);
             }
         }
         

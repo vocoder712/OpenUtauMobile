@@ -837,4 +837,10 @@
   <data name="SelectExpression" xml:space="preserve">
     <value>表現を選択</value>
   </data>
+  <data name="ImportTracksCaption" xml:space="preserve">
+      <value>トラックのインポート</value>
+  </data>
+  <data name="AskIfImportTempo" xml:space="preserve">
+      <value>インポートしたプロジェクトには以下のテンポマーカーが含まれています。これらを使用しますか？</value>
+  </data>
 </root>

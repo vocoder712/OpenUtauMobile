@@ -3,9 +3,7 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels.Controls"
-               xmlns:io="clr-namespace:System.IO;assembly=System.Runtime"
                xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
-                xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
                Color="Transparent"
                x:Class="OpenUtauMobile.Views.Controls.EditMenuPopup">
     <toolkit:Popup.BindingContext>
@@ -51,7 +49,7 @@
                         </Grid>
                         <Grid>
                             <Label Text="{Static res:AppResources.ImportTrack}" />
-                            <Button BackgroundColor="Transparent" />
+                            <Button BackgroundColor="Transparent" x:Name="ButtonImportTracks" Clicked="ButtonImportTracks_OnClicked"/>
                         </Grid>
                     </VerticalStackLayout>
                 </ScrollView>
