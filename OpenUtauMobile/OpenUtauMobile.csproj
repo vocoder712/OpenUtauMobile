@@ -28,8 +28,8 @@
 		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.1.4</ApplicationDisplayVersion>
-		<ApplicationVersion>13</ApplicationVersion>
+		<ApplicationDisplayVersion>1.1.5</ApplicationDisplayVersion>
+		<ApplicationVersion>14</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
