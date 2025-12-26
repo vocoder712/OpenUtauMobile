@@ -35,7 +35,7 @@
         <AbsoluteLayout Grid.Row="1">
             <!-- 已安装的依赖项列表 -->
             <ScrollView AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All" >
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding InstalledDependencies}" Margin="0,0,10,0" MinimumHeightRequest="300" Spacing="10">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding InstalledDependencies}" Margin="0,0,10,0" MinimumHeightRequest="300">
                     <BindableLayout.EmptyView>
                         <Label Text="{Static res:AppResources.NoDependencyPrompt}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center"/>
                     </BindableLayout.EmptyView>
