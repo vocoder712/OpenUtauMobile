@@ -40,7 +40,12 @@ namespace OpenUtau.Core
                     continue;
                 }
                 var filePath = Path.Combine(basePath, entry.Key);
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath) ?? "");
+                var directoryPath = Path.GetDirectoryName(filePath);
+                if (string.IsNullOrEmpty(directoryPath))
+                {
+                    throw new ArgumentException($"Invalid entry path '{entry.Key}' in archive.");
+                }
+                Directory.CreateDirectory(directoryPath);
                 if (!entry.IsDirectory)
                 {
                     entry.WriteToFile(Path.Combine(basePath, entry.Key));
