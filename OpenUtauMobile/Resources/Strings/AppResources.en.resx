@@ -838,9 +838,15 @@ Exception Details:
     <value>Select an Expression</value>
   </data>
   <data name="ImportTracksCaption" xml:space="preserve">
-      <value>Importing Tracks</value>
+    <value>Importing Tracks</value>
   </data>
   <data name="AskIfImportTempo" xml:space="preserve">
-      <value>The imported project contains the following tempo markers. Do you want to use them?</value>
+    <value>The imported project contains the following tempo markers. Do you want to use them?</value>
+  </data>
+  <data name="DependencyManage" xml:space="preserve">
+    <value>Dependencies Manage</value>
+  </data>
+  <data name="NoDependencyPrompt" xml:space="preserve">
+    <value>No dependencies have been installed yet, please click "+" to install from a file.</value>
   </data>
 </root>

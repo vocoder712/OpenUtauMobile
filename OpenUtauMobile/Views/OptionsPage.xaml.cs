@@ -31,4 +31,9 @@ public partial class OptionsPage : ContentPage
     {
 
     }
+
+    private void ButtonDependencyManage_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushModalAsync(new DependencyManagePage());
+    }
 }

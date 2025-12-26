@@ -197,6 +197,9 @@
 	  <Compile Update="Views\SettingsPage.xaml.cs">
 	    <DependentUpon>SettingsPage.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\DependencyManagePage.xaml.cs">
+	    <DependentUpon>DependencyManagePage.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 
@@ -379,6 +382,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\SingerDetailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\DependencyManagePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\SingerManagePage.xaml">

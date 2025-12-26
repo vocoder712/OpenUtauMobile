@@ -331,6 +331,15 @@ namespace OpenUtauMobile.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Dependencies Manage 的本地化字符串。
+        /// </summary>
+        internal static string DependencyManage {
+            get {
+                return ResourceManager.GetString("DependencyManage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Detect Tempo 的本地化字符串。
         /// </summary>
         internal static string DetectTempo {
@@ -1206,6 +1215,15 @@ namespace OpenUtauMobile.Resources.Strings {
         internal static string NoColorsAvailable {
             get {
                 return ResourceManager.GetString("NoColorsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 No dependencies have been installed yet, click &quot;+&quot; to install from a file. 的本地化字符串。
+        /// </summary>
+        internal static string NoDependencyPrompt {
+            get {
+                return ResourceManager.GetString("NoDependencyPrompt", resourceCulture);
             }
         }
         

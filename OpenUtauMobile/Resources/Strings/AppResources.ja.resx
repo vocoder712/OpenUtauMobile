@@ -838,9 +838,15 @@
     <value>表現を選択</value>
   </data>
   <data name="ImportTracksCaption" xml:space="preserve">
-      <value>トラックのインポート</value>
+    <value>トラックのインポート</value>
   </data>
   <data name="AskIfImportTempo" xml:space="preserve">
-      <value>インポートしたプロジェクトには以下のテンポマーカーが含まれています。これらを使用しますか？</value>
+    <value>インポートしたプロジェクトには以下のテンポマーカーが含まれています。これらを使用しますか？</value>
+  </data>
+  <data name="DependencyManage" xml:space="preserve">
+    <value>依存関係管理</value>
+  </data>
+  <data name="NoDependencyPrompt" xml:space="preserve">
+    <value>依存関係はまだインストールされていません。ファイルからインストールするには「+」をクリックしてください。</value>
   </data>
 </root>
