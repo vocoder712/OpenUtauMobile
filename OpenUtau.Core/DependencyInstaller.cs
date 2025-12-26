@@ -34,7 +34,7 @@ namespace OpenUtau.Core
             var basePath = Path.Combine(PathManager.Inst.DependencyPath, name);
             foreach (var entry in archive.Entries)
             {
-                if (entry.Key?.Contains("..") ?? true)
+                if (string.IsNullOrEmpty(entry.Key) || entry.Key.Contains(".."))
                 {
                     // Prevent zipSlip attack
                     continue;
