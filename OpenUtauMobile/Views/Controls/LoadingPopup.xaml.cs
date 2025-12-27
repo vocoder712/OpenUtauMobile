@@ -25,8 +25,8 @@ public partial class LoadingPopup : Popup
         });
     }
 
-    public async void Finish()
+    public Task Finish()
     {
-        await CloseAsync();
+        return CloseAsync();
     }
 }

@@ -39,7 +39,7 @@ public partial class DependencyManagePage : ContentPage
             this.ShowPopup(popup);
             popup.Update(0, string.Format(AppResources.RemovingDependencyMessage, dependency.Name));
             bool result = await ViewModel.RemoveDependencyAsync(dependency);
-            popup.Finish();
+            await popup.Finish();
             if (result)
             {
                 await Toast.Make(AppResources.SuccessfullyDeleted, CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
@@ -61,7 +61,7 @@ public partial class DependencyManagePage : ContentPage
             this.ShowPopup(popup);
             popup.Update(0, "正在安装依赖项...");
             await ViewModel.InstallDependencyAsync(archivePath, popup.Update);
-            popup.Finish();
+            await popup.Finish();
             await Toast.Make(AppResources.InstallationComplete, CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
             await ViewModel.RefreshInstalledDependencies();
         }
