@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决�
 	ProjectSection(SolutionItems) = preProject
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
+		UIIntroductions.md = UIIntroductions.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.Plugin.Builtin", "OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj", "{971BB856-3AB3-D2D9-3BE8-43E6DC45AD67}"
