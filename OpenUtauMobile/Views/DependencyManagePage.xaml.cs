@@ -22,9 +22,9 @@ public partial class DependencyManagePage : ContentPage
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void ButtonBack_Clicked(object sender, EventArgs e)
+    private async void ButtonBack_Clicked(object sender, EventArgs e)
     {
-        Navigation.PopModalAsync(); // 返回上一页
+        await Navigation.PopModalAsync(); // 返回上一页
     }
 
     private async void ButtonRemove_Clicked(object sender, EventArgs e)
