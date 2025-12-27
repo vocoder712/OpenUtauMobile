@@ -28,7 +28,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
-            <Label Text="{Static res:AppResources.DependencyManage}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            <Label Text="{Static res:AppResources.DependencyManagement}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
         </Grid>
 
         <!-- 页面内容 -->
@@ -65,11 +65,5 @@
                 </Button.Shadow>
             </Button>
         </AbsoluteLayout>
-
-        <!-- 遮罩 -->
-        <Grid x:Name="Overlay" Grid.RowSpan="2" IsVisible="{Binding IsBusy}" InputTransparent="False">
-            <Button BackgroundColor="#80808080" CornerRadius="0"/>
-            <ActivityIndicator IsRunning="True" VerticalOptions="Center" HorizontalOptions="Center" Color="{DynamicResource Primary}" />
-        </Grid>
     </Grid>
 </ContentPage>

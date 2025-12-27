@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SharpCompress.Archives;
 
 namespace OpenUtau.Core 
@@ -15,9 +16,10 @@ namespace OpenUtau.Core
 
     public class DependencyInstaller 
     {
-        public static string FileExt = ".oudep";
-        public static void Install(string archivePath) 
+        public static void Install(string archivePath, Action<double, string> progress) 
         {
+            progress?.Invoke(0, "准备安装依赖项...");
+            int counter = 0;
             DependencyConfig dependencyConfig;
             using var archive = ArchiveFactory.Open(archivePath);
             var configEntry = archive.Entries.First(e => e.Key == "oudep.yaml") ?? throw new ArgumentException("missing oudep.yaml");
@@ -34,6 +36,7 @@ namespace OpenUtau.Core
             var basePath = Path.Combine(PathManager.Inst.DependencyPath, name);
             foreach (var entry in archive.Entries)
             {
+                counter++;
                 if (string.IsNullOrEmpty(entry.Key) || entry.Key.Contains(".."))
                 {
                     // Prevent zipSlip attack
@@ -50,6 +53,8 @@ namespace OpenUtau.Core
                 {
                     entry.WriteToFile(Path.Combine(basePath, entry.Key));
                 }
+                double progressValue = (double)counter / archive.Entries.Count() * 100;
+                progress?.Invoke(progressValue, $"正在安装依赖项 {name} ({counter}/{archive.Entries.Count()})");
             }
         }
     }

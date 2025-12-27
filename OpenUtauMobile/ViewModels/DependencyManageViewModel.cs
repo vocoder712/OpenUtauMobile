@@ -66,12 +66,12 @@ namespace OpenUtauMobile.ViewModels
             }
         }
 
-        public async Task InstallDependencyAsync(string archivePath)
+        public async Task InstallDependencyAsync(string archivePath, Action<double, string> progress)
         {
             IsBusy = true;
             try
             {
-                await Task.Run(() => DependencyInstaller.Install(archivePath));
+                await Task.Run(() => DependencyInstaller.Install(archivePath, progress));
             }
             catch (Exception ex)
             {

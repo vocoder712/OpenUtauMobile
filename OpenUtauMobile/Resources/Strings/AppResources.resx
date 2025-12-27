@@ -843,10 +843,28 @@ Exception Details:
   <data name="AskIfImportTempo" xml:space="preserve">
     <value>The imported project contains the following tempo markers. Do you want to use them?</value>
   </data>
-  <data name="DependencyManage" xml:space="preserve">
-    <value>Dependencies Manage</value>
+  <data name="DependencyManagement" xml:space="preserve">
+    <value>Dependency Management</value>
   </data>
   <data name="NoDependencyPrompt" xml:space="preserve">
-    <value>No dependencies have been installed yet, click "+" to install from a file.</value>
+    <value>No dependencies have been installed yet. Click "+" to install from a file.</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="InstallationFailed" xml:space="preserve">
+    <value>Installation failed!</value>
+  </data>
+  <data name="SuccessfullyDeleted" xml:space="preserve">
+    <value>Successfully deleted!</value>
+  </data>
+  <data name="RemoveDependencyTitle" xml:space="preserve">
+    <value>Remove Dependency</value>
+  </data>
+  <data name="RemoveDependencyPrompt" xml:space="preserve">
+    <value>Are you sure you want to remove dependency {0}?</value>
+  </data>
+  <data name="RemovingDependencyMessage" xml:space="preserve">
+    <value>Removing Dependency {0}</value>
   </data>
 </root>

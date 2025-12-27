@@ -1,7 +1,10 @@
 ﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Views;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Utils;
 using OpenUtauMobile.ViewModels;
+using OpenUtauMobile.Views.Controls;
+using OpenUtauMobile.Resources.Strings;
 
 namespace OpenUtauMobile.Views;
 
@@ -12,12 +15,6 @@ public partial class DependencyManagePage : ContentPage
     {
         InitializeComponent();
         ViewModel = (DependencyManageViewModel)BindingContext;
-    }
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        ViewModel.RefreshInstalledDependencies(); // 刷新
     }
 
     /// <summary>
@@ -34,14 +31,18 @@ public partial class DependencyManagePage : ContentPage
     {
         if (sender is Button button && button.BindingContext is DependencyInfo dependency)
         {
-            if (!await DisplayAlert("删除依赖项", $"确定要删除依赖项 {dependency.Name} 吗？", "确定", "取消"))
+            if (!await DisplayAlert(AppResources.RemoveDependencyTitle, string.Format(AppResources.RemoveDependencyPrompt, dependency.Name), AppResources.Confirm, AppResources.CancelText))
             {
                 return;
             }
+            LoadingPopup popup = new(false);
+            this.ShowPopup(popup);
+            popup.Update(0, string.Format(AppResources.RemovingDependencyMessage, dependency.Name));
             bool result = await ViewModel.RemoveDependencyAsync(dependency);
+            popup.Finish();
             if (result)
             {
-                await Toast.Make("删除成功", CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
+                await Toast.Make(AppResources.SuccessfullyDeleted, CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
             }
             else
             {
@@ -56,8 +57,12 @@ public partial class DependencyManagePage : ContentPage
         string archivePath = await ObjectProvider.PickFile([".oudep"], this);
         if (!string.IsNullOrWhiteSpace(archivePath))
         {
-            await ViewModel.InstallDependencyAsync(archivePath);
-            await Toast.Make("安装完成", CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
+            LoadingPopup popup = new(true);
+            this.ShowPopup(popup);
+            popup.Update(0, "正在安装依赖项...");
+            await ViewModel.InstallDependencyAsync(archivePath, popup.Update);
+            popup.Finish();
+            await Toast.Make(AppResources.InstallationComplete, CommunityToolkit.Maui.Core.ToastDuration.Short).Show();
             await ViewModel.RefreshInstalledDependencies();
         }
     }

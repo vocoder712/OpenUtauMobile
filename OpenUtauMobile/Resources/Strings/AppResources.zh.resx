@@ -843,11 +843,29 @@
   <data name="AskIfImportTempo" xml:space="preserve">
     <value>导入的工程文件中包含以下曲速信息。请问您是否要将这些曲速标记应用到当前工程？</value>
   </data>
-  <data name="DependencyManage" xml:space="preserve">
+  <data name="DependencyManagement" xml:space="preserve">
     <value>依赖项管理</value>
   </data>
   <data name="NoDependencyPrompt" xml:space="preserve">
     <value>还没有安装任何依赖项。
 点击"+"从文件安装。</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>加载中</value>
+  </data>
+  <data name="InstallationFailed" xml:space="preserve">
+    <value>安装失败</value>
+  </data>
+  <data name="SuccessfullyDeleted" xml:space="preserve">
+    <value>删除成功</value>
+  </data>
+  <data name="RemoveDependencyTitle" xml:space="preserve">
+    <value>删除依赖项</value>
+  </data>
+  <data name="RemoveDependencyPrompt" xml:space="preserve">
+    <value>确定要删除依赖项 {0} 吗？</value>
+  </data>
+  <data name="RemovingDependencyMessage" xml:space="preserve">
+    <value>正在删除依赖项 {0}</value>
   </data>
 </root>

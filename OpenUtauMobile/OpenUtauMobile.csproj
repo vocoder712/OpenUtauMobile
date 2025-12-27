@@ -158,6 +158,9 @@
 	  <Compile Update="Views\Controls\EditBeatPopup.xaml.cs">
 	    <DependentUpon>EditBeatPopup.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Controls\LoadingPopup.xaml.cs">
+	    <DependentUpon>LoadingPopup.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Controls\SelectPhonemizerPopup.xaml.cs">
 	    <DependentUpon>SelectPhonemizerPopup.xaml</DependentUpon>
 	  </Compile>
@@ -325,6 +328,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Controls\EditBeatPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\LoadingPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Controls\SelectPhonemizerPopup.xaml">
