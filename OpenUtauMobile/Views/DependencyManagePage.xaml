@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="OpenUtauMobile.Views.DependencyManagePage"
+             x:DataType="vm:DependencyManageViewModel"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:converters="clr-namespace:OpenUtauMobile.ViewModels.Converters"
+             xmlns:res="clr-namespace:OpenUtauMobile.Resources.Strings"
+             xmlns:util="clr-namespace:OpenUtau.Core.Util;assembly=OpenUtau.Core"
+             Title="DependencyManagePage">
+    <ContentPage.BindingContext>
+        <vm:DependencyManageViewModel />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <converters:ByteDataImageSourceConverter x:Key="ByteDataImageSourceConverter" />
+        <converters:SingerToTypeColorConverter x:Key="SingerToTypeColorConverter" />
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- 自定义标题栏 -->
+        <Grid BackgroundColor="{DynamicResource TitleBarBackground}" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
+            <Label Text="{Static res:AppResources.DependencyManagement}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+        </Grid>
+
+        <!-- 页面内容 -->
+        <AbsoluteLayout Grid.Row="1">
+            <!-- 已安装的依赖项列表 -->
+            <ScrollView AbsoluteLayout.LayoutBounds="0, 0, 1, 1" AbsoluteLayout.LayoutFlags="All" >
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding InstalledDependencies}" Margin="0,0,10,0" MinimumHeightRequest="300">
+                    <BindableLayout.EmptyView>
+                        <Label Text="{Static res:AppResources.NoDependencyPrompt}" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" VerticalOptions="Center"/>
+                    </BindableLayout.EmptyView>
+                    <BindableLayout.ItemTemplate>
+                        <!-- 依赖项卡片 -->
+                        <DataTemplate x:DataType="util:DependencyInfo">
+                            <Grid RowDefinitions="70, .5">
+                                <Grid ColumnDefinitions="*, 60" RowDefinitions="50, 20">
+                                    <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Margin="10,0,10,0" LineBreakMode="MiddleTruncation" FontSize="16"/>
+                                    <Label  Grid.Row="1" Grid.Column="0" Text="{Binding DisplaySize}" Margin="10,0,10,0" FontSize="12" TextColor="{DynamicResource SecondaryTextColor}"/>
+                                    <Image Source="{DynamicResource delete}" Grid.Column="1" Grid.RowSpan="2" Margin="10"/>
+                                </Grid>
+                                <Button x:Name="ButtonRemove" BackgroundColor="Transparent" Clicked="ButtonRemove_Clicked"/>
+                                <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
+            <!-- 圆形添加按钮 -->
+            <Button ImageSource="{DynamicResource add}" x:Name="ButtonInstall" Clicked="ButtonInstall_Clicked"
+                    WidthRequest="70" HeightRequest="70" CornerRadius="35" BackgroundColor="{StaticResource SemiTransparentPrimary}"
+                    AbsoluteLayout.LayoutBounds="0.89, 0.92, AutoSize, AutoSize" AbsoluteLayout.LayoutFlags="PositionProportional">
+                <!-- 阴影 -->
+                <Button.Shadow>
+                    <Shadow Brush="{DynamicResource ItemDivider}" Opacity="0.4" Offset="2, 2" Radius="9" />
+                </Button.Shadow>
+            </Button>
+        </AbsoluteLayout>
+    </Grid>
+</ContentPage>

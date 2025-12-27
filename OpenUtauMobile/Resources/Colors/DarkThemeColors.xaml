@@ -21,6 +21,7 @@
     <Color x:Key="SingerCardBackground">#11ffffff</Color>
     <Color x:Key="Handle">#707070</Color>
     <Color x:Key="HandleGrain">#303030</Color>
+    <Color x:Key="SecondaryTextColor">#AAAAAA</Color>
 
     <FileImageSource x:Key="file" File="ic_sharp_insert_drive_file_dark.png"></FileImageSource>
     <FileImageSource x:Key="folder" File="ic_sharp_folder_dark.png"></FileImageSource>

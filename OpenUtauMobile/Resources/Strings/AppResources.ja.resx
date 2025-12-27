@@ -838,9 +838,33 @@
     <value>表現を選択</value>
   </data>
   <data name="ImportTracksCaption" xml:space="preserve">
-      <value>トラックのインポート</value>
+    <value>トラックのインポート</value>
   </data>
   <data name="AskIfImportTempo" xml:space="preserve">
-      <value>インポートしたプロジェクトには以下のテンポマーカーが含まれています。これらを使用しますか？</value>
+    <value>インポートしたプロジェクトには以下のテンポマーカーが含まれています。これらを使用しますか？</value>
+  </data>
+  <data name="DependencyManagement" xml:space="preserve">
+    <value>依存関係管理</value>
+  </data>
+  <data name="NoDependencyPrompt" xml:space="preserve">
+    <value>依存関係はまだインストールされていません。ファイルからインストールするには「+」をクリックしてください。</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>読み込み中</value>
+  </data>
+  <data name="InstallationFailed" xml:space="preserve">
+    <value>インストールに失敗しました。</value>
+  </data>
+  <data name="SuccessfullyDeleted" xml:space="preserve">
+    <value>削除されました!</value>
+  </data>
+  <data name="RemoveDependencyTitle" xml:space="preserve">
+    <value>依存関係を削除する</value>
+  </data>
+  <data name="RemoveDependencyPrompt" xml:space="preserve">
+    <value>依存関係 {0} を削除してもよろしいですか?</value>
+  </data>
+  <data name="RemovingDependencyMessage" xml:space="preserve">
+    <value>依存関係を削除しています {0}</value>
   </data>
 </root>

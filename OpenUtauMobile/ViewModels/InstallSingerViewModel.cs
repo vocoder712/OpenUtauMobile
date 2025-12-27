@@ -66,7 +66,7 @@ namespace OpenUtauMobile.ViewModels
             long totalUncompressSize = archive.Entries // 计算解压后总大小
                 .Where(entry => !entry.IsDirectory)
                 .Sum(entry => entry.Size);
-            InstallSize = Utils.FormatTools.FormatSize(totalUncompressSize);
+            InstallSize = Utils.FileTools.FormatSize(totalUncompressSize);
             Log.Information($"准备安装声库。安装包路径：{InstallPackagePath}");
             Busy = false;
         }

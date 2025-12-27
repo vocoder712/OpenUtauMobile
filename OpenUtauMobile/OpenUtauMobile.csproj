@@ -158,6 +158,9 @@
 	  <Compile Update="Views\Controls\EditBeatPopup.xaml.cs">
 	    <DependentUpon>EditBeatPopup.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Controls\LoadingPopup.xaml.cs">
+	    <DependentUpon>LoadingPopup.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Controls\SelectPhonemizerPopup.xaml.cs">
 	    <DependentUpon>SelectPhonemizerPopup.xaml</DependentUpon>
 	  </Compile>
@@ -196,6 +199,9 @@
 	  </Compile>
 	  <Compile Update="Views\SettingsPage.xaml.cs">
 	    <DependentUpon>SettingsPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\DependencyManagePage.xaml.cs">
+	    <DependentUpon>DependencyManagePage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
@@ -324,6 +330,9 @@
 	  <MauiXaml Update="Views\Controls\EditBeatPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Controls\LoadingPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Controls\SelectPhonemizerPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -379,6 +388,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\SingerDetailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\DependencyManagePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\SingerManagePage.xaml">

@@ -43,6 +43,11 @@
                         <Button x:Name="ButtonExportLog" BackgroundColor="Transparent" Clicked="ButtonExportLog_Clicked"/>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                     </Grid>
+                    <Grid RowDefinitions="50, .5">
+                        <Label Text="{Static res:AppResources.DependencyManagement}" Margin="10,0,10,0" />
+                        <Button x:Name="ButtonDependencyManagement" BackgroundColor="Transparent" Clicked="ButtonDependencyManagement_Clicked"/>
+                        <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
+                    </Grid>
                 </VerticalStackLayout>
             </ScrollView>
         </Border>
