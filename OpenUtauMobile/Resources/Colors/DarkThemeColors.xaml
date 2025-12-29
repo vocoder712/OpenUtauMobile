@@ -56,4 +56,5 @@
     <FileImageSource x:Key="copy" File="icon_copy_dark.png"></FileImageSource>
     <FileImageSource x:Key="paste" File="icon_paste_dark.png"></FileImageSource>
     <FileImageSource x:Key="selectall" File="icon_selectall_dark.png"></FileImageSource>
+    <FileImageSource x:Key="extension" File="ic_sharp_extension_dark.png"></FileImageSource>
 </ResourceDictionary>

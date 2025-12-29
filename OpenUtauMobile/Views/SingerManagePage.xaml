@@ -26,9 +26,11 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <Button x:Name="ButtonBack" ImageSource="{DynamicResource back}" Clicked="ButtonBack_Clicked" Grid.Column="0" Padding="10" BackgroundColor="Transparent"/>
             <Label Text="{Static res:AppResources.SingerManage}" VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" />
+            <Button x:Name="ButtonDependency" ImageSource="{DynamicResource extension}" Clicked="ButtonDependency_Clicked"  Grid.Column="2" Padding="10" BackgroundColor="Transparent" ToolTipProperties.Text="依赖管理"/>
         </Grid>
 
         <!-- 页面内容 -->
