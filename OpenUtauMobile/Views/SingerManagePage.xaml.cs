@@ -62,8 +62,8 @@ public partial class SingerManagePage : ContentPage
         }
     }
 
-    private void ButtonDependency_Clicked(object sender, EventArgs e)
+    private async void ButtonDependency_Clicked(object sender, EventArgs e)
     {
-        Navigation.PushModalAsync(new DependencyManagePage()); // 跳转到依赖管理页面
+        await Navigation.PushModalAsync(new DependencyManagePage()); // 跳转到依赖管理页面
     }
 }
