@@ -61,4 +61,9 @@ public partial class SingerManagePage : ContentPage
             Navigation.PushModalAsync(new SingerDetailPage(singer)); // 跳转到歌手详情页面
         }
     }
+
+    private void ButtonDependency_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushModalAsync(new DependencyManagePage()); // 跳转到依赖管理页面
+    }
 }

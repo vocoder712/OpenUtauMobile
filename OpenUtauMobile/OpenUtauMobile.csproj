@@ -28,8 +28,8 @@
 		<ApplicationId>pers.vocoder712.openutaumobile</ApplicationId>
 
 		<!-- 版本 -->
-		<ApplicationDisplayVersion>1.1.5</ApplicationDisplayVersion>
-		<ApplicationVersion>14</ApplicationVersion>
+		<ApplicationDisplayVersion>1.1.6</ApplicationDisplayVersion>
+		<ApplicationVersion>15</ApplicationVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -106,8 +106,10 @@
 	  <None Remove="Resources\AppIcon\appiconfg.svg" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_expand_less_dark.svg" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_expand_more_dark.svg" />
+	  <None Remove="Resources\Icons\dark\ic_sharp_extension_dark.svg" />
 	  <None Remove="Resources\Icons\light\ic_sharp_expand_less_light.svg" />
 	  <None Remove="Resources\Icons\light\ic_sharp_expand_more_light.svg" />
+	  <None Remove="Resources\Icons\light\ic_sharp_extension_light.svg" />
 	</ItemGroup>
 
 
@@ -231,6 +233,7 @@
 	  <MauiImage Include="Resources\Icons\dark\ic_sharp_edit_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\ic_sharp_expand_less_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\ic_sharp_expand_more_dark.svg" />
+	  <MauiImage Include="Resources\Icons\dark\ic_sharp_extension_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\ic_sharp_folder_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\ic_sharp_folder_open_dark.svg" />
 	  <MauiImage Include="Resources\Icons\dark\ic_sharp_insert_drive_file_dark.svg" />
@@ -265,6 +268,7 @@
 	  <MauiImage Include="Resources\Icons\light\ic_sharp_edit_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\ic_sharp_expand_less_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\ic_sharp_expand_more_light.svg" />
+	  <MauiImage Include="Resources\Icons\light\ic_sharp_extension_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\ic_sharp_folder_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\ic_sharp_folder_open_light.svg" />
 	  <MauiImage Include="Resources\Icons\light\ic_sharp_insert_drive_file_light.svg" />
