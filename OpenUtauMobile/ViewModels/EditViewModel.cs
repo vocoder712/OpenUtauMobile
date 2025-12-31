@@ -1,6 +1,5 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-using NAudio.CoreAudioApi;
 using OpenUtau.Core;
 using OpenUtau.Core.Analysis.Some;
 using OpenUtau.Core.Ustx;
