@@ -21,6 +21,7 @@ using Preferences = OpenUtau.Core.Util.Preferences;
 using System.Reactive.Linq;
 using DynamicData;
 using OpenUtau.Core.Format;
+using System.Threading.Tasks;
 
 namespace OpenUtauMobile.Views;
 
@@ -2995,5 +2996,41 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
     {
         _viewModel.SelectAllNotes();
         PianoRollCanvas.InvalidateSurface();
+    }
+
+    private async void ButtonAudioTranscribe_Clicked(object sender, EventArgs e)
+    {
+        if (_viewModel.SelectedParts == null || _viewModel.SelectedParts.Count == 0 || _viewModel.SelectedParts[0] is not UWavePart wavePart)
+        {
+            return;
+        }
+        try
+        {
+            LoadingPopup popup = new(true);
+            this.ShowPopup(popup);
+            UVoicePart? result = await _viewModel.AudioTranscribe(wavePart, (progress, message) =>
+            {
+                popup.Update(progress, message);
+            });
+            if (result != null)
+            {
+                var project = DocManager.Inst.Project;
+                UTrack track = new(project)
+                {
+                    TrackNo = project.tracks.Count
+                };
+                result.trackNo = track.TrackNo;
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(project, result));
+                DocManager.Inst.EndUndoGroup();
+            }
+            await popup.Finish();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "干声转换失败");
+            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("干声转换失败：", ex));
+        }
     }
 }

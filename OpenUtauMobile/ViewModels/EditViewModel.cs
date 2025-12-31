@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 using OpenUtau.Core;
+using OpenUtau.Core.Analysis.Some;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Utils.Messages;
 using OpenUtauMobile.Resources.Strings;
@@ -47,6 +48,7 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public double AvatarSize { get; set; } = 35d; // 头像大小
         [Reactive] public bool IsShowRemoveNoteButton { get; set; } = false; // 是否显示删除音符按钮
         [Reactive] public bool IsShowRenderPitchButton { get; set; } = false; // 是否显示渲染音高按钮
+        [Reactive] public bool IsShowAudioTranscribeButton { get; set; } = false; // 是否显示干声转换按钮
         [Reactive] public bool IsShowSelectButton { get; set; } = false;
         public double OriginalVolume { get; set; } = 0d; // 保存原始音量
         public int[] SnapDivs = [4, 8, 16, 32, 64, 128, 3, 6, 12, 24, 48, 96, 192]; // 常用量化单位数组
@@ -306,6 +308,7 @@ namespace OpenUtauMobile.ViewModels
             SelectedParts.CollectionChanged += (sender, e) =>
             {
                 IsShowRenderPitchButton = false; // 每次选中分片变化时重置渲染音高按钮显示状态
+                IsShowAudioTranscribeButton = false; // 每次选中分片变化时重置干声转换按钮显示状态
                 if (SelectedParts.Count == 0)
                 {
                     EditingPart = null; // 清空正在编辑的分片
@@ -332,6 +335,14 @@ namespace OpenUtauMobile.ViewModels
                     {
                         EditingPartName = string.Empty; // 如果没有选中歌声分片，清空编辑分片名称
                         EditingNotes = null; // 清空正在编辑的音符组
+                        if (SelectedParts.Count > 0)
+                        {
+                            if (SelectedParts[0] is UWavePart)
+                            {
+                                // 如果选中的第一个分片是音频分片，显示干声转换按钮
+                                IsShowAudioTranscribeButton = true;
+                            }
+                        }
                         return;
                     }
                     if (SelectedParts.Count == 1)
@@ -1949,6 +1960,44 @@ namespace OpenUtauMobile.ViewModels
                 return;
             }
             OpenUtau.Core.Format.Formats.ImportTracks(DocManager.Inst.Project, loadedProjects, importTempo);
+        }
+
+        /// <summary>
+        /// 干声转换
+        /// </summary>
+        /// <param name="wavePart"></param>
+        public async Task<UVoicePart?> AudioTranscribe(UWavePart wavePart, Action<double, string> progress)
+        {
+            if (wavePart == null)
+            {
+                return null;
+            }
+            int wavDurS = (int)(wavePart.fileDurationMs / 1000.0);
+            Task<UVoicePart> transcribeTask = Task.Run(() =>
+            {
+                using Some some = new();
+                return some.Transcribe(DocManager.Inst.Project, wavePart, wavPosS =>
+                {
+                    Debug.WriteLine($"转换进度: {wavPosS}/{wavDurS}");
+                    progress.Invoke((double)wavPosS / wavDurS * 100, $"{wavePart.name}\n{wavPosS}/{wavDurS}");
+                });
+            });
+            UVoicePart? result = await transcribeTask.ContinueWith(task =>
+            {
+                if (task.IsFaulted)
+                {
+                    Log.Error(task.Exception, $"Failed to transcribe part {wavePart.name}");
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("干声转换失败", task.Exception));
+                    return null;
+                }
+                UVoicePart voicePart = task.Result;
+                if (voicePart != null)
+                {
+                    return voicePart;
+                }
+                return null;
+            });
+            return result;
         }
     }
 }
