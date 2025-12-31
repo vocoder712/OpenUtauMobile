@@ -21,6 +21,7 @@ using Preferences = OpenUtau.Core.Util.Preferences;
 using System.Reactive.Linq;
 using DynamicData;
 using OpenUtau.Core.Format;
+using System.Threading.Tasks;
 
 namespace OpenUtauMobile.Views;
 
@@ -2997,7 +2998,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         PianoRollCanvas.InvalidateSurface();
     }
 
-    private void ButtonAudioTranscribe_Clicked(object sender, EventArgs e)
+    private async void ButtonAudioTranscribe_Clicked(object sender, EventArgs e)
     {
         if (_viewModel.SelectedParts == null || _viewModel.SelectedParts.Count == 0 || _viewModel.SelectedParts[0] is not UWavePart wavePart)
         {
@@ -3005,13 +3006,26 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         }
         try
         {
-            LoadingPopup popup = new LoadingPopup(true);
+            LoadingPopup popup = new(true);
             this.ShowPopup(popup);
-            _viewModel.AudioTranscribe(wavePart, (progress, message) =>
+            UVoicePart? result = await _viewModel.AudioTranscribe(wavePart, (progress, message) =>
             {
                 popup.Update(progress, message);
             });
-            popup.Finish();
+            if (result != null)
+            {
+                var project = DocManager.Inst.Project;
+                UTrack track = new(project)
+                {
+                    TrackNo = project.tracks.Count
+                };
+                result.trackNo = track.TrackNo;
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(project, result));
+                DocManager.Inst.EndUndoGroup();
+            }
+            await popup.Finish();
         }
         catch (Exception ex)
         {

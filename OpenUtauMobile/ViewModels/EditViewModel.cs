@@ -1967,11 +1967,11 @@ namespace OpenUtauMobile.ViewModels
         /// 干声转换
         /// </summary>
         /// <param name="wavePart"></param>
-        public void AudioTranscribe(UWavePart wavePart, Action<double, string> progress)
+        public async Task<UVoicePart?> AudioTranscribe(UWavePart wavePart, Action<double, string> progress)
         {
             if (wavePart == null)
             {
-                return;
+                return null;
             }
             int wavDurS = (int)(wavePart.fileDurationMs / 1000.0);
             Task<UVoicePart> transcribeTask = Task.Run(() =>
@@ -1979,32 +1979,26 @@ namespace OpenUtauMobile.ViewModels
                 using Some some = new();
                 return some.Transcribe(DocManager.Inst.Project, wavePart, wavPosS =>
                 {
-                    progress?.Invoke((double)wavPosS / wavDurS * 100, $"{wavePart.name}\n{wavPosS}/{wavDurS}");
+                    Debug.WriteLine($"转换进度: {wavPosS}/{wavDurS}");
+                    progress.Invoke((double)wavPosS / wavDurS * 100, $"{wavePart.name}\n{wavPosS}/{wavDurS}");
                 });
             });
-            transcribeTask.ContinueWith(task =>
+            UVoicePart? result = await transcribeTask.ContinueWith(task =>
             {
                 if (task.IsFaulted)
                 {
                     Log.Error(task.Exception, $"Failed to transcribe part {wavePart.name}");
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("干声转换失败", task.Exception));
-                    return;
+                    return null;
                 }
                 UVoicePart voicePart = task.Result;
                 if (voicePart != null)
                 {
-                    var project = DocManager.Inst.Project;
-                    UTrack track = new(project) // 新建轨道
-                    {
-                        TrackNo = project.tracks.Count
-                    };
-                    voicePart.trackNo = track.TrackNo;
-                    DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
-                    DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
-                    DocManager.Inst.EndUndoGroup();
+                    return voicePart;
                 }
+                return null;
             });
+            return result;
         }
     }
 }
