@@ -131,31 +131,43 @@
                         </Grid>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                     </Grid>
-                    <Grid RowDefinitions="50,.5">
-                        <Grid ColumnDefinitions="Auto, 50, *, 30, 200">
-                            <Label Text="{Static res:AppResources.DiffSingerSteps}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.DiffSingerStepsTooltip}" />
-                            <Label Grid.Column="3" Text="{Binding DiffSingerSteps}" />
-                            <Slider Grid.Column="4" Value="{Binding DiffSingerSteps}" Minimum="1" Maximum="30"/>
-                        </Grid>
+                    <Grid RowDefinitions="Auto,.5">
+                        <FlexLayout Wrap="Wrap">
+                            <HorizontalStackLayout Margin="5">
+                                <Label Text="{Static res:AppResources.DiffSingerSteps}" Margin="20,0"/>
+                                <Label Text="?" ToolTipProperties.Text="{Static res:AppResources.DiffSingerStepsTooltip}" />
+                                </HorizontalStackLayout>
+                            <HorizontalStackLayout Margin="5">
+                                <Label Text="{Binding DiffSingerSteps}" />
+                                <Slider WidthRequest="200" Value="{Binding DiffSingerSteps}" Minimum="1" Maximum="30"/>
+                            </HorizontalStackLayout>
+                        </FlexLayout>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                     </Grid>
-                    <Grid RowDefinitions="50,.5">
-                        <Grid ColumnDefinitions="Auto, 50, *, 30, 200">
-                            <Label Text="{Static res:AppResources.DiffSingerStepsVariance}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.DiffSingerStepsVarianceTooltip}" />
-                            <Label Grid.Column="3" Text="{Binding DiffSingerStepsVariance}" />
-                            <Slider Grid.Column="4" Value="{Binding DiffSingerStepsVariance}" Minimum="1" Maximum="30"/>
-                        </Grid>
+                    <Grid RowDefinitions="Auto,.5">
+                        <FlexLayout Wrap="Wrap">
+                            <HorizontalStackLayout Margin="5">
+                                <Label Text="{Static res:AppResources.DiffSingerStepsVariance}" Margin="20,0,20,0"/>
+                                <Label Text="?" ToolTipProperties.Text="{Static res:AppResources.DiffSingerStepsVarianceTooltip}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Margin="5">
+                                <Label Text="{Binding DiffSingerStepsVariance}" />
+                                <Slider WidthRequest="200" Value="{Binding DiffSingerStepsVariance}" Minimum="1" Maximum="30"/>
+                            </HorizontalStackLayout>
+                        </FlexLayout>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                     </Grid>
-                    <Grid RowDefinitions="50,.5">
-                        <Grid ColumnDefinitions="Auto, 50, *, 30, 200">
-                            <Label Text="{Static res:AppResources.DiffSingerStepsPitch}" Margin="20,0,20,0"/>
-                            <Label Grid.Column="1" Text="?" ToolTipProperties.Text="{Static res:AppResources.DiffSingerStepsPitchTooltip}" />
-                            <Label Grid.Column="3" Text="{Binding DiffSingerStepsPitch}" />
-                            <Slider Grid.Column="4" Value="{Binding DiffSingerStepsPitch}" Minimum="1" Maximum="30"/>
-                        </Grid>
+                    <Grid RowDefinitions="Auto,.5">
+                        <FlexLayout Wrap="Wrap">
+                            <HorizontalStackLayout Margin="5">
+                                <Label Text="{Static res:AppResources.DiffSingerStepsPitch}" Margin="20,0,20,0"/>
+                                <Label Text="?" ToolTipProperties.Text="{Static res:AppResources.DiffSingerStepsPitchTooltip}" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Margin="5">
+                                <Label Text="{Binding DiffSingerStepsPitch}" />
+                                <Slider WidthRequest="200" Value="{Binding DiffSingerStepsPitch}" Minimum="1" Maximum="30"/>
+                            </HorizontalStackLayout>
+                        </FlexLayout>
                         <BoxView Grid.Row="1" Margin="10,0,10,0" Color="{DynamicResource ItemDivider}"/>
                     </Grid>
                 </VerticalStackLayout>
