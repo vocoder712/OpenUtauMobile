@@ -337,7 +337,7 @@ namespace OpenUtauMobile.ViewModels
                         EditingNotes = null; // 清空正在编辑的音符组
                         if (SelectedParts.Count > 0)
                         {
-                            if (SelectedParts[0] is UWavePart wavePart)
+                            if (SelectedParts[0] is UWavePart)
                             {
                                 // 如果选中的第一个分片是音频分片，显示干声转换按钮
                                 IsShowAudioTranscribeButton = true;
