@@ -14,7 +14,7 @@ public partial class LoadingPopup : Popup
     /// <summary>
     /// 更新加载进度和消息
     /// </summary>
-    /// <param name="progress">0-100</param>
+    /// <param name="progress"> 0-100 </param>
     /// <param name="message">消息</param>
     public void Update(double progress, string message)
     {

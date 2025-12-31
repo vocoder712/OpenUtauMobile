@@ -364,6 +364,9 @@
                             <Grid RowDefinitions="40" IsVisible="{Binding IsShowRemoveNoteButton}">
                                 <Button ImageSource="{DynamicResource delete}" x:Name="ButtonRemoveNote" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonRemoveNote_Clicked"/>
                             </Grid>
+                            <Grid RowDefinitions="40" IsVisible="{Binding IsShowAudioTranscribeButton}">
+                                <Button Text="干声转换" x:Name="ButtonAudioTranscribe" Style="{StaticResource CircularToolbarButtonStyle}" Clicked="ButtonAudioTranscribe_Clicked"/>
+                            </Grid>
                         </VerticalStackLayout>
                     </Grid>
 

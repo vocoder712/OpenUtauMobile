@@ -2996,4 +2996,27 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _viewModel.SelectAllNotes();
         PianoRollCanvas.InvalidateSurface();
     }
+
+    private void ButtonAudioTranscribe_Clicked(object sender, EventArgs e)
+    {
+        if (_viewModel.SelectedParts == null || _viewModel.SelectedParts.Count == 0 || _viewModel.SelectedParts[0] is not UWavePart wavePart)
+        {
+            return;
+        }
+        try
+        {
+            LoadingPopup popup = new LoadingPopup(true);
+            this.ShowPopup(popup);
+            _viewModel.AudioTranscribe(wavePart, (progress, message) =>
+            {
+                popup.Update(progress, message);
+            });
+            popup.Finish();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "干声转换失败");
+            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("干声转换失败：", ex));
+        }
+    }
 }
