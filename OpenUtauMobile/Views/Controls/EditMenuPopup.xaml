@@ -77,10 +77,10 @@
                             <Label Text="{Static res:AppResources.SeparateStems}" />
                             <Button BackgroundColor="Transparent" />
                         </Grid>
-                        <Grid>
+                        <!--<Grid>
                             <Label Text="{Static res:AppResources.DryWetConversion}" />
                             <Button BackgroundColor="Transparent" />
-                        </Grid>
+                        </Grid>-->
                         <Grid>
                             <Label Text="{Static res:AppResources.DetectTempo}" />
                             <Button BackgroundColor="Transparent" />
