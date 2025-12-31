@@ -160,7 +160,7 @@
                     <Grid RowDefinitions="Auto,.5">
                         <FlexLayout Wrap="Wrap">
                             <HorizontalStackLayout Margin="5">
-                                <Label Text="{Binding DiffSingerStepsPitch}" Margin="20,0,20,0"/>
+                                <Label Text="{Static res:AppResources.DiffSingerStepsPitch}" Margin="20,0,20,0"/>
                                 <Label Text="?" ToolTipProperties.Text="{Static res:AppResources.DiffSingerStepsPitchTooltip}" />
                             </HorizontalStackLayout>
                             <HorizontalStackLayout Margin="5">
