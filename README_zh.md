@@ -1,5 +1,5 @@
 # OpenUtau Mobile
-
+[English](README.md) | [简体中文](README_zh.md)
 ## 特别感谢
 
 - [OpenUtau](https://github.com/stakira/OpenUtau)
