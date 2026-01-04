@@ -1,0 +1,74 @@
+# Interface Introduction
+
+The main interface is divided into three parts:
+
+- **Top Title Bar:** Includes functions for Exit, Title, Undo/Redo, Save, etc.
+- **Transport (Arrangement) Area:**
+    - **Top-left `>>>` button:** Expand details.
+    - **Top-right Timeline:**
+        - Displays the timeline. Click to move the playback position.
+        - Double-click to add tempo/time signature markers (**Not recommended**; deletion is currently unsupported).
+    - **Left Track Header:** For each track:
+        - Click the colored tab on the left to **Mute/Unmute**.
+        - Click the avatar to change the **Singer**.
+        - Click the track name to **Rename** the track.
+        - Click the colored dot to change the **Track Color**.
+        - Click `↑` `↓` to adjust the **Track Order**.
+        - Click the trash can to **Delete** the track.
+        - Slide the shorter slider to adjust **Pan**.
+        - Slide the longer slider to adjust **Volume**.
+        - Double-click sliders to **Reset**.
+        
+        The `+` button at the bottom adds a new track.
+    - **Right Arrangement Area:** Has two edit modes, toggled by the pencil button:
+        - **Read-only Mode:**
+            - Select parts (clips) to edit in the Piano Roll.
+            - Click empty space to deselect.
+            - Single-finger drag to scroll the view.
+            - Two-finger pinch to zoom the view.
+        - **Edit Mode:**
+            - Swipe on empty space to create a new part.
+            - Click a part to select it.
+            - Click empty space to deselect.
+            - Drag inside a part to move it.
+            - Drag the edge handles of a part to adjust its length.
+- **Main Editor Area:** Divided into the Piano Roll and the Extension Area:
+    - **Piano Roll:**
+        - **Left Piano Keyboard:** ~~Click to preview pitch (can also be clicked to play in real-time during playback).~~
+        - **Right Note Area:** Has four edit modes:
+            - **Note Edit Mode (Default):**
+                - Click empty space:
+                    - If no note is selected: Create a note with default length.
+                    - If a note is selected: Deselect it.
+                - Click a note to select it.
+                - Drag inside a note to move it.
+                - Drag the edge handles of a note to adjust its length.
+                - Double-click a note to edit lyrics.
+                - Two-finger pinch to zoom the view.
+                - Single-finger drag to scroll the view.
+            - **Pitch Curve Edit Mode:**
+                - Two-finger pinch to zoom the view.
+                - Single-finger drag to draw pitch curves.
+            - ~~**Pitch Anchor Edit Mode:**~~
+                - ~~Click empty space to deselect anchors.~~
+                - ~~Click near an anchor to select it.~~
+                - ~~Two-finger pinch to zoom the view.~~
+                - ~~Single-finger drag to move the selected anchor.~~
+                - ~~Double-click to create an anchor.~~
+            - ~~**Vibrato Edit Mode:**~~
+                - ~~Two-finger pinch to zoom the view.~~
+                - ~~Single-finger drag to draw vibrato lines.~~
+                - ~~Hmm, haven't figured out the rest yet 8(:D~~
+        - **Floating Buttons:**
+            - `AI`: Load pitch rendering results. Visible only when the renderer supports automatic pitch.
+            - `Magnet`: Click to Enable/Disable **Snap to Grid**; Long press to change grid density (Quantization).
+    - **Extension Area:** Divided into three zones:
+        - **Left:** Expression Selector and Edit Mode Switcher.
+        - **Top:** Phoneme Editor (Editing not yet supported).
+        - **Bottom:** Expression Parameter Editor (Three edit modes):
+            - **Drag:** No editing function. Single-finger drag to scroll, two-finger pinch to zoom.
+            - **Brush:** Two-finger pinch to zoom.
+                - *Curve parameters:* Single-finger tap or drag to draw curves.
+                - *Numerical parameters:* Single-finger tap or drag to sample values at the corresponding phoneme position.
+                - *Option parameters:* Single-finger tap or slide to toggle options.
+            - **Eraser:** Single-finger tap or drag to erase expression data. Two-finger pinch to zoom.
