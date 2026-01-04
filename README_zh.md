@@ -27,7 +27,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 ## 快速开始
 
 1. 在本项目的[release](https://github.com/vocoder712/OpenUtauMobile/releases)下载对应平台和架构的安装包并安装
-2. 下载一个声库。通常你可以在[DiffSinger自制声库分享页面](https://docs.qq.com/sheet/DQXNDY0pPaEpOc3JN?tab=BB08J2)找到下载地址。声库通常以zip格式打包。
+2. 下载一个声库。通常你可以在[DiffSinger自制声库分享页面](https://docs.qq.com/sheet/DQXNDY0pPaEpOc3JN?tab=BB08J2)或[UTAU wiki](https://utau.fandom.com/)找到下载地址。声库通常以zip格式打包。
 3. 打开软件 → 点击首页的 `歌手` 按钮 → 点击右下角 `+` → 选择上一步下载的声库安装包，然后按照指引安装。
 4. 返回首页，点击 `新建` 进入主界面，开始你的创作吧！
 
