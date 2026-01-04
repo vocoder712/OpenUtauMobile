@@ -37,7 +37,7 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
 ## 软件界面简介
 
-详见[编辑界面简介](./UIIntroductions.md)
+详见[编辑界面简介](./UIIntroductions_zh.md)
 
 ## 自行构建与贡献
 
