@@ -45,7 +45,7 @@ If you want to help improve this project:
 
 - If you find a bug, have a feature request, or have a suggestion for the UI/UX, please check [Planned Features & Known Bugs](#planned-features--known-bugs) first. If it is not listed there, feel free to report bugs in [Issues](https://github.com/vocoder712/OpenUtauMobile/issues) or discuss suggestions in [Discussions](https://github.com/vocoder712/OpenUtauMobile/discussion).
 
-- **Contributing Code:** Clone this project locally, then use Visual Studio to open `OpenUtauMobile.sln` in the project root directory to enter the development environment. It is recommended to create a new branch for your changes. You can refer to the task list in [Planned Features & Known Bugs](#planned-features--known-bugs) to implement features or fix bugs. Once completed, you can submit a Pull Request.
+- **Contributing Code:** Clone this project locally, then use Visual Studio to open `OpenUtauMobile.sln` in the project root directory to enter the development environment. It is recommended to create a new branch for your changes. Once completed, you can submit a Pull Request.
 
 ## License
 
