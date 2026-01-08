@@ -369,3 +369,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 .idea/
+
+# Xcode build artifacts
+XcodeProject/build/
+
+# macOS system files
+.DS_Store
