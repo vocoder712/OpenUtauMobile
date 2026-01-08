@@ -1,72 +1,74 @@
-# 编辑界面简介
+# Interface Introduction
 
-主界面分为三个部分：
+The main interface is divided into three parts:
 
-- 顶部标题栏：包含退出、标题、撤消重做、保存等功能
-- 走带（编曲）区：
-	- 左上角 `>>>` 按钮：展开详细内容
-	- 右上时间轴：显示时间线，点击可以移动播放位置；双击可以添加时间曲速标记（不建议使用，目前不支持删除）
-	- 左侧轨道头部：对于每个轨道：
-		- 点击左侧彩签可以静音/解除静音
-		- 点击头像更改歌手
-		- 点击轨道名称更改轨道名称
-		- 点击彩色圆点更改轨道颜色
-		- 点击 `↑` `↓` 可以调整轨道顺序
-		- 点击垃圾桶删除轨道
-		- 滑动较短滑块调整声像
-		- 滑动较长滑块调整音量
-		- 双击重置
-		
-		下方 的 `+` 按钮可以添加新轨道
-	- 右侧编曲区有两种编辑状态，点击铅笔按钮切换：
-		- 只读状态：
-			- 可以选择分片以在钢琴卷帘中编辑
-			- 点击空白处可以取消选择
-			- 单指移动滚动视图
-			- 双指缩放缩放视图
-		- 编辑状态：
-			- 在空白处划动创建新的分片
-			- 点击分片选中分片
-			- 点击空白处以取消选择
-			- 拖动分片内部移动分片
-			- 拖动分片边缘手柄可以调整分片长度
-- 主编辑区，分为钢琴卷帘和扩展区：
-	- 钢琴卷帘：
-		- 左侧钢琴键盘：~~点击可以试听音高（播放时也可以点击实时弹奏）~~
-		- 右侧音符区，有四种编辑状态：
-			- 音符编辑状态（默认）：
-				- 点击空白处
-					- 如果没有选中的音符，那么创建默认长度的音符
-					- 如果有选中的音符，那么取消选择
-				- 点击音符选中音符
-				- 拖动音符内部移动音符
-				- 拖动音符边缘手柄调整音符长度
-				- 双击音符编辑歌词
-				- 双指缩放缩放视图
-				- 单指移动滚动视图
-			- 音高线编辑状态：
-				- 双指缩放缩放视图
-				- 单指移动绘制音高线
-			- ~~音高锚点编辑状态：~~
-				- ~~点击空白处取消选择锚点~~
-				- ~~点击锚点附近选中锚点~~
-				- ~~双指缩放缩放视图~~
-				- ~~单指移动拖动选中的锚点~~
-				- ~~双击创建锚点~~
-			- ~~颤音编辑状态：~~
-				- ~~双指缩放缩放视图~~
-				- ~~单指移动绘制颤音线~~
-				- ~~唔，剩下的还没想好8(:D~~
-        - 悬浮按钮
-        	- `AI` ：加载音高渲染结果。在渲染器支持自动音高时展示
-  			- `磁铁` ：单击启用/禁用吸附到网格；长按更改网格密度
-	- 扩展区，分为三个区域：
-		- 左侧表情选择区和表情编辑模式切换
-		- 上方音素编辑区（尚不支持编辑）
-		- 下方表情参数编辑区，三个编辑状态
-			- 拖拽：无编辑功能，单指移动滚动视图，双指缩放缩放视图
-			- 画笔：双指缩放缩放视图
-				- 曲线型参数：单指点击或移动绘制曲线
-				- 数值型参数：单指点击或移动采样对应音素位置的数值
-				- 选项型参数：单指点击或滑动切换选项
-			- 橡皮擦：单指点击或移动擦除表情数据，双指缩放缩放视图
+- **Top Title Bar:** Includes functions for Exit, Title, Undo/Redo, Save, etc.
+- **Transport (Arrangement) Area:**
+    - **Top-left `>>>` button:** Expand details.
+    - **Top-right Timeline:**
+        - Displays the timeline. Click to move the playback position.
+        - Double-click to add tempo/time signature markers (**Not recommended**; deletion is currently unsupported).
+    - **Left Track Header:** For each track:
+        - Click the colored tab on the left to **Mute/Unmute**.
+        - Click the avatar to change the **Singer**.
+        - Click the track name to **Rename** the track.
+        - Click the colored dot to change the **Track Color**.
+        - Click `↑` `↓` to adjust the **Track Order**.
+        - Click the trash can to **Delete** the track.
+        - Slide the shorter slider to adjust **Pan**.
+        - Slide the longer slider to adjust **Volume**.
+        - Double-click sliders to **Reset**.
+        
+        The `+` button at the bottom adds a new track.
+    - **Right Arrangement Area:** Has two edit modes, toggled by the pencil button:
+        - **Read-only Mode:**
+            - Select parts (clips) to edit in the Piano Roll.
+            - Click empty space to deselect.
+            - Single-finger drag to scroll the view.
+            - Two-finger pinch to zoom the view.
+        - **Edit Mode:**
+            - Swipe on empty space to create a new part.
+            - Click a part to select it.
+            - Click empty space to deselect.
+            - Drag inside a part to move it.
+            - Drag the edge handles of a part to adjust its length.
+- **Main Editor Area:** Divided into the Piano Roll and the Extension Area:
+    - **Piano Roll:**
+        - **Left Piano Keyboard:** ~~Click to preview pitch (can also be clicked to play in real-time during playback).~~
+        - **Right Note Area:** Has four edit modes:
+            - **Note Edit Mode (Default):**
+                - Click empty space:
+                    - If no note is selected: Create a note with default length.
+                    - If a note is selected: Deselect it.
+                - Click a note to select it.
+                - Drag inside a note to move it.
+                - Drag the edge handles of a note to adjust its length.
+                - Double-click a note to edit lyrics.
+                - Two-finger pinch to zoom the view.
+                - Single-finger drag to scroll the view.
+            - **Pitch Curve Edit Mode:**
+                - Two-finger pinch to zoom the view.
+                - Single-finger drag to draw pitch curves.
+            - ~~**Pitch Anchor Edit Mode:**~~
+                - ~~Click empty space to deselect anchors.~~
+                - ~~Click near an anchor to select it.~~
+                - ~~Two-finger pinch to zoom the view.~~
+                - ~~Single-finger drag to move the selected anchor.~~
+                - ~~Double-click to create an anchor.~~
+            - ~~**Vibrato Edit Mode:**~~
+                - ~~Two-finger pinch to zoom the view.~~
+                - ~~Single-finger drag to draw vibrato lines.~~
+                - ~~Hmm, haven't figured out the rest yet 8(:D~~
+        - **Floating Buttons:**
+            - `AI`: Load pitch rendering results. Visible only when the renderer supports automatic pitch.
+            - `Magnet`: Click to Enable/Disable **Snap to Grid**; Long press to change grid density (Quantization).
+    - **Extension Area:** Divided into three zones:
+        - **Left:** Expression Selector and Edit Mode Switcher.
+        - **Top:** Phoneme Editor (Editing not yet supported).
+        - **Bottom:** Expression Parameter Editor (Three edit modes):
+            - **Drag:** No editing function. Single-finger drag to scroll, two-finger pinch to zoom.
+            - **Brush:** Two-finger pinch to zoom.
+                - *Curve parameters:* Single-finger tap or drag to draw curves.
+                - *Numerical parameters:* Single-finger tap or drag to sample values at the corresponding phoneme position.
+                - *Option parameters:* Single-finger tap or slide to toggle options.
+            - **Eraser:** Single-finger tap or drag to erase expression data. Two-finger pinch to zoom.
