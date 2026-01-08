@@ -15,7 +15,10 @@
     <PackageReference Include="csharp-pinyin" Version="1.0.0" />
     <PackageReference Include="Ignore" Version="0.1.50" />
     <PackageReference Include="K4os.Hash.xxHash" Version="1.0.8" />
-    <PackageReference Include="Melanchall.DryWetMidi" Version="7.2.0" />
+    <PackageReference Include="Melanchall.DryWetMidi" Version="7.2.0">
+      <!-- 排除原生库，iOS 不需要 MIDI 设备直接访问 -->
+      <ExcludeAssets>native;build</ExcludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.16.0" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.22.1" />
 	<PackageReference Include="Microsoft.Maui.Essentials" Version="9.0.30" />
