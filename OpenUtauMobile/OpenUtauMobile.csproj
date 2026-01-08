@@ -55,6 +55,12 @@
 		<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
 	</PropertyGroup>
 
+	<!-- iOS 配置 -->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+		<!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
+		<MtouchLink>None</MtouchLink>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 	  <AndroidPackageFormat>apk</AndroidPackageFormat>
@@ -86,7 +92,7 @@
 	<!-- 资源 -->
 	<ItemGroup>
 		<!-- 应用图标 -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.4" BaseSize="256,256" />
+		<MauiIcon Include="Resources\AppIcon\appicon.png" BaseSize="1024,1024" />
 
 		<!-- 开屏图片 -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" BaseSize="256,256" Color="#ffffff" />
