@@ -14,7 +14,8 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
 ### 运行平台
 
-- Android5及以上
+- Android 5.0 及以上
+- iOS 15.0 及以上（需自行构建）
 
 ### 歌手类型
 
@@ -46,6 +47,102 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 - 如果你发现了BUG或者有想实现的功能或者对操作逻辑UI有好的建议，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题](https://github.com/vocoder712/OpenUtauMobile/issues)提出BUG，[讨论](https://github.com/vocoder712/OpenUtauMobile/discussion)提建议。
 
 - 贡献代码：克隆本项目到本地后，使用 Visual Studio 打开项目根目录 `OpenUtauMobile.sln` 即可进入开发环境。建议新建分支操作。完成后可以发起 Pull Request。
+
+## iOS 构建指南
+
+由于 Apple 的政策限制，iOS 版本无法直接发布安装包，需要自行在 macOS 上构建。
+
+### 环境要求
+
+- macOS（必须）
+- .NET 9.0 SDK
+- Xcode 15 或更高版本
+- Apple 开发者账号（免费账号即可用于个人设备）
+- MAUI 工作负载
+
+### 安装开发环境
+
+```bash
+# 安装 .NET 9.0 SDK（如果尚未安装）
+brew install dotnet-sdk
+
+# 安装 MAUI iOS 工作负载（仅构建 iOS）
+dotnet workload install maui-ios
+
+# 或者安装完整的 MAUI 工作负载（同时支持 Android 和 iOS）
+# dotnet workload install maui
+```
+
+### 构建步骤
+
+1. **克隆项目**
+   ```bash
+   git clone https://github.com/vocoder712/OpenUtauMobile.git
+   cd OpenUtauMobile
+   ```
+
+2. **还原依赖**
+   ```bash
+   # 指定仅还原 iOS 平台，避免自动下载 Android workload
+   dotnet restore -p:TargetFramework=net9.0-ios
+   ```
+
+3. **构建 IPA 安装包**
+   ```bash
+   dotnet publish OpenUtauMobile/OpenUtauMobile.csproj \
+       -f net9.0-ios \
+       -c Debug \
+       -p:ArchiveOnBuild=true \
+       -p:RuntimeIdentifier=ios-arm64 \
+       -p:TargetFrameworks=net9.0-ios
+   ```
+   
+   构建完成后，IPA 文件位于：
+   `OpenUtauMobile/bin/Debug/net9.0-ios/ios-arm64/publish/OpenUtauMobile.ipa`
+
+### 安装到 iPhone
+
+1. **使用 USB 连接 iPhone 到 Mac**
+
+2. **查看设备 ID**
+   ```bash
+   xcrun devicectl list devices
+   ```
+
+3. **安装应用**
+   ```bash
+   xcrun devicectl device install app \
+       --device <你的设备ID> \
+       OpenUtauMobile/bin/Debug/net9.0-ios/ios-arm64/publish/OpenUtauMobile.ipa
+   ```
+
+4. **信任开发者证书**
+   
+   首次安装后，在 iPhone 上前往：
+   **设置 → 通用 → VPN与设备管理**，找到开发者证书并点击信任。
+
+### 常见问题
+
+**Q: 构建时间很长怎么办？**
+
+A: Debug 模式构建通常需要 2-5 分钟。如果构建 Release 版本（启用 AOT），可能需要 20-40 分钟。建议日常开发使用 Debug 模式。
+
+**Q: 证书过期了怎么办？**
+
+A: 免费开发者证书有效期为 7 天，过期后需要重新构建安装。付费开发者账号（$99/年）证书有效期为 1 年。
+
+**Q: 可以不用 Mac 构建吗？**
+
+A: 不可以。Apple 要求 iOS 应用必须在 macOS 上使用 Xcode 工具链构建。
+
+**Q: 如果我也想构建 Android 版本怎么办？**
+
+A: 安装完整的 MAUI workload：
+```bash
+dotnet workload install maui
+```
+
+然后在构建命令中移除 `-p:TargetFrameworks=net9.0-ios` 参数，或改为 Android 的目标框架。
 
 ## 开源协议
 

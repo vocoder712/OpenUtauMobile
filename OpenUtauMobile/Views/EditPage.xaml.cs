@@ -17,6 +17,7 @@ using Serilog;
 using SkiaSharp;
 using System.Diagnostics;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using Preferences = OpenUtau.Core.Util.Preferences;
 using System.Reactive.Linq;
 using DynamicData;
@@ -173,6 +174,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
         _viewModel.WhenAnyValue(x => x.PianoRollTransformer.PanX,
             x => x.PianoRollTransformer.ZoomX)
             .Throttle(TimeSpan.FromMilliseconds(16.6)) // 限制更新频率为60FPS
+            .ObserveOn(RxApp.MainThreadScheduler) // 确保在主线程执行
             .Subscribe(_ =>
             {
                 PianoRollCanvas.InvalidateSurface();
@@ -1258,6 +1260,9 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
+        // iOS 需要确保 UI 更新在主线程执行
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
         if (cmd is SetPlayPosTickNotification setPlayPosTickNotification)
         {
             _viewModel.PlayPosTick = setPlayPosTickNotification.playPosTick;
@@ -1488,6 +1493,7 @@ public partial class EditPage : ContentPage, ICmdSubscriber, IDisposable
             CommunityToolkit.Maui.Alerts.Toast.Make(AppResources.Saved, CommunityToolkit.Maui.Core.ToastDuration.Short, 16).Show();
 #endif
         }
+        }); // MainThread.BeginInvokeOnMainThread
     }
 
     #region 分割线

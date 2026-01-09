@@ -55,6 +55,12 @@
 		<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
 	</PropertyGroup>
 
+	<!-- iOS 配置 -->
+	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+		<!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
+		<MtouchLink>None</MtouchLink>
+	</PropertyGroup>
+
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
 	  <JavaMaximumHeapSize>4G</JavaMaximumHeapSize>
 	  <AndroidPackageFormat>apk</AndroidPackageFormat>
@@ -86,7 +92,7 @@
 	<!-- 资源 -->
 	<ItemGroup>
 		<!-- 应用图标 -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.4" BaseSize="256,256" />
+		<MauiIcon Include="Resources\AppIcon\appicon.png" BaseSize="1024,1024" />
 
 		<!-- 开屏图片 -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" BaseSize="256,256" Color="#ffffff" />
@@ -100,6 +106,12 @@
 
 		<!-- 原始资源 Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+	<!-- 将 OpenUtau 的资源打包进 iOS 应用 -->
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+		<BundleResource Include="Resources\AppIcon\Assets.car" />
+		<BundleResource Include="Resources\AppIcon\openutau60x60@2x.png" />
+		<BundleResource Include="Resources\AppIcon\openutau76x76@2x~ipad.png" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Resources\AppIcon\appicon.svg" />
@@ -119,6 +131,17 @@
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\x86_64\libworldline.so" />
 	  <AndroidNativeLibrary Include="Platforms\Android\Lib\x86\libworldline.so" />
 	</ItemGroup>
+
+	<!-- 确保仓库中的 Assets.car 和 openutau 图标已复制到生成的 .app 包中 -->
+	<Target Name="CopyOpenUtauAssets" AfterTargets="Build;Publish">
+		<PropertyGroup>
+			<AppBundle>$(OutputPath)$(AssemblyName).app</AppBundle>
+		</PropertyGroup>
+		<Message Importance="high" Text="Copying OpenUtau Assets to $(AppBundle)" />
+		<Copy SourceFiles="Resources/AppIcon/Assets.car" DestinationFiles="$(AppBundle)/Assets.car" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="Resources/AppIcon/openutau60x60@2x.png" DestinationFiles="$(AppBundle)/openutau60x60@2x.png" SkipUnchangedFiles="true" />
+		<Copy SourceFiles="Resources/AppIcon/openutau76x76@2x~ipad.png" DestinationFiles="$(AppBundle)/openutau76x76@2x~ipad.png" SkipUnchangedFiles="true" />
+	</Target>
 
 
 	<!-- nuget依赖项 -->

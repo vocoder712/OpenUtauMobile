@@ -27,8 +27,10 @@ namespace OpenUtau.Core {
             }
             else if (DeviceInfo.Current.Platform == DevicePlatform.iOS)
             {
-                RootPath = FileSystem.AppDataDirectory;
-                DataPath = FileSystem.AppDataDirectory;
+                // iOS 使用 Documents 目录，这样用户可以在"文件"应用中看到和管理文件
+                string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                RootPath = documentsPath;
+                DataPath = documentsPath;
                 CachePath = FileSystem.CacheDirectory;
                 HomePathIsAscii = true;
                 IsInstalled = false;
