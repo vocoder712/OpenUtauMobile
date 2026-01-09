@@ -92,7 +92,8 @@
 	<!-- 资源 -->
 	<ItemGroup>
 		<!-- 应用图标 -->
-		<MauiIcon Include="Resources\AppIcon\appicon.png" BaseSize="1024,1024" />
+		<MauiIcon Condition="'$(TargetFramework)' != 'net9.0-android'" Include="Resources\AppIcon\appicon.png" BaseSize="1024,1024" />
+		<MauiIcon Condition="'$(TargetFramework)' == 'net9.0-android'" Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.4" BaseSize="256,256" />
 
 		<!-- 开屏图片 -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" BaseSize="256,256" Color="#ffffff" />
@@ -115,7 +116,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <None Remove="Resources\AppIcon\appicon.svg" />
-	  <None Remove="Resources\AppIcon\appiconfg.svg" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_expand_less_dark.svg" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_expand_more_dark.svg" />
 	  <None Remove="Resources\Icons\dark\ic_sharp_extension_dark.svg" />
