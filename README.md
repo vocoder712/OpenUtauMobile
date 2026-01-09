@@ -1,54 +1,54 @@
 # OpenUtau Mobile
-
-## 特别感谢
+[English](README.md) | [简体中文](README_zh.md)
+## Special Thanks
 
 - [OpenUtau](https://github.com/stakira/OpenUtau)
 
-## OpenUtau Mobile 是什么？
+## What is OpenUtau Mobile?
 
-OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
+OpenUtau Mobile is an open-source, free singing synthesis software for mobile devices.
 
-一个基于 [OpenUtau内核](https://github.com/stakira/OpenUtau/tree/master/OpenUtau.Core) ，并进行了一些修补的编辑器。完全支持 OpenUtau 的 USTX 工程文件。
+It is an editor based on the [OpenUtau Core](https://github.com/stakira/OpenUtau/tree/master/OpenUtau.Core) with some patches applied. It fully supports OpenUtau USTX project files.
 
-## 兼容性
+## Compatibility
 
-### 运行平台
+### Platforms
 
-- Android5及以上
+- Android 5.0 and above
 
-### 歌手类型
+### Singer Types
 
 - DiffSinger
 - UTAU
 - Vogen
 
-其他未测试的类型不能保证正常工作
+Other untested types are not guaranteed to work correctly.
 
-## 快速开始
+## Quick Start
 
-1. 在本项目的[release](https://github.com/vocoder712/OpenUtauMobile/releases)下载对应平台和架构的安装包并安装
-2. 下载一个声库。通常你可以在[DiffSinger自制声库分享页面](https://docs.qq.com/sheet/DQXNDY0pPaEpOc3JN?tab=BB08J2)找到下载地址。声库通常以zip格式打包。
-3. 打开软件 → 点击首页的 `歌手` 按钮 → 点击右下角 `+` → 选择上一步下载的声库安装包，然后按照指引安装。
-4. 返回首页，点击 `新建` 进入主界面，开始你的创作吧！
+1. Download the installer for your platform and architecture from the [Releases](https://github.com/vocoder712/OpenUtauMobile/releases) page and install it.
+2. Download a voicebank. You can usually find download links on the [DiffSinger Custom Voicebank Share Page](https://docs.qq.com/sheet/DQXNDY0pPaEpOc3JN?tab=BB08J2) or the [UTAU wiki](https://utau.fandom.com/). Voicebanks are usually packaged in ZIP format.
+3. Open the software → Click the `Singer` button on the home page → Click the `+` in the bottom right → Select the voicebank package (ZIP) downloaded in the previous step, and follow the instructions to install.
+4. Return to the home page, click `New` to enter the main interface, and start creating!
 
-你也可以在首页的 `打开` 直接找到并打开 OpenUtau 的 USTX 工程文件。
+You can also use the `Open` button on the home page to directly find and open OpenUtau USTX project files.
 
-软件现阶段很不稳定，特别是受限于开发框架，容易出现内存管理问题。因此记得随时点点保存。如果崩溃，可以在工程文件同目录找到以 `.autosave.ustx` 结尾的文件恢复。
+**Note:** The software is currently very unstable. Due to limitations of the development framework, memory management issues may occur frequently. Therefore, **remember to save often**. If the app crashes, you can find a recovery file ending in `.autosave.ustx` in the same directory as your project file.
 
-## 软件界面简介
+## Interface Introduction
 
-详见[编辑界面简介](./UIIntroductions.md)
+See [Interface Introduction](./UIIntroductions.md) for details.
 
-## 自行构建与贡献
+## Building & Contributing
 
-如果你想让这个项目变得更好：
+If you want to help improve this project:
 
-- 如果你发现了BUG或者有想实现的功能或者对操作逻辑UI有好的建议，可以先在[开发计划与已知BUG](#开发计划与已知BUG)看看有没有，如果没有，欢迎在[议题](https://github.com/vocoder712/OpenUtauMobile/issues)提出BUG，[讨论](https://github.com/vocoder712/OpenUtauMobile/discussion)提建议。
+- If you find a bug, have a feature request, or have a suggestion for the UI/UX, please check [Planned Features & Known Bugs](#planned-features--known-bugs) first. If it is not listed there, feel free to report bugs in [Issues](https://github.com/vocoder712/OpenUtauMobile/issues) or discuss suggestions in [Discussions](https://github.com/vocoder712/OpenUtauMobile/discussion).
 
-- 贡献代码：克隆本项目到本地后，使用 Visual Studio 打开项目根目录 `OpenUtauMobile.sln` 即可进入开发环境。建议新建分支操作。可以参考[开发计划与已知BUG](#开发计划与已知BUG)中的任务列表实现功能或修复BUG。完成后可以发起 Pull Request。
+- **Contributing Code:** Clone this project locally, then use Visual Studio to open `OpenUtauMobile.sln` in the project root directory to enter the development environment. It is recommended to create a new branch for your changes. Once completed, you can submit a Pull Request.
 
-## 开源协议
+## License
 
-本项目采用 [Apache 2.0](./LICENSE.txt) 许可证开源。
+This project is open-source under the [Apache 2.0](./LICENSE.txt) license.
 
-不是官方 OpenUtau ，不得冒充官方 OpenUtau 。
+This is NOT the official OpenUtau application and must not impersonate the official OpenUtau.
