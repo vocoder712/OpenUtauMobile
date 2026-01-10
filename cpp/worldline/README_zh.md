@@ -25,12 +25,12 @@ cmake -S . -B build_xcode -G Xcode -DCMAKE_BUILD_TYPE=Release
 ./scripts/build_sim_x86.sh
 ./scripts/build_sim_arm64.sh
 ./scripts/build_device_arm64.sh
-# 合并模拟器切片（生成 fat 模拟器库）
-lipo -create build_xcode/libworldline-iphonesim-arm64.dylib build_xcode/libworldline-iphonesim-x86_64.dylib -output build_xcode/libworldline-iphonesim-fat.dylib
+# 注意：为避免在模拟器上触发 dyld / codesign 的 "invalid page" 问题，脚本已改为**不再合并**模拟器切片为 fat dylib。
+# 构建将优先使用 arm64 模式的模拟器切片（iossimulator-arm64），若不存在再回退到 x86_64。
 # 打包 XCFramework，并拷贝到 runtimes/ios/
-xcodebuild -create-xcframework \
-  -library build_xcode/libworldline-iphoneos-arm64.dylib -headers build_xcode/include \
-  -library build_xcode/libworldline-iphonesim-fat.dylib -headers build_xcode/include \
+xcodebuild -create-xcframework 
+  -library build_xcode/libworldline-iphoneos-arm64.dylib -headers build_xcode/include 
+  -library build_xcode/libworldline-iphonesim-arm64.dylib -headers build_xcode/include 
   -output build_xcode/worldline.xcframework
 cp -R build_xcode/worldline.xcframework runtimes/ios/
 ```
