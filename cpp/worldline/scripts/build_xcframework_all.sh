@@ -38,22 +38,15 @@ else
   echo "Warning: worldline.h not found in source root; XCFramework headers may be incomplete" >&2
 fi
 
-# Locate lipo tool (use xcrun or which as fallback)
-LIPO=${LIPO:-$(xcrun -f lipo 2>/dev/null || which lipo || true)}
-if [ -z "$LIPO" ] || [ ! -x "$LIPO" ]; then
-  echo "Error: 'lipo' tool not found. Ensure Xcode command line tools are installed or lipo is available in PATH." >&2
-  exit 1
-fi
-
-# Merge simulator slices into fat dylib (if both present)
+# Prefer arm64 simulator slice only (do NOT create a fat universal sim dylib)
+# This avoids known dyld / codesign invalid-page issues on simulators caused by universal simulator
+# slices. If arm64 sim slice exists, use it; otherwise fall back to x86_64.
 SIM_LIB=""
-if [ -f "$BUILD_DIR/libworldline-iphonesim-arm64.dylib" ] && [ -f "$BUILD_DIR/libworldline-iphonesim-x86_64.dylib" ]; then
-  echo "Merging simulator slices into fat dylib..."
-  "$LIPO" -create "$BUILD_DIR/libworldline-iphonesim-arm64.dylib" "$BUILD_DIR/libworldline-iphonesim-x86_64.dylib" -output "$BUILD_DIR/libworldline-iphonesim-fat.dylib"
-  SIM_LIB="$BUILD_DIR/libworldline-iphonesim-fat.dylib"
-elif [ -f "$BUILD_DIR/libworldline-iphonesim-arm64.dylib" ]; then
+if [ -f "$BUILD_DIR/libworldline-iphonesim-arm64.dylib" ]; then
+  echo "Using simulator arm64 slice (no fat merge)."
   SIM_LIB="$BUILD_DIR/libworldline-iphonesim-arm64.dylib"
 elif [ -f "$BUILD_DIR/libworldline-iphonesim-x86_64.dylib" ]; then
+  echo "Arm64 sim slice not found; falling back to x86_64 sim slice."
   SIM_LIB="$BUILD_DIR/libworldline-iphonesim-x86_64.dylib"
 else
   echo "Error: No simulator library found to include in XCFramework" >&2
