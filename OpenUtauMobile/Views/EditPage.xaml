@@ -300,14 +300,14 @@
                     <Grid x:Name="GridPianoRoll" ColumnDefinitions="60, *" AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="All">
                         <!-- 横向网格 -->
                         <skia:SKCanvasView x:Name="PianoRollKeysBackgroundCanvas" Grid.Column="1" PaintSurface="PianoRollKeysBackgroundCanvas_PaintSurface" />
-                        <!-- 立绘 -->
-                        <Image x:Name="ImageSingerPortrait" Grid.Column="1" HorizontalOptions="End" Aspect="AspectFit" Source="{Binding CurrentPortrait, Converter={StaticResource ByteDataImageSourceConverter}}" Opacity="{Binding PortraitOpacity}"/>
-                        <!-- 时间网格 -->
-                        <skia:SKCanvasView x:Name="PianoRollTickBackgroundCanvas" Grid.Column="1" PaintSurface="PianoRollTickBackgroundCanvas_PaintSurface" />
+                        <!-- 立绘（装饰层）: InputTransparent=True 以允许触摸穿透到下层 PianoRoll（iOS hit-testing 会阻塞上层可见控件） -->
+                        <Image x:Name="ImageSingerPortrait" Grid.Column="1" HorizontalOptions="End" Aspect="AspectFit" Source="{Binding CurrentPortrait, Converter={StaticResource ByteDataImageSourceConverter}}" Opacity="{Binding PortraitOpacity}" InputTransparent="True" />
+                        <!-- 时间网格（装饰层）: InputTransparent=True 以允许触摸穿透到下层 PianoRoll（iOS hit-testing 会阻塞上层可见控件） -->
+                        <skia:SKCanvasView x:Name="PianoRollTickBackgroundCanvas" Grid.Column="1" PaintSurface="PianoRollTickBackgroundCanvas_PaintSurface" InputTransparent="True" />
                         <!-- 音符 -->
                         <skia:SKCanvasView x:Name="PianoRollCanvas" Grid.Column="1" EnableTouchEvents="True" PaintSurface="PianoRollCanvas_PaintSurface" Touch="PianoRollCanvas_Touch"/>
-                        <!-- 音高线 -->
-                        <skia:SKCanvasView x:Name="PianoRollPitchCanvas" Grid.Column="1" PaintSurface="PianoRollPitchCanvas_PaintSurface"/>
+                        <!-- 音高线（装饰层）: InputTransparent=True 以允许触摸穿透到下层 PianoRoll（iOS hit-testing 会阻塞上层可见控件） -->
+                        <skia:SKCanvasView x:Name="PianoRollPitchCanvas" Grid.Column="1" PaintSurface="PianoRollPitchCanvas_PaintSurface" InputTransparent="True"/>
                         <!-- 左侧钢琴键 -->
                         <skia:SKCanvasView x:Name="PianoKeysCanvas" Grid.Column="0" EnableTouchEvents="True" PaintSurface="PianoKeysCanvas_PaintSurface" Touch="PianoKeysCanvas_Touch">
                             <!-- 阴影 -->
