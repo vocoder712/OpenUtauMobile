@@ -1,0 +1,9 @@
+
+build/
+runtimes/
+bazel-*
+
+# Archived build artifacts
+archived_builds/
+
+.vscode/settings.json
