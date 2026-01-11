@@ -7,9 +7,6 @@
 - CMake（建议 >= 3.20；若使用旧版 WORLD，构建时可传 `-DCMAKE_POLICY_VERSION_MINIMUM=3.5`）
 - Xcode 命令行工具（含 `xcrun`、`lipo`、`xcodebuild`）
 
-使用 vendored WORLD（推荐，无需联网）：
-- 若存在 `third_party/world/`，CMake 会优先使用该目录（请保留原仓库的 `LICENSE.txt`）。
-
 一键构建（自动化脚本）：
 ```bash
 cd cpp/worldline
