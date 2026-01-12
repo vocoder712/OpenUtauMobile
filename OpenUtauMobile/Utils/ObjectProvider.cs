@@ -32,7 +32,13 @@ namespace OpenUtauMobile.Utils
             AppLifeCycleHelper = new OpenUtauMobile.Platforms.Android.Utils.AndroidAppLifeCycleHelper();
 #elif IOS
             ExternalStorageService = new OpenUtauMobile.Platforms.iOS.Utils.Permission.ExternalStorageService();
-            AudioOutput = new OpenUtau.Audio.DummyAudioOutput(); // iOS平台使用DummyAudioOutput作为占位符
+            try {
+                AudioOutput = new OpenUtauMobile.Platforms.iOS.Utils.Audio.AVAudioEngineOutput();
+            } catch (Exception ex) {
+                Log.Error(ex, "Failed to initialize AVAudioEngineOutput, falling back to DummyAudioOutput");
+                AudioOutput = new OpenUtau.Audio.DummyAudioOutput();
+            }
+            Log.Information("ObjectProvider initialized AudioOutput: {AudioOutput}", AudioOutput?.GetType().FullName);
             AppLifeCycleHelper = new OpenUtauMobile.Platforms.iOS.Utils.iOSAppLifeCycleHelper();
 #elif WINDOWS
             ExternalStorageService = new OpenUtauMobile.Platforms.Windows.Utils.Permission.ExternalStorageService();
