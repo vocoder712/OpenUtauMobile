@@ -219,6 +219,9 @@
 	  <Compile Update="Views\Controls\ErrorPopup.xaml.cs">
 	    <DependentUpon>ErrorPopup.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Controls\DemoAdvancedPopup.xaml.cs">
+	    <DependentUpon>DemoAdvancedPopup.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\InstallVogenSingerPage.xaml.cs">
 	    <DependentUpon>InstallVogenSingerPage.xaml</DependentUpon>
 	  </Compile>

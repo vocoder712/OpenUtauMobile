@@ -40,6 +40,10 @@ OpenUtau Mobile 是一个面向移动端的开源免费歌声合成软件。
 
 详见[编辑界面简介](./UIIntroductions_zh.md)
 
+## 弹窗高级特性
+
+详见[弹窗特性文档](./PopupFeatures_zh.md)，涵盖 `CommunityToolkit.Maui` 弹窗框架直接支持的功能（定位、半透明、圆角/不规则形状、拖拽、调整大小）以及需要自定义实现的内容。
+
 ## 自行构建与贡献
 
 如果你想让这个项目变得更好：

@@ -40,6 +40,10 @@ You can also use the `Open` button on the home page to directly find and open Op
 
 See [Interface Introduction](./UIIntroductions.md) for details.
 
+## Popup / Dialog Advanced Features
+
+See [Popup Features](./PopupFeatures.md) for a full description of what the `CommunityToolkit.Maui` popup framework supports directly (positioning, semi-transparency, rounded/irregular shapes, dragging, resizing) and what requires custom implementation.
+
 ## Building & Contributing
 
 If you want to help improve this project:

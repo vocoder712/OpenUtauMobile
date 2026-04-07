@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+    DemoAdvancedPopup — demonstrates advanced CommunityToolkit.Maui Popup features.
+
+    Features shown here:
+      1. Color="Transparent"          — no backdrop scrim; the page is fully visible behind the popup
+      2. HorizontalOptions / VerticalOptions — popup placed at the top-right corner of the screen
+      3. StrokeShape="RoundRectangle 16" — rounded-corner content via Border
+      4. Background="#CC1A1A2E"       — semi-transparent (80 % opaque) dark content background
+      5. CanBeDismissedByTappingOutsideOfPopup="True" — tapping outside dismisses the popup
+      6. PanGestureRecognizer on the title bar — drag the popup to any position
+      7. PanGestureRecognizer on the resize handle — drag the bottom-right corner to resize
+-->
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+
+               Color="Transparent"
+               HorizontalOptions="End"
+               VerticalOptions="Start"
+               CanBeDismissedByTappingOutsideOfPopup="True"
+               x:Class="OpenUtauMobile.Views.Controls.DemoAdvancedPopup">
+
+    <!--
+        Feature 3 + 4: Semi-transparent dark card with rounded corners.
+        The popup's Color="Transparent" lets the rounded corners show through without a
+        solid-colour overlay filling the gap between the screen edge and the card.
+    -->
+    <Border x:Name="PopupCard"
+            StrokeThickness="0"
+            Background="#CC1A1A2E"
+            WidthRequest="320"
+            StrokeShape="RoundRectangle 16">
+
+        <Grid RowDefinitions="44,*,24">
+
+            <!-- ── Title bar / drag handle ──────────────────────────────────── -->
+            <!--
+                Feature 6: PanGestureRecognizer on the title BoxView.
+                Dragging this bar translates PopupCard via TranslationX/TranslationY.
+                (See DemoAdvancedPopup.xaml.cs for the gesture handler.)
+            -->
+            <BoxView x:Name="DragHandle"
+                     Grid.Row="0"
+                     BackgroundColor="#66CCFF"
+                     Opacity="0.9">
+                <BoxView.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="OnDragHandlePanUpdated" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Label Grid.Row="0"
+                   Text="Advanced Popup Demo  ✥ drag me"
+                   FontSize="14"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   VerticalTextAlignment="Center"
+                   InputTransparent="True" />
+
+            <!-- ── Content area ──────────────────────────────────────────────── -->
+            <VerticalStackLayout Grid.Row="1" Padding="16,12" Spacing="8">
+                <Label Text="1. Color=&quot;Transparent&quot; — no scrim backdrop"
+                       TextColor="White" FontSize="12" />
+                <Label Text="2. HorizontalOptions=End / VerticalOptions=Start — top-right"
+                       TextColor="White" FontSize="12" />
+                <Label Text="3. StrokeShape=&quot;RoundRectangle 16&quot; — rounded corners"
+                       TextColor="White" FontSize="12" />
+                <Label Text="4. Background=&quot;#CC1A1A2E&quot; — 80 % opaque dark card"
+                       TextColor="White" FontSize="12" />
+                <Label Text="5. CanBeDismissedByTappingOutsideOfPopup=True"
+                       TextColor="White" FontSize="12" />
+                <Label Text="6. Drag the blue title bar to reposition"
+                       TextColor="White" FontSize="12" />
+                <Label Text="7. Drag the ▶ handle to resize"
+                       TextColor="White" FontSize="12" />
+                <Button Text="Close"
+                        Clicked="OnCloseClicked"
+                        CornerRadius="20"
+                        BackgroundColor="Transparent"
+                        TextColor="#66CCFF"
+                        BorderColor="#66CCFF"
+                        BorderWidth="1"
+                        HorizontalOptions="End"
+                        Margin="0,4,0,0" />
+            </VerticalStackLayout>
+
+            <!-- ── Resize handle (bottom-right corner) ──────────────────────── -->
+            <!--
+                Feature 7: PanGestureRecognizer on this BoxView.
+                Dragging it adjusts PopupCard.WidthRequest / HeightRequest.
+                (See DemoAdvancedPopup.xaml.cs for the gesture handler.)
+            -->
+            <BoxView x:Name="ResizeHandle"
+                     Grid.Row="2"
+                     WidthRequest="24"
+                     HeightRequest="24"
+                     HorizontalOptions="End"
+                     VerticalOptions="End"
+                     BackgroundColor="#66CCFF"
+                     Opacity="0.7">
+                <BoxView.GestureRecognizers>
+                    <PanGestureRecognizer PanUpdated="OnResizeHandlePanUpdated" />
+                </BoxView.GestureRecognizers>
+            </BoxView>
+            <Label Grid.Row="2"
+                   Text="▶"
+                   TextColor="White"
+                   FontSize="10"
+                   HorizontalOptions="End"
+                   VerticalOptions="End"
+                   Margin="0,0,5,2"
+                   InputTransparent="True" />
+        </Grid>
+    </Border>
+</toolkit:Popup>
