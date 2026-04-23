@@ -257,6 +257,7 @@ namespace OpenUtau.Core {
             AudioOutput.Stop();
             Render(project, tick, endTick, trackNo);
             StartingToPlay = true;
+            PlayingMaster = true;
         }
 
         public void StopPlayback() {
@@ -286,12 +287,9 @@ namespace OpenUtau.Core {
                 try {
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
                     var result = engine.RenderProject(DocManager.Inst.MainScheduler, ref renderCancellation);
-                    if (result.Item1.IsPlayable()) {
-                        faders = result.Item2;
-                        StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
-                        PlayingMaster = true;
-                    }
+                    faders = result.Item2;
                     StartingToPlay = false;
+                    StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to render.");
                     StopPlayback();
