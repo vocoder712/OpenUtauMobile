@@ -101,7 +101,7 @@ Use release configuration for better performance.
 
 Contributions are WELCOME!
 
-You can fork the repository, make changes, and submit a pull request. Make sure to follow the coding styles in `.editorconfig`.
+You can fork the repository, make changes, and submit a pull request to `dev` branch. Make sure to follow the coding styles in `.editorconfig`.
 
 ---
 
