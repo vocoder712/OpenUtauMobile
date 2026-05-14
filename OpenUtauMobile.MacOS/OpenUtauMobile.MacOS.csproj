@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0-maccatalyst</TargetFramework>
+        <TargetPlatformVersion>26.0</TargetPlatformVersion>
+        <Nullable>enable</Nullable>
+        <DefineConstants>MACOS</DefineConstants>
+        <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers>
+        <ApplicationId>$(ApplicationId)</ApplicationId>
+    </PropertyGroup>
+
+	<!-- 苹果配置 -->
+	<PropertyGroup>
+		<!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
+		<MtouchLink>None</MtouchLink>
+	</PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="runtimes\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <!-- OnnxRuntime 没有提供 Mac Catalyst 原生库（只有 osx-x64/osx-arm64），
+         将 macOS dylib 手动引入 Mac Catalyst 构建并传递给链接器 -->
+    <Target Name="IncludeOnnxRuntimeNativeForMacCatalyst" AfterTargets="ResolvePackageAssets" BeforeTargets="_ComputePublishLocation" Condition="'$(RuntimeIdentifier)' == 'maccatalyst-x64' Or '$(RuntimeIdentifier)' == 'maccatalyst-arm64'">
+        <PropertyGroup>
+            <_ORT_NativeRid Condition="'$(RuntimeIdentifier)' == 'maccatalyst-x64'">osx-x64</_ORT_NativeRid>
+            <_ORT_NativeRid Condition="'$(RuntimeIdentifier)' == 'maccatalyst-arm64'">osx-arm64</_ORT_NativeRid>
+            <_ORT_DylibSource>$(NuGetPackageRoot)microsoft.ml.onnxruntime/1.23.2/runtimes/$(_ORT_NativeRid)/native/libonnxruntime.dylib</_ORT_DylibSource>
+            <_ORT_DylibDest>$(IntermediateOutputPath)nativelibraries/Contents/MonoBundle/libonnxruntime.dylib</_ORT_DylibDest>
+        </PropertyGroup>
+
+        <Warning Text="OnnxRuntime dylib not found at $(_ORT_DylibSource) — OnnxRuntime will not work on Mac Catalyst"
+                 Condition="!Exists('$(_ORT_DylibSource)')" />
+
+        <MakeDir Directories="$([System.IO.Path]::GetDirectoryName($(_ORT_DylibDest)))"
+                 Condition="Exists('$(_ORT_DylibSource)')" />
+        <Copy SourceFiles="$(_ORT_DylibSource)" DestinationFiles="$(_ORT_DylibDest)"
+              Condition="Exists('$(_ORT_DylibSource)')" />
+
+        <ItemGroup Condition="Exists('$(_ORT_DylibSource)')">
+            <ResolvedFileToPublish Include="$(_ORT_DylibDest)">
+                <RelativePath>libonnxruntime.dylib</RelativePath>
+                <AssetType>native</AssetType>
+                <NuGetPackageId>Microsoft.ML.OnnxRuntime</NuGetPackageId>
+                <NuGetPackageVersion>1.23.2</NuGetPackageVersion>
+                <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            </ResolvedFileToPublish>
+        </ItemGroup>
+
+        <PropertyGroup Condition="Exists('$(_ORT_DylibSource)')">
+            <MtouchExtraArgs>$(MtouchExtraArgs) --gcc_flags=-Wl,$(_ORT_DylibDest)</MtouchExtraArgs>
+        </PropertyGroup>
+    </Target>
+</Project>
+

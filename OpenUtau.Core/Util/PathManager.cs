@@ -9,46 +9,63 @@ using System.Text.RegularExpressions;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
-using Microsoft.Maui.Devices;
-using Microsoft.Maui.Storage;
-using Preferences = OpenUtau.Core.Util.Preferences;
 
 namespace OpenUtau.Core {
 
     public class PathManager : SingletonBase<PathManager> {
         public PathManager() {
-            if (DeviceInfo.Current.Platform == DevicePlatform.Android)
+            try
             {
-                RootPath = FileSystem.AppDataDirectory;
-                DataPath = FileSystem.AppDataDirectory;
-                CachePath = FileSystem.CacheDirectory;
-                HomePathIsAscii = true;
-                IsInstalled = false;
+                RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             }
-            else if (DeviceInfo.Current.Platform == DevicePlatform.iOS)
+            catch
             {
-                // iOS 使用 Documents 目录，这样用户可以在"文件"应用中看到和管理文件
-                string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                RootPath = documentsPath;
-                DataPath = documentsPath;
-                CachePath = FileSystem.CacheDirectory;
-                HomePathIsAscii = true;
-                IsInstalled = false;
+                return;
             }
-            else if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
-            {
-                string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                RootPath = Path.Combine(dataHome, "OpenUtauMobile");
-                DataPath = Path.Combine(dataHome, "OpenUtauMobile");
+            if (OS.IsMacOS()) {
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                DataPath = Path.Combine(userHome, "Library", "OpenUtau");
+                CachePath = Path.Combine(userHome, "Library", "Caches", "OpenUtau");
+                HomePathIsAscii = true;
+                try {
+                    // Deletes old cache.
+                    string oldCache = Path.Combine(DataPath, "Cache");
+                    if (Directory.Exists(oldCache)) {
+                        Directory.Delete(oldCache, true);
+                    }
+                } catch { }
+            } else if (OS.IsLinux()) {
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+                if (string.IsNullOrEmpty(dataHome)) {
+                    dataHome = Path.Combine(userHome, ".local", "share");
+                }
+                DataPath = Path.Combine(dataHome, "OpenUtau");
+                string cacheHome = Environment.GetEnvironmentVariable("XDG_CACHE_HOME");
+                if (string.IsNullOrEmpty(cacheHome)) {
+                    cacheHome = Path.Combine(userHome, ".cache");
+                }
+                CachePath = Path.Combine(cacheHome, "OpenUtau");
+                HomePathIsAscii = true;
+            } else {
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                IsInstalled = File.Exists(Path.Combine(exePath, "installed.txt"));
+                if (!IsInstalled) {
+                    DataPath = exePath;
+                } else {
+                    string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    DataPath = Path.Combine(dataHome, "OpenUtau");
+                }
                 CachePath = Path.Combine(DataPath, "Cache");
                 HomePathIsAscii = true;
-                IsInstalled = false;
-            }
-            else
-            {
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("不支持的操作系统"));
-                Log.Error("不支持的操作系统");
-                throw new Exception("不支持的操作系统");
+                var etor = StringInfo.GetTextElementEnumerator(DataPath);
+                while (etor.MoveNext()) {
+                    string s = etor.GetTextElement();
+                    if (s.Length != 1 || s[0] >= 128) {
+                        HomePathIsAscii = false;
+                        break;
+                    }
+                }
             }
         }
 
@@ -73,6 +90,7 @@ namespace OpenUtau.Core {
         public string LogsPath => Path.Combine(DataPath, "Logs");
         public string LogFilePath => Path.Combine(DataPath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(DataPath, "prefs.json");
+        public string ThemesPath => Path.Combine(DataPath, "Themes");
         public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
         public string BackupsPath => Path.Combine(DataPath, "Backups");
 

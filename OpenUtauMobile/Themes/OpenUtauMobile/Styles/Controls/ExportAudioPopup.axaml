@@ -1,0 +1,56 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="Border.ExportPathPreview">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="10,8" />
+    </Style>
+
+    <Style Selector="Button.ExportPathBtn">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.ExportPathBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.9" />
+    </Style>
+
+    <Style Selector="RadioButton.ExportModeCard">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter Content="{TemplateBinding Content}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="RadioButton.ExportModeCard:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+    </Style>
+    <Style Selector="RadioButton.ExportModeCard:checked">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+</Styles>

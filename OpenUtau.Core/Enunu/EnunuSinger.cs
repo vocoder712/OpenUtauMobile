@@ -191,23 +191,9 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public override byte[] LoadPortrait() {
-            //return string.IsNullOrEmpty(Portrait)
-            //    ? null
-            //    : File.ReadAllBytes(Portrait);
-            if (string.IsNullOrEmpty(Portrait) || !File.Exists(Portrait))
-            {
-                return [];
-            }
-            try
-            {
-                return File.ReadAllBytes(Portrait);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Failed to load portrait data.");
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-                return [];
-            }
+            return string.IsNullOrEmpty(Portrait)
+                ? null
+                : File.ReadAllBytes(Portrait);
         }
 
         public override byte[] LoadSample() {

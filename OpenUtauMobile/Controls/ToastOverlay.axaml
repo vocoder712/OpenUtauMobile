@@ -1,0 +1,35 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OpenUtauMobile.Controls.ToastOverlay"
+             IsHitTestVisible="False">
+
+    <Panel>
+        <Border x:Name="ToastBorder"
+                IsVisible="False"
+                Opacity="0"
+                Background="{DynamicResource Sem.Color.InverseSurface}"
+                CornerRadius="28"
+                Padding="16,12"
+                MinWidth="48"
+                MaxWidth="320"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Center"
+                Margin="16,0,16,88">
+            <!-- 阴影效果 -->
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="14" OffsetX="0" OffsetY="4" Opacity="0.35"
+                                  Color="{DynamicResource Sem.Value.Shadow}" />
+            </Border.Effect>
+            <!-- Toast 消息文本 -->
+            <TextBlock x:Name="ToastText"
+                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}"
+                       FontSize="14"
+                       FontWeight="Medium"
+                       MaxLines="2"
+                       TextTrimming="CharacterEllipsis"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center" />
+        </Border>
+    </Panel>
+
+</UserControl>

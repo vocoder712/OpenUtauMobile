@@ -1,0 +1,238 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Views.SingerDetailView"
+             x:DataType="vm:SingerDetailViewModel">
+
+    <UserControl.Resources>
+        <!-- Icons -->
+        <StreamGeometry x:Key="IconDelete">M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z</StreamGeometry>
+        <StreamGeometry x:Key="IconWeb">M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z</StreamGeometry>
+        <StreamGeometry x:Key="IconFavorite">M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z</StreamGeometry>
+        <StreamGeometry x:Key="IconFavoriteOutline">M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z</StreamGeometry>
+        <StreamGeometry x:Key="IconPerson">M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z</StreamGeometry>
+        <StreamGeometry x:Key="IconFolder">M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z</StreamGeometry>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SingerDetailView.axaml" />
+    </UserControl.Styles>
+
+    <Panel Background="{DynamicResource Sem.Color.Surface}">
+        <DockPanel>
+            <!-- 鈹€鈹€ Top App Bar 鈹€鈹€ -->
+            <Border DockPanel.Dock="Top" Classes="TopBar">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <!-- Back button -->
+                    <Button Grid.Column="0"
+                            Classes="TopBarBtn"
+                            Command="{Binding BackCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Back}"
+                            Content="{iconPacks:PhosphorIcons ArrowLeft}">
+                    </Button>
+                    <!-- Title -->
+                    <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource SingerDetail.Title}" />
+                    <!-- Favorite toggle -->
+                    <ToggleButton Grid.Column="2"
+                                  IsChecked="{Binding IsFavorite, Mode=TwoWay}"
+                                  Background="Transparent"
+                                  BorderThickness="0"
+                                  Padding="12"
+                                  Cursor="Hand">
+                        <Panel>
+                            <Path Width="20" Height="20"
+                                  Stretch="Uniform"
+                                  Fill="{DynamicResource Sem.Color.Error}"
+                                  Data="{StaticResource IconFavorite}"
+                                  IsVisible="{Binding IsFavorite}" />
+                            <Path Width="20" Height="20"
+                                  Stretch="Uniform"
+                                  Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                  Data="{StaticResource IconFavoriteOutline}"
+                                  IsVisible="{Binding !IsFavorite}" />
+                        </Panel>
+                    </ToggleButton>
+                </Grid>
+            </Border>
+
+            <!-- 鈹€鈹€ Content 鈹€鈹€ -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="20,16,20,24">
+
+                    <!-- 鈹€鈹€ Hero Section: Avatar + Name + Type 鈹€鈹€ -->
+                    <Border Classes="InfoCard" Padding="24,20">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <!-- Avatar -->
+                            <Border Grid.Column="0"
+                                    Width="80" Height="80"
+                                    CornerRadius="16"
+                                    ClipToBounds="True"
+                                    Background="{DynamicResource Sem.Color.SurfaceContainer}">
+                                <Panel>
+                                    <!-- Placeholder icon -->
+                                    <Path Width="32" Height="32"
+                                          Stretch="Uniform"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                          Data="{StaticResource IconPerson}"
+                                          IsVisible="{Binding !HasAvatar}" />
+                                    <!-- Actual avatar -->
+                                    <Image Source="{Binding AvatarBitmap}"
+                                           Stretch="UniformToFill"
+                                           IsVisible="{Binding HasAvatar}" />
+                                </Panel>
+                            </Border>
+
+                            <!-- Name + Type + ID -->
+                            <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding SingerName}"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis" />
+                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0" Spacing="8">
+                                    <!-- Type badge -->
+                                    <Border Background="{DynamicResource Sem.Color.Primary}"
+                                            CornerRadius="6"
+                                            Padding="8,3">
+                                        <TextBlock Text="{Binding SingerType}"
+                                                   FontSize="11"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource Sem.Color.OnPrimary}" />
+                                    </Border>
+                                    <!-- Version badge -->
+                                    <Border Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                            CornerRadius="6"
+                                            Padding="8,3"
+                                            IsVisible="{Binding HasVersion}">
+                                        <TextBlock Text="{Binding Version}"
+                                                   FontSize="11"
+                                                   Opacity="0.7" />
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Text="{Binding SingerId}"
+                                           FontSize="12"
+                                           Opacity="0.5"
+                                           Margin="0,6,0,0"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- 鈹€鈹€ Quick Actions 鈹€鈹€ -->
+                    <Grid ColumnDefinitions="*,*" Margin="0,0,0,12">
+                        <!-- Open Web -->
+                        <Button Grid.Column="0"
+                                Classes="ActionBtn"
+                                Margin="0,0,6,0"
+                                Command="{Binding OpenWebCommand}"
+                                IsVisible="{Binding HasWeb}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Path Width="18" Height="18"
+                                      Stretch="Uniform"
+                                      Fill="{DynamicResource Sem.Color.SurfaceContainerHigh}"
+                                      Data="{StaticResource IconWeb}" />
+                                <TextBlock Text="{DynamicResource SingerDetail.OpenWeb}"
+                                           VerticalAlignment="Center"
+                                           FontSize="13" />
+                            </StackPanel>
+                        </Button>
+                        <!-- Placeholder for future action -->
+                        <Border Grid.Column="1" Margin="6,0,0,0" />
+                    </Grid>
+
+                    <!-- 鈹€鈹€ Details Card 鈹€鈹€ -->
+                    <Border Classes="InfoCard">
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="{DynamicResource SingerDetail.Details}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,0,4" />
+
+                            <!-- Author -->
+                            <StackPanel IsVisible="{Binding HasAuthor}">
+                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Author}" />
+                                <TextBlock Classes="InfoValue" Text="{Binding Author}" />
+                            </StackPanel>
+
+                            <!-- Voice -->
+                            <StackPanel IsVisible="{Binding HasVoice}">
+                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Voice}" />
+                                <TextBlock Classes="InfoValue" Text="{Binding Voice}" />
+                            </StackPanel>
+
+                            <!-- Website -->
+                            <StackPanel IsVisible="{Binding HasWeb}">
+                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Website}" />
+                                <TextBlock Classes="InfoValue" Text="{Binding Web}"
+                                           Foreground="{DynamicResource Sem.Color.Primary}" />
+                            </StackPanel>
+
+                            <!-- Default Phonemizer -->
+                            <StackPanel IsVisible="{Binding HasDefaultPhonemizer}">
+                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.DefaultPhonemizer}" />
+                                <TextBlock Classes="InfoValue" Text="{Binding DefaultPhonemizer}" />
+                            </StackPanel>
+
+                            <!-- Other Info -->
+                            <StackPanel IsVisible="{Binding HasOtherInfo}">
+                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.OtherInfo}" />
+                                <TextBlock Classes="InfoValue" Text="{Binding OtherInfo}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 鈹€鈹€ Location Card 鈹€鈹€ -->
+                    <Border Classes="InfoCard" IsVisible="{Binding HasLocation}">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+                                <Path Width="16" Height="16"
+                                      Stretch="Uniform"
+                                      Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                      Data="{StaticResource IconFolder}" />
+                                <TextBlock Text="{DynamicResource SingerDetail.Location}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold" />
+                            </StackPanel>
+                            <TextBlock Text="{Binding Location}"
+                                       FontSize="12"
+                                       Opacity="0.7"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 鈹€鈹€ Danger Zone 鈹€鈹€ -->
+                    <Border Classes="InfoCard" Margin="0,12,0,0">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="{DynamicResource SingerDetail.DangerZone}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Sem.Color.Error}" />
+                            <TextBlock Text="{DynamicResource SingerDetail.DeleteWarning}"
+                                       FontSize="12"
+                                       Opacity="0.7"
+                                       TextWrapping="Wrap" />
+                            <Button Classes="DeleteBtn"
+                                    Command="{Binding DeleteCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Path Width="16" Height="16"
+                                          Stretch="Uniform"
+                                          Fill="{DynamicResource Sem.Color.Error}"
+                                          Data="{StaticResource IconDelete}" />
+                                    <TextBlock Text="{DynamicResource SingerDetail.Delete}"
+                                               FontWeight="SemiBold" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Panel>
+</UserControl>

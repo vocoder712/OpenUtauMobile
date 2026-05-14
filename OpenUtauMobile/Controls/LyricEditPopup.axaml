@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.LyricEditPopup"
+             d:DataContext="{d:DesignInstance Type=vm:LyricEditViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:LyricEditViewModel"
+             Classes="PopupDialogRoot"
+             MinHeight="180">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <!-- 标题栏 -->
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource LyricEdit.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}">
+                        <Path Width="14" Height="14"
+                              Stretch="Uniform"
+                              Fill="{DynamicResource Sem.Color.OnSurface}"
+                              Data="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 Z" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- 内容区域 -->
+            <Border DockPanel.Dock="Top"
+                    Padding="16,16"
+                    Background="{DynamicResource Sem.Color.Surface}">
+                <StackPanel Spacing="12">
+                    <!-- 当前音符信息 -->
+                    <TextBlock Text="{Binding CurrentNoteInfo}"
+                               FontSize="13"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+
+                    <!-- 歌词输入框 -->
+                    <TextBox x:Name="LyricInput"
+                             Text="{Binding CurrentLyric}"
+                             Watermark="{DynamicResource LyricEdit.Watermark}"
+                             Padding="12,8"
+                             CornerRadius="8"
+                             FontSize="14"
+                             BorderThickness="1" />
+
+                    <!-- 按钮栏 -->
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                        <Button Grid.Column="1"
+                                Command="{Binding CancelCommand}"
+                                Classes="Secondary"
+                                Content="{DynamicResource Common.Cancel}" />
+
+                        <Button Grid.Column="2"
+                                Command="{Binding NextCommand}"
+                                Classes="Secondary"
+                                Content="{DynamicResource Common.Next}"
+                                ToolTip.Tip="{Binding NextButtonTooltip}" />
+
+                        <Button Grid.Column="3"
+                                Command="{Binding ConfirmCommand}"
+                                Classes="Primary"
+                                Content="{DynamicResource Common.Confirm}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </DockPanel>
+    </Border>
+
+</UserControl>

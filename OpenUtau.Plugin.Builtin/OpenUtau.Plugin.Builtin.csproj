@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net9.0-android;net9.0-ios</TargetFrameworks>
+    <TargetFramework>net9.0</TargetFramework>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <DebugType>embedded</DebugType>
     <Nullable>enable</Nullable>
+    <!-- 禁用 Core 项目的 Null 相关警告 -->
+    <NoWarn>CS0168;CS0162;CS0219;CS0649;CS0414;CS8600;CS8601;CS8602;CS8603;CS8604;CS8612;CS8618;CS8619;CS8625;CS8629;CS8714;CS8767;CS8769</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

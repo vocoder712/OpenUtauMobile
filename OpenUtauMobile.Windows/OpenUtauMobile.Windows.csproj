@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <DefineConstants>WINDOWS</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.--> 
+        <PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="NAudio" Version="2.2.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="runtimes\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <!--
+      Ensure native runtime libraries (runtimes\<rid>\native\*) are copied to the publish output root.
+      Some native libraries end up under a rid-specific runtimes folder after publish and are not found by
+      DllImport("worldline") at runtime. This target copies those native files into the publish directory
+      root so P/Invoke can locate them next to the executable.
+    -->
+    <Target Name="CopyNativeRuntimeAssetsToPublish" AfterTargets="Publish">
+        <ItemGroup>
+            <NativeRuntimeAssets Include="$(PublishDir)runtimes\**\native\**\*.*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(NativeRuntimeAssets)"
+              DestinationFiles="@(NativeRuntimeAssets->'$(PublishDir)%(Filename)%(Extension)')"
+              SkipUnchangedFiles="true" />
+    </Target>
+</Project>
+

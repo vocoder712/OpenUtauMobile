@@ -1,0 +1,1407 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common.Back" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="Common.CollapseRail" xml:space="preserve">
+    <value>收起侧栏</value>
+  </data>
+  <data name="Common.Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Common.Confirm" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="Common.Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Common.Next" xml:space="preserve">
+    <value>下一步</value>
+  </data>
+  <data name="Common.Previous" xml:space="preserve">
+    <value>上一步</value>
+  </data>
+  <data name="Common.Skip" xml:space="preserve">
+    <value>跳过</value>
+  </data>
+  <data name="Common.Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Common.Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="Common.Cut" xml:space="preserve">
+    <value>剪切</value>
+  </data>
+  <data name="Common.Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="Common.SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="Common.Install" xml:space="preserve">
+    <value>安装</value>
+  </data>
+  <data name="Common.Update" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Common.Installed" xml:space="preserve">
+    <value>已安装</value>
+  </data>
+  <data name="Common.Uninstall" xml:space="preserve">
+    <value>卸载</value>
+  </data>
+  <data name="Common.Unknown" xml:space="preserve">
+    <value>未知</value>
+  </data>
+  <data name="Common.Details" xml:space="preserve">
+    <value>详情</value>
+  </data>
+  <data name="Settings.Title" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Settings.Nav.EditAndBehaviour" xml:space="preserve">
+    <value>编辑与行为</value>
+  </data>
+  <data name="Settings.Nav.EditAndBehaviour.Sub" xml:space="preserve">
+    <value>自动翻页…</value>
+  </data>
+  <data name="Settings.Nav.RenderAndPerformance" xml:space="preserve">
+    <value>渲染与性能</value>
+  </data>
+  <data name="Settings.Nav.RenderAndPerformance.Sub" xml:space="preserve">
+    <value>渲染器、音频输出、ML参数…</value>
+  </data>
+  <data name="Settings.Nav.FileAndStorage" xml:space="preserve">
+    <value>文件与存储</value>
+  </data>
+  <data name="Settings.Nav.FileAndStorage.Sub" xml:space="preserve">
+    <value>歌手路径、自动保存…</value>
+  </data>
+  <data name="Settings.Nav.AppearanceAndLanguage" xml:space="preserve">
+    <value>外观与语言</value>
+  </data>
+  <data name="Settings.Nav.AppearanceAndLanguage.Sub" xml:space="preserve">
+    <value>主题、语言、立绘…</value>
+  </data>
+  <data name="Settings.Edit.CategoryTitle" xml:space="preserve">
+    <value>编辑与行为</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyBehavior" xml:space="preserve">
+    <value>钢琴键行为</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyBehavior.Desc" xml:space="preserve">
+    <value>按下钢琴键时的声音输出方式</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath" xml:space="preserve">
+    <value>SoundFont 文件路径</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath.Change" xml:space="preserve">
+    <value>选择</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath.Loaded" xml:space="preserve">
+    <value>✓ 已加载</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath.NotLoaded" xml:space="preserve">
+    <value>⚠ 未加载 - 请选择有效的 SF2 文件</value>
+  </data>
+  <data name="Settings.Edit.AutoScrollBehavior" xml:space="preserve">
+    <value>走带自动翻页行为</value>
+  </data>
+  <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
+    <value>设置走带时的自动翻页行为</value>
+  </data>
+  <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
+    <value>回放刷新率</value>
+  </data>
+  <data name="Settings.Edit.PlaybackRefreshRate.Desc" xml:space="preserve">
+    <value>控制播放时界面刷新频率，数值越高越流畅但更耗性能</value>
+  </data>
+  <data name="Settings.Edit.ShowPortrait" xml:space="preserve">
+    <value>显示立绘</value>
+  </data>
+  <data name="Settings.Edit.ShowPortrait.Desc" xml:space="preserve">
+    <value>在钢琴卷帘中显示歌手立绘</value>
+  </data>
+  <data name="Settings.Edit.UndoLimit" xml:space="preserve">
+    <value>撤销步数上限</value>
+  </data>
+  <data name="Settings.Edit.UndoLimit.Desc" xml:space="preserve">
+    <value>限制可保留的撤销历史步数</value>
+  </data>
+  <data name="Settings.Edit.AutoSave" xml:space="preserve">
+    <value>自动保存</value>
+  </data>
+  <data name="Settings.Edit.AutoSave.Enabled" xml:space="preserve">
+    <value>启用自动保存</value>
+  </data>
+  <data name="Settings.Edit.AutoSave.Desc" xml:space="preserve">
+    <value>编辑时自动保存工程文件的时间间隔</value>
+  </data>
+  <data name="Settings.PianoKey.Silent" xml:space="preserve">
+    <value>静音</value>
+  </data>
+  <data name="Settings.PianoKey.SineWave" xml:space="preserve">
+    <value>正弦波</value>
+  </data>
+  <data name="Settings.PianoKey.SoundFont" xml:space="preserve">
+    <value>钢琴采样 (SF2)</value>
+  </data>
+  <data name="Settings.AutoScroll.Disabled" xml:space="preserve">
+    <value>关闭自动翻页</value>
+  </data>
+  <data name="Settings.AutoScroll.Enabled" xml:space="preserve">
+    <value>启用自动翻页</value>
+  </data>
+  <data name="Settings.AutoScroll.Smooth" xml:space="preserve">
+    <value>启用平滑自动翻页</value>
+  </data>
+  <data name="Settings.Render.CategoryTitle" xml:space="preserve">
+    <value>渲染与性能</value>
+  </data>
+  <data name="Settings.Render.DiffSingerParams" xml:space="preserve">
+    <value>DiffSinger 推理参数</value>
+  </data>
+  <data name="Settings.Render.AcousticSteps" xml:space="preserve">
+    <value>音质模型推理步数</value>
+  </data>
+  <data name="Settings.Render.AcousticSteps.Desc" xml:space="preserve">
+    <value>控制音质模型的推理精度，数值越大质量越高但速度越慢（推荐：5-20）</value>
+  </data>
+  <data name="Settings.Render.VarianceSteps" xml:space="preserve">
+    <value>唱法模型推理步数 (Variance)</value>
+  </data>
+  <data name="Settings.Render.VarianceSteps.Desc" xml:space="preserve">
+    <value>控制唱法/表现力模型的推理精度（推荐：5-20）</value>
+  </data>
+  <data name="Settings.Render.PitchSteps" xml:space="preserve">
+    <value>音高模型推理步数</value>
+  </data>
+  <data name="Settings.Render.PitchSteps.Desc" xml:space="preserve">
+    <value>控制音高模型的推理精度（推荐：5-20）</value>
+  </data>
+  <data name="Settings.Render.PreRender" xml:space="preserve">
+    <value>预渲染</value>
+  </data>
+  <data name="Settings.Render.PreRender.Desc" xml:space="preserve">
+    <value>启用后将在后台提前渲染音频，提升播放流畅度</value>
+  </data>
+  <data name="Settings.Render.ThreadCount" xml:space="preserve">
+    <value>渲染线程数</value>
+  </data>
+  <data name="Settings.Render.ThreadCount.Desc" xml:space="preserve">
+    <value>同时运行的渲染线程数量，根据 CPU 核心数调整（推荐：2-4）</value>
+  </data>
+  <data name="Settings.Render.AudioOutput" xml:space="preserve">
+    <value>音频输出</value>
+  </data>
+  <data name="Settings.Render.OnnxRunner" xml:space="preserve">
+    <value>机器学习运行器后端</value>
+  </data>
+  <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
+    <value>选择机器学习模型使用的 ONNX Runtime 执行后端</value>
+  </data>
+  <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
+    <value>部分机型不支持硬件加速，选择此选项可能导致闪退。</value>
+  </data>
+  <data name="Settings.Render.AudioBackend" xml:space="preserve">
+    <value>音频后端</value>
+  </data>
+  <data name="Settings.Render.AudioBackend.Desc" xml:space="preserve">
+    <value>选择音频输出后端，自动将根据平台选择最佳后端</value>
+  </data>
+  <data name="Settings.Render.OutputDevice" xml:space="preserve">
+    <value>输出设备</value>
+  </data>
+  <data name="Settings.Render.OutputDevice.Desc" xml:space="preserve">
+    <value>选择音频输出设备</value>
+  </data>
+  <data name="Settings.Render.AudioBackend.RestartRequired" xml:space="preserve">
+    <value>更改音频后端需要重启应用才能生效</value>
+  </data>
+  <data name="Settings.Audio.DefaultDevice" xml:space="preserve">
+    <value>默认设备</value>
+  </data>
+  <data name="Settings.Audio.AutoSelect" xml:space="preserve">
+    <value>自动选择</value>
+  </data>
+  <data name="Settings.Audio.Dummy" xml:space="preserve">
+    <value>无声 (Dummy)</value>
+  </data>
+  <data name="Settings.Audio.Device" xml:space="preserve">
+    <value>设备 {0}</value>
+  </data>
+  <data name="Settings.File.CategoryTitle" xml:space="preserve">
+    <value>文件与存储</value>
+  </data>
+  <data name="Settings.File.AdditionalSingerPath" xml:space="preserve">
+    <value>额外歌手路径</value>
+  </data>
+  <data name="Settings.File.AdditionalSingerPath.Desc" xml:space="preserve">
+    <value>指定额外的歌手搜索目录</value>
+  </data>
+  <data name="Settings.File.AdditionalSingerPath.Change" xml:space="preserve">
+    <value>更改</value>
+  </data>
+  <data name="Settings.File.RenderCache" xml:space="preserve">
+    <value>渲染缓存</value>
+  </data>
+  <data name="Settings.File.RenderCache.Desc" xml:space="preserve">
+    <value>删除存储在应用数据中的渲染缓存文件。</value>
+  </data>
+  <data name="Settings.File.RenderCache.Clear" xml:space="preserve">
+    <value>清除渲染缓存</value>
+  </data>
+  <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
+    <value>外观与语言</value>
+  </data>
+  <data name="Settings.Appearance.Theme" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="Settings.Appearance.Theme.Desc" xml:space="preserve">
+    <value>选择明亮、暗色或跟随系统主题。</value>
+  </data>
+  <data name="Settings.Appearance.Theme.System" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="Settings.Appearance.Theme.Light" xml:space="preserve">
+    <value>明亮</value>
+  </data>
+  <data name="Settings.Appearance.Theme.Dark" xml:space="preserve">
+    <value>暗色</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor" xml:space="preserve">
+    <value>主题色</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Desc" xml:space="preserve">
+    <value>可跟随系统强调色，或使用自定义种子色。</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Mode.FollowSystem" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Mode.Custom" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.ApplyHex" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.OpenPicker" xml:space="preserve">
+    <value>取色器</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.ResetDefault" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Presets" xml:space="preserve">
+    <value>预设颜色</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Title" xml:space="preserve">
+    <value>主题色选择器</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Hue" xml:space="preserve">
+    <value>色相</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Saturation" xml:space="preserve">
+    <value>饱和度</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Value" xml:space="preserve">
+    <value>明度</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.InvalidHex" xml:space="preserve">
+    <value>颜色格式无效，请使用 #RRGGBB。</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.FallbackToSystem" xml:space="preserve">
+    <value>自定义颜色无效，已回退到系统强调色。</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.SystemUnavailable" xml:space="preserve">
+    <value>系统强调色不可用，已使用回退颜色。</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Source" xml:space="preserve">
+    <value>颜色来源</value>
+  </data>
+  <data name="Settings.Appearance.Language" xml:space="preserve">
+    <value>语言</value>
+  </data>
+  <data name="Settings.Appearance.Language.Desc" xml:space="preserve">
+    <value>界面显示语言</value>
+  </data>
+  <data name="Settings.Appearance.Language.FollowSystem" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="FilePicker.Empty" xml:space="preserve">
+    <value>此目录为空</value>
+  </data>
+  <data name="FilePicker.NoMatch" xml:space="preserve">
+    <value>没有符合条件的文件</value>
+  </data>
+  <data name="FilePicker.AccessDenied" xml:space="preserve">
+    <value>无权访问此目录</value>
+  </data>
+  <data name="FilePicker.GoUp" xml:space="preserve">
+    <value>返回上级目录</value>
+  </data>
+  <data name="FilePicker.Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="FilePicker.SelectFolder" xml:space="preserve">
+    <value>选择此文件夹</value>
+  </data>
+  <data name="FilePicker.FileName" xml:space="preserve">
+    <value>文件名</value>
+  </data>
+  <data name="FilePicker.FileNameHint" xml:space="preserve">
+    <value>输入文件名…</value>
+  </data>
+  <data name="FilePicker.Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="FilePicker.OpenProject" xml:space="preserve">
+    <value>打开工程文件</value>
+  </data>
+  <data name="FilePicker.SaveProjectAs" xml:space="preserve">
+    <value>将工程另存为</value>
+  </data>
+  <data name="FilePicker.DefaultProjectName" xml:space="preserve">
+    <value>新工程</value>
+  </data>
+  <data name="FilePicker.OverwriteWarning" xml:space="preserve">
+    <value>当前目录已存在同名文件，将覆盖</value>
+  </data>
+  <data name="FilePicker.ImportAudio" xml:space="preserve">
+    <value>导入音频</value>
+  </data>
+  <data name="FilePicker.ImportMIDI" xml:space="preserve">
+    <value>导入MIDI</value>
+  </data>
+  <data name="FilePicker.SelectSingerFile" xml:space="preserve">
+    <value>选择歌手文件</value>
+  </data>
+  <data name="FilePicker.SelectSF2" xml:space="preserve">
+    <value>选择 SoundFont 文件</value>
+  </data>
+  <data name="FilePicker.SelectSingerDir" xml:space="preserve">
+    <value>选择额外歌手目录</value>
+  </data>
+  <data name="Home.Action.New" xml:space="preserve">
+    <value>新建</value>
+  </data>
+  <data name="Home.Action.Open" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="Home.Action.Singers" xml:space="preserve">
+    <value>歌手</value>
+  </data>
+  <data name="Home.Action.Options" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="Home.Title" xml:space="preserve">
+    <value>主页</value>
+  </data>
+  <data name="Home.Recent.Title" xml:space="preserve">
+    <value>最近打开</value>
+  </data>
+  <data name="Home.Recent.Empty" xml:space="preserve">
+    <value>暂无最近打开的项目</value>
+  </data>
+  <data name="Home.Recent.Remove" xml:space="preserve">
+    <value>从列表移除</value>
+  </data>
+  <data name="Home.Brand.Name" xml:space="preserve">
+    <value>OpenUtau Mobile</value>
+  </data>
+  <data name="Home.Recovery.Message" xml:space="preserve">
+    <value>上次异常退出，有可恢复的工程：</value>
+  </data>
+  <data name="Home.Recovery.Open" xml:space="preserve">
+    <value> 点击打开</value>
+  </data>
+  <data name="Home.Recovery.OpenAction" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="Home.Recovery.Dismiss" xml:space="preserve">
+    <value>忽略</value>
+  </data>
+  <data name="Home.Toast.BackToExit" xml:space="preserve">
+    <value>再按一次返回键退出应用</value>
+  </data>
+  <data name="SingerDetail.Title" xml:space="preserve">
+    <value>歌手详情</value>
+  </data>
+  <data name="SingerDetail.OpenWeb" xml:space="preserve">
+    <value>访问网站</value>
+  </data>
+  <data name="SingerDetail.Details" xml:space="preserve">
+    <value>详细信息</value>
+  </data>
+  <data name="SingerDetail.Author" xml:space="preserve">
+    <value>作者</value>
+  </data>
+  <data name="SingerDetail.Voice" xml:space="preserve">
+    <value>声源</value>
+  </data>
+  <data name="SingerDetail.Website" xml:space="preserve">
+    <value>网站</value>
+  </data>
+  <data name="SingerDetail.DefaultPhonemizer" xml:space="preserve">
+    <value>默认音素器</value>
+  </data>
+  <data name="SingerDetail.OtherInfo" xml:space="preserve">
+    <value>其他信息</value>
+  </data>
+  <data name="SingerDetail.Location" xml:space="preserve">
+    <value>存储位置</value>
+  </data>
+  <data name="SingerDetail.DangerZone" xml:space="preserve">
+    <value>危险操作</value>
+  </data>
+  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
+    <value>删除歌手将永久移除所有相关文件，此操作不可撤销。</value>
+  </data>
+  <data name="SingerDetail.Delete" xml:space="preserve">
+    <value>删除歌手</value>
+  </data>
+  <data name="Editor.Undo" xml:space="preserve">
+    <value>撤销</value>
+  </data>
+  <data name="Editor.Redo" xml:space="preserve">
+    <value>重做</value>
+  </data>
+  <data name="Editor.More" xml:space="preserve">
+    <value>更多</value>
+  </data>
+  <data name="Editor.Quantize" xml:space="preserve">
+    <value>量化（全局）</value>
+  </data>
+  <data name="Editor.Quantize.Auto" xml:space="preserve">
+    <value>自动</value>
+  </data>
+  <data name="Editor.Quantize.Off" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Editor.NormalMode" xml:space="preserve">
+    <value>普通模式</value>
+  </data>
+  <data name="Editor.MultiSelectMode" xml:space="preserve">
+    <value>多选模式</value>
+  </data>
+  <data name="Editor.Stop" xml:space="preserve">
+    <value>停止</value>
+  </data>
+  <data name="Editor.PlayPause" xml:space="preserve">
+    <value>播放/暂停</value>
+  </data>
+  <data name="Editor.Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Editor.Saved" xml:space="preserve">
+    <value>已保存</value>
+  </data>
+  <data name="Editor.ToggleTrackHeader" xml:space="preserve">
+    <value>展开/收起轨道头</value>
+  </data>
+  <data name="Editor.NoEditingPart" xml:space="preserve">
+    <value>没有正在编辑的分片</value>
+  </data>
+  <data name="Editor.Rendering" xml:space="preserve">
+    <value>渲染中...</value>
+  </data>
+  <data name="Editor.Undone" xml:space="preserve">
+    <value>已撤销</value>
+  </data>
+  <data name="Editor.Redone" xml:space="preserve">
+    <value>已重做</value>
+  </data>
+  <data name="Editor.NewPart" xml:space="preserve">
+    <value>新分片</value>
+  </data>
+  <data name="Editor.LoadingProject" xml:space="preserve">
+    <value>正在加载项目...</value>
+  </data>
+  <data name="Editor.ProjectLoaded" xml:space="preserve">
+    <value>项目加载完成</value>
+  </data>
+  <data name="Editor.Action.Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Editor.Action.Rename" xml:space="preserve">
+    <value>重命名</value>
+  </data>
+  <data name="Editor.Action.Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="Editor.Action.Cut" xml:space="preserve">
+    <value>剪切</value>
+  </data>
+  <data name="Editor.Action.Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="Editor.Action.Split" xml:space="preserve">
+    <value>分割</value>
+  </data>
+  <data name="Editor.Action.AddTimeSig" xml:space="preserve">
+    <value>添加节拍标签</value>
+  </data>
+  <data name="Editor.Action.AddTempo" xml:space="preserve">
+    <value>添加曲速标签</value>
+  </data>
+  <data name="Editor.Action.PrevTimeSig" xml:space="preserve">
+    <value>转到上一个节拍标签</value>
+  </data>
+  <data name="Editor.Action.NextTimeSig" xml:space="preserve">
+    <value>转到下一个节拍标签</value>
+  </data>
+  <data name="Editor.Action.PrevTempo" xml:space="preserve">
+    <value>转到上一个曲速标签</value>
+  </data>
+  <data name="Editor.Action.NextTempo" xml:space="preserve">
+    <value>转到下一个曲速标签</value>
+  </data>
+  <data name="Editor.Action.DeleteTimeSig" xml:space="preserve">
+    <value>删除节拍标签</value>
+  </data>
+  <data name="Editor.Action.DeleteTempo" xml:space="preserve">
+    <value>删除曲速标签</value>
+  </data>
+  <data name="Editor.Toast.SyncTempo" xml:space="preserve">
+    <value>没有同步曲速，TODO</value>
+  </data>
+  <data name="Editor.Selection.Copied" xml:space="preserve">
+    <value>已复制 {0} 个分片</value>
+  </data>
+  <data name="Editor.Selection.Cut" xml:space="preserve">
+    <value>已剪切 {0} 个分片</value>
+  </data>
+  <data name="Editor.Selection.Pasted" xml:space="preserve">
+    <value>已粘贴 {0} 个分片</value>
+  </data>
+  <data name="Editor.Selection.AllSelected" xml:space="preserve">
+    <value>已全选 {0} 个分片</value>
+  </data>
+  <data name="PianoRoll.DragSelect" xml:space="preserve">
+    <value>拖拽/选择</value>
+  </data>
+  <data name="PianoRoll.MultiSelect" xml:space="preserve">
+    <value>多选</value>
+  </data>
+  <data name="PianoRoll.NotePen" xml:space="preserve">
+    <value>音符笔</value>
+  </data>
+  <data name="PianoRoll.PitchPen" xml:space="preserve">
+    <value>音高笔</value>
+  </data>
+  <data name="PianoRoll.Anchor" xml:space="preserve">
+    <value>锚点</value>
+  </data>
+  <data name="PianoRoll.Vibrato" xml:space="preserve">
+    <value>颤音</value>
+  </data>
+  <data name="PianoRoll.Action.Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="PianoRoll.Action.Properties" xml:space="preserve">
+    <value>属性</value>
+  </data>
+  <data name="PianoRoll.Action.SelectionStart" xml:space="preserve">
+    <value>开始选区</value>
+  </data>
+  <data name="PianoRoll.Action.SelectionEnd" xml:space="preserve">
+    <value>结束选区</value>
+  </data>
+  <data name="PianoRoll.Action.SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="PianoRoll.Action.Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="PianoRoll.Action.Cut" xml:space="preserve">
+    <value>剪切</value>
+  </data>
+  <data name="PianoRoll.Action.Paste" xml:space="preserve">
+    <value>粘贴</value>
+  </data>
+  <data name="PianoRoll.Action.Split" xml:space="preserve">
+    <value>分割</value>
+  </data>
+  <data name="PianoRoll.Action.Merge" xml:space="preserve">
+    <value>合并</value>
+  </data>
+  <data name="PianoRoll.Action.SwitchToPitchPen" xml:space="preserve">
+    <value>切换为音高画笔</value>
+  </data>
+  <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
+    <value>切换为橡皮擦</value>
+  </data>
+  <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
+    <value>在播放标记处添加控制点</value>
+  </data>
+  <data name="PianoRoll.Action.Previous" xml:space="preserve">
+    <value>上一个</value>
+  </data>
+  <data name="PianoRoll.Action.Next" xml:space="preserve">
+    <value>下一个</value>
+  </data>
+  <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
+    <value>控制点形状</value>
+  </data>
+  <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
+    <value>重置颤音</value>
+  </data>
+  <data name="PianoRoll.Action.AddVibrato" xml:space="preserve">
+    <value>添加颤音</value>
+  </data>
+  <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
+    <value>颤音预设</value>
+  </data>
+  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
+    <value>颤音模式</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
+    <value>音高曲线橡皮擦模式</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
+    <value>音高曲线画笔模式</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
+    <value>音高锚点编辑模式</value>
+  </data>
+  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
+    <value>拖拽模式</value>
+  </data>
+  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
+    <value>多选模式</value>
+  </data>
+  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
+    <value>音符模式</value>
+  </data>
+  <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
+    <value>颤音模式暂未上线</value>
+  </data>
+  <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
+    <value>按"|◀"结束选区</value>
+  </data>
+  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
+    <value>已选中 {0} 个音符</value>
+  </data>
+  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
+    <value>已全选 {0} 个音符</value>
+  </data>
+  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
+    <value>已复制 {0} 个音符</value>
+  </data>
+  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
+    <value>已剪切 {0} 个音符</value>
+  </data>
+  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
+    <value>已粘贴 {0} 个音符</value>
+  </data>
+  <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
+    <value>音符属性编辑窗尚未实现</value>
+  </data>
+  <data name="PianoRoll.Toast.ControlPointNotFound" xml:space="preserve">
+    <value>没有找到可以插入的控制点列表</value>
+  </data>
+  <data name="PianoRoll.Undone" xml:space="preserve">
+    <value>已撤销</value>
+  </data>
+  <data name="PianoRoll.Redone" xml:space="preserve">
+    <value>已重做</value>
+  </data>
+  <data name="PianoRoll.PortraitLoadError" xml:space="preserve">
+    <value>无法加载立绘</value>
+  </data>
+  <data name="SingerManagement.Title" xml:space="preserve">
+    <value>歌手管理</value>
+  </data>
+  <data name="SingerManagement.Install" xml:space="preserve">
+    <value>安装歌手</value>
+  </data>
+  <data name="DependencyManager.Title" xml:space="preserve">
+    <value>依赖项管理</value>
+  </data>
+  <data name="DependencyManager.Refresh" xml:space="preserve">
+    <value>刷新列表</value>
+  </data>
+  <data name="DependencyManager.InstallFromFile" xml:space="preserve">
+    <value>从文件安装</value>
+  </data>
+  <data name="DependencyManager.Available" xml:space="preserve">
+    <value>可用</value>
+  </data>
+  <data name="DependencyManager.InstalledTab" xml:space="preserve">
+    <value>已安装</value>
+  </data>
+  <data name="DependencyManager.Search" xml:space="preserve">
+    <value>搜索依赖包...</value>
+  </data>
+  <data name="DependencyManager.LoadingAvailable" xml:space="preserve">
+    <value>正在加载可用依赖包...</value>
+  </data>
+  <data name="DependencyManager.NoAvailable" xml:space="preserve">
+    <value>暂无可用依赖包</value>
+  </data>
+  <data name="DependencyManager.LoadingInstalled" xml:space="preserve">
+    <value>正在加载已安装列表...</value>
+  </data>
+  <data name="DependencyManager.NoInstalled" xml:space="preserve">
+    <value>暂无已安装的依赖包</value>
+  </data>
+  <data name="DependencyManager.Uninstalling" xml:space="preserve">
+    <value>正在卸载...</value>
+  </data>
+  <data name="DependencyManager.UnknownDeveloper" xml:space="preserve">
+    <value>未知开发者</value>
+  </data>
+  <data name="DependencyManager.Installing" xml:space="preserve">
+    <value>正在安装...</value>
+  </data>
+  <data name="DependencyManager.Toast.Loaded" xml:space="preserve">
+    <value>已加载 {0} 个可用依赖包</value>
+  </data>
+  <data name="DependencyManager.Toast.LoadFailed" xml:space="preserve">
+    <value>加载失败: {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstalledListFailed" xml:space="preserve">
+    <value>加载已安装列表失败: {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFromFileNotImpl" xml:space="preserve">
+    <value>从文件安装功能待实现</value>
+  </data>
+  <data name="DependencyManager.Toast.Uninstalled" xml:space="preserve">
+    <value>已卸载 {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.UninstallFailed" xml:space="preserve">
+    <value>卸载失败: {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallSuccess" xml:space="preserve">
+    <value>已安装 {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFailed" xml:space="preserve">
+    <value>安装失败: {0}</value>
+  </data>
+  <data name="Options.Title" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="Options.Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Options.Settings.Desc" xml:space="preserve">
+    <value>语言、音频、外观…</value>
+  </data>
+  <data name="Options.DependencyManager" xml:space="preserve">
+    <value>依赖项管理</value>
+  </data>
+  <data name="Options.DependencyManager.Desc" xml:space="preserve">
+    <value>安装和管理声库、音素等依赖</value>
+  </data>
+  <data name="Options.Help" xml:space="preserve">
+    <value>帮助与教程</value>
+  </data>
+  <data name="Options.Help.Desc" xml:space="preserve">
+    <value>查看使用指南与常见问题</value>
+  </data>
+  <data name="Options.ExportLog" xml:space="preserve">
+    <value>导出日志</value>
+  </data>
+  <data name="Options.ExportLog.Desc" xml:space="preserve">
+    <value>排查问题时导出并分享日志</value>
+  </data>
+  <data name="Options.About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="Options.About.Desc" xml:space="preserve">
+    <value>版本、许可证、致谢</value>
+  </data>
+  <data name="Options.Toast.HelpNotImpl" xml:space="preserve">
+    <value>帮助与教程页面尚未实现</value>
+  </data>
+  <data name="Options.Toast.ExportLogNotImpl" xml:space="preserve">
+    <value>日志导出功能尚未实现</value>
+  </data>
+  <data name="About.Title" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="About.Version" xml:space="preserve">
+    <value>版本号 </value>
+  </data>
+  <data name="About.CoreVersion" xml:space="preserve">
+    <value>内核版本 </value>
+  </data>
+  <data name="About.ProjectHome" xml:space="preserve">
+    <value>项目主页</value>
+  </data>
+  <data name="About.License" xml:space="preserve">
+    <value>开放源代码许可</value>
+  </data>
+  <data name="About.Credits" xml:space="preserve">
+    <value>致谢</value>
+  </data>
+  <data name="About.Credits.Desc" xml:space="preserve">
+    <value>引用的外部库与贡献者</value>
+  </data>
+  <data name="About.Contribute" xml:space="preserve">
+    <value>帮助 OpenUtau Mobile 变得更好</value>
+  </data>
+  <data name="About.Contribute.Desc" xml:space="preserve">
+    <value>反馈 Bug | 功能建议 | 贡献代码</value>
+  </data>
+  <data name="About.Toast.LicenseNotImpl" xml:space="preserve">
+    <value>许可证页面尚未实现</value>
+  </data>
+  <data name="About.Toast.CreditsNotImpl" xml:space="preserve">
+    <value>致谢页面尚未实现</value>
+  </data>
+  <data name="About.Toast.OpenLinkNotImpl" xml:space="preserve">
+    <value>打开外部链接功能尚未实现</value>
+  </data>
+  <data name="About.Toast.OpenLinkFailed" xml:space="preserve">
+    <value>无法打开链接</value>
+  </data>
+  <data name="ErrorDialog.Title" xml:space="preserve">
+    <value>发生错误</value>
+  </data>
+  <data name="ErrorDialog.UnknownError" xml:space="preserve">
+    <value>未知错误</value>
+  </data>
+  <data name="EditorMore.Title" xml:space="preserve">
+    <value>更多操作</value>
+  </data>
+  <data name="EditorMore.FileTab" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="EditorMore.SaveAs" xml:space="preserve">
+    <value>另存为</value>
+  </data>
+  <data name="EditorMore.ImportTab" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="EditorMore.ExportTab" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="EditorMore.ImportAudio" xml:space="preserve">
+    <value>导入音频</value>
+  </data>
+  <data name="EditorMore.ImportMIDI" xml:space="preserve">
+    <value>导入 MIDI</value>
+  </data>
+  <data name="EditorMore.ImportTrack" xml:space="preserve">
+    <value>导入轨道</value>
+  </data>
+  <data name="EditorMore.ExportAudio" xml:space="preserve">
+    <value>导出为音频</value>
+  </data>
+  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
+    <value>TODO: 导入轨道功能</value>
+  </data>
+  <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
+    <value>TODO: 导出音频功能</value>
+  </data>
+  <data name="ExportAudioPopup.Title" xml:space="preserve">
+    <value>导出音频</value>
+  </data>
+  <data name="ExportAudioPopup.PathLabel" xml:space="preserve">
+    <value>导出文件路径</value>
+  </data>
+  <data name="ExportAudioPopup.PathPlaceholder" xml:space="preserve">
+    <value>请选择输出文件路径（.wav）</value>
+  </data>
+  <data name="ExportAudioPopup.SelectPath" xml:space="preserve">
+    <value>选择路径</value>
+  </data>
+  <data name="ExportAudioPopup.ModeLabel" xml:space="preserve">
+    <value>导出模式</value>
+  </data>
+  <data name="ExportAudioPopup.Mode.Mixdown" xml:space="preserve">
+    <value>缩混（单文件）</value>
+  </data>
+  <data name="ExportAudioPopup.Mode.Tracks" xml:space="preserve">
+    <value>分轨（多文件）</value>
+  </data>
+  <data name="ExportAudioPopup.Mode.TracksHint" xml:space="preserve">
+    <value>分轨会基于当前文件名生成多个 wav 文件。</value>
+  </data>
+  <data name="ExportAudioPopup.Start" xml:space="preserve">
+    <value>开始导出</value>
+  </data>
+  <data name="ExportAudioPopup.Exporting" xml:space="preserve">
+    <value>正在导出，请稍候...</value>
+  </data>
+  <data name="ExportAudioPopup.SaveDialogTitle" xml:space="preserve">
+    <value>选择导出音频文件</value>
+  </data>
+  <data name="ExportAudioPopup.PathRequired" xml:space="preserve">
+    <value>请先选择导出路径</value>
+  </data>
+  <data name="ExportAudioPopup.Toast.Success.Mixdown" xml:space="preserve">
+    <value>缩混导出完成</value>
+  </data>
+  <data name="ExportAudioPopup.Toast.Success.Tracks" xml:space="preserve">
+    <value>分轨导出完成</value>
+  </data>
+  <data name="ExportAudioPopup.Toast.Failed" xml:space="preserve">
+    <value>导出失败</value>
+  </data>
+  <data name="Editor.BackConfirm.Title" xml:space="preserve">
+    <value>退出编辑</value>
+  </data>
+  <data name="Editor.BackConfirm.Message" xml:space="preserve">
+    <value>当前工程有未保存的更改。</value>
+  </data>
+  <data name="Editor.BackConfirm.ExitWithoutSave" xml:space="preserve">
+    <value>直接退出</value>
+  </data>
+  <data name="Editor.BackConfirm.SaveAndExit" xml:space="preserve">
+    <value>保存并退出</value>
+  </data>
+  <data name="LyricEdit.Title" xml:space="preserve">
+    <value>编辑歌词</value>
+  </data>
+  <data name="LyricEdit.Watermark" xml:space="preserve">
+    <value>输入歌词</value>
+  </data>
+  <data name="LyricEdit.NoteInfo" xml:space="preserve">
+    <value>音符 {0}/{1}</value>
+  </data>
+  <data name="LyricEdit.NextNote" xml:space="preserve">
+    <value>下一个音符: {0}</value>
+  </data>
+  <data name="LyricEdit.LastNote" xml:space="preserve">
+    <value>已是最后一个音符</value>
+  </data>
+  <data name="Picker.Singer.Title" xml:space="preserve">
+    <value>选择歌手</value>
+  </data>
+  <data name="Picker.Phonemizer.Title" xml:space="preserve">
+    <value>选择音素器</value>
+  </data>
+  <data name="Picker.Renderer.Title" xml:space="preserve">
+    <value>选择渲染器</value>
+  </data>
+  <data name="Picker.TrackRename.Title" xml:space="preserve">
+    <value>重命名轨道</value>
+  </data>
+  <data name="Picker.TrackRename.Placeholder" xml:space="preserve">
+    <value>输入轨道名称</value>
+  </data>
+  <data name="Picker.TrackColor.Title" xml:space="preserve">
+    <value>选择轨道颜色</value>
+  </data>
+  <data name="ProjectEdit.Tempo" xml:space="preserve">
+    <value>编辑曲速</value>
+  </data>
+  <data name="ProjectEdit.TimeSignature" xml:space="preserve">
+    <value>编辑拍号</value>
+  </data>
+  <data name="ProjectEdit.KeySignature" xml:space="preserve">
+    <value>编辑调号</value>
+  </data>
+  <data name="ProjectEdit.TempoLabel" xml:space="preserve">
+    <value>曲速 (BPM)</value>
+  </data>
+  <data name="ProjectEdit.TempoWatermark" xml:space="preserve">
+    <value>例：120</value>
+  </data>
+  <data name="ProjectEdit.Beats" xml:space="preserve">
+    <value>拍数（分子）</value>
+  </data>
+  <data name="ProjectEdit.NoteValue" xml:space="preserve">
+    <value>音符时值（分母）</value>
+  </data>
+  <data name="ProjectEdit.KeySignature.Hint" xml:space="preserve">
+    <value>点击音名即可选定</value>
+  </data>
+  <data name="ProjectEdit.Toast.BeatsValidation" xml:space="preserve">
+    <value>拍数须为 1 ~ 32 的整数</value>
+  </data>
+  <data name="ProjectEdit.Toast.NoteValueValidation" xml:space="preserve">
+    <value>音符时值须为 1/2/4/8/16/32</value>
+  </data>
+  <data name="Vibrato.Title" xml:space="preserve">
+    <value>颤音参数</value>
+  </data>
+  <data name="Vibrato.Depth" xml:space="preserve">
+    <value>深度</value>
+  </data>
+  <data name="Vibrato.Period" xml:space="preserve">
+    <value>周期</value>
+  </data>
+  <data name="Vibrato.FadeIn" xml:space="preserve">
+    <value>淡入</value>
+  </data>
+  <data name="Vibrato.FadeOut" xml:space="preserve">
+    <value>淡出</value>
+  </data>
+  <data name="Vibrato.Phase" xml:space="preserve">
+    <value>相位</value>
+  </data>
+  <data name="Vibrato.Pitch" xml:space="preserve">
+    <value>音高</value>
+  </data>
+  <data name="Vibrato.VolLink" xml:space="preserve">
+    <value>音量联动</value>
+  </data>
+  <data name="Vibrato.Length" xml:space="preserve">
+    <value>长度</value>
+  </data>
+  <data name="TrackHeader.Singer" xml:space="preserve">
+    <value>切换歌手</value>
+  </data>
+  <data name="TrackHeader.Phonemizer" xml:space="preserve">
+    <value>切换音素器</value>
+  </data>
+  <data name="TrackHeader.Renderer" xml:space="preserve">
+    <value>切换渲染器</value>
+  </data>
+  <data name="TrackHeader.Rename" xml:space="preserve">
+    <value>重命名轨道</value>
+  </data>
+  <data name="TrackHeader.ChangeColor" xml:space="preserve">
+    <value>更改轨道颜色</value>
+  </data>
+  <data name="TrackHeader.Volume" xml:space="preserve">
+    <value>电平 (dB)</value>
+  </data>
+  <data name="TrackHeader.Pan" xml:space="preserve">
+    <value>声像</value>
+  </data>
+  <data name="TrackHeader.Mute" xml:space="preserve">
+    <value>切换静音</value>
+  </data>
+  <data name="TrackRename.Toast.Empty" xml:space="preserve">
+    <value>轨道名称不能为空</value>
+  </data>
+  <data name="TrackAdder.AddTrack" xml:space="preserve">
+    <value>添加轨道</value>
+  </data>
+  <data name="ContextAction.ToggleExpand" xml:space="preserve">
+    <value>展开/收起操作</value>
+  </data>
+  <data name="SingerSetup.Title" xml:space="preserve">
+    <value>歌手安装向导</value>
+  </data>
+  <data name="SingerSetup.Step1.Title" xml:space="preserve">
+    <value>选择压缩包文件</value>
+  </data>
+  <data name="SingerSetup.Step1.Desc" xml:space="preserve">
+    <value>选择包含歌手数据的 ZIP、RAR、UAR 等压缩包文件</value>
+  </data>
+  <data name="SingerSetup.Step1.ArchiveEncoding" xml:space="preserve">
+    <value>压缩包编码</value>
+  </data>
+  <data name="SingerSetup.Step1.Preview" xml:space="preserve">
+    <value>压缩包内容预览:</value>
+  </data>
+  <data name="SingerSetup.Step2.Title" xml:space="preserve">
+    <value>文本文件编码</value>
+  </data>
+  <data name="SingerSetup.Step2.Desc" xml:space="preserve">
+    <value>选择文本文件的正确编码，预览内容以确保显示正确</value>
+  </data>
+  <data name="SingerSetup.Step2.TextEncoding" xml:space="preserve">
+    <value>文本文件编码</value>
+  </data>
+  <data name="SingerSetup.Step2.Preview" xml:space="preserve">
+    <value>文本文件预览:</value>
+  </data>
+  <data name="SingerSetup.Step3.SingerType" xml:space="preserve">
+    <value>歌手类型</value>
+  </data>
+  <data name="SingerSetup.Step3.ManualDesc" xml:space="preserve">
+    <value>检测到歌手信息不完整，请手动选择歌手类型</value>
+  </data>
+  <data name="SingerSetup.Step3.SingerInfo" xml:space="preserve">
+    <value>歌手信息</value>
+  </data>
+  <data name="SingerSetup.Step3.AutoDesc" xml:space="preserve">
+    <value>已自动检测到歌手信息，确认继续</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeLabel" xml:space="preserve">
+    <value>歌手类型</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeHelp" xml:space="preserve">
+    <value>歌手类型说明</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeUtau" xml:space="preserve">
+    <value>• utau: 经典 UTAU 歌手（最常见）</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeEnunu" xml:space="preserve">
+    <value>• enunu: 使用 ENUNU 合成引擎</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeDiffSinger" xml:space="preserve">
+    <value>• diffsinger: 使用 DiffSinger AI 合成引擎</value>
+  </data>
+  <data name="SingerSetup.Step4.Title" xml:space="preserve">
+    <value>安装摘要</value>
+  </data>
+  <data name="SingerSetup.Step4.Desc" xml:space="preserve">
+    <value>检查安装信息，确认无误后点击安装</value>
+  </data>
+  <data name="SingerSetup.Step4.FileInfo" xml:space="preserve">
+    <value>文件信息</value>
+  </data>
+  <data name="SingerSetup.Step4.File" xml:space="preserve">
+    <value>文件: </value>
+  </data>
+  <data name="SingerSetup.Step4.EncodingInfo" xml:space="preserve">
+    <value>编码信息</value>
+  </data>
+  <data name="SingerSetup.Step4.ArchiveEncoding" xml:space="preserve">
+    <value>压缩包编码: </value>
+  </data>
+  <data name="SingerSetup.Step4.TextEncoding" xml:space="preserve">
+    <value>文本文件编码: </value>
+  </data>
+  <data name="SingerSetup.Step4.SingerType" xml:space="preserve">
+    <value>歌手类型</value>
+  </data>
+  <data name="SingerSetup.Step4.Type" xml:space="preserve">
+    <value>类型: </value>
+  </data>
+  <data name="SingerSetup.ConfirmInstall" xml:space="preserve">
+    <value>确认安装</value>
+  </data>
+  <data name="SingerSetup.Success" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="SingerSetup.Success.Desc" xml:space="preserve">
+    <value>歌手已成功安装，现在可以在编辑器中使用</value>
+  </data>
+  <data name="SingerSetup.Failed" xml:space="preserve">
+    <value>安装失败</value>
+  </data>
+  <data name="SingerSetup.Error.Encrypted" xml:space="preserve">
+    <value>不支持加密的压缩包文件</value>
+  </data>
+  <data name="SingerSetup.Installing" xml:space="preserve">
+    <value>准备安装...</value>
+  </data>
+  <data name="SingerSetup.InstallComplete" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="SingerSetup.InstallFailed" xml:space="preserve">
+    <value>安装失败: {0}</value>
+  </data>
+  <data name="SingerSetup.StepFormat" xml:space="preserve">
+    <value>第 {0} 步 / 4</value>
+  </data>
+  <data name="Splash.DocManager" xml:space="preserve">
+    <value>文档管理器初始化中</value>
+  </data>
+  <data name="Splash.Phonemizer" xml:space="preserve">
+    <value>加载插件中</value>
+  </data>
+  <data name="Splash.ToolManager" xml:space="preserve">
+    <value>工具管理器初始化中</value>
+  </data>
+  <data name="Splash.SingerManager" xml:space="preserve">
+    <value>歌手初始化中</value>
+  </data>
+  <data name="Splash.AudioBackend" xml:space="preserve">
+    <value>音频后端初始化中</value>
+  </data>
+  <data name="Splash.Localization" xml:space="preserve">
+    <value>语言本地化初始化中</value>
+  </data>
+  <data name="Splash.Complete" xml:space="preserve">
+    <value>初始化完成</value>
+  </data>
+  <data name="SingerManagement.VogenNotImplemented" xml:space="preserve">
+    <value>Vogen 歌手安装向导尚未实现，请手动安装</value>
+  </data>
+  <data name="ProjectEdit.BpmRange" xml:space="preserve">
+    <value>BPM 须为 10 ~ 1000 之间的数值</value>
+  </data>
+  <data name="Editor.SyncTempoTodo" xml:space="preserve">
+    <value>没有同步曲速，TODO</value>
+  </data>
+  <data name="PianoRoll.PortraitLoadFailed" xml:space="preserve">
+    <value>无法加载立绘</value>
+  </data>
+  <data name="Editor.Action.Merge" xml:space="preserve">
+    <value>合并</value>
+  </data>
+  <data name="SetupWizard.Title" xml:space="preserve">
+    <value>设置向导</value>
+  </data>
+  <data name="SetupWizard.Step0.Title" xml:space="preserve">
+    <value>欢迎使用</value>
+  </data>
+  <data name="SetupWizard.Step0.Desc" xml:space="preserve">
+    <value>OpenUtau Mobile 是一款跨平台歌声合成编辑器，支持 UTAU、DiffSinger、Vogen 等多种引擎。让我们花一分钟完成基本设置，即可开始创作。</value>
+  </data>
+  <data name="SetupWizard.Step0.Skip" xml:space="preserve">
+    <value>跳过向导</value>
+  </data>
+  <data name="SetupWizard.Step1.Title" xml:space="preserve">
+    <value>存储权限</value>
+  </data>
+  <data name="SetupWizard.Step1.Desc" xml:space="preserve">
+    <value>以下权限帮助应用正常工作。不授权也可以使用受限功能。</value>
+  </data>
+  <data name="SetupWizard.Step1.Card.Storage" xml:space="preserve">
+    <value>文件存储</value>
+  </data>
+  <data name="SetupWizard.Step1.Card.Storage.Desc" xml:space="preserve">
+    <value>用于读取歌手库、打开和保存工程文件。</value>
+  </data>
+  <data name="SetupWizard.Step1.Grant" xml:space="preserve">
+    <value>授权</value>
+  </data>
+  <data name="SetupWizard.Step1.PermissionGranted" xml:space="preserve">
+    <value>已授权</value>
+  </data>
+  <data name="SetupWizard.Step1.DesktopReady" xml:space="preserve">
+    <value>当前平台无需额外权限设置，文件访问已就绪。</value>
+  </data>
+  <data name="SetupWizard.Step2.Title" xml:space="preserve">
+    <value>歌手存储路径</value>
+  </data>
+  <data name="SetupWizard.Step2.Desc" xml:space="preserve">
+    <value>选择歌手的存储方式。你可以稍后在设置中随时更改。</value>
+  </data>
+  <data name="SetupWizard.Step2.Builtin" xml:space="preserve">
+    <value>内置</value>
+  </data>
+  <data name="SetupWizard.Step2.Builtin.Desc" xml:space="preserve">
+    <value>使用应用自带的默认歌手目录，无需额外配置。</value>
+  </data>
+  <data name="SetupWizard.Step2.External" xml:space="preserve">
+    <value>外部文件夹</value>
+  </data>
+  <data name="SetupWizard.Step2.External.Desc" xml:space="preserve">
+    <value>选择自定义文件夹存放和读取歌手。适合已有 UTAU 歌手库的用户。</value>
+  </data>
+  <data name="SetupWizard.Step2.Selected" xml:space="preserve">
+    <value>已选择</value>
+  </data>
+  <data name="SetupWizard.Step2.SelectFolder" xml:space="preserve">
+    <value>选择文件夹</value>
+  </data>
+  <data name="SetupWizard.Step3.Title" xml:space="preserve">
+    <value>设置完成</value>
+  </data>
+  <data name="SetupWizard.Step3.Desc" xml:space="preserve">
+    <value>你现在可以开始使用 OpenUtau Mobile 了！</value>
+  </data>
+  <data name="SetupWizard.Finish" xml:space="preserve">
+    <value>完成</value>
+  </data>
+</root>

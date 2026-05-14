@@ -1,0 +1,35 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <Border Padding="128">
+            <StackPanel Orientation="Vertical"
+                        Spacing="8">
+                <TextBox Width="200" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ControlTheme x:Key="Theme.TextBox.Default"
+                          TargetType="TextBox"
+                          BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+                <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+                <Setter Property="BorderThickness"
+                        Value="{x:Static theme:ThemeSemComponentTokens.InputBorderThickness}" />
+                <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemComponentTokens.InputCornerRadius}" />
+                <Setter Property="Padding" Value="{x:Static theme:ThemeSemComponentTokens.InputPadding}" />
+            </ControlTheme>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <Style Selector="TextBox">
+        <Setter Property="Theme" Value="{StaticResource Theme.TextBox.Default}" />
+    </Style>
+
+    <Style Selector="TextBox:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+</Styles>

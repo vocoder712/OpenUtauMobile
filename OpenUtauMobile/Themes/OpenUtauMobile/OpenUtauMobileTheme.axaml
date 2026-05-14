@@ -1,0 +1,44 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- load runtime colors and shared icons only. -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude
+                    Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Shared/Color/SemanticColor.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!-- 对系统控件和自定义组合控件的样式定义 -->
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Button.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/ComponentAbstractions.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Card.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/TextInput.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/ComboBox.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Slider.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/DawKnob.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Icon.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/ProgressBar.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/ToggleSwitch.axaml" />
+
+    <!-- 对特定 View 的样式定义 -->
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/DependencyManagerView.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/HomeView.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SettingsView.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SingerManagementView.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SingerDetailView.axaml" />
+
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/CollapsibleContextMenu.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/EditorMorePopup.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ExportAudioPopup.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ErrorDialogPopup.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/FilePickerPopup.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/LyricEditPopup.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/PianoRollEditModeSwitcher.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/PopupCommon.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ProjectInfoEditPopup.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/SingerList.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/TrackHeader.axaml" />
+</Styles>

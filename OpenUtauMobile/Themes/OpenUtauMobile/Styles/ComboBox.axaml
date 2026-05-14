@@ -1,0 +1,58 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <Border Padding="128">
+            <StackPanel Orientation="Vertical"
+                        Spacing="8">
+                <ComboBox>
+                    <ComboBoxItem Content="选项 1" />
+                    <ComboBoxItem Content="选项 2" />
+                    <ComboBoxItem Content="选项 3" />
+                </ComboBox>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <Style Selector="ComboBox">
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemComponentTokens.InputPadding}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemComponentTokens.InputBorderThickness}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemComponentTokens.InputCornerRadius}" />
+    </Style>
+
+    <Style Selector="ComboBox:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+    </Style>
+
+    <Style Selector="ComboBox:focus, ComboBox:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="ComboBox:disabled">
+        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Disabled}" />
+    </Style>
+
+    <Style Selector="ComboBox /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+    </Style>
+
+    <Style Selector="ComboBoxItem">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="MinHeight" Value="36" />
+    </Style>
+
+    <Style Selector="ComboBoxItem:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <Style Selector="ComboBoxItem:selected">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+    </Style>
+</Styles>

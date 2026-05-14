@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.TrackRenamePopup"
+             d:DataContext="{d:DesignInstance Type=vm:TrackRenamePopupViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:TrackRenamePopupViewModel"
+             Classes="PopupDialogRoot"
+             MinHeight="200"
+             MaxHeight="320">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border Classes="PopupTitleBar" DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource Picker.TrackRename.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}"
+                            Content="{iconPacks:PhosphorIcons X}" />
+                </Grid>
+            </Border>
+
+            <StackPanel Margin="20" Spacing="16">
+                <TextBox Text="{Binding TrackName, Mode=TwoWay}"
+                         Watermark="{DynamicResource Picker.TrackRename.Placeholder}"
+                         FontSize="16"
+                         VerticalContentAlignment="Center" />
+
+                <Grid ColumnDefinitions="*,8,*">
+                    <Button Grid.Column="0"
+                            Classes="Secondary"
+                            Command="{Binding CancelCommand}"
+                            Content="{DynamicResource Common.Cancel}" />
+                    <Button Grid.Column="2"
+                            Classes="Primary"
+                            Command="{Binding ConfirmCommand}"
+                            Content="{DynamicResource Common.Confirm}" />
+                </Grid>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

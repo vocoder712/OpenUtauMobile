@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using WanaKanaNet;
@@ -98,14 +97,15 @@ namespace OpenUtau.Classic {
             subbanks.AddRange(voicebank.Subbanks
                 .OrderByDescending(subbank => subbank.Prefix.Length + subbank.Suffix.Length)
                 .Select(subbank => new USubbank(subbank)));
-            var patterns = subbanks.Select(subbank => new Regex($"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$"))
-                .ToList();
+            var groups = subbanks.GroupBy(subbank => $"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$")
+                .Select(group => new KeyValuePair<Regex, USubbank[]>(new Regex(group.Key), group.ToArray()));
 
-            var dummy = new USubbank(new Subbank());
+            var dummy = new USubbank[] { new USubbank(new Subbank()) };
             otoSets.Clear();
             otos.Clear();
             otoMap.Clear();
             errors.Clear();
+            
             foreach (var otoSet in voicebank.OtoSets) {
                 var uSet = new UOtoSet(otoSet, voicebank.BasePath);
                 otoSets.Add(uSet);
@@ -117,11 +117,11 @@ namespace OpenUtau.Classic {
                         continue;
                     }
                     UOto? uOto = null;
-                    for (var i = 0; i < patterns.Count; i++) {
-                        var m = patterns[i].Match(oto.Alias);
+                    foreach (var group in groups) {
+                        var m = group.Key.Match(oto.Alias);
                         if (m.Success) {
                             oto.Phonetic = m.Groups[1].Value;
-                            uOto = new UOto(oto, uSet, subbanks[i]);
+                            uOto = new UOto(oto, uSet, group.Value);
                             break;
                         }
                     }
@@ -195,25 +195,10 @@ namespace OpenUtau.Classic {
                 .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)));
         }
 
-        public override byte[] LoadPortrait()
-        {
-            //return string.IsNullOrEmpty(Portrait)
-            //    ? null
-            //    : File.ReadAllBytes(Portrait);
-            if (string.IsNullOrEmpty(Portrait) || !File.Exists(Portrait))
-            {
-                return [];
-            }
-            try
-            {
-                return File.ReadAllBytes(Portrait);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Failed to load portrait data.");
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-                return [];
-            }
+        public override byte[] LoadPortrait() {
+            return string.IsNullOrEmpty(Portrait)
+                ? null
+                : File.ReadAllBytes(Portrait);
         }
     }
 }

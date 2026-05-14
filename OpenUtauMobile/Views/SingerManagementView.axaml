@@ -1,0 +1,60 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             d:DesignHeight="880" d:DesignWidth="400"
+             x:Class="OpenUtauMobile.Views.SingerManagementView"
+             x:DataType="vm:SingerManagementViewModel">
+
+    <UserControl.Styles>
+        <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SingerManagementView.axaml" />
+    </UserControl.Styles>
+
+    <!-- Root -->
+    <Panel Background="{DynamicResource Sem.Color.Surface}">
+
+        <DockPanel>
+            <!-- 顶栏 -->
+            <Border DockPanel.Dock="Top"
+                    Classes="TopBar">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <!-- Back button -->
+                    <Button Grid.Column="0"
+                            Classes="TopBarBtn"
+                            Command="{Binding BackCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Back}"
+                            Content="{iconPacks:PhosphorIcons ArrowLeft}">
+                    </Button>
+
+                    <!-- Title -->
+                    <TextBlock Grid.Column="1"
+                               Classes="TopBarTitle"
+                               Text="{DynamicResource SingerManagement.Title}" />
+                </Grid>
+            </Border>
+
+            <!-- 歌手列表 -->
+            <!-- 允许列表项溢出到标题栏上，以实现视觉上的重叠效果 -->
+            <c:SingerList DockPanel.Dock="Top"
+                          ClipToBounds="False"
+                          Singers="{Binding Singers}"
+                          SelectSingerCommand="{Binding OpenSingerCommand}" />
+        </DockPanel>
+
+        <!-- FAB 半透明悬浮按钮 -->
+        <Button Classes="FAB"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,0,24,28"
+                Command="{Binding AddSingerCommand}"
+                ToolTip.Tip="{DynamicResource SingerManagement.Install}"
+                Content="{iconPacks:PhosphorIcons Plus}">
+        </Button>
+
+    </Panel>
+</UserControl>

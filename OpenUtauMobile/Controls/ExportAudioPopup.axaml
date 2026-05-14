@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.ExportAudioPopup"
+             x:DataType="vm:ExportAudioPopupViewModel"
+             Classes="PopupDialogRoot">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource ExportAudioPopup.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Close}">
+                        <Path Width="14" Height="14"
+                              Stretch="Uniform"
+                              Fill="{DynamicResource Sem.Color.OnSurface}"
+                              Data="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 Z" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <StackPanel Margin="20"
+                        Spacing="14">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{DynamicResource ExportAudioPopup.PathLabel}"
+                               FontSize="12"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <Border Classes="ExportPathPreview">
+                        <TextBlock Text="{Binding ExportPath}"
+                                   TextWrapping="Wrap"
+                                   MinHeight="20" />
+                    </Border>
+                    <TextBlock Text="{DynamicResource ExportAudioPopup.PathPlaceholder}"
+                               FontSize="11"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                               TextWrapping="Wrap" />
+                    <Button Classes="ExportPathBtn"
+                            Content="{DynamicResource ExportAudioPopup.SelectPath}"
+                            Command="{Binding PickPathCommand}" />
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{DynamicResource ExportAudioPopup.ModeLabel}"
+                               FontSize="12"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <Grid ColumnDefinitions="*,10,*">
+                        <RadioButton Grid.Column="0"
+                                     GroupName="ExportMode"
+                                     Classes="ExportModeCard"
+                                     IsEnabled="{Binding !IsExporting}"
+                                     IsChecked="{Binding IsMixdownSelected, Mode=TwoWay}"
+                                     Content="{DynamicResource ExportAudioPopup.Mode.Mixdown}" />
+                        <RadioButton Grid.Column="2"
+                                     GroupName="ExportMode"
+                                     Classes="ExportModeCard"
+                                     IsEnabled="{Binding !IsExporting}"
+                                     IsChecked="{Binding IsTracksSelected, Mode=TwoWay}"
+                                     Content="{DynamicResource ExportAudioPopup.Mode.Tracks}" />
+                    </Grid>
+                    <TextBlock Text="{DynamicResource ExportAudioPopup.Mode.TracksHint}"
+                               FontSize="11"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <StackPanel Spacing="6"
+                            IsVisible="{Binding IsExporting}">
+                    <ProgressBar IsIndeterminate="True"
+                                 Height="6" />
+                    <TextBlock Text="{DynamicResource ExportAudioPopup.Exporting}"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource Sem.Color.Primary}" />
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,8,*">
+                    <Button Grid.Column="0"
+                            Classes="Secondary"
+                            HorizontalAlignment="Stretch"
+                            Content="{DynamicResource Common.Cancel}"
+                            Command="{Binding CancelCommand}" />
+                    <Button Grid.Column="2"
+                            Classes="Primary"
+                            HorizontalAlignment="Stretch"
+                            Content="{DynamicResource ExportAudioPopup.Start}"
+                            Command="{Binding StartCommand}" />
+                </Grid>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- Android 12 及以上的主题 -->
+<resources>
+    <style name="MyTheme">
+    </style>
+    <style name="MyTheme.NoActionBar" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+        <!-- 设置全屏 -->
+        <item name="android:windowFullscreen">true</item>
+        <!-- 隐藏 ActionBar -->
+        <item name="android:windowActionBar">false</item>
+        <!-- 设置窗口背景为 null -->
+        <item name="android:windowBackground">@null</item>
+        <!-- 隐藏标题栏 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 设置启动画面背景颜色 -->
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+        <!-- 设置动画资源 -->
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/openutau_splash_anim</item>
+        <!-- 设置动画持续时间为 1500ms -->
+        <item name="android:windowSplashScreenAnimationDuration">1500</item>
+        <item name="postSplashScreenTheme">@style/MyTheme.Main</item>
+    </style>
+    <style name="MyTheme.Main"
+           parent ="MyTheme.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+</resources>

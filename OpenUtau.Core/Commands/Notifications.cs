@@ -12,7 +12,7 @@ namespace OpenUtau.Core {
 
     public class ErrorMessageNotification : UNotification {
         public readonly string message = string.Empty;
-        public readonly Exception? e;
+        public readonly Exception e;
         public ErrorMessageNotification(Exception e) {
             this.e = e;
         }
@@ -84,21 +84,7 @@ namespace OpenUtau.Core {
     }
 
     public class PhonemizedNotification : UNotification {
-        //public readonly UPart part; // 完成音素化的分片
-        public PhonemizedNotification(UPart part) {
-            this.part = part;
-        }
         public override string ToString() => "Phonemized";
-    }
-
-    public class PhonemizingNotification : UNotification {
-        public readonly USinger singer; // 歌手
-        public readonly UVoicePart part; // 分片
-        public PhonemizingNotification(USinger singer, UVoicePart part) {
-            this.singer = singer;
-            this.part = part;
-        }
-        public override string ToString() => $"正在音素化分片：{part.DisplayName}";
     }
 
     public class SelectExpressionNotification : UNotification {
@@ -139,39 +125,15 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Seek play position to tick {playPosTick}";
     }
 
-    public class ProgressBarNotification : UNotification
-    {
+    public class ProgressBarNotification : UNotification {
         public double Progress;
         public string Info;
         public override bool Silent => true;
-        public ProgressBarNotification(double progress, string info)
-        {
+        public ProgressBarNotification(double progress, string info) {
             Progress = progress;
             Info = info;
         }
         public override string ToString() => $"Set progress {Progress} {Info}";
-    }
-    
-    public class ExportingNotification : UNotification {
-        public double Progress { get; set; }
-        public string Info { get; set; } = "";
-        public string Id { get; set; }
-        public ExportingNotification(double progress, string info, string id) {
-            Progress = progress;
-            Info = info;
-            Id = id;
-        }
-        public override string ToString() => $"正导出 {Info} ({Progress * 100}%)";
-    }
-
-    public class ExportedNotification : UNotification {
-        public string Info { get; set; } = "";
-        public string Id { get; set; }
-        public ExportedNotification(string info, string id) {
-            Info = info;
-            Id = id;
-        }
-        public override string ToString() => $"导出完成 {Info}";
     }
 
     public class VolumeChangeNotification : UNotification {
@@ -223,6 +185,11 @@ namespace OpenUtau.Core {
     public class VoiceColorRemappingNotification : UNotification {
         public int TrackNo;
         public bool Validate;
+        /// <summary>
+        /// Remap when the singer's voice color changes. Or use when the user intentionally wants to remap.
+        /// </summary>
+        /// <param name="trackNo">Track number for remapping the singer. When -1, checks whether remapping is required for all tracks.</param>
+        /// <param name="validate">When verifying if the color lineup has changed, set to true; when forcing remapping even if no changes occur, set to false.</param>
         public VoiceColorRemappingNotification(int trackNo, bool validate) {
             TrackNo = trackNo;
             Validate = validate;

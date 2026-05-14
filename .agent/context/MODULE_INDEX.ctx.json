@@ -1,0 +1,146 @@
+﻿{
+  "version": 1,
+  "updatedOn": "2026-05-13",
+  "granularity": "first-level-subdirectories",
+  "notes": [
+    "Top-level modules are the index of record.",
+    "Subdirectories listed are first-level only.",
+    "Generated folders are excluded (bin, obj)."
+  ],
+  "modules": [
+    {
+      "path": "OpenUtau.Core",
+      "purpose": "Core engine and shared logic",
+      "changePolicy": "avoid-unless-necessary",
+      "notes": "Upstream-based",
+      "subdirectories": [
+        { "name": "Analysis", "purpose": "Analysis pipeline and feature extraction" },
+        { "name": "Api", "purpose": "Public APIs and integration surfaces" },
+        { "name": "Audio", "purpose": "Audio IO, buffers, and processing helpers" },
+        { "name": "Classic", "purpose": "Legacy and compatibility components" },
+        { "name": "Commands", "purpose": "Command definitions and execution" },
+        { "name": "DiffSinger", "purpose": "DiffSinger integration" },
+        { "name": "Editing", "purpose": "Editing models and operations" },
+        { "name": "Enunu", "purpose": "Enunu integration" },
+        { "name": "Format", "purpose": "Project and file format handling" },
+        { "name": "G2p", "purpose": "G2P (grapheme-to-phoneme) logic" },
+        { "name": "Render", "purpose": "Rendering pipeline and backends" },
+        { "name": "SignalChain", "purpose": "Signal processing chain" },
+        { "name": "ThirdParty", "purpose": "Third-party integrations" },
+        { "name": "Ustx", "purpose": "USTX project model and serialization" },
+        { "name": "Util", "purpose": "Shared utilities and helpers" },
+        { "name": "VocalShaper", "purpose": "VocalShaper integration" },
+        { "name": "Vogen", "purpose": "Vogen integration" },
+        { "name": "Voicevox", "purpose": "VOICEVOX integration" }
+      ]
+    },
+    {
+      "path": "OpenUtau.Plugin.Builtin",
+      "purpose": "Built-in phonemizers and plugins",
+      "changePolicy": "do-not-modify",
+      "notes": "Upstream copy",
+      "subdirectories": [
+        { "name": "Data", "purpose": "Embedded data files" },
+        { "name": "EnunuOnnx", "purpose": "Enunu ONNX assets and helpers" },
+        { "name": "HifiSampler", "purpose": "HiFiSampler integration" },
+        { "name": "Resources", "purpose": "Resource files for built-in plugins" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile",
+      "purpose": "UI app (Avalonia)",
+      "changePolicy": "allowed",
+      "notes": "MVVM, ReactiveUI",
+      "subdirectories": [
+        { "name": "Assets", "purpose": "Static assets (images, fonts, etc.)" },
+        { "name": "Audio", "purpose": "App-level audio logic" },
+        { "name": "Controls", "purpose": "Custom UI controls" },
+        { "name": "Helpers", "purpose": "UI helpers and utilities" },
+        { "name": "Messages", "purpose": "Message/notification definitions" },
+        { "name": "Properties", "purpose": "Assembly metadata and app properties" },
+        { "name": "Services", "purpose": "Service layer and app infrastructure" },
+        { "name": "Storage", "purpose": "Local storage and persistence" },
+        { "name": "Themes", "purpose": "Theme tokens and styling" },
+        { "name": "Tools", "purpose": "Developer tools and diagnostics helpers" },
+        { "name": "ViewModels", "purpose": "MVVM view models" },
+        { "name": "Views", "purpose": "Avalonia views and pages" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile.Android",
+      "purpose": "Android host",
+      "changePolicy": "allowed",
+      "notes": "Build with -t:Run",
+      "subdirectories": [
+        { "name": "Audio", "purpose": "Android audio integration" },
+        { "name": "Libs", "purpose": "Native or external libraries" },
+        { "name": "Properties", "purpose": "Android project properties" },
+        { "name": "Resources", "purpose": "Android resources (res/)" },
+        { "name": "Storage", "purpose": "Android storage integration" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile.Windows",
+      "purpose": "Windows host",
+      "changePolicy": "allowed",
+      "notes": "Build with -t:Run",
+      "subdirectories": [
+        { "name": "Audio", "purpose": "Windows audio integration" },
+        { "name": "Properties", "purpose": "Windows project properties" },
+        { "name": "runtimes", "purpose": "Runtime native dependencies" },
+        { "name": "Storage", "purpose": "Windows storage integration" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile.Linux",
+      "purpose": "Linux host",
+      "changePolicy": "allowed",
+      "notes": "Linux machine required",
+      "subdirectories": [
+        { "name": "Properties", "purpose": "Linux project properties" },
+        { "name": "runtimes", "purpose": "Runtime native dependencies" },
+        { "name": "Storage", "purpose": "Linux storage integration" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile.iOS",
+      "purpose": "iOS host",
+      "changePolicy": "allowed",
+      "notes": "Does not build yet",
+      "subdirectories": [
+        { "name": "Resources", "purpose": "iOS resources" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile.MacOS",
+      "purpose": "MacCatalyst host",
+      "changePolicy": "allowed",
+      "notes": "Does not build yet",
+      "subdirectories": [
+        { "name": "Properties", "purpose": "MacCatalyst project properties" },
+        { "name": "runtimes", "purpose": "Runtime native dependencies" },
+        { "name": "Storage", "purpose": "MacCatalyst storage integration" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile.Browser",
+      "purpose": "Browser host",
+      "changePolicy": "allowed",
+      "notes": "Initialization hangs",
+      "subdirectories": [
+        { "name": "Properties", "purpose": "Browser project properties" },
+        { "name": "wwwroot", "purpose": "Web assets and static content" }
+      ]
+    },
+    {
+      "path": "OpenUtauMobile.Plugin.Renderers",
+      "purpose": "Renderer plugins",
+      "changePolicy": "allowed",
+      "notes": "Verify perf impact",
+      "subdirectories": [
+        { "name": "HifiSampler", "purpose": "HiFiSampler renderer integration" }
+      ]
+    }
+  ]
+}
+

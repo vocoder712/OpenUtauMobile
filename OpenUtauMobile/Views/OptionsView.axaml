@@ -1,0 +1,199 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Views.OptionsView"
+             x:DataType="vm:OptionsViewModel">
+    <UserControl.Styles>
+        <Style Selector="iconPacks|PackIconPhosphorIcons.CaretRight">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        </Style>
+        <Style Selector="Border.Separator">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Opacity" Value="0.08" />
+            <Setter Property="Margin" Value="52,0,12,0" />
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel Background="{DynamicResource Sem.Color.Surface}">
+        <DockPanel>
+            <!-- Top App Bar -->
+            <Border DockPanel.Dock="Top" Classes="TopBar">
+                <Grid ColumnDefinitions="Auto,*">
+                    <!-- Back button -->
+                    <Button Grid.Column="0"
+                            Classes="TopBarBtn"
+                            Command="{Binding BackCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Back}"
+                            Content="{iconPacks:PhosphorIcons Kind=ArrowLeft}" />
+                    <!-- Title -->
+                    <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource Options.Title}" />
+                </Grid>
+            </Border>
+
+            <!-- Entry list -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled"
+                          Padding="20,16,20,20">
+                <Border CornerRadius="14"
+                        Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                        ClipToBounds="True">
+                    <StackPanel>
+
+                        <!-- 鈺愨晲鈺?1. 璁剧疆 鈺愨晲鈺?-->
+                        <Button Classes="OptionEntry"
+                                Command="{Binding OpenSettingsCommand}">
+                            <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                <!-- Icon -->
+                                <Panel Grid.Column="0"
+                                       Width="36" Height="36"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                                    <Border Width="36" Height="36"
+                                            CornerRadius="10"
+                                            Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                    <iconPacks:PackIconPhosphorIcons Kind="GearSix" />
+                                </Panel>
+                                <!-- Title + Subtitle -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                    <TextBlock Text="{DynamicResource Options.Settings}" FontSize="15"
+                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{DynamicResource Options.Settings.Desc}" FontSize="11"
+                                               Opacity="0.50" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <!-- Chevron -->
+                                <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
+                                                                 Classes="CaretRight"
+                                                                 Grid.Column="2" />
+                            </Grid>
+                        </Button>
+
+                        <!-- Separator -->
+                        <Border Classes="Separator" />
+
+                        <!-- 鈺愨晲鈺?2. 渚濊禆椤圭鐞?鈺愨晲鈺?-->
+                        <Button Classes="OptionEntry"
+                                Command="{Binding OpenDependencyManagerCommand}">
+                            <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                <!-- Icon -->
+                                <Panel Grid.Column="0"
+                                       Width="36" Height="36"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                                    <Border Width="36" Height="36"
+                                            CornerRadius="10"
+                                            Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                    <iconPacks:PackIconPhosphorIcons Kind="PuzzlePiece" />
+                                </Panel>
+                                <!-- Title + Subtitle -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0"
+                                            ClipToBounds="True">
+                                    <TextBlock Text="{DynamicResource Options.DependencyManager}" FontSize="15"
+                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{DynamicResource Options.DependencyManager.Desc}" FontSize="11"
+                                               Opacity="0.50" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <!-- Chevron -->
+                                <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
+                                                                 Classes="CaretRight"
+                                                                 Grid.Column="2" />
+                            </Grid>
+                        </Button>
+
+                        <!-- Separator -->
+                        <Border Classes="Separator" />
+
+                        <!-- 鈺愨晲鈺?3. 甯姪涓庢暀绋?鈺愨晲鈺?-->
+                        <Button Classes="OptionEntry" Command="{Binding OpenHelpCommand}">
+                            <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                <Panel Grid.Column="0"
+                                       Width="36" Height="36"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                                    <Border Width="36" Height="36"
+                                            CornerRadius="10"
+                                            Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                    <iconPacks:PackIconPhosphorIcons Kind="Book" />
+                                </Panel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                    <TextBlock Text="{DynamicResource Options.Help}" FontSize="15"
+                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{DynamicResource Options.Help.Desc}" FontSize="11" Opacity="0.50"
+                                               TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
+                                                                 Classes="CaretRight"
+                                                                 Grid.Column="2" />
+                            </Grid>
+                        </Button>
+
+                        <!-- Separator -->
+                        <Border Classes="Separator" />
+
+                        <!-- 鈺愨晲鈺?4. 瀵煎嚭鏃ュ織 鈺愨晲鈺?-->
+                        <Button Classes="OptionEntry" Command="{Binding ExportLogCommand}">
+                            <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                <Panel Grid.Column="0"
+                                       Width="36" Height="36"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                                    <Border Width="36" Height="36"
+                                            CornerRadius="10"
+                                            Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                    <iconPacks:PackIconPhosphorIcons Kind="Bug" />
+                                </Panel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                    <TextBlock Text="{DynamicResource Options.ExportLog}" FontSize="15"
+                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{DynamicResource Options.ExportLog.Desc}" FontSize="11"
+                                               Opacity="0.50" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <!-- Export icon instead of chevron -->
+                                <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
+                                                                 Classes="CaretRight"
+                                                                 Grid.Column="2" />
+                            </Grid>
+                        </Button>
+
+                        <!-- Separator -->
+                        <Border Classes="Separator" />
+
+                        <!-- 鈺愨晲鈺?5. 鍏充簬 鈺愨晲鈺?-->
+                        <Button Classes="OptionEntry" Command="{Binding OpenAboutCommand}">
+                            <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                <Panel Grid.Column="0"
+                                       Width="36" Height="36"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+                                    <Border Width="36" Height="36"
+                                            CornerRadius="10"
+                                            Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                    <iconPacks:PackIconPhosphorIcons Kind="Info" />
+                                </Panel>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                    <TextBlock Text="{DynamicResource Options.About}" FontSize="15"
+                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{DynamicResource Options.About.Desc}" FontSize="11" Opacity="0.50"
+                                               TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
+                                                                 Classes="CaretRight"
+                                                                 Grid.Column="2" />
+                            </Grid>
+                        </Button>
+
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </DockPanel>
+    </Panel>
+</UserControl>

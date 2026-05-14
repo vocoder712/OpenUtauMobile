@@ -1,0 +1,323 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Controls.TrackHeader"
+             x:DataType="vm:TrackHeaderViewModel">
+    <UserControl.Resources>
+        <!-- 反转布尔值转换器：用于根据 IsExpanded 切换显示轨道名 -->
+        <tools:BoolInvertConverter x:Key="BoolInvertConverter" />
+    </UserControl.Resources>
+    <!--
+        主体背景层 + HUD 层：半透明和模糊效果；HUD 层默认不可见，调整旋钮时显示。
+        主体层：头像 + 右侧详情面板；
+               彩色等腰直角三角形浮于左上角。
+    -->
+    <Panel Background="{DynamicResource Sem.Color.SurfaceContainer}">
+        <!-- 主体层 -->
+        <Panel x:Name="BackgroundLayer">
+            <!-- 基本内容层：头像 + 详情 -->
+            <Grid ColumnDefinitions="64, *">
+                <!-- 左侧头像和轨道名：固定宽度，始终可见 -->
+                <Grid Grid.Column="0" RowDefinitions="*, Auto">
+                    <!-- 圆形歌手头像（点击弹出歌手选择器） -->
+                    <!-- TODO: 当歌手为 null 时，绘制一圈虚线表示未选择 -->
+                    <Button Grid.Row="0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Padding="0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="4,0,0,0"
+                            Command="{Binding SelectSingerCommand}"
+                            ToolTip.Tip="{DynamicResource TrackHeader.Singer}">
+                        <Ellipse Width="32" Height="32">
+                            <Ellipse.Fill>
+                                <ImageBrush Source="{Binding SingerIcon}"
+                                            Stretch="UniformToFill" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </Button>
+                    <!-- 轨道名 -->
+                    <TextBlock Grid.Row="1"
+                               IsVisible="{Binding IsExpanded, Converter={StaticResource BoolInvertConverter}}"
+                               Text="{Binding TrackName}"
+                               FontSize="8"
+                               Foreground="{DynamicResource ForegroundBrush}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                    <!-- 歌手名 -->
+                    <TextBlock Grid.Row="1"
+                               IsVisible="{Binding IsExpanded}"
+                               Text="{Binding SingerName}"
+                               FontSize="8"
+                               Foreground="{DynamicResource ForegroundBrush}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                </Grid>
+
+                <!-- 详情面板，仅当轨道展开时显示 -->
+                <Border Grid.Column="1"
+                        x:Name="DetailsPanel"
+                        IsVisible="{Binding IsExpanded}"
+                        ClipToBounds="True"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                    <Grid ColumnDefinitions="*, 52, 24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <!-- 轨道名、音素器、渲染器 -->
+                        <Grid Grid.Column="0" RowDefinitions="20, *, *" ColumnDefinitions="Auto, *"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                              ColumnSpacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}">
+                            <!-- 轨道颜色、名称 -->
+                            <Button Grid.Column="0" Grid.Row="0" Background="{Binding TrackColorBrush}"
+                                    Command="{Binding ChangeColorCommand}"
+                                    ToolTip.Tip="{DynamicResource TrackHeader.ChangeColor}"
+                                    Width="16" Height="16" />
+                            <Button Grid.Column="1" Grid.Row="0" Padding="0"
+                                    Foreground="{DynamicResource TrackHeaderForegroundBrush}"
+                                    Command="{Binding RenameCommand}"
+                                    ToolTip.Tip="{DynamicResource TrackHeader.Rename}"
+                                    Background="Transparent"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch">
+                                <TextBlock TextTrimming="CharacterEllipsis"
+                                           Text="{Binding TrackName}"
+                                           FontSize="13"
+                                           FontWeight="SemiBold" />
+                            </Button>
+                            <!-- 音素器名 -->
+                            <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="1" Kind="Translate"
+                                                             Width="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}"
+                                                             Height="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}" />
+                            <Button Grid.Row="1" Grid.Column="1"
+                                    Classes="TrackHeaderCompactAction"
+                                    Command="{Binding SelectPhonemizerCommand}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    ToolTip.Tip="{DynamicResource TrackHeader.Phonemizer}">
+                                <TextBlock Text="{Binding PhonemizerTag}"
+                                           FontSize="9"
+                                           Foreground="{DynamicResource TrackHeaderSingerNameBrush}"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Button>
+                            <!-- 渲染器名 -->
+                            <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="2" Kind="Cpu"
+                                                             Width="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}"
+                                                             Height="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}" />
+                            <Button Grid.Row="2" Grid.Column="1"
+                                    Classes="TrackHeaderCompactAction"
+                                    Command="{Binding SelectRendererCommand}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    ToolTip.Tip="{DynamicResource TrackHeader.Renderer}">
+                                <TextBlock Text="{Binding RendererName}"
+                                           FontSize="9"
+                                           Foreground="{DynamicResource TrackHeaderSingerNameBrush}"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Button>
+                        </Grid>
+                        <!-- 电平、声像 -->
+                        <Grid Grid.Column="1" ColumnDefinitions="16, *"
+                              ColumnSpacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceS}"
+                              RowDefinitions="*, *">
+                            <!-- 电平旋钮 (Volume: -24 到 +12) -->
+                            <Path Grid.Column="0" Grid.Row="0"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Stretch="Uniform"
+                                  Stroke="{DynamicResource Sem.Color.Primary}"
+                                  StrokeThickness="2"
+                                  Data="M 4 17 L 20 17 L 20,6 Z" />
+                            <controls:DawKnob Grid.Column="1" Grid.Row="0" x:Name="VolumeKnob"
+                                              Value="{Binding Volume}"
+                                              Minimum="-24"
+                                              Maximum="12"
+                                              DefaultValue="0"
+                                              SemanticRole="Volume"
+                                              ToolTip.Tip="{DynamicResource TrackHeader.Volume}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                            <!-- 声像旋钮 (Pan: -100 到 +100) -->
+                            <Path Grid.Column="0" Grid.Row="1"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Stretch="Uniform"
+                                  Stroke="{DynamicResource Sem.Color.Primary}"
+                                  StrokeThickness="2"
+                                  Data="M 4 17 L 20 6 L 20,17 L 4,6 Z" />
+                            <controls:DawKnob Grid.Column="1" Grid.Row="1" x:Name="PanKnob"
+                                              Value="{Binding Pan}"
+                                              Minimum="-100"
+                                              Maximum="100"
+                                              DefaultValue="0"
+                                              SemanticRole="Pan"
+                                              ToolTip.Tip="{DynamicResource TrackHeader.Pan}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Grid>
+                        <!-- 上下删除 -->
+                        <Grid Grid.Column="2"
+                              RowDefinitions="*, *, *">
+                            <Button Grid.Row="0" Background="Transparent" Command="{Binding MoveUpCommand}">
+                                <iconPacks:PackIconPhosphorIcons Kind="CaretUp"
+                                                                 Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                            </Button>
+                            <Button Grid.Row="1" Background="Transparent" Command="{Binding RemoveTrackCommand}">
+                                <iconPacks:PackIconPhosphorIcons Kind="Trash"
+                                                                 Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                            </Button>
+                            <Button Grid.Row="2" Background="Transparent" Command="{Binding MoveDownCommand}">
+                                <iconPacks:PackIconPhosphorIcons Kind="CaretDown"
+                                                                 Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- 左上角彩色等腰直角三角形色标（可点击） -->
+            <Button Name="ColorBarButton"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Padding="0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ZIndex="10"
+                    ToolTip.Tip="{DynamicResource TrackHeader.Mute}"
+                    Command="{Binding MuteCommand}">
+                <Button.Template>
+                    <ControlTemplate>
+                        <Polygon Name="ColorTriangle"
+                                 Fill="{Binding TrackColorBrush}"
+                                 Points="0,0 20,0 0,20"
+                                 HorizontalAlignment="Left"
+                                 VerticalAlignment="Top" />
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Panel>
+
+
+        <!-- 旋钮调整 HUD：覆盖整个轨道头，由 code-behind 驱动显隐和内容 -->
+        <Border x:Name="HudOverlay"
+                IsVisible="False"
+                Opacity="0"
+                IsHitTestVisible="False"
+                ZIndex="30"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="{DynamicResource Sem.Color.GlassOverlay}">
+            <!-- HUD 内容层：标题、数值、可视化 -->
+            <!-- TODO: 主题尚未覆盖 -->
+            <StackPanel VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Spacing="10">
+                <!-- 数值显示 -->
+                <TextBlock x:Name="HudValue"
+                           Text="0.0 dB"
+                           HorizontalAlignment="Center" />
+                <!-- 电平 可视化 -->
+                <Canvas x:Name="VolumeHudVisual"
+                        Width="144"
+                        Height="32"
+                        IsVisible="True">
+                    <Border Canvas.Left="0"
+                            Canvas.Top="13"
+                            Width="144"
+                            Height="7"
+                            CornerRadius="3.5"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+
+                    <Border x:Name="VolumeNegFill"
+                            Canvas.Left="0"
+                            Canvas.Top="13"
+                            Width="0"
+                            Height="7"
+                            CornerRadius="3.5"
+                            Background="{DynamicResource Sem.Color.Primary}" />
+
+                    <Border x:Name="VolumePosFill"
+                            Canvas.Left="0"
+                            Canvas.Top="13"
+                            Width="0"
+                            Height="7"
+                            CornerRadius="3.5"
+                            Background="{DynamicResource Sem.Color.Warning}" />
+                    <!-- 刻度线 -->
+                    <Border Canvas.Left="0" Canvas.Top="10" Width="1" Height="12"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+                    <Border Canvas.Left="24" Canvas.Top="10" Width="1" Height="12"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+                    <Border Canvas.Left="48" Canvas.Top="10" Width="1" Height="12"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+                    <Border Canvas.Left="72" Canvas.Top="10" Width="1" Height="12"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+                    <Border Canvas.Left="96" Canvas.Top="8" Width="1.5" Height="16"
+                            Background="{DynamicResource Sem.Color.GlassOverlay}" />
+                    <Border Canvas.Left="120" Canvas.Top="10" Width="1" Height="12"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+                    <Border Canvas.Left="144" Canvas.Top="10" Width="1" Height="12"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+                    <!-- 刻度标签 -->
+                    <TextBlock Canvas.Left="0" Canvas.Top="0" Text="-24" Classes="TrackHeaderHudScaleLabel" />
+                    <TextBlock Canvas.Left="88" Canvas.Top="0" Text="0" Classes="TrackHeaderHudScaleLabel" />
+                    <TextBlock Canvas.Left="124" Canvas.Top="0" Text="+12" Classes="TrackHeaderHudScaleLabel" />
+                </Canvas>
+                <!-- 声像 可视化 -->
+                <Canvas x:Name="PanHudVisual"
+                        Width="144"
+                        Height="32"
+                        IsVisible="False">
+                    <!-- Rail -->
+                    <Border Canvas.Left="0"
+                            Canvas.Top="13"
+                            Width="144"
+                            Height="7"
+                            CornerRadius="3.5"
+                            Background="{DynamicResource Sem.Color.OutlineVariant}" />
+
+                    <!-- Left Fill -->
+                    <Border x:Name="PanLeftFill"
+                            Canvas.Left="72"
+                            Canvas.Top="13"
+                            Width="0"
+                            Height="7"
+                            CornerRadius="3.5"
+                            Background="{DynamicResource Sem.Color.Primary}" />
+
+                    <!-- Right Fill -->
+                    <Border x:Name="PanRightFill"
+                            Canvas.Left="72"
+                            Canvas.Top="13"
+                            Width="0"
+                            Height="7"
+                            CornerRadius="3.5"
+                            Background="{DynamicResource Sem.Color.Warning}" />
+
+                    <!-- Center Mark -->
+                    <Border Canvas.Left="71.25"
+                            Canvas.Top="8"
+                            Width="1.5"
+                            Height="16"
+                            Background="{DynamicResource Sem.Color.GlassOverlay}" />
+
+                    <!-- Labels -->
+                    <TextBlock Canvas.Left="0" Canvas.Top="0" Text="L" Classes="TrackHeaderHudScaleLabel" />
+                    <TextBlock Canvas.Left="69" Canvas.Top="0" Text="C" Classes="TrackHeaderHudScaleLabel" />
+                    <TextBlock Canvas.Left="135" Canvas.Top="0" Text="R" Classes="TrackHeaderHudScaleLabel" />
+                </Canvas>
+            </StackPanel>
+        </Border>
+    </Panel>
+</UserControl>

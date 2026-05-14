@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.ErrorDialogPopup"
+             d:DataContext="{d:DesignInstance Type=vm:ErrorDialogViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:ErrorDialogViewModel"
+             Classes="PopupDialogRoot">
+
+    <UserControl.Resources>
+        <!-- 错误图标（感叹号圆形） -->
+        <StreamGeometry x:Key="IconError">M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 Z M13,17 L11,17 L11,15 L13,15 L13,17 Z M13,13 L11,13 L11,7 L13,7 L13,13 Z</StreamGeometry>
+        <!-- 关闭 / X -->
+        <StreamGeometry x:Key="IconClose">M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 Z</StreamGeometry>
+        <!-- 展开/折叠 Chevron -->
+        <StreamGeometry x:Key="IconChevronDown">M7.41,8.59 L12,13.17 L16.59,8.59 L18,10 L12,16 L6,10 L7.41,8.59 Z</StreamGeometry>
+    </UserControl.Resources>
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+
+            <!-- ── Header ── -->
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top"
+                    Padding="8,8,8,8">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+
+                    <!-- 错误图标 -->
+                    <Panel Grid.Column="0"
+                           Margin="8,0,0,0"
+                           VerticalAlignment="Center">
+                        <PathIcon Width="20" Height="20"
+                                  Data="{StaticResource IconError}"
+                                  Foreground="{DynamicResource Sem.Color.Error}" />
+                    </Panel>
+
+                    <!-- 标题 -->
+                    <StackPanel Grid.Column="1"
+                                Margin="8,0,4,0"
+                                VerticalAlignment="Center"
+                                Spacing="1">
+                        <TextBlock Text="{Binding Title}"
+                                   Classes="PopupTitle" />
+                    </StackPanel>
+
+                    <!-- 关闭按钮 -->
+                    <Button Grid.Column="2"
+                            Classes="IconBtn PopupCloseBtn"
+                            Command="{Binding CloseCommand}">
+                        <PathIcon Width="18" Height="18"
+                                  Data="{StaticResource IconClose}"
+                                  Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- ── Footer ── -->
+            <Border DockPanel.Dock="Bottom"
+                    Padding="12,10,12,12">
+                <Button Classes="PrimaryBtn"
+                        Content="{DynamicResource Common.Confirm}"
+                        Command="{Binding CloseCommand}" />
+            </Border>
+
+            <!-- ── Content ── -->
+            <StackPanel Orientation="Vertical" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetCardCompact}"
+                        Spacing="8">
+                <TextBlock Text="{Binding Message}"
+                           TextWrapping="Wrap" />
+
+                <!-- 详情折叠切换 -->
+                <Button DockPanel.Dock="Top"
+                        Classes="DetailToggle"
+                        IsVisible="{Binding HasDetail}"
+                        x:Name="DetailToggleBtn"
+                        Click="OnDetailToggleClicked">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <PathIcon Width="12" Height="12"
+                                  x:Name="DetailChevron"
+                                  Data="{StaticResource IconChevronDown}"
+                                  Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                        <TextBlock Text="{DynamicResource Common.Details}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <!-- 详情文本（默认折叠） -->
+                <ScrollViewer DockPanel.Dock="Top"
+                              x:Name="DetailPanel"
+                              IsVisible="False"
+                              MaxHeight="200"
+                              Margin="0,6,0,0"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                    <TextBlock Text="{Binding Detail}"
+                               FontFamily="Consolas, Courier New, monospace"
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               Opacity="0.7" />
+                </ScrollViewer>
+
+            </StackPanel>
+
+        </DockPanel>
+    </Border>
+</UserControl>

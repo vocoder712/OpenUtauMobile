@@ -3,8 +3,6 @@ using System.IO;
 using System.Text;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using Serilog;
-using System;
 
 namespace OpenUtau.Core.Vogen {
     class VogenSinger : USinger {
@@ -54,23 +52,9 @@ namespace OpenUtau.Core.Vogen {
         }
 
         public override byte[] LoadPortrait() {
-            //return string.IsNullOrEmpty(meta.portrait)
-            //    ? null
-            //    : Zip.ExtractBytes(filePath, meta.portrait);
-            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath) || string.IsNullOrEmpty(meta.portrait))
-            {
-                return [];
-            }
-            try
-            {
-                return Zip.ExtractBytes(filePath, meta.portrait);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Failed to load portrait data.");
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-                return [];
-            }
+            return string.IsNullOrEmpty(meta.portrait)
+                ? null
+                : Zip.ExtractBytes(filePath, meta.portrait);
         }
     }
 }

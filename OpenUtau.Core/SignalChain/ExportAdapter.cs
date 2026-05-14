@@ -2,7 +2,7 @@
 using NAudio.Wave;
 
 namespace OpenUtau.Core.SignalChain {
-    class ExportAdapter : ISampleProvider {
+    public class ExportAdapter : ISampleProvider {
         private readonly WaveFormat waveFormat;
         private readonly ISignalSource source;
         private int position;

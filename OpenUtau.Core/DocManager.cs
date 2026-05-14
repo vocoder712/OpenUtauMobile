@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Classic;
+using OpenUtau.Core.Editing;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -37,9 +38,11 @@ namespace OpenUtau.Core {
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
-        public List<UPart> PartsClipboard { get; set; }
-        public List<UNote> NotesClipboard { get; set; }
+        public List<UPart>? PartsClipboard { get; set; }
+        public List<UNote>? NotesClipboard { get; set; }
+        public CurveSelection? CurvesClipboard { get; set; }
         internal PhonemizerRunner PhonemizerRunner { get; private set; }
+        public List<Type> ExternalBatchEditTypes { get; private set; } = new List<Type>();
 
         public void Initialize(Thread mainThread, TaskScheduler mainScheduler) {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
@@ -64,87 +67,59 @@ namespace OpenUtau.Core {
             }
         }
 
-        /// <summary>
-        /// 从 插件目录、内置程序集 和 当前程序集 加载所有插件并添加音素器
-        /// </summary>
-        public void SearchAllPlugins()
-        {
+        public void SearchAllPlugins() {
             const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
-            var phonemizerFactories = new List<PhonemizerFactory>();
             var files = new List<string>();
-            try
-            {
+            try {
                 files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
                 Directory.CreateDirectory(PathManager.Inst.PluginsPath);
                 string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
-                if (File.Exists(oldBuiltin))
-                {
+                if (File.Exists(oldBuiltin)) {
                     File.Delete(oldBuiltin);
                 }
                 files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search plugins.");
             }
-            catch (Exception e)
-            {
-                Log.Error(e, "扫描插件失败");
-            }
-            foreach (var file in files)
-            {
+            foreach (var file in files) {
                 Assembly assembly;
-                try
-                {
-                    if (!LibraryLoader.IsManagedAssembly(file))
-                    {
-                        Log.Information($"跳过 {file}，因为不是托管程序集");
+                try {
+                    if (!LibraryLoader.IsManagedAssembly(file)) {
+                        Log.Information($"Skipping {file}");
                         continue;
                     }
                     assembly = Assembly.LoadFile(file);
-                    foreach (var type in assembly.GetExportedTypes())
-                    {
-                        if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
-                        {
-                            phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                    // 遍历所有类型
+                    foreach (var type in assembly.GetExportedTypes()) {
+                        // 对于音素器
+                        if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+                            PhonemizerFactory.Get(type);
+                        }
+                        // 对于批量编辑工具
+                        if (Path.GetFileName(file) != kBuiltin
+                            && typeof(BatchEdit).IsAssignableFrom(type)
+                            && !type.IsInterface
+                            && !type.IsAbstract
+                            && type.GetConstructor(Type.EmptyTypes) != null) {
+                            ExternalBatchEditTypes.Add(type);
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    Log.Warning(e, $"程序集文件 {file} 加载失败。");
+                } catch (Exception e) {
+                    Log.Warning(e, $"Failed to load {file}.");
                     continue;
                 }
             }
-            try
-            {
-                // 对于Android平台，内置音素器插件程序集不是单独的DLL文件，需从当前域加载
-                Assembly assemblyPluginBuiltin = Assembly.Load("OpenUtau.Plugin.Builtin");
-                foreach (Type type in assemblyPluginBuiltin.GetExportedTypes())
-                {
-                    if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
-                    {
-                        phonemizerFactories.Add(PhonemizerFactory.Get(type));
-                    }
-                }
-                Log.Information($"成功加载内建插件程序集 {assemblyPluginBuiltin}");
-            }
-            catch (Exception e)
-            {
-                Log.Warning(e, "无法加载内建插件程序集 OpenUtau.Plugin.Builtin");
-            }
-            // 加载当前程序集（Core）中的内置音素化器
-            foreach (var type in GetType().Assembly.GetExportedTypes())
-            {
-                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer)))
-                {
-                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
+            foreach (var type in GetType().Assembly.GetExportedTypes()) {
+                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+                    PhonemizerFactory.Get(type);
                 }
             }
-            PhonemizerFactories = [.. phonemizerFactories
-                .DistinctBy(factory => factory.type) // 去重,避免同一个 Phonemizer 被多次加载
-                .OrderBy(factory => factory.tag)];
+            PhonemizerFactory.BuildList();
             stopWatch.Stop();
-            Log.Information($"已完成插件查找，用时: {stopWatch.Elapsed}");
+            Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
-        
+
         #region Command Queue
 
         readonly Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
@@ -221,7 +196,7 @@ namespace OpenUtau.Core {
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
                 if (!(cmd is ProgressBarNotification)) {
-                    //Log.Warning($"{cmd} not on main thread");
+                    Log.Warning($"{cmd} not on main thread");
                 }
                 PostOnUIThread(() => ExecuteCmd(cmd));
                 return;
@@ -261,7 +236,7 @@ namespace OpenUtau.Core {
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
-                    //Log.Information($"Publish notification {cmd}");
+                    Log.Information($"Publish notification {cmd}");
                 }
                 return;
             }
@@ -282,13 +257,13 @@ namespace OpenUtau.Core {
             }
         }
 
-        public void StartUndoGroup(bool deferValidate = false) {
+        public void StartUndoGroup(string? nameKey = null, bool deferValidate = false) {
             if (undoGroup != null) {
                 Log.Error("undoGroup already started");
                 EndUndoGroup();
             }
-            undoGroup = new UCommandGroup(deferValidate);
-            //Log.Information("undoGroup started");
+            undoGroup = new UCommandGroup(nameKey, deferValidate);
+            Log.Information("undoGroup started");
         }
 
         public void EndUndoGroup() {
@@ -308,7 +283,7 @@ namespace OpenUtau.Core {
             }
             undoGroup.Merge();
             undoGroup = null;
-            //Log.Information("undoGroup ended");
+            Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());
         }
 
@@ -360,6 +335,25 @@ namespace OpenUtau.Core {
             }
             undoQueue.AddToBack(group);
             ExecuteCmd(new PreRenderNotification());
+        }
+
+        public bool GetUndoState(out string? key) {
+            key = null;
+            if (undoQueue.Count > 0) {
+                key = undoQueue.Last().NameKey;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        public bool GetRedoState(out string? key) {
+            key = null;
+            if (redoQueue.Count > 0) {
+                key = redoQueue.Last().NameKey;
+                return true;
+            } else {
+                return false;
+            }
         }
 
         # endregion

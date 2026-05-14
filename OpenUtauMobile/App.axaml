@@ -1,0 +1,24 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:OpenUtauMobile"
+             xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             x:Class="OpenUtauMobile.App"
+             RequestedThemeVariant="Default">
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <!-- Development fallback only; custom Style layer should override and eventually replace this. -->
+        <FluentTheme />
+        <!-- DialogHost.Avalonia 弹窗所需的样式 -->
+        <dialogHostAvalonia:DialogHostStyles />
+        <!-- 新的 Theme 主题系统 -->
+        <StyleInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/OpenUtauMobileTheme.axaml" />
+        <!-- IconPacks.Avalonia 包含了 PhosphorIcons 和 Fontaudio 两个图标库的样式 -->
+        <StyleInclude Source="avares://IconPacks.Avalonia.PhosphorIcons/PhosphorIcons.axaml" />
+        <StyleInclude Source="avares://IconPacks.Avalonia.Fontaudio/Fontaudio.axaml" />
+    </Application.Styles>
+</Application>

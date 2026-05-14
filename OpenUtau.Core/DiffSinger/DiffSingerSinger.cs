@@ -6,6 +6,7 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 using Microsoft.ML.OnnxRuntime;
 
@@ -156,23 +157,9 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public override byte[] LoadPortrait() {
-            //return string.IsNullOrEmpty(Portrait)
-            //    ? null
-            //    : File.ReadAllBytes(Portrait);
-            if (string.IsNullOrEmpty(Portrait) || !File.Exists(Portrait))
-            {
-                return [];
-            }
-            try
-            {
-                return File.ReadAllBytes(Portrait);
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Failed to load portrait data.");
-                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
-                return [];
-            }
+            return string.IsNullOrEmpty(Portrait)
+                ? null
+                : File.ReadAllBytes(Portrait);
         }
 
         public InferenceSession getAcousticSession() {
@@ -180,7 +167,7 @@ namespace OpenUtau.Core.DiffSinger {
                 var acousticPath = Path.Combine(Location, dsConfig.acoustic);
                 var acousticBytes = File.ReadAllBytes(acousticPath);
                 acousticHash = XXH64.DigestOf(acousticBytes);
-                acousticSession = Onnx.getInferenceSession(acousticBytes);
+                acousticSession = Onnx.getInferenceSession(acousticBytes, OnnxRunnerChoice.CPUForCoreML);
             }
             return acousticSession;
         }

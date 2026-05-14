@@ -1,0 +1,35 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="OpenUtauMobile.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="{DynamicResource Sem.Color.Surface}">
+    <!-- Root 根 -->
+    <!-- 弹窗容器，覆盖在导航页之上 -->
+    <!-- 背景模糊，点击外部不关闭，启用打开动画，禁止多重弹窗 -->
+    <dialogHostAvalonia:DialogHost BlurBackground="True"
+                                   CloseOnClickAway="False"
+                                   Identifier="MainDialogHost"
+                                   IsMultipleDialogsEnabled="True"
+                                   OverlayBackground="Transparent">
+        <dialogHostAvalonia:DialogHost.PopupTemplate>
+            <ControlTemplate>
+                <!-- 这里的 Border 就是弹窗的“背景容器”，透明背景 -->
+                <Border Background="Transparent">
+                    <ContentPresenter Content="{TemplateBinding Content}" />
+                </Border>
+            </ControlTemplate>
+        </dialogHostAvalonia:DialogHost.PopupTemplate>
+
+        <Panel>
+            <!-- 导航页的容器 -->
+            <ContentControl Content="{Binding CurrentViewModel}"></ContentControl>
+            <controls:ToastOverlay x:Name="ToastOverlay" />
+        </Panel>
+    </dialogHostAvalonia:DialogHost>
+</UserControl>

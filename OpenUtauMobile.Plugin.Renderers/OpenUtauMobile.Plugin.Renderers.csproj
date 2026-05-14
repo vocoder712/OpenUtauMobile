@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="NAudio.Core" Version="2.2.1" />
+        <PackageReference Include="NWaves" Version="0.9.6" />
+        <PackageReference Include="Serilog" Version="4.1.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
+        <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.23.0" />
+    </ItemGroup>
+    <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'false'">
+        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.26.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+    </ItemGroup>
+
+</Project>

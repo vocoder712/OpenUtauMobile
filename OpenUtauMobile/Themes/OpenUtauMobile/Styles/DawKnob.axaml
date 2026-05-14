@@ -1,0 +1,31 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia">
+    <Design.PreviewWith>
+        <Border Padding="128">
+            <StackPanel Orientation="Vertical"
+                        Spacing="16">
+                <controls:DawKnob Angle="45" />
+                <controls:DawKnob Angle="90" />
+                <controls:DawKnob Angle="135" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <Style Selector="controls|DawKnob">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Name="PART_KnobContainer" Background="{TemplateBinding Background}">
+                    <Grid.RenderTransform>
+                        <RotateTransform Angle="{Binding Angle, RelativeSource={RelativeSource TemplatedParent}}" />
+                    </Grid.RenderTransform>
+                    <iconPacks:PackIconFontaudio Kind="SliderRound2"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Foreground="{DynamicResource Sem.Color.OnSurface}"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

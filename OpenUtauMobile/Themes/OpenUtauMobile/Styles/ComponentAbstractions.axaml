@@ -1,0 +1,187 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical"
+                    Spacing="8">
+            <Border Classes="TopBar">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button Classes="TopBarBtn" Content="{iconPacks:PhosphorIcons ArrowLeft}">
+
+                    </Button>
+                    <TextBlock Classes="TopBarTitle" Text="Top App Bar" />
+                </StackPanel>
+            </Border>
+            <Button Classes="OptionEntry">
+                <TextBlock Text="Option Entry" />
+            </Button>
+            <Button Classes="ContextActionBtn">
+                <TextBlock Text="Context Action" />
+            </Button>
+            <Button Classes="HomeActionButton">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <Path Data="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
+                    <TextBlock Text="Home Action" />
+                </StackPanel>
+            </Button>
+            <Button Classes="FAB">
+                <Path
+                    Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2ZM13.5,17H10.5V14H7.5V11H10.5V8H13.5V11H16.5V14H13.5V17Z" />
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
+    <!-- 椤舵爮 -->
+    <!-- 椤舵爮鑳屾櫙 -->
+    <Style Selector="Border.TopBar">
+        <Setter Property="Height" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXXL}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetXS}" />
+        <Setter Property="Opacity" Value="0.8" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <!-- 顶栏按钮 -->
+    <Style Selector="Button.TopBarBtn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXL}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXL}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerXXXL}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.TopBarBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+    <Style Selector="Button.TopBarBtn:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHighest}" />
+    </Style>
+    <Style Selector="Button.TopBarBtn Path">
+        <Setter Property="Fill" Value="{DynamicResource Sem.Color.OnSurface}" />
+    </Style>
+    <!-- 顶栏标题 -->
+    <Style Selector="TextBlock.TopBarTitle">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.BodyLSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetStartSM}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- 閫夐」鏉＄洰 -->
+    <Style Selector="Button.OptionEntry">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.OptionEntry:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+
+    <Style Selector="Button.OptionEntry:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <!-- 棣栭〉鎿嶄綔鎸夐挳 -->
+    <Style Selector="Button.HomeActionButton">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemLayoutTokens.SizeHomeAction}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemLayoutTokens.SizeHomeAction}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.LabelMSize}" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton StackPanel">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton Path">
+        <Setter Property="Stroke" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton:pointerover">
+        <Setter Property="Opacity" Value="0.92" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton:pressed">
+        <Setter Property="Opacity" Value="0.82" />
+    </Style>
+    <!-- FAB -->
+    <Style Selector="Button.FAB">
+        <Setter Property="Width" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXXL}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXXL}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="10" OffsetX="0" OffsetY="3" Opacity="0.24"
+                              Color="{DynamicResource Sem.Value.Shadow}" />
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="Button">
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <Grid>
+                        <!-- 鐢ㄤ簬鎮诞鐘舵€佺殑閬僵灞?-->
+                        <Border x:Name="StateLayer"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Opacity="0" />
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Margin="{TemplateBinding Padding}" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <!-- hover -->
+    <Style Selector="Button.FAB:pointerover">
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="14" OffsetX="0" OffsetY="5" Opacity="0.28"
+                              Color="{DynamicResource Sem.Value.Shadow}" />
+        </Setter>
+    </Style>
+    <Style Selector="Button.FAB:pointerover /template/ Border#StateLayer">
+        <Setter Property="Opacity" Value="0.08" />
+    </Style>
+    <!-- pressed -->
+    <Style Selector="Button.FAB:pressed">
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="6" OffsetX="0" OffsetY="1" Opacity="0.2"
+                              Color="{DynamicResource Sem.Value.Shadow}" />
+        </Setter>
+    </Style>
+    <Style Selector="Button.FAB:pressed /template/ Border#StateLayer">
+        <Setter Property="Opacity" Value="0.12" />
+    </Style>
+</Styles>

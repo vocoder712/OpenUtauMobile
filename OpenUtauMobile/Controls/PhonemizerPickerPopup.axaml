@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.PhonemizerPickerPopup"
+             d:DataContext="{d:DesignInstance Type=vm:PhonemizerPickerViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:PhonemizerPickerViewModel"
+             Classes="PopupDialogRoot"
+             MinHeight="300"
+             MaxHeight="600">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <!-- 标题栏 -->
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource Picker.Phonemizer.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}">
+                        <Path Width="14" Height="14"
+                              Stretch="Uniform"
+                              Fill="{DynamicResource Sem.Color.OnSurface}"
+                              Data="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 Z" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- 音素器列表容器 -->
+            <Grid DockPanel.Dock="Top" ColumnDefinitions="160,*">
+                <!-- 左侧：分组 -->
+                <ListBox Grid.Column="0"
+                         ItemsSource="{Binding Groups}"
+                         SelectedItem="{Binding CurrentGroup}"
+                         SelectionMode="Single"
+                         Background="{DynamicResource Sem.Color.Surface}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Value}"
+                                       Margin="8,6"
+                                       FontSize="14"
+                                       VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- 右侧：音素器列表 -->
+                <ListBox Grid.Column="1"
+                         ItemsSource="{Binding PhonemizerFactories}"
+                         SelectedItem="{Binding SelectedFactoryPair}"
+                         SelectionMode="Single"
+                         Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Value}"
+                                       Margin="8,6"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </DockPanel>
+    </Border>
+
+</UserControl>

@@ -1,0 +1,1386 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common.Back" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="Common.CollapseRail" xml:space="preserve">
+    <value>Згорнути</value>
+  </data>
+  <data name="Common.Refresh" xml:space="preserve">
+    <value>Оновити</value>
+  </data>
+  <data name="Common.Cancel" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="Common.Confirm" xml:space="preserve">
+    <value>Підтвердити</value>
+  </data>
+  <data name="Common.Close" xml:space="preserve">
+    <value>Закрити</value>
+  </data>
+  <data name="Common.Next" xml:space="preserve">
+    <value>Далі</value>
+  </data>
+  <data name="Common.Previous" xml:space="preserve">
+    <value>Попередній</value>
+  </data>
+  <data name="Common.Skip" xml:space="preserve">
+    <value>Пропустити</value>
+  </data>
+  <data name="Common.Delete" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="Common.Copy" xml:space="preserve">
+    <value>Копіювати</value>
+  </data>
+  <data name="Common.Cut" xml:space="preserve">
+    <value>Вирізати</value>
+  </data>
+  <data name="Common.Paste" xml:space="preserve">
+    <value>Вставити</value>
+  </data>
+  <data name="Common.SelectAll" xml:space="preserve">
+    <value>Вибрати все</value>
+  </data>
+  <data name="Common.Install" xml:space="preserve">
+    <value>Встановити</value>
+  </data>
+  <data name="Common.Update" xml:space="preserve">
+    <value>Оновити</value>
+  </data>
+  <data name="Common.Installed" xml:space="preserve">
+    <value>Встановлено</value>
+  </data>
+  <data name="Common.Uninstall" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="Common.Unknown" xml:space="preserve">
+    <value>Невідомо</value>
+  </data>
+  <data name="Common.Details" xml:space="preserve">
+    <value>Деталі</value>
+  </data>
+  <data name="Settings.Title" xml:space="preserve">
+    <value>Налаштування</value>
+  </data>
+  <data name="Settings.Nav.EditAndBehaviour" xml:space="preserve">
+    <value>Редагування та поведінка</value>
+  </data>
+  <data name="Settings.Nav.EditAndBehaviour.Sub" xml:space="preserve">
+    <value>Автоперегортання…</value>
+  </data>
+  <data name="Settings.Nav.RenderAndPerformance" xml:space="preserve">
+    <value>Рендеринг і продуктивність</value>
+  </data>
+  <data name="Settings.Nav.RenderAndPerformance.Sub" xml:space="preserve">
+    <value>Рендерер, аудіовихід, параметри ML…</value>
+  </data>
+  <data name="Settings.Nav.FileAndStorage" xml:space="preserve">
+    <value>Файли та сховище</value>
+  </data>
+  <data name="Settings.Nav.FileAndStorage.Sub" xml:space="preserve">
+    <value>Шляхи до банків, автозбереження…</value>
+  </data>
+  <data name="Settings.Nav.AppearanceAndLanguage" xml:space="preserve">
+    <value>Зовнішній вигляд і мова</value>
+  </data>
+  <data name="Settings.Nav.AppearanceAndLanguage.Sub" xml:space="preserve">
+    <value>Тема, мова, портрет банку…</value>
+  </data>
+  <data name="Settings.Edit.CategoryTitle" xml:space="preserve">
+    <value>Редагування та поведінка</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyBehavior" xml:space="preserve">
+    <value>Поведінка клавіш піаніно</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyBehavior.Desc" xml:space="preserve">
+    <value>Відтворення звуку під час натискання клавіш піаніно</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath" xml:space="preserve">
+    <value>Шлях до файлу SoundFont</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath.Change" xml:space="preserve">
+    <value>Вибрати</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath.Loaded" xml:space="preserve">
+    <value>✓ Завантажено</value>
+  </data>
+  <data name="Settings.Edit.SoundFontPath.NotLoaded" xml:space="preserve">
+    <value>⚠ Не завантажено - виберіть коректний файл SF2</value>
+  </data>
+  <data name="Settings.Edit.AutoScrollBehavior" xml:space="preserve">
+    <value>Поведінка автопрокручування</value>
+  </data>
+  <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
+    <value>Поведінка автоматичного перегортання під час відтворення</value>
+  </data>
+  <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
+    <value>Частота оновлення відтворення</value>
+  </data>
+  <data name="Settings.Edit.PlaybackRefreshRate.Desc" xml:space="preserve">
+    <value>Частота оновлення інтерфейсу під час відтворення. Вищі значення плавніші, але збільшують навантаження на CPU.</value>
+  </data>
+  <data name="Settings.Edit.ShowPortrait" xml:space="preserve">
+    <value>Показувати портрет</value>
+  </data>
+  <data name="Settings.Edit.ShowPortrait.Desc" xml:space="preserve">
+    <value>Показувати портрет банку на піаноролі.</value>
+  </data>
+  <data name="Settings.Edit.UndoLimit" xml:space="preserve">
+    <value>Ліміт кроків скасування</value>
+  </data>
+  <data name="Settings.Edit.UndoLimit.Desc" xml:space="preserve">
+    <value>Максимальна кількість кроків історії скасування, що зберігаються в пам'яті.</value>
+  </data>
+  <data name="Settings.Edit.AutoSave" xml:space="preserve">
+    <value>Автозбереження</value>
+  </data>
+  <data name="Settings.Edit.AutoSave.Enabled" xml:space="preserve">
+    <value>Увімкнути автозбереження</value>
+  </data>
+  <data name="Settings.Edit.AutoSave.Desc" xml:space="preserve">
+    <value>Інтервал автозбереження проєкту під час редагування.</value>
+  </data>
+  <data name="Settings.PianoKey.Silent" xml:space="preserve">
+    <value>Без звуку</value>
+  </data>
+  <data name="Settings.PianoKey.SineWave" xml:space="preserve">
+    <value>Синусоїда</value>
+  </data>
+  <data name="Settings.PianoKey.SoundFont" xml:space="preserve">
+    <value>Семпл піаніно (SF2)</value>
+  </data>
+  <data name="Settings.AutoScroll.Disabled" xml:space="preserve">
+    <value>Вимкнено</value>
+  </data>
+  <data name="Settings.AutoScroll.Enabled" xml:space="preserve">
+    <value>Увімкнено</value>
+  </data>
+  <data name="Settings.AutoScroll.Smooth" xml:space="preserve">
+    <value>Плавне прокручування</value>
+  </data>
+  <data name="Settings.Render.CategoryTitle" xml:space="preserve">
+    <value>Рендеринг і продуктивність</value>
+  </data>
+  <data name="Settings.Render.DiffSingerParams" xml:space="preserve">
+    <value>Параметри інференсу DiffSinger</value>
+  </data>
+  <data name="Settings.Render.AcousticSteps" xml:space="preserve">
+    <value>Кроки акустичної моделі</value>
+  </data>
+  <data name="Settings.Render.AcousticSteps.Desc" xml:space="preserve">
+    <value>Керує якістю інференсу акустичної моделі. Вищі значення дають кращу якість, але нижчу швидкість (рекомендовано: 5–20)</value>
+  </data>
+  <data name="Settings.Render.VarianceSteps" xml:space="preserve">
+    <value>Кроки моделі варіативності</value>
+  </data>
+  <data name="Settings.Render.VarianceSteps.Desc" xml:space="preserve">
+    <value>Керує якістю інференсу моделі варіативності та виразності (рекомендовано: 5–20)</value>
+  </data>
+  <data name="Settings.Render.PitchSteps" xml:space="preserve">
+    <value>Кроки моделі висоти тону</value>
+  </data>
+  <data name="Settings.Render.PitchSteps.Desc" xml:space="preserve">
+    <value>Керує якістю інференсу моделі висоти тону (рекомендовано: 5–20)</value>
+  </data>
+  <data name="Settings.Render.PreRender" xml:space="preserve">
+    <value>Попередній рендеринг</value>
+  </data>
+  <data name="Settings.Render.PreRender.Desc" xml:space="preserve">
+    <value>Попередньо рендерить аудіо у фоновому режимі для плавнішого відтворення</value>
+  </data>
+  <data name="Settings.Render.ThreadCount" xml:space="preserve">
+    <value>Кількість потоків рендерингу</value>
+  </data>
+  <data name="Settings.Render.ThreadCount.Desc" xml:space="preserve">
+    <value>Кількість одночасних потоків рендерингу. Налаштуйте відповідно до кількості ядер CPU (рекомендовано: 2–4)</value>
+  </data>
+  <data name="Settings.Render.AudioOutput" xml:space="preserve">
+    <value>Аудіовихід</value>
+  </data>
+  <data name="Settings.Render.OnnxRunner" xml:space="preserve">
+    <value>Бекенд ML-раннера</value>
+  </data>
+  <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
+    <value>Виберіть бекенд виконання ONNX Runtime для моделей машинного навчання.</value>
+  </data>
+  <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
+    <value>Деякі пристрої не підтримують апаратне прискорення. Вибір NNAPI може спричинити збій застосунку.</value>
+  </data>
+  <data name="Settings.Render.AudioBackend" xml:space="preserve">
+    <value>Аудіобекенд</value>
+  </data>
+  <data name="Settings.Render.AudioBackend.Desc" xml:space="preserve">
+    <value>Виберіть бекенд аудіовиходу. Режим «Авто» вибере найкращий варіант для платформи</value>
+  </data>
+  <data name="Settings.Render.OutputDevice" xml:space="preserve">
+    <value>Пристрій виведення</value>
+  </data>
+  <data name="Settings.Render.OutputDevice.Desc" xml:space="preserve">
+    <value>Виберіть пристрій виведення звуку</value>
+  </data>
+  <data name="Settings.Render.AudioBackend.RestartRequired" xml:space="preserve">
+    <value>Зміна аудіобекенду потребує перезапуску застосунку</value>
+  </data>
+  <data name="Settings.Audio.DefaultDevice" xml:space="preserve">
+    <value>Типовий пристрій</value>
+  </data>
+  <data name="Settings.Audio.AutoSelect" xml:space="preserve">
+    <value>Авто</value>
+  </data>
+  <data name="Settings.Audio.Dummy" xml:space="preserve">
+    <value>Без звуку (фіктивний пристрій)</value>
+  </data>
+  <data name="Settings.Audio.Device" xml:space="preserve">
+    <value>Пристрій {0}</value>
+  </data>
+  <data name="Settings.File.CategoryTitle" xml:space="preserve">
+    <value>Файли та сховище</value>
+  </data>
+  <data name="Settings.File.AdditionalSingerPath" xml:space="preserve">
+    <value>Додатковий шлях до банків</value>
+  </data>
+  <data name="Settings.File.AdditionalSingerPath.Desc" xml:space="preserve">
+    <value>Вкажіть додаткову теку для пошуку банків.</value>
+  </data>
+  <data name="Settings.File.AdditionalSingerPath.Change" xml:space="preserve">
+    <value>Змінити</value>
+  </data>
+  <data name="Settings.File.RenderCache" xml:space="preserve">
+    <value>Кеш рендера</value>
+  </data>
+  <data name="Settings.File.RenderCache.Desc" xml:space="preserve">
+    <value>Видаляє файли кешу рендера, збережені в даних застосунку.</value>
+  </data>
+  <data name="Settings.File.RenderCache.Clear" xml:space="preserve">
+    <value>Очистити кеш рендера</value>
+  </data>
+  <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
+    <value>Зовнішній вигляд і мова</value>
+  </data>
+  <data name="Settings.Appearance.Theme" xml:space="preserve">
+    <value>Тема</value>
+  </data>
+  <data name="Settings.Appearance.Theme.Desc" xml:space="preserve">
+    <value>Перемикання світлої й темної теми, слідування системній темі тощо.</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Desc" xml:space="preserve">
+    <value>Використовувати системний акцентний колір або вибрати власний первинний колір.</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Mode.FollowSystem" xml:space="preserve">
+    <value>У системі</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Mode.Custom" xml:space="preserve">
+    <value>Власний</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.ApplyHex" xml:space="preserve">
+    <value>Застосувати</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.OpenPicker" xml:space="preserve">
+    <value>Вибір кольору</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.ResetDefault" xml:space="preserve">
+    <value>Скинути</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Presets" xml:space="preserve">
+    <value>Пресети</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Title" xml:space="preserve">
+    <value>Вибір кольору теми</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Hue" xml:space="preserve">
+    <value>Відтінок</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Saturation" xml:space="preserve">
+    <value>Насиченість</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Picker.Value" xml:space="preserve">
+    <value>Яскравість</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.InvalidHex" xml:space="preserve">
+    <value>Недійсний HEX-колір. Використайте #RRGGBB.</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.FallbackToSystem" xml:space="preserve">
+    <value>Недійсний власний колір, повертаємося до системного акценту.</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.SystemUnavailable" xml:space="preserve">
+    <value>Системний акцент недоступний, використовується запасний колір.</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor.Source" xml:space="preserve">
+    <value>Джерело кольору</value>
+  </data>
+  <data name="Settings.Appearance.Language" xml:space="preserve">
+    <value>Мова</value>
+  </data>
+  <data name="Settings.Appearance.Language.Desc" xml:space="preserve">
+    <value>Мова інтерфейсу.</value>
+  </data>
+  <data name="Settings.Appearance.Language.FollowSystem" xml:space="preserve">
+    <value>За системою</value>
+  </data>
+  <data name="FilePicker.Empty" xml:space="preserve">
+    <value>Ця тека порожня</value>
+  </data>
+  <data name="FilePicker.NoMatch" xml:space="preserve">
+    <value>Жоден файл не відповідає фільтру</value>
+  </data>
+  <data name="FilePicker.AccessDenied" xml:space="preserve">
+    <value>Доступ до цієї теки заборонено</value>
+  </data>
+  <data name="FilePicker.GoUp" xml:space="preserve">
+    <value>Перейти до батьківської теки</value>
+  </data>
+  <data name="FilePicker.Close" xml:space="preserve">
+    <value>Закрити</value>
+  </data>
+  <data name="FilePicker.SelectFolder" xml:space="preserve">
+    <value>Вибрати цю теку</value>
+  </data>
+  <data name="FilePicker.FileName" xml:space="preserve">
+    <value>Ім'я файлу</value>
+  </data>
+  <data name="FilePicker.FileNameHint" xml:space="preserve">
+    <value>Введіть ім'я файлу…</value>
+  </data>
+  <data name="FilePicker.Save" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="FilePicker.OpenProject" xml:space="preserve">
+    <value>Відкрити файл проєкту</value>
+  </data>
+  <data name="FilePicker.SaveProjectAs" xml:space="preserve">
+    <value>Зберегти проєкт як</value>
+  </data>
+  <data name="FilePicker.DefaultProjectName" xml:space="preserve">
+    <value>Новий проєкт</value>
+  </data>
+  <data name="FilePicker.OverwriteWarning" xml:space="preserve">
+    <value>У цій теці вже є файл із такою назвою. Його буде перезаписано.</value>
+  </data>
+  <data name="FilePicker.ImportAudio" xml:space="preserve">
+    <value>Імпорт аудіо</value>
+  </data>
+  <data name="FilePicker.ImportMIDI" xml:space="preserve">
+    <value>Імпорт MIDI</value>
+  </data>
+  <data name="FilePicker.SelectSingerFile" xml:space="preserve">
+    <value>Вибрати файл банку</value>
+  </data>
+  <data name="FilePicker.SelectSF2" xml:space="preserve">
+    <value>Вибрати файл SoundFont</value>
+  </data>
+  <data name="FilePicker.SelectSingerDir" xml:space="preserve">
+    <value>Вибрати додаткову теку банків</value>
+  </data>
+  <data name="Home.Action.New" xml:space="preserve">
+    <value>Створити</value>
+  </data>
+  <data name="Home.Action.Open" xml:space="preserve">
+    <value>Відкрити</value>
+  </data>
+  <data name="Home.Action.Singers" xml:space="preserve">
+    <value>Банки</value>
+  </data>
+  <data name="Home.Action.Options" xml:space="preserve">
+    <value>Параметри</value>
+  </data>
+  <data name="Home.Title" xml:space="preserve">
+    <value>Головна</value>
+  </data>
+  <data name="Home.Recent.Title" xml:space="preserve">
+    <value>Нещодавні</value>
+  </data>
+  <data name="Home.Recent.Empty" xml:space="preserve">
+    <value>Немає нещодавніх проєктів</value>
+  </data>
+  <data name="Home.Recent.Remove" xml:space="preserve">
+    <value>Видалити зі списку</value>
+  </data>
+  <data name="Home.Brand.Name" xml:space="preserve">
+    <value>OpenUtau Mobile</value>
+  </data>
+  <data name="Home.Recovery.Message" xml:space="preserve">
+    <value>Відновлено після аварійного завершення: </value>
+  </data>
+  <data name="Home.Recovery.Open" xml:space="preserve">
+    <value> Натисніть, щоб відкрити</value>
+  </data>
+  <data name="Home.Toast.BackToExit" xml:space="preserve">
+    <value>Натисніть «Назад» ще раз, щоб вийти</value>
+  </data>
+  <data name="SingerDetail.Title" xml:space="preserve">
+    <value>Деталі банку</value>
+  </data>
+  <data name="SingerDetail.OpenWeb" xml:space="preserve">
+    <value>Відкрити сайт</value>
+  </data>
+  <data name="SingerDetail.Details" xml:space="preserve">
+    <value>Деталі</value>
+  </data>
+  <data name="SingerDetail.Author" xml:space="preserve">
+    <value>Автор</value>
+  </data>
+  <data name="SingerDetail.Voice" xml:space="preserve">
+    <value>Голос</value>
+  </data>
+  <data name="SingerDetail.Website" xml:space="preserve">
+    <value>Сайт</value>
+  </data>
+  <data name="SingerDetail.DefaultPhonemizer" xml:space="preserve">
+    <value>Фонемайзер за замовчуванням</value>
+  </data>
+  <data name="SingerDetail.OtherInfo" xml:space="preserve">
+    <value>Інша інформація</value>
+  </data>
+  <data name="SingerDetail.Location" xml:space="preserve">
+    <value>Місце зберігання</value>
+  </data>
+  <data name="SingerDetail.DangerZone" xml:space="preserve">
+    <value>Небезпечна зона</value>
+  </data>
+  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
+    <value>Видалення цього банку назавжди видалить усі пов'язані файли. Цю дію неможливо скасувати.</value>
+  </data>
+  <data name="SingerDetail.Delete" xml:space="preserve">
+    <value>Видалити банк</value>
+  </data>
+  <data name="Editor.Undo" xml:space="preserve">
+    <value>Скасувати</value>
+  </data>
+  <data name="Editor.Redo" xml:space="preserve">
+    <value>Повторити</value>
+  </data>
+  <data name="Editor.More" xml:space="preserve">
+    <value>Ще</value>
+  </data>
+  <data name="Editor.Quantize" xml:space="preserve">
+    <value>Квантування (глобальне)</value>
+  </data>
+  <data name="Editor.Quantize.Auto" xml:space="preserve">
+    <value>Авто</value>
+  </data>
+  <data name="Editor.Quantize.Off" xml:space="preserve">
+    <value>Вимкнено</value>
+  </data>
+  <data name="Editor.NormalMode" xml:space="preserve">
+    <value>Звичайний режим</value>
+  </data>
+  <data name="Editor.MultiSelectMode" xml:space="preserve">
+    <value>Режим мультивибору</value>
+  </data>
+  <data name="Editor.Stop" xml:space="preserve">
+    <value>Стоп</value>
+  </data>
+  <data name="Editor.PlayPause" xml:space="preserve">
+    <value>Відтворення/пауза</value>
+  </data>
+  <data name="Editor.Save" xml:space="preserve">
+    <value>Зберегти</value>
+  </data>
+  <data name="Editor.Saved" xml:space="preserve">
+    <value>Збережено</value>
+  </data>
+  <data name="Editor.ToggleTrackHeader" xml:space="preserve">
+    <value>Розгорнути/згорнути заголовок треку</value>
+  </data>
+  <data name="Editor.NoEditingPart" xml:space="preserve">
+    <value>Жодна партія не редагується</value>
+  </data>
+  <data name="Editor.Rendering" xml:space="preserve">
+    <value>Рендеринг...</value>
+  </data>
+  <data name="Editor.Undone" xml:space="preserve">
+    <value>Дію скасовано</value>
+  </data>
+  <data name="Editor.Redone" xml:space="preserve">
+    <value>Дію повторено</value>
+  </data>
+  <data name="Editor.NewPart" xml:space="preserve">
+    <value>Нова партія</value>
+  </data>
+  <data name="Editor.LoadingProject" xml:space="preserve">
+    <value>Завантаження проєкту...</value>
+  </data>
+  <data name="Editor.ProjectLoaded" xml:space="preserve">
+    <value>Проєкт завантажено</value>
+  </data>
+  <data name="Editor.Action.Delete" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="Editor.Action.Rename" xml:space="preserve">
+    <value>Перейменувати</value>
+  </data>
+  <data name="Editor.Action.Copy" xml:space="preserve">
+    <value>Копіювати</value>
+  </data>
+  <data name="Editor.Action.Cut" xml:space="preserve">
+    <value>Вирізати</value>
+  </data>
+  <data name="Editor.Action.Paste" xml:space="preserve">
+    <value>Вставити</value>
+  </data>
+  <data name="Editor.Action.Split" xml:space="preserve">
+    <value>Розділити</value>
+  </data>
+  <data name="Editor.Action.AddTimeSig" xml:space="preserve">
+    <value>Додати розмір</value>
+  </data>
+  <data name="Editor.Action.AddTempo" xml:space="preserve">
+    <value>Додати позначку темпу</value>
+  </data>
+  <data name="Editor.Action.PrevTimeSig" xml:space="preserve">
+    <value>Перейти до попереднього розміру</value>
+  </data>
+  <data name="Editor.Action.NextTimeSig" xml:space="preserve">
+    <value>Перейти до наступного розміру</value>
+  </data>
+  <data name="Editor.Action.PrevTempo" xml:space="preserve">
+    <value>Перейти до попередньої позначки темпу</value>
+  </data>
+  <data name="Editor.Action.NextTempo" xml:space="preserve">
+    <value>Перейти до наступної позначки темпу</value>
+  </data>
+  <data name="Editor.Action.DeleteTimeSig" xml:space="preserve">
+    <value>Видалити розмір</value>
+  </data>
+  <data name="Editor.Action.DeleteTempo" xml:space="preserve">
+    <value>Видалити позначку темпу</value>
+  </data>
+  <data name="Editor.Toast.SyncTempo" xml:space="preserve">
+    <value>Синхронізацію темпу ще не реалізовано</value>
+  </data>
+  <data name="Editor.Selection.Copied" xml:space="preserve">
+    <value>Скопійовано частин: {0}</value>
+  </data>
+  <data name="Editor.Selection.Cut" xml:space="preserve">
+    <value>Вирізано частин: {0}</value>
+  </data>
+  <data name="Editor.Selection.Pasted" xml:space="preserve">
+    <value>Вставлено частин: {0}</value>
+  </data>
+  <data name="Editor.Selection.AllSelected" xml:space="preserve">
+    <value>Вибрано всі {0} частин</value>
+  </data>
+  <data name="PianoRoll.DragSelect" xml:space="preserve">
+    <value>Перетягування/вибір</value>
+  </data>
+  <data name="PianoRoll.MultiSelect" xml:space="preserve">
+    <value>Мультивибір</value>
+  </data>
+  <data name="PianoRoll.NotePen" xml:space="preserve">
+    <value>Олівець нот</value>
+  </data>
+  <data name="PianoRoll.PitchPen" xml:space="preserve">
+    <value>Олівець висоти</value>
+  </data>
+  <data name="PianoRoll.Anchor" xml:space="preserve">
+    <value>Якір</value>
+  </data>
+  <data name="PianoRoll.Vibrato" xml:space="preserve">
+    <value>Вібрато</value>
+  </data>
+  <data name="PianoRoll.Action.Delete" xml:space="preserve">
+    <value>Видалити</value>
+  </data>
+  <data name="PianoRoll.Action.Properties" xml:space="preserve">
+    <value>Властивості</value>
+  </data>
+  <data name="PianoRoll.Action.SelectionStart" xml:space="preserve">
+    <value>Почати виділення</value>
+  </data>
+  <data name="PianoRoll.Action.SelectionEnd" xml:space="preserve">
+    <value>Завершити виділення</value>
+  </data>
+  <data name="PianoRoll.Action.SelectAll" xml:space="preserve">
+    <value>Вибрати все</value>
+  </data>
+  <data name="PianoRoll.Action.Copy" xml:space="preserve">
+    <value>Копіювати</value>
+  </data>
+  <data name="PianoRoll.Action.Cut" xml:space="preserve">
+    <value>Вирізати</value>
+  </data>
+  <data name="PianoRoll.Action.Paste" xml:space="preserve">
+    <value>Вставити</value>
+  </data>
+  <data name="PianoRoll.Action.Split" xml:space="preserve">
+    <value>Розділити</value>
+  </data>
+  <data name="PianoRoll.Action.Merge" xml:space="preserve">
+    <value>Об'єднати</value>
+  </data>
+  <data name="PianoRoll.Action.SwitchToPitchPen" xml:space="preserve">
+    <value>Перемкнутися на олівець висоти</value>
+  </data>
+  <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
+    <value>Перемкнутися на гумку</value>
+  </data>
+  <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
+    <value>Додати контрольну точку на позиції курсора відтворення</value>
+  </data>
+  <data name="PianoRoll.Action.Previous" xml:space="preserve">
+    <value>Попередній</value>
+  </data>
+  <data name="PianoRoll.Action.Next" xml:space="preserve">
+    <value>Далі</value>
+  </data>
+  <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
+    <value>Форма контрольної точки</value>
+  </data>
+  <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
+    <value>Скинути вібрато</value>
+  </data>
+  <data name="PianoRoll.Action.AddVibrato" xml:space="preserve">
+    <value>Додати вібрато</value>
+  </data>
+  <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
+    <value>Пресет вібрато</value>
+  </data>
+  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
+    <value>Режим вібрато</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
+    <value>Режим стирання висоти</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
+    <value>Режим олівця висоти</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
+    <value>Режим редагування якорів висоти</value>
+  </data>
+  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
+    <value>Режим перетягування</value>
+  </data>
+  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
+    <value>Режим мультивибору</value>
+  </data>
+  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
+    <value>Режим нот</value>
+  </data>
+  <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
+    <value>Режим вібрато поки недоступний</value>
+  </data>
+  <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
+    <value>Натисніть "|◀", щоб завершити виділення</value>
+  </data>
+  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
+    <value>Вибрано нот: {0}</value>
+  </data>
+  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
+    <value>Вибрано всі {0} нот</value>
+  </data>
+  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
+    <value>Скопійовано нот: {0}</value>
+  </data>
+  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
+    <value>Вирізано нот: {0}</value>
+  </data>
+  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
+    <value>Вставлено нот: {0}</value>
+  </data>
+  <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
+    <value>Редактор властивостей нот ще не реалізовано</value>
+  </data>
+  <data name="PianoRoll.Toast.ControlPointNotFound" xml:space="preserve">
+    <value>Не знайдено список контрольних точок для вставлення</value>
+  </data>
+  <data name="PianoRoll.Undone" xml:space="preserve">
+    <value>Скасовано</value>
+  </data>
+  <data name="PianoRoll.Redone" xml:space="preserve">
+    <value>Повторено</value>
+  </data>
+  <data name="PianoRoll.PortraitLoadError" xml:space="preserve">
+    <value>Не вдалося завантажити портрет</value>
+  </data>
+  <data name="SingerManagement.Title" xml:space="preserve">
+    <value>Керування банками</value>
+  </data>
+  <data name="SingerManagement.Install" xml:space="preserve">
+    <value>Встановити банк</value>
+  </data>
+  <data name="DependencyManager.Title" xml:space="preserve">
+    <value>Керування залежностями</value>
+  </data>
+  <data name="DependencyManager.Refresh" xml:space="preserve">
+    <value>Оновити список</value>
+  </data>
+  <data name="DependencyManager.InstallFromFile" xml:space="preserve">
+    <value>Встановити з файла</value>
+  </data>
+  <data name="DependencyManager.Available" xml:space="preserve">
+    <value>Доступні</value>
+  </data>
+  <data name="DependencyManager.InstalledTab" xml:space="preserve">
+    <value>Встановлені</value>
+  </data>
+  <data name="DependencyManager.Search" xml:space="preserve">
+    <value>Пошук пакунків...</value>
+  </data>
+  <data name="DependencyManager.LoadingAvailable" xml:space="preserve">
+    <value>Завантаження доступних пакунків...</value>
+  </data>
+  <data name="DependencyManager.NoAvailable" xml:space="preserve">
+    <value>Немає доступних пакунків</value>
+  </data>
+  <data name="DependencyManager.LoadingInstalled" xml:space="preserve">
+    <value>Завантаження встановлених пакунків...</value>
+  </data>
+  <data name="DependencyManager.NoInstalled" xml:space="preserve">
+    <value>Немає встановлених пакунків</value>
+  </data>
+  <data name="DependencyManager.Uninstalling" xml:space="preserve">
+    <value>Видалення...</value>
+  </data>
+  <data name="DependencyManager.UnknownDeveloper" xml:space="preserve">
+    <value>Невідомий розробник</value>
+  </data>
+  <data name="DependencyManager.Installing" xml:space="preserve">
+    <value>Встановлення...</value>
+  </data>
+  <data name="DependencyManager.Toast.Loaded" xml:space="preserve">
+    <value>Завантажено доступних пакунків: {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.LoadFailed" xml:space="preserve">
+    <value>Не вдалося завантажити: {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstalledListFailed" xml:space="preserve">
+    <value>Не вдалося завантажити список встановлених: {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFromFileNotImpl" xml:space="preserve">
+    <value>Встановлення з файла ще не реалізовано</value>
+  </data>
+  <data name="DependencyManager.Toast.Uninstalled" xml:space="preserve">
+    <value>Видалено {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.UninstallFailed" xml:space="preserve">
+    <value>Не вдалося видалити: {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallSuccess" xml:space="preserve">
+    <value>Встановлено {0}</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFailed" xml:space="preserve">
+    <value>Не вдалося встановити: {0}</value>
+  </data>
+  <data name="Options.Title" xml:space="preserve">
+    <value>Параметри</value>
+  </data>
+  <data name="Options.Settings" xml:space="preserve">
+    <value>Налаштування</value>
+  </data>
+  <data name="Options.Settings.Desc" xml:space="preserve">
+    <value>Мова, аудіо, зовнішній вигляд…</value>
+  </data>
+  <data name="Options.DependencyManager" xml:space="preserve">
+    <value>Керування залежностями</value>
+  </data>
+  <data name="Options.DependencyManager.Desc" xml:space="preserve">
+    <value>Встановлюйте та керуйте банками, фонемами й залежностями</value>
+  </data>
+  <data name="Options.Help" xml:space="preserve">
+    <value>Довідка та посібники</value>
+  </data>
+  <data name="Options.Help.Desc" xml:space="preserve">
+    <value>Переглянути посібник користувача та FAQ</value>
+  </data>
+  <data name="Options.ExportLog" xml:space="preserve">
+    <value>Експорт журналу</value>
+  </data>
+  <data name="Options.ExportLog.Desc" xml:space="preserve">
+    <value>Експорт і надсилання журналів для діагностики</value>
+  </data>
+  <data name="Options.About" xml:space="preserve">
+    <value>Про програму</value>
+  </data>
+  <data name="Options.About.Desc" xml:space="preserve">
+    <value>Версія, ліцензія, подяки</value>
+  </data>
+  <data name="Options.Toast.HelpNotImpl" xml:space="preserve">
+    <value>Сторінку довідки ще не реалізовано</value>
+  </data>
+  <data name="Options.Toast.ExportLogNotImpl" xml:space="preserve">
+    <value>Експорт журналу ще не реалізовано</value>
+  </data>
+  <data name="About.Title" xml:space="preserve">
+    <value>Про програму</value>
+  </data>
+  <data name="About.Version" xml:space="preserve">
+    <value>Версія </value>
+  </data>
+  <data name="About.CoreVersion" xml:space="preserve">
+    <value>Версія ядра </value>
+  </data>
+  <data name="About.ProjectHome" xml:space="preserve">
+    <value>Домашня сторінка проєкту</value>
+  </data>
+  <data name="About.License" xml:space="preserve">
+    <value>Ліцензія відкритого коду</value>
+  </data>
+  <data name="About.Credits" xml:space="preserve">
+    <value>Подяки</value>
+  </data>
+  <data name="About.Credits.Desc" xml:space="preserve">
+    <value>Сторонні бібліотеки та учасники</value>
+  </data>
+  <data name="About.Contribute" xml:space="preserve">
+    <value>Допоможіть покращити OpenUtau Mobile</value>
+  </data>
+  <data name="About.Contribute.Desc" xml:space="preserve">
+    <value>Повідомити про помилку | Запропонувати функцію | Зробити внесок у код</value>
+  </data>
+  <data name="About.Toast.LicenseNotImpl" xml:space="preserve">
+    <value>Сторінку ліцензії ще не реалізовано</value>
+  </data>
+  <data name="About.Toast.CreditsNotImpl" xml:space="preserve">
+    <value>Сторінку подяк ще не реалізовано</value>
+  </data>
+  <data name="About.Toast.OpenLinkNotImpl" xml:space="preserve">
+    <value>Відкриття зовнішніх посилань ще не реалізовано</value>
+  </data>
+  <data name="About.Toast.OpenLinkFailed" xml:space="preserve">
+    <value>Не вдалося відкрити посилання</value>
+  </data>
+  <data name="ErrorDialog.Title" xml:space="preserve">
+    <value>Сталася помилка</value>
+  </data>
+  <data name="ErrorDialog.UnknownError" xml:space="preserve">
+    <value>Невідома помилка</value>
+  </data>
+  <data name="EditorMore.Title" xml:space="preserve">
+    <value>Додаткові дії</value>
+  </data>
+  <data name="EditorMore.FileTab" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="EditorMore.SaveAs" xml:space="preserve">
+    <value>Зберегти як</value>
+  </data>
+  <data name="EditorMore.ImportTab" xml:space="preserve">
+    <value>Імпорт</value>
+  </data>
+  <data name="EditorMore.ExportTab" xml:space="preserve">
+    <value>Експорт</value>
+  </data>
+  <data name="EditorMore.ImportAudio" xml:space="preserve">
+    <value>Імпорт аудіо</value>
+  </data>
+  <data name="EditorMore.ImportMIDI" xml:space="preserve">
+    <value>Імпорт MIDI</value>
+  </data>
+  <data name="EditorMore.ImportTrack" xml:space="preserve">
+    <value>Імпорт треку</value>
+  </data>
+  <data name="EditorMore.ExportAudio" xml:space="preserve">
+    <value>Експортувати як аудіо</value>
+  </data>
+  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
+    <value>TODO: Імпорт треку</value>
+  </data>
+  <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
+    <value>TODO: Експорт аудіо</value>
+  </data>
+  <data name="ExportAudioPopup.Title" xml:space="preserve">
+    <value>Експорт аудіо</value>
+  </data>
+  <data name="ExportAudioPopup.PathLabel" xml:space="preserve">
+    <value>Шлях вихідного файлу</value>
+  </data>
+  <data name="ExportAudioPopup.PathPlaceholder" xml:space="preserve">
+    <value>Виберіть шлях вихідного файлу .wav</value>
+  </data>
+  <data name="ExportAudioPopup.SelectPath" xml:space="preserve">
+    <value>Вибрати шлях</value>
+  </data>
+  <data name="ExportAudioPopup.ModeLabel" xml:space="preserve">
+    <value>Режим експорту</value>
+  </data>
+  <data name="ExportAudioPopup.Mode.Mixdown" xml:space="preserve">
+    <value>Зведення (один файл)</value>
+  </data>
+  <data name="ExportAudioPopup.Mode.Tracks" xml:space="preserve">
+    <value>Потреково (декілька файлів)</value>
+  </data>
+  <data name="ExportAudioPopup.Mode.TracksHint" xml:space="preserve">
+    <value>Потрековий експорт створить декілька wav-файлів на основі вибраного імені файлу.</value>
+  </data>
+  <data name="ExportAudioPopup.Start" xml:space="preserve">
+    <value>Почати експорт</value>
+  </data>
+  <data name="ExportAudioPopup.Exporting" xml:space="preserve">
+    <value>Триває експорт, зачекайте...</value>
+  </data>
+  <data name="ExportAudioPopup.SaveDialogTitle" xml:space="preserve">
+    <value>Виберіть файл для експорту аудіо</value>
+  </data>
+  <data name="ExportAudioPopup.PathRequired" xml:space="preserve">
+    <value>Спочатку виберіть шлях експорту</value>
+  </data>
+  <data name="ExportAudioPopup.Toast.Success.Mixdown" xml:space="preserve">
+    <value>Експорт зведення завершено</value>
+  </data>
+  <data name="ExportAudioPopup.Toast.Success.Tracks" xml:space="preserve">
+    <value>Потрековий експорт завершено</value>
+  </data>
+  <data name="ExportAudioPopup.Toast.Failed" xml:space="preserve">
+    <value>Не вдалося експортувати аудіо</value>
+  </data>
+  <data name="Editor.BackConfirm.Title" xml:space="preserve">
+    <value>Вийти з редактора</value>
+  </data>
+  <data name="Editor.BackConfirm.Message" xml:space="preserve">
+    <value>У поточному проєкті є незбережені зміни.</value>
+  </data>
+  <data name="Editor.BackConfirm.ExitWithoutSave" xml:space="preserve">
+    <value>Вийти без збереження</value>
+  </data>
+  <data name="Editor.BackConfirm.SaveAndExit" xml:space="preserve">
+    <value>Зберегти та вийти</value>
+  </data>
+  <data name="LyricEdit.Title" xml:space="preserve">
+    <value>Редагувати текст</value>
+  </data>
+  <data name="LyricEdit.Watermark" xml:space="preserve">
+    <value>Введіть текст</value>
+  </data>
+  <data name="LyricEdit.NoteInfo" xml:space="preserve">
+    <value>Нота {0}/{1}</value>
+  </data>
+  <data name="LyricEdit.NextNote" xml:space="preserve">
+    <value>Наступна нота: {0}</value>
+  </data>
+  <data name="LyricEdit.LastNote" xml:space="preserve">
+    <value>Це остання нота</value>
+  </data>
+  <data name="Picker.Singer.Title" xml:space="preserve">
+    <value>Вибрати банк</value>
+  </data>
+  <data name="Picker.Phonemizer.Title" xml:space="preserve">
+    <value>Вибрати фонемайзер</value>
+  </data>
+  <data name="Picker.Renderer.Title" xml:space="preserve">
+    <value>Вибрати рендерер</value>
+  </data>
+  <data name="Picker.TrackRename.Title" xml:space="preserve">
+    <value>Перейменувати трек</value>
+  </data>
+  <data name="Picker.TrackRename.Placeholder" xml:space="preserve">
+    <value>Введіть назву треку</value>
+  </data>
+  <data name="Picker.TrackColor.Title" xml:space="preserve">
+    <value>Вибрати колір треку</value>
+  </data>
+  <data name="ProjectEdit.Tempo" xml:space="preserve">
+    <value>Змінити темп</value>
+  </data>
+  <data name="ProjectEdit.TimeSignature" xml:space="preserve">
+    <value>Змінити розмір</value>
+  </data>
+  <data name="ProjectEdit.KeySignature" xml:space="preserve">
+    <value>Змінити тональність</value>
+  </data>
+  <data name="ProjectEdit.TempoLabel" xml:space="preserve">
+    <value>Темп (BPM)</value>
+  </data>
+  <data name="ProjectEdit.TempoWatermark" xml:space="preserve">
+    <value>наприклад, 120</value>
+  </data>
+  <data name="ProjectEdit.Beats" xml:space="preserve">
+    <value>Долі (чисельник)</value>
+  </data>
+  <data name="ProjectEdit.NoteValue" xml:space="preserve">
+    <value>Тривалість ноти (знаменник)</value>
+  </data>
+  <data name="ProjectEdit.KeySignature.Hint" xml:space="preserve">
+    <value>Натисніть назву ноти, щоб вибрати</value>
+  </data>
+  <data name="ProjectEdit.Toast.BeatsValidation" xml:space="preserve">
+    <value>Кількість долей має бути цілим числом від 1 до 32</value>
+  </data>
+  <data name="ProjectEdit.Toast.NoteValueValidation" xml:space="preserve">
+    <value>Значення ноти має бути 1/2/4/8/16/32</value>
+  </data>
+  <data name="Vibrato.Title" xml:space="preserve">
+    <value>Параметри вібрато</value>
+  </data>
+  <data name="Vibrato.Depth" xml:space="preserve">
+    <value>Глибина</value>
+  </data>
+  <data name="Vibrato.Period" xml:space="preserve">
+    <value>Період</value>
+  </data>
+  <data name="Vibrato.FadeIn" xml:space="preserve">
+    <value>Плавний вхід</value>
+  </data>
+  <data name="Vibrato.FadeOut" xml:space="preserve">
+    <value>Плавний вихід</value>
+  </data>
+  <data name="Vibrato.Phase" xml:space="preserve">
+    <value>Фаза</value>
+  </data>
+  <data name="Vibrato.Pitch" xml:space="preserve">
+    <value>Висота</value>
+  </data>
+  <data name="Vibrato.VolLink" xml:space="preserve">
+    <value>Зв'язок гучн.</value>
+  </data>
+  <data name="Vibrato.Length" xml:space="preserve">
+    <value>Довжина</value>
+  </data>
+  <data name="TrackHeader.Singer" xml:space="preserve">
+    <value>Змінити банк</value>
+  </data>
+  <data name="TrackHeader.Phonemizer" xml:space="preserve">
+    <value>Змінити фонемайзер</value>
+  </data>
+  <data name="TrackHeader.Renderer" xml:space="preserve">
+    <value>Змінити рендерер</value>
+  </data>
+  <data name="TrackHeader.Rename" xml:space="preserve">
+    <value>Перейменувати трек</value>
+  </data>
+  <data name="TrackHeader.ChangeColor" xml:space="preserve">
+    <value>Змінити колір треку</value>
+  </data>
+  <data name="TrackHeader.Volume" xml:space="preserve">
+    <value>Гучність (дБ)</value>
+  </data>
+  <data name="TrackHeader.Pan" xml:space="preserve">
+    <value>Панорама</value>
+  </data>
+  <data name="TrackHeader.Mute" xml:space="preserve">
+    <value>Увімк./вимк. приглушення</value>
+  </data>
+  <data name="TrackRename.Toast.Empty" xml:space="preserve">
+    <value>Назва треку не може бути порожньою</value>
+  </data>
+  <data name="TrackAdder.AddTrack" xml:space="preserve">
+    <value>Додати трек</value>
+  </data>
+  <data name="ContextAction.ToggleExpand" xml:space="preserve">
+    <value>Розгорнути/згорнути дії</value>
+  </data>
+  <data name="SingerSetup.Title" xml:space="preserve">
+    <value>Майстер встановлення банку</value>
+  </data>
+  <data name="SingerSetup.Step1.Title" xml:space="preserve">
+    <value>Виберіть файл архіву</value>
+  </data>
+  <data name="SingerSetup.Step1.Desc" xml:space="preserve">
+    <value>Виберіть ZIP, RAR, UAR або інший архівний файл із даними банку</value>
+  </data>
+  <data name="SingerSetup.Step1.ArchiveEncoding" xml:space="preserve">
+    <value>Кодування архіву</value>
+  </data>
+  <data name="SingerSetup.Step1.Preview" xml:space="preserve">
+    <value>Попередній перегляд вмісту архіву:</value>
+  </data>
+  <data name="SingerSetup.Step2.Title" xml:space="preserve">
+    <value>Кодування текстових файлів</value>
+  </data>
+  <data name="SingerSetup.Step2.Desc" xml:space="preserve">
+    <value>Виберіть правильне кодування для текстових файлів. Перевірте відображення в попередньому перегляді</value>
+  </data>
+  <data name="SingerSetup.Step2.TextEncoding" xml:space="preserve">
+    <value>Кодування текстових файлів</value>
+  </data>
+  <data name="SingerSetup.Step2.Preview" xml:space="preserve">
+    <value>Попередній перегляд текстового файла:</value>
+  </data>
+  <data name="SingerSetup.Step3.SingerType" xml:space="preserve">
+    <value>Тип банку</value>
+  </data>
+  <data name="SingerSetup.Step3.ManualDesc" xml:space="preserve">
+    <value>Виявлено неповні відомості про банк. Виберіть тип банку вручну</value>
+  </data>
+  <data name="SingerSetup.Step3.SingerInfo" xml:space="preserve">
+    <value>Відомості про банк</value>
+  </data>
+  <data name="SingerSetup.Step3.AutoDesc" xml:space="preserve">
+    <value>Відомості про банк визначено автоматично. Підтвердьте, щоб продовжити</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeLabel" xml:space="preserve">
+    <value>Тип банку</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeHelp" xml:space="preserve">
+    <value>Довідка про типи банків</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeUtau" xml:space="preserve">
+    <value>• utau: класичний банк UTAU (найпоширеніший)</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeEnunu" xml:space="preserve">
+    <value>• enunu: використовує синтезатор ENUNU</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeDiffSinger" xml:space="preserve">
+    <value>• diffsinger: використовує AI-синтезатор DiffSinger</value>
+  </data>
+  <data name="SingerSetup.Step4.Title" xml:space="preserve">
+    <value>Підсумок встановлення</value>
+  </data>
+  <data name="SingerSetup.Step4.Desc" xml:space="preserve">
+    <value>Перевірте відомості про встановлення й натисніть «Встановити», щоб продовжити</value>
+  </data>
+  <data name="SingerSetup.Step4.FileInfo" xml:space="preserve">
+    <value>Відомості про файл</value>
+  </data>
+  <data name="SingerSetup.Step4.File" xml:space="preserve">
+    <value>Файл: </value>
+  </data>
+  <data name="SingerSetup.Step4.EncodingInfo" xml:space="preserve">
+    <value>Відомості про кодування</value>
+  </data>
+  <data name="SingerSetup.Step4.ArchiveEncoding" xml:space="preserve">
+    <value>Кодування архіву: </value>
+  </data>
+  <data name="SingerSetup.Step4.TextEncoding" xml:space="preserve">
+    <value>Кодування текстових файлів: </value>
+  </data>
+  <data name="SingerSetup.Step4.SingerType" xml:space="preserve">
+    <value>Тип банку</value>
+  </data>
+  <data name="SingerSetup.Step4.Type" xml:space="preserve">
+    <value>Тип: </value>
+  </data>
+  <data name="SingerSetup.ConfirmInstall" xml:space="preserve">
+    <value>Підтвердити встановлення</value>
+  </data>
+  <data name="SingerSetup.Success" xml:space="preserve">
+    <value>Встановлення завершено</value>
+  </data>
+  <data name="SingerSetup.Success.Desc" xml:space="preserve">
+    <value>Банк успішно встановлено. Тепер ним можна користуватися в редакторі</value>
+  </data>
+  <data name="SingerSetup.Failed" xml:space="preserve">
+    <value>Не вдалося виконати встановлення</value>
+  </data>
+  <data name="SingerSetup.Error.Encrypted" xml:space="preserve">
+    <value>Зашифровані архіви не підтримуються</value>
+  </data>
+  <data name="SingerSetup.Installing" xml:space="preserve">
+    <value>Підготовка до встановлення...</value>
+  </data>
+  <data name="SingerSetup.InstallComplete" xml:space="preserve">
+    <value>Встановлення завершено</value>
+  </data>
+  <data name="SingerSetup.InstallFailed" xml:space="preserve">
+    <value>Не вдалося виконати встановлення: {0}</value>
+  </data>
+  <data name="SingerSetup.StepFormat" xml:space="preserve">
+    <value>Крок {0} / 4</value>
+  </data>
+  <data name="Splash.DocManager" xml:space="preserve">
+    <value>Ініціалізація менеджера документів</value>
+  </data>
+  <data name="Splash.Phonemizer" xml:space="preserve">
+    <value>Завантаження плагінів фонемайзера</value>
+  </data>
+  <data name="Splash.ToolManager" xml:space="preserve">
+    <value>Ініціалізація менеджера інструментів</value>
+  </data>
+  <data name="Splash.SingerManager" xml:space="preserve">
+    <value>Ініціалізація менеджера банків</value>
+  </data>
+  <data name="Splash.AudioBackend" xml:space="preserve">
+    <value>Ініціалізація аудіобекенду</value>
+  </data>
+  <data name="Splash.Localization" xml:space="preserve">
+    <value>Ініціалізація локалізації</value>
+  </data>
+  <data name="Splash.Complete" xml:space="preserve">
+    <value>Ініціалізацію завершено</value>
+  </data>
+  <data name="SingerManagement.VogenNotImplemented" xml:space="preserve">
+    <value>Майстер встановлення банків Vogen ще не реалізовано, встановіть вручну</value>
+  </data>
+  <data name="ProjectEdit.BpmRange" xml:space="preserve">
+    <value>BPM має бути в межах від 10 до 1000</value>
+  </data>
+  <data name="Editor.SyncTempoTodo" xml:space="preserve">
+    <value>Синхронізація темпу недоступна, TODO</value>
+  </data>
+  <data name="PianoRoll.PortraitLoadFailed" xml:space="preserve">
+    <value>Не вдалося завантажити портрет</value>
+  </data>
+  <data name="SetupWizard.Title" xml:space="preserve">
+    <value>Майстер налаштування</value>
+  </data>
+  <data name="SetupWizard.Step0.Title" xml:space="preserve">
+    <value>Ласкаво просимо</value>
+  </data>
+  <data name="SetupWizard.Step0.Desc" xml:space="preserve">
+    <value>OpenUtau Mobile — це кросплатформний редактор синтезу вокалу, що підтримує UTAU, DiffSinger, Vogen та інші рушії. Приділіть хвилину базовому налаштуванню, щоб почати творити.</value>
+  </data>
+  <data name="SetupWizard.Step0.Skip" xml:space="preserve">
+    <value>Пропустити</value>
+  </data>
+  <data name="SetupWizard.Step1.Title" xml:space="preserve">
+    <value>Права сховища</value>
+  </data>
+  <data name="SetupWizard.Step1.Desc" xml:space="preserve">
+    <value>Наступні дозволи допомагають програмі працювати правильно. Ви можете використовувати обмежені функції без їх надання.</value>
+  </data>
+  <data name="SetupWizard.Step1.Card.Storage" xml:space="preserve">
+    <value>Файлове сховище</value>
+  </data>
+  <data name="SetupWizard.Step1.Card.Storage.Desc" xml:space="preserve">
+    <value>Використовується для читання бібліотек банків і відкриття/збереження файлів проєктів.</value>
+  </data>
+  <data name="SetupWizard.Step1.Grant" xml:space="preserve">
+    <value>Надати</value>
+  </data>
+  <data name="SetupWizard.Step1.PermissionGranted" xml:space="preserve">
+    <value>Надано</value>
+  </data>
+  <data name="SetupWizard.Step1.DesktopReady" xml:space="preserve">
+    <value>Ваша платформа не потребує додаткових дозволів. Доступ до файлів готовий.</value>
+  </data>
+  <data name="SetupWizard.Step2.Title" xml:space="preserve">
+    <value>Шлях до банків</value>
+  </data>
+  <data name="SetupWizard.Step2.Desc" xml:space="preserve">
+    <value>Виберіть спосіб зберігання банків. Ви можете змінити це будь-коли в Налаштуваннях.</value>
+  </data>
+  <data name="SetupWizard.Step2.Builtin" xml:space="preserve">
+    <value>Вбудований</value>
+  </data>
+  <data name="SetupWizard.Step2.Builtin.Desc" xml:space="preserve">
+    <value>Використовувати стандартний каталог банків програми. Додаткове налаштування не потрібне.</value>
+  </data>
+  <data name="SetupWizard.Step2.External" xml:space="preserve">
+    <value>Зовнішня папка</value>
+  </data>
+  <data name="SetupWizard.Step2.External.Desc" xml:space="preserve">
+    <value>Виберіть користувацьку папку для зберігання та читання банків. Ідеально для користувачів із наявними банками UTAU.</value>
+  </data>
+  <data name="SetupWizard.Step2.Selected" xml:space="preserve">
+    <value>Вибрано</value>
+  </data>
+  <data name="SetupWizard.Step2.SelectFolder" xml:space="preserve">
+    <value>Вибрати папку</value>
+  </data>
+  <data name="SetupWizard.Step3.Title" xml:space="preserve">
+    <value>Налаштування завершено</value>
+  </data>
+  <data name="SetupWizard.Step3.Desc" xml:space="preserve">
+    <value>Ви готові використовувати OpenUtau Mobile!</value>
+  </data>
+  <data name="SetupWizard.Finish" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+</root>

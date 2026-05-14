@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0-ios</TargetFramework>
+        <SupportedOSPlatformVersion>13.0</SupportedOSPlatformVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+	<!-- iOS 配置 -->
+	<PropertyGroup>
+		<!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
+		<MtouchLink>None</MtouchLink>
+	</PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
+    </ItemGroup>
+</Project>

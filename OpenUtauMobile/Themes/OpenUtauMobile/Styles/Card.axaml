@@ -1,0 +1,36 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical"
+                    Spacing="8">
+            <Border Classes="card">
+                <TextBlock Text="Default Card" />
+            </Border>
+            <Border Classes="card elevated">
+                <TextBlock Text="Elevated Card" />
+            </Border>
+            <Border Classes="card primary">
+                <TextBlock Text="Primary Card" />
+            </Border>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemComponentTokens.CardBorderThickness}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemComponentTokens.CardCornerRadius}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemComponentTokens.CardPadding}" />
+    </Style>
+
+    <Style Selector="Border.card.elevated">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+    </Style>
+
+    <Style Selector="Border.card.primary">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+</Styles>

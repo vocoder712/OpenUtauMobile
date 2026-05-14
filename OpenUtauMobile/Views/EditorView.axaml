@@ -1,0 +1,573 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:local="clr-namespace:OpenUtauMobile"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Views.EditorView"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:runtime="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             x:DataType="vm:EditorViewModel"
+             Background="{DynamicResource DynamicResource Sem.Color.SurfaceContainerLow}">
+
+    <UserControl.Resources>
+        <tools:SnapDivToLabelConverter x:Key="SnapDivToLabelConverter" />
+        <tools:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
+        <tools:PathToFileNameConverter x:Key="PathToFileName" />
+        <tools:PathToDirectoryConverter x:Key="PathToDirectory" />
+        <tools:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="Grid#SplitDragHandle">
+            <Setter Property="Opacity" Value="0.92" />
+            <Setter Property="Cursor" Value="{x:Static local:ViewConstants.cursorSizeNS}" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity"
+                                      Duration="{x:Static runtime:ThemeBaseMotionTokens.DurationBase}" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Grid#SplitDragHandle:pointerover">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="Grid#SplitDragHandle:pressed">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel>
+        <!-- 顶部工具栏 -->
+        <Border DockPanel.Dock="Top" Classes="TopBar">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <Button Grid.Column="0"
+                        Classes="TopBarBtn"
+                        Command="{Binding BackCommand}"
+                        ToolTip.Tip="{DynamicResource Common.Back}"
+                        Content="{iconPacks:PhosphorIcons ArrowLeft}">
+                </Button>
+                <!-- 标题 -->
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="2"
+                            Margin="0,0,8,0">
+                    <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToFileName}}"
+                               FontSize="{x:Static runtime:ThemeBaseTypographyTokens.BodyLSize}"
+                               FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToDirectory}}"
+                               FontSize="{x:Static runtime:ThemeBaseTypographyTokens.LabelSSize}"
+                               Opacity="0.50"
+                               TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+
+                <!-- 撤销 重做 保存 更多 -->
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button Command="{Binding UndoCommand}"
+                            ToolTip.Tip="{DynamicResource Editor.Undo}"
+                            Classes="TopBarBtn"
+                            Margin="0" Padding="0"
+                            Content="{iconPacks:PhosphorIcons ArrowCounterClockwise}">
+                    </Button>
+                    <Button Command="{Binding RedoCommand}"
+                            ToolTip.Tip="{DynamicResource Editor.Redo}"
+                            Classes="TopBarBtn"
+                            Content="{iconPacks:PhosphorIcons ArrowClockwise}">
+                    </Button>
+                    <Button Command="{Binding SaveCommand}"
+                            ToolTip.Tip="{DynamicResource Editor.Save}"
+                            Classes="TopBarBtn"
+                            Content="{iconPacks:PhosphorIcons FloppyDisk}">
+                    </Button>
+                    <Button Command="{Binding ShowMorePopupCommand}"
+                            ToolTip.Tip="{DynamicResource Editor.More}"
+                            Classes="TopBarBtn"
+                            Content="{iconPacks:PhosphorIcons DotsThreeVertical}">
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <!-- 主编辑区，分为走带编曲（上）和钢琴卷帘（下）两大部分
+             第二列用于支持响应式布局 -->
+        <Grid x:Name="EditorGrid" RowDefinitions="200,*" ColumnDefinitions="*,0">
+            <!-- 走带编曲 -->
+            <Grid Grid.Row="0"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2"
+                  x:Name="TrackAreaGrid"
+                  RowDefinitions="Auto, 24, *"
+                  ColumnDefinitions="64, *"
+                  ClipToBounds="True">
+                
+                <!-- 轨道编辑工具栏 -->
+                <Border Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"
+                        BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                        BorderThickness="0,0,0,1"
+                        Background="{DynamicResource Sem.Color.Surface}">
+                    <Panel x:Name="ProgressPanel">
+                        <!-- 进度条背景层（仅当有进度时显示） -->
+                        <Rectangle Fill="{DynamicResource Sem.Color.Success}"
+                                   Opacity="0.15"
+                                   HorizontalAlignment="Left"
+                                   IsVisible="{Binding ProgressValue, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                   ClipToBounds="True">
+                            <Rectangle.Width>
+                                <MultiBinding Converter="{StaticResource ProgressToWidthConverter}">
+                                    <Binding Path="ProgressValue" />
+                                    <Binding Path="Bounds.Width" ElementName="ProgressPanel" />
+                                </MultiBinding>
+                            </Rectangle.Width>
+                            <Rectangle.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Width"
+                                                      Duration="{x:Static runtime:ThemeBaseMotionTokens.DurationLargeMove}"
+                                                      Easing="QuadraticEaseOut" />
+                                </Transitions>
+                            </Rectangle.Transitions>
+                        </Rectangle>
+                        <!-- 工具栏内容层 -->
+                        <Grid ColumnDefinitions="Auto, *, Auto, Auto" VerticalAlignment="Center">
+                            <!-- 量化吸附选择器（走带编曲与钢琴卷帘共用） -->
+                            <Border Grid.Column="0" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                    BorderThickness="1,0,0,0"
+                                    Padding="6,0"
+                                    ZIndex="1">
+                                <ComboBox ItemsSource="{x:Static local:ViewConstants.SnapDivOptions}"
+                                          SelectedItem="{Binding SnapDiv, Mode=TwoWay}"
+                                          MinWidth="64"
+                                          Height="32"
+                                          VerticalAlignment="Center"
+                                          ToolTip.Tip="{DynamicResource Editor.Quantize}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate x:DataType="x:Int32">
+                                            <TextBlock
+                                                Text="{Binding Converter={StaticResource SnapDivToLabelConverter}}"
+                                                FontSize="13"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Border>
+                            <!-- 进度消息显示 -->
+                            <TextBlock Grid.Column="1" Text="{Binding ProgressMessage}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       VerticalAlignment="Center"
+                                       Margin="0"
+                                       IsVisible="{Binding ProgressMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            <!-- 播放控制按钮 -->
+                            <StackPanel Grid.Column="3"
+                                        Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Margin="0,0,12,0">
+                                <!-- 停止按钮 -->
+                                <Button Command="{Binding StopCommand}"
+                                        ToolTip.Tip="{DynamicResource Editor.Stop}"
+                                        Classes="TopBarBtn"
+                                        Content="{iconPacks:PhosphorIcons Stop}">
+                                </Button>
+                                <!-- 播放/暂停按钮 -->
+                                <Button Command="{Binding PlayPauseCommand}"
+                                        ToolTip.Tip="{DynamicResource Editor.PlayPause}"
+                                        Classes="TopBarBtn">
+                                    <Panel>
+                                        <iconPacks:PackIconPhosphorIcons Kind="Play" IsVisible="{Binding !IsPlaying}" />
+                                        <iconPacks:PackIconPhosphorIcons Kind="Pause" IsVisible="{Binding IsPlaying}" />
+                                    </Panel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Panel>
+                </Border>
+
+                <!-- 左上：切换按钮 + 工程信息主键 -->
+                <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="64,*" ClipToBounds="True">
+                    <!-- 展开/收起箭头按钮（始终可见） -->
+                    <Button Grid.Column="0"
+                            Command="{Binding ToggleTrackHeaderCommand}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            ToolTip.Tip="{DynamicResource Editor.ToggleTrackHeader}"
+                            Padding="0"
+                            ClipToBounds="True">
+                        <Panel ClipToBounds="True" Margin="0">
+                            <!-- 右箭头（收起时显示） -->
+                            <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
+                                                             Margin="{x:Static runtime:ThemeSemLayoutTokens.InsetXS}"
+                                                             IsVisible="{Binding !IsTrackHeaderExpanded}" />
+                            <!-- 左箭头（展开时显示） -->
+                            <iconPacks:PackIconPhosphorIcons Kind="CaretLeft"
+                                                             Margin="{x:Static runtime:ThemeSemLayoutTokens.InsetXS}"
+                                                             IsVisible="{Binding IsTrackHeaderExpanded}" />
+                        </Panel>
+                    </Button>
+
+                    <!-- 工程信息区（仅展开时显示） -->
+                    <Border Grid.Column="1"
+                            IsVisible="{Binding IsTrackHeaderExpanded}"
+                            ClipToBounds="True"
+                            VerticalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center"
+                                    Spacing="4"
+                                    Margin="2,0,2,0">
+                            <!-- 曲速 BPM -->
+                            <Button Width="56"
+                                    Command="{Binding EditBpmCommand}"
+                                    Padding="0">
+                                <TextBlock Text="{Binding ProjectBpm}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                            <!-- 拍号 -->
+                            <Button Width="56"
+                                    Command="{Binding EditTimeSignatureCommand}"
+                                    Padding="0">
+                                <TextBlock Text="{Binding ProjectTimeSignature}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                            <!-- 音名 -->
+                            <Button Width="56"
+                                    Command="{Binding EditKeyCommand}"
+                                    Padding="0">
+                                <TextBlock Text="{Binding ProjectKey}"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- 左下：轨道头 -->
+                <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0"
+                                     ClipToBounds="True"
+                                     IsExpanded="{Binding IsTrackHeaderExpanded}"
+                                     TrackHeight="{Binding TrackHeight}"
+                                     TrackOffset="{Binding TrackOffset}">
+                    <!-- <c:TrackHeaderCanvas.Effect> -->
+                    <!--     <DropShadowEffect Color="{DynamicResource ShadowColor}" BlurRadius="12" OffsetX="4" OffsetY="4" Opacity="0.5"/> -->
+                    <!-- </c:TrackHeaderCanvas.Effect> -->
+                </c:TrackHeaderCanvas>
+
+                <!-- 右下： 网格 + 分片 -->
+                <Panel Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
+                    <c:TrackBackground
+                        ClipToBounds="True"
+                        Margin="0,24,0,0"
+                        TrackHeight="{Binding TrackHeight}"
+                        TrackOffset="{Binding TrackOffset}" />
+
+                    <c:TickBackground
+                        TickWidth="{Binding TickWidth}"
+                        TickOffset="{Binding TickOffset}"
+                        SnapDiv="{Binding SnapDiv}"
+                        RulerHeight="{x:Static local:ViewConstants.TickRulerHeight}"
+                        MinTicklineWidth="{x:Static local:ViewConstants.TrackMinTicklineWidth}"
+                        ShowBarNumber="True"
+                        ShowTempoMarkers="True"
+                        ShowTimeSignatureMarkers="True" />
+
+                    <c:PartsCanvas
+                        ClipToBounds="True"
+                        Margin="0,24,0,0"
+                        SelectedParts="{Binding SelectedParts, Mode=TwoWay}"
+                        TrackEditMode="{Binding TrackEditMode}"
+                        TickWidth="{Binding TickWidth}"
+                        TrackHeight="{Binding TrackHeight}"
+                        TickOffset="{Binding TickOffset}"
+                        TrackOffset="{Binding TrackOffset}" />
+
+                    <!-- 播放位置竖线置于顶层，并且对输入事件透明 -->
+                    <c:PlayPosCanvas
+                        TickWidth="{Binding TickWidth}"
+                        TickOffset="{Binding TickOffset}"
+                        PlayPosTick="{Binding PlayPosTick}"
+                        IsPlaying="{Binding IsPlaying}"
+                        IsWaiting="{Binding IsWaitingRender}"
+                        IsHitTestVisible="False" />
+                    <!-- 上下文操作面板（右上角悬浮，ZIndex 置顶） -->
+                    <StackPanel ZIndex="100"
+                                Orientation="Vertical"
+                                Spacing="8"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="8">
+                        <c:TrackEditModeSwitcher CurrentMode="{Binding TrackEditMode}" />
+                        <c:CollapsibleContextMenu Actions="{Binding TrackContextActions}"
+                                                  IsExpanded="{Binding IsContextMenuExpanded}" />
+                    </StackPanel>
+
+                </Panel>
+            </Grid>
+
+            <!-- 钢琴卷帘 -->
+            <Grid x:Name="PianoRollAreaGrid"
+                  Grid.Row="1"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="2"
+                Background="{DynamicResource surface-editor-canvas-bg}">
+
+                <!-- 上下文为PianoRollViewModel，放大镜的Source -->
+                <Grid Grid.Row="0" ClipToBounds="True"
+                      x:Name="PART_PianoRollGrid"
+                      DataContext="{Binding PianoRollViewModel}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition
+                            Width="{Binding Source={x:Static local:ViewConstants.PianoKeysWidth}, Converter={StaticResource DoubleToGridLengthConverter}}" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="{Binding Source={x:Static local:ViewConstants.PianoRollTickRulerHeight}, Converter={StaticResource DoubleToGridLengthConverter}}" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!-- 左上角占位（标尺行 × 琴键列交叉区） -->
+                    <Border Grid.Row="0"
+                            Grid.Column="0"
+                            Background="{DynamicResource surface-editor-canvas-bg}" />
+                    <!-- 钢琴键画布（Row 1, Col 0） -->
+                    <Border Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsVoiceMode}">
+                        <c:PianoKeysCanvas ClipToBounds="True"
+                                           KeyHeight="{Binding KeyHeight}"
+                                           KeyOffset="{Binding KeyOffset}" />
+                        <!-- <Border.Effect> -->
+                        <!--     <DropShadowEffect Color="{DynamicResource ShadowColor}" BlurRadius="12" OffsetX="4" OffsetY="4" Opacity="0.5"/> -->
+                        <!-- </Border.Effect> -->
+                    </Border>
+                    <!-- 横向琴键网格（Row 1, Col 1） -->
+                    <c:PianoRollBackground
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        ClipToBounds="True"
+                        IsVisible="{Binding IsVoiceMode}"
+                        KeyHeight="{Binding KeyHeight}"
+                        KeyOffset="{Binding KeyOffset}" />
+                    <!-- 纵向时间网格 覆盖右列全高（Row 0..1, Col 1） -->
+                    <c:TickBackground Grid.Row="0"
+                                      Grid.RowSpan="2"
+                                      Grid.Column="1"
+                                      TickWidth="{Binding TickWidth}"
+                                      TickOffset="{Binding TickOffset}"
+                                      SnapDiv="{Binding PianoRollSnapDiv}"
+                                      RulerHeight="{x:Static local:ViewConstants.PianoRollTickRulerHeight}"
+                                      MinTicklineWidth="{x:Static local:ViewConstants.PianoRollMinTicklineWidth}"
+                                      ShowBarNumber="True"
+                                      ShowTempoMarkers="False"
+                                      ShowTimeSignatureMarkers="False" />
+                    <!-- 立绘 （Row 1, Col 1） 靠右 -->
+                    <Image Grid.Column="1"
+                           Grid.Row="1"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Bottom"
+                           Opacity="{Binding PortraitOpacity}"
+                           Source="{Binding PortraitBitmap}" />
+                    <!-- 标尺行透明占位（阻挡穿透点击，Row 0, Col 1） -->
+                    <Border Grid.Row="0" Grid.Column="1"
+                            Background="Transparent"
+                            Height="{x:Static local:ViewConstants.PianoRollTickRulerHeight}" />
+                    <!-- 音符画布（Row 1, Col 1） -->
+                    <c:NotesCanvas Grid.Row="1"
+                                   Grid.Column="1"
+                                   IsVisible="{Binding IsVoiceMode}"
+                                   ClipToBounds="True"
+                                   Part="{Binding EditingVoicePart}"
+                                   TickWidth="{Binding TickWidth}"
+                                   KeyHeight="{Binding KeyHeight}"
+                                   TickOffset="{Binding TickOffset}"
+                                   KeyOffset="{Binding KeyOffset}" />
+                    <!-- 波形画布 -->
+                    <c:WaveCanvas Grid.Row="1" Grid.Column="1"
+                                  ClipToBounds="True"
+                                  IsVisible="{Binding IsWaveMode}"
+                                  WavePart="{Binding EditingWavePart}"
+                                  TickWidth="{Binding TickWidth}"
+                                  TickOffset="{Binding TickOffset}" />
+                    <!-- 钢琴卷帘固定居中播放标记 -->
+                    <c:PianoRollPlayPosCanvas
+                        Grid.Row="1" Grid.Column="1"
+                        PlayMarkerScreenX="{Binding PlayMarkerScreenX}"
+                        IsPlaying="{Binding IsPlaying}"
+                        IsWaiting="{Binding IsWaitingRender}"
+                        IsHitTestVisible="False" />
+                    <!-- 编辑提示文本，位于中上方 -->
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="1"
+                               VerticalAlignment="Top"
+                               HorizontalAlignment="Center"
+                               Margin="0,16,0,0"
+                               TextWrapping="Wrap"
+                               IsHitTestVisible="False"
+                               Text="{Binding EditingTip}" />
+                    <!-- 上下文操作面板（右上角悬浮，ZIndex 置顶） -->
+                    <StackPanel Grid.Row="1"
+                                Grid.Column="1"
+                                Orientation="Vertical"
+                                Spacing="8"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Margin="8"
+                                ZIndex="100"
+                                IsHitTestVisible="True">
+                        <!-- 编辑模式切换 -->
+                        <c:PianoRollEditModeSwitcher CurrentMode="{Binding EditMode, Mode=TwoWay}" />
+                        <!-- 上下文菜单 -->
+                        <c:CollapsibleContextMenu Actions="{Binding PianoRollContextActions}"
+                                                  IsExpanded="{Binding IsContextMenuExpanded, Mode=TwoWay}" />
+                    </StackPanel>
+                    <!-- 编辑中的分片名 -->
+                    <StackPanel Grid.Column="1"
+                                Grid.Row="1"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Margin="8"
+                                IsHitTestVisible="False">
+                        <TextBlock Text="{Binding EditingVoicePart.DisplayName}"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource EditingPartNameBrush}"
+                                   IsVisible="{Binding IsVoiceMode}"
+                                   MaxWidth="80" TextTrimming="CharacterEllipsis"
+                                   ToolTip.Tip="{Binding EditingVoicePart.DisplayName}" />
+                        <TextBlock Text="{Binding EditingWavePart.DisplayName}"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource EditingPartNameBrush}"
+                                   IsVisible="{Binding IsWaveMode}"
+                                   MaxWidth="80" TextTrimming="CharacterEllipsis"
+                                   ToolTip.Tip="{Binding EditingWavePart.DisplayName}" />
+                    </StackPanel>
+                    <!-- 没有活动分片时的遮罩 -->
+                    <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2"
+                            Background="{DynamicResource Sem.Color.SurfaceVariant}"
+                            ZIndex="150"
+                            IsHitTestVisible="True">
+                        <!-- 同时考虑 EditingWavePart 也没有才显示遮罩 -->
+                        <Border.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding Path="EditingVoicePart" Converter="{x:Static ObjectConverters.IsNull}" />
+                                <Binding Path="EditingWavePart" Converter="{x:Static ObjectConverters.IsNull}" />
+                            </MultiBinding>
+                        </Border.IsVisible>
+                        <TextBlock Text="{DynamicResource Editor.NoEditingPart}"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                </Grid>
+            </Grid>
+
+            <!-- 分割线与拖拽手柄叠加层（仅手柄可命中） -->
+            <Canvas x:Name="SplitOverlay"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    ZIndex="350"
+                    ClipToBounds="True">
+                <Border x:Name="SplitGuideLine"
+                        Width="{x:Static local:ViewConstants.EditorSplitLineThickness}"
+                        Height="{x:Static local:ViewConstants.EditorSplitLineThickness}"
+                        Background="{DynamicResource Sem.Color.OutlineVariant}"
+                        IsHitTestVisible="False" />
+
+                <Grid x:Name="SplitDragHandle"
+                      Width="{x:Static local:ViewConstants.EditorSplitHandleWidth}"
+                      Height="{x:Static local:ViewConstants.EditorSplitHandleHeight}"
+                        RenderTransformOrigin="0.5,0.5"
+                      ToolTip.Tip="拖拽调整编辑区布局"
+                      IsHitTestVisible="True">
+                    <Path
+                        Data="M 0,12 
+                       C 0,12 3,12 6,6 
+                       C 9,0 12,0 12,0 
+                       H 36 
+                       C 36,0 39,0 42,6 
+                       C 45,12 48,12 48,12 
+                       C 48,12 45,12 42,18 
+                       C 39,24 36,24 36,24 
+                       H 12 
+                       C 12,24 9,24 6,18 
+                       C 3,12 0,12 0,12 
+                       Z"
+                        Fill="{DynamicResource Sem.Color.Surface}"
+                        Stroke="{DynamicResource Sem.Color.Outline}"
+                        StrokeThickness="1"
+                        Stretch="Fill" />
+                    <StackPanel Orientation="Vertical"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="3"
+                                IsHitTestVisible="False">
+                        <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
+                                   Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
+                        <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
+                                   Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
+                    </StackPanel>
+                </Grid>
+            </Canvas>
+
+            <!-- 渲染等待提示（全局悬浮） -->
+            <Border Grid.Row="0" Grid.RowSpan="2"
+                    Grid.Column="0" Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="0,48,0,0"
+                    Background="{DynamicResource Sem.Color.Surface}"
+                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                    BorderThickness="1"
+                    CornerRadius="14"
+                    Padding="12,6"
+                    IsVisible="{Binding IsWaitingRender}"
+                    IsHitTestVisible="False"
+                    ZIndex="1000">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" Color="{DynamicResource Sem.Value.Shadow}" Opacity="0.3"
+                                      OffsetX="0" OffsetY="2" />
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="●" Foreground="{DynamicResource Sem.Color.Warning}" FontSize="10"
+                               VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource Editor.Rendering}"
+                               Foreground="{DynamicResource Sem.Color.OnSurface}"
+                               FontSize="12"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <!-- 放大镜控件，置于最顶层，绝对布局于左上角 -->
+            <!-- 将其放在 EditorGrid 的最后，这样它会覆盖在 TrackArea 和 PianoRoll 之上 -->
+            <c:MagnifierControl
+                x:Name="PitchMagnifier"
+                Grid.Row="0" Grid.RowSpan="2"
+                Grid.Column="0" Grid.ColumnSpan="2"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Width="200" Height="200"
+                LensSize="200,200"
+                MagnificationFactor="2.0"
+                IsVisible="False"
+                ZIndex="200"
+                Margin="10" />
+        </Grid>
+    </DockPanel>
+</UserControl>

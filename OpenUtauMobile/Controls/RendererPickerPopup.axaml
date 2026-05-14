@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.RendererPickerPopup"
+             d:DataContext="{d:DesignInstance Type=vm:RendererPickerViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:RendererPickerViewModel"
+             Classes="PopupDialogRoot"
+             MinHeight="220"
+             MaxHeight="520">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource Picker.Renderer.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}"
+                            Content="{iconPacks:PhosphorIcons X}">
+                    </Button>
+                </Grid>
+            </Border>
+
+            <ItemsControl x:Name="RendererList" x:DataType="vm:RendererPickerViewModel"
+                     ItemsSource="{Binding Renderers}"
+                     Background="Transparent"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding DataContext.SelectRendererCommand, ElementName=RendererList}"
+                                CommandParameter="{Binding .}"
+                                HorizontalContentAlignment="Center"
+                                HorizontalAlignment="Stretch"
+                                Padding="10,8"
+                                Background="Transparent"
+                                BorderThickness="0">
+                            <TextBlock Text="{Binding .}"
+                                       FontSize="14"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </DockPanel>
+    </Border>
+</UserControl>

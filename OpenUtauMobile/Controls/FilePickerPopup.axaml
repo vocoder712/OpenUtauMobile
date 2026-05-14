@@ -1,0 +1,223 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.FilePickerPopup"
+             Name="Root"
+             d:DataContext="vm:FilePickerBaseViewModel"
+             x:DataType="vm:FilePickerBaseViewModel"
+             Classes="PopupDialogRoot">
+
+    <UserControl.Resources>
+        <conv:IsFileConverter x:Key="IsFile" />
+        <conv:FileSizeConverter x:Key="FileSize" />
+        <conv:EnumEqualConverter x:Key="ModeEq" />
+</UserControl.Resources>
+
+    <Border Classes="PopupDialogSurface" Height="400">
+        <DockPanel>
+            <!-- ── Header ── -->
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+
+                    <!-- 返回上级 -->
+                    <Button Grid.Column="0"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding GoUpCommand}"
+                            ToolTip.Tip="{DynamicResource FilePicker.GoUp}"
+                            Content="{iconPacks:PhosphorIcons ArrowUp}">
+                    </Button>
+
+                    <!-- 标题 + 路径输入框 -->
+                    <StackPanel Grid.Column="1"
+                                Margin="4,0"
+                                VerticalAlignment="Center"
+                                Spacing="1">
+                        <TextBlock Text="{Binding Title}"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Opacity="0.5" />
+                        <TextBox Text="{Binding CurrentPath}"
+                                 FontSize="13"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Padding="0,1" />
+                    </StackPanel>
+
+                    <!-- 关闭按钮 -->
+                    <Button Grid.Column="2"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CloseCommand}"
+                            ToolTip.Tip="{DynamicResource FilePicker.Close}"
+                            Content="{iconPacks:PhosphorIcons X}">
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- OpenFolder 模式：选择此文件夹 -->
+            <Border DockPanel.Dock="Bottom"
+                    Padding="8,6"
+                    Background="{DynamicResource Sem.Color.Surface}"
+                    IsVisible="{Binding Mode, Converter={StaticResource ModeEq}, ConverterParameter=OpenFolder}">
+                <Button Content="{DynamicResource FilePicker.SelectFolder}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Command="{Binding SelectCurrentFolderCommand}" />
+            </Border>
+
+            <!-- SaveFile 模式：文件名输入 + 保存按钮 -->
+            <Border DockPanel.Dock="Bottom"
+                    Padding="8,8"
+                    Background="{DynamicResource Sem.Color.Surface}"
+                    IsVisible="{Binding Mode, Converter={StaticResource ModeEq}, ConverterParameter=SaveFile}">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                    <!-- 标签 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="{DynamicResource FilePicker.FileName}"
+                               FontSize="11"
+                               Opacity="0.5"
+                               Margin="0,0,0,2" />
+                    <!-- 文件名输入框 + 固定后缀 -->
+                    <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="*,Auto" Margin="0,0,8,0">
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding FileName}"
+                                 Watermark="{DynamicResource FilePicker.FileNameHint}"
+                                 FontSize="13" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Extension}"
+                                   VerticalAlignment="Center"
+                                   Margin="4,0,0,0"
+                                   FontSize="13"
+                                   Opacity="0.6" />
+                    </Grid>
+                    <!-- 保存按钮（跨两行，右侧对齐） -->
+                    <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                            Content="{DynamicResource FilePicker.Save}"
+                            Command="{Binding SaveCommand}"
+                            VerticalAlignment="Bottom" />
+                    <!-- 警告消息 -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                               Text="{Binding WarningMessage}"
+                               IsVisible="{Binding IsShowingWarningMessage}"
+                               FontSize="12"
+                               Foreground="{DynamicResource Sem.Color.Warning}"
+                               Margin="0,4,0,0"
+                               TextWrapping="Wrap" />
+                </Grid>
+            </Border>
+
+            <!-- ── Content ── -->
+            <Panel ClipToBounds="True">
+
+                <!-- 繁忙指示器：居中 Spinner，IsLoading=true 时覆盖整个内容区 -->
+                <ProgressBar IsVisible="{Binding IsLoading}"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             IsIndeterminate="True"
+                             Width="40" Height="8" />
+
+                <!-- 空状态面板（仅在非加载、无内容时显示） -->
+                <StackPanel IsVisible="{Binding ShowEmptyState}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="14"
+                            Margin="24">
+                    <!-- 无权限：锁图标 -->
+                    <iconPacks:PackIconPhosphorIcons Width="52" Height="52"
+                              Kind="Lock"
+                              Opacity="0.35"
+                              HorizontalAlignment="Center"
+                              IsVisible="{Binding IsAccessDenied}" />
+                    <!-- 目录为空 / 无匹配：空文件夹图标 -->
+                    <iconPacks:PackIconPhosphorIcons Width="52" Height="52"
+                              Kind="Folder"
+                              Opacity="0.35"
+                              HorizontalAlignment="Center"
+                              IsVisible="{Binding IsAccessDenied, Converter={x:Static BoolConverters.Not}}" />
+                    <TextBlock Text="{Binding EmptyStateMessage}"
+                               FontSize="14"
+                               Opacity="0.5"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               MaxWidth="240"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <!-- 文件列表（加载中时隐藏，避免空列表在 Spinner 下方撑开空间） -->
+                <ScrollViewer IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding AllItems}"
+                                  Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Classes="FileEntry"
+                                        Command="{Binding DataContext.SelectItemCommand, ElementName=Root}"
+                                        CommandParameter="{Binding .}">
+                                    <Grid ColumnDefinitions="38,*,Auto"
+                                          Height="44"
+                                          Margin="2,0">
+
+                                        <!-- 图标列 -->
+                                        <Panel Grid.Column="0"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center">
+                                            <!-- 文件夹图标（目录） -->
+                                            <iconPacks:PackIconPhosphorIcons Width="20" Height="20"
+                                                      Kind="Folder"
+                                                      Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                      IsVisible="{Binding ., Converter={StaticResource IsFile}, ConverterParameter=invert}" />
+                                            <!-- 文件图标 -->
+                                            <iconPacks:PackIconPhosphorIcons Width="20" Height="20"
+                                                      Kind="File"
+                                                      Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                      IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
+                                        </Panel>
+
+                                        <!-- 文件名 + 大小副标题 -->
+                                        <StackPanel Grid.Column="1"
+                                                    VerticalAlignment="Center"
+                                                    Spacing="1">
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="14"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding ., Converter={StaticResource FileSize}}"
+                                                       FontSize="11"
+                                                       Opacity="0.45"
+                                                       IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
+                                        </StackPanel>
+
+                                        <!-- 目录右箭头 -->
+                                        <iconPacks:PackIconPhosphorIcons Grid.Column="2"
+                                                  Width="14" Height="14"
+                                                  Kind="CaretRight"
+                                                  Opacity="0.3"
+                                                  VerticalAlignment="Center"
+                                                  Margin="4,0,6,0"
+                                                  IsVisible="{Binding ., Converter={StaticResource IsFile}, ConverterParameter=invert}" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Panel>
+
+            <!-- ── Footer（按模式显示，OpenFile 模式不显示底部栏） ── -->
+
+
+
+        </DockPanel>
+    </Border>
+</UserControl>

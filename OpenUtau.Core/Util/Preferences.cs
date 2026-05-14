@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -28,6 +29,20 @@ namespace OpenUtau.Core.Util {
 
         public static void Reset() {
             Default = new SerializablePreferences();
+            try
+            {
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
+                if (File.Exists(shippedPrefsPath)) {
+                    var shippedPrefs = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(shippedPrefsPath, Encoding.UTF8));
+                    if (shippedPrefs != null) {
+                        Default = shippedPrefs;
+                    }
+                }
+            } catch(Exception e){
+                Log.Error(e, "failed to load prefs-default.json");
+            }
             Save();
         }
 
@@ -118,42 +133,38 @@ namespace OpenUtau.Core.Util {
 
         [Serializable]
         public class SerializablePreferences {
-            public const int MidiWidth = 1024;
-            public const int MidiHeight = 768;
-            public int MainWidth = 1024;
-            public int MainHeight = 768;
-            public bool MainMaximized;
-            public bool MidiMaximized;
+            public WindowSize MainWindowSize = new WindowSize();
+            public WindowSize PianorollWindowSize = new WindowSize();
             public int UndoLimit = 100;
-            public List<string> SingerSearchPaths = new List<string>(); // 应该是废弃了
+            public List<string> SingerSearchPaths = new List<string>();
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme = 2;
+            public string ThemeName = "System";
             public bool PenPlusDefault = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
-            public int NumRenderThreads = 2;
+            public int NumRenderThreads = 1;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
             public double DiffSingerDepth = 1.0;
-            public int DiffSingerSteps = 2; // 移动端默认2步
-            public int DiffSingerStepsVariance = 2; // 移动端默认2步
-            public int DiffSingerStepsPitch = 1; // 移动端默认1步
+            public int DiffSingerSteps = 5;
+            public int DiffSingerStepsVariance = 5;
+            public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
             public bool DiffSingerLangCodeHide = false;
             public bool SkipRenderingMutedTracks = false;
-            public string Language = string.Empty;
+            public string Language = "system";
             public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
-            public string AdditionalSingerPath = string.Empty; // 额外歌手路径
+            public string AdditionalSingerPath = string.Empty;
             public bool InstallToAdditionalSingersPath = true;
             public bool LoadDeepFolderSinger = true;
             public bool PreferCommaSeparator = false;
@@ -176,6 +187,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowFinalPitch = true;
             public bool ShowWaveform = true;
             public bool ShowPhoneme = true;
+            public bool ShowExpressions = true;
             public bool ShowNoteParams = true;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
@@ -196,23 +208,105 @@ namespace OpenUtau.Core.Util {
             public bool LockUnselectedNotesVibrato = true;
             public bool LockUnselectedNotesExpressions = true;
             public bool VoicebankPublishUseIgnore = true;
-            public string VoicebankPublishIgnores = "#Adobe Audition\n*.pkf\n\n#UTAU Engines\n*.ctspec\n*.d4c\n*.dio\n*.frc\n*.frt\n#*.frq\n*.harvest\n*.lessaudio\n*.llsm\n*.mrq\n*.pitchtier\n*.pkf\n*.platinum\n*.pmk\n*.star\n*.uspec\n*.vs4ufrq\n\n#UTAU related tools\n$read\n*.setParam-Scache\n*.lbp\n*.lbp.caches/*\n\n#OpenUtau\nerrors.txt\n*.sc.npz";
+            public string VoicebankPublishIgnores = @"#Adobe Audition
+*.pkf
+
+#UTAU Engines
+*.ctspec
+*.d4c
+*.dio
+*.frc
+*.frt
+#*.frq
+*.harvest
+*.lessaudio
+*.llsm
+*.mrq
+*.pitchtier
+*.pkf
+*.platinum
+*.pmk
+*.sc.npz
+*.star
+*.uspec
+*.vs4ufrq
+
+#UTAU related tools
+\$read
+*.setParam-Scache
+*.lbp
+*.lbp.caches/*
+
+#OpenUtau
+errors.txt
+";
             public string RecoveryPath = string.Empty;
+            public bool DetachPianoRoll = false;
 
             #region OpenUtau Mobile 特定选项
-            public int PlaybackRefreshRate = 20; // 播放器刷新率，单位FPS
-            public float PitchDisplayPrecision = 5f; // 音高显示精度，越小越精细，0为原始
-            public bool CustomPortraitOptions = false; // 是否全局自定义立绘透明度
-            public double PortraitOpacity = 0.3; // 全局立绘透明度，0~1
-            public bool KeepScreenOn = false; // 是否保持屏幕常亮
-            //public enum PianoSampleType {
-            //    Mute = 0,
-            //    Sine = 1,
-            //    Piano = 2
-            //}
-            //public PianoSampleType PianoSample = PianoSampleType.Mute; // 钢琴音类型
-            public int PianoSample = 0; // 钢琴音类型 0: 静音 1: 正弦波 2: 钢琴
-            public bool WarnOnRenderPitch = true; // 是否在按下渲染按钮时提示会覆盖原有音高
+            public double PlaybackRefreshRate = 20.0;
+
+            /// <summary>
+            /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont
+            /// </summary>
+            public int PianoKeyBehavior = 1;
+
+            /// <summary>
+            /// Path to SoundFont (SF2) file for piano key playback.
+            /// If empty or file not found, falls back to SineWave.
+            /// </summary>
+            public string SoundFontPath = string.Empty;
+
+            /// <summary>
+            /// Preferred audio backend. Empty string means auto-select based on platform.
+            /// Supported values:
+            /// - "" or "Auto": Auto-select (default)
+            /// - "MiniAudio": Use MiniAudio (Windows/Linux/macOS/Android)
+            /// - "NAudio": Use NAudio (Windows only)
+            /// - "AudioTrack": Use Android AudioTrack (Android only)
+            /// - "Dummy": Use dummy audio output (all platforms, no sound)
+            /// Platform-specific availability:
+            /// - Windows: MiniAudio, NAudio, Dummy
+            /// - Linux/macOS: MiniAudio, Dummy
+            /// - Android: MiniAudio, AudioTrack, Dummy
+            /// - iOS/Browser: Dummy (future support)
+            /// </summary>
+            public string AudioBackend = string.Empty;
+
+            /// <summary>
+            /// Theme color mode: 0 = FollowSystem, 1 = Custom.
+            /// </summary>
+            public int ThemeColorMode = 0;
+
+            /// <summary>
+            /// Custom theme seed in #RRGGBB format.
+            /// </summary>
+            public string ThemeColorSeedHex = "#66CCFF";
+
+            /// <summary>
+            /// Current selected preset id; empty when manually adjusted.
+            /// </summary>
+            public string ThemeColorPresetId = "tianyi";
+            /// <summary>
+            /// 上一次打开工程文件的目录
+            /// </summary>
+            public string LastOpenProjectDirectory = string.Empty;
+            /// <summary>
+            /// 上一次保存工程文件的目录
+            /// </summary>
+            public string LastSaveProjectDirectory = string.Empty;
+            /// <summary>
+            /// 首次启动设置向导是否已完成。
+            /// </summary>
+            public bool SetupWizardCompleted = false;
+            /// <summary>
+            /// 是否启用自动保存。
+            /// </summary>
+            public bool AutoSaveEnabled = true;
+            /// <summary>
+            /// 自动保存间隔，单位秒（仅在启用时生效）。
+            /// </summary>
+            public int AutoSaveInterval = 120;
             #endregion
         }
     }

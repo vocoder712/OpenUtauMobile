@@ -1,0 +1,334 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.SetupWizardPopup"
+             x:DataType="vm:SetupWizardViewModel"
+             Classes="PopupDialogRoot">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <!--标题 -->
+            <Border Classes="PopupTitleBar" DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button Grid.Column="0"
+                            Content="{DynamicResource SetupWizard.Step0.Skip}"
+                            Command="{Binding SkipCommand}"
+                            Classes="Secondary"
+                            FontSize="13" Padding="12,6" />
+                    <TextBlock Grid.Column="1" Text="{DynamicResource SetupWizard.Title}"
+                               Classes="PopupTitle" HorizontalAlignment="Center" />
+                    <Button Grid.Column="2" Classes="PopupCloseBtn" Command="{Binding CloseCommand}" Content="{iconPacks:PhosphorIcons X}" />
+                </Grid>
+            </Border>
+
+            <!-- 导航按钮 -->
+            <Border DockPanel.Dock="Bottom" Padding="20,14"
+                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                    BorderThickness="0,1,0,0">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6"
+                                VerticalAlignment="Center">
+                        <TextBlock FontSize="15" FontWeight="Bold"
+                                   Foreground="{DynamicResource Sem.Color.Primary}"
+                                   Text="{Binding StepDisplay}" />
+                        <TextBlock Text="/ 4" FontSize="13"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                        <Button Content="{DynamicResource Common.Previous}"
+                                Command="{Binding BackCommand}"
+                                IsVisible="{Binding !IsFirstStep}"
+                                Classes="Secondary"
+                                Padding="20,10" />
+                        <Button Content="{DynamicResource Common.Next}"
+                                Command="{Binding NextCommand}"
+                                IsVisible="{Binding !IsLastStep}"
+                                Classes="Primary"
+                                FontWeight="SemiBold"
+                                Padding="28,10" />
+                        <Button Content="{DynamicResource SetupWizard.Finish}"
+                                Command="{Binding FinishCommand}"
+                                IsVisible="{Binding IsLastStep}"
+                                Classes="Primary"
+                                FontWeight="SemiBold"
+                                Padding="28,10" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- 主体 -->
+            <Carousel SelectedIndex="{Binding Step}" VerticalAlignment="Stretch">
+                <Carousel.PageTransition>
+                    <PageSlide Duration="0:0:0.2" />
+                </Carousel.PageTransition>
+
+                <!-- Step 0: Welcome -->
+                <ScrollViewer>
+                    <StackPanel VerticalAlignment="Center" Spacing="12" Margin="32,0">
+                        <TextBlock Text="{DynamicResource SetupWizard.Step0.Desc}"
+                                   FontSize="13" LineHeight="22"
+                                   TextWrapping="Wrap" TextAlignment="Center"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                   Margin="0,16,0,0" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Step 1: Permissions -->
+                <ScrollViewer>
+                    <StackPanel Spacing="0">
+                        <StackPanel Margin="28,20,28,8" Spacing="4">
+                            <TextBlock Text="{DynamicResource SetupWizard.Step1.Title}"
+                                       FontSize="18" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                            <TextBlock Text="{DynamicResource SetupWizard.Step1.Desc}"
+                                       FontSize="12" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        </StackPanel>
+                        <StackPanel Margin="24,4,24,24" Spacing="10">
+                            <!-- Non-Android -->
+                            <Border Padding="16" CornerRadius="10"
+                                    Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                    BorderThickness="1"
+                                    IsVisible="{Binding !StoragePermission.IsApplicable}">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="{DynamicResource SetupWizard.Step1.Card.Storage}"
+                                               FontSize="14" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                    <TextBlock Text="{DynamicResource SetupWizard.Step1.DesktopReady}"
+                                               FontSize="12" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                </StackPanel>
+                            </Border>
+                            <!-- Android -->
+                            <Border Padding="16" CornerRadius="10"
+                                    Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                    BorderThickness="1"
+                                    IsVisible="{Binding StoragePermission.IsApplicable}">
+                                <StackPanel Spacing="10">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding StoragePermission.Title}"
+                                                   FontSize="14" FontWeight="SemiBold"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                        <Button Grid.Column="1"
+                                                Content="{Binding StoragePermission.ButtonText}"
+                                                Command="{Binding StoragePermission.GrantCommand}"
+                                                IsVisible="{Binding !StoragePermission.IsGranted}"
+                                                Classes="Primary"
+                                                Padding="16,8" />
+                                        <Border Grid.Column="1" Padding="12,6" CornerRadius="6"
+                                                Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
+                                                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                                BorderThickness="1"
+                                                IsVisible="{Binding StoragePermission.IsGranted}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <TextBlock Text="✓" FontWeight="Bold"
+                                                           VerticalAlignment="Center"
+                                                           Foreground="{DynamicResource Sem.Color.Success}" />
+                                                <TextBlock Text="{DynamicResource SetupWizard.Step1.PermissionGranted}"
+                                                           FontSize="13" VerticalAlignment="Center"
+                                                           Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                    <TextBlock Text="{Binding StoragePermission.Description}"
+                                               FontSize="12" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Step 2: Singer Path -->
+                <ScrollViewer>
+                    <StackPanel Spacing="0">
+                        <StackPanel Margin="28,20,28,8" Spacing="4">
+                            <TextBlock Text="{DynamicResource SetupWizard.Step2.Title}"
+                                       FontSize="18" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                            <TextBlock Text="{DynamicResource SetupWizard.Step2.Desc}"
+                                       FontSize="12" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        </StackPanel>
+                        <StackPanel Margin="24,4,24,24" Spacing="10">
+                            <!-- Built-in -->
+                            <Button HorizontalAlignment="Stretch" Padding="0"
+                                    Background="Transparent" BorderThickness="0"
+                                    Command="{Binding SelectBuiltinCommand}">
+                                <Panel>
+                                    <Border Padding="16" CornerRadius="10"
+                                            BorderThickness="2"
+                                            BorderBrush="{DynamicResource Sem.Color.Primary}"
+                                            Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                            IsVisible="{Binding !UseExternalPath}">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Grid.Column="0" Spacing="4">
+                                                <TextBlock Text="{DynamicResource SetupWizard.Step2.Builtin}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                                <TextBlock Text="{DynamicResource SetupWizard.Step2.Builtin.Desc}"
+                                                           FontSize="12" TextWrapping="Wrap"
+                                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                            </StackPanel>
+                                            <Path Grid.Column="1" Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                                                  Width="20" Height="20" Stretch="Uniform"
+                                                  Fill="{DynamicResource Sem.Color.Primary}"
+                                                  VerticalAlignment="Center" Margin="8,0,0,0" />
+                                        </Grid>
+                                    </Border>
+                                    <Border Padding="16" CornerRadius="10"
+                                            BorderThickness="1"
+                                            BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                            Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                            IsVisible="{Binding UseExternalPath}">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{DynamicResource SetupWizard.Step2.Builtin}"
+                                                       FontSize="14" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                            <TextBlock Text="{DynamicResource SetupWizard.Step2.Builtin.Desc}"
+                                                       FontSize="12" TextWrapping="Wrap"
+                                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Panel>
+                            </Button>
+                            <!-- External -->
+                            <Button HorizontalAlignment="Stretch" Padding="0"
+                                    Background="Transparent" BorderThickness="0"
+                                    Command="{Binding SelectExternalCommand}">
+                                <Panel>
+                                    <Border Padding="16" CornerRadius="10"
+                                            BorderThickness="2"
+                                            BorderBrush="{DynamicResource Sem.Color.Primary}"
+                                            Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                            IsVisible="{Binding UseExternalPath}">
+                                        <StackPanel Spacing="10">
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <StackPanel Grid.Column="0" Spacing="4">
+                                                    <TextBlock Text="{DynamicResource SetupWizard.Step2.External}"
+                                                               FontSize="14" FontWeight="SemiBold"
+                                                               Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                                    <TextBlock Text="{DynamicResource SetupWizard.Step2.External.Desc}"
+                                                               FontSize="12" TextWrapping="Wrap"
+                                                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                </StackPanel>
+                                                <Path Grid.Column="1" Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
+                                                      Width="20" Height="20" Stretch="Uniform"
+                                                      Fill="{DynamicResource Sem.Color.Primary}"
+                                                      VerticalAlignment="Top" Margin="8,2,0,0" />
+                                            </Grid>
+                                            <Border Padding="10" CornerRadius="6"
+                                                    Background="{DynamicResource Sem.Color.Surface}"
+                                                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                                    BorderThickness="1">
+                                                <Grid ColumnDefinitions="*,Auto">
+                                                    <TextBlock Grid.Column="0"
+                                                               Text="{Binding ExternalPath}"
+                                                               FontSize="11" TextTrimming="CharacterEllipsis"
+                                                               VerticalAlignment="Center" Margin="0,0,8,0"
+                                                               Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                                    <Button Grid.Column="1"
+                                                            Content="{DynamicResource SetupWizard.Step2.SelectFolder}"
+                                                            Command="{Binding ChangeFolderCommand}"
+                                                            FontSize="12" Padding="10,6" />
+                                                </Grid>
+                                            </Border>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Padding="16" CornerRadius="10"
+                                            BorderThickness="1"
+                                            BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                            Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                            IsVisible="{Binding !UseExternalPath}">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{DynamicResource SetupWizard.Step2.External}"
+                                                       FontSize="14" FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                            <TextBlock Text="{DynamicResource SetupWizard.Step2.External.Desc}"
+                                                       FontSize="12" TextWrapping="Wrap"
+                                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Panel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Step 3: Complete -->
+                <ScrollViewer>
+                    <StackPanel VerticalAlignment="Center" Spacing="20" Margin="32,0">
+                        <iconPacks:PackIconPhosphorIcons Kind="Check" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource Sem.Color.Success}" />
+                        <TextBlock Text="{DynamicResource SetupWizard.Step3.Title}"
+                                   FontSize="20" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                        <TextBlock Text="{DynamicResource SetupWizard.Step3.Desc}"
+                                   FontSize="13" TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <!-- Permission summary -->
+                        <Border Padding="14" CornerRadius="8"
+                                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                BorderThickness="1"
+                                IsVisible="{Binding StoragePermission.IsApplicable}">
+                            <StackPanel Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="✓" FontWeight="Bold"
+                                               Foreground="{DynamicResource Sem.Color.Success}"
+                                               IsVisible="{Binding StoragePermission.IsGranted}" />
+                                    <TextBlock Text="✕" FontWeight="Bold"
+                                               Foreground="{DynamicResource Sem.Color.Error}"
+                                               IsVisible="{Binding !StoragePermission.IsGranted}" />
+                                    <TextBlock Text="{DynamicResource SetupWizard.Step1.Card.Storage}"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                </StackPanel>
+                                <TextBlock FontSize="11" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                           IsVisible="{Binding !StoragePermission.IsGranted}"
+                                           Text="{DynamicResource SetupWizard.Step1.Card.Storage.Note}" />
+                            </StackPanel>
+                        </Border>
+                        <!-- Singer path summary -->
+                        <Border Padding="14" CornerRadius="8"
+                                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                BorderThickness="1">
+                            <StackPanel Spacing="4">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="歌手路径: " FontSize="13" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                    <TextBlock Text="{DynamicResource SetupWizard.Step2.Builtin}"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               IsVisible="{Binding !UseExternalPath}"
+                                               Foreground="{DynamicResource Sem.Color.Primary}" />
+                                    <TextBlock Text="{DynamicResource SetupWizard.Step2.External}"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               IsVisible="{Binding UseExternalPath}"
+                                               Foreground="{DynamicResource Sem.Color.Primary}" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding ExternalPath}"
+                                           FontSize="11" TextTrimming="CharacterEllipsis"
+                                           IsVisible="{Binding UseExternalPath}"
+                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Carousel>
+        </DockPanel>
+    </Border>
+</UserControl>

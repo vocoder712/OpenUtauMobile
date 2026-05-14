@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.TrackColorPickerPopup"
+             d:DataContext="{d:DesignInstance Type=vm:TrackColorPickerPopupViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:TrackColorPickerPopupViewModel"
+             Classes="PopupDialogRoot"
+             MinHeight="320"
+             MaxHeight="620">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border Classes="PopupTitleBar" DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource Picker.TrackColor.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}"
+                            Content="{iconPacks:PhosphorIcons X}" />
+                </Grid>
+            </Border>
+
+            <ScrollViewer Margin="16"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="ColorList"
+                              ItemsSource="{Binding Colors}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"
+                                       HorizontalAlignment="Center"
+                                       ItemWidth="92"
+                                       ItemHeight="98" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 每个颜色选项的按钮 -->
+                            <!-- TODO: 布局看起来不太好 -->
+                            <Button Padding="8"
+                                    Margin="4"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Command="{Binding DataContext.SelectColorCommand, ElementName=ColorList}"
+                                    CommandParameter="{Binding Name}">
+                                <StackPanel Spacing="8" HorizontalAlignment="Center">
+                                    <Border Width="34"
+                                            Height="34"
+                                            CornerRadius="17"
+                                            Background="{Binding AccentColor}"
+                                            BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                            BorderThickness="1" />
+                                    <TextBlock Text="{Binding Name}"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center"
+                                               TextTrimming="CharacterEllipsis"
+                                               MaxWidth="78"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</UserControl>

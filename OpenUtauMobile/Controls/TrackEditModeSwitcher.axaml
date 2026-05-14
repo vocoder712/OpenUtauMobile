@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:openUtauMobile="clr-namespace:OpenUtauMobile"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             x:Class="OpenUtauMobile.Controls.TrackEditModeSwitcher"
+             HorizontalAlignment="Right">
+
+    <Border x:Name="Capsule"
+            Background="{DynamicResource Sem.Color.SurfaceContainer}"
+            CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerXL}"
+            Height="{x:Static theme:ThemeBaseLayoutTokens.SizeM}"
+            ClipToBounds="True"
+            HorizontalAlignment="Right">
+        <Grid ColumnDefinitions="Auto,Auto"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Right">
+            <!-- 左侧编辑模式按钮列表 -->
+            <Grid Grid.Column="0"
+                  x:Name="ModeButtonsGrid"
+                  ColumnDefinitions="Auto,Auto"
+                  VerticalAlignment="Center"
+                  ClipToBounds="True">
+                <!-- 动画过渡 -->
+                <Grid.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Width" Duration="{x:Static theme:ThemeBaseMotionTokens.DurationBase}" Easing="CubicEaseOut" />
+                    </Transitions>
+                </Grid.Transitions>
+                <!-- 模式列表 -->
+                <StackPanel Grid.Column="0"
+                            x:Name="ModeButtonsPanel"
+                            Orientation="Horizontal"
+                            Spacing="{x:Static openUtauMobile:ViewConstants.EditModeItemSpacing}">
+                    <Button Content="{iconPacks:PhosphorIcons Hand}"
+                            Classes="EditModeBtn"
+                            x:Name="HandButton"
+                            Click="OnModeButtonClick" />
+                    <Button Content="{iconPacks:PhosphorIcons Selection}"
+                            Classes="EditModeBtn"
+                            x:Name="MultiSelectButton"
+                            Click="OnModeButtonClick" />
+                    <!-- 分隔线 -->
+                    <Border Width="1"
+                            Background="{DynamicResource Sem.Color.Outline}" />
+                </StackPanel>
+            </Grid>
+            <!-- 右侧当前编辑模式按钮 -->
+            <Button Grid.Column="1"
+                    x:Name="SwitchButton"
+                    Classes="EditModeBtn"
+                    Click="OnSwitchButtonClick">
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

@@ -1,0 +1,34 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Style Selector="Border.DependencyCard">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderDefault}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerL}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetL}" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetBottomLG}" />
+    </Style>
+
+    <Style Selector="Border.DependencyCard:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+
+    <Style Selector="Ellipse.CircularProgressTrack">
+        <Setter Property="Stroke" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="StrokeThickness" Value="{x:Static theme:ThemeSemLayoutTokens.StrokeLG}" />
+        <Setter Property="Fill" Value="Transparent" />
+    </Style>
+
+    <Style Selector="Button.btn-primary">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetButtonCompact}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerXS}" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+</Styles>

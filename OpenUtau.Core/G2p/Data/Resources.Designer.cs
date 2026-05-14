@@ -39,7 +39,7 @@ namespace OpenUtau.Core.G2p.Data {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OpenUtau.Core.G2p.Data.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("G2p.Data.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -93,6 +93,16 @@ namespace OpenUtau.Core.G2p.Data {
         /// <summary>
         ///   查找 System.Byte[] 类型的本地化资源。
         /// </summary>
+        internal static byte[] g2p_de_marzipan {
+            get {
+                object obj = ResourceManager.GetObject("g2p-de-marzipan", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
         internal static byte[] g2p_es {
             get {
                 object obj = ResourceManager.GetObject("g2p-es", resourceCulture);
@@ -103,9 +113,29 @@ namespace OpenUtau.Core.G2p.Data {
         /// <summary>
         ///   查找 System.Byte[] 类型的本地化资源。
         /// </summary>
+        internal static byte[] g2p_fil {
+            get {
+                object obj = ResourceManager.GetObject("g2p-fil", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
         internal static byte[] g2p_fr {
             get {
                 object obj = ResourceManager.GetObject("g2p-fr", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] g2p_fr_millefeuille {
+            get {
+                object obj = ResourceManager.GetObject("g2p-fr-millefeuille", resourceCulture);
                 return ((byte[])(obj));
             }
         }

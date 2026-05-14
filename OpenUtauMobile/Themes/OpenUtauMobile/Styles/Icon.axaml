@@ -1,0 +1,20 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:inconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel>
+            <Button Padding="8">
+                <inconPacks:PackIconPhosphorIcons Kind="FolderOpen">
+                    <!-- Add Controls for Previewer Here -->
+                </inconPacks:PackIconPhosphorIcons>
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="inconPacks|PackIconPhosphorIcons">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+</Styles>

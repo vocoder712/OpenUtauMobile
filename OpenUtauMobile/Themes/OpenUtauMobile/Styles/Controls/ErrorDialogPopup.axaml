@@ -1,0 +1,49 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 宸ュ叿鏍忓浘鏍囨寜閽?-->
+    <Style Selector="Button.IconBtn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.IconBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+    <Style Selector="Button.IconBtn:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <!-- 纭鎸夐挳 -->
+    <Style Selector="Button.PrimaryBtn">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="20,8" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+    </Style>
+    <Style Selector="Button.PrimaryBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+    <Style Selector="Button.PrimaryBtn:pressed /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.70" />
+    </Style>
+
+    <!-- 璇︽儏鍒囨崲鎸夐挳 -->
+    <Style Selector="Button.DetailToggle">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4,4" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Opacity" Value="0.6" />
+    </Style>
+    <Style Selector="Button.DetailToggle:pointerover /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+</Styles>

@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="Sem.Color.Singer.Classic" Color="#7B96F2" />
+    <SolidColorBrush x:Key="Sem.Color.Singer.Enunu" Color="#58C58E" />
+    <SolidColorBrush x:Key="Sem.Color.Singer.Voicevox" Color="#67B6D8" />
+    <SolidColorBrush x:Key="Sem.Color.Singer.Vogen" Color="#E3A658" />
+    <SolidColorBrush x:Key="Sem.Color.Singer.DiffSinger" Color="#E28A97" />
+    <SolidColorBrush x:Key="Sem.Color.Singer.Unknown" Color="#A1A8B3" />
+
+    <!-- 小节线 -->
+    <Pen x:Key="Sem.Pen.Grid.Bar" Brush="{DynamicResource Sem.Color.Primary}" Thickness="1.5" />
+    <!-- 节拍线 -->
+    <Pen x:Key="Sem.Pen.Grid.Beat" Brush="{DynamicResource Sem.Color.OutlineVariant}" Thickness="1" />
+    <!-- 吸附线 -->
+    <Pen x:Key="Sem.Pen.Grid.Snap" Brush="{DynamicResource Sem.Color.OutlineVariant}" Thickness="1">
+        <Pen.DashStyle>
+            <DashStyle Dashes="4,4" />
+        </Pen.DashStyle>
+    </Pen>
+    <Pen x:Key="Sem.Pen.Grid.SnapMarker" Brush="{DynamicResource Sem.Color.OutlineVariant}" Thickness="1" />
+
+    <Color x:Key="Sem.Value.Shadow">#000000</Color>
+    <x:String x:Key="SvgCss">.cls-1{fill:#E6E1E5;}</x:String>
+    
+    <!-- 黑键 -->
+    <SolidColorBrush x:Key="Comp.Color.BlackKey" Color="{DynamicResource Sem.}"/>
+</ResourceDictionary>

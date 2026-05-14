@@ -1,0 +1,188 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:theme="using:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Views.AboutView"
+             x:DataType="vm:AboutViewModel">
+
+    <UserControl.Resources>
+        <StreamGeometry x:Key="IconExternalLink">M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z</StreamGeometry>
+    </UserControl.Resources>
+
+    <Panel Background="{DynamicResource Sem.Color.Surface}">
+        <DockPanel>
+            <!-- Top Bar -->
+            <Border DockPanel.Dock="Top" Classes="TopBar">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Grid.Column="0"
+                            Classes="TopBarBtn"
+                            Command="{Binding BackCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Back}"
+                            Content="{iconPacks:PhosphorIcons ArrowLeft}" />
+                    <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource About.Title}" />
+                </Grid>
+            </Border>
+
+            <!-- 主体-->
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetPageScroll}">
+                    <!-- Hero -->
+                    <StackPanel HorizontalAlignment="Center" Margin="0,32,0,24" Spacing="0">
+                        <Border Width="72" Height="72"
+                                CornerRadius="16"
+                                ClipToBounds="True"
+                                HorizontalAlignment="Center">
+                            <Image Source="avares://OpenUtauMobile/Assets/openutau.ico"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                        </Border>
+                        <!-- logotype -->
+                        <Svg Path="avares://OpenUtauMobile/Assets/logotype.svg" HorizontalAlignment="Center"
+                             Css="{DynamicResource SvgCss}"
+                             Margin="0,16,0,0"
+                             Width="300" />
+                        <!-- 版本号 -->
+                        <TextBlock FontSize="12"
+                                   Opacity="0.40"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   Margin="0,4,0,0"
+                                   TextWrapping="WrapWithOverflow">
+                            <Run Text="{DynamicResource About.Version}" />
+                            <Run Text="{Binding Version}" />
+                        </TextBlock>
+                        <!-- 内核版本 -->
+                        <TextBlock FontSize="12"
+                                   Opacity="0.40"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0">
+                            <Run Text="{DynamicResource About.CoreVersion}" />
+                            <Run Text="{Binding CoreVersion}" />
+                        </TextBlock>
+
+                    </StackPanel>
+
+                    <!-- 选项栏 -->
+                    <Border CornerRadius="14" Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                            ClipToBounds="True">
+                        <StackPanel>
+                            <!-- 项目主页 -->
+                            <Button Classes="OptionEntry" Command="{Binding OpenHomepageCommand}">
+                                <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                    <Panel Grid.Column="0" Width="36" Height="36" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                                        <Border Width="36" Height="36" CornerRadius="10"
+                                                Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                        <iconPacks:PackIconPhosphorIcons Width="18" Height="18"
+                                                                         HorizontalAlignment="Center"
+                                                                         VerticalAlignment="Center"
+                                                                         Foreground="{DynamicResource Sem.Color.Primary}"
+                                                                         Kind="GlobeSimple" />
+                                    </Panel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                        <TextBlock Text="{DynamicResource About.ProjectHome}" FontSize="15"
+                                                   FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="github.com/vocoder712/OpenUtauMobile" FontSize="11"
+                                                   Opacity="0.50" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Path Grid.Column="2" Width="14" Height="14" Stretch="Uniform"
+                                          VerticalAlignment="Center" Margin="0,0,14,0"
+                                          Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                          Data="{StaticResource IconExternalLink}" />
+                                </Grid>
+                            </Button>
+                            <Border Height="1" Opacity="0.08" Margin="52,0,12,0"
+                                    Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                            <!-- 开放源代码许可 -->
+                            <Button Classes="OptionEntry" Command="{Binding OpenLicenseCommand}">
+                                <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                    <Panel Grid.Column="0" Width="36" Height="36" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                                        <Border Width="36" Height="36" CornerRadius="10"
+                                                Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                        <iconPacks:PackIconPhosphorIcons Width="18" Height="18"
+                                                                         HorizontalAlignment="Center"
+                                                                         VerticalAlignment="Center"
+                                                                         Foreground="{DynamicResource Sem.Color.Primary}"
+                                                                         Kind="Scales" />
+                                    </Panel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                        <TextBlock Text="{DynamicResource About.License}" FontSize="15"
+                                                   FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="Apache-2.0" FontSize="11" Opacity="0.50"
+                                                   TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Path Grid.Column="2" Width="8" Height="14" Stretch="Uniform"
+                                          VerticalAlignment="Center" Margin="0,0,12,0"
+                                          Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                          Data="{StaticResource icon-chevron-right}" />
+                                </Grid>
+                            </Button>
+                            <Border Height="1" Opacity="0.08" Margin="52,0,12,0"
+                                    Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                            <!-- 致谢 -->
+                            <Button Classes="OptionEntry" Command="{Binding OpenCreditsCommand}">
+                                <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                    <Panel Grid.Column="0" Width="36" Height="36" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                                        <Border Width="36" Height="36" CornerRadius="10"
+                                                Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                        <iconPacks:PackIconPhosphorIcons Width="18" Height="18"
+                                                                         HorizontalAlignment="Center"
+                                                                         VerticalAlignment="Center"
+                                                                         Foreground="{DynamicResource Sem.Color.Primary}"
+                                                                         Kind="Heart" />
+                                    </Panel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                        <TextBlock Text="{DynamicResource About.Credits}" FontSize="15"
+                                                   FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{DynamicResource About.Credits.Desc}" FontSize="11"
+                                                   Opacity="0.50" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Path Grid.Column="2" Width="8" Height="14" Stretch="Uniform"
+                                          VerticalAlignment="Center" Margin="0,0,12,0"
+                                          Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                          Data="{StaticResource icon-chevron-right}" />
+                                </Grid>
+                            </Button>
+                            <Border Height="1" Opacity="0.08" Margin="52,0,12,0"
+                                    Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                            <!-- 贡献 -->
+                            <Button Classes="OptionEntry" Command="{Binding OpenFeedbackCommand}">
+                                <Grid ColumnDefinitions="52,*,Auto" MinHeight="56">
+                                    <Panel Grid.Column="0" Width="36" Height="36" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center">
+                                        <Border Width="36" Height="36" CornerRadius="10"
+                                                Background="{DynamicResource Sem.Color.PrimaryContainer}" />
+                                        <iconPacks:PackIconPhosphorIcons Width="18" Height="18"
+                                                                         HorizontalAlignment="Center"
+                                                                         VerticalAlignment="Center"
+                                                                         Foreground="{DynamicResource Sem.Color.Primary}"
+                                                                         Kind="BracketsCurly" />
+                                    </Panel>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2" Margin="0,0,8,0">
+                                        <TextBlock Text="{DynamicResource About.Contribute}" FontSize="15"
+                                                   FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{DynamicResource About.Contribute.Desc}" FontSize="11"
+                                                   Opacity="0.50" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Path Grid.Column="2" Width="14" Height="14" Stretch="Uniform"
+                                          VerticalAlignment="Center" Margin="0,0,14,0"
+                                          Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                          Data="{StaticResource IconExternalLink}" />
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Panel>
+</UserControl>

@@ -1,0 +1,78 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <!-- Recent item row button -->
+    <Style Selector="Button.RecentItem">
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.RecentItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+    <Style Selector="Button.RecentItem:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <!-- Delete button on each row -->
+    <Style Selector="Button.HomeDeleteBtn">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemLayoutTokens.SizeDeleteButton}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemLayoutTokens.SizeDeleteButton}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerDeleteButton}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <!-- <Style Selector="Button.DeleteBtn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource state-danger-hover}"/>
+        </Style>
+        <Style Selector="Button.DeleteBtn:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource state-danger-pressed}"/>
+        </Style> -->
+
+    <!-- MD2 banner for recovery prompt -->
+    <Style Selector="Border.RecoveryBanner">
+        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerL}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Button.RecoveryBannerSecondaryAction">
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.RecoveryBannerSecondaryAction:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+    </Style>
+    <Style Selector="Button.RecoveryBannerSecondaryAction:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+
+    <Style Selector="Button.RecoveryBannerPrimaryAction">
+        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.RecoveryBannerPrimaryAction:pointerover /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.9" />
+    </Style>
+    <Style Selector="Button.RecoveryBannerPrimaryAction:pressed /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.78" />
+    </Style>
+</Styles>

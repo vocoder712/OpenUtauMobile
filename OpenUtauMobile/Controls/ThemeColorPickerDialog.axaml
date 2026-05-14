@@ -1,0 +1,102 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             d:DesignWidth="520"
+             d:DesignHeight="560"
+             x:Class="OpenUtauMobile.Controls.ThemeColorPickerDialog"
+             x:DataType="vm:ThemeColorPickerDialogViewModel"
+             Classes="PopupDialogRoot">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border Classes="PopupTitleBar" DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Classes="PopupTitle"
+                               Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Title}" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Close}"
+                            Content="{iconPacks:PhosphorIcons X}" />
+                </Grid>
+            </Border>
+
+            <StackPanel Margin="16" Spacing="14">
+                <Border CornerRadius="12"
+                        Height="88"
+                        BorderBrush="{DynamicResource Sem.Color.Outline}"
+                        BorderThickness="1"
+                        Background="{Binding PreviewBrush}" />
+
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <TextBlock Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Hue}" />
+                    <Slider Grid.Column="1"
+                            Minimum="0"
+                            Maximum="360"
+                            Value="{Binding Hue, Mode=TwoWay}" />
+                    <TextBlock Grid.Column="2"
+                               VerticalAlignment="Center"
+                               Text="{Binding Hue, StringFormat={}{0:F0}}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <TextBlock Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Saturation}" />
+                    <Slider Grid.Column="1"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="{Binding Saturation, Mode=TwoWay}" />
+                    <TextBlock Grid.Column="2"
+                               VerticalAlignment="Center"
+                               Text="{Binding Saturation, StringFormat={}{0:F0}%}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <TextBlock Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Value}" />
+                    <Slider Grid.Column="1"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="{Binding Value, Mode=TwoWay}" />
+                    <TextBlock Grid.Column="2"
+                               VerticalAlignment="Center"
+                               Text="{Binding Value, StringFormat={}{0:F0}%}" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <TextBox Grid.Column="0"
+                             Text="{Binding HexInput, Mode=TwoWay}"
+                             Watermark="#RRGGBB" />
+                    <Button Grid.Column="1"
+                            Classes="AccentBtn"
+                            Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
+                            Command="{Binding ApplyHexCommand}" />
+                </Grid>
+
+                <TextBlock Classes="PlaceholderText"
+                           Foreground="{DynamicResource Sem.Color.Error}"
+                           Text="{Binding ErrorText}"
+                           IsVisible="{Binding HasError}" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Grid.Column="0"
+                            Content="{DynamicResource Common.Cancel}"
+                            Command="{Binding CancelCommand}" />
+                    <Button Grid.Column="1"
+                            Classes="AccentBtn"
+                            Content="{DynamicResource Common.Confirm}"
+                            Command="{Binding ConfirmCommand}" />
+                </Grid>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

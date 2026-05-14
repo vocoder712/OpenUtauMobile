@@ -1,0 +1,42 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.SingerPickerPopup"
+             d:DataContext="{d:DesignInstance Type=vm:SingerPickerViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:SingerPickerViewModel"
+             Classes="PopupDialogRoot"
+             MinHeight="240"
+             MaxHeight="600">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <!-- 标题栏 -->
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource Picker.Singer.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}"
+                            Content="{iconPacks:PhosphorIcons X}">
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- 歌手列表 -->
+            <ScrollViewer>
+                <c:SingerList Singers="{Binding Singers}"
+                              SelectSingerCommand="{Binding SelectSingerCommand}" />
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+
+</UserControl>

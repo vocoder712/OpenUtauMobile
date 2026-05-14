@@ -1,42 +1,58 @@
-﻿using DynamicData.Binding;
-using Microsoft.Maui.Handlers;
+﻿using System.Reactive;
+using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OpenUtauMobile.ViewModels
+namespace OpenUtauMobile.ViewModels;
+
+public class OptionsViewModel : NavigateViewModelBase
 {
-    //public class OptionItem
-    //{
-    //    public string Name { get; set; }
-    //    public EventHandler Clicked { get; set; }
-    //    public OptionItem(string name, EventHandler handler)
-    //    {
-    //        Name = name;
-    //        Clicked = handler;
-    //    }
-    //}
-    public partial class OptionsViewModel : ReactiveObject
+    public ReactiveCommand<Unit, Unit> BackCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenDependencyManagerCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenHelpCommand { get; }
+    public ReactiveCommand<Unit, Unit> ExportLogCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenAboutCommand { get; }
+
+    public OptionsViewModel(MainViewModel navigator) : base(navigator)
     {
-        //[Reactive] public ObservableCollectionExtended<OptionItem> Options { get; set; } = new();
-        //public OptionsViewModel()
-        //{
-        //    Options.Add(new OptionItem("Settings", (s, e) => 
-        //    {
-        //        MessagingCenter.Send(this, "NavigateToSettings");
-        //    }));
-        //    Options.Add(new OptionItem("Manage Plugins", (s, e) =>
-        //    {
-        //        MessagingCenter.Send(this, "NavigateToManagePlugins");
-        //    }));
-        //    Options.Add(new OptionItem("About", (s, e) =>
-        //    {
-        //        MessagingCenter.Send(this, "NavigateToAbout");
-        //    }));
-        //}
+        BackCommand = ReactiveCommand.Create(OnBack);
+        OpenSettingsCommand = ReactiveCommand.Create(OnOpenSettings);
+        OpenDependencyManagerCommand = ReactiveCommand.Create(OnOpenDependencyManager);
+        OpenHelpCommand = ReactiveCommand.Create(OnOpenHelp);
+        ExportLogCommand = ReactiveCommand.Create(OnExportLog);
+        OpenAboutCommand = ReactiveCommand.Create(OnOpenAbout);
+    }
+
+    private void OnBack()
+    {
+        Navigator.NavigateBack(this);
+    }
+
+    private void OnOpenSettings()
+    {
+        Navigator.Navigate(new SettingsViewModel(Navigator));
+    }
+
+    private void OnOpenDependencyManager()
+    {
+        Navigator.Navigate(new DependencyManagerViewModel(Navigator));
+    }
+
+    private void OnOpenHelp()
+    {
+        // TODO: Navigator.Navigate(new HelpViewModel(Navigator));
+        ToastService.Enqueue(L.S("Options.Toast.HelpNotImpl"));
+    }
+
+    private void OnExportLog()
+    {
+        // TODO: 导出日志
+        ToastService.Enqueue(L.S("Options.Toast.ExportLogNotImpl"));
+    }
+
+    private void OnOpenAbout()
+    {
+        Navigator.Navigate(new AboutViewModel(Navigator));
     }
 }

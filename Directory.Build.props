@@ -1,0 +1,26 @@
+﻿<Project>
+    <PropertyGroup>
+        <AvaloniaVersion>11.3.9</AvaloniaVersion>
+        <!-- OpenUtau Mobile 版本号 -->
+        <MainVersion>2.0.3</MainVersion>
+        <!-- OpenUtau.Core 及附加插件版本号 -->
+        <CoreVersion>0.1.568</CoreVersion>
+        <!-- 构建号（主要用于 Android）和版本后缀 -->
+        <BuildNumber>20</BuildNumber>
+        <Suffix>-Canary</Suffix>
+        <!-- 外显版本号 -->
+        <Version>$(MainVersion)$(Suffix)</Version>
+        <!-- 包名 -->
+        <ApplicationId>pers.vocoder712.openutaumobile.canary</ApplicationId>
+        <ApplicationVersion>$(BuildNumber)</ApplicationVersion>
+        <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
+    </PropertyGroup>
+    <!-- 启用预览语言特性 -->
+    <PropertyGroup>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
+    <!-- 元数据映射 -->
+    <ItemGroup>
+        <AssemblyMetadata Include="CoreVersion" Value="$(CoreVersion)"/>
+    </ItemGroup>
+</Project>

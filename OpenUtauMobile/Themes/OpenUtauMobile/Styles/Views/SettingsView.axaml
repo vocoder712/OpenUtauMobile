@@ -1,0 +1,92 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <!-- NavRail item button -->
+    <Style Selector="Button.NavItem">
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemLayoutTokens.SizeNavItemMin}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerNone}" />
+    </Style>
+    <Style Selector="Button.NavItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+    <Style Selector="Button.NavItem:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <!-- Expand/collapse toggle button -->
+    <Style Selector="Button.NavToggle">
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerNone}" />
+    </Style>
+    <Style Selector="Button.NavToggle:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+    <Style Selector="Button.NavToggle:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <!-- Category heading in content area -->
+    <Style Selector="TextBlock.CategoryTitle">
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.TitlePageSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetBottomLG}" />
+    </Style>
+
+    <!-- Setting group card -->
+    <Style Selector="Border.SettingCard">
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerCardCompact}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetCardCompact}" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetBottomMD}" />
+    </Style>
+
+    <!-- Section label inside card -->
+    <Style Selector="TextBlock.SectionLabel">
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.InfoLabelSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Opacity" Value="0.50" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetBottomSM}" />
+    </Style>
+
+    <!-- Placeholder description text -->
+    <Style Selector="TextBlock.PlaceholderText">
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}" />
+        <Setter Property="Opacity" Value="0.65" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="{x:Static theme:ThemeSemTypographyTokens.BodyPlaceholderLineHeight}" />
+    </Style>
+
+    <!-- Accent action button (e.g. "Change path") -->
+    <Style Selector="Button.AccentBtn">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerButton}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetButtonMedium}" />
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.LabelActionSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+    </Style>
+    <Style Selector="Button.AccentBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+    <Style Selector="Button.AccentBtn:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Opacity" Value="0.70" />
+    </Style>
+</Styles>

@@ -1,0 +1,8 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style Selector="ToggleSwitch">
+        <!-- TODO: 覆写颜色为主题色 -->
+    </Style>
+
+</Styles>

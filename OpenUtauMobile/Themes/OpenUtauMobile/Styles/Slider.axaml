@@ -1,0 +1,145 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <Border Padding="128">
+            <StackPanel Orientation="Vertical"
+                        Spacing="8">
+                <Slider Minimum="0"
+                        Maximum="100"
+                        Value="50"
+                        Width="200" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="Slider:horizontal">
+        <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemComponentTokens.SliderMinHeight}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal:focus, Slider:horizontal:focus-within">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal /template/ Thumb">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemComponentTokens.SliderThumbSize}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemComponentTokens.SliderThumbSize}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="Slider:horizontal:pointerover /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal:focus-within /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal /template/ RepeatButton">
+        <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemComponentTokens.SliderTrackHeight}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="Slider:horizontal /template/ RepeatButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Outline}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal /template/ RepeatButton:pressed">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Outline}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal /template/ Track#PART_Track > RepeatButton:first-child">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="Slider:horizontal:disabled">
+        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Disabled}" />
+    </Style>
+
+    <!-- 加上 :horizontal 伪类，提高优先级以覆盖默认主题的模板 --><!--
+    <Style Selector="Slider:horizontal">
+        <Setter Property="Foreground" Value="#6750A4" />
+        <Setter Property="Background" Value="#EADDFF" />
+        <Setter Property="MinHeight" Value="48" />
+
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid MinHeight="48" VerticalAlignment="Center">
+                
+                    <Track Name="PART_Track"
+                           Minimum="{TemplateBinding Minimum}"
+                           Maximum="{TemplateBinding Maximum}"
+                           Value="{TemplateBinding Value, Mode=TwoWay}"
+                           Orientation="Horizontal"
+                           IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
+                    
+                        --><!-- 1. 左侧：已填充的轨道 --><!--
+                        <Track.DecreaseButton>
+                            <RepeatButton Name="PART_DecreaseButton" Focusable="False">
+                                <RepeatButton.Template>
+                                    <ControlTemplate>
+                                        --><!-- 使用 Transparent 的 Grid 撑开 48px 的高度，确保这块区域完全可被点击 --><!--
+                                        <Grid Background="Transparent">
+                                            --><!-- 强制绑定到外层 Slider 的 Foreground --><!--
+                                            <Border Height="24"
+                                                    Margin="0,0,2,0"
+                                                    Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Slider}}"
+                                                    CornerRadius="12,0,0,12"
+                                                    VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+                        </Track.DecreaseButton>
+
+                        --><!-- 2. 右侧：未填充的轨道 --><!--
+                        <Track.IncreaseButton>
+                            <RepeatButton Name="PART_IncreaseButton" Focusable="False">
+                                <RepeatButton.Template>
+                                    <ControlTemplate>
+                                        <Grid Background="Transparent">
+                                            --><!-- 强制绑定到外层 Slider 的 Background --><!--
+                                            <Border Height="24"
+                                                    Margin="2,0,0,0"
+                                                    Background="{Binding Background, RelativeSource={RelativeSource AncestorType=Slider}}"
+                                                    CornerRadius="0,12,12,0"
+                                                    VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+                        </Track.IncreaseButton>
+
+                        --><!-- 3. 中间：竖条滑块 --><!--
+                        <Track.Thumb>
+                            <Thumb Name="slider_thumb" Focusable="False">
+                                <Thumb.Template>
+                                    <ControlTemplate>
+                                        <Grid Background="Transparent">
+                                            --><!-- 强制绑定到外层 Slider 的 Foreground --><!--
+                                            <Border Width="4"
+                                                    Height="32"
+                                                    Background="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Slider}}"
+                                                    CornerRadius="2"
+                                                    VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Thumb.Template>
+                            </Thumb>
+                        </Track.Thumb>
+
+                    </Track>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>-->
+</Styles>

@@ -1,0 +1,171 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.ProjectInfoEditPopup"
+             d:DataContext="{d:DesignInstance Type=vm:ProjectInfoEditViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:ProjectInfoEditViewModel"
+             Classes="PopupDialogRoot">
+
+    <UserControl.Resources>
+        <tools:EnumEqualConverter x:Key="EnumEq" />
+    </UserControl.Resources>
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <!-- 标题栏 -->
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <!-- 动态标题：根据 Mode 显示 -->
+                    <Panel Grid.Column="0">
+                        <TextBlock Text="{DynamicResource ProjectEdit.Tempo}"
+                                   IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Bpm}"
+                                   Classes="PopupTitle" />
+                        <TextBlock Text="{DynamicResource ProjectEdit.TimeSignature}"
+                                   IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=TimeSignature}"
+                                   Classes="PopupTitle" />
+                        <TextBlock Text="{DynamicResource ProjectEdit.KeySignature}"
+                                   IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Key}"
+                                   Classes="PopupTitle" />
+                    </Panel>
+                    <!-- 关闭按钮 -->
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}"
+                            Content="{iconPacks:PhosphorIcons X}"/>
+                </Grid>
+            </Border>
+
+            <!-- BPM 模式内容 -->
+            <StackPanel DockPanel.Dock="Top"
+                        IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Bpm}"
+                        Spacing="16"
+                        Margin="20,20,20,20">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{DynamicResource ProjectEdit.TempoLabel}"
+                               FontSize="12"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <TextBox Text="{Binding BpmText, Mode=TwoWay}"
+                             FontSize="22"
+                             FontWeight="Bold"
+                             TextAlignment="Center"
+                             Watermark="{DynamicResource ProjectEdit.TempoWatermark}" />
+                </StackPanel>
+                <!-- 底部按钮 -->
+                <Grid ColumnDefinitions="*,8,*">
+                    <Button Grid.Column="0" Classes="Secondary"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding CancelCommand}"
+                            Content="{DynamicResource Common.Cancel}" />
+                    <Button Grid.Column="2" Classes="Primary"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding ConfirmCommand}"
+                            Content="{DynamicResource Common.Confirm}" />
+                </Grid>
+            </StackPanel>
+
+            <!-- 拍号模式内容 -->
+            <StackPanel DockPanel.Dock="Top"
+                        IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=TimeSignature}"
+                        Spacing="16"
+                        Margin="20,20,20,20">
+                <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto,Auto">
+                    <!-- 分子 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="{DynamicResource ProjectEdit.Beats}"
+                               FontSize="12"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Grid.Row="0" Grid.Column="2"
+                               Text="{DynamicResource ProjectEdit.NoteValue}"
+                               FontSize="12"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                               HorizontalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="0"
+                             Text="{Binding BeatPerBarText, Mode=TwoWay}"
+                             FontSize="26" FontWeight="Bold"
+                             TextAlignment="Center"
+                             Watermark="4" />
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Text="/"
+                               FontSize="32" FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               Margin="12,0" />
+                    <TextBox Grid.Row="1" Grid.Column="2"
+                             Text="{Binding BeatUnitText, Mode=TwoWay}"
+                             FontSize="26" FontWeight="Bold"
+                             TextAlignment="Center"
+                             Watermark="4" />
+                </Grid>
+                <!-- 底部按钮 -->
+                <Grid ColumnDefinitions="*,8,*">
+                    <Button Grid.Column="0" Classes="Secondary"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding CancelCommand}"
+                            Content="{DynamicResource Common.Cancel}" />
+                    <Button Grid.Column="2" Classes="Primary"
+                            HorizontalAlignment="Stretch"
+                            Command="{Binding ConfirmCommand}"
+                            Content="{DynamicResource Common.Confirm}" />
+                </Grid>
+            </StackPanel>
+
+            <!-- 音名模式内容 -->
+            <StackPanel DockPanel.Dock="Top"
+                        IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Key}"
+                        Spacing="12"
+                        Margin="16,16,16,16">
+                <TextBlock Text="{DynamicResource ProjectEdit.KeySignature.Hint}"
+                           FontSize="12"
+                           Opacity="0.55"
+                           HorizontalAlignment="Center" />
+                <!-- 12 个音名按钮，3 行 4 列 -->
+                <UniformGrid Rows="3" Columns="4" HorizontalAlignment="Stretch">
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="0"
+                            Content="C" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="1"
+                            Content="C#" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="2"
+                            Content="D" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="3"
+                            Content="D#" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="4"
+                            Content="E" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="5"
+                            Content="F" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="6"
+                            Content="F#" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="7"
+                            Content="G" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="8"
+                            Content="G#" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="9"
+                            Content="A" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="10"
+                            Content="A#" />
+                    <Button Classes="KeyBtn" Height="48" Margin="3"
+                            Command="{Binding SelectKeyCommand}" CommandParameter="11"
+                            Content="B" />
+                </UniformGrid>
+            </StackPanel>
+
+        </DockPanel>
+    </Border>
+</UserControl>

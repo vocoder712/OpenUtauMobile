@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0-android</TargetFramework>
+        <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+        <Nullable>enable</Nullable>
+        <ApplicationId>$(ApplicationId)</ApplicationId>
+        <ApplicationTitle>OpenUtau Mobile 预览版</ApplicationTitle>
+        <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+        <!-- 大堆内存 -->
+        <AndroidMaxHeapSize>2G</AndroidMaxHeapSize>
+        <TieredPGO>true</TieredPGO>
+    </PropertyGroup>
+    <!-- 调试模式 -->
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <IsTrimmable>True</IsTrimmable>
+        <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    </PropertyGroup>
+    <!-- 发布模式 -->
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <IsTrimmable>True</IsTrimmable>
+        <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+        <!-- 分包 -->
+        <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+    </PropertyGroup>
+    <!-- 静态资源 -->
+    <ItemGroup>
+        <AndroidResource Include="Resources\drawable\Icon.png"/>
+    </ItemGroup>
+    <!-- NuGet 包引用 -->
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.1"/>
+    </ItemGroup>
+    <!-- 项目引用 -->
+    <ItemGroup>
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
+    </ItemGroup>
+
+    <!-- 原生库 -->
+    <ItemGroup>
+        <AndroidNativeLibrary Include="Libs\armeabi-v7a\*">
+            <Abi>armeabi-v7a</Abi>
+        </AndroidNativeLibrary>
+        <AndroidNativeLibrary Include="Libs\arm64-v8a\*">
+            <Abi>arm64-v8a</Abi>
+        </AndroidNativeLibrary>
+        <AndroidNativeLibrary Include="Libs\x86\*">
+            <Abi>x86</Abi>
+        </AndroidNativeLibrary>
+        <AndroidNativeLibrary Include="Libs\x86_64\*">
+            <Abi>x86_64</Abi>
+        </AndroidNativeLibrary>
+    </ItemGroup>
+</Project>

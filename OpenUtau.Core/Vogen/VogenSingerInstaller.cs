@@ -1,28 +1,20 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using System;
 
-namespace OpenUtau.Core.Vogen
-{
-    public class VogenSingerInstaller
-    {
+namespace OpenUtau.Core.Vogen {
+    public class VogenSingerInstaller {
         public const string FileExt = ".vogeon";
-        public static void Install(string filePath, Action<double, string> progress)
-        {
-            progress.Invoke(0, "准备安装……");
+        public static void Install(string filePath) {
             string fileName = Path.GetFileName(filePath);
             string destName = Path.Combine(PathManager.Inst.SingersInstallPath, fileName);
-            if (File.Exists(destName))
-            {
+            if (File.Exists(destName)) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"{destName} already exist!"));
                 return;
             }
-            progress.Invoke(50, $"复制文件{fileName}……");
             File.Copy(filePath, destName);
-            new Task(() =>
-            {
+            new Task(() => {
                 DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
-                progress.Invoke(100, "安装完成！");
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Installed {fileName}"));
             }).Start(DocManager.Inst.MainScheduler);
         }
     }

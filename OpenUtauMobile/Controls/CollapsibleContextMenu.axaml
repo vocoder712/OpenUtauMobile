@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             x:Class="OpenUtauMobile.Controls.CollapsibleContextMenu"
+             HorizontalAlignment="Right">
+    <!-- 上下文菜单，胶囊 -->
+    <Border x:Name="Capsule"
+            Background="{DynamicResource Sem.Color.SurfaceContainer}"
+            CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerXXXXXL}"
+            Padding="{x:Static theme:ThemeSemLayoutTokens.InsetS}">
+        <Grid RowDefinitions="Auto,Auto"
+              HorizontalAlignment="Center">
+            <Border x:Name="ContentHost"
+                    Grid.Row="0"
+                    Background="Transparent">
+                <Border.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Height" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                    </Transitions>
+                </Border.Transitions>
+                <Panel x:Name="ContentPanel">
+                    <StackPanel Orientation="Vertical"
+                                ClipToBounds="True"
+                                Spacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}"
+                                x:Name="ActionsList">
+                    </StackPanel>
+                </Panel>
+            </Border>
+            <!-- 展开收起按钮 -->
+            <Button Grid.Row="1"
+                    x:Name="ToggleButton"
+                    HorizontalAlignment="Center"
+                    Classes="ContextActionBtn"
+                    Background="{DynamicResource Sem.Color.SecondaryContainer}"
+                    Click="OnToggleClick" />
+        </Grid>
+    </Border>
+</UserControl>

@@ -71,28 +71,21 @@ namespace OpenUtau.Api {
             }
         }
 
-        /// <summary>
-        /// 发送音素化结果到主线程
-        /// </summary>
-        /// <param name="response"></param>
         void SendResponse(PhonemizerResponse response) {
             Task.Factory.StartNew(_ => {
                 if (DocManager.Inst.Project.parts.Contains(response.part)) {
-                    response.part.SetPhonemizerResponse(response); // 让对应分片接收保存音素化结果
+                    response.part.SetPhonemizerResponse(response);
                 }
-                // 请求验证
                 DocManager.Inst.Project.Validate(new ValidateOptions {
                     SkipTiming = true,
                     Part = response.part,
                     SkipPhonemizer = true,
                 });
-                // 验证完成，通知UI
-                DocManager.Inst.ExecuteCmd(new PhonemizedNotification(response.part));
+                DocManager.Inst.ExecuteCmd(new PhonemizedNotification());
             }, null, CancellationToken.None, TaskCreationOptions.None, mainScheduler);
         }
 
         static PhonemizerResponse Phonemize(PhonemizerRequest request) {
-            DocManager.Inst.ExecuteCmd(new PhonemizingNotification(request.singer, request.part));
             var notes = request.notes;
             var phonemizer = request.phonemizer;
             if (request.singer == null) {
