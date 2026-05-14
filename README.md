@@ -1,5 +1,38 @@
 # OpenUtau Mobile
 [English](README.md) | [简体中文](README_zh.md)
+
+> [!IMPORTANT]
+> ## OpenUtau Mobile V2 Rewrite In Progress
+>
+> The project is currently undergoing a major V2 rewrite.
+>
+> The `master` branch is now considered **legacy mode**.
+>
+> Active development has moved to the [`dev`](https://github.com/vocoder712/OpenUtauMobile/tree/dev) branch.
+>
+> If you are:
+>
+> - testing new features
+> - contributing code
+> - reporting bugs
+> - reviewing architecture
+>
+> please switch to the `dev` branch first:
+>
+> ```bash
+> git clone -b dev https://github.com/vocoder712/OpenUtauMobile.git
+> ```
+>
+> The V2 rewrite includes:
+>
+> - new architecture
+> - redesigned UI system
+> - improved platform abstraction
+> - agent-assisted development workflow
+> - ongoing large-scale refactoring
+>
+> Project structure and internal implementations may change frequently during this stage.
+
 ## Special Thanks
 
 - [OpenUtau](https://github.com/stakira/OpenUtau)
