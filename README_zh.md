@@ -1,5 +1,36 @@
 # OpenUtau Mobile
 [English](README.md) | [简体中文](README_zh.md)
+
+> [!IMPORTANT]
+> ## OpenUtau Mobile V2 重构进行中
+>
+> 本项目目前正在进行 V2 重构。
+>
+> 当前的主要开发工作已经迁移至 [`dev`](https://github.com/vocoder712/OpenUtauMobile/tree/dev) 分支。
+>
+> 如果你希望：
+>
+> - 测试新功能
+> - 参与代码贡献
+> - 提交 Bug 反馈
+> - 了解新的架构设计
+>
+> 请先切换到 `dev` 分支，或者使用以下命令确保本地代码是最新的：
+>
+> ```bash
+> git clone -b dev https://github.com/vocoder712/OpenUtauMobile.git
+> ```
+>
+> V2 重构内容包括：
+>
+> - 全新架构设计
+> - 重构后的 UI 系统
+> - 改进的平台抽象层
+> - Agent 工作流
+> - 大规模内部重构
+>
+> 在此阶段，项目结构以及内部实现可能会频繁和不稳定地发生变化。
+
 ## 特别感谢
 
 - [OpenUtau](https://github.com/stakira/OpenUtau)
