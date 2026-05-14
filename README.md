@@ -135,7 +135,7 @@ Reproduce the issue, then stop recording and upload the log file. Recommended to
 
 # Special Thanks
 
-* [Mystic](https://github.com/MysticILD) for earlier contributions.
+* [MysticILD](https://github.com/MysticILD) for earlier contributions (adding support for the HifiSampler resampler, vibrato and pitch anchor mode implementation, and finishing multi-selection mode. Provided full English, Ukrainian, and Russian localizations).
 
 ---
 
