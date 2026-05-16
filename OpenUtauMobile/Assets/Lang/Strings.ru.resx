@@ -283,7 +283,7 @@
     <value>Настройка поведения кнопки остановки во время и после воспроизведения.</value>
   </data>
   <data name="Settings.StopButton.StartTickSelectedPartZero" xml:space="preserve">
-    <value>Начало → Выделенный фрагмент → 0 (По умолчанию)</value>
+    <value>Начало → Выделенная партия → 0 (По умолчанию)</value>
   </data>
   <data name="Settings.StopButton.StartTickZero" xml:space="preserve">
     <value>Начало → 0</value>
