@@ -226,6 +226,8 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     // 最近一次来自回放流的等待标记（SetPlayPosTickNotification.waitingRendering）
     private bool _streamWaitingRender;
 
+    private int _stopSeekState;
+
     // 随机数生成器
     private Random Randomer { get; } = new();
 
@@ -254,13 +256,85 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             {
                 DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick, true));
             }
+
+            if (PlaybackManager.Inst.PlayingMaster || PlaybackManager.Inst.StartingToPlay)
+            {
+                _stopSeekState = 0;
+            }
         }).DisposeWith(_disposables);
         // 停止命令
         StopCommand = ReactiveCommand.Create(() =>
         {
+            bool wasPlaying = PlaybackManager.Inst.OutputActive || PlaybackManager.Inst.PlayingMaster;
             PlaybackManager.Inst.StopPlayback();
             SyncPlaybackStateFromAuthority();
-            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+
+            int mode = Preferences.Default.StopButtonBehavior;
+            if (mode <= 0 || mode > 3) mode = 1;
+
+            if (wasPlaying)
+            {
+                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
+                _stopSeekState = 1;
+            }
+            else
+            {
+                switch (mode)
+                {
+                    case 2:
+                        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                        _stopSeekState = 3;
+                        break;
+                    case 3:
+                        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                        break;
+                    default:
+                        if (_stopSeekState <= 0)
+                        {
+                            int? selectedTick = null;
+                            if (SelectedParts is { Count: > 0 } parts)
+                            {
+                                selectedTick = parts.Min(p => p.position);
+                            }
+
+                            if (selectedTick.HasValue)
+                            {
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(selectedTick.Value));
+                                _stopSeekState = 2;
+                            }
+                            else
+                            {
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                _stopSeekState = 3;
+                            }
+                        }
+                        else if (_stopSeekState == 1)
+                        {
+                            int? selectedTick = null;
+                            if (SelectedParts is { Count: > 0 } parts)
+                            {
+                                selectedTick = parts.Min(p => p.position);
+                            }
+
+                            if (selectedTick.HasValue)
+                            {
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(selectedTick.Value));
+                                _stopSeekState = 2;
+                            }
+                            else
+                            {
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                _stopSeekState = 3;
+                            }
+                        }
+                        else
+                        {
+                            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                            _stopSeekState = 3;
+                        }
+                        break;
+                }
+            }
         }).DisposeWith(_disposables);
         // 工程信息编辑命令
         EditBpmCommand = ReactiveCommand.CreateFromTask(EditBpmAsync);

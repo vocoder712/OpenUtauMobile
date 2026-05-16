@@ -276,6 +276,21 @@
   <data name="Settings.AutoScroll.Smooth" xml:space="preserve">
     <value>启用平滑自动翻页</value>
   </data>
+  <data name="Settings.Edit.StopButtonBehavior" xml:space="preserve">
+    <value>停止按钮行为</value>
+  </data>
+  <data name="Settings.Edit.StopButtonBehavior.Desc" xml:space="preserve">
+    <value>设置在播放期间和播放后按下停止按钮时的行为。</value>
+  </data>
+  <data name="Settings.StopButton.StartTickSelectedPartZero" xml:space="preserve">
+    <value>起始位置 → 选中部分 → 0（默认）</value>
+  </data>
+  <data name="Settings.StopButton.StartTickZero" xml:space="preserve">
+    <value>起始位置 → 0</value>
+  </data>
+  <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
+    <value>始终跳转到 0</value>
+  </data>
   <data name="Settings.Render.CategoryTitle" xml:space="preserve">
     <value>渲染与性能</value>
   </data>

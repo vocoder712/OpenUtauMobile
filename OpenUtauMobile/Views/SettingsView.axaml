@@ -468,6 +468,32 @@
                                 </StackPanel>
                             </Border>
 
+                            <!-- ── Stop Button Behavior ── -->
+                            <Border Classes="SettingCard">
+                                <StackPanel Spacing="0">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                                            <TextBlock Classes="SectionLabel"
+                                                       Text="{DynamicResource Settings.Edit.StopButtonBehavior}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.StopButtonBehavior.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  MinWidth="140"
+                                                  Margin="16,0,0,0"
+                                                  ItemsSource="{Binding AvailableStopButtonBehaviors}"
+                                                  SelectedItem="{Binding SelectedStopButtonBehavior, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:StopButtonBehaviorOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
                             <!-- ── 回放刷新率 ── -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="8">
