@@ -33,7 +33,7 @@ The goal is to provide a more modern, maintainable, and truly cross-platform mob
 * macOS (failed passing compilation stage)
 * WebAssembly (obstacles in initializing stage)
 
-**Rad `.agent` for more information on development workflow and project context.**
+**Read `.agent` for more information on development workflow and project context.**
 
 ---
 
@@ -100,6 +100,8 @@ Use release configuration for better performance.
 # Contributing
 
 Contributions are WELCOME!
+
+You can refer to [TODO](https://docs.qq.com/sheet/DV2NuakZtQW1LZUNS)
 
 You can fork the repository, make changes, and submit a pull request to `dev` branch. Make sure to follow the coding styles in `.editorconfig`.
 
