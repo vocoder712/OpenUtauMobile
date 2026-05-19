@@ -276,6 +276,21 @@
   <data name="Settings.AutoScroll.Smooth" xml:space="preserve">
     <value>Плавная прокрутка</value>
   </data>
+  <data name="Settings.Edit.StopButtonBehavior" xml:space="preserve">
+    <value>Поведение кнопки Стоп</value>
+  </data>
+  <data name="Settings.Edit.StopButtonBehavior.Desc" xml:space="preserve">
+    <value>Настройка поведения кнопки остановки во время и после воспроизведения.</value>
+  </data>
+  <data name="Settings.StopButton.StartTickSelectedPartZero" xml:space="preserve">
+    <value>Начало → Выделенная партия → 0 (По умолчанию)</value>
+  </data>
+  <data name="Settings.StopButton.StartTickZero" xml:space="preserve">
+    <value>Начало → 0</value>
+  </data>
+  <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
+    <value>Всегда к 0</value>
+  </data>
   <data name="Settings.Render.CategoryTitle" xml:space="preserve">
     <value>Рендеринг и производительность</value>
   </data>

@@ -15,20 +15,13 @@
         <conv:EnumNotEqualConverter x:Key="EnumNotEqual" />
     </UserControl.Resources>
 
-    <!-- ═══════════════════════════════════════════════════════
-         样式
-         ═══════════════════════════════════════════════════════ -->
     <UserControl.Styles>
         <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SettingsView.axaml" />
     </UserControl.Styles>
 
-    <!-- ═══════════════════════════════════════════════════════
-         Root
-         ═══════════════════════════════════════════════════════ -->
     <Panel Background="{DynamicResource Sem.Color.Surface}">
         <DockPanel>
 
-            <!-- ── 顶栏 ─────────────────────────────── -->
             <Border DockPanel.Dock="Top" Classes="TopBar">
                 <Grid ColumnDefinitions="Auto,*">
                     <Button Grid.Column="0"
@@ -41,10 +34,8 @@
                 </Grid>
             </Border>
 
-            <!-- ── Body: NavRail (left) + Content (right) ──── -->
             <Grid ColumnDefinitions="Auto,Auto,*">
 
-                <!-- ─── 左侧栏 ──────────────────────── -->
                 <Border Grid.Column="0"
                         Background="{DynamicResource Sem.Color.SurfaceContainer}"
                         Width="{Binding NavWidth}">
@@ -58,7 +49,6 @@
 
                     <DockPanel ClipToBounds="True">
 
-                        <!-- ── 切换展开 ──── -->
                         <Border DockPanel.Dock="Bottom"
                                 Height="1" Opacity="0.08"
                                 Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
@@ -89,15 +79,12 @@
                             </Grid>
                         </Button>
 
-                        <!-- ── 栏目 ──────────────────── -->
                         <StackPanel ClipToBounds="True">
 
-                            <!-- ── 1. EditAndBehaviour ──── -->
                             <Button Classes="NavItem"
                                     Command="{Binding SelectCategoryCommand}"
                                     CommandParameter="{x:Static vm:SettingsCategory.EditAndBehaviour}">
                                 <Panel>
-                                    <!-- Active left indicator bar -->
                                     <Border Width="3"
                                             CornerRadius="0,2,2,0"
                                             HorizontalAlignment="Left"
@@ -106,7 +93,6 @@
                                             IsVisible="{Binding SelectedCategory,
                                                 Converter={StaticResource EnumEqual},
                                                 ConverterParameter=EditAndBehaviour}" />
-                                    <!-- Active row tint -->
                                     <Border Background="{DynamicResource Sem.Color.Primary}"
                                             Opacity="0.08"
                                             IsVisible="{Binding SelectedCategory,
@@ -114,7 +100,6 @@
                                                 ConverterParameter=EditAndBehaviour}" />
                                     <Grid ColumnDefinitions="64,*" MinHeight="56">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
-                                            <!-- Icon bg pill (active) -->
                                             <Border Width="36" Height="36"
                                                     CornerRadius="10"
                                                     HorizontalAlignment="Center"
@@ -123,7 +108,6 @@
                                                     IsVisible="{Binding SelectedCategory,
                                                         Converter={StaticResource EnumEqual},
                                                         ConverterParameter=EditAndBehaviour}" />
-                                            <!-- Accent icon (active) -->
                                             <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
@@ -132,7 +116,6 @@
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumEqual},
                                                       ConverterParameter=EditAndBehaviour}" />
-                                            <!-- Muted icon (inactive) -->
                                             <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
@@ -158,7 +141,6 @@
                                 </Panel>
                             </Button>
 
-                            <!-- ── 2. RenderAndPerformance ── -->
                             <Button Classes="NavItem"
                                     Command="{Binding SelectCategoryCommand}"
                                     CommandParameter="{x:Static vm:SettingsCategory.RenderAndPerformance}">
@@ -219,7 +201,6 @@
                                 </Panel>
                             </Button>
 
-                            <!-- ── 3. FileAndStorage ──── -->
                             <Button Classes="NavItem"
                                     Command="{Binding SelectCategoryCommand}"
                                     CommandParameter="{x:Static vm:SettingsCategory.FileAndStorage}">
@@ -280,7 +261,6 @@
                                 </Panel>
                             </Button>
 
-                            <!-- ── 4. AppearanceAndLanguage ── -->
                             <Button Classes="NavItem"
                                     Command="{Binding SelectCategoryCommand}"
                                     CommandParameter="{x:Static vm:SettingsCategory.AppearanceAndLanguage}">
@@ -345,63 +325,54 @@
                     </DockPanel>
                 </Border>
 
-                <!-- ── Vertical divider ───────────────────── -->
                 <Border Grid.Column="1"
                         Width="1"
                         Opacity="0.10"
                         Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
-                <!-- ── 右侧详细设置页面 ─────────────────── -->
                 <ScrollViewer Grid.Column="2"
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled"
                               BringIntoViewOnFocusChange="False">
                     <Panel Margin="24,20,24,24">
 
-                        <!-- ── 编辑与行为 ── -->
+                        <!-- ══════════════════════════════════════════
+                             编辑与行为
+                             ══════════════════════════════════════════ -->
                         <StackPanel
                             IsVisible="{Binding SelectedCategory,
                             Converter={StaticResource EnumEqual},
                             ConverterParameter=EditAndBehaviour}">
                             <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Edit.CategoryTitle}" />
 
-                            <!-- ── 钢琴键行为 ── -->
+                            <!-- 钢琴键行为 -->
                             <Border Classes="SettingCard">
-                                <StackPanel Spacing="0">
-                                    <!-- 上栏：行为选择 -->
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
-                                            <TextBlock Classes="SectionLabel"
-                                                       Text="{DynamicResource Settings.Edit.PianoKeyBehavior}" />
-                                            <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Edit.PianoKeyBehavior.Desc}" />
-                                        </StackPanel>
-                                        <ComboBox Grid.Column="1"
-                                                  VerticalAlignment="Center"
-                                                  MinWidth="140"
-                                                  Margin="16,0,0,0"
-                                                  ItemsSource="{Binding AvailablePianoKeyBehaviors}"
-                                                  SelectedItem="{Binding SelectedPianoKeyBehavior, Mode=TwoWay}">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate x:DataType="vm:PianoKeyBehaviorOption">
-                                                    <TextBlock Text="{Binding DisplayName}" />
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-                                    </Grid>
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.Edit.PianoKeyBehavior}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.PianoKeyBehavior.Desc}" />
+                                    </StackPanel>
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding AvailablePianoKeyBehaviors}"
+                                              SelectedItem="{Binding SelectedPianoKeyBehavior, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:PianoKeyBehaviorOption">
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
 
-                                    <!-- 分隔线（仅 SoundFont 模式时显示） -->
                                     <Border Height="1"
-                                            Margin="-20,12,-20,0"
+                                            Margin="-20,0,-20,0"
                                             Opacity="0.08"
                                             Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                            IsVisible="{Binding SelectedPianoKeyBehavior.Value, 
+                                            IsVisible="{Binding SelectedPianoKeyBehavior.Value,
                                                 Converter={StaticResource EnumEqual},
                                                 ConverterParameter=SoundFont}" />
 
-                                    <!-- SF2 文件路径（仅 SoundFont 模式时显示） -->
-                                    <StackPanel Margin="0,12,0,0"
-                                                Spacing="8"
+                                    <StackPanel Spacing="8"
                                                 IsVisible="{Binding SelectedPianoKeyBehavior.Value,
                                                     Converter={StaticResource EnumEqual},
                                                     ConverterParameter=SoundFont}">
@@ -426,7 +397,6 @@
                                                     Margin="12,0,0,0"
                                                     VerticalAlignment="Center" />
                                         </Grid>
-                                        <!-- 加载状态提示 -->
                                         <TextBlock FontSize="12"
                                                    Opacity="0.65"
                                                    Foreground="{DynamicResource Sem.Color.Primary}"
@@ -441,48 +411,59 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ── 走带自动翻页行为 ── -->
+                            <!-- 走带自动翻页行为 -->
                             <Border Classes="SettingCard">
-                                <StackPanel Spacing="0">
-                                    <!-- 行为选择 -->
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
-                                            <TextBlock Classes="SectionLabel"
-                                                       Text="{DynamicResource Settings.Edit.AutoScrollBehavior}" />
-                                            <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Edit.AutoScrollBehavior.Desc}" />
-                                        </StackPanel>
-                                        <ComboBox Grid.Column="1"
-                                                  VerticalAlignment="Center"
-                                                  MinWidth="140"
-                                                  Margin="16,0,0,0"
-                                                  ItemsSource="{Binding AvailableAutoScrollBehaviors}"
-                                                  SelectedItem="{Binding SelectedAutoScrollBehavior, Mode=TwoWay}">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate x:DataType="vm:AutoScrollBehaviorOption">
-                                                    <TextBlock Text="{Binding DisplayName}" />
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-                                    </Grid>
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.Edit.AutoScrollBehavior}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.AutoScrollBehavior.Desc}" />
+                                    </StackPanel>
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding AvailableAutoScrollBehaviors}"
+                                              SelectedItem="{Binding SelectedAutoScrollBehavior, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:AutoScrollBehaviorOption">
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
                                 </StackPanel>
                             </Border>
 
-                            <!-- ── 回放刷新率 ── -->
+                            <!-- Stop Button Behavior -->
+                            <Border Classes="SettingCard">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.Edit.StopButtonBehavior}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.StopButtonBehavior.Desc}" />
+                                    </StackPanel>
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding AvailableStopButtonBehaviors}"
+                                              SelectedItem="{Binding SelectedStopButtonBehavior, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:StopButtonBehaviorOption">
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 回放刷新率 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="8">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
                                                    FontSize="13"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding PlaybackRefreshRate}"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   Opacity="0.70"
-                                                   VerticalAlignment="Center" />
-                                    </Grid>
+                                                   Opacity="0.65" />
+                                    </StackPanel>
                                     <Slider Minimum="1" Maximum="60"
                                             Value="{Binding PlaybackRefreshRate, Mode=TwoWay}"
                                             TickFrequency="1"
@@ -493,39 +474,32 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ── 立绘显示 ── -->
+                            <!-- 立绘显示 -->
                             <Border Classes="SettingCard">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
                                         <TextBlock Classes="SectionLabel"
                                                    Text="{DynamicResource Settings.Edit.ShowPortrait}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.ShowPortrait.Desc}" />
                                     </StackPanel>
-                                    <ToggleSwitch Grid.Column="1"
-                                                  IsChecked="{Binding ShowPortraitEnabled, Mode=TwoWay}"
-                                                  VerticalAlignment="Center"
-                                                  Margin="12,0,0,0"
+                                    <ToggleSwitch IsChecked="{Binding ShowPortraitEnabled, Mode=TwoWay}"
                                                   OffContent=""
                                                   OnContent="" />
-                                </Grid>
+                                </StackPanel>
                             </Border>
 
-                            <!-- ── 撤销步数上限 ── -->
+                            <!-- 撤销步数上限 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="8">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{DynamicResource Settings.Edit.UndoLimit}"
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="{DynamicResource Settings.Edit.UndoLimit}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding UndoLimit, StringFormat='{}{0} steps'}"
                                                    FontSize="13"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding UndoLimit}"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   Opacity="0.70"
-                                                   VerticalAlignment="Center" />
-                                    </Grid>
+                                                   Opacity="0.65" />
+                                    </StackPanel>
                                     <Slider Minimum="10" Maximum="100"
                                             Value="{Binding UndoLimit, Mode=TwoWay}"
                                             TickFrequency="1"
@@ -536,23 +510,22 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ── 自动保存 ── -->
+                            <!-- 自动保存 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="8">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{DynamicResource Settings.Edit.AutoSave}"
-                                                   FontSize="13"
-                                                   VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="1"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   Opacity="0.70"
-                                                   VerticalAlignment="Center" >
-                                            <Run Text="{Binding AutoSaveInterval}" />
-                                            <Run Text="s" />
-                                        </TextBlock>
-                                    </Grid>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold" />
+                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                            <TextBlock Text="{Binding AutoSaveInterval}"
+                                                       FontSize="13"
+                                                       Opacity="0.65" />
+                                            <TextBlock Text="s"
+                                                       FontSize="13"
+                                                       Opacity="0.65" />
+                                        </StackPanel>
+                                    </StackPanel>
                                     <StackPanel Orientation="Horizontal" Spacing="12">
                                         <ToggleSwitch IsChecked="{Binding AutoSaveEnabled}"
                                                       OffContent=""
@@ -573,32 +546,31 @@
                             </Border>
 
                         </StackPanel>
+
+                        <!-- ══════════════════════════════════════════
+                             渲染与性能
+                             ══════════════════════════════════════════ -->
                         <StackPanel
                             IsVisible="{Binding SelectedCategory,
                             Converter={StaticResource EnumEqual},
                             ConverterParameter=RenderAndPerformance}">
                             <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Render.CategoryTitle}" />
 
-                            <!-- ── DiffSinger 推理参数 ── -->
+                            <!-- DiffSinger 推理参数 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="16">
                                     <TextBlock Classes="SectionLabel"
                                                Text="{DynamicResource Settings.Render.DiffSingerParams}" />
 
-                                    <!-- 音质模型步数 -->
                                     <StackPanel Spacing="8">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{DynamicResource Settings.Render.AcousticSteps}"
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{DynamicResource Settings.Render.AcousticSteps}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding DiffSingerSteps, StringFormat='{}{0} steps'}"
                                                        FontSize="13"
-                                                       VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding DiffSingerSteps}"
-                                                       FontSize="13"
-                                                       FontWeight="SemiBold"
-                                                       Opacity="0.70"
-                                                       VerticalAlignment="Center" />
-                                        </Grid>
+                                                       Opacity="0.65" />
+                                        </StackPanel>
                                         <Slider Minimum="1" Maximum="100"
                                                 Value="{Binding DiffSingerSteps, Mode=TwoWay}"
                                                 TickFrequency="1"
@@ -608,26 +580,20 @@
                                                    FontSize="12" />
                                     </StackPanel>
 
-                                    <!-- 分隔线 -->
                                     <Border Height="1"
                                             Margin="-20,0,-20,0"
                                             Opacity="0.08"
                                             Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
-                                    <!-- 唱法模型步数 -->
                                     <StackPanel Spacing="8">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{DynamicResource Settings.Render.VarianceSteps}"
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{DynamicResource Settings.Render.VarianceSteps}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding DiffSingerStepsVariance, StringFormat='{}{0} steps'}"
                                                        FontSize="13"
-                                                       VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding DiffSingerStepsVariance}"
-                                                       FontSize="13"
-                                                       FontWeight="SemiBold"
-                                                       Opacity="0.70"
-                                                       VerticalAlignment="Center" />
-                                        </Grid>
+                                                       Opacity="0.65" />
+                                        </StackPanel>
                                         <Slider Minimum="1" Maximum="100"
                                                 Value="{Binding DiffSingerStepsVariance, Mode=TwoWay}"
                                                 TickFrequency="1"
@@ -637,26 +603,20 @@
                                                    FontSize="12" />
                                     </StackPanel>
 
-                                    <!-- 分隔线 -->
                                     <Border Height="1"
                                             Margin="-20,0,-20,0"
                                             Opacity="0.08"
                                             Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
-                                    <!-- 音高模型步数 -->
                                     <StackPanel Spacing="8">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{DynamicResource Settings.Render.PitchSteps}"
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{DynamicResource Settings.Render.PitchSteps}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding DiffSingerStepsPitch, StringFormat='{}{0} steps'}"
                                                        FontSize="13"
-                                                       VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding DiffSingerStepsPitch}"
-                                                       FontSize="13"
-                                                       FontWeight="SemiBold"
-                                                       Opacity="0.70"
-                                                       VerticalAlignment="Center" />
-                                        </Grid>
+                                                       Opacity="0.65" />
+                                        </StackPanel>
                                         <Slider Minimum="1" Maximum="100"
                                                 Value="{Binding DiffSingerStepsPitch, Mode=TwoWay}"
                                                 TickFrequency="1"
@@ -668,19 +628,16 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ── 机器学习运行器后端 ── -->
+                            <!-- 机器学习运行器后端 -->
                             <Border Classes="SettingCard">
-                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                                    <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
                                         <TextBlock Classes="SectionLabel"
                                                    Text="{DynamicResource Settings.Render.OnnxRunner}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Render.OnnxRunner.Desc}" />
                                     </StackPanel>
-                                    <ComboBox Grid.Row="0" Grid.Column="1"
-                                              VerticalAlignment="Center"
-                                              MinWidth="160"
-                                              Margin="16,0,0,0"
+                                    <ComboBox HorizontalAlignment="Stretch"
                                               ItemsSource="{Binding AvailableOnnxRunners}"
                                               SelectedItem="{Binding SelectedOnnxRunner, Mode=TwoWay}">
                                         <ComboBox.ItemTemplate>
@@ -689,61 +646,45 @@
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
-                                    <TextBlock Grid.Column="1"
-                                               Grid.Row="1"
-                                               Margin="16,8,0,0"
-                                               FontSize="12"
+                                    <TextBlock FontSize="12"
                                                Foreground="{DynamicResource Sem.Color.Error}"
                                                IsVisible="{Binding SelectedOnnxRunner.Value,
                                                    Converter={StaticResource EnumEqual},
                                                    ConverterParameter=NNAPI}"
                                                Text="{DynamicResource Settings.Render.OnnxRunner.NnapiWarning}"
                                                TextWrapping="Wrap" />
-                                </Grid>
+                                </StackPanel>
                             </Border>
 
-                            <!-- ── 预渲染设置 ── -->
+                            <!-- 预渲染设置 -->
                             <Border Classes="SettingCard">
-                                <StackPanel Spacing="0">
-                                    <!-- 预渲染开关 -->
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
-                                            <TextBlock Classes="SectionLabel"
-                                                       Text="{DynamicResource Settings.Render.PreRender}" />
-                                            <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Render.PreRender.Desc}" />
-                                        </StackPanel>
-                                        <ToggleSwitch Grid.Column="1"
-                                                      IsChecked="{Binding PreRenderEnabled, Mode=TwoWay}"
-                                                      VerticalAlignment="Center"
-                                                      Margin="12,0,0,0"
-                                                      OffContent=""
-                                                      OnContent="" />
-                                    </Grid>
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.Render.PreRender}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Render.PreRender.Desc}" />
+                                    </StackPanel>
+                                    <ToggleSwitch IsChecked="{Binding PreRenderEnabled, Mode=TwoWay}"
+                                                  OffContent=""
+                                                  OnContent="" />
 
-                                    <!-- 分隔线（仅预渲染开启时显示） -->
                                     <Border Height="1"
-                                            Margin="-20,12,-20,0"
+                                            Margin="-20,0,-20,0"
                                             Opacity="0.08"
                                             Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                             IsVisible="{Binding PreRenderEnabled}" />
 
-                                    <!-- 线程数设置（仅预渲染开启时显示） -->
-                                    <StackPanel Margin="0,12,0,0"
-                                                Spacing="8"
+                                    <StackPanel Spacing="8"
                                                 IsVisible="{Binding PreRenderEnabled}">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <TextBlock Grid.Column="0"
-                                                       Text="{DynamicResource Settings.Render.ThreadCount}"
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{DynamicResource Settings.Render.ThreadCount}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding NumRenderThreads, StringFormat='{}{0} threads'}"
                                                        FontSize="13"
-                                                       VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding NumRenderThreads}"
-                                                       FontSize="13"
-                                                       FontWeight="SemiBold"
-                                                       Opacity="0.70"
-                                                       VerticalAlignment="Center" />
-                                        </Grid>
+                                                       Opacity="0.65" />
+                                        </StackPanel>
                                         <Slider Minimum="1" Maximum="16"
                                                 Value="{Binding NumRenderThreads, Mode=TwoWay}"
                                                 TickFrequency="1"
@@ -755,26 +696,22 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ── 音频输出设置 ── -->
+                            <!-- 音频输出设置 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="16">
                                     <TextBlock Classes="SectionLabel"
                                                Text="{DynamicResource Settings.Render.AudioOutput}" />
 
-                                    <!-- 音频后端选择 -->
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
+                                    <StackPanel Spacing="12">
+                                        <StackPanel Spacing="2">
                                             <TextBlock Text="{DynamicResource Settings.Render.AudioBackend}"
-                                                       FontSize="13"
-                                                       VerticalAlignment="Center" />
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold" />
                                             <TextBlock Classes="PlaceholderText"
                                                        Text="{DynamicResource Settings.Render.AudioBackend.Desc}"
                                                        FontSize="12" />
                                         </StackPanel>
-                                        <ComboBox Grid.Column="1"
-                                                  VerticalAlignment="Center"
-                                                  MinWidth="140"
-                                                  Margin="16,0,0,0"
+                                        <ComboBox HorizontalAlignment="Stretch"
                                                   ItemsSource="{Binding AvailableAudioBackends}"
                                                   SelectedItem="{Binding SelectedAudioBackend, Mode=TwoWay}">
                                             <ComboBox.ItemTemplate>
@@ -783,33 +720,27 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
-                                    </Grid>
+                                    </StackPanel>
 
-                                    <!-- 分隔线 -->
                                     <Border Height="1"
                                             Margin="-20,0,-20,0"
                                             Opacity="0.08"
                                             Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
-                                    <!-- 音频设备选择 -->
                                     <StackPanel Spacing="8">
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
-                                                <TextBlock Text="{DynamicResource Settings.Render.OutputDevice}"
-                                                           FontSize="13"
-                                                           VerticalAlignment="Center" />
-                                                <TextBlock Classes="PlaceholderText"
-                                                           Text="{DynamicResource Settings.Render.OutputDevice.Desc}"
-                                                           FontSize="12" />
-                                            </StackPanel>
-                                            <Button Grid.Column="1"
-                                                    Classes="AccentBtn"
-                                                    Content="{DynamicResource Common.Refresh}"
-                                                    Command="{Binding RefreshAudioDevicesCommand}"
-                                                    IsEnabled="{Binding !IsRefreshingDevices}"
-                                                    VerticalAlignment="Center"
-                                                    Margin="16,0,0,0" />
-                                        </Grid>
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{DynamicResource Settings.Render.OutputDevice}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.OutputDevice.Desc}"
+                                                       FontSize="12" />
+                                        </StackPanel>
+                                        <Button Classes="AccentBtn"
+                                                Content="{DynamicResource Common.Refresh}"
+                                                Command="{Binding RefreshAudioDevicesCommand}"
+                                                IsEnabled="{Binding !IsRefreshingDevices}"
+                                                HorizontalAlignment="Left" />
                                         <ComboBox HorizontalAlignment="Stretch"
                                                   ItemsSource="{Binding AvailableAudioDevices}"
                                                   SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}">
@@ -822,7 +753,6 @@
                                         </ComboBox>
                                     </StackPanel>
 
-                                    <!-- 提示信息 -->
                                     <TextBlock Classes="PlaceholderText"
                                                Text="{DynamicResource Settings.Render.AudioBackend.RestartRequired}"
                                                FontSize="12"
@@ -832,44 +762,35 @@
 
                         </StackPanel>
 
-                        <!-- ── 文件与存储 ── -->
+                        <!-- ══════════════════════════════════════════
+                             文件与存储
+                             ══════════════════════════════════════════ -->
                         <StackPanel
                             IsVisible="{Binding SelectedCategory,
                             Converter={StaticResource EnumEqual},
                             ConverterParameter=FileAndStorage}">
                             <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.File.CategoryTitle}" />
-                            <!-- ── 额外歌手路径 ── -->
+
+                            <!-- 额外歌手路径 -->
                             <Border Classes="SettingCard">
-                                <StackPanel Spacing="0">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.File.AdditionalSingerPath}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.File.AdditionalSingerPath.Desc}" />
+                                    </StackPanel>
+                                    <ToggleSwitch IsChecked="{Binding AdditionalSingerPathEnabled, Mode=TwoWay}"
+                                                  OffContent=""
+                                                  OnContent="" />
 
-                                    <!-- 上栏：标题 + 副标题 + 开关 -->
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0"
-                                                    Spacing="3"
-                                                    VerticalAlignment="Center">
-                                            <TextBlock Classes="SectionLabel"
-                                                       Text="{DynamicResource Settings.File.AdditionalSingerPath}" />
-                                            <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.File.AdditionalSingerPath.Desc}" />
-                                        </StackPanel>
-                                        <ToggleSwitch Grid.Column="1"
-                                                      IsChecked="{Binding AdditionalSingerPathEnabled, Mode=TwoWay}"
-                                                      VerticalAlignment="Center"
-                                                      Margin="12,0,0,0"
-                                                      OffContent=""
-                                                      OnContent="" />
-                                    </Grid>
-
-                                    <!-- 分隔线（仅开关开时显示） -->
                                     <Border Height="1"
-                                            Margin="-20,12,-20,0"
+                                            Margin="-20,0,-20,0"
                                             Opacity="0.08"
                                             Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                             IsVisible="{Binding AdditionalSingerPathEnabled}" />
 
-                                    <!-- 下栏：路径 + 更改按钮（仅开关开时显示） -->
                                     <Grid ColumnDefinitions="*,Auto"
-                                          Margin="0,12,0,0"
                                           IsVisible="{Binding AdditionalSingerPathEnabled}">
                                         <Border Grid.Column="0"
                                                 Background="{DynamicResource Sem.Color.SurfaceContainer}"
@@ -889,44 +810,46 @@
                                                 Margin="12,0,0,0"
                                                 VerticalAlignment="Center" />
                                     </Grid>
-
                                 </StackPanel>
                             </Border>
 
+                            <!-- 渲染缓存 -->
                             <Border Classes="SettingCard">
-                                <StackPanel Spacing="0">
-                                    <TextBlock Classes="SectionLabel" Text="{DynamicResource Settings.File.RenderCache}"/>
-                                    <TextBlock Classes="PlaceholderText"
-                                               Text="{DynamicResource Settings.File.RenderCache.Desc}"/>
+                                <StackPanel Spacing="10">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.File.RenderCache}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.File.RenderCache.Desc}" />
+                                    </StackPanel>
                                     <Button Classes="AccentBtn"
                                             Content="{DynamicResource Settings.File.RenderCache.Clear}"
                                             Command="{Binding ClearRenderCacheCommand}"
-                                            HorizontalAlignment="Left"
-                                            Margin="0,12,0,0"/>
+                                            HorizontalAlignment="Left" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
 
-                        <!-- ── 外观与语言 ── -->
+                        <!-- ══════════════════════════════════════════
+                             外观与语言
+                             ══════════════════════════════════════════ -->
                         <StackPanel
                             IsVisible="{Binding SelectedCategory,
                             Converter={StaticResource EnumEqual},
                             ConverterParameter=AppearanceAndLanguage}">
                             <TextBlock Classes="CategoryTitle"
                                        Text="{DynamicResource Settings.Appearance.CategoryTitle}" />
-                            <!-- 主题选择卡片 -->
+
+                            <!-- 主题选择 -->
                             <Border Classes="SettingCard">
-                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                                    <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" VerticalAlignment="Center">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
                                         <TextBlock Classes="SectionLabel"
                                                    Text="{DynamicResource Settings.Appearance.Theme}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Appearance.Theme.Desc}" />
                                     </StackPanel>
-                                    <ComboBox Grid.Column="1" Grid.Row="0"
-                                              VerticalAlignment="Center"
-                                              MinWidth="160"
-                                              Margin="16,0,0,0"
+                                    <ComboBox HorizontalAlignment="Stretch"
                                               ItemsSource="{Binding AvailableThemes}"
                                               SelectedItem="{Binding SelectedThemeOption, Mode=TwoWay}">
                                         <ComboBox.ItemTemplate>
@@ -935,31 +858,27 @@
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
-                                </Grid>
+                                </StackPanel>
                             </Border>
-                            <!-- 主题色选择卡片 -->
+
+                            <!-- 主题色选择 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
-                                    <Grid ColumnDefinitions="*,Auto">
-                                        <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Center">
-                                            <TextBlock Classes="SectionLabel"
-                                                       Text="{DynamicResource Settings.Appearance.ThemeColor}" />
-                                            <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Appearance.ThemeColor.Desc}" />
-                                        </StackPanel>
-                                        <ComboBox Grid.Column="1"
-                                                  VerticalAlignment="Center"
-                                                  MinWidth="160"
-                                                  Margin="16,0,0,0"
-                                                  ItemsSource="{Binding AvailableThemeColorModes}"
-                                                  SelectedItem="{Binding SelectedThemeColorMode, Mode=TwoWay}">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate x:DataType="vm:ThemeColorModeOption">
-                                                    <TextBlock Text="{Binding DisplayName}" />
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-                                    </Grid>
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.Appearance.ThemeColor}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Appearance.ThemeColor.Desc}" />
+                                    </StackPanel>
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding AvailableThemeColorModes}"
+                                              SelectedItem="{Binding SelectedThemeColorMode, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:ThemeColorModeOption">
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
 
                                     <Border Height="1"
                                             Opacity="0.08"
@@ -986,9 +905,6 @@
                                             <Button Grid.Column="3"
                                                     Content="{DynamicResource Settings.Appearance.ThemeColor.OpenPicker}"
                                                     Command="{Binding OpenThemeColorPickerCommand}" />
-                                            <!-- <Button Grid.Column="4" -->
-                                            <!--         Content="{DynamicResource Settings.Appearance.ThemeColor.ResetDefault}" -->
-                                            <!--         Command="{Binding ResetThemeSeedCommand}" /> -->
                                         </Grid>
 
                                         <StackPanel Spacing="6">
@@ -1032,19 +948,17 @@
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
-                            <!-- ── 语言选择卡片 ── -->
+
+                            <!-- 语言选择 -->
                             <Border Classes="SettingCard">
-                                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                                    <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4" VerticalAlignment="Center">
+                                <StackPanel Spacing="12">
+                                    <StackPanel Spacing="2">
                                         <TextBlock Classes="SectionLabel"
                                                    Text="{DynamicResource Settings.Appearance.Language}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Appearance.Language.Desc}" />
                                     </StackPanel>
-                                    <ComboBox Grid.Column="1" Grid.Row="0"
-                                              VerticalAlignment="Center"
-                                              MinWidth="160"
-                                              Margin="16,0,0,0"
+                                    <ComboBox HorizontalAlignment="Stretch"
                                               ItemsSource="{Binding AvailableLanguages}"
                                               SelectedItem="{Binding SelectedLanguageOption, Mode=TwoWay}">
                                         <ComboBox.ItemTemplate>
@@ -1053,7 +967,7 @@
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
-                                </Grid>
+                                </StackPanel>
                             </Border>
 
                         </StackPanel>

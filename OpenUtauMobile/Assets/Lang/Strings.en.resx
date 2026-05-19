@@ -276,6 +276,21 @@
   <data name="Settings.AutoScroll.Smooth" xml:space="preserve">
     <value>Smooth Scrolling</value>
   </data>
+  <data name="Settings.Edit.StopButtonBehavior" xml:space="preserve">
+    <value>Stop Button Behavior</value>
+  </data>
+  <data name="Settings.Edit.StopButtonBehavior.Desc" xml:space="preserve">
+    <value>Configure what happens when you press the stop button during and after playback.</value>
+  </data>
+  <data name="Settings.StopButton.StartTickSelectedPartZero" xml:space="preserve">
+    <value>Start Tick → Selected Part → 0 (Default)</value>
+  </data>
+  <data name="Settings.StopButton.StartTickZero" xml:space="preserve">
+    <value>Start Tick → 0</value>
+  </data>
+  <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
+    <value>Always Go to 0</value>
+  </data>
   <data name="Settings.Render.CategoryTitle" xml:space="preserve">
     <value>Render &amp; Performance</value>
   </data>
