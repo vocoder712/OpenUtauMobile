@@ -22,7 +22,8 @@
         <IsTrimmable>True</IsTrimmable>
         <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
         <!-- 分包 -->
-        <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+        <!-- 在命令行中单独制定需要哪些分包 -->
+        <!-- <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers> -->
     </PropertyGroup>
     <!-- 静态资源 -->
     <ItemGroup>
