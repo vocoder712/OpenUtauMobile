@@ -14,6 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      # 创建交换空间，避免内存不足导致构建失败
+      - name: Create Swap Space
+        run: |
+          sudo fallocate -l 6G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
       # 拉取代码
       - name: Checkout
         uses: actions/checkout@v4
