@@ -17,10 +17,16 @@ jobs:
       # 创建交换空间，避免内存不足导致构建失败
       - name: Create Swap Space
         run: |
-          sudo fallocate -l 6G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          SWAP_FILE=/runner-swapfile
+          if [ ! -f "$SWAP_FILE" ]; then
+            sudo fallocate -l 6G "$SWAP_FILE"
+            sudo chmod 600 "$SWAP_FILE"
+            sudo mkswap "$SWAP_FILE"
+          fi
+          sudo swapon "$SWAP_FILE" 2>/dev/null || true
+          echo "===== Swap status ====="
+          free -h
+          swapon --show
       # 拉取代码
       - name: Checkout
         uses: actions/checkout@v4
