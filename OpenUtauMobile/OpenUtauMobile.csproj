@@ -48,42 +48,4 @@
         <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj"/>
         <ProjectReference Include="..\OpenUtauMobile.Plugin.Renderers\OpenUtauMobile.Plugin.Renderers.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-        <Compile Update="Views\HomeView.axaml.cs">
-            <DependentUpon>HomeView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Views\EditorView.axaml.cs">
-            <DependentUpon>EditorView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Controls\FilePickerPopup.axaml.cs">
-            <DependentUpon>EditorView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Views\SingerDetailView.axaml.cs">
-            <DependentUpon>SingerDetailView.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Views\SingerManagementView.axaml.cs">
-            <DependentUpon>SingerManagementView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Controls\TrackHeader.axaml.cs">
-            <DependentUpon>TrackHeader.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Controls\TrackAdder.axaml.cs">
-            <DependentUpon>TrackAdder.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Controls\ToastOverlay.axaml.cs">
-            <DependentUpon>ToastOverlay.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
-        <Compile Update="Controls\TrackEditModeSwitcher.axaml.cs">
-          <DependentUpon>TrackEditModeSwitcher.axaml</DependentUpon>
-          <SubType>Code</SubType>
-        </Compile>
-    </ItemGroup>
 </Project>
