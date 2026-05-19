@@ -43,14 +43,15 @@ jobs:
       - name: Publish Android ARM64
         run: |
           dotnet publish OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
-            -c Release \
-            -f net9.0-android \
-            -p:AndroidKeyStore=true \
-            -p:AndroidSigningKeyStore=signing.keystore \
-            -p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \
-            -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} \
-            -p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} \
-            -p:RuntimeIdentifier=android-arm64
+            -c Release \  # Release 模式
+            -f net9.0-android \  # 框架
+            -p:AndroidPackageFormat=apk \  # apk格式
+            -p:AndroidKeyStore=true \  # 指定密钥
+            -p:AndroidSigningKeyStore=${{ github.workspace }}/signing.keystore \  # 密钥路径
+            -p:AndroidSigningStorePass=${{ secrets.ANDROID_KEYSTORE_PASSWORD }} \  # 密钥库密码
+            -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} \  # 密钥别名
+            -p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} \  # 密钥别名密码
+            -p:RuntimeIdentifier=android-arm64  # 仅arm64
       # 上传 apk
       - name: Upload APK
         uses: actions/upload-artifact@v4
