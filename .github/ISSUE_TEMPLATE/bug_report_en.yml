@@ -1,0 +1,61 @@
+
+name: 🐛 Bug Report
+description: Report a bug or issue.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Thanks for taking the time to report a bug! 
+        Please ensure you are using the latest version and have checked for duplicates before submitting.
+
+  - type: input
+    id: device_info
+    attributes:
+      label: Device and System Name
+      placeholder: e.g., Samsung Galaxy S26 (Android 16, OneUI 8.5) / iPhone 17 Pro (iOS 26.5)
+    validations:
+      required: true
+
+  - type: input
+    id: app_version
+    attributes:
+      label: App Version
+      placeholder: e.g., Build v0.1.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of the Issue
+      placeholder: Provide a clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-flight Checklists
+      options:
+        - label: I have searched for similar issues, and none have been found.
+          required: true
+        - label: This is a legitimate issue, not a general discussion or feature request.
+          required: true
+        - label: I didn't read the checkboxes so I pressed every single one and didn't know I didn't have to press this one.
+          required: false
+        - label: I didn't read the checkboxes so I pressed every single one and didn't know I HAD to press this one.
+          required: false

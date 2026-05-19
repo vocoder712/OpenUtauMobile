@@ -1,0 +1,61 @@
+
+name: 🐛 报告问题
+description: 报告软件使用期间出现的 bug 等问题。
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### 感谢您抽出宝贵的时间反馈问题！
+        请在提交前确保您使用的是最新正式版或开发版，并已检查是否存在重复的 Issue。
+
+  - type: input
+    id: device_info
+    attributes:
+      label: 设备型号与系统版本
+      placeholder: 例如, 三星 Galaxy S26 (Android 16, OneUI 8.5) / iPhone 17 Pro (iOS 26.5)
+    validations:
+      required: true
+
+  - type: input
+    id: app_version
+    attributes:
+      label: 应用版本
+      placeholder: 例如, v1.1.7
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 详细描述问题
+      placeholder: 请清晰、简明地描述您遇到了什么问题。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        例如：
+        1. 前往 …… 页面
+        2. 点击 …… 按钮/开关
+        3. 出现错误
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 预检清单
+      options:
+        - label: 我已搜索过类似问题，未发现重复。
+          required: true
+        - label: 这是一个真正的应用程序问题，而非普通讨论或新功能建议。
+          required: true
+        - label: 我没看选项，不知道我不需要选这个，所以我全选了。
+          required: false
+        - label: 我没看选项，不知道我必须选这个，所以我全选了。
+          required: false
