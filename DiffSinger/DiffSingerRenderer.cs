@@ -368,7 +368,8 @@ namespace OpenUtau.Core.DiffSinger {
                         varianceResult.headFrames, varianceResult.tailFrames,
                         headFrames, tailFrames,
                         varianceResult.frameMs, frameMs);
-                    var energy = predictedEnergy.Zip(userEnergy, varianceDeltaFunctions[ENE]).ToArray();
+                    var energy = predictedEnergy.Zip(userEnergy, varianceDeltaFunctions[ENE])
+                        .Select(x => Math.Clamp(x, -96f, 0f)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy",
                         new DenseTensor<float>(energy, new int[] { energy.Length })
                         .Reshape(new int[] { 1, energy.Length })));
@@ -386,7 +387,8 @@ namespace OpenUtau.Core.DiffSinger {
                         varianceResult.headFrames, varianceResult.tailFrames,
                         headFrames, tailFrames,
                         varianceResult.frameMs, frameMs);
-                    var breathiness = predictedBreathiness.Zip(userBreathiness, varianceDeltaFunctions[Format.Ustx.BREC]).ToArray();
+                    var breathiness = predictedBreathiness.Zip(userBreathiness, varianceDeltaFunctions[Format.Ustx.BREC])
+                        .Select(x => Math.Clamp(x, -96f, 0f)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness",
                         new DenseTensor<float>(breathiness, new int[] { breathiness.Length })
                         .Reshape(new int[] { 1, breathiness.Length })));
@@ -404,7 +406,8 @@ namespace OpenUtau.Core.DiffSinger {
                         varianceResult.headFrames, varianceResult.tailFrames,
                         headFrames, tailFrames,
                         varianceResult.frameMs, frameMs);
-                    var voicing = predictedVoicing.Zip(userVoicing, varianceDeltaFunctions[Format.Ustx.VOIC]).ToArray();
+                    var voicing = predictedVoicing.Zip(userVoicing, varianceDeltaFunctions[Format.Ustx.VOIC])
+                        .Select(x => Math.Clamp(x, -96f, 0f)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("voicing",
                         new DenseTensor<float>(voicing, new int[] { voicing.Length })
                         .Reshape(new int[] { 1, voicing.Length })));
@@ -422,7 +425,8 @@ namespace OpenUtau.Core.DiffSinger {
                         varianceResult.headFrames, varianceResult.tailFrames,
                         headFrames, tailFrames,
                         varianceResult.frameMs, frameMs);
-                    var tension = predictedTension.Zip(userTension, varianceDeltaFunctions[Format.Ustx.TENC]).ToArray();
+                    var tension = predictedTension.Zip(userTension, varianceDeltaFunctions[Format.Ustx.TENC])
+                        .Select(x => Math.Clamp(x, -10f, 10f)).ToArray();
                     acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tension",
                         new DenseTensor<float>(tension, new int[] { tension.Length })
                         .Reshape(new int[] { 1, tension.Length })));
