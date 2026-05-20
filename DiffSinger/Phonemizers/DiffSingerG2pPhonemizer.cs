@@ -97,9 +97,9 @@ namespace OpenUtau.Core.DiffSinger
             foreach(var c in GetBaseG2pConsonants()){
                 phonemeSymbols[c]=false;
             }
-            if(useLangId){
+            var langCode = GetLangCode();
+            if(!string.IsNullOrEmpty(langCode)){
                 //For diffsinger multi dict voicebanks, the replacements of g2p phonemes default to the <langcode>/<phoneme>
-                var langCode = GetLangCode();
                 foreach(var ph in GetBaseG2pVowels().Concat(GetBaseG2pConsonants())){
                     if(!replacements.ContainsKey(ph)){
                         replacements[ph]=langCode + "/" + ph;
