@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -227,6 +227,8 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     private bool _streamWaitingRender;
 
     private int _stopSeekState;
+    private bool _isSeekingInternally = false;
+    private bool _playheadMovedSinceStart = false;
 
     // 随机数生成器
     private Random Randomer { get; } = new();
@@ -270,69 +272,84 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             SyncPlaybackStateFromAuthority();
 
             int mode = Preferences.Default.StopButtonBehavior;
-            if (mode <= 0 || mode > 3) mode = 1;
+            if (mode <= 0 || mode > 3)
+            {
+                mode = 1;
+            }
+
+            if (mode == 3)
+            {
+                _isSeekingInternally = true;
+                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                _stopSeekState = 3;
+                _playheadMovedSinceStart = false;
+                return;
+            }
 
             if (wasPlaying)
             {
+                _isSeekingInternally = true;
                 DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
                 _stopSeekState = 1;
+                _playheadMovedSinceStart = false;
             }
             else
             {
-                switch (mode)
+                if (_stopSeekState == 0 && !_playheadMovedSinceStart)
                 {
-                    case 2:
-                        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
-                        _stopSeekState = 3;
-                        break;
-                    case 3:
-                        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
-                        break;
-                    default:
-                        if (_stopSeekState <= 0)
-                        {
-                            int? selectedTick = null;
-                            if (SelectedParts is { Count: > 0 } parts)
-                            {
-                                selectedTick = parts.Min(p => p.position);
-                            }
-
-                            if (selectedTick.HasValue)
-                            {
-                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(selectedTick.Value));
-                                _stopSeekState = 2;
-                            }
-                            else
-                            {
-                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
-                                _stopSeekState = 3;
-                            }
-                        }
-                        else if (_stopSeekState == 1)
-                        {
-                            int? selectedTick = null;
-                            if (SelectedParts is { Count: > 0 } parts)
-                            {
-                                selectedTick = parts.Min(p => p.position);
-                            }
-
-                            if (selectedTick.HasValue)
-                            {
-                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(selectedTick.Value));
-                                _stopSeekState = 2;
-                            }
-                            else
-                            {
-                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
-                                _stopSeekState = 3;
-                            }
-                        }
-                        else
-                        {
+                    _isSeekingInternally = true;
+                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
+                    _stopSeekState = 1;
+                }
+                else
+                {
+                    switch (mode)
+                    {
+                        case 2:
+                            _isSeekingInternally = true;
                             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
                             _stopSeekState = 3;
-                        }
-                        break;
+                            break;
+                        case 3:
+                            _isSeekingInternally = true;
+                            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                            break;
+                        default:
+                            if (_stopSeekState <= 1)
+                            {
+                                int? selectedTick = null;
+                                if (SelectedParts is { Count: > 0 } parts)
+                                {
+                                    selectedTick = parts.Min(p => p.position);
+                                }
+
+                                if (selectedTick.HasValue && selectedTick.Value != PlayPosTick)
+                                {
+                                    _isSeekingInternally = true;
+                                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(selectedTick.Value));
+                                    _stopSeekState = 2;
+                                }
+                                else
+                                {
+                                    _isSeekingInternally = true;
+                                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                    _stopSeekState = 3;
+                                }
+                            }
+                            else if (_stopSeekState == 2)
+                            {
+                                _isSeekingInternally = true;
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                _stopSeekState = 3;
+                            }
+                            else
+                            {
+                                _isSeekingInternally = true;
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                _stopSeekState = 3;
+                            }
+                            break;
+                    }
                 }
             }
         }).DisposeWith(_disposables);
@@ -466,6 +483,17 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         // TODO: 一定要发到UI线程吗？:不需要！docman已经做了
         switch (cmd)
         {
+            case SeekPlayPosTickNotification _:
+                if (_isSeekingInternally)
+                {
+                    _isSeekingInternally = false;
+                }
+                else
+                {
+                    _playheadMovedSinceStart = true;
+                    _stopSeekState = 0;
+                }
+                break;
             case SetPlayPosTickNotification setPlayPos:
                 // 等待渲染期间冻结回放标记，避免位置在等待点附近抖动漂移。
                 if (!setPlayPos.waitingRendering)
