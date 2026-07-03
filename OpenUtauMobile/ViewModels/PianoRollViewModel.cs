@@ -760,25 +760,6 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     #region 命中测试
 
-    /// <summary>
-    /// 哨兵音符：仅用于 SortedSet.GetViewBetween 的范围端点，不代表真实音符。
-    /// GetHashCode() 返回 int.MinValue，确保同 position 时哨兵排在所有真实音符之前，
-    /// 从而使 hiSentinel(?tick?) 作为右端点时能把所有 position == ?tick? 的真实音符纳入视图。
-    /// </summary>
-    private sealed class SentinelNote : UNote
-    {
-        public SentinelNote(int position)
-        {
-            this.position = position;
-        }
-
-        public override int GetHashCode() => int.MinValue;
-    }
-
-    // 预分配哨兵，避免每次命中测试触发 GC
-    private readonly SentinelNote _hitTestLoSentinel = new(0);
-    private readonly SentinelNote _hitTestHiSentinel = new(0);
-
     public UNote? HitTestNote(Point canvasPoint)
     {
         if (EditingVoicePart == null)
@@ -794,15 +775,17 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
         int toneInt = PointYToToneInt(canvasPoint.Y);
 
-        // 利用 SortedSet<UNote> 按 position 升序排列的特性，将候选集截断至 position ≤ tick。
-        // position 为整数，position ≤ tick 等价于 position ≤ ?tick?。
-        // 端点定位 O(log n)，随后遍历子视图 O(k)，k 为 position ≤ tick 的音符数。
-        // x 轴可能存在重叠（OverlapError），需遍历子视图全部元素确保正确性。
-        _hitTestHiSentinel.position = tick;
-        foreach (UNote note in EditingVoicePart.notes.GetViewBetween(_hitTestLoSentinel, _hitTestHiSentinel))
+        foreach (UNote note in EditingVoicePart.notes)
         {
+            if (note.position > tick)
+            {
+                break;
+            }
+
             if (note.tone == toneInt && tick < note.End)
+            {
                 return note;
+            }
         }
 
         return null;
@@ -859,12 +842,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         double minDistanceSquared = hitRadius * hitRadius;
         PitchPointHit? bestHit = null;
 
-        // Narrow candidates to notes whose tick range intersects canvasPoint.X ± hitRadius
+        // Narrow candidates to notes whose tick range intersects canvasPoint.X ± hitRadius.
         int loTick = PointXToTick(canvasPoint.X - hitRadius - _pitchPointHitMargin) - EditingVoicePart.position;
-        _hitTestLoSentinel.position = loTick;
-        _hitTestHiSentinel.position = PointXToTick(canvasPoint.X + hitRadius + _pitchPointHitMargin) - EditingVoicePart.position;
-        foreach (UNote note in EditingVoicePart.notes.GetViewBetween(_hitTestLoSentinel, _hitTestHiSentinel))
+        int hiTick = PointXToTick(canvasPoint.X + hitRadius + _pitchPointHitMargin) - EditingVoicePart.position;
+        foreach (UNote note in EditingVoicePart.notes)
         {
+            if (note.position > hiTick)
+            {
+                break;
+            }
+
             if (note.End < loTick)
             {
                 continue;
@@ -903,12 +890,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         double minDistanceSquared = hitThreshold * hitThreshold;
         PitchCurveHit? bestHit = null;
 
-        // Narrow candidates to notes whose tick range intersects canvasPoint.X ± hitThreshold
+        // Narrow candidates to notes whose tick range intersects canvasPoint.X ± hitThreshold.
         int loTick = PointXToTick(canvasPoint.X - hitThreshold - _pitchPointHitMargin) - EditingVoicePart.position;
-        _hitTestLoSentinel.position = loTick;
-        _hitTestHiSentinel.position = PointXToTick(canvasPoint.X + hitThreshold + _pitchPointHitMargin) - EditingVoicePart.position;
-        foreach (UNote note in EditingVoicePart.notes.GetViewBetween(_hitTestLoSentinel, _hitTestHiSentinel))
+        int hiTick = PointXToTick(canvasPoint.X + hitThreshold + _pitchPointHitMargin) - EditingVoicePart.position;
+        foreach (UNote note in EditingVoicePart.notes)
         {
+            if (note.position > hiTick)
+            {
+                break;
+            }
+
             if (note.End < loTick || note.pitch.data.Count < 2)
             {
                 continue;
