@@ -1,6 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Platform;
 using Avalonia.Interactivity;
+using System;
 using DialogHostAvalonia;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Services;
@@ -19,9 +21,27 @@ public partial class MainView : UserControl
     {
         base.OnAttachedToVisualTree(e);
         TopLevel? topLevel = AppService.GetTopLevel();
+        ConfigureAndroidSystemBars(topLevel);
         topLevel?.BackRequested += OnBackRequested;
         ToastService.Register(ToastOverlay.ConsumeAsync);
         ErrorDialogService.Register(async vm => { await PopupService.Show<object>(new ErrorDialogPopup(), vm); });
+    }
+
+    /// <summary>
+    /// 由 Avalonia 统一管理 Android 系统栏，避免原生窗口与 Avalonia 使用不同的输入坐标系。
+    /// </summary>
+    private static void ConfigureAndroidSystemBars(TopLevel? topLevel)
+    {
+        if (!OperatingSystem.IsAndroid())
+        {
+            return;
+        }
+
+        IInsetsManager? insetsManager = topLevel?.InsetsManager;
+        if (insetsManager != null)
+        {
+            insetsManager.IsSystemBarVisible = false;
+        }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

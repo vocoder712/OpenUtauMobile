@@ -12,6 +12,10 @@ public static class StorageProviderFactory
             // 桌面多窗口应用
             Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktopLifetime =>
                 desktopLifetime.MainWindow?.StorageProvider,
+            // Android 活动生命周期
+            Avalonia.Controls.ApplicationLifetimes.IActivityApplicationLifetime => TopLevel
+                .GetTopLevel(App.ActivityMainView)
+                ?.StorageProvider,
             // 移动单窗口应用
             Avalonia.Controls.ApplicationLifetimes.ISingleViewApplicationLifetime singleViewLifetime => TopLevel
                 .GetTopLevel(singleViewLifetime.MainView)

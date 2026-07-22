@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Media;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtauMobile;
@@ -35,7 +35,10 @@ internal sealed partial class Program
         {
             await BuildAvaloniaApp()
                 .WithInterFont()
-                .UseReactiveUI()
+                .UseReactiveUI(reactiveUIBuilder =>
+                {
+                    reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
+                })
                 .StartBrowserAppAsync("out");
         }
         catch (Exception ex)
@@ -188,11 +191,12 @@ internal sealed partial class Program
             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(args.Exception));
             args.SetObserved();
         };
-        RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
-        {
-            Log.Error(ex, "Unhandled ReactiveUI exception.");
-            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
-        });
+    }
+
+    private static void HandleReactiveException(Exception exception)
+    {
+        Log.Error(exception, "Unhandled ReactiveUI exception.");
+        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(exception));
     }
 
     private static (bool success, Color color, string source) TryGetPlatformAccentFallback()

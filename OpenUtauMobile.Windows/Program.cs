@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using Microsoft.Win32;
 using OpenUtau.Audio;
 using OpenUtau.Core;
@@ -34,7 +34,10 @@ sealed class Program
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
-            .UseReactiveUI()
+            .UseReactiveUI(reactiveUIBuilder =>
+            {
+                reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
+            })
             .LogToTrace();
     }
 
@@ -135,11 +138,12 @@ sealed class Program
             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(args.Exception));
             args.SetObserved();
         };
-        RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex =>
-        {
-            Log.Error(ex, "Unhandled ReactiveUI exception.");
-            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(ex));
-        });
+    }
+
+    private static void HandleReactiveException(Exception exception)
+    {
+        Log.Error(exception, "Unhandled ReactiveUI exception.");
+        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(exception));
     }
 
     private static (bool success, Color color, string source) TryGetPlatformAccentFallback()

@@ -57,6 +57,9 @@ Run from the `OpenUtauMobile.Browser` project folder. Note: initialization hangs
 - Audio integration lives in `OpenUtauMobile.Android/Audio`.
 - Storage integration lives in `OpenUtauMobile.Android/Storage`.
 - Resources in `OpenUtauMobile.Android/Resources`.
+- Builds target `net10.0-android36.0`; Android SDK Platform 36 is required.
+- Avalonia 12 uses an `AvaloniaAndroidApplication<App>` application class and a non-generic `AvaloniaMainActivity`.
+- Android uses `IActivityApplicationLifetime.MainViewFactory`; iOS and browser continue to use `ISingleViewApplicationLifetime`.
 - Known issue: undo/redo gesture invalid; triggers non-recoverable state machine fault.
 
 ### Windows

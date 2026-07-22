@@ -28,7 +28,7 @@
 
         <Panel>
             <!-- 导航页的容器 -->
-            <ContentControl Content="{Binding CurrentViewModel}"></ContentControl>
+            <ContentControl Content="{Binding CurrentViewModel}" />
             <controls:ToastOverlay x:Name="ToastOverlay" />
         </Panel>
     </dialogHostAvalonia:DialogHost>

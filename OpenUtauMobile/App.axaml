@@ -17,8 +17,7 @@
         <dialogHostAvalonia:DialogHostStyles />
         <!-- 新的 Theme 主题系统 -->
         <StyleInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/OpenUtauMobileTheme.axaml" />
-        <!-- IconPacks.Avalonia 包含了 PhosphorIcons 和 Fontaudio 两个图标库的样式 -->
-        <StyleInclude Source="avares://IconPacks.Avalonia.PhosphorIcons/PhosphorIcons.axaml" />
-        <StyleInclude Source="avares://IconPacks.Avalonia.Fontaudio/Fontaudio.axaml" />
+        <!-- IconPacks 2.0 仍使用 Avalonia 11 编译 XAML，此处提供 Avalonia 12 兼容控件主题。 -->
+        <StyleInclude Source="avares://OpenUtauMobile/Themes/IconPacksCompat.axaml" />
     </Application.Styles>
 </Application>
