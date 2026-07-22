@@ -8,6 +8,7 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
+using AndroidX.Core.View;
 using Avalonia;
 using Avalonia.Android;
 using Avalonia.Media;
@@ -48,7 +49,6 @@ namespace OpenUtauMobile.Android;
 public class MainActivity : AvaloniaMainActivity
 {
     private static MainActivity? _currentActivity;
-    private bool _convertingMouseGesture;
 
     internal static AppBuilder ConfigureAppBuilder(AppBuilder builder)
     {
@@ -96,26 +96,21 @@ public class MainActivity : AvaloniaMainActivity
     /// </summary>
     private void EnterImmersiveMode()
     {
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.R) // Android 11+
+        Window? window = Window;
+        View? decorView = window?.DecorView;
+        if (window == null || decorView == null)
         {
-            IWindowInsetsController? controller = Window?.InsetsController;
-            if (controller != null)
-            {
-                controller.SystemBarsBehavior =
-                    (int)WindowInsetsControllerBehavior.ShowTransientBarsBySwipe;
-            }
+            return;
         }
-        else
-        {
-            SystemUiFlags flags = SystemUiFlags.LayoutStable |
-                                  SystemUiFlags.LayoutHideNavigation |
-                                  SystemUiFlags.LayoutFullscreen |
-                                  SystemUiFlags.HideNavigation |
-                                  SystemUiFlags.Fullscreen |
-                                  SystemUiFlags.ImmersiveSticky;
 
-            Window?.DecorView.SystemUiVisibility = (StatusBarVisibility)flags;
+        WindowInsetsControllerCompat? controller = WindowCompat.GetInsetsController(window, decorView);
+        if (controller == null)
+        {
+            return;
         }
+
+        controller.Hide(WindowInsetsCompat.Type.SystemBars());
+        controller.SystemBarsBehavior = WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
     }
     /// <summary>
     /// 处理Intent
