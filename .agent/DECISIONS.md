@@ -54,3 +54,15 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Disable immersive mode in emulators; patch and locally build Avalonia.Android; treat injected touchscreen events as sufficient validation.
 - Impacted areas: Android emulator and mouse-primary-button input dispatch; physical touchscreen input is unchanged.
 
+- Date: 2026-07-22
+- Decision: Supersede the Avalonia `IInsetsManager` and mouse-event normalization approaches; manage immersive mode only in the Android activity using the official AndroidX `WindowInsetsControllerCompat` hide-and-transient-bars pattern.
+- Rationale: `IInsetsManager.IsSystemBarVisible = false` makes Avalonia 12 content non-interactive in this app. The activity's Android 11+ branch previously set only the transient-bar behavior and never hid the bars. Input device types must remain distinct for mouse, touch, and pen handling.
+- Alternatives considered: Continue using Avalonia's `IInsetsManager`; normalize mouse input as touch; maintain separate modern and legacy native implementations.
+- Impacted areas: Android system-bar visibility and the shared `MainView` attachment lifecycle; input event dispatch is unchanged.
+
+- Date: 2026-07-22
+- Decision: Embed managed assemblies in Android Debug APKs instead of using Fast Deployment.
+- Rationale: The 151 MB Fast Deployment override directory caused managed assembly loading to exceed Android's startup deadline. The system recorded a `failed to complete startup` ANR followed by a focus-event ANR even though the app eventually became usable. Embedded-assembly cold starts completed in 5.1-5.7 seconds without new ANRs.
+- Alternatives considered: Keep Fast Deployment and ignore debug-only ANRs; move application initialization off the UI thread without evidence that it caused these ANRs.
+- Impacted areas: Android Debug APK size, build/deployment time, and cold-start reliability; Release builds are unchanged.
+

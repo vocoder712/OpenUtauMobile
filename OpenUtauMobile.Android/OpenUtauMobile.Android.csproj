@@ -15,7 +15,8 @@
     <!-- 调试模式 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <IsTrimmable>True</IsTrimmable>
-        <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+        <!-- 避免 Fast Deployment 在启动期逐个加载程序集导致 ANR -->
+        <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     </PropertyGroup>
     <!-- 发布模式 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
