@@ -49,8 +49,6 @@ namespace OpenUtauMobile.Android;
 public class MainActivity : AvaloniaMainActivity
 {
     private static MainActivity? _currentActivity;
-    private bool _convertingMouseGesture;
-
     internal static AppBuilder ConfigureAppBuilder(AppBuilder builder)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 注册编码提供程序以支持更多编码格式
