@@ -49,6 +49,7 @@ namespace OpenUtauMobile.Android;
 public class MainActivity : AvaloniaMainActivity
 {
     private static MainActivity? _currentActivity;
+    private bool _convertingMouseGesture;
 
     internal static AppBuilder ConfigureAppBuilder(AppBuilder builder)
     {
