@@ -66,3 +66,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Keep Fast Deployment and ignore debug-only ANRs; move application initialization off the UI thread without evidence that it caused these ANRs.
 - Impacted areas: Android Debug APK size, build/deployment time, and cold-start reliability; Release builds are unchanged.
 
+- Date: 2026-07-23
+- Decision: Add viewport-right pruning to PartsCanvas note preview iteration.
+- Rationale: UVoicePart notes are position-sorted, so stopping when a note start exceeds the viewport right edge avoids scanning the remainder of long parts during each render frame.
+- Alternatives considered: Continue scanning to the part boundary; binary-search the note set (not supported by the existing collection API).
+- Impacted areas: `OpenUtauMobile/Controls/PartsCanvas.cs` note preview rendering performance.
+

@@ -422,6 +422,8 @@ public class PartsCanvas : Control, ICmdSubscriber
         // 视口左边缘在 part 内部坐标系（x=0 = part.position）下对应的 tick
         int viewLeftTick = (int)(TickOffset - part.position);
         double viewLeftX = viewLeftTick * TickWidth;
+        // 视口右边缘在 part 内部坐标系下的 x，用于提前终止有序音符遍历
+        double viewRightX = (TickOffset + Bounds.Width / TickWidth - part.position) * TickWidth;
 
         using (context.PushClip(rect))
         using (context.PushTransform(Matrix.CreateTranslation(rect.X, rect.Y + 2)))
@@ -432,6 +434,8 @@ public class PartsCanvas : Control, ICmdSubscriber
 
                 // SortedSet 按 position 升序；起点超出 part 右侧则后续全部超出
                 if (noteX1 >= partW) break;
+                // 音符起点超出视口右侧则后续全部不可见
+                if (noteX1 >= viewRightX) break;
 
                 double noteX2 = note.End * TickWidth;
                 // 音符右端仍在视口左侧。
