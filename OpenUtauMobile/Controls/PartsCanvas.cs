@@ -421,50 +421,30 @@ public class PartsCanvas : Control, ICmdSubscriber
 
         // 视口左边缘在 part 内部坐标系（x=0 = part.position）下对应的 tick
         int viewLeftTick = (int)(TickOffset - part.position);
-        // 左哨兵向左偏移一个视口宽度，以包含跨越视口左边缘的长音符
-        int viewWidthTick = (int)(rect.Width / TickWidth) + 1;
-        int loTick = Math.Max(0, viewLeftTick - viewWidthTick);
-        int hiTick = part.Duration;
-
-        // SentinelNote.GetHashCode() == int.MinValue，确保哨兵落在同 position 真实音符之前
-        SentinelNote loSentinel = new(loTick);
-        SentinelNote hiSentinel = new(hiTick);
+        double viewLeftX = viewLeftTick * TickWidth;
+        // 视口右边缘在 part 内部坐标系下的 x，用于提前终止有序音符遍历
+        double viewRightX = (TickOffset + Bounds.Width / TickWidth - part.position) * TickWidth;
 
         using (context.PushClip(rect))
         using (context.PushTransform(Matrix.CreateTranslation(rect.X, rect.Y + 2)))
         {
-            foreach (UNote note in part.notes.GetViewBetween(loSentinel, hiSentinel))
+            foreach (UNote note in part.notes)
             {
                 double noteX1 = note.position * TickWidth;
 
                 // SortedSet 按 position 升序；起点超出 part 右侧则后续全部超出
                 if (noteX1 >= partW) break;
+                // 音符起点超出视口右侧则后续全部不可见
+                if (noteX1 >= viewRightX) break;
 
                 double noteX2 = note.End * TickWidth;
-                // 音符右端仍在视口左侧（偏移量兜住的但实际不可见的音符）
-                if (noteX2 <= viewLeftTick * TickWidth) continue;
+                // 音符右端仍在视口左侧。
+                if (noteX2 <= viewLeftX) continue;
 
                 double noteY = (hi - note.tone) * scaleY;
                 context.DrawLine(notePen, new Point(noteX1, noteY), new Point(noteX2, noteY));
             }
         }
-    }
-
-    /// <summary>
-    /// 仅用于 <see cref="System.Collections.Generic.SortedSet{T}.GetViewBetween"/> 边界定位。
-    /// <para>
-    /// <see cref="UNote.CompareTo"/> 先比较 position，position 相同时比 GetHashCode()。
-    /// 此类返回 int.MinValue，保证哨兵落在同 position 所有真实音符之前。
-    /// </para>
-    /// </summary>
-    private sealed class SentinelNote : UNote
-    {
-        public SentinelNote(int position)
-        {
-            this.position = position;
-        }
-
-        public override int GetHashCode() => int.MinValue;
     }
 
     // ── 波形缩略图（UWavePart）

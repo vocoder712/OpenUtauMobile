@@ -16,6 +16,9 @@ public static class AppService
             // 桌面多窗口应用
             Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktopLifetime =>
                 desktopLifetime.MainWindow,
+            // Android 活动生命周期
+            Avalonia.Controls.ApplicationLifetimes.IActivityApplicationLifetime =>
+                App.ActivityMainView,
             // 移动单窗口应用
             Avalonia.Controls.ApplicationLifetimes.ISingleViewApplicationLifetime singleViewLifetime =>
                 singleViewLifetime.MainView,
@@ -33,6 +36,9 @@ public static class AppService
         {
             case Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktopLifetime:
                 desktopLifetime.Shutdown();
+                return true;
+            case Avalonia.Controls.ApplicationLifetimes.IActivityApplicationLifetime:
+                Environment.Exit(0);
                 return true;
             case Avalonia.Controls.ApplicationLifetimes.ISingleViewApplicationLifetime
                 when !OperatingSystem.IsBrowser():

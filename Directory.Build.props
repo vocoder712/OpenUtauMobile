@@ -1,6 +1,6 @@
 ﻿<Project>
     <PropertyGroup>
-        <AvaloniaVersion>11.3.9</AvaloniaVersion>
+        <AvaloniaVersion>12.1.0</AvaloniaVersion>
         <!-- OpenUtau Mobile 版本号 -->
         <MainVersion>2.0.3</MainVersion>
         <!-- OpenUtau.Core 及附加插件版本号 -->

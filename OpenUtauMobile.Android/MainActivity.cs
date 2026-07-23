@@ -8,10 +8,11 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
+using AndroidX.Core.View;
 using Avalonia;
 using Avalonia.Android;
 using Avalonia.Media;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtauMobile.Android.Audio;
@@ -45,11 +46,10 @@ namespace OpenUtauMobile.Android;
     DataHost = "*",
     DataMimeType = "*/*",
     DataPathPattern = ".*\\\\.ustx")] // 匹配 ".*\\.ustx"
-public class MainActivity : AvaloniaMainActivity<App>
+public class MainActivity : AvaloniaMainActivity
 {
     private static MainActivity? _currentActivity;
-
-    protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
+    internal static AppBuilder ConfigureAppBuilder(AppBuilder builder)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 注册编码提供程序以支持更多编码格式
         InitPathManager();
@@ -58,8 +58,10 @@ public class MainActivity : AvaloniaMainActivity<App>
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
         ServiceHub.ExternalStorageService = new Storage.AndroidExternalStorageService(); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
-        return base.CustomizeAppBuilder(builder)
-            .UseReactiveUI();
+        return builder.UseReactiveUI(reactiveUIBuilder =>
+        {
+            reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
+        });
     }
 
     protected override void OnNewIntent(Intent? intent)
@@ -93,30 +95,21 @@ public class MainActivity : AvaloniaMainActivity<App>
     /// </summary>
     private void EnterImmersiveMode()
     {
-        if (Build.VERSION.SdkInt >= BuildVersionCodes.R) // Android 11+
+        Window? window = Window;
+        View? decorView = window?.DecorView;
+        if (window == null || decorView == null)
         {
-            Window?.SetDecorFitsSystemWindows(false);
-
-            var controller = Window?.InsetsController;
-            if (controller != null)
-            {
-                controller.Hide(WindowInsets.Type.StatusBars() | WindowInsets.Type.NavigationBars());
-
-                controller.SystemBarsBehavior =
-                    (int)WindowInsetsControllerBehavior.ShowTransientBarsBySwipe;
-            }
+            return;
         }
-        else
+
+        WindowInsetsControllerCompat? controller = WindowCompat.GetInsetsController(window, decorView);
+        if (controller == null)
         {
-            SystemUiFlags flags = SystemUiFlags.LayoutStable |
-                                  SystemUiFlags.LayoutHideNavigation |
-                                  SystemUiFlags.LayoutFullscreen |
-                                  SystemUiFlags.HideNavigation |
-                                  SystemUiFlags.Fullscreen |
-                                  SystemUiFlags.ImmersiveSticky;
-
-            Window?.DecorView.SystemUiVisibility = (StatusBarVisibility)flags;
+            return;
         }
+
+        controller.Hide(WindowInsetsCompat.Type.SystemBars());
+        controller.SystemBarsBehavior = WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
     }
     /// <summary>
     /// 处理Intent
@@ -182,11 +175,12 @@ public class MainActivity : AvaloniaMainActivity<App>
             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("未观察到的 Task 异常", args.Exception));
             args.SetObserved();
         };
-        RxApp.DefaultExceptionHandler = Observer.Create<Exception>(ex => 
-        {
-            Log.Error(ex, "ReactiveUI 中发生的未处理异常！");
-            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("ReactiveUI 中发生的未处理异常", ex));
-        });
+    }
+
+    private static void HandleReactiveException(Exception exception)
+    {
+        Log.Error(exception, "ReactiveUI 中发生的未处理异常！");
+        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("ReactiveUI 中发生的未处理异常", exception));
     }
 
     /// <summary>

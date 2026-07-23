@@ -12,9 +12,9 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 - Keep UI aligned with Material Design 3 (MD3) and modern, touch-first interaction. Plan for keyboard/mouse and stylus compatibility.
 - Do not hardcode numeric values or enum values in new code.
 - Color tokens are generated dynamically; other tokens live in `ThemeStaticTokens.cs`.
-- Use MVVM. UI is Avalonia 11 with a planned upgrade to the latest version.
+- Use MVVM. UI is Avalonia 12.1 on .NET 10.
 - Use ReactiveUI and the Fody helper (deprecated); plan to migrate to a source-generator alternative.
-- Language rules follow .NET 9 preview.
+- Language rules follow .NET 10 preview.
 
 ## Performance Pain Points
 
