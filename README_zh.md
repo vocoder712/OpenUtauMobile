@@ -30,6 +30,9 @@
 > - 大规模内部重构
 >
 > 在此阶段，项目结构以及内部实现可能会频繁和不稳定地发生变化。
+>
+> 如果您想测试新更新，[请在此处下载最新的夜间构建版本](https://nightly.link/vocoder712/OpenUtauMobile/workflows/build-android-dev/dev/OpenUtauMobile-android-arm64.zip)。
+
 
 ## 特别感谢
 
