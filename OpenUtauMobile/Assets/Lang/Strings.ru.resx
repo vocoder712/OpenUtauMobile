@@ -928,19 +928,19 @@
     <value>Версия ядра </value>
   </data>
   <data name="About.BuildNumber" xml:space="preserve">
-    <value>Номер сборки</value>
+    <value>Номер сборки </value>
   </data>
   <data name="About.BuildTime" xml:space="preserve">
-    <value>Время сборки (UTC)</value>
+    <value>Время сборки (UTC) </value>
   </data>
   <data name="About.BuildMachine" xml:space="preserve">
-    <value>Система сборки</value>
+    <value>Система сборки </value>
   </data>
   <data name="About.CommitId" xml:space="preserve">
-    <value>ID коммита</value>
+    <value>ID коммита </value>
   </data>
   <data name="About.ActionId" xml:space="preserve">
-    <value>ID запуска Action</value>
+    <value>ID запуска Action </value>
   </data>
   <data name="About.ProjectHome" xml:space="preserve">
     <value>Страница проекта</value>
