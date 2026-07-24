@@ -76,10 +76,32 @@ jobs:
             -p:AndroidSigningKeyAlias=${{ secrets.ANDROID_KEY_ALIAS }} \
             -p:AndroidSigningKeyPass=${{ secrets.ANDROID_KEY_PASSWORD }} \
             -p:RuntimeIdentifier=android-arm64
-      # 上传 apk
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenUtauMobile-android-arm64
-          path: |
-            OpenUtauMobile.Android/bin/Release/net10.0-android36.0/android-arm64/publish/*.apk
+      - name: Prepare APK Artifact
+        shell: bash
+        run: |
+          PUBLISH_DIR="OpenUtauMobile.Android/bin/Release/net10.0-android36.0/android-arm64/publish"
+          ARTIFACT_DIR="artifacts/android-arm64"
+      
+          echo "===== 准备上传 ====="
+          find "$PUBLISH_DIR" -maxdepth 1 -type f -printf '%f\n'
+      
+          mkdir -p "$ARTIFACT_DIR"
+      
+          SIGNED_APK="$(find "$PUBLISH_DIR" -maxdepth 1 -type f \
+            \( -iname '*-signed.apk' \) \
+            | head -n 1)"
+      
+          if [ -z "$SIGNED_APK" ]; then
+            echo "::error::找不到已签名的 APK 文件"
+            exit 1
+          fi
+      
+          cp "$SIGNED_APK" \
+            "$ARTIFACT_DIR/OpenUtauMobile-预览版-${{ github.run_number }}-arm64.apk"
+
+        - name: Upload APK
+          uses: actions/upload-artifact@v4
+          with:
+            name: OpenUtauMobile-预览版-android-arm64-${{ github.run_number }}
+            path: artifacts/android-arm64/OpenUtauMobile-预览版-${{ github.run_number }}-arm64.apk
+            if-no-files-found: error
