@@ -49,6 +49,8 @@ namespace OpenUtauMobile.Android;
 public class MainActivity : AvaloniaMainActivity
 {
     private static MainActivity? _currentActivity;
+    internal static MainActivity? CurrentActivity => _currentActivity;
+
     internal static AppBuilder ConfigureAppBuilder(AppBuilder builder)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 注册编码提供程序以支持更多编码格式
@@ -56,7 +58,8 @@ public class MainActivity : AvaloniaMainActivity
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
-        ServiceHub.ExternalStorageService = new Storage.AndroidExternalStorageService(); // 设置外部存储服务
+        ServiceHub.ExternalStorageService =
+            new Storage.AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return builder.UseReactiveUI(reactiveUIBuilder =>
         {
@@ -72,10 +75,20 @@ public class MainActivity : AvaloniaMainActivity
     
     protected override void OnCreate(Bundle? savedInstanceState)
     {
-        base.OnCreate(savedInstanceState);
         _currentActivity = this;
+        base.OnCreate(savedInstanceState);
         HandleIntent(Intent); // 处理启动时的 Intent
         EnterImmersiveMode();
+    }
+
+    protected override void OnDestroy()
+    {
+        if (ReferenceEquals(_currentActivity, this))
+        {
+            _currentActivity = null;
+        }
+
+        base.OnDestroy();
     }
     /// <summary>
     /// 自动恢复沉浸模式

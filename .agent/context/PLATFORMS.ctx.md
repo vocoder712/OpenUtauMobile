@@ -56,6 +56,8 @@ Run from the `OpenUtauMobile.Browser` project folder. Note: initialization hangs
 ### Android
 - Audio integration lives in `OpenUtauMobile.Android/Audio`.
 - Storage integration lives in `OpenUtauMobile.Android/Storage`.
+- Android 10 and earlier use runtime `READ_EXTERNAL_STORAGE` / `WRITE_EXTERNAL_STORAGE` permissions through the current activity; Android 10 opts into legacy external storage for the internal raw-path file picker.
+- Android 11 and later use `MANAGE_EXTERNAL_STORAGE`.
 - Resources in `OpenUtauMobile.Android/Resources`.
 - Builds target `net10.0-android36.0`; Android SDK Platform 36 is required.
 - Avalonia 12 uses an `AvaloniaAndroidApplication<App>` application class and a non-generic `AvaloniaMainActivity`.
