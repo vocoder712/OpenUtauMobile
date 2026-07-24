@@ -98,10 +98,10 @@ jobs:
       
           cp "$SIGNED_APK" \
             "$ARTIFACT_DIR/OpenUtauMobile-预览版-${{ github.run_number }}-arm64.apk"
-
-        - name: Upload APK
-          uses: actions/upload-artifact@v4
-          with:
-            name: OpenUtauMobile-预览版-android-arm64-${{ github.run_number }}
-            path: artifacts/android-arm64/OpenUtauMobile-预览版-${{ github.run_number }}-arm64.apk
-            if-no-files-found: error
+          
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-预览版-android-arm64-${{ github.run_number }}
+          path: artifacts/android-arm64/OpenUtauMobile-预览版-${{ github.run_number }}-arm64.apk
+          if-no-files-found: error
