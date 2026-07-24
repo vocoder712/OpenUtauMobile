@@ -78,3 +78,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Commit a manually incremented build number; reuse the Release application ID for local Debug builds.
 - Impacted areas: Shared build properties, Android packaging, Android development workflow, and About-page build metadata.
 
+- Date: 2026-07-24
+- Decision: Resolve legacy storage permissions through the live Android activity and opt Android 10 into the legacy external-storage model.
+- Rationale: `Application.Context` is never an `Activity`, so Android 10 and earlier could neither check dangerous permissions nor open the runtime permission dialog. The internal file picker also requires raw-path access that Android 10 otherwise restricts under scoped storage.
+- Alternatives considered: Launch the system Storage Access Framework picker; request permissions through an application context.
+- Impacted areas: Android 10 and earlier storage permission checks, runtime permission requests, and raw external-storage access.
+
