@@ -942,6 +942,21 @@
   <data name="About.CoreVersion" xml:space="preserve">
     <value>コアバージョン </value>
   </data>
+  <data name="About.BuildNumber" xml:space="preserve">
+    <value>ビルド番号</value>
+  </data>
+  <data name="About.BuildTime" xml:space="preserve">
+    <value>ビルド日時 (UTC)</value>
+  </data>
+  <data name="About.BuildMachine" xml:space="preserve">
+    <value>ビルドシステム</value>
+  </data>
+  <data name="About.CommitId" xml:space="preserve">
+    <value>コミット ID</value>
+  </data>
+  <data name="About.ActionId" xml:space="preserve">
+    <value>Action 実行 ID</value>
+  </data>
   <data name="About.ProjectHome" xml:space="preserve">
     <value>プロジェクトホーム</value>
   </data>

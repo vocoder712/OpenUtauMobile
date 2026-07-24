@@ -945,6 +945,21 @@
   <data name="About.CoreVersion" xml:space="preserve">
     <value>Core Version </value>
   </data>
+  <data name="About.BuildNumber" xml:space="preserve">
+    <value>Build number</value>
+  </data>
+  <data name="About.BuildTime" xml:space="preserve">
+    <value>Build time (UTC)</value>
+  </data>
+  <data name="About.BuildMachine" xml:space="preserve">
+    <value>Build system</value>
+  </data>
+  <data name="About.CommitId" xml:space="preserve">
+    <value>Commit ID</value>
+  </data>
+  <data name="About.ActionId" xml:space="preserve">
+    <value>Action run ID</value>
+  </data>
   <data name="About.ProjectHome" xml:space="preserve">
     <value>Project Home</value>
   </data>
