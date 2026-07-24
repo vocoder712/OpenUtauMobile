@@ -72,3 +72,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Continue scanning to the part boundary; binary-search the note set (not supported by the existing collection API).
 - Impacted areas: `OpenUtauMobile/Controls/PartsCanvas.cs` note preview rendering performance.
 
+- Date: 2026-07-23
+- Decision: Compose CI versions as `MainVersion + Suffix + "." + GITHUB_RUN_NUMBER`, use `10000 + GITHUB_RUN_NUMBER` for Android version codes, and give Debug Android builds a `.debug` application ID suffix.
+- Rationale: GitHub run numbers provide monotonic CI build identifiers, while distinct Debug and Release package IDs allow side-by-side installation and avoid Android downgrade conflicts.
+- Alternatives considered: Commit a manually incremented build number; reuse the Release application ID for local Debug builds.
+- Impacted areas: Shared build properties, Android packaging, Android development workflow, and About-page build metadata.
+

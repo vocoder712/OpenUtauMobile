@@ -34,7 +34,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          global-json-file: global.json
       # 安装 android 工作负载
       - name: Install Android workload
         run: |
@@ -45,6 +45,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      # 收集写入程序集的构建信息
+      - name: Collect Build Metadata
+        run: |
+          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BUILD_MACHINE=${{ runner.os }} / $(uname -srm)" >> "$GITHUB_ENV"
       # 下载密钥
       - name: Decode Keystore
         run: |
@@ -53,12 +58,17 @@ jobs:
       - name: Restore
         run: dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj
       # 核心发布命令
-      # 构建 Release 模式 | 目标框架 net9.0-android | 仅打包 arm64 架构的 APK
+      # 构建 Release 模式 | 目标框架 net10.0-android36.0 | 仅打包 arm64 架构的 APK
       - name: Publish Android ARM64
         run: |
           dotnet publish OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
             -c Release \
-            -f net9.0-android \
+            -f net10.0-android36.0 \
+            -p:BuildNumber=${{ github.run_number }} \
+            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
+            -p:BuildMachine="$BUILD_MACHINE" \
+            -p:SourceCommit=${{ github.sha }} \
+            -p:ActionRunId=${{ github.run_id }} \
             -p:AndroidPackageFormat=apk \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore=${{ github.workspace }}/signing.keystore \
@@ -72,4 +82,4 @@ jobs:
         with:
           name: OpenUtauMobile-android-arm64
           path: |
-            OpenUtauMobile.Android/bin/Release/net9.0-android/android-arm64/publish/*.apk
+            OpenUtauMobile.Android/bin/Release/net10.0-android36.0/android-arm64/publish/*.apk

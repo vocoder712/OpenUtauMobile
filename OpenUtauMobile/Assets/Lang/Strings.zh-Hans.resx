@@ -945,6 +945,21 @@
   <data name="About.CoreVersion" xml:space="preserve">
     <value>内核版本 </value>
   </data>
+  <data name="About.BuildNumber" xml:space="preserve">
+    <value>构建号 </value>
+  </data>
+  <data name="About.BuildTime" xml:space="preserve">
+    <value>构建时间（UTC） </value>
+  </data>
+  <data name="About.BuildMachine" xml:space="preserve">
+    <value>构建系统 </value>
+  </data>
+  <data name="About.CommitId" xml:space="preserve">
+    <value>Commit ID </value>
+  </data>
+  <data name="About.ActionId" xml:space="preserve">
+    <value>Action 运行 ID </value>
+  </data>
   <data name="About.ProjectHome" xml:space="preserve">
     <value>项目主页</value>
   </data>

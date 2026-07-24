@@ -16,6 +16,11 @@ public class AboutViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> OpenFeedbackCommand { get; }
     public string Version { get; }
     public string CoreVersion { get; }
+    public string BuildNumber { get; }
+    public string BuildTimestamp { get; }
+    public string BuildMachine { get; }
+    public string SourceCommit { get; }
+    public string ActionRunId { get; }
 
     public AboutViewModel(MainViewModel navigator) : base(navigator)
     {
@@ -33,9 +38,19 @@ public class AboutViewModel : NavigateViewModelBase
         Version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
             .InformationalVersion ?? L.S("Common.Unknown");
 
-        CoreVersion = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .FirstOrDefault(x => x.Key == "CoreVersion")?
-            .Value ?? L.S("Common.Unknown");
+        AssemblyMetadataAttribute[] metadata = assembly.GetCustomAttributes<AssemblyMetadataAttribute>().ToArray();
+        CoreVersion = GetMetadata(metadata, "CoreVersion");
+        BuildNumber = GetMetadata(metadata, "BuildNumber");
+        BuildTimestamp = GetMetadata(metadata, "BuildTimestamp");
+        BuildMachine = GetMetadata(metadata, "BuildMachine");
+        SourceCommit = GetMetadata(metadata, "SourceCommit");
+        ActionRunId = GetMetadata(metadata, "ActionRunId");
+    }
+
+    private static string GetMetadata(AssemblyMetadataAttribute[] metadata, string key)
+    {
+        string? value = metadata.FirstOrDefault(attribute => attribute.Key == key)?.Value;
+        return string.IsNullOrWhiteSpace(value) || value == "Unknown" ? L.S("Common.Unknown") : value;
     }
 
     private void OnBack()
