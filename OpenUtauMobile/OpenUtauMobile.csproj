@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -24,23 +24,18 @@
         <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)"/>
         <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)"/>
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)">
-            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="Avalonia.ReactiveUI" Version="$(AvaloniaVersion)"/>
-        <PackageReference Include="DialogHost.Avalonia" Version="0.11.0"/>
-        <PackageReference Include="IconPacks.Avalonia.Fontaudio" Version="1.3.1"/>
-        <PackageReference Include="IconPacks.Avalonia.PhosphorIcons" Version="1.3.1"/>
+        <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.3"/>
+        <PackageReference Include="DialogHost.Avalonia" Version="0.12.3"/>
+        <PackageReference Include="IconPacks.Avalonia.Fontaudio" Version="2.0.0"/>
+        <PackageReference Include="IconPacks.Avalonia.PhosphorIcons" Version="2.0.0"/>
         <PackageReference Include="MaterialColorUtilities" Version="0.3.0"/>
-        <PackageReference Include="ReactiveUI" Version="20.1.1"/>
+        <PackageReference Include="ReactiveUI" Version="23.2.28"/>
         <PackageReference Include="ReactiveUI.Fody" Version="19.5.41"/>
-        <PackageReference Include="Semi.Avalonia" Version="11.3.7.2"/>
+        <PackageReference Include="Semi.Avalonia" Version="12.1.0"/>
         <PackageReference Include="MeltySynth" Version="2.4.1"/>
         <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0"/>
         <PackageReference Include="Serilog.Sinks.File" Version="8.0.0-dev-02318"/>
-        <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="11.3.9.5"/>
+        <PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0"/>
     </ItemGroup>
 
     <ItemGroup>

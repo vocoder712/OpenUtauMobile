@@ -13,6 +13,8 @@ namespace OpenUtauMobile;
 
 public partial class App : Application
 {
+    internal static MainView? ActivityMainView { get; private set; }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -42,6 +44,10 @@ public partial class App : Application
                 DataContext = new MainViewModel()
             };
         }
+        else if (ApplicationLifetime is IActivityApplicationLifetime activityPlatform)
+        {
+            activityPlatform.MainViewFactory = CreateActivityMainView;
+        }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
             singleViewPlatform.MainView = new MainView
@@ -54,6 +60,16 @@ public partial class App : Application
 
         // Follow system light/dark changes with runtime-generated semantic theme.
         ActualThemeVariantChanged += (_, _) => ThemeManagerV2.OnThemeVariantChanged();
+    }
+
+    private static MainView CreateActivityMainView()
+    {
+        MainView mainView = new MainView
+        {
+            DataContext = new MainViewModel()
+        };
+        ActivityMainView = mainView;
+        return mainView;
     }
 
     private static ThemeVariant ParseThemePreference(string? value) => value switch

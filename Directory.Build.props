@@ -1,19 +1,26 @@
 ﻿<Project>
     <PropertyGroup>
-        <AvaloniaVersion>11.3.9</AvaloniaVersion>
+        <AvaloniaVersion>12.1.0</AvaloniaVersion>
         <!-- OpenUtau Mobile 版本号 -->
         <MainVersion>2.0.3</MainVersion>
         <!-- OpenUtau.Core 及附加插件版本号 -->
         <CoreVersion>0.1.568</CoreVersion>
-        <!-- 构建号（主要用于 Android）和版本后缀 -->
-        <BuildNumber>20</BuildNumber>
+        <!-- 构建号由 CI 传入，本地构建使用 0 -->
+        <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
         <Suffix>-Canary</Suffix>
         <!-- 外显版本号 -->
-        <Version>$(MainVersion)$(Suffix)</Version>
+        <Version>$(MainVersion)$(Suffix).$(BuildNumber)</Version>
+        <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
         <!-- 包名 -->
-        <ApplicationId>pers.vocoder712.openutaumobile.canary</ApplicationId>
-        <ApplicationVersion>$(BuildNumber)</ApplicationVersion>
+        <BaseApplicationId>pers.vocoder712.openutaumobile.canary</BaseApplicationId>
+        <ApplicationId>$(BaseApplicationId)</ApplicationId>
+        <ApplicationVersion>$([MSBuild]::Add(10000, $(BuildNumber)))</ApplicationVersion>
         <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
+        <!-- CI 构建信息；未传入的字段在关于页面显示为未知 -->
+        <BuildTimestamp Condition="'$(BuildTimestamp)' == ''">Unknown</BuildTimestamp>
+        <BuildMachine Condition="'$(BuildMachine)' == ''">Unknown</BuildMachine>
+        <SourceCommit Condition="'$(SourceCommit)' == ''">Unknown</SourceCommit>
+        <ActionRunId Condition="'$(ActionRunId)' == ''">Unknown</ActionRunId>
     </PropertyGroup>
     <!-- 启用预览语言特性 -->
     <PropertyGroup>
@@ -22,5 +29,10 @@
     <!-- 元数据映射 -->
     <ItemGroup>
         <AssemblyMetadata Include="CoreVersion" Value="$(CoreVersion)"/>
+        <AssemblyMetadata Include="BuildNumber" Value="$(BuildNumber)"/>
+        <AssemblyMetadata Include="BuildTimestamp" Value="$(BuildTimestamp)"/>
+        <AssemblyMetadata Include="BuildMachine" Value="$(BuildMachine)"/>
+        <AssemblyMetadata Include="SourceCommit" Value="$(SourceCommit)"/>
+        <AssemblyMetadata Include="ActionRunId" Value="$(ActionRunId)"/>
     </ItemGroup>
 </Project>

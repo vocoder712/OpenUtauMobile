@@ -23,6 +23,7 @@ This workflow is for AI agents and human contributors to restore context quickly
 - Avoid editing `OpenUtau.Core` and `OpenUtau.Plugin.Builtin` unless necessary.
 - Do not hardcode numeric values or enum values in new code.
 - Color tokens are generated dynamically; other tokens live in `ThemeStaticTokens.cs`.
+- When running `dotnet build` in Codex sandboxes, ensure the working directory/output paths are writable (use `sudo` only if necessary) to avoid permission errors.
 
 ## Communication Expectations
 

@@ -83,28 +83,28 @@
                             <Button Classes="HomeActionButton" Command="{Binding NewCommand}">
                                 <StackPanel Orientation="Vertical"
                                             Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
-                                    <iconPacks:PackIconPhosphorIcons Kind="Plus"></iconPacks:PackIconPhosphorIcons>
+                                    <iconPacks:PackIconPhosphorIcons Kind="Plus" />
                                     <TextBlock Text="{DynamicResource Home.Action.New}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding OpenCommand}">
                                 <StackPanel Orientation="Vertical"
                                             Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
-                                    <iconPacks:PackIconPhosphorIcons Kind="FolderOpen"></iconPacks:PackIconPhosphorIcons>
+                                    <iconPacks:PackIconPhosphorIcons Kind="FolderOpen" />
                                     <TextBlock Text="{DynamicResource Home.Action.Open}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding SingersCommand}">
                                 <StackPanel Orientation="Vertical"
                                             Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
-                                    <iconPacks:PackIconPhosphorIcons Kind="MicrophoneStage"></iconPacks:PackIconPhosphorIcons>
+                                    <iconPacks:PackIconPhosphorIcons Kind="MicrophoneStage" />
                                     <TextBlock Text="{DynamicResource Home.Action.Singers}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding OptionsCommand}">
                                 <StackPanel Orientation="Vertical"
                                             Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
-                                    <iconPacks:PackIconPhosphorIcons Kind="List"></iconPacks:PackIconPhosphorIcons>
+                                    <iconPacks:PackIconPhosphorIcons Kind="List" />
                                     <TextBlock Text="{DynamicResource Home.Action.Options}" />
                                 </StackPanel>
                             </Button>

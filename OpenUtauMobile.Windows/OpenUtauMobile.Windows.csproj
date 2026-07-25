@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net9.0-windows</TargetFramework>
+        <TargetFramework>net10.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <RuntimeIdentifiers>win-x64;win-x86;win-arm64</RuntimeIdentifiers>
@@ -14,11 +14,6 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
-        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.--> 
-        <PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)">
-            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-        </PackageReference>
         <PackageReference Include="NAudio" Version="2.2.1" />
     </ItemGroup>
 

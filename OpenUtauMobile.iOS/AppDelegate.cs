@@ -5,7 +5,7 @@ using Foundation;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.iOS;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 using OpenUtau.Core;
 using OpenUtauMobile.Services;
 using Serilog;
@@ -29,7 +29,9 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         // TODO: iOS尚未实现音频输出
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return base.CustomizeAppBuilder(builder)
-            .UseReactiveUI();
+            .UseReactiveUI(_ =>
+            {
+            });
     }
 
     private static void InitLogging()

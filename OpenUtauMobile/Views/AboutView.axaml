@@ -32,7 +32,9 @@
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetPageScroll}">
                     <!-- Hero -->
-                    <StackPanel HorizontalAlignment="Center" Margin="0,32,0,24" Spacing="0">
+                    <StackPanel HorizontalAlignment="Center" 
+                                Margin="0,32,0,24" 
+                                Spacing="0">
                         <Border Width="72" Height="72"
                                 CornerRadius="16"
                                 ClipToBounds="True"
@@ -65,7 +67,51 @@
                             <Run Text="{DynamicResource About.CoreVersion}" />
                             <Run Text="{Binding CoreVersion}" />
                         </TextBlock>
-
+                        <!-- 构建号 -->
+                        <TextBlock FontSize="12"
+                                   Opacity="0.40"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0">
+                            <Run Text="{DynamicResource About.BuildNumber}" />
+                            <Run Text="{Binding BuildNumber}" />
+                        </TextBlock>
+                        <!-- 构建时间 -->
+                        <TextBlock FontSize="12"
+                                   Opacity="0.40"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0">
+                            <Run Text="{DynamicResource About.BuildTime}" />
+                            <Run Text="{Binding BuildTimestamp}" />
+                        </TextBlock>
+                        <!-- 构建系统 -->
+                        <TextBlock FontSize="12"
+                                   Opacity="0.40"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0">
+                            <Run Text="{DynamicResource About.BuildMachine}" />
+                            <Run Text="{Binding BuildMachine}" />
+                        </TextBlock>
+                        <!-- Commit ID -->
+                        <TextBlock FontSize="12"
+                                   Opacity="0.40"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0">
+                            <Run Text="{DynamicResource About.CommitId}" />
+                            <Run Text="{Binding SourceCommit}" />
+                        </TextBlock>
+                        <!-- Action 运行 ID -->
+                        <TextBlock FontSize="12"
+                                   Opacity="0.40"
+                                   TextAlignment="Center"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,4,0,0">
+                            <Run Text="{DynamicResource About.ActionId}" />
+                            <Run Text="{Binding ActionRunId}" />
+                        </TextBlock>
                     </StackPanel>
 
                     <!-- 选项栏 -->
