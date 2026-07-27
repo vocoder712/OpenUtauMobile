@@ -84,3 +84,15 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Launch the system Storage Access Framework picker; request permissions through an application context.
 - Impacted areas: Android 10 and earlier storage permission checks, runtime permission requests, and raw external-storage access.
 
+- Date: 2026-07-25
+- Decision: Give the dependency manager a page-scoped MD3 component token set and render its tabs with a compact custom state-layer template.
+- Rationale: The default desktop tab indicator, unconstrained count badges, and filled hover treatment produced inconsistent geometry and excessive contrast. Page-scoped tokens keep responsive spacing, badge shape, state opacity, and the short pill indicator consistent across generated color themes.
+- Alternatives considered: Modify the global Avalonia TabItem theme; continue using per-control literal values.
+- Impacted areas: Dependency manager layout and styles; shared static theme tokens.
+
+- Date: 2026-07-27
+- Decision: Supersede the dependency-manager-specific tab header template with a global MD3 secondary TabItem style.
+- Rationale: Secondary tabs are a shared component pattern. A global style gives every TabItem the same 48dp container, Title Small label, state layer, semantic colors, and full-width 2dp active indicator while allowing each view to supply arbitrary header content.
+- Alternatives considered: Keep the dependency manager's page-scoped short pill indicator; duplicate the secondary-tab template in each view.
+- Impacted areas: Global OpenUtau Mobile TabItem headers; dependency manager tab header markup and tokens.
+

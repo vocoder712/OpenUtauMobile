@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia;
+using Avalonia.Media;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 
@@ -8,6 +9,7 @@ namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 /// </summary>
 public static class ThemeBaseLayoutTokens
 {
+    public static double SpaceXXS => 2d;
     public static double SpaceXS => 4d;
     public static double SpaceS => 8d;
     public static double SpaceM => 16d;
@@ -201,6 +203,40 @@ public static class ThemeSemComponentTokens
     public static double SliderThumbSize => 20d;
     public static double SliderThumbCornerRadius => 10d;
     public static double SliderMinHeight => 48d;
+}
+
+public static class ThemeSemTabItemTokens
+{
+    public static double ContainerHeight => 48d;
+    public static double ActiveIndicatorHeight => 2d;
+    public static double LabelSize => ThemeBaseTypographyTokens.LabelLSize;
+
+    public static Thickness HeaderInset => new(24, 0);
+
+    public static CornerRadius ActiveIndicatorCorner => ThemeBaseShapeTokens.CornerNone;
+
+    public static FontWeight LabelWeight => FontWeight.Medium;
+}
+
+public static class ThemeSemDependencyManagerTokens
+{
+    public static double ContentMaxWidth => 1248d;
+    public static double BadgeMinWidth => 16d;
+    public static double BadgeHeight => 16d;
+    public static double SearchFieldHeight => 48d;
+    public static double IconButtonSize => 48d;
+
+    public static Thickness PageInset => new(24, 16, 24, 24);
+    public static Thickness BadgeInset => new(4, 0);
+    public static Thickness SearchFieldInset => new(40, 0, 16, 0);
+    public static Thickness SearchFieldEndSpacing => new(0, 0, 12, 0);
+    public static Thickness ToolbarBottomSpacing => new(0, 0, 0, 16);
+    public static Thickness CardInset => new(16);
+    public static Thickness CardBottomSpacing => new(0, 0, 0, 12);
+
+    public static CornerRadius SearchFieldCorner => ThemeBaseShapeTokens.CornerXXXXL;
+    public static CornerRadius IconButtonCorner => ThemeBaseShapeTokens.CornerXXXXL;
+    public static CornerRadius BadgeCorner => ThemeBaseShapeTokens.CornerM;
 }
 
 public static class ThemeSemOpacityTokens

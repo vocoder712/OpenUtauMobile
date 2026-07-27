@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Styling;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
@@ -31,7 +32,7 @@ public partial class App : Application
 
         // Initialize runtime theme resources before creating UI.
         ThemeManagerV2.Initialize();
-        var seed = ThemeSeedResolver.ResolveSeed(
+        Color seed = ThemeSeedResolver.ResolveSeed(
             ServiceHub.SystemAccentColorProvider,
             out _,
             out _);
