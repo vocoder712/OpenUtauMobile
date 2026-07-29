@@ -84,3 +84,27 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Launch the system Storage Access Framework picker; request permissions through an application context.
 - Impacted areas: Android 10 and earlier storage permission checks, runtime permission requests, and raw external-storage access.
 
+- Date: 2026-07-25
+- Decision: Give the dependency manager a page-scoped MD3 component token set and render its tabs with a compact custom state-layer template.
+- Rationale: The default desktop tab indicator, unconstrained count badges, and filled hover treatment produced inconsistent geometry and excessive contrast. Page-scoped tokens keep responsive spacing, badge shape, state opacity, and the short pill indicator consistent across generated color themes.
+- Alternatives considered: Modify the global Avalonia TabItem theme; continue using per-control literal values.
+- Impacted areas: Dependency manager layout and styles; shared static theme tokens.
+
+- Date: 2026-07-27
+- Decision: Supersede the dependency-manager-specific tab header template with a global MD3 secondary TabItem style.
+- Rationale: Secondary tabs are a shared component pattern. A global style gives every TabItem the same 48dp container, Title Small label, state layer, semantic colors, and full-width 2dp active indicator while allowing each view to supply arbitrary header content.
+- Alternatives considered: Keep the dependency manager's page-scoped short pill indicator; duplicate the secondary-tab template in each view.
+- Impacted areas: Global OpenUtau Mobile TabItem headers; dependency manager tab header markup and tokens.
+
+- Date: 2026-07-29
+- Decision: Implement dependency installation from local files entirely in the Mobile layer without modifying the upstream-derived Core package manager.
+- Rationale: The existing Core API already supports file installation, while keeping this feature's UI state and error presentation outside Core avoids increasing the cost of future upstream synchronization.
+- Alternatives considered: Add transactional extraction, package metadata results, or typed installation errors to `OpenUtau.Core`; duplicate package parsing in a Mobile adapter.
+- Impacted areas: Dependency manager ViewModel, view state, and localization resources. Core installation behavior remains unchanged.
+
+- Date: 2026-07-29
+- Decision: Run non-cancellable background UI operations through a reusable LoadingPopup service with determinate and indeterminate progress modes.
+- Rationale: Centralizing first-frame yielding, UI-thread progress updates, and guaranteed dialog closure prevents operation-specific loading overlays from racing with completion or subsequent error dialogs.
+- Alternatives considered: Keep page-local busy indicators; open and close DialogHost directly in each ViewModel; add loading notifications to the upstream-derived Core.
+- Impacted areas: Shared popup controls and services; dependency installation now uses the indeterminate loading mode.
+

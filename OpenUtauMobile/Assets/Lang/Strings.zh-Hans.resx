@@ -837,6 +837,12 @@
   <data name="DependencyManager.Title" xml:space="preserve">
     <value>依赖项管理</value>
   </data>
+  <data name="LoadingPopup.Title" xml:space="preserve">
+    <value>请稍候</value>
+  </data>
+  <data name="LoadingPopup.DefaultMessage" xml:space="preserve">
+    <value>正在进行后台操作…</value>
+  </data>
   <data name="DependencyManager.Refresh" xml:space="preserve">
     <value>刷新列表</value>
   </data>
@@ -882,8 +888,26 @@
   <data name="DependencyManager.Toast.InstalledListFailed" xml:space="preserve">
     <value>加载已安装列表失败: {0}</value>
   </data>
-  <data name="DependencyManager.Toast.InstallFromFileNotImpl" xml:space="preserve">
-    <value>从文件安装功能待实现</value>
+  <data name="DependencyManager.FilePicker.SelectPackage" xml:space="preserve">
+    <value>选择依赖包</value>
+  </data>
+  <data name="DependencyManager.Loading.InstallFromFile" xml:space="preserve">
+    <value>正在安装依赖包…</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFromFileSuccess" xml:space="preserve">
+    <value>已安装依赖包“{0}”</value>
+  </data>
+  <data name="DependencyManager.Error.InvalidPackage" xml:space="preserve">
+    <value>所选文件不是有效的依赖包，或文件已损坏。</value>
+  </data>
+  <data name="DependencyManager.Error.AccessDenied" xml:space="preserve">
+    <value>无法读取依赖包或写入依赖项存储，请检查存储权限。</value>
+  </data>
+  <data name="DependencyManager.Error.FileUnavailable" xml:space="preserve">
+    <value>所选依赖包已不可用，请重新选择文件。</value>
+  </data>
+  <data name="DependencyManager.Error.Storage" xml:space="preserve">
+    <value>无法安装依赖包，请检查可用存储空间以及文件是否被占用。</value>
   </data>
   <data name="DependencyManager.Toast.Uninstalled" xml:space="preserve">
     <value>已卸载 {0}</value>

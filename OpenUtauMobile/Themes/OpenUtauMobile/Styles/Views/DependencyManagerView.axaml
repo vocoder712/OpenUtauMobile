@@ -3,15 +3,64 @@
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
     <Style Selector="Border.DependencyCard">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderDefault}" />
         <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerL}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetL}" />
-        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetBottomLG}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemDependencyManagerTokens.CardInset}" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemDependencyManagerTokens.CardBottomSpacing}" />
     </Style>
 
-    <Style Selector="Border.DependencyCard:pointerover">
-        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    <Style Selector="StackPanel.DependencyPageContent">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemDependencyManagerTokens.PageInset}" />
+    </Style>
+
+    <Style Selector="TabControl.DependencyTabs">
+        <Setter Property="MaxWidth" Value="{x:Static theme:ThemeSemDependencyManagerTokens.ContentMaxWidth}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+    </Style>
+
+    <!-- 徽章 -->
+    <Style Selector="Border.DependencyCountBadge">
+        <Setter Property="MinWidth" Value="{x:Static theme:ThemeSemDependencyManagerTokens.BadgeMinWidth}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemDependencyManagerTokens.BadgeHeight}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemDependencyManagerTokens.BadgeInset}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemDependencyManagerTokens.BadgeCorner}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- 徽章文字 -->
+    <Style Selector="Border.DependencyCountBadge TextBlock">
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.LabelSSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    
+    <!-- 例如排序按钮 -->
+    <Style Selector="Button.DependencyIconButton">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemDependencyManagerTokens.IconButtonSize}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemDependencyManagerTokens.IconButtonSize}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemDependencyManagerTokens.IconButtonCorner}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderDefault}" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.DependencyIconButton:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+
+    <Style Selector="Button.DependencyIconButton:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
     </Style>
 
     <Style Selector="Ellipse.CircularProgressTrack">

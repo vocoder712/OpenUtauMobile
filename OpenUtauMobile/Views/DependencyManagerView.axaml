@@ -15,24 +15,20 @@
 
     <Panel Background="{DynamicResource Sem.Color.Surface}">
         <DockPanel>
-
             <Border DockPanel.Dock="Top" Classes="TopBar">
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-
-                    <!-- Back button -->
+                    <!-- 返回 -->
                     <Button Grid.Column="0"
                             Classes="TopBarBtn"
                             Command="{Binding BackCommand}"
                             ToolTip.Tip="{DynamicResource Common.Back}"
                             Content="{iconPacks:PhosphorIcons ArrowLeft}">
                     </Button>
-
-                    <!-- Title -->
+                    <!-- 标题 -->
                     <TextBlock Grid.Column="1"
                                Classes="TopBarTitle"
                                Text="{DynamicResource DependencyManager.Title}" />
-
-                    <!-- Refresh button -->
+                    <!-- 刷新 -->
                     <Button Grid.Column="2"
                             Classes="TopBarBtn"
                             Command="{Binding RefreshRegistryCommand}"
@@ -40,75 +36,75 @@
                             Margin="0,0,4,0"
                             Content="{iconPacks:PhosphorIcons ArrowsClockwise}">
                     </Button>
-
-                    <!-- Install from file button -->
+                    <!-- 从文件安装 -->
                     <Button Grid.Column="3"
                             Classes="TopBarBtn"
                             Command="{Binding InstallFromFileCommand}"
-                            ToolTip.Tip="{DynamicResource DependencyManager.InstallFromFile}"
-                            Content="{iconPacks:PhosphorIcons FileArchive}">
+                            ToolTip.Tip="{DynamicResource DependencyManager.InstallFromFile}">
+                        <Grid>
+                            <iconPacks:PackIconPhosphorIcons
+                                Kind="FileArchive"
+                                IsVisible="{Binding IsInstallingFromFile, Converter={x:Static BoolConverters.Not}}" />
+                            <iconPacks:PackIconPhosphorIcons
+                                Kind="HourglassMedium"
+                                IsVisible="{Binding IsInstallingFromFile}" />
+                        </Grid>
                     </Button>
-
                 </Grid>
             </Border>
 
             <TabControl SelectedIndex="{Binding SelectedTabIndex}"
-                        Background="Transparent"
-                        BorderThickness="0">
-
-                <!-- Tab 0: 鍙敤 -->
+                        Classes="DependencyTabs">
+                <!-- Tab 0: 可用 -->
                 <TabItem>
+                    <!-- Tab header -->
                     <TabItem.Header>
-                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="8">
-                            <TextBlock Text="{DynamicResource DependencyManager.Available}"
-                                       FontSize="{x:Static theme:ThemeBaseTypographyTokens.HeadlineMSize}" />
-                            <Border Background="{DynamicResource Sem.Color.Primary}"
-                                    Padding="4,2"
-                                    CornerRadius="6">
-                                <TextBlock Text="{Binding AvailablePackages.Count}"
-                                           FontSize="12"
-                                           FontWeight="Medium"
-                                           Foreground="{DynamicResource Sem.Color.OnPrimary}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}">
+                            <TextBlock Text="{DynamicResource DependencyManager.Available}" />
+                            <Border Classes="DependencyCountBadge">
+                                <TextBlock Text="{Binding AvailablePackages.Count}" />
                             </Border>
                         </StackPanel>
                     </TabItem.Header>
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
-                        <StackPanel Margin="8">
-
-                            <!-- 绛涢€夊伐鍏?-->
-                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,20">
-
-                                <!-- 鎼滅储鏍?-->
+                        <StackPanel Classes="DependencyPageContent">
+                            <!-- 顶栏 -->
+                            <Grid ColumnDefinitions="*,Auto"
+                                  Margin="{x:Static theme:ThemeSemDependencyManagerTokens.ToolbarBottomSpacing}">
+                                <!-- 搜索栏 -->
                                 <TextBox Grid.Column="0"
                                          Text="{Binding SearchText}"
-                                         Watermark="{DynamicResource DependencyManager.Search}"
+                                         PlaceholderText="{DynamicResource DependencyManager.Search}"
                                          CornerRadius="12"
-                                         Height="44"
                                          VerticalContentAlignment="Center"
                                          Margin="0,0,12,0"
-                                         Padding="32,0,16,0"
+                                         Padding="8,0,12,0"
                                          FontSize="14">
+
                                     <TextBox.InnerLeftContent>
-                                        <iconPacks:PackIconPhosphorIcons Kind="MagnifyingGlass"
-                                                                         HorizontalAlignment="Center" />
+                                        <iconPacks:PackIconPhosphorIcons
+                                            Kind="MagnifyingGlass"
+                                            Width="20"
+                                            Height="20"
+                                            Margin="12,0,4,0"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            Opacity="0.72"/>
                                     </TextBox.InnerLeftContent>
                                 </TextBox>
 
-                                <!-- 鎺掑簭鎸夐挳 -->
+                                <!-- 排序 -->
                                 <!-- TODO: Implement sort dropdown -->
                                 <Button Grid.Column="1"
-                                        Classes="btn-secondary"
-                                        Height="44"
-                                        Width="44"
-                                        Padding="0"
-                                        CornerRadius="12"
+                                        Classes="DependencyIconButton"
                                         Content="{iconPacks:PhosphorIcons FunnelSimple}">
                                 </Button>
 
                             </Grid>
 
-                            <!-- 蹇欑鎸囩ず鍣?-->
+                            <!-- 加载状态 -->
                             <StackPanel IsVisible="{Binding IsLoadingRegistry}"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
@@ -120,7 +116,7 @@
                                            HorizontalAlignment="Center" />
                             </StackPanel>
 
-                            <!-- 绌虹姸鎬?-->
+                            <!-- 无可用包 -->
                             <Border HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Margin="0,60,0,0">
@@ -142,19 +138,15 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- Package list -->
-                            <ItemsControl ItemsSource="{Binding AvailablePackages}"
-                                          Padding="8">
+                            <!-- 可用包列表 -->
+                            <ItemsControl ItemsSource="{Binding AvailablePackages}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:DependencyItemViewModel">
-
                                         <Border Classes="DependencyCard">
                                             <Grid RowDefinitions="Auto,Auto,Auto,Auto">
-
                                                 <!-- Row 0: Header (Icon + Name + Version) -->
                                                 <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,12">
-
-                                                    <!-- 鍗犱綅鍥炬爣 -->
+                                                    <!-- 图标 -->
                                                     <Border Grid.Column="0"
                                                             Width="48" Height="48"
                                                             CornerRadius="12"
@@ -166,8 +158,7 @@
                                                                 Foreground="{DynamicResource Sem.Color.Primary}"
                                                                 Kind="Cube" />
                                                     </Border>
-
-                                                    <!-- Name + Developers -->
+                                                    <!-- 名称 + 开发者 -->
                                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
                                                         <TextBlock Text="{Binding Name}"
                                                                    FontSize="16"
@@ -178,9 +169,9 @@
                                                                    Foreground="{DynamicResource Sem.Color.Outline}" />
                                                     </StackPanel>
 
-                                                    <!-- Version badge -->
+                                                    <!-- 版本号 -->
                                                     <Border Grid.Column="2"
-                                                            Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                                            Background="{DynamicResource Sem.Color.SuccessContainer}"
                                                             Padding="10,5"
                                                             CornerRadius="8"
                                                             VerticalAlignment="Center">
@@ -189,18 +180,18 @@
                                                                    FontWeight="Medium"
                                                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                                                     </Border>
-
                                                 </Grid>
-
                                                 <!-- Row 1: ID -->
                                                 <TextBlock Grid.Row="1"
-                                                           Text="{Binding Id}"
                                                            FontSize="12"
                                                            FontFamily="Consolas,Courier New,monospace"
                                                            Foreground="{DynamicResource Sem.Color.Outline}"
-                                                           Margin="0,0,0,10" />
+                                                           Margin="0,0,0,10" >
+                                                    <Run Text="ID: " />
+                                                    <Run Text="{Binding Id}" />
+                                                </TextBlock>
 
-                                                <!-- Row 2: 鏍囩 -->
+                                                <!-- Row 2: 标签 -->
                                                 <ItemsControl Grid.Row="2"
                                                               ItemsSource="{Binding Tags}"
                                                               Margin="0,0,0,16">
@@ -223,11 +214,9 @@
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
-
-                                                <!-- Row 3: Install button or Progress ring -->
+                                                <!-- 安装按钮 -->
                                                 <Grid Grid.Row="3">
-
-                                                    <!-- 瀹夎鎸夐挳 (鏈畨瑁呬笖鏃犳洿鏂? -->
+                                                    <!-- 安装 -->
                                                     <Button Command="{Binding InstallCommand}"
                                                             Classes="btn-primary"
                                                             Height="40"
@@ -250,8 +239,7 @@
                                                                        FontSize="14" FontWeight="Medium" />
                                                         </StackPanel>
                                                     </Button>
-
-                                                    <!-- Update button (宸插畨瑁呬笖鏈夋洿鏂? -->
+                                                    <!-- 更新 -->
                                                     <Button Command="{Binding InstallCommand}"
                                                             Classes="btn-primary"
                                                             Height="40"
@@ -274,10 +262,9 @@
                                                                        FontSize="14" FontWeight="Medium" />
                                                         </StackPanel>
                                                     </Button>
-
-                                                    <!-- Installed button (宸插畨瑁呬笖鏃犳洿鏂? -->
+                                                    <!-- 已安装 -->
                                                     <Button IsEnabled="False"
-                                                            Classes="btn-secondary"
+                                                            Classes="btn-primary"
                                                             Height="40"
                                                             CornerRadius="10"
                                                             HorizontalAlignment="Stretch">
@@ -298,8 +285,7 @@
                                                                        FontSize="14" FontWeight="Medium" />
                                                         </StackPanel>
                                                     </Button>
-
-                                                    <!-- Progress ring (when installing) -->
+                                                    <!-- 进度条 -->
                                                     <Grid IsVisible="{Binding IsInstalling}"
                                                           HorizontalAlignment="Center"
                                                           VerticalAlignment="Center">
@@ -310,41 +296,30 @@
                                                                      CornerRadius="10"
                                                                      ShowProgressText="True" />
                                                     </Grid>
-
                                                 </Grid>
-
                                             </Grid>
                                         </Border>
-
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
 
-                <!-- Tab 1: Installed Packages -->
+                <!-- Tab 1: 已安装 -->
                 <TabItem>
                     <TabItem.Header>
-                        <StackPanel Orientation="Horizontal" Spacing="8" Margin="8">
-                            <TextBlock Text="{DynamicResource DependencyManager.InstalledTab}"
-                                       FontSize="{x:Static theme:ThemeBaseTypographyTokens.HeadlineMSize}" />
-                            <Border Background="{DynamicResource Sem.Color.Primary}"
-                                    Padding="4,2"
-                                    CornerRadius="6">
-                                <TextBlock Text="{Binding InstalledPackages.Count}"
-                                           FontSize="12"
-                                           FontWeight="Medium"
-                                           Foreground="{DynamicResource Sem.Color.OnPrimary}" />
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}">
+                            <TextBlock Text="{DynamicResource DependencyManager.InstalledTab}" />
+                            <Border Classes="DependencyCountBadge">
+                                <TextBlock Text="{Binding InstalledPackages.Count}" />
                             </Border>
                         </StackPanel>
                     </TabItem.Header>
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled"
-                                  Padding="24,20">
-                        <StackPanel Margin="0,0,8,0">
-
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Classes="DependencyPageContent">
                             <!-- Loading indicator -->
                             <StackPanel IsVisible="{Binding IsLoadingInstalled}"
                                         HorizontalAlignment="Center"
@@ -380,29 +355,25 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- 宸插畨瑁呯殑渚濊禆鍖呭垪琛?-->
+                            <!-- 已安装包列表-->
                             <ItemsControl ItemsSource="{Binding InstalledPackages}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:InstalledDependencyViewModel">
-
                                         <Border Classes="DependencyCard">
                                             <Grid RowDefinitions="Auto,Auto,Auto">
-
                                                 <!-- Row 0: Header -->
                                                 <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,12">
-
-                                                    <!-- Icon -->
+                                                    <!-- 图标 -->
                                                     <Border Grid.Column="0"
                                                             Width="48" Height="48"
                                                             CornerRadius="12"
-                                                            Background="{DynamicResource Sem.Color.SuccessContainer}"
+                                                            Background="{DynamicResource Sem.Color.PrimaryContainer}"
                                                             Margin="0,0,16,0">
-                                                        <Path Width="24" Height="24"
-                                                              Stretch="Uniform"
-                                                              HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"
-                                                              Fill="{DynamicResource Sem.Color.Success}"
-                                                              Data="{StaticResource icon-check}" />
+                                                        <iconPacks:PackIconPhosphorIcons Width="24" Height="24"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                Foreground="{DynamicResource Sem.Color.Primary}"
+                                                                Kind="Cube" />
                                                     </Border>
 
                                                     <!-- ID -->
@@ -416,7 +387,7 @@
                                                                    Foreground="{DynamicResource Sem.Color.Outline}" />
                                                     </StackPanel>
 
-                                                    <!-- Version badge -->
+                                                    <!-- 版本号徽章 -->
                                                     <Border Grid.Column="2"
                                                             Background="{DynamicResource Sem.Color.SuccessContainer}"
                                                             Padding="10,5"
@@ -440,9 +411,11 @@
 
                                                 <!-- Row 2: Uninstall button -->
                                                 <Button Grid.Row="2"
+                                                        Classes="btn-primary"
                                                         Command="{Binding UninstallCommand}"
                                                         IsEnabled="{Binding !IsUninstalling}"
-                                                        Classes="btn-danger"
+                                                        Background="{DynamicResource Sem.Color.ErrorContainer}"
+                                                        Foreground="{DynamicResource Sem.Color.OnErrorContainer}"
                                                         Height="40"
                                                         CornerRadius="10"
                                                         HorizontalAlignment="Stretch">

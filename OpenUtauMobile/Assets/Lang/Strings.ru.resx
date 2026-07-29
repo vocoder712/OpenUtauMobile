@@ -819,6 +819,12 @@
   <data name="DependencyManager.Title" xml:space="preserve">
     <value>Управление зависимостями</value>
   </data>
+  <data name="LoadingPopup.Title" xml:space="preserve">
+    <value>Пожалуйста, подождите</value>
+  </data>
+  <data name="LoadingPopup.DefaultMessage" xml:space="preserve">
+    <value>Выполняется фоновая операция…</value>
+  </data>
   <data name="DependencyManager.Refresh" xml:space="preserve">
     <value>Обновить список</value>
   </data>
@@ -864,8 +870,26 @@
   <data name="DependencyManager.Toast.InstalledListFailed" xml:space="preserve">
     <value>Не удалось загрузить список установленных: {0}</value>
   </data>
-  <data name="DependencyManager.Toast.InstallFromFileNotImpl" xml:space="preserve">
-    <value>Установка из файла ещё не реализована</value>
+  <data name="DependencyManager.FilePicker.SelectPackage" xml:space="preserve">
+    <value>Выберите пакет зависимостей</value>
+  </data>
+  <data name="DependencyManager.Loading.InstallFromFile" xml:space="preserve">
+    <value>Установка пакета зависимостей…</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFromFileSuccess" xml:space="preserve">
+    <value>Пакет зависимостей «{0}» установлен</value>
+  </data>
+  <data name="DependencyManager.Error.InvalidPackage" xml:space="preserve">
+    <value>Выбранный файл не является допустимым пакетом зависимостей или повреждён.</value>
+  </data>
+  <data name="DependencyManager.Error.AccessDenied" xml:space="preserve">
+    <value>Не удалось прочитать пакет или записать данные зависимостей. Проверьте разрешения хранилища.</value>
+  </data>
+  <data name="DependencyManager.Error.FileUnavailable" xml:space="preserve">
+    <value>Выбранный пакет больше недоступен. Выберите файл ещё раз.</value>
+  </data>
+  <data name="DependencyManager.Error.Storage" xml:space="preserve">
+    <value>Не удалось установить пакет. Проверьте свободное место и не используется ли файл.</value>
   </data>
   <data name="DependencyManager.Toast.Uninstalled" xml:space="preserve">
     <value>Удалено: {0}</value>

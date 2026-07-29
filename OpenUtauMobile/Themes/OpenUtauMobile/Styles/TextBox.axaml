@@ -1,0 +1,143 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <Border Padding="128">
+            <StackPanel Orientation="Vertical"
+                        Spacing="8">
+                <TextBox Width="200"
+                         PlaceholderText="Placeholder" />
+                <TextBox Width="200"
+                         Text="Read-only"
+                         IsReadOnly="True" />
+                <TextBox Width="200"
+                         Text="Disabled"
+                         IsEnabled="False" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <Style Selector="TextBox">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness"
+                Value="{x:Static theme:ThemeSemComponentTokens.InputBorderThickness}" />
+        <Setter Property="CornerRadius"
+                Value="{x:Static theme:ThemeSemComponentTokens.InputCornerRadius}" />
+        <Setter Property="Padding"
+                Value="{x:Static theme:ThemeSemComponentTokens.InputPadding}" />
+    </Style>
+
+    <Style Selector="TextBox:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+    </Style>
+
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+    </Style>
+
+    <Style Selector="TextBox:focus, TextBox:focus-within">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement,
+                     TextBox:focus-within /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="TextBox[IsReadOnly=True]">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+    </Style>
+
+    <Style Selector="TextBox[IsReadOnly=True] /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+    </Style>
+
+    <Style Selector="TextBox[IsReadOnly=True]:focus,
+                     TextBox[IsReadOnly=True]:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="TextBox[IsReadOnly=True]:focus /template/ Border#PART_BorderElement,
+                     TextBox[IsReadOnly=True]:focus-within /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="TextBox:error">
+        <Setter Property="CaretBrush" Value="{DynamicResource Sem.Color.Error}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Error}" />
+    </Style>
+
+    <Style Selector="TextBox:error /template/ Border#PART_BorderElement">
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Error}" />
+    </Style>
+
+    <Style Selector="TextBox /template/ Button,
+                     TextBox /template/ ToggleButton">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Surface}" />
+    </Style>
+
+    <Style Selector="TextBox /template/ Button:pointerover,
+                     TextBox /template/ ToggleButton:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <Style Selector="TextBox /template/ Button:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                     TextBox /template/ ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+
+    <Style Selector="TextBox /template/ Button:pressed,
+                     TextBox /template/ ToggleButton:pressed,
+                     TextBox /template/ ToggleButton:checked">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+    </Style>
+
+    <Style Selector="TextBox /template/ Button:pressed /template/ ContentPresenter#PART_ContentPresenter,
+                     TextBox /template/ ToggleButton:pressed /template/ ContentPresenter#PART_ContentPresenter,
+                     TextBox /template/ ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+    </Style>
+
+    <Style Selector="TextBox:disabled">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Sem.Color.SurfaceContainerHighest}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Disabled}" />
+    </Style>
+
+    <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+    </Style>
+</Styles>

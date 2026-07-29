@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.LoadingPopup"
+             x:DataType="vm:LoadingPopupViewModel"
+             d:DataContext="{d:DesignInstance Type=vm:LoadingPopupViewModel, IsDesignTimeCreatable=False}"
+             Classes="PopupDialogRoot">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <TextBlock Text="{DynamicResource LoadingPopup.Title}"
+                           Classes="PopupTitle" />
+            </Border>
+
+            <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetCardComfortable}"
+                        Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceMD}">
+                <TextBlock Text="{Binding Message}"
+                           FontSize="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}"
+                           Foreground="{DynamicResource Sem.Color.OnSurface}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center" />
+
+                <ProgressBar Value="{Binding Progress}"
+                             IsIndeterminate="{Binding IsIndeterminate}"
+                             HorizontalAlignment="Stretch" />
+
+                <TextBlock Text="{Binding ProgressText}"
+                           IsVisible="{Binding IsIndeterminate, Converter={x:Static BoolConverters.Not}}"
+                           FontSize="{x:Static theme:ThemeSemTypographyTokens.LabelMSize}"
+                           Foreground="{DynamicResource Sem.Color.Primary}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

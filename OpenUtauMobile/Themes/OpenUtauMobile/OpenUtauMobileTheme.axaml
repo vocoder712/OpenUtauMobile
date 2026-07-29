@@ -15,8 +15,9 @@
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Button.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/ComponentAbstractions.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Card.axaml" />
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/TextInput.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/TextBox.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/ComboBox.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/TabItem.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Slider.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/DawKnob.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Icon.axaml" />

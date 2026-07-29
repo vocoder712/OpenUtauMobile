@@ -1,0 +1,76 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <Border Padding="24">
+            <StackPanel>
+                <TabItem Header="Available" IsSelected="True" />
+                <TabItem Header="Installed" />
+                <TabItem Header="Disabled" IsEnabled="False" />
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <Style Selector="TabItem">
+        <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemTabItemTokens.ContainerHeight}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemTabItemTokens.HeaderInset}" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTabItemTokens.LabelSize}" />
+        <Setter Property="FontWeight" Value="{x:Static theme:ThemeSemTabItemTokens.LabelWeight}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="TabItem">
+                <Grid MinHeight="{TemplateBinding MinHeight}"
+                      Background="{TemplateBinding Background}">
+                    <ContentPresenter x:Name="PART_ContentPresenter"
+                                      Margin="{TemplateBinding Padding}"
+                                      Content="{TemplateBinding Header}"
+                                      ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      RecognizesAccessKey="True" />
+                    <Border x:Name="PART_StateLayer"
+                            Background="{DynamicResource Sem.Color.OnSurface}"
+                            IsHitTestVisible="False"
+                            Opacity="0" />
+                    <Border x:Name="PART_SelectedIndicator"
+                            Height="{x:Static theme:ThemeSemTabItemTokens.ActiveIndicatorHeight}"
+                            Background="{DynamicResource Sem.Color.Primary}"
+                            CornerRadius="{x:Static theme:ThemeSemTabItemTokens.ActiveIndicatorCorner}"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Bottom"
+                            IsVisible="False" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="TabItem:selected">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+    </Style>
+
+    <Style Selector="TabItem:pointerover /template/ Border#PART_StateLayer">
+        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Hover}" />
+    </Style>
+
+    <Style Selector="TabItem:focus /template/ Border#PART_StateLayer">
+        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Focus}" />
+    </Style>
+
+    <Style Selector="TabItem:pressed /template/ Border#PART_StateLayer">
+        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Pressed}" />
+    </Style>
+
+    <Style Selector="TabItem:selected /template/ Border#PART_SelectedIndicator">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <Style Selector="TabItem:disabled">
+        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Disabled}" />
+    </Style>
+</Styles>
