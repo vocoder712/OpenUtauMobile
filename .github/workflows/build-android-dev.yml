@@ -97,7 +97,7 @@ jobs:
           fi
       
           cp "$SIGNED_APK" \
-            "$ARTIFACT_DIR/OpenUtauMobile-预览版-${{ github.run_number }}-arm64.apk"
+            "$ARTIFACT_DIR/OpenUtauMobile-预览版-build${{ github.run_number }}-arm64.apk"
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
