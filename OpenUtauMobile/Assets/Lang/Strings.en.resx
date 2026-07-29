@@ -837,6 +837,12 @@
   <data name="DependencyManager.Title" xml:space="preserve">
     <value>Dependency Management</value>
   </data>
+  <data name="LoadingPopup.Title" xml:space="preserve">
+    <value>Please wait</value>
+  </data>
+  <data name="LoadingPopup.DefaultMessage" xml:space="preserve">
+    <value>Working in the background…</value>
+  </data>
   <data name="DependencyManager.Refresh" xml:space="preserve">
     <value>Refresh List</value>
   </data>
@@ -882,8 +888,26 @@
   <data name="DependencyManager.Toast.InstalledListFailed" xml:space="preserve">
     <value>Failed to load installed list: {0}</value>
   </data>
-  <data name="DependencyManager.Toast.InstallFromFileNotImpl" xml:space="preserve">
-    <value>Install from file not implemented yet</value>
+  <data name="DependencyManager.FilePicker.SelectPackage" xml:space="preserve">
+    <value>Select dependency package</value>
+  </data>
+  <data name="DependencyManager.Loading.InstallFromFile" xml:space="preserve">
+    <value>Installing the dependency package…</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFromFileSuccess" xml:space="preserve">
+    <value>Installed dependency package "{0}"</value>
+  </data>
+  <data name="DependencyManager.Error.InvalidPackage" xml:space="preserve">
+    <value>The selected file is not a valid dependency package or is damaged.</value>
+  </data>
+  <data name="DependencyManager.Error.AccessDenied" xml:space="preserve">
+    <value>Unable to read the package or write to dependency storage. Check storage permissions.</value>
+  </data>
+  <data name="DependencyManager.Error.FileUnavailable" xml:space="preserve">
+    <value>The selected package is no longer available. Choose the file again.</value>
+  </data>
+  <data name="DependencyManager.Error.Storage" xml:space="preserve">
+    <value>Unable to install the package. Check available storage space and whether the file is in use.</value>
   </data>
   <data name="DependencyManager.Toast.Uninstalled" xml:space="preserve">
     <value>Uninstalled {0}</value>

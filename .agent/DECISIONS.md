@@ -96,3 +96,15 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Keep the dependency manager's page-scoped short pill indicator; duplicate the secondary-tab template in each view.
 - Impacted areas: Global OpenUtau Mobile TabItem headers; dependency manager tab header markup and tokens.
 
+- Date: 2026-07-29
+- Decision: Implement dependency installation from local files entirely in the Mobile layer without modifying the upstream-derived Core package manager.
+- Rationale: The existing Core API already supports file installation, while keeping this feature's UI state and error presentation outside Core avoids increasing the cost of future upstream synchronization.
+- Alternatives considered: Add transactional extraction, package metadata results, or typed installation errors to `OpenUtau.Core`; duplicate package parsing in a Mobile adapter.
+- Impacted areas: Dependency manager ViewModel, view state, and localization resources. Core installation behavior remains unchanged.
+
+- Date: 2026-07-29
+- Decision: Run non-cancellable background UI operations through a reusable LoadingPopup service with determinate and indeterminate progress modes.
+- Rationale: Centralizing first-frame yielding, UI-thread progress updates, and guaranteed dialog closure prevents operation-specific loading overlays from racing with completion or subsequent error dialogs.
+- Alternatives considered: Keep page-local busy indicators; open and close DialogHost directly in each ViewModel; add loading notifications to the upstream-derived Core.
+- Impacted areas: Shared popup controls and services; dependency installation now uses the indeterminate loading mode.
+

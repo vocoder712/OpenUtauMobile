@@ -834,6 +834,12 @@
   <data name="DependencyManager.Title" xml:space="preserve">
     <value>依存関係管理</value>
   </data>
+  <data name="LoadingPopup.Title" xml:space="preserve">
+    <value>しばらくお待ちください</value>
+  </data>
+  <data name="LoadingPopup.DefaultMessage" xml:space="preserve">
+    <value>バックグラウンド処理を実行しています…</value>
+  </data>
   <data name="DependencyManager.Refresh" xml:space="preserve">
     <value>リストを更新</value>
   </data>
@@ -879,8 +885,26 @@
   <data name="DependencyManager.Toast.InstalledListFailed" xml:space="preserve">
     <value>インストール済みリストの読み込みに失敗: {0}</value>
   </data>
-  <data name="DependencyManager.Toast.InstallFromFileNotImpl" xml:space="preserve">
-    <value>ファイルからのインストールは未実装です</value>
+  <data name="DependencyManager.FilePicker.SelectPackage" xml:space="preserve">
+    <value>依存関係パッケージを選択</value>
+  </data>
+  <data name="DependencyManager.Loading.InstallFromFile" xml:space="preserve">
+    <value>依存関係パッケージをインストールしています…</value>
+  </data>
+  <data name="DependencyManager.Toast.InstallFromFileSuccess" xml:space="preserve">
+    <value>依存関係パッケージ「{0}」をインストールしました</value>
+  </data>
+  <data name="DependencyManager.Error.InvalidPackage" xml:space="preserve">
+    <value>選択したファイルは有効な依存関係パッケージではないか、破損しています。</value>
+  </data>
+  <data name="DependencyManager.Error.AccessDenied" xml:space="preserve">
+    <value>パッケージの読み込みまたは依存関係ストレージへの書き込みができません。ストレージ権限を確認してください。</value>
+  </data>
+  <data name="DependencyManager.Error.FileUnavailable" xml:space="preserve">
+    <value>選択したパッケージは利用できなくなりました。ファイルを再度選択してください。</value>
+  </data>
+  <data name="DependencyManager.Error.Storage" xml:space="preserve">
+    <value>パッケージをインストールできません。空き容量とファイルが使用中でないか確認してください。</value>
   </data>
   <data name="DependencyManager.Toast.Uninstalled" xml:space="preserve">
     <value>{0} をアンインストールしました</value>

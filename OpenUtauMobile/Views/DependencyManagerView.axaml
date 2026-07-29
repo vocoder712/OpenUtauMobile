@@ -40,8 +40,15 @@
                     <Button Grid.Column="3"
                             Classes="TopBarBtn"
                             Command="{Binding InstallFromFileCommand}"
-                            ToolTip.Tip="{DynamicResource DependencyManager.InstallFromFile}"
-                            Content="{iconPacks:PhosphorIcons FileArchive}">
+                            ToolTip.Tip="{DynamicResource DependencyManager.InstallFromFile}">
+                        <Grid>
+                            <iconPacks:PackIconPhosphorIcons
+                                Kind="FileArchive"
+                                IsVisible="{Binding IsInstallingFromFile, Converter={x:Static BoolConverters.Not}}" />
+                            <iconPacks:PackIconPhosphorIcons
+                                Kind="HourglassMedium"
+                                IsVisible="{Binding IsInstallingFromFile}" />
+                        </Grid>
                     </Button>
                 </Grid>
             </Border>

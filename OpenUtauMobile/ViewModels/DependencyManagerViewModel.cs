@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -7,6 +9,7 @@ using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -50,6 +53,10 @@ public class DependencyManagerViewModel : NavigateViewModelBase
     [Reactive]
     public int SortMode { get; set; } = 0;
 
+    /// <summary>是否正在从本地文件安装依赖包</summary>
+    [Reactive]
+    public bool IsInstallingFromFile { get; set; }
+
     // ═══════════════════════════════════════════════════
     //  Commands
     // ═══════════════════════════════════════════════════
@@ -68,7 +75,12 @@ public class DependencyManagerViewModel : NavigateViewModelBase
         BackCommand = ReactiveCommand.Create(OnBack);
         RefreshRegistryCommand = ReactiveCommand.CreateFromTask(LoadAvailablePackagesAsync);
         RefreshInstalledCommand = ReactiveCommand.CreateFromTask(LoadInstalledPackagesAsync);
-        InstallFromFileCommand = ReactiveCommand.CreateFromTask(OnInstallFromFileAsync);
+        IObservable<bool> canInstallFromFile = this
+            .WhenAnyValue(x => x.IsInstallingFromFile)
+            .Select(isInstalling => !isInstalling);
+        InstallFromFileCommand = ReactiveCommand.CreateFromTask(
+            OnInstallFromFileAsync,
+            canInstallFromFile);
 
         // 自动加载数据
         Task.Run(async () =>
@@ -99,11 +111,11 @@ public class DependencyManagerViewModel : NavigateViewModelBase
         IsLoadingRegistry = true;
         try
         {
-            var packages = await PackageManager.Inst.FetchRegistryAsync();
+            List<RegistrySoftware> packages = await PackageManager.Inst.FetchRegistryAsync();
 
             // 清空并重新填充
             AvailablePackages.Clear();
-            foreach (var pkg in packages)
+            foreach (RegistrySoftware pkg in packages)
             {
                 AvailablePackages.Add(new DependencyItemViewModel(pkg, this));
             }
@@ -129,11 +141,11 @@ public class DependencyManagerViewModel : NavigateViewModelBase
         IsLoadingInstalled = true;
         try
         {
-            var installed = await PackageManager.Inst.GetInstalledAsync();
+            List<OudepMetadata> installed = await PackageManager.Inst.GetInstalledAsync();
 
             // 清空并重新填充
             InstalledPackages.Clear();
-            foreach (var meta in installed)
+            foreach (OudepMetadata meta in installed)
             {
                 InstalledPackages.Add(new InstalledDependencyViewModel(meta, this));
             }
@@ -154,21 +166,78 @@ public class DependencyManagerViewModel : NavigateViewModelBase
     /// <summary>更新可用包的已安装状态</summary>
     private void UpdateInstalledStatus()
     {
-        foreach (var pkg in AvailablePackages)
+        foreach (DependencyItemViewModel pkg in AvailablePackages)
         {
             pkg.UpdateInstalledStatus(InstalledPackages);
         }
     }
 
     /// <summary>从本地文件安装依赖包</summary>
-    private Task OnInstallFromFileAsync()
+    private async Task OnInstallFromFileAsync()
     {
-        // TODO: 实现文件选择器
-        // 1. 打开文件选择器,选择 .oudep 文件
-        // 2. 调用 PackageManager.Inst.InstallFromFileAsync(filePath)
-        // 3. 安装完成后刷新已安装列表
-        ToastService.Enqueue(L.S("DependencyManager.Toast.InstallFromFileNotImpl"));
-        return Task.CompletedTask;
+        string[] filters = [$"*{PackageManager.OudepExt}"];
+        string archivePath;
+        try
+        {
+            archivePath = await FilePicker.PickSingleFileAsync(
+                L.S("DependencyManager.FilePicker.SelectPackage"),
+                filters);
+        }
+        catch (Exception ex)
+        {
+            ShowInstallFromFileError(
+                L.S("DependencyManager.Error.FileUnavailable"),
+                ex);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(archivePath))
+        {
+            return;
+        }
+
+        IsInstallingFromFile = true;
+        try
+        {
+            await LoadingPopupService.RunAsync(
+                L.S("DependencyManager.Loading.InstallFromFile"),
+                _ => PackageManager.Inst.InstallFromFileAsync(archivePath));
+            string fileName = Path.GetFileName(archivePath);
+            ToastService.Enqueue(string.Format(
+                L.S("DependencyManager.Toast.InstallFromFileSuccess"),
+                fileName));
+            SelectedTabIndex = 1;
+        }
+        catch (Exception ex)
+        {
+            string message = GetInstallFromFileErrorMessage(ex);
+            ShowInstallFromFileError(message, ex);
+        }
+        finally
+        {
+            IsInstallingFromFile = false;
+            await LoadInstalledPackagesAsync();
+        }
+    }
+
+    /// <summary>将安装异常转换为面向用户的错误信息</summary>
+    private static string GetInstallFromFileErrorMessage(Exception exception)
+    {
+        return exception switch
+        {
+            UnauthorizedAccessException => L.S("DependencyManager.Error.AccessDenied"),
+            FileNotFoundException or DirectoryNotFoundException =>
+                L.S("DependencyManager.Error.FileUnavailable"),
+            IOException => L.S("DependencyManager.Error.Storage"),
+            _ => L.S("DependencyManager.Error.InvalidPackage")
+        };
+    }
+
+    /// <summary>显示从文件安装失败弹窗</summary>
+    private static void ShowInstallFromFileError(string message, Exception exception)
+    {
+        ErrorMessageNotification notification = new(message, exception);
+        ErrorDialogService.Show(new ErrorDialogViewModel(notification));
     }
 
     /// <summary>卸载指定的依赖包</summary>
@@ -258,15 +327,15 @@ public class DependencyItemViewModel : ReactiveObject
     /// <summary>更新已安装状态</summary>
     public void UpdateInstalledStatus(ObservableCollection<InstalledDependencyViewModel> installedPackages)
     {
-        var installed = installedPackages.FirstOrDefault(p => p.Id == Id);
+        InstalledDependencyViewModel? installed = installedPackages.FirstOrDefault(p => p.Id == Id);
         IsInstalled = installed != null;
         InstalledVersion = installed?.Version ?? string.Empty;
 
         // 检查是否有更新：已安装且远程版本号更高
         if (IsInstalled && !string.IsNullOrEmpty(InstalledVersion) && !string.IsNullOrEmpty(LatestVersion))
         {
-            if (Version.TryParse(InstalledVersion, out var installedVer) &&
-                Version.TryParse(LatestVersion, out var latestVer))
+            if (Version.TryParse(InstalledVersion, out Version? installedVer) &&
+                Version.TryParse(LatestVersion, out Version? latestVer))
             {
                 HasUpdate = latestVer > installedVer;
             }
@@ -289,7 +358,7 @@ public class DependencyItemViewModel : ReactiveObject
 
         try
         {
-            var progress = new Progress<int>(percent => { InstallProgress = percent; });
+            Progress<int> progress = new(percent => { InstallProgress = percent; });
 
             await PackageManager.Inst.InstallAsync(_software, progress);
             ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.InstallSuccess"), Name));
