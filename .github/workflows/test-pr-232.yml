@@ -1,0 +1,108 @@
+﻿name: Build iOS Simulator x64
+
+on:
+  workflow_dispatch:
+  
+  push:
+    branches:
+      - pr-232-merged
+
+jobs:
+  build-ios-simulator:
+    runs-on: macos-26-intel
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 26.6
+        run: |
+          sudo xcode-select \
+            --switch /Applications/Xcode_26.6.app/Contents/Developer
+          echo "===== macOS ====="
+          sw_vers
+          echo "===== Architecture ====="
+          uname -m
+          echo "===== Xcode ====="
+          xcodebuild -version
+          echo "===== iOS Simulator SDK ====="
+          xcrun --sdk iphonesimulator --show-sdk-version
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Show .NET environment
+        run: |
+          dotnet --version
+          dotnet --info
+          dotnet workload list
+      - name: Install iOS workload
+        run: |
+          dotnet workload install ios
+      - name: Restore iOS project
+        run: |
+          dotnet restore \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -p:RuntimeIdentifier=iossimulator-x64
+      - name: Build iOS Simulator app
+        run: |
+          dotnet build \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -c Debug \
+            -f net10.0-ios \
+            -p:RuntimeIdentifier=iossimulator-x64 \
+            --no-restore
+      - name: Find and inspect app bundle
+        id: find_app
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_PATH="$(find OpenUtauMobile.iOS/bin \
+            -type d \
+            -name '*.app' \
+            -path '*iossimulator-x64*' \
+            -print \
+            -quit)"
+          if [ -z "$APP_PATH" ]; then
+            echo "没有找到生成的 .app"
+            find OpenUtauMobile.iOS/bin -maxdepth 8 -print
+            exit 1
+          fi
+          echo "找到 App：$APP_PATH"
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+          echo "===== App contents ====="
+          find "$APP_PATH" -maxdepth 2 -print | head -100
+          echo "===== Info.plist ====="
+          /usr/libexec/PlistBuddy \
+            -c 'Print :CFBundleIdentifier' \
+            "$APP_PATH/Info.plist"
+          echo "===== Executable architectures ====="
+          EXECUTABLE_NAME=$(/usr/libexec/PlistBuddy \
+            -c 'Print :CFBundleExecutable' \
+            "$APP_PATH/Info.plist")
+          file "$APP_PATH/$EXECUTABLE_NAME"
+          lipo -info "$APP_PATH/$EXECUTABLE_NAME" || true
+      - name: Package app bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_PATH="${{ steps.find_app.outputs.app_path }}"
+          APP_NAME="$(basename "$APP_PATH")"
+          mkdir -p artifacts
+          # ditto 比普通 zip 更适合打包 macOS/iOS bundle
+          ditto -c -k \
+            --sequesterRsrc \
+            --keepParent \
+            "$APP_PATH" \
+            "artifacts/OpenUtauMobile-iOS-Simulator-x64.zip"
+          echo "===== Package ====="
+          ls -lh artifacts
+      - name: Upload simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-iOS-Simulator-x64
+          path: artifacts/OpenUtauMobile-iOS-Simulator-x64.zip
+          retention-days: 3
+          if-no-files-found: error
