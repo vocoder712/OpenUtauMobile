@@ -24,26 +24,25 @@ jobs:
       - name: 安装 MAUI iOS 工作负载
         run: dotnet workload install maui-ios
 
+      # 关键修改：还原依赖时也指定仅 iOS
       - name: 还原依赖 (仅 iOS)
-        run: dotnet restore -p:TargetFramework=net9.0-ios
+        run: dotnet restore OpenUtauMobile/OpenUtauMobile.csproj -p:TargetFrameworks=net9.0-ios
 
-      # 关键修改：使用 build 直接编译出 .app，完全绕过归档和签名
+      # 关键修改：编译时明确指定仅针对 iOS 平台
       - name: 编译生成未签名的 .app 包
         run: |
           dotnet build OpenUtauMobile/OpenUtauMobile.csproj \
             -f net9.0-ios \
             -c Debug \
             -p:RuntimeIdentifier=ios-arm64 \
-            -p:EnableCodeSigning=false
+            -p:EnableCodeSigning=false \
+            -p:TargetFrameworks=net9.0-ios
 
       - name: 手动打包为 .ipa (兼容 TrollStore Lite)
         run: |
-          # 进入编译输出目录
           cd OpenUtauMobile/bin/Debug/net9.0-ios/ios-arm64/
-          # 创建 Payload 文件夹并将 .app 移入
           mkdir Payload
           mv OpenUtauMobile.app Payload/
-          # 压缩为 .ipa 文件
           zip -r OpenUtauMobile.ipa Payload/
 
       - name: 上传 .ipa 到 Actions 产物
