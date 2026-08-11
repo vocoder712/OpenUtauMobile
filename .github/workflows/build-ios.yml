@@ -1,4 +1,4 @@
-name: Build iOS IPA (Debug)
+name: Build iOS App (TrollStore Lite Compatible)
 
 on:
   workflow_dispatch:
@@ -16,7 +16,6 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      # 关键修复：强制切换到 Xcode 26.5
       - name: 切换 Xcode 到 26.5 版本
         run: |
           sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
@@ -28,20 +27,27 @@ jobs:
       - name: 还原依赖 (仅 iOS)
         run: dotnet restore -p:TargetFramework=net9.0-ios
 
-      - name: 编译生成 .ipa (Debug 模式)
+      # 关键修改：使用 build 直接编译出 .app，完全绕过归档和签名
+      - name: 编译生成未签名的 .app 包
         run: |
-          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj \
+          dotnet build OpenUtauMobile/OpenUtauMobile.csproj \
             -f net9.0-ios \
             -c Debug \
-            -p:ArchiveOnBuild=true \
             -p:RuntimeIdentifier=ios-arm64 \
-            -p:TargetFrameworks=net9.0-ios \
-            -p:CodesignKey="" \
-            -p:CodesignProvision="" \
             -p:EnableCodeSigning=false
+
+      - name: 手动打包为 .ipa (兼容 TrollStore Lite)
+        run: |
+          # 进入编译输出目录
+          cd OpenUtauMobile/bin/Debug/net9.0-ios/ios-arm64/
+          # 创建 Payload 文件夹并将 .app 移入
+          mkdir Payload
+          mv OpenUtauMobile.app Payload/
+          # 压缩为 .ipa 文件
+          zip -r OpenUtauMobile.ipa Payload/
 
       - name: 上传 .ipa 到 Actions 产物
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-ipa
-          path: OpenUtauMobile/bin/Debug/net9.0-ios/ios-arm64/publish/*.ipa
+          name: OpenUtauMobile-TrollStoreLite
+          path: OpenUtauMobile/bin/Debug/net9.0-ios/ios-arm64/OpenUtauMobile.ipa
