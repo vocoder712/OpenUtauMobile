@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-15  # GitHub 提供的 macOS 运行器
+    runs-on: macos-26 # GitHub 提供的 macOS 运行器
 
     steps:
       - name: Checkout 代码
