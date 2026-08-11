@@ -1,1 +1,41 @@
+name: Build iOS IPA (Debug)
 
+on:
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  build:
+    runs-on: macos-15  # GitHub 提供的 macOS 运行器
+
+    steps:
+      - name: Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: 安装 .NET 9.0 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: 安装 MAUI iOS 工作负载
+        run: dotnet workload install maui-ios
+
+      - name: 还原依赖 (仅 iOS)
+        run: dotnet restore -p:TargetFramework=net9.0-ios
+
+      - name: 编译生成 .ipa (Debug 模式)
+        run: |
+          dotnet publish OpenUtauMobile/OpenUtauMobile.csproj \
+            -f net9.0-ios \
+            -c Debug \
+            -p:ArchiveOnBuild=true \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:TargetFrameworks=net9.0-ios \
+            -p:CodesignKey="" \
+            -p:CodesignProvision="" \
+            -p:EnableCodeSigning=false
+
+      - name: 上传 .ipa 到 Actions 产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-ipa
+          path: OpenUtauMobile/bin/Debug/net9.0-ios/ios-arm64/publish/*.ipa
