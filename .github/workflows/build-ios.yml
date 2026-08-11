@@ -1,11 +1,11 @@
 name: Build iOS IPA (Debug)
 
 on:
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-26 # GitHub 提供的 macOS 运行器
+    runs-on: macos-26
 
     steps:
       - name: Checkout 代码
@@ -15,6 +15,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+
+      # 关键修复：强制切换到 Xcode 26.5
+      - name: 切换 Xcode 到 26.5 版本
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.5.app/Contents/Developer
+          xcodebuild -version
 
       - name: 安装 MAUI iOS 工作负载
         run: dotnet workload install maui-ios
