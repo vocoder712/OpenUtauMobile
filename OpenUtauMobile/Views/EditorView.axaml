@@ -230,6 +230,7 @@
                                            FontSize="12"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                           HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
                             </Button>
                             <!-- 拍号 -->
@@ -240,6 +241,7 @@
                                            FontSize="12"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                           HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
                             </Button>
                             <!-- 音名 -->
@@ -250,6 +252,7 @@
                                            FontSize="12"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                           HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
                             </Button>
                         </StackPanel>

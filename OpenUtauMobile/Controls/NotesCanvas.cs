@@ -88,8 +88,11 @@ public class NotesCanvas : Control, ICmdSubscriber
     // 绘制辅助
     private readonly Points _tmpPoints = []; // 临时缓存，避免GC
     private readonly PolylineGeometry _tmpPolylineGeometry = new(); // 临时缓存，避免GC
+    private const int RenderPitchSampleInterval = 5;
     private const double PitchHandleRadius = 5.0;
     private const double PitchHandleDiameter = PitchHandleRadius * 2;
+    private const double NoteBodyCornerRadius = 4;
+
     private readonly Geometry _pointGeometry = new EllipseGeometry(
         new Rect(-PitchHandleRadius, -PitchHandleRadius, PitchHandleDiameter, PitchHandleDiameter));
 
@@ -168,7 +171,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         int rightTick = (int)(leftTick + Bounds.Width / TickWidth);
         SolidColorBrush brush = TrackPalette.GetTrackColor(DocManager.Inst.Project.tracks[Part.trackNo].TrackColor)
             .AccentColor;
-        // ———— 绘制主体、手柄 ————
+        // ———— 绘制主体 ————
         foreach (UNote note in Part.notes)
         {
             if (note.position + Part.position > rightTick)
@@ -182,19 +185,6 @@ public class NotesCanvas : Control, ICmdSubscriber
             }
 
             RenderNoteBody(note, context, brush); // 主体
-
-            if ((ViewModel.EditMode != PianoRollEditMode.MultiSelect &&
-                 ViewModel.EditMode != PianoRollEditMode.Note) ||
-                !ViewModel.SelectedNotes.Contains(note)) // 仅在可直接移动或缩放音符的模式中显示 resize 手柄。
-            {
-                continue;
-            }
-
-            Point lt = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
-            lt = lt.WithX(lt.X + 1).WithY(Math.Round(lt.Y + 1));
-            Size sz = ViewModel.TickToneToSize(note.duration, 1);
-            sz = sz.WithWidth(sz.Width - 1).WithHeight(Math.Floor(sz.Height - 2));
-            DrawNoteResizeHandle(context, new Rect(lt, sz));
         }
 
         // ———— 绘制最终音高线 ————
@@ -223,10 +213,38 @@ public class NotesCanvas : Control, ICmdSubscriber
             }
         }
 
+        // ———— 绘制颤音控件 ————
         if (ViewModel.EditMode == PianoRollEditMode.Vibrato &&
             ViewModel.GetActiveVibratoOverlayLayout() is { } vibratoLayout)
         {
             RenderVibratoOverlay(vibratoLayout, context);
+        }
+        
+        // ———— 绘制边框和调整音符长度手柄 ————
+        foreach (UNote note in Part.notes)
+        {
+            bool isSelected = ViewModel.SelectedNotes.Contains(note);
+            // 定位
+            Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
+            Size size = ViewModel.TickToneToSize(note.duration, 1);
+            Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
+            // 圆角矩形
+            Rect rect = new(leftTop, rightBottom);
+            RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
+            // 边框：表示选中状态
+            IPen borderPen = isSelected
+                ? ThemeResources.GetPen("Sem.Color.Primary", 1.5)
+                : ThemeResources.GetPen("Sem.Color.OutlineVariant", 0.5);
+            context.DrawRectangle(null, borderPen, roundedRect);
+            
+            if ((ViewModel.EditMode != PianoRollEditMode.MultiSelect &&
+                 ViewModel.EditMode != PianoRollEditMode.Note) ||
+                 !isSelected) // 仅在可直接移动或缩放音符的模式中显示 resize 手柄。
+            {
+                continue;
+            }
+
+            DrawNoteResizeHandle(context, rect);
         }
 
         // ———— 绘制遮罩 ————
@@ -268,27 +286,23 @@ public class NotesCanvas : Control, ICmdSubscriber
     private void RenderNoteBody(UNote note, DrawingContext context, SolidColorBrush brush)
     {
         if (ViewModel == null || Part == null) return;
+        
         Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
-        leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1));
         Size size = ViewModel.TickToneToSize(note.duration, 1);
-        size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 2));
         Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
+        
+        // 圆角矩形
+        Rect rect = new(leftTop, rightBottom);
+        RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
 
-        // 根据选中状态和错误状态选择颜色
-        bool isSelected = ViewModel.SelectedNotes.Contains(note);
+        // 根据错误状态选择颜色
         bool isError = note.Error;
 
         // 错误音符透明度更高
         using (context.PushOpacity(isError ? 0.24 : 0.88))
         {
-            context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom));
+            context.DrawRectangle(brush, null, roundedRect);
         }
-
-        // 边框：表示选中状态
-        IPen borderPen = isSelected
-            ? ThemeResources.GetPen("Sem.Color.Primary", 1.5)
-            : ThemeResources.GetPen("Sem.Color.OutlineVariant", 1);
-        context.DrawRectangle(null, borderPen, new Rect(leftTop, rightBottom));
 
         if (ViewModel.KeyHeight < 10 || note.lyric.Length == 0)
         {
@@ -296,24 +310,24 @@ public class NotesCanvas : Control, ICmdSubscriber
         }
 
         string displayLyric = note.lyric;
-        int txtsize = 12;
+        int textSize = 12;
         TextLayout textLayout =
-            TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), txtsize);
-        if (txtsize > size.Height)
+            TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), textSize);
+        if (textSize > size.Height)
         {
             return; // 空间太小，无法显示歌词
         }
 
         if (textLayout.Height + 5 < size.Height)
         {
-            txtsize = (int)(12 * (size.Height / textLayout.Height));
-            textLayout = TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), txtsize);
+            textSize = (int)(12 * (size.Height / textLayout.Height));
+            textLayout = TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), textSize);
         }
 
         if (textLayout.Width + 5 > size.Width)
         {
             displayLyric = displayLyric[0] + ".."; // 尝试使用省略号
-            textLayout = TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), txtsize);
+            textLayout = TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), textSize);
             if (textLayout.Width + 5 > size.Width)
             {
                 return;
@@ -373,6 +387,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         IPen pen = ThemeResources.GetPen("Sem.Color.Outline", 2);
         lock (Part)
         {
+            _tmpPoints.Clear();
             foreach (RenderPhrase phrase in Part.renderPhrases)
             {
                 if (phrase.position > rightTick || phrase.end < leftTick)
@@ -381,12 +396,11 @@ public class NotesCanvas : Control, ICmdSubscriber
                 }
 
                 int pitchStart = phrase.position - phrase.leading;
-                int startIdx = Math.Max(0, (leftTick - pitchStart) / 5);
-                int endIdx = Math.Min(phrase.pitches.Length, (rightTick - pitchStart) / 5 + 1);
-                _tmpPoints.Clear();
+                int startIdx = Math.Max(0, (leftTick - pitchStart) / RenderPitchSampleInterval);
+                int endIdx = Math.Min(phrase.pitches.Length, (rightTick - pitchStart) / RenderPitchSampleInterval + 1);
                 for (int i = startIdx; i < endIdx; ++i)
                 {
-                    int t = pitchStart + i * 5;
+                    int t = pitchStart + i * RenderPitchSampleInterval;
                     float p = phrase.pitches[i];
                     _tmpPoints.Add(ViewModel.TickPitchToPoint(t, p / 100 - 0.5));
                 }
