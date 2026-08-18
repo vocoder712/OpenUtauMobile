@@ -276,6 +276,21 @@
   <data name="Settings.AutoScroll.Smooth" xml:space="preserve">
     <value>Плавне прокручування</value>
   </data>
+  <data name="Settings.Edit.StopButtonBehavior" xml:space="preserve">
+    <value>Поведінка кнопки Стоп</value>
+  </data>
+  <data name="Settings.Edit.StopButtonBehavior.Desc" xml:space="preserve">
+    <value>Налаштування поведінки кнопки зупинки під час та після відтворення.</value>
+  </data>
+  <data name="Settings.StopButton.StartTickSelectedPartZero" xml:space="preserve">
+    <value>Початок → Виділена партія → 0 (За замовчуванням)</value>
+  </data>
+  <data name="Settings.StopButton.StartTickZero" xml:space="preserve">
+    <value>Початок → 0</value>
+  </data>
+  <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
+    <value>Завжди до 0</value>
+  </data>
   <data name="Settings.Render.CategoryTitle" xml:space="preserve">
     <value>Рендеринг і продуктивність</value>
   </data>

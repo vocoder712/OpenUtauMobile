@@ -81,6 +81,25 @@ public class PianoKeyBehaviorOption
     }
 }
 
+public enum StopButtonBehavior
+{
+    StartTickSelectedPartZero = 1,
+    StartTickZero = 2,
+    AlwaysZero = 3
+}
+
+public class StopButtonBehaviorOption
+{
+    public StopButtonBehavior Value { get; }
+    public string DisplayName { get; }
+
+    public StopButtonBehaviorOption(StopButtonBehavior value, string displayName)
+    {
+        Value = value;
+        DisplayName = displayName;
+    }
+}
+
 /// <summary>走带自动翻页行为选项（用于绑定到选择器）。</summary>
 public class AutoScrollBehaviorOption
 {
@@ -328,6 +347,20 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public AutoScrollBehaviorOption? SelectedAutoScrollBehavior { get; set; }
 
+    // ── Edit & Behaviour: Stop Button ──────────────────────────────
+    /// <summary>List of available stop button actions.</summary>
+    public IReadOnlyList<StopButtonBehaviorOption> AvailableStopButtonBehaviors { get; } =
+        new List<StopButtonBehaviorOption>
+        {
+            new(StopButtonBehavior.StartTickSelectedPartZero, L.S("Settings.StopButton.StartTickSelectedPartZero")),
+            new(StopButtonBehavior.StartTickZero, L.S("Settings.StopButton.StartTickZero")),
+            new(StopButtonBehavior.AlwaysZero, L.S("Settings.StopButton.AlwaysZero"))
+        };
+
+    /// <summary>The currently selected behavior option for the Stop button.</summary>
+    [Reactive]
+    public StopButtonBehaviorOption? SelectedStopButtonBehavior { get; set; }
+
     /// <summary>回放刷新率（1-60）。</summary>
     [Reactive]
     public int PlaybackRefreshRate { get; set; }
@@ -547,6 +580,25 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .Subscribe(opt =>
             {
                 Preferences.Default.PlaybackAutoScroll = opt.Value;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        // Initializing Stop Button Behavior
+        int stopBehaviorVal = Preferences.Default.StopButtonBehavior;
+        StopButtonBehavior stopBehavior = stopBehaviorVal is >= 1 and <= 3
+            ? (StopButtonBehavior)stopBehaviorVal
+            : StopButtonBehavior.StartTickSelectedPartZero;
+        SelectedStopButtonBehavior = AvailableStopButtonBehaviors.FirstOrDefault(b => b.Value == stopBehavior)
+                                     ?? AvailableStopButtonBehaviors[0];
+
+        // Monitor changes in the behavior of the Stop button and persist them to Preferences
+        this.WhenAnyValue(x => x.SelectedStopButtonBehavior)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(opt =>
+            {
+                Preferences.Default.StopButtonBehavior = (int)opt.Value;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);

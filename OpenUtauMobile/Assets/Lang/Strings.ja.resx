@@ -276,6 +276,21 @@
   <data name="Settings.AutoScroll.Smooth" xml:space="preserve">
     <value>スムーズスクロール有効</value>
   </data>
+  <data name="Settings.Edit.StopButtonBehavior" xml:space="preserve">
+    <value>停止ボタンの動作</value>
+  </data>
+  <data name="Settings.Edit.StopButtonBehavior.Desc" xml:space="preserve">
+    <value>再生中および再生後に停止ボタンを押したときの動作を設定します。</value>
+  </data>
+  <data name="Settings.StopButton.StartTickSelectedPartZero" xml:space="preserve">
+    <value>開始位置 → 選択部分 → 0（デフォルト）</value>
+  </data>
+  <data name="Settings.StopButton.StartTickZero" xml:space="preserve">
+    <value>開始位置 → 0</value>
+  </data>
+  <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
+    <value>常に 0 に移動</value>
+  </data>
   <data name="Settings.Render.CategoryTitle" xml:space="preserve">
     <value>レンダーとパフォーマンス</value>
   </data>
