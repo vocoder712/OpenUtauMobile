@@ -223,10 +223,12 @@ public static class ThemeSemBatchEditTokens
     public static double PopupMinWidth => 280d;
     public static double PopupMinHeight => 420d;
     public static double PopupMaxHeight => 680d;
+    public static double ItemRunIconSize => 56d;
     public static double ItemIconSize => 40d;
     public static double ParameterMinWidth => 96d;
-    public static double RunButtonMinWidth => 72d;
-    public static double RunButtonMinHeight => 40d;
+    public static double ActionIconButtonSize => ItemRunIconSize;
+    public static double ActionIconVisualSize => ItemRunIconSize;
+    public static double ActionIconSize => 24d;
 
     public static Thickness ScopeMargin => new(12, 12, 12, 4);
     public static Thickness ScopeInset => new(12, 10);
@@ -237,9 +239,9 @@ public static class ThemeSemBatchEditTokens
     public static Thickness ParameterMargin => new(0, 6, 8, 0);
     public static Thickness ParameterLabelMargin => new(0, 0, 0, 4);
     public static Thickness RunButtonMargin => new(8, 0, 0, 0);
-    public static Thickness RunButtonInset => new(12, 6);
     public static Thickness FeedbackMargin => new(0, 6, 0, 0);
     public static CornerRadius ItemIconCorner => ThemeBaseShapeTokens.CornerXXL;
+    public static CornerRadius ActionIconButtonCorner => ThemeBaseShapeTokens.CornerXXXXL;
 }
 
 public static class ThemeSemDependencyManagerTokens

@@ -120,3 +120,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Keep page-local busy indicators; open and close DialogHost directly in each ViewModel; add loading notifications to the upstream-derived Core.
 - Impacted areas: Shared popup controls and services; dependency installation now uses the indeterminate loading mode.
 
+- Date: 2026-08-19
+- Decision: Render each batch-edit execution action with a 48dp touch target containing a 40dp circular filled-tonal container and 24dp Play icon, and explicitly pair every new container color with its matching MD3 on-color.
+- Rationale: Separating the 48dp hit target from the 40dp visual container preserves the MD3 icon-button geometry while remaining easy to acquire on touch screens. Semantic `SecondaryContainer`/`OnSecondaryContainer`, `PrimaryContainer`/`OnPrimaryContainer`, and surface/on-surface pairs remain legible across generated light and dark themes.
+- Alternatives considered: Keep the 72x40 text button; use a 40dp visual target; use primary colors for every row action.
+- Impacted areas: Batch-edit popup item actions, scope banner, item icon foreground, and batch-edit theme tokens.
+

@@ -32,6 +32,7 @@
     <Style Selector="TextBlock.BatchEditItemTitle">
         <Setter Property="FontSize" Value="{x:Static theme:ThemeBaseTypographyTokens.BodyLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
@@ -42,16 +43,29 @@
         <Setter Property="Margin" Value="{x:Static theme:ThemeSemBatchEditTokens.ParameterLabelMargin}" />
     </Style>
 
-    <Style Selector="Button.BatchEditRunButton">
-        <Setter Property="MinWidth" Value="{x:Static theme:ThemeSemBatchEditTokens.RunButtonMinWidth}" />
-        <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemBatchEditTokens.RunButtonMinHeight}" />
+    <Style Selector="Button.BatchEditRunIconButton">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconButtonSize}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconButtonSize}" />
         <Setter Property="Margin" Value="{x:Static theme:ThemeSemBatchEditTokens.RunButtonMargin}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemBatchEditTokens.RunButtonInset}" />
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerButton}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetM}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconButtonCorner}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <!-- 执行 -->
+    <Style Selector="Border.BatchEditRunIconVisual">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconVisualSize}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconVisualSize}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconButtonCorner}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
     </Style>
 
     <Style Selector="TextBlock.BatchEditValidation">
