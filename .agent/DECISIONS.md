@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-19
+- Decision: Expose batch editing from the piano-roll contextual action capsule with a `ListChecks` icon, and present operations in a responsive wide-preset popup organized into Lyrics, Notes, and Reset tabs. Register operations through a strongly typed static descriptor catalog with lazy factories instead of reflection.
+- Rationale: Batch edits operate on the active voice part and its selected notes, so the piano-roll context is the correct semantic level. Explicit descriptors keep ordering, localization, parameters, confirmation, AOT trimming, and future availability rules deterministic on mobile. A tabbed single-column list remains readable on narrow screens while the existing wide popup preset uses additional desktop/tablet width.
+- Alternatives considered: Place the entry in the project-level More popup; add batch editing as an edit mode; discover `BatchEdit` implementations through reflection; display equal-width action cards in two columns.
+- Impacted areas: Piano-roll contextual actions, batch-edit popup and view models, localization resources, and Windows/mobile responsive popup layout.
+
 - Date: 2026-05-13
 - Decision: Initialize agent context and workflow documents for OpenUtau Mobile.
 - Rationale: Provide a consistent, searchable context for AI agents and contributors.

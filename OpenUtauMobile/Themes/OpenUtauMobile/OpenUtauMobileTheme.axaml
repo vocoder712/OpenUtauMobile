@@ -32,6 +32,7 @@
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SingerDetailView.axaml" />
 
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/CollapsibleContextMenu.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/BatchEditPopup.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/EditorMorePopup.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ExportAudioPopup.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ErrorDialogPopup.axaml" />

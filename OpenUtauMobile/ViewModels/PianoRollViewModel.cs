@@ -16,6 +16,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Audio;
+using OpenUtauMobile.Controls;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
@@ -1826,6 +1827,11 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 break;
 
             case PianoRollEditMode.Note:
+                if (hasNoteSelection && EditingVoicePart != null)
+                {
+                    items.Add(CreateBatchEditAction());
+                }
+
                 if (hasNoteSelection)
                 {
                     items.Add(new ContextActionItem
@@ -1875,6 +1881,10 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                     Tip = L.S("Common.SelectAll"),
                     Command = ReactiveCommand.Create(SelectAllNotes)
                 });
+                if (EditingVoicePart != null)
+                {
+                    items.Add(CreateBatchEditAction());
+                }
                 if (hasNoteSelection)
                 {
                     items.Add(new ContextActionItem
@@ -1970,6 +1980,29 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         PianoRollContextActions = items;
+    }
+
+    private ContextActionItem CreateBatchEditAction()
+    {
+        return new ContextActionItem
+        {
+            Icon = PackIconPhosphorIconsKind.ListChecks,
+            Tip = L.S("BatchEdit.Title"),
+            Command = ReactiveCommand.CreateFromTask(ShowBatchEditPopupAsync),
+        };
+    }
+
+    private async Task ShowBatchEditPopupAsync()
+    {
+        UVoicePart? part = EditingVoicePart;
+        if (part == null)
+        {
+            return;
+        }
+
+        List<UNote> selectedNotes = SelectedNotes.ToList();
+        BatchEditViewModel viewModel = new(DocManager.Inst.Project, part, selectedNotes);
+        await PopupService.Show<object?>(new BatchEditPopup(), viewModel);
     }
 
     // ── 操作方法存根 ──────────────────────────────────────────────────
