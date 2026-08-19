@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reactive;
-using System.Threading;
-using System.Threading.Tasks;
-using Avalonia.Threading;
 using IconPacks.Avalonia.PhosphorIcons;
-using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
@@ -19,7 +15,7 @@ namespace OpenUtauMobile.ViewModels;
 public sealed class BatchEditItemViewModel : ViewModelBase
 {
     private readonly BatchEditDescriptor _descriptor;
-    private readonly Func<BatchEditItemViewModel, Task> _executeAsync;
+    private readonly Action<BatchEditItemViewModel> _execute;
 
     public string Title => L.S(_descriptor.TitleKey);
     public BatchEditCategory Category => _descriptor.Category;
@@ -27,10 +23,9 @@ public sealed class BatchEditItemViewModel : ViewModelBase
     public bool HasParameter => _descriptor.ParameterKind != BatchEditParameterKind.None;
     public string ParameterLabel => HasParameter ? L.S(_descriptor.ParameterLabelKey) : string.Empty;
     public bool RequiresConfirmation => _descriptor.RequiresConfirmation;
+    public bool SupportsCancellation => _descriptor.SupportsCancellation;
 
     [Reactive] public string ParameterValue { get; set; }
-    [Reactive] public bool IsRunning { get; set; }
-    [Reactive] public string ProgressText { get; set; } = string.Empty;
     [Reactive] public string ValidationMessage { get; set; } = string.Empty;
     [Reactive] public bool IsConfirmationPending { get; set; }
     [Reactive] public string ExecuteLabel { get; set; } = L.S("BatchEdit.Run");
@@ -40,12 +35,12 @@ public sealed class BatchEditItemViewModel : ViewModelBase
     public BatchEditItemViewModel(
         BatchEditDescriptor descriptor,
         UProject project,
-        Func<BatchEditItemViewModel, Task> executeAsync)
+        Action<BatchEditItemViewModel> execute)
     {
         _descriptor = descriptor;
-        _executeAsync = executeAsync;
+        _execute = execute;
         ParameterValue = descriptor.DefaultValueFactory(project);
-        ExecuteCommand = ReactiveCommand.CreateFromTask(ExecuteAsync);
+        ExecuteCommand = ReactiveCommand.Create(() => _execute(this));
     }
 
     public bool TryCreate(out BatchEdit? batchEdit)
@@ -91,34 +86,29 @@ public sealed class BatchEditItemViewModel : ViewModelBase
         return (!_descriptor.Minimum.HasValue || value >= _descriptor.Minimum.Value) &&
                (!_descriptor.Maximum.HasValue || value <= _descriptor.Maximum.Value);
     }
-
-    private async Task ExecuteAsync()
-    {
-        await _executeAsync(this);
-    }
 }
+
+public sealed record BatchEditExecutionRequest(
+    BatchEdit Operation,
+    string Title,
+    IReadOnlyList<UNote> TargetNotes,
+    bool SupportsCancellation);
 
 public sealed class BatchEditViewModel : PopupViewModelBase
 {
-    private readonly UProject _project;
     private readonly UVoicePart _part;
     private readonly List<UNote> _selectedNotes;
     private readonly bool _usesSelection;
-    private CancellationTokenSource? _cancellationTokenSource;
 
     public IReadOnlyList<BatchEditItemViewModel> LyricActions { get; }
     public IReadOnlyList<BatchEditItemViewModel> NoteActions { get; }
     public IReadOnlyList<BatchEditItemViewModel> ResetActions { get; }
     public string ScopeText { get; }
 
-    [Reactive] public bool IsBusy { get; private set; }
-    [Reactive] public string StatusText { get; private set; } = string.Empty;
-
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
 
     public BatchEditViewModel(UProject project, UVoicePart part, IReadOnlyCollection<UNote> selectedNotes)
     {
-        _project = project;
         _part = part;
 
         List<UNote> selectedSnapshot = selectedNotes
@@ -135,7 +125,7 @@ public sealed class BatchEditViewModel : PopupViewModelBase
         ScopeText = string.Format(CultureInfo.CurrentCulture, L.S(scopeKey), targetCount);
 
         List<BatchEditItemViewModel> items = BatchEditCatalog.Items
-            .Select(descriptor => new BatchEditItemViewModel(descriptor, project, ExecuteAsync))
+            .Select(descriptor => new BatchEditItemViewModel(descriptor, project, Execute))
             .ToList();
         LyricActions = items.Where(item => item.Category == BatchEditCategory.Lyrics).ToList();
         NoteActions = items.Where(item => item.Category == BatchEditCategory.Notes).ToList();
@@ -146,17 +136,11 @@ public sealed class BatchEditViewModel : PopupViewModelBase
 
     public override void RequestBack()
     {
-        _cancellationTokenSource?.Cancel();
         RaiseClose(null);
     }
 
-    private async Task ExecuteAsync(BatchEditItemViewModel item)
+    private void Execute(BatchEditItemViewModel item)
     {
-        if (IsBusy)
-        {
-            return;
-        }
-
         if (item.RequiresConfirmation && !item.IsConfirmationPending)
         {
             item.IsConfirmationPending = true;
@@ -172,63 +156,18 @@ public sealed class BatchEditViewModel : PopupViewModelBase
 
         item.IsConfirmationPending = false;
         item.ExecuteLabel = L.S("BatchEdit.Run");
-
-        IsBusy = true;
-        item.IsRunning = true;
-        item.ProgressText = string.Empty;
-        StatusText = string.Format(CultureInfo.CurrentCulture, L.S("BatchEdit.Status.Running"), item.Title);
-        _cancellationTokenSource = new CancellationTokenSource();
-
-        try
+        List<UNote> targetNotes = GetCurrentTargetNotes();
+        if (_usesSelection && targetNotes.Count == 0)
         {
-            List<UNote> targetNotes = GetCurrentTargetNotes();
-            if (_usesSelection && targetNotes.Count == 0)
-            {
-                item.ValidationMessage = L.S("BatchEdit.Validation.SelectionUnavailable");
-                StatusText = item.ValidationMessage;
-                return;
-            }
+            item.ValidationMessage = L.S("BatchEdit.Validation.SelectionUnavailable");
+            return;
+        }
 
-            if (batchEdit.IsAsync)
-            {
-                CancellationToken token = _cancellationTokenSource.Token;
-                await Task.Run(() => batchEdit.RunAsync(
-                    _project,
-                    _part,
-                    targetNotes,
-                    DocManager.Inst,
-                    (current, total) =>
-                    {
-                        string progress = total > 0
-                            ? string.Format(CultureInfo.CurrentCulture, L.S("BatchEdit.Status.Progress"), current, total)
-                            : string.Empty;
-                        Dispatcher.UIThread.Post(() => item.ProgressText = progress);
-                    },
-                    token), token);
-            }
-            else
-            {
-                batchEdit.Run(_project, _part, targetNotes, DocManager.Inst);
-            }
-
-            StatusText = string.Format(CultureInfo.CurrentCulture, L.S("BatchEdit.Status.Completed"), item.Title);
-        }
-        catch (OperationCanceledException)
-        {
-            StatusText = L.S("BatchEdit.Status.Cancelled");
-        }
-        catch (Exception exception)
-        {
-            item.ValidationMessage = exception.GetBaseException().Message;
-            StatusText = string.Format(CultureInfo.CurrentCulture, L.S("BatchEdit.Status.Failed"), item.Title);
-        }
-        finally
-        {
-            item.IsRunning = false;
-            IsBusy = false;
-            _cancellationTokenSource.Dispose();
-            _cancellationTokenSource = null;
-        }
+        RaiseClose(new BatchEditExecutionRequest(
+            batchEdit,
+            item.Title,
+            targetNotes,
+            item.SupportsCancellation));
     }
 
     private List<UNote> GetCurrentTargetNotes()

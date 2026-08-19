@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
@@ -2002,7 +2003,123 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
         List<UNote> selectedNotes = SelectedNotes.ToList();
         BatchEditViewModel viewModel = new(DocManager.Inst.Project, part, selectedNotes);
-        await PopupService.Show<object?>(new BatchEditPopup(), viewModel);
+        BatchEditExecutionRequest? request = await PopupService.Show<BatchEditExecutionRequest>(
+            new BatchEditPopup(),
+            viewModel);
+        if (request == null)
+        {
+            return;
+        }
+
+        await ExecuteBatchEditAsync(part, request);
+    }
+
+    private static async Task ExecuteBatchEditAsync(
+        UVoicePart part,
+        BatchEditExecutionRequest request)
+    {
+        string runningMessage = string.Format(
+            CultureInfo.CurrentCulture,
+            L.S("BatchEdit.Status.Running"),
+            request.Title);
+
+        try
+        {
+            if (request.Operation.IsAsync)
+            {
+                if (request.SupportsCancellation)
+                {
+                    await LoadingPopupService.RunAsync(
+                        runningMessage,
+                        0d,
+                        (loading, cancellationToken) => RunAsyncBatchBackend(
+                            part,
+                            request,
+                            loading,
+                            cancellationToken));
+                }
+                else
+                {
+                    await LoadingPopupService.RunAsync(
+                        runningMessage,
+                        0d,
+                        loading => RunAsyncBatchBackend(
+                            part,
+                            request,
+                            loading,
+                            CancellationToken.None));
+                }
+            }
+            else
+            {
+                await LoadingPopupService.RunAsync(
+                    runningMessage,
+                    _ =>
+                    {
+                        request.Operation.Run(
+                            DocManager.Inst.Project,
+                            part,
+                            request.TargetNotes.ToList(),
+                            DocManager.Inst);
+                        return Task.CompletedTask;
+                    });
+            }
+
+            ToastService.Enqueue(string.Format(
+                CultureInfo.CurrentCulture,
+                L.S("BatchEdit.Status.Completed"),
+                request.Title));
+        }
+        catch (OperationCanceledException)
+        {
+            ToastService.Enqueue(L.S("BatchEdit.Status.Cancelled"));
+        }
+        catch (Exception exception)
+        {
+            ToastService.Enqueue(string.Format(
+                CultureInfo.CurrentCulture,
+                L.S("BatchEdit.Status.Failed"),
+                request.Title));
+            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+        }
+    }
+
+    private static async Task RunAsyncBatchBackend(
+        UVoicePart part,
+        BatchEditExecutionRequest request,
+        LoadingPopupViewModel loading,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Run(() =>
+            {
+                request.Operation.RunAsync(
+                    DocManager.Inst.Project,
+                    part,
+                    request.TargetNotes.ToList(),
+                    DocManager.Inst,
+                    (current, total) =>
+                    {
+                        string progressMessage = string.Format(
+                            CultureInfo.CurrentCulture,
+                            L.S("BatchEdit.Status.Progress"),
+                            current,
+                            total);
+                        loading.UpdateProgress(current, total, progressMessage);
+                    },
+                    cancellationToken);
+            }, cancellationToken);
+        }
+        finally
+        {
+            // Core 异步操作会把最终命令投递回 UI 线程；取消时也要排空队列再释放 Loading。
+            await Dispatcher.UIThread.InvokeAsync(
+                () => { },
+                DispatcherPriority.Background);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
     }
 
     // ── 操作方法存根 ──────────────────────────────────────────────────

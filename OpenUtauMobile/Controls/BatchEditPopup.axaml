@@ -15,6 +15,7 @@
              d:DesignHeight="620">
 
     <UserControl.Resources>
+        <!-- Action 项目模板 -->
         <DataTemplate x:Key="BatchEditItemTemplate" x:DataType="vm:BatchEditItemViewModel">
             <Border Classes="BatchEditItem">
                 <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
@@ -48,16 +49,12 @@
                             Grid.Column="2"
                             Classes="BatchEditRunButton"
                             Command="{Binding ExecuteCommand}"
-                            Content="{Binding ExecuteLabel}"
-                            IsEnabled="{Binding !IsRunning}" />
+                            Content="{Binding ExecuteLabel}" />
 
                     <StackPanel Grid.Row="2"
                                 Grid.Column="1"
                                 Grid.ColumnSpan="2"
                                 Margin="{x:Static theme:ThemeSemBatchEditTokens.FeedbackMargin}">
-                        <TextBlock Text="{Binding ProgressText}"
-                                   Classes="BatchEditProgress"
-                                   IsVisible="{Binding ProgressText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         <TextBlock Text="{Binding ValidationMessage}"
                                    Classes="BatchEditValidation"
                                    IsVisible="{Binding ValidationMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
@@ -96,12 +93,7 @@
                 </StackPanel>
             </Border>
 
-            <Border DockPanel.Dock="Bottom"
-                    Classes="BatchEditStatus"
-                    IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-                <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
-            </Border>
-
+            <!-- Tab 页：歌词、音符、重置 -->
             <TabControl Margin="{x:Static theme:ThemeSemBatchEditTokens.TabMargin}">
                 <TabItem Header="{DynamicResource BatchEdit.Tab.Lyrics}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">

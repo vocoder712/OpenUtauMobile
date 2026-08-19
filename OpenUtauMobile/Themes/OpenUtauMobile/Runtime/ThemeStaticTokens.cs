@@ -239,8 +239,6 @@ public static class ThemeSemBatchEditTokens
     public static Thickness RunButtonMargin => new(8, 0, 0, 0);
     public static Thickness RunButtonInset => new(12, 6);
     public static Thickness FeedbackMargin => new(0, 6, 0, 0);
-    public static Thickness StatusMargin => new(12, 4, 12, 12);
-    public static Thickness StatusInset => new(12, 8);
     public static CornerRadius ItemIconCorner => ThemeBaseShapeTokens.CornerXXL;
 }
 

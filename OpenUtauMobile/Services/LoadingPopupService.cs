@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtauMobile.Controls;
@@ -51,6 +52,23 @@ public static class LoadingPopupService
     {
         LoadingPopupViewModel viewModel = new(message, initialProgress);
         await RunAsync(viewModel, operation);
+    }
+
+    /// <summary>使用可取消的确定进度加载弹窗运行后台操作</summary>
+    public static async Task RunAsync(
+        string message,
+        double initialProgress,
+        Func<LoadingPopupViewModel, CancellationToken, Task> operation)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+        using CancellationTokenSource cancellationTokenSource = new();
+        LoadingPopupViewModel viewModel = new(
+            message,
+            initialProgress,
+            cancellationTokenSource.Cancel);
+        await RunAsync(
+            viewModel,
+            loading => operation(loading, cancellationTokenSource.Token));
     }
 
     private static async Task RunAsync(

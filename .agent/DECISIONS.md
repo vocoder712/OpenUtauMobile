@@ -18,6 +18,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Place the entry in the project-level More popup; add batch editing as an edit mode; discover `BatchEdit` implementations through reflection; display equal-width action cards in two columns.
 - Impacted areas: Piano-roll contextual actions, batch-edit popup and view models, localization resources, and Windows/mobile responsive popup layout.
 
+- Date: 2026-08-19
+- Decision: Keep the batch-edit selection popup free of execution state. It closes with an immutable execution request before a shared modal `LoadingPopup` starts. Completion and cancellation are reported through Toast. Loading ignores back/outside-close requests; a cancel button is exposed only for descriptors whose Core implementation explicitly consumes `CancellationToken`.
+- Rationale: Running work inside the selection popup left progress non-modal, allowed competing interactions, and coupled task resources to a closable view model. Serial popup handoff makes DialogHost release the selection popup before work starts and gives one owner to progress, cancellation, and cleanup.
+- Alternatives considered: Disable controls inside the batch popup while retaining inline progress; infer cancellation support from `BatchEdit.IsAsync`; expose cancellation for every operation.
+- Impacted areas: Batch-edit execution lifecycle, shared loading popup cancellation support, completion feedback, and two cancellation-aware rendered-data operations.
+
 - Date: 2026-05-13
 - Decision: Initialize agent context and workflow documents for OpenUtau Mobile.
 - Rationale: Provide a consistent, searchable context for AI agents and contributors.

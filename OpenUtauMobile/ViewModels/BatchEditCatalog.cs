@@ -46,6 +46,7 @@ public sealed class BatchEditDescriptor
     public double? Minimum { get; init; }
     public double? Maximum { get; init; }
     public bool RequiresConfirmation { get; init; }
+    public bool SupportsCancellation { get; init; }
     public required Func<string, BatchEdit> Factory { get; init; }
 }
 
@@ -149,13 +150,13 @@ public static class BatchEditCatalog
             BatchEditUiConstants.MinimumPositiveValue, null, value => new RandomizeTuning(value)),
         NoParameter("load-rendered-pitch", BatchEditCategory.Notes,
             "BatchEdit.Action.LoadRenderedPitch", PackIconPhosphorIconsKind.DownloadSimple,
-            _ => new LoadRenderedPitch()),
+            _ => new LoadRenderedPitch(), supportsCancellation: true),
         NoParameter("bake-pitch", BatchEditCategory.Notes,
             "BatchEdit.Action.BakePitch", PackIconPhosphorIconsKind.CookingPot,
             _ => new BakePitch(), true),
         NoParameter("refresh-real-curves", BatchEditCategory.Notes,
             "BatchEdit.Action.RefreshRealCurves", PackIconPhosphorIconsKind.ArrowsClockwise,
-            _ => new RefreshRealCurves()),
+            _ => new RefreshRealCurves(), supportsCancellation: true),
 
         NoParameter("reset-pitch-bends", BatchEditCategory.Reset,
             "BatchEdit.Action.ResetPitchBends", PackIconPhosphorIconsKind.ArrowCounterClockwise,
@@ -186,7 +187,8 @@ public static class BatchEditCatalog
         string titleKey,
         PackIconPhosphorIconsKind icon,
         Func<string, BatchEdit> factory,
-        bool requiresConfirmation = false)
+        bool requiresConfirmation = false,
+        bool supportsCancellation = false)
     {
         return new BatchEditDescriptor
         {
@@ -195,6 +197,7 @@ public static class BatchEditCatalog
             TitleKey = titleKey,
             Icon = icon,
             RequiresConfirmation = requiresConfirmation,
+            SupportsCancellation = supportsCancellation,
             Factory = factory,
         };
     }

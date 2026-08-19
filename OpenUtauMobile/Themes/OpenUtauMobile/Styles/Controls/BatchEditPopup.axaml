@@ -50,11 +50,8 @@
         <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
         <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerButton}" />
-    </Style>
-
-    <Style Selector="TextBlock.BatchEditProgress">
-        <Setter Property="FontSize" Value="{x:Static theme:ThemeBaseTypographyTokens.BodySSize}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style Selector="TextBlock.BatchEditValidation">
@@ -63,10 +60,4 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <Style Selector="Border.BatchEditStatus">
-        <Setter Property="Margin" Value="{x:Static theme:ThemeSemBatchEditTokens.StatusMargin}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemBatchEditTokens.StatusInset}" />
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerMedium}" />
-    </Style>
 </Styles>
