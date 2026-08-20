@@ -1828,13 +1828,15 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 break;
 
             case PianoRollEditMode.Note:
-                if (hasNoteSelection && EditingVoicePart != null)
+                if (EditingVoicePart != null)
                 {
+                    // 批量编辑
                     items.Add(CreateBatchEditAction());
                 }
 
                 if (hasNoteSelection)
                 {
+                    // 删除音符
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Trash,
@@ -1846,6 +1848,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
                 if (hasSingleNote)
                 {
+                    // 音符属性
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Wrench,
