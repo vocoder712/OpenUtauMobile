@@ -80,8 +80,7 @@ public sealed class BatchEditItemViewModel : ViewModelBase
     public bool TryCreate(out BatchEdit? batchEdit)
     {
         ValidationMessage = string.Empty;
-        string value = ParameterValue.Trim();
-
+        string value = (ParameterValue ?? string.Empty).Trim();
         if (_descriptor.ParameterKind == BatchEditParameterKind.Text && string.IsNullOrWhiteSpace(value))
         {
             ValidationMessage = L.S("BatchEdit.Validation.Required");
