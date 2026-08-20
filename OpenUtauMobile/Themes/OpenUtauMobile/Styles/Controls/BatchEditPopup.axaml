@@ -43,6 +43,49 @@
         <Setter Property="Margin" Value="{x:Static theme:ThemeSemBatchEditTokens.ParameterLabelMargin}" />
     </Style>
 
+    <Style Selector="Border.BatchEditPinnedGroup">
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemBatchEditTokens.PinnedGroupMargin}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemBatchEditTokens.PinnedGroupInset}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerMedium}" />
+    </Style>
+
+    <Style Selector="TextBlock.BatchEditPinnedHeader">
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemBatchEditTokens.PinnedHeaderMargin}" />
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeBaseTypographyTokens.LabelLSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+
+    <Style Selector="Button.BatchEditPinIconButton">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemBatchEditTokens.PinIconButtonSize}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemBatchEditTokens.PinIconButtonSize}" />
+        <Setter Property="Margin" Value="{x:Static theme:ThemeSemBatchEditTokens.PinButtonMargin}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemBatchEditTokens.PinIconButtonCorner}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Border.BatchEditPinIconVisual">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemBatchEditTokens.PinIconVisualSize}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemBatchEditTokens.PinIconVisualSize}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemBatchEditTokens.PinIconButtonCorner}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button.BatchEditPinIconButton.pinned">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+    </Style>
+
+
+
     <Style Selector="Button.BatchEditRunIconButton">
         <Setter Property="Width" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconButtonSize}" />
         <Setter Property="Height" Value="{x:Static theme:ThemeSemBatchEditTokens.ActionIconButtonSize}" />

@@ -1479,6 +1479,15 @@
   <data name="BatchEdit.Run" xml:space="preserve">
     <value>Run</value>
   </data>
+  <data name="BatchEdit.Pin" xml:space="preserve">
+    <value>Pin</value>
+  </data>
+  <data name="BatchEdit.Unpin" xml:space="preserve">
+    <value>Unpin</value>
+  </data>
+  <data name="BatchEdit.Pinned" xml:space="preserve">
+    <value>Pinned</value>
+  </data>
   <data name="BatchEdit.Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>

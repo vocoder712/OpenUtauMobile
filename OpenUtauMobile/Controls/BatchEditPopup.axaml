@@ -18,7 +18,7 @@
         <!-- Action 项目模板 -->
         <DataTemplate x:Key="BatchEditItemTemplate" x:DataType="vm:BatchEditItemViewModel">
             <Border Classes="BatchEditItem">
-                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
                     <Border Grid.Row="0"
                             Grid.RowSpan="2"
                             Grid.Column="0"
@@ -48,6 +48,20 @@
                     <Button Grid.Row="0"
                             Grid.RowSpan="2"
                             Grid.Column="2"
+                            Classes="BatchEditPinIconButton"
+                            Classes.pinned="{Binding IsPinned}"
+                            Command="{Binding TogglePinCommand}"
+                            ToolTip.Tip="{Binding PinLabel}">
+                        <Border Classes="BatchEditPinIconVisual">
+                            <iconPacks:PackIconPhosphorIcons Kind="{Binding PinIcon}"
+                                                               Width="{x:Static theme:ThemeSemBatchEditTokens.PinIconSize}"
+                                                               Height="{x:Static theme:ThemeSemBatchEditTokens.PinIconSize}" />
+                        </Border>
+                    </Button>
+
+                    <Button Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="3"
                             Classes="BatchEditRunIconButton"
                             Command="{Binding ExecuteCommand}"
                             ToolTip.Tip="{Binding ExecuteLabel}">
@@ -61,7 +75,7 @@
 
                     <StackPanel Grid.Row="2"
                                 Grid.Column="1"
-                                Grid.ColumnSpan="2"
+                                Grid.ColumnSpan="3"
                                 Margin="{x:Static theme:ThemeSemBatchEditTokens.FeedbackMargin}">
                         <TextBlock Text="{Binding ValidationMessage}"
                                    Classes="BatchEditValidation"
@@ -107,20 +121,53 @@
             <TabControl Margin="{x:Static theme:ThemeSemBatchEditTokens.TabMargin}">
                 <TabItem Header="{DynamicResource BatchEdit.Tab.Lyrics}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding LyricActions}"
-                                      ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        <StackPanel>
+                            <Border Classes="BatchEditPinnedGroup"
+                                    IsVisible="{Binding HasPinnedLyrics}">
+                                <StackPanel>
+                                    <TextBlock Classes="BatchEditPinnedHeader"
+                                               Text="{DynamicResource BatchEdit.Pinned}" />
+                                    <ItemsControl ItemsSource="{Binding PinnedLyricActions}"
+                                                  ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                </StackPanel>
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding LyricActions}"
+                                          ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        </StackPanel>
                     </ScrollViewer>
                 </TabItem>
                 <TabItem Header="{DynamicResource BatchEdit.Tab.Notes}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding NoteActions}"
-                                      ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        <StackPanel>
+                            <Border Classes="BatchEditPinnedGroup"
+                                    IsVisible="{Binding HasPinnedNotes}">
+                                <StackPanel>
+                                    <TextBlock Classes="BatchEditPinnedHeader"
+                                               Text="{DynamicResource BatchEdit.Pinned}" />
+                                    <ItemsControl ItemsSource="{Binding PinnedNoteActions}"
+                                                  ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                </StackPanel>
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding NoteActions}"
+                                          ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        </StackPanel>
                     </ScrollViewer>
                 </TabItem>
                 <TabItem Header="{DynamicResource BatchEdit.Tab.Reset}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding ResetActions}"
-                                      ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        <StackPanel>
+                            <Border Classes="BatchEditPinnedGroup"
+                                    IsVisible="{Binding HasPinnedReset}">
+                                <StackPanel>
+                                    <TextBlock Classes="BatchEditPinnedHeader"
+                                               Text="{DynamicResource BatchEdit.Pinned}" />
+                                    <ItemsControl ItemsSource="{Binding PinnedResetActions}"
+                                                  ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                </StackPanel>
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding ResetActions}"
+                                          ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        </StackPanel>
                     </ScrollViewer>
                 </TabItem>
             </TabControl>

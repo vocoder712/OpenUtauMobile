@@ -126,3 +126,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Keep the 72x40 text button; use a 40dp visual target; use primary colors for every row action.
 - Impacted areas: Batch-edit popup item actions, scope banner, item icon foreground, and batch-edit theme tokens.
 
+- Date: 2026-08-20
+- Decision: Persist batch-edit pins as category-keyed lists of stable catalog IDs, with the most recently pinned ID inserted first; render pinned items in a dedicated group above the remaining catalog-order items in each tab.
+- Rationale: Stable IDs survive localization and title changes, per-category lists prevent cross-tab ordering leakage, and moving rather than duplicating an item keeps each operation available exactly once. Invalid or duplicate stored IDs are removed when the menu opens.
+- Alternatives considered: Persist localized titles; store one global pin list; duplicate pinned operations while leaving them in the regular list; keep pins session-only.
+- Impacted areas: Core preferences serialization, batch-edit ViewModels and popup layout, batch-edit semantic tokens/styles, and localization resources.
+

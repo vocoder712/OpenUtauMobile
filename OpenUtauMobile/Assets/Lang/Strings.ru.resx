@@ -1458,6 +1458,15 @@
   <data name="BatchEdit.Run" xml:space="preserve">
     <value>Run</value>
   </data>
+  <data name="BatchEdit.Pin" xml:space="preserve">
+    <value>Закрепить</value>
+  </data>
+  <data name="BatchEdit.Unpin" xml:space="preserve">
+    <value>Открепить</value>
+  </data>
+  <data name="BatchEdit.Pinned" xml:space="preserve">
+    <value>Закреплённые</value>
+  </data>
   <data name="BatchEdit.Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
