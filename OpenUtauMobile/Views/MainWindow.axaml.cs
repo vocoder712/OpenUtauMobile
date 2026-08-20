@@ -23,6 +23,13 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (DataContext is not MainViewModel mainViewModel)
+        {
+            // No VM to confirm against; allow the close to proceed.
+            _closeConfirmed = true;
+            return;
+        }
+
         e.Cancel = true;
         if (_closeRequestPending)
         {
@@ -32,8 +39,7 @@ public partial class MainWindow : Window
         _closeRequestPending = true;
         try
         {
-            if (DataContext is not MainViewModel mainViewModel ||
-                !await mainViewModel.ConfirmCloseAsync())
+            if (!await mainViewModel.ConfirmCloseAsync())
             {
                 return;
             }
