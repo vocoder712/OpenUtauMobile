@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-20
+- Decision: Intercept the shared desktop `MainWindow` closing event and route editor close requests through the same save/discard/cancel decision used by back navigation, then allow exactly one confirmed close.
+- Rationale: Native title-bar close requests otherwise bypass editor navigation and can terminate the process with unsaved project changes. A shared window hook covers Windows and other classic desktop hosts while keeping project-state decisions in the view models.
+- Alternatives considered: Add separate platform hooks in the Windows and Linux hosts; always convert window close into back navigation; duplicate the confirmation UI in the window code-behind.
+- Impacted areas: Desktop window lifetime, main navigation coordination, and editor exit confirmation.
+
 - Date: 2026-08-19
 - Decision: Expose batch editing from the piano-roll contextual action capsule with a `ListChecks` icon, and present operations in a responsive wide-preset popup organized into Lyrics, Notes, and Reset tabs. Register operations through a strongly typed static descriptor catalog with lazy factories instead of reflection.
 - Rationale: Batch edits operate on the active voice part and its selected notes, so the piano-roll context is the correct semantic level. Explicit descriptors keep ordering, localization, parameters, confirmation, AOT trimming, and future availability rules deterministic on mobile. A tabbed single-column list remains readable on narrow screens while the existing wide popup preset uses additional desktop/tablet width.

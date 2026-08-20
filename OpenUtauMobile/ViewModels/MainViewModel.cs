@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtauMobile.Messages;
 using OpenUtauMobile.Services;
@@ -87,5 +88,19 @@ public class MainViewModel : ViewModelBase
         {
             _ = AppService.ExitApplication();
         }
+    }
+
+    /// <summary>
+    /// 确认桌面窗口是否可以关闭。
+    /// </summary>
+    /// <returns>当前工程允许退出时返回 true。</returns>
+    public async Task<bool> ConfirmCloseAsync()
+    {
+        if (CurrentViewModel is EditorViewModel editorViewModel)
+        {
+            return await editorViewModel.ConfirmExitAsync();
+        }
+
+        return true;
     }
 }
