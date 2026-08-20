@@ -59,6 +59,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "===== Generated files ====="
+          find OpenUtauMobile.iOS/bin -type f -print
           APP_PATH="$(find OpenUtauMobile.iOS/bin \
             -type d \
             -name '*.app' \
