@@ -48,12 +48,13 @@ jobs:
             -p:RuntimeIdentifier=ios-arm64
       - name: Build iOS app
         run: |
-          dotnet build \
+          dotnet publish \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -c Debug \
             -f net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64 \
-            --no-restore
+            -r ios-arm64 \
+            -p:ArchiveOnBuild=true \
+            -p:IsMacEnabled=true
       - name: Find and inspect app bundle
         id: find_app
         shell: bash
