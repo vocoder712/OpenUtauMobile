@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-20
+- Decision: Build final-pitch rendering as one per-frame `StreamGeometry` with a separate figure for each visible render phrase, and never mutate that geometry after submitting it to the drawing context.
+- Rationale: Avalonia drawing commands retain mutable geometry resources rather than snapshotting a shared `Points` collection. Reusing and clearing the same `Points`/`PolylineGeometry` after `DrawGeometry` either joins independent phrases, changes already-submitted drawing, or leaves the retained geometry empty.
+- Alternatives considered: Clear the shared point collection after every phrase; allocate a separate `Points` and `PolylineGeometry` for every phrase; submit every pitch segment as a separate `DrawLine` command.
+- Impacted areas: Final pitch-line rendering in `NotesCanvas`; one geometry allocation is made per visible render pass instead of retaining mutable geometry across frames.
+
+- Date: 2026-08-20
 - Decision: Intercept the shared desktop `MainWindow` closing event and route editor close requests through the same save/discard/cancel decision used by back navigation, then allow exactly one confirmed close.
 - Rationale: Native title-bar close requests otherwise bypass editor navigation and can terminate the process with unsaved project changes. A shared window hook covers Windows and other classic desktop hosts while keeping project-state decisions in the view models.
 - Alternatives considered: Add separate platform hooks in the Windows and Linux hosts; always convert window close into back navigation; duplicate the confirmation UI in the window code-behind.

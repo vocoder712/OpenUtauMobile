@@ -88,7 +88,7 @@ public class NotesCanvas : Control, ICmdSubscriber
     // 绘制辅助
     private readonly Points _tmpPoints = []; // 临时缓存，避免GC
     private readonly PolylineGeometry _tmpPolylineGeometry = new(); // 临时缓存，避免GC
-    private const int RenderPitchSampleInterval = 5;
+    private const int RenderPitchSampleInterval = 5; // 音高采样间隔（tick）
     private const double PitchHandleRadius = 5.0;
     private const double PitchHandleDiameter = PitchHandleRadius * 2;
     private const double NoteBodyCornerRadius = 4;
@@ -201,7 +201,7 @@ public class NotesCanvas : Control, ICmdSubscriber
             {
                 bool anchorVisible = ViewModel.EditMode == PianoRollEditMode.Anchor
                     && note.pitch.data.Count >= 2
-                    && DocManager.Inst.Project.timeAxis.MsPosToTickPos(note.PositionMs + note.pitch.data[note.pitch.data.Count - 1].X) >= leftTick;
+                    && DocManager.Inst.Project.timeAxis.MsPosToTickPos(note.PositionMs + note.pitch.data[^1].X) >= leftTick;
                 if (!anchorVisible)
                     continue; // 音符在左侧不可见，跳过
             }
@@ -385,29 +385,50 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         if (ViewModel == null || Part == null) return;
         IPen pen = ThemeResources.GetPen("Sem.Color.Outline", 2);
+        StreamGeometry geometry = new();
+        bool hasVisibleSegment = false;
         lock (Part)
         {
-            _tmpPoints.Clear();
-            foreach (RenderPhrase phrase in Part.renderPhrases)
+            using (StreamGeometryContext geometryContext = geometry.Open())
             {
-                if (phrase.position > rightTick || phrase.end < leftTick)
+                foreach (RenderPhrase phrase in Part.renderPhrases)
                 {
-                    continue;
-                }
+                    if (phrase.position > rightTick || phrase.end < leftTick)
+                    {
+                        continue;
+                    }
 
-                int pitchStart = phrase.position - phrase.leading;
-                int startIdx = Math.Max(0, (leftTick - pitchStart) / RenderPitchSampleInterval);
-                int endIdx = Math.Min(phrase.pitches.Length, (rightTick - pitchStart) / RenderPitchSampleInterval + 1);
-                for (int i = startIdx; i < endIdx; ++i)
-                {
-                    int t = pitchStart + i * RenderPitchSampleInterval;
-                    float p = phrase.pitches[i];
-                    _tmpPoints.Add(ViewModel.TickPitchToPoint(t, p / 100 - 0.5));
-                }
+                    int pitchStart = phrase.position - phrase.leading;
+                    int startIdx = Math.Max(0, (leftTick - pitchStart) / RenderPitchSampleInterval);
+                    int endIdx = Math.Min(
+                        phrase.pitches.Length,
+                        (rightTick - pitchStart) / RenderPitchSampleInterval + 1);
+                    if (endIdx - startIdx < 2)
+                    {
+                        continue;
+                    }
 
-                _tmpPolylineGeometry.Points = _tmpPoints;
-                context.DrawGeometry(null, pen, _tmpPolylineGeometry);
+                    int firstTick = pitchStart + startIdx * RenderPitchSampleInterval;
+                    float firstPitch = phrase.pitches[startIdx];
+                    Point firstPoint = ViewModel.TickPitchToPoint(firstTick, firstPitch / 100 - 0.5);
+                    geometryContext.BeginFigure(firstPoint, false);
+                    for (int i = startIdx + 1; i < endIdx; ++i)
+                    {
+                        int tick = pitchStart + i * RenderPitchSampleInterval;
+                        float pitch = phrase.pitches[i];
+                        Point point = ViewModel.TickPitchToPoint(tick, pitch / 100 - 0.5);
+                        geometryContext.LineTo(point);
+                    }
+
+                    geometryContext.EndFigure(false);
+                    hasVisibleSegment = true;
+                }
             }
+        }
+
+        if (hasVisibleSegment)
+        {
+            context.DrawGeometry(null, pen, geometry);
         }
     }
 
@@ -520,7 +541,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         _vibGuidePenDisabled = new Pen(_vibGuideBrushDisabled, 2.0);
         _vibFineGuidePenEnabled = new Pen(_vibFineGuideBrushEnabled, 1.3);
         _vibFineGuidePenDisabled = new Pen(_vibFineGuideBrushDisabled, 1.3);
-        _vibTrackBorderPen = new Pen(_vibTrackBorderBrush, 1);
+        _vibTrackBorderPen = new Pen(_vibTrackBorderBrush);
         _vibHandleHaloBrush = new SolidColorBrush(primaryColor, 0.16);
         _vibHandleBrush = ThemeResources.GetBrush("Sem.Color.Primary");
         _vibHandlePen = ThemeResources.GetPen("Sem.Color.OnSurface", 1.1);
