@@ -45,14 +45,14 @@ jobs:
         run: |
           dotnet restore \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -p:RuntimeIdentifier=iossimulator-x64
-      - name: Build iOS Simulator app
+            -p:RuntimeIdentifier=ios-arm64
+      - name: Build iOS app
         run: |
           dotnet build \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -c Debug \
             -f net10.0-ios \
-            -p:RuntimeIdentifier=iossimulator-x64 \
+            -p:RuntimeIdentifier=ios-arm64 \
             --no-restore
       - name: Find and inspect app bundle
         id: find_app
