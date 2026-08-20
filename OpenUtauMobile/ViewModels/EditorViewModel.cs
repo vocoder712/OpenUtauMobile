@@ -1918,36 +1918,40 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     {
         try
         {
-            if (DocManager.Inst.ChangesSaved)
+            if (await ConfirmExitAsync())
             {
                 Navigator.NavigateBack(this);
-                return;
-            }
-
-            byte actionRegister = await ShowExitEditorConfirmPopupAsync();
-            switch ((ExitEditorActionRegister)actionRegister)
-            {
-                case ExitEditorActionRegister.ExitWithoutSave:
-                    Preferences.Default.RecoveryPath = string.Empty;
-                    Preferences.Save();
-                    Navigator.NavigateBack(this);
-                    return;
-                case ExitEditorActionRegister.SaveAndExit:
-                    if (await Save())
-                    {
-                        Navigator.NavigateBack(this);
-                    }
-
-                    return;
-                case ExitEditorActionRegister.Cancel:
-                default:
-                    return;
             }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Error while handling back navigation in EditorViewModel");
-            Navigator.NavigateBack(this);
+        }
+    }
+
+    /// <summary>
+    /// 确认是否可以退出当前工程。
+    /// </summary>
+    /// <returns>已保存或用户确认退出时返回 true。</returns>
+    public async Task<bool> ConfirmExitAsync()
+    {
+        if (DocManager.Inst.ChangesSaved)
+        {
+            return true;
+        }
+
+        byte actionRegister = await ShowExitEditorConfirmPopupAsync();
+        switch ((ExitEditorActionRegister)actionRegister)
+        {
+            case ExitEditorActionRegister.ExitWithoutSave:
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
+                return true;
+            case ExitEditorActionRegister.SaveAndExit:
+                return await Save();
+            case ExitEditorActionRegister.Cancel:
+            default:
+                return false;
         }
     }
 

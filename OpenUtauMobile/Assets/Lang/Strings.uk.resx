@@ -1437,4 +1437,181 @@
   <data name="SetupWizard.Finish" xml:space="preserve">
     <value>Готово</value>
   </data>
+  <data name="BatchEdit.Title" xml:space="preserve">
+    <value>Batch edit</value>
+  </data>
+  <data name="BatchEdit.Tab.Lyrics" xml:space="preserve">
+    <value>Lyrics</value>
+  </data>
+  <data name="BatchEdit.Tab.Notes" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="BatchEdit.Tab.Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="BatchEdit.Scope.Selected" xml:space="preserve">
+    <value>{0} selected notes</value>
+  </data>
+  <data name="BatchEdit.Scope.Part" xml:space="preserve">
+    <value>All {0} notes in the current part</value>
+  </data>
+  <data name="BatchEdit.Run" xml:space="preserve">
+    <value>Run</value>
+  </data>
+  <data name="BatchEdit.Pin" xml:space="preserve">
+    <value>Закріпити</value>
+  </data>
+  <data name="BatchEdit.Unpin" xml:space="preserve">
+    <value>Відкріпити</value>
+  </data>
+  <data name="BatchEdit.Pinned" xml:space="preserve">
+    <value>Закріплені</value>
+  </data>
+  <data name="BatchEdit.Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="BatchEdit.Parameter.Lyric" xml:space="preserve">
+    <value>Lyric</value>
+  </data>
+  <data name="BatchEdit.Parameter.Semitones" xml:space="preserve">
+    <value>Semitones</value>
+  </data>
+  <data name="BatchEdit.Parameter.Ticks" xml:space="preserve">
+    <value>Ticks</value>
+  </data>
+  <data name="BatchEdit.Parameter.Ratio" xml:space="preserve">
+    <value>Ratio (0–1)</value>
+  </data>
+  <data name="BatchEdit.Parameter.Cents" xml:space="preserve">
+    <value>Maximum cents</value>
+  </data>
+  <data name="BatchEdit.Validation.Required" xml:space="preserve">
+    <value>Enter a value.</value>
+  </data>
+  <data name="BatchEdit.Validation.Number" xml:space="preserve">
+    <value>Enter a valid number in the allowed range.</value>
+  </data>
+  <data name="BatchEdit.Validation.Confirm" xml:space="preserve">
+    <value>This operation changes or resets note data. Select Confirm to continue.</value>
+  </data>
+  <data name="BatchEdit.Status.Running" xml:space="preserve">
+    <value>Running {0}…</value>
+  </data>
+  <data name="BatchEdit.Status.Progress" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="BatchEdit.Status.Completed" xml:space="preserve">
+    <value>Completed {0}.</value>
+  </data>
+  <data name="BatchEdit.Status.Cancelled" xml:space="preserve">
+    <value>Operation cancelled.</value>
+  </data>
+  <data name="BatchEdit.Status.Failed" xml:space="preserve">
+    <value>{0} failed.</value>
+  </data>
+  <data name="BatchEdit.Action.RomajiToHiragana" xml:space="preserve">
+    <value>Romaji to Hiragana</value>
+  </data>
+  <data name="BatchEdit.Action.HiraganaToRomaji" xml:space="preserve">
+    <value>Hiragana to Romaji</value>
+  </data>
+  <data name="BatchEdit.Action.JapaneseVcvToCv" xml:space="preserve">
+    <value>Japanese VCV to CV</value>
+  </data>
+  <data name="BatchEdit.Action.RemoveToneSuffix" xml:space="preserve">
+    <value>Remove tone suffix</value>
+  </data>
+  <data name="BatchEdit.Action.RemoveLetterSuffix" xml:space="preserve">
+    <value>Remove letter suffix</value>
+  </data>
+  <data name="BatchEdit.Action.MoveSuffixToVoiceColor" xml:space="preserve">
+    <value>Move suffix to voice color</value>
+  </data>
+  <data name="BatchEdit.Action.RemovePhoneticHint" xml:space="preserve">
+    <value>Remove phonetic hint</value>
+  </data>
+  <data name="BatchEdit.Action.DashToPlus" xml:space="preserve">
+    <value>Convert dash to plus</value>
+  </data>
+  <data name="BatchEdit.Action.DashToPlusTilde" xml:space="preserve">
+    <value>Convert dash to plus-tilde</value>
+  </data>
+  <data name="BatchEdit.Action.InsertSlur" xml:space="preserve">
+    <value>Insert slur</value>
+  </data>
+  <data name="BatchEdit.Action.AddTailNote" xml:space="preserve">
+    <value>Add tail note</value>
+  </data>
+  <data name="BatchEdit.Action.RemoveTailNote" xml:space="preserve">
+    <value>Remove tail note</value>
+  </data>
+  <data name="BatchEdit.Action.AddBreathNote" xml:space="preserve">
+    <value>Add breath note</value>
+  </data>
+  <data name="BatchEdit.Action.Transpose" xml:space="preserve">
+    <value>Transpose</value>
+  </data>
+  <data name="BatchEdit.Action.Quantize" xml:space="preserve">
+    <value>Quantize notes</value>
+  </data>
+  <data name="BatchEdit.Action.AutoLegato" xml:space="preserve">
+    <value>Auto legato</value>
+  </data>
+  <data name="BatchEdit.Action.FixOverlap" xml:space="preserve">
+    <value>Fix overlapping notes</value>
+  </data>
+  <data name="BatchEdit.Action.CommonNoteCopy" xml:space="preserve">
+    <value>Copy as CommonNote</value>
+  </data>
+  <data name="BatchEdit.Action.CommonNotePaste" xml:space="preserve">
+    <value>Paste CommonNote</value>
+  </data>
+  <data name="BatchEdit.Action.HanziToPinyin" xml:space="preserve">
+    <value>Hanzi to Pinyin</value>
+  </data>
+  <data name="BatchEdit.Action.LengthenCrossfade" xml:space="preserve">
+    <value>Lengthen crossfade</value>
+  </data>
+  <data name="BatchEdit.Action.RandomizeTiming" xml:space="preserve">
+    <value>Randomize timing</value>
+  </data>
+  <data name="BatchEdit.Action.RandomizePhonemeOffset" xml:space="preserve">
+    <value>Randomize phoneme offset</value>
+  </data>
+  <data name="BatchEdit.Action.RandomizeTuning" xml:space="preserve">
+    <value>Randomize tuning</value>
+  </data>
+  <data name="BatchEdit.Action.LoadRenderedPitch" xml:space="preserve">
+    <value>Load rendered pitch</value>
+  </data>
+  <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
+    <value>Bake pitch</value>
+  </data>
+  <data name="BatchEdit.Action.RefreshRealCurves" xml:space="preserve">
+    <value>Refresh rendered curves</value>
+  </data>
+  <data name="BatchEdit.Action.ResetPitchBends" xml:space="preserve">
+    <value>Reset pitch bends</value>
+  </data>
+  <data name="BatchEdit.Action.ResetExpressions" xml:space="preserve">
+    <value>Reset expressions</value>
+  </data>
+  <data name="BatchEdit.Action.ClearVibratos" xml:space="preserve">
+    <value>Clear vibratos</value>
+  </data>
+  <data name="BatchEdit.Action.ResetVibratos" xml:space="preserve">
+    <value>Reset vibratos</value>
+  </data>
+  <data name="BatchEdit.Action.ClearTimings" xml:space="preserve">
+    <value>Clear phoneme timings</value>
+  </data>
+  <data name="BatchEdit.Action.ResetAliases" xml:space="preserve">
+    <value>Reset phoneme aliases</value>
+  </data>
+  <data name="BatchEdit.Action.ResetAll" xml:space="preserve">
+    <value>Reset all note data</value>
+  </data>
+  <data name="BatchEdit.Validation.SelectionUnavailable" xml:space="preserve">
+    <value>The selected notes are no longer in the current part.</value>
+  </data>
 </root>

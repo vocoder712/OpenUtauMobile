@@ -1,0 +1,176 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.BatchEditPopup"
+             x:DataType="vm:BatchEditViewModel"
+             Classes="PopupDialogRoot BatchEditRoot"
+             MinHeight="{x:Static theme:ThemeSemBatchEditTokens.PopupMinHeight}"
+             MaxHeight="{x:Static theme:ThemeSemBatchEditTokens.PopupMaxHeight}"
+             d:DesignWidth="560"
+             d:DesignHeight="620">
+
+    <UserControl.Resources>
+        <!-- Action 项目模板 -->
+        <DataTemplate x:Key="BatchEditItemTemplate" x:DataType="vm:BatchEditItemViewModel">
+            <Border Classes="BatchEditItem">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+                    <Border Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="0"
+                            Classes="BatchEditItemIcon">
+                        <iconPacks:PackIconPhosphorIcons Kind="{Binding Icon}"
+                                                           Foreground="{DynamicResource Sem.Color.OnPrimaryContainer}"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" />
+                    </Border>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="{Binding Title}"
+                               Classes="BatchEditItemTitle" />
+
+                    <StackPanel Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="{x:Static theme:ThemeSemBatchEditTokens.ParameterMargin}"
+                                IsVisible="{Binding HasParameter}">
+                        <TextBlock Text="{Binding ParameterLabel}"
+                                   Classes="BatchEditParameterLabel" />
+                        <TextBox Text="{Binding ParameterValue, Mode=TwoWay}"
+                                 MinWidth="{x:Static theme:ThemeSemBatchEditTokens.ParameterMinWidth}"
+                                 HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <Button Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="2"
+                            Classes="BatchEditPinIconButton"
+                            Classes.pinned="{Binding IsPinned}"
+                            Command="{Binding TogglePinCommand}"
+                            ToolTip.Tip="{Binding PinLabel}">
+                        <Border Classes="BatchEditPinIconVisual">
+                            <iconPacks:PackIconPhosphorIcons Kind="{Binding PinIcon}"
+                                                               Width="{x:Static theme:ThemeSemBatchEditTokens.PinIconSize}"
+                                                               Height="{x:Static theme:ThemeSemBatchEditTokens.PinIconSize}" />
+                        </Border>
+                    </Button>
+
+                    <Button Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Grid.Column="3"
+                            Classes="BatchEditRunIconButton"
+                            Command="{Binding ExecuteCommand}"
+                            ToolTip.Tip="{Binding ExecuteLabel}">
+                        <Border Classes="BatchEditRunIconVisual">
+                            <iconPacks:PackIconPhosphorIcons Kind="Play"
+                                                             Width="{x:Static theme:ThemeSemBatchEditTokens.ActionIconSize}"
+                                                             Height="{x:Static theme:ThemeSemBatchEditTokens.ActionIconSize}"
+                                                             Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+                        </Border>
+                    </Button>
+
+                    <StackPanel Grid.Row="2"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="3"
+                                Margin="{x:Static theme:ThemeSemBatchEditTokens.FeedbackMargin}">
+                        <TextBlock Text="{Binding ValidationMessage}"
+                                   Classes="BatchEditValidation"
+                                   IsVisible="{Binding ValidationMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border Classes="PopupTitleBar" DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <iconPacks:PackIconPhosphorIcons Grid.Column="0"
+                                                       Kind="ListChecks"
+                                                       Margin="0,0,10,0"
+                                                       VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1"
+                               Text="{DynamicResource BatchEdit.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="2"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CloseCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Close}"
+                            Content="{iconPacks:PhosphorIcons X}" />
+                </Grid>
+            </Border>
+
+            <Border DockPanel.Dock="Top" Classes="BatchEditScope">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <iconPacks:PackIconPhosphorIcons Kind="SelectionAll"
+                                                       Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}"
+                                                       VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding ScopeText}"
+                               Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <!-- Tab 页：歌词、音符、重置 -->
+            <TabControl Margin="{x:Static theme:ThemeSemBatchEditTokens.TabMargin}">
+                <TabItem Header="{DynamicResource BatchEdit.Tab.Lyrics}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border Classes="BatchEditPinnedGroup"
+                                    IsVisible="{Binding HasPinnedLyrics}">
+                                <StackPanel>
+                                    <TextBlock Classes="BatchEditPinnedHeader"
+                                               Text="{DynamicResource BatchEdit.Pinned}" />
+                                    <ItemsControl ItemsSource="{Binding PinnedLyricActions}"
+                                                  ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                </StackPanel>
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding LyricActions}"
+                                          ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="{DynamicResource BatchEdit.Tab.Notes}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border Classes="BatchEditPinnedGroup"
+                                    IsVisible="{Binding HasPinnedNotes}">
+                                <StackPanel>
+                                    <TextBlock Classes="BatchEditPinnedHeader"
+                                               Text="{DynamicResource BatchEdit.Pinned}" />
+                                    <ItemsControl ItemsSource="{Binding PinnedNoteActions}"
+                                                  ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                </StackPanel>
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding NoteActions}"
+                                          ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Header="{DynamicResource BatchEdit.Tab.Reset}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <Border Classes="BatchEditPinnedGroup"
+                                    IsVisible="{Binding HasPinnedReset}">
+                                <StackPanel>
+                                    <TextBlock Classes="BatchEditPinnedHeader"
+                                               Text="{DynamicResource BatchEdit.Pinned}" />
+                                    <ItemsControl ItemsSource="{Binding PinnedResetActions}"
+                                                  ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                </StackPanel>
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding ResetActions}"
+                                          ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Border>
+</UserControl>

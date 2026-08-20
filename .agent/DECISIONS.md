@@ -12,6 +12,24 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-20
+- Decision: Intercept the shared desktop `MainWindow` closing event and route editor close requests through the same save/discard/cancel decision used by back navigation, then allow exactly one confirmed close.
+- Rationale: Native title-bar close requests otherwise bypass editor navigation and can terminate the process with unsaved project changes. A shared window hook covers Windows and other classic desktop hosts while keeping project-state decisions in the view models.
+- Alternatives considered: Add separate platform hooks in the Windows and Linux hosts; always convert window close into back navigation; duplicate the confirmation UI in the window code-behind.
+- Impacted areas: Desktop window lifetime, main navigation coordination, and editor exit confirmation.
+
+- Date: 2026-08-19
+- Decision: Expose batch editing from the piano-roll contextual action capsule with a `ListChecks` icon, and present operations in a responsive wide-preset popup organized into Lyrics, Notes, and Reset tabs. Register operations through a strongly typed static descriptor catalog with lazy factories instead of reflection.
+- Rationale: Batch edits operate on the active voice part and its selected notes, so the piano-roll context is the correct semantic level. Explicit descriptors keep ordering, localization, parameters, confirmation, AOT trimming, and future availability rules deterministic on mobile. A tabbed single-column list remains readable on narrow screens while the existing wide popup preset uses additional desktop/tablet width.
+- Alternatives considered: Place the entry in the project-level More popup; add batch editing as an edit mode; discover `BatchEdit` implementations through reflection; display equal-width action cards in two columns.
+- Impacted areas: Piano-roll contextual actions, batch-edit popup and view models, localization resources, and Windows/mobile responsive popup layout.
+
+- Date: 2026-08-19
+- Decision: Keep the batch-edit selection popup free of execution state. It closes with an immutable execution request before a shared modal `LoadingPopup` starts. Completion and cancellation are reported through Toast. Loading ignores back/outside-close requests; a cancel button is exposed only for descriptors whose Core implementation explicitly consumes `CancellationToken`.
+- Rationale: Running work inside the selection popup left progress non-modal, allowed competing interactions, and coupled task resources to a closable view model. Serial popup handoff makes DialogHost release the selection popup before work starts and gives one owner to progress, cancellation, and cleanup.
+- Alternatives considered: Disable controls inside the batch popup while retaining inline progress; infer cancellation support from `BatchEdit.IsAsync`; expose cancellation for every operation.
+- Impacted areas: Batch-edit execution lifecycle, shared loading popup cancellation support, completion feedback, and two cancellation-aware rendered-data operations.
+
 - Date: 2026-05-13
 - Decision: Initialize agent context and workflow documents for OpenUtau Mobile.
 - Rationale: Provide a consistent, searchable context for AI agents and contributors.
@@ -107,4 +125,28 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Centralizing first-frame yielding, UI-thread progress updates, and guaranteed dialog closure prevents operation-specific loading overlays from racing with completion or subsequent error dialogs.
 - Alternatives considered: Keep page-local busy indicators; open and close DialogHost directly in each ViewModel; add loading notifications to the upstream-derived Core.
 - Impacted areas: Shared popup controls and services; dependency installation now uses the indeterminate loading mode.
+
+- Date: 2026-08-19
+- Decision: Render each batch-edit execution action with a 48dp touch target containing a 40dp circular filled-tonal container and 24dp Play icon, and explicitly pair every new container color with its matching MD3 on-color.
+- Rationale: Separating the 48dp hit target from the 40dp visual container preserves the MD3 icon-button geometry while remaining easy to acquire on touch screens. Semantic `SecondaryContainer`/`OnSecondaryContainer`, `PrimaryContainer`/`OnPrimaryContainer`, and surface/on-surface pairs remain legible across generated light and dark themes.
+- Alternatives considered: Keep the 72x40 text button; use a 40dp visual target; use primary colors for every row action.
+- Impacted areas: Batch-edit popup item actions, scope banner, item icon foreground, and batch-edit theme tokens.
+
+- Date: 2026-08-20
+- Decision: Persist batch-edit pins as category-keyed lists of stable catalog IDs, with the most recently pinned ID inserted first; render pinned items in a dedicated group above the remaining catalog-order items in each tab.
+- Rationale: Stable IDs survive localization and title changes, per-category lists prevent cross-tab ordering leakage, and moving rather than duplicating an item keeps each operation available exactly once. Invalid or duplicate stored IDs are removed when the menu opens.
+- Alternatives considered: Persist localized titles; store one global pin list; duplicate pinned operations while leaving them in the regular list; keep pins session-only.
+- Impacted areas: Core preferences serialization, batch-edit ViewModels and popup layout, batch-edit semantic tokens/styles, and localization resources.
+
+- Date: 2026-08-20
+- Decision: Execute synchronous batch-edit orchestration on a thread-pool thread while synchronously marshalling `DocManager` command execution and undo-group boundaries back to the main thread through a thread-scoped dispatch mode.
+- Rationale: A bare `Task.Run(BatchEdit.Run)` would let `StartUndoGroup` and `EndUndoGroup` race ahead of asynchronously posted commands, dropping commands or corrupting undo state. The scoped bridge keeps expensive operation traversal off the UI thread, preserves command order and exception propagation, and leaves unrelated background command dispatch unchanged.
+- Alternatives considered: Keep the full operation on the UI thread; use a bare `Task.Run`; globally make every background `ExecuteCmd` blocking; refactor every Core batch edit into prepare/commit phases.
+- Impacted areas: `DocManager` main-thread dispatch and the synchronous batch-edit execution path in `PianoRollViewModel`.
+
+- Date: 2026-08-20
+- Decision: Capture the registered toast consumer before posting UI work and validate that the same consumer remains registered before invocation.
+- Rationale: Window shutdown detaches `MainView` and unregisters the toast consumer after a save notification can already have posted a dispatcher callback. Reading the mutable callback inside that delayed callback creates a check-then-use race and a null dereference.
+- Alternatives considered: Clear pending toast messages during shutdown; keep invoking a captured consumer after its view detaches; move toast lifetime management into the Windows host.
+- Impacted areas: Shared toast callback registration and shutdown behavior on all application hosts.
 

@@ -312,6 +312,10 @@ errors.txt
             /// 2 = StartTick -> 0, 3 = Always 0.
             /// </summary>
             public int StopButtonBehavior = 1;
+            /// <summary>
+            /// 各批量编辑类别中置顶操作的稳定 ID，顺序为最近置顶优先。
+            /// </summary>
+            public Dictionary<string, List<string>> PinnedBatchEdits = new Dictionary<string, List<string>>();
             #endregion
         }
     }

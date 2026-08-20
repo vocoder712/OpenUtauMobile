@@ -1,4 +1,5 @@
 using System;
+using System.Reactive;
 using System.Threading;
 using Avalonia.Threading;
 using OpenUtauMobile.Helpers;
@@ -19,6 +20,8 @@ public class LoadingPopupViewModel : PopupViewModelBase, IProgress<double>
     private const double MinimumProgress = 0d;
     private const double MaximumProgress = 100d;
     private int _isClosed;
+    private int _isCancellationRequested;
+    private readonly Action? _requestCancellation;
 
     /// <summary>当前后台操作说明</summary>
     [Reactive]
@@ -35,11 +38,21 @@ public class LoadingPopupViewModel : PopupViewModelBase, IProgress<double>
     /// <summary>用于界面显示的进度文本</summary>
     public string ProgressText => $"{Progress:0}%";
 
+    /// <summary>后端任务是否支持取消</summary>
+    public bool CanCancel => _requestCancellation != null;
+
+    /// <summary>是否已经向后端请求取消</summary>
+    [Reactive]
+    public bool IsCancelling { get; private set; }
+
+    public ReactiveCommand<Unit, Unit> CancelCommand { get; }
+
     /// <param name="message">后台操作说明</param>
     public LoadingPopupViewModel(string message)
     {
         Message = NormalizeMessage(message);
         IsIndeterminate = true;
+        CancelCommand = ReactiveCommand.Create(RequestCancellation);
     }
 
     /// <param name="message">后台操作说明</param>
@@ -49,6 +62,20 @@ public class LoadingPopupViewModel : PopupViewModelBase, IProgress<double>
         Message = NormalizeMessage(message);
         Progress = NormalizeProgress(progress);
         IsIndeterminate = false;
+        CancelCommand = ReactiveCommand.Create(RequestCancellation);
+    }
+
+    /// <param name="message">后台操作说明</param>
+    /// <param name="progress">初始进度，超出 0–100 时自动截断</param>
+    /// <param name="requestCancellation">传递给后端的取消请求</param>
+    public LoadingPopupViewModel(string message, double progress, Action requestCancellation)
+    {
+        ArgumentNullException.ThrowIfNull(requestCancellation);
+        Message = NormalizeMessage(message);
+        Progress = NormalizeProgress(progress);
+        IsIndeterminate = false;
+        _requestCancellation = requestCancellation;
+        CancelCommand = ReactiveCommand.Create(RequestCancellation);
     }
 
     /// <summary>报告确定进度</summary>
@@ -71,6 +98,15 @@ public class LoadingPopupViewModel : PopupViewModelBase, IProgress<double>
 
             this.RaisePropertyChanged(nameof(ProgressText));
         });
+    }
+
+    /// <summary>使用已完成量和总量更新确定进度</summary>
+    public void UpdateProgress(int current, int total, string? message = null)
+    {
+        double progress = total > 0
+            ? (double)current / total * MaximumProgress
+            : MinimumProgress;
+        UpdateProgress(progress, message);
     }
 
     /// <summary>切换为无确定进度的加载状态</summary>
@@ -106,6 +142,18 @@ public class LoadingPopupViewModel : PopupViewModelBase, IProgress<double>
     /// <summary>后台操作期间忽略返回请求</summary>
     public override void RequestBack()
     {
+    }
+
+    private void RequestCancellation()
+    {
+        if (_requestCancellation == null ||
+            Interlocked.Exchange(ref _isCancellationRequested, 1) != 0)
+        {
+            return;
+        }
+
+        IsCancelling = true;
+        _requestCancellation();
     }
 
     private void RunOnUiThread(Action action, bool allowAfterClose = false)

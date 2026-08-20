@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Api;
@@ -29,6 +30,8 @@ namespace OpenUtau.Core {
 
         private Thread mainThread;
         private TaskScheduler mainScheduler;
+        [ThreadStatic]
+        private static bool synchronousMainThreadDispatch;
 
         public int playPosTick = 0;
 
@@ -195,10 +198,14 @@ namespace OpenUtau.Core {
 
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
-                if (!(cmd is ProgressBarNotification)) {
+                if (!synchronousMainThreadDispatch && !(cmd is ProgressBarNotification)) {
                     Log.Warning($"{cmd} not on main thread");
                 }
-                PostOnUIThread(() => ExecuteCmd(cmd));
+                if (synchronousMainThreadDispatch) {
+                    DispatchToMainThreadAndWait(() => ExecuteCmd(cmd));
+                } else {
+                    PostOnUIThread(() => ExecuteCmd(cmd));
+                }
                 return;
             }
             if (cmd is UNotification) {
@@ -258,6 +265,10 @@ namespace OpenUtau.Core {
         }
 
         public void StartUndoGroup(string? nameKey = null, bool deferValidate = false) {
+            if (mainThread != Thread.CurrentThread && synchronousMainThreadDispatch) {
+                DispatchToMainThreadAndWait(() => StartUndoGroup(nameKey, deferValidate));
+                return;
+            }
             if (undoGroup != null) {
                 Log.Error("undoGroup already started");
                 EndUndoGroup();
@@ -267,6 +278,10 @@ namespace OpenUtau.Core {
         }
 
         public void EndUndoGroup() {
+            if (mainThread != Thread.CurrentThread && synchronousMainThreadDispatch) {
+                DispatchToMainThreadAndWait(EndUndoGroup);
+                return;
+            }
             if (undoGroup == null) {
                 Log.Error("No active undoGroup to end.");
                 return;
@@ -285,6 +300,42 @@ namespace OpenUtau.Core {
             undoGroup = null;
             Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());
+        }
+
+        /// <summary>
+        /// 在后台运行批量逻辑，并按调用顺序等待其中的命令在主线程完成。
+        /// </summary>
+        public void RunWithSynchronousMainThreadDispatch(Action action) {
+            if (mainThread == Thread.CurrentThread) {
+                action();
+                return;
+            }
+
+            bool previousValue = synchronousMainThreadDispatch;
+            synchronousMainThreadDispatch = true;
+            try {
+                action();
+            } finally {
+                synchronousMainThreadDispatch = previousValue;
+            }
+        }
+
+        private void DispatchToMainThreadAndWait(Action action) {
+            using ManualResetEventSlim completed = new ManualResetEventSlim(false);
+            Exception? exception = null;
+            PostOnUIThread(() => {
+                try {
+                    action();
+                } catch (Exception caughtException) {
+                    exception = caughtException;
+                } finally {
+                    completed.Set();
+                }
+            });
+            completed.Wait();
+            if (exception != null) {
+                ExceptionDispatchInfo.Capture(exception).Throw();
+            }
         }
 
         public void RollBackUndoGroup() {

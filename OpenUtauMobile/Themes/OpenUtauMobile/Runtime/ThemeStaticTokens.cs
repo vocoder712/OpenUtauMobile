@@ -218,6 +218,40 @@ public static class ThemeSemTabItemTokens
     public static FontWeight LabelWeight => FontWeight.Medium;
 }
 
+public static class ThemeSemBatchEditTokens
+{
+    public static double PopupMinWidth => 280d;
+    public static double PopupMinHeight => 420d;
+    public static double PopupMaxHeight => 680d;
+    public static double ItemRunIconSize => 56d;
+    public static double ItemIconSize => 40d;
+    public static double ParameterMinWidth => 96d;
+    public static double ActionIconButtonSize => ItemRunIconSize;
+    public static double ActionIconVisualSize => ItemRunIconSize;
+    public static double ActionIconSize => 24d;
+    public static double PinIconButtonSize => ThemeSemLayoutTokens.SizeNavToggleMin;
+    public static double PinIconVisualSize => ThemeBaseLayoutTokens.SizeM;
+    public static double PinIconSize => ThemeBaseLayoutTokens.SpaceL;
+
+    public static Thickness ScopeMargin => new(12, 12, 12, 4);
+    public static Thickness ScopeInset => new(12, 10);
+    public static Thickness TabMargin => new(12, 8, 12, 12);
+    public static Thickness ItemMargin => new(0, 4);
+    public static Thickness ItemInset => new(12);
+    public static Thickness ItemIconMargin => new(0, 0, 12, 0);
+    public static Thickness ParameterMargin => new(0, 6, 8, 0);
+    public static Thickness ParameterLabelMargin => new(0, 0, 0, 4);
+    public static Thickness RunButtonMargin => new(8, 0, 0, 0);
+    public static Thickness PinButtonMargin => new(4, 0, 0, 0);
+    public static Thickness FeedbackMargin => new(0, 6, 0, 0);
+    public static Thickness PinnedGroupMargin => new(0, 4, 0, 8);
+    public static Thickness PinnedGroupInset => new(4);
+    public static Thickness PinnedHeaderMargin => new(8, 4, 8, 0);
+    public static CornerRadius ItemIconCorner => ThemeBaseShapeTokens.CornerXXL;
+    public static CornerRadius ActionIconButtonCorner => ThemeBaseShapeTokens.CornerXXXXL;
+    public static CornerRadius PinIconButtonCorner => ThemeBaseShapeTokens.CornerFull;
+}
+
 public static class ThemeSemDependencyManagerTokens
 {
     public static double ContentMaxWidth => 1248d;
