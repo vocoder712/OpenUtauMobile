@@ -144,3 +144,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Keep the full operation on the UI thread; use a bare `Task.Run`; globally make every background `ExecuteCmd` blocking; refactor every Core batch edit into prepare/commit phases.
 - Impacted areas: `DocManager` main-thread dispatch and the synchronous batch-edit execution path in `PianoRollViewModel`.
 
+- Date: 2026-08-20
+- Decision: Capture the registered toast consumer before posting UI work and validate that the same consumer remains registered before invocation.
+- Rationale: Window shutdown detaches `MainView` and unregisters the toast consumer after a save notification can already have posted a dispatcher callback. Reading the mutable callback inside that delayed callback creates a check-then-use race and a null dereference.
+- Alternatives considered: Clear pending toast messages during shutdown; keep invoking a captured consumer after its view detaches; move toast lifetime management into the Windows host.
+- Impacted areas: Shared toast callback registration and shutdown behavior on all application hosts.
+

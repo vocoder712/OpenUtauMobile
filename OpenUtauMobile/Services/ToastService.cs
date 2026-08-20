@@ -21,7 +21,7 @@ public static class ToastService
     /// </summary>
     public static void Register(Func<Task> consume)
     {
-        _consume = consume;
+        Volatile.Write(ref _consume, consume);
         // 若注册前已有消息排队，立即触发
         if (!_queue.IsEmpty)
             TryStartConsuming();
@@ -32,7 +32,7 @@ public static class ToastService
     /// </summary>
     public static void Unregister()
     {
-        _consume = null;
+        Volatile.Write(ref _consume, null);
         Interlocked.Exchange(ref _isShowing, 0);
     }
 
@@ -62,11 +62,25 @@ public static class ToastService
     // 尝试启动消费循环，保证只有一个在跑
     private static void TryStartConsuming()
     {
-        if (_consume == null) return;
+        Func<Task>? consume = Volatile.Read(ref _consume);
+        if (consume == null)
+        {
+            return;
+        }
+
         // CAS：只有从 0 → 1 成功的线程才触发
         if (Interlocked.CompareExchange(ref _isShowing, 1, 0) == 0)
         {
-            Dispatcher.UIThread.Post(() => _ = _consume.Invoke());
+            Dispatcher.UIThread.Post(() =>
+            {
+                // 注销可能发生在入队与调度回调之间，避免在视图卸载后启动旧消费者。
+                if (!ReferenceEquals(Volatile.Read(ref _consume), consume))
+                {
+                    return;
+                }
+
+                _ = consume.Invoke();
+            });
         }
     }
 }
