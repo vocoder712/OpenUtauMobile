@@ -307,6 +307,15 @@ errors.txt
             /// 自动保存间隔，单位秒（仅在启用时生效）。
             /// </summary>
             public int AutoSaveInterval = 120;
+            /// <summary>
+            /// Stop button behavior: 1 = StartTick -> SelectedPart -> 0 (default),
+            /// 2 = StartTick -> 0, 3 = Always 0.
+            /// </summary>
+            public int StopButtonBehavior = 1;
+            /// <summary>
+            /// 各批量编辑类别中置顶操作的稳定 ID，顺序为最近置顶优先。
+            /// </summary>
+            public Dictionary<string, List<string>> PinnedBatchEdits = new Dictionary<string, List<string>>();
             #endregion
         }
     }

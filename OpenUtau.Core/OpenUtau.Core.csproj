@@ -6,6 +6,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>embedded</DebugType>
     <Nullable>enable</Nullable>
+    <!-- 修复静态资源命名空间错位 -->
+    <RootNamespace />
     <!-- 禁用 Core 项目的 Null 相关警告 -->
     <NoWarn>CS0168;CS0162;CS0219;CS0649;CS0414;CS8600;CS8601;CS8602;CS8603;CS8604;CS8612;CS8618;CS8619;CS8625;CS8629;CS8714;CS8767;CS8769</NoWarn>
   </PropertyGroup>

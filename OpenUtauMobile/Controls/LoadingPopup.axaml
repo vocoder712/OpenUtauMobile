@@ -35,6 +35,12 @@
                            FontSize="{x:Static theme:ThemeSemTypographyTokens.LabelMSize}"
                            Foreground="{DynamicResource Sem.Color.Primary}"
                            HorizontalAlignment="Center" />
+
+                <Button Content="{DynamicResource Common.Cancel}"
+                        Command="{Binding CancelCommand}"
+                        IsVisible="{Binding CanCancel}"
+                        IsEnabled="{Binding !IsCancelling}"
+                        HorizontalAlignment="Center" />
             </StackPanel>
         </DockPanel>
     </Border>

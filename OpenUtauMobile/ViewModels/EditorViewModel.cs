@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -226,6 +226,10 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     // 最近一次来自回放流的等待标记（SetPlayPosTickNotification.waitingRendering）
     private bool _streamWaitingRender;
 
+    private int _stopSeekState;
+    private bool _isSeekingInternally = false;
+    private bool _playheadMovedSinceStart = false;
+
     // 随机数生成器
     private Random Randomer { get; } = new();
 
@@ -254,13 +258,100 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             {
                 DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick, true));
             }
+
+            if (PlaybackManager.Inst.PlayingMaster || PlaybackManager.Inst.StartingToPlay)
+            {
+                _stopSeekState = 0;
+            }
         }).DisposeWith(_disposables);
         // 停止命令
         StopCommand = ReactiveCommand.Create(() =>
         {
+            bool wasPlaying = PlaybackManager.Inst.OutputActive || PlaybackManager.Inst.PlayingMaster;
             PlaybackManager.Inst.StopPlayback();
             SyncPlaybackStateFromAuthority();
-            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+
+            int mode = Preferences.Default.StopButtonBehavior;
+            if (mode <= 0 || mode > 3)
+            {
+                mode = 1;
+            }
+
+            if (mode == 3)
+            {
+                _isSeekingInternally = true;
+                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                _stopSeekState = 3;
+                _playheadMovedSinceStart = false;
+                return;
+            }
+
+            if (wasPlaying)
+            {
+                _isSeekingInternally = true;
+                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
+                _stopSeekState = 1;
+                _playheadMovedSinceStart = false;
+            }
+            else
+            {
+                if (_stopSeekState == 0 && !_playheadMovedSinceStart)
+                {
+                    _isSeekingInternally = true;
+                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
+                    _stopSeekState = 1;
+                }
+                else
+                {
+                    switch (mode)
+                    {
+                        case 2:
+                            _isSeekingInternally = true;
+                            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                            _stopSeekState = 3;
+                            break;
+                        case 3:
+                            _isSeekingInternally = true;
+                            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                            break;
+                        default:
+                            if (_stopSeekState <= 1)
+                            {
+                                int? selectedTick = null;
+                                if (SelectedParts is { Count: > 0 } parts)
+                                {
+                                    selectedTick = parts.Min(p => p.position);
+                                }
+
+                                if (selectedTick.HasValue && selectedTick.Value != PlayPosTick)
+                                {
+                                    _isSeekingInternally = true;
+                                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(selectedTick.Value));
+                                    _stopSeekState = 2;
+                                }
+                                else
+                                {
+                                    _isSeekingInternally = true;
+                                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                    _stopSeekState = 3;
+                                }
+                            }
+                            else if (_stopSeekState == 2)
+                            {
+                                _isSeekingInternally = true;
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                _stopSeekState = 3;
+                            }
+                            else
+                            {
+                                _isSeekingInternally = true;
+                                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+                                _stopSeekState = 3;
+                            }
+                            break;
+                    }
+                }
+            }
         }).DisposeWith(_disposables);
         // 工程信息编辑命令
         EditBpmCommand = ReactiveCommand.CreateFromTask(EditBpmAsync);
@@ -392,6 +483,17 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         // TODO: 一定要发到UI线程吗？:不需要！docman已经做了
         switch (cmd)
         {
+            case SeekPlayPosTickNotification _:
+                if (_isSeekingInternally)
+                {
+                    _isSeekingInternally = false;
+                }
+                else
+                {
+                    _playheadMovedSinceStart = true;
+                    _stopSeekState = 0;
+                }
+                break;
             case SetPlayPosTickNotification setPlayPos:
                 // 等待渲染期间冻结回放标记，避免位置在等待点附近抖动漂移。
                 if (!setPlayPos.waitingRendering)
@@ -1816,36 +1918,40 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     {
         try
         {
-            if (DocManager.Inst.ChangesSaved)
+            if (await ConfirmExitAsync())
             {
                 Navigator.NavigateBack(this);
-                return;
-            }
-
-            byte actionRegister = await ShowExitEditorConfirmPopupAsync();
-            switch ((ExitEditorActionRegister)actionRegister)
-            {
-                case ExitEditorActionRegister.ExitWithoutSave:
-                    Preferences.Default.RecoveryPath = string.Empty;
-                    Preferences.Save();
-                    Navigator.NavigateBack(this);
-                    return;
-                case ExitEditorActionRegister.SaveAndExit:
-                    if (await Save())
-                    {
-                        Navigator.NavigateBack(this);
-                    }
-
-                    return;
-                case ExitEditorActionRegister.Cancel:
-                default:
-                    return;
             }
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Error while handling back navigation in EditorViewModel");
-            Navigator.NavigateBack(this);
+        }
+    }
+
+    /// <summary>
+    /// 确认是否可以退出当前工程。
+    /// </summary>
+    /// <returns>已保存或用户确认退出时返回 true。</returns>
+    public async Task<bool> ConfirmExitAsync()
+    {
+        if (DocManager.Inst.ChangesSaved)
+        {
+            return true;
+        }
+
+        byte actionRegister = await ShowExitEditorConfirmPopupAsync();
+        switch ((ExitEditorActionRegister)actionRegister)
+        {
+            case ExitEditorActionRegister.ExitWithoutSave:
+                Preferences.Default.RecoveryPath = string.Empty;
+                Preferences.Save();
+                return true;
+            case ExitEditorActionRegister.SaveAndExit:
+                return await Save();
+            case ExitEditorActionRegister.Cancel:
+            default:
+                return false;
         }
     }
 
