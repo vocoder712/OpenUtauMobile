@@ -2057,15 +2057,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             {
                 await LoadingPopupService.RunAsync(
                     runningMessage,
-                    _ =>
-                    {
-                        request.Operation.Run(
-                            DocManager.Inst.Project,
-                            part,
-                            request.TargetNotes.ToList(),
-                            DocManager.Inst);
-                        return Task.CompletedTask;
-                    });
+                    _ => RunSynchronousBatchBackend(part, request));
             }
 
             ToastService.Enqueue(string.Format(
@@ -2123,6 +2115,23 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         cancellationToken.ThrowIfCancellationRequested();
+    }
+
+    private static Task RunSynchronousBatchBackend(
+        UVoicePart part,
+        BatchEditExecutionRequest request)
+    {
+        return Task.Run(() =>
+        {
+            DocManager.Inst.RunWithSynchronousMainThreadDispatch(() =>
+            {
+                request.Operation.Run(
+                    DocManager.Inst.Project,
+                    part,
+                    request.TargetNotes.ToList(),
+                    DocManager.Inst);
+            });
+        });
     }
 
     // ── 操作方法存根 ──────────────────────────────────────────────────

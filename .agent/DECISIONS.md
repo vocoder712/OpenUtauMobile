@@ -138,3 +138,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Persist localized titles; store one global pin list; duplicate pinned operations while leaving them in the regular list; keep pins session-only.
 - Impacted areas: Core preferences serialization, batch-edit ViewModels and popup layout, batch-edit semantic tokens/styles, and localization resources.
 
+- Date: 2026-08-20
+- Decision: Execute synchronous batch-edit orchestration on a thread-pool thread while synchronously marshalling `DocManager` command execution and undo-group boundaries back to the main thread through a thread-scoped dispatch mode.
+- Rationale: A bare `Task.Run(BatchEdit.Run)` would let `StartUndoGroup` and `EndUndoGroup` race ahead of asynchronously posted commands, dropping commands or corrupting undo state. The scoped bridge keeps expensive operation traversal off the UI thread, preserves command order and exception propagation, and leaves unrelated background command dispatch unchanged.
+- Alternatives considered: Keep the full operation on the UI thread; use a bare `Task.Run`; globally make every background `ExecuteCmd` blocking; refactor every Core batch edit into prepare/commit phases.
+- Impacted areas: `DocManager` main-thread dispatch and the synchronous batch-edit execution path in `PianoRollViewModel`.
+
