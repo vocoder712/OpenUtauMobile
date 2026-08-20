@@ -53,7 +53,14 @@ jobs:
             -c Debug \
             -f net10.0-ios \
             -r ios-arm64 \
-            -p:ArchiveOnBuild=true \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:ArchiveOnBuild=false \
+            -p:BuildIpa=false \
+            -p:CodesignKey="" \
+            -p:CodesignProvision="" \
+            -p:CodesignEntitlements="" \
+            -p:CodesignRequireProvisioningProfile=false \
+            -p:EnableDefaultCodesignEntitlements=false \
             -p:IsMacEnabled=true
       - name: Find and inspect app bundle
         id: find_app
@@ -65,7 +72,7 @@ jobs:
           APP_PATH="$(find OpenUtauMobile.iOS/bin \
             -type d \
             -name '*.app' \
-            -path '*iossimulator-x64*' \
+            -path '*ios-arm64*' \
             -print \
             -quit)"
           if [ -z "$APP_PATH" ]; then
