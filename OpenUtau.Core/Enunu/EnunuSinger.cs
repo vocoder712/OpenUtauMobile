@@ -60,6 +60,20 @@ namespace OpenUtau.Core.Enunu {
             Reload();
         }
 
+        public override void EnsureAvatarLoaded() {
+            if (avatarData != null) {
+                return;
+            }
+            if (Avatar != null && File.Exists(Avatar)) {
+                try {
+                    avatarData = File.ReadAllBytes(Avatar);
+                } catch (Exception e) {
+                    avatarData = null;
+                    Log.Error(e, "Failed to load avatar data.");
+                }
+            }
+        }
+
         public override void Reload() {
             if (!Found) {
                 return;
@@ -74,6 +88,7 @@ namespace OpenUtau.Core.Enunu {
         }
 
         void Load() {
+            avatarData = null;
             enuconfig = EnunuConfig.Load(this);
             voicebankNameHash = Hash();
             phonemes.Clear();
@@ -152,22 +167,7 @@ namespace OpenUtau.Core.Enunu {
                 Log.Error(e, $"Failed to load table for {Name}");
             }
 
-            if (Avatar != null && File.Exists(Avatar)) {
-                try {
-                    using (var stream = new FileStream(Avatar, FileMode.Open, FileAccess.Read)) {
-                        using (var memoryStream = new MemoryStream()) {
-                            stream.CopyTo(memoryStream);
-                            avatarData = memoryStream.ToArray();
-                        }
-                    }
-                } catch (Exception e) {
-                    avatarData = null;
-                    Log.Error(e, "Failed to load avatar data.");
-                }
-            } else {
-                avatarData = null;
-                Log.Error("Avatar can't be found");
-            }
+            EnsureAvatarLoaded();
         }
 
         public override bool TryGetOto(string phoneme, out UOto oto) {

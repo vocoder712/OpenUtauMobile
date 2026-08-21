@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-21
+- Decision: Materialize singer discovery once for both manager indexes, and preload only singer avatar bytes during splash initialization instead of calling full `Reload()` for every discovered singer; retain full lazy loading through `EnsureLoaded()` when a singer is attached to a track.
+- Rationale: The lazy discovery sequence previously scanned the singer directory tree twice and created different objects for the ID index and UI groups. Classic singer reload then recursively parsed all OTO files, built phoneme maps, validated samples, and started file watchers for every installed singer even though the initial UI only needs metadata and avatar bytes.
+- Alternatives considered: Keep eager full reload and parallelize it; decode avatars lazily on the UI thread; skip avatar initialization.
+- Impacted areas: Singer discovery/index identity, the singer avatar-loading contract in Core, and the Mobile splash initialization path. VOICEVOX reuses an existing generated icon when available and retains its reload fallback when engine-provided singer information is still required.
+
 - Date: 2026-08-20
 - Decision: Build final-pitch rendering as one per-frame `StreamGeometry` with a separate figure for each visible render phrase, and never mutate that geometry after submitting it to the drawing context.
 - Rationale: Avalonia drawing commands retain mutable geometry resources rather than snapshotting a shared `Points` collection. Reusing and clearing the same `Points`/`PolylineGeometry` after `DrawGeometry` either joins independent phrases, changes already-submitted drawing, or leaves the retained geometry empty.
