@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-21
+- Decision: Supersede the earlier Android main-view-factory reapply as the startup fix: refresh follow-system colors from `MainView.OnAttachedToVisualTree`, subscribe to `IPlatformSettings.ColorValuesChanged`, and skip regeneration when the resolved seed and actual variant have not changed.
+- Rationale: On Android 12, both application initialization and `IActivityApplicationLifetime.MainViewFactory` run before Avalonia exposes the Material You palette through `Application.PlatformSettings`. Theme resolution therefore falls back to the persisted `#66CCFF` seed until a later page, such as Settings, resolves it after visual-tree attachment.
+- Alternatives considered: Reapply from the splash screen after a fixed delay; keep refreshing only when Settings opens; read Android dynamic-color resources directly in the shared UI project.
+- Impacted areas: Application theme lifecycle and Android 12+ follow-system theme-color startup behavior.
+
+- Date: 2026-08-21
 - Decision: Resolve and apply the persisted theme seed through one `ThemeManagerV2.ApplyConfiguredTheme` entry point during both application startup and settings initialization, and reapply it when Android creates its activity-backed main view.
 - Rationale: Startup previously applied the manager's red default seed before separately resolving preferences with the requested theme variant, while settings resolved preferences with the actual variant after the UI existed. Android creates its main view after application initialization, so replaying the same centralized operation at that boundary prevents the default seed from surviving until settings is opened.
 - Alternatives considered: Duplicate the settings logic in `App`; delay every platform's theme setup until the splash screen; add Android-only color parsing outside the shared theme manager.

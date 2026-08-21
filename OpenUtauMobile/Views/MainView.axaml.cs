@@ -18,6 +18,8 @@ public partial class MainView : UserControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        // Android 的 Material You 色值在 TopLevel 建立后才可由平台设置读取。
+        App.RefreshSystemThemeColor();
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested += OnBackRequested;
         ToastService.Register(ToastOverlay.ConsumeAsync);
