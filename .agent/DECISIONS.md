@@ -13,7 +13,7 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-21
-- Decision: On Android, report the app's current resident memory from `VmRSS` in `/proc/self/status`, falling back to the shared `Process.WorkingSet64` path when procfs data is unavailable; stop using `ActivityManager.getProcessMemoryInfo()` and `TotalPss` for the one-second monitor.
+- Decision: On Android, report the app's current resident memory from `RssAnon` in `/proc/self/status`, falling back to the shared `Process.WorkingSet64` path when procfs data is unavailable; stop using `ActivityManager.getProcessMemoryInfo()` and `TotalPss` for the one-second monitor.
 - Rationale: Android Q and later significantly rate-limit `getProcessMemoryInfo()` and silently return cached samples when it is polled too frequently, which made the displayed app-memory value appear frozen. Reading the current process's own procfs status avoids that API cache, remains available across the project's Android 7+ target range, and has a compatible shared fallback.
 - Alternatives considered: Increase PSS polling to several minutes; display cached PSS beside a separate RSS value; use only `Debug.getNativeHeapAllocatedSize()`, which excludes managed, graphics, code, and other resident mappings.
 - Impacted areas: Android app-memory sampling and the meaning of the displayed app-memory metric, which is now resident set size rather than proportional set size.
