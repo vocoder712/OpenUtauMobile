@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -123,17 +124,25 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.SingerManager"); ProgressPercent = 85; });
                 SingerManager.Inst.Initialize();
+                Stopwatch avatarStopwatch = Stopwatch.StartNew();
+                int singerCount = 0;
                 foreach (List<USinger> group in SingerManager.Inst.SingerGroups.Values)
                 {
-                    if (group == null) continue;
+                    if (group == null)
+                    {
+                        continue;
+                    }
                     foreach (USinger singer in group)
                     {
                         if (singer != null)
                         {
-                            singer.Reload();
+                            singer.EnsureAvatarLoaded();
+                            singerCount++;
                         }
                     }
                 }
+                avatarStopwatch.Stop();
+                Log.Information("Preload {SingerCount} singer avatars: {Elapsed}", singerCount, avatarStopwatch.Elapsed);
                 Log.Information("SingerManager初始化完成");
 
                 // ---- 阶段 7：音频后端 ----
