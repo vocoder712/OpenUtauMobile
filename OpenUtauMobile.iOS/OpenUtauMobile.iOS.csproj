@@ -10,10 +10,12 @@
 	<PropertyGroup>
 		<!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
 		<MtouchLink>None</MtouchLink>
+        <IsMacEnabled>false</IsMacEnabled>
 	</PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="Microsoft.ML.OnnxRuntime.Extensions" Version="0.14.0" />
     </ItemGroup>
 
     <ItemGroup>
