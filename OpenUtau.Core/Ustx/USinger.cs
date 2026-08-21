@@ -290,6 +290,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public virtual void EnsureLoaded() { }
+        public virtual void EnsureAvatarLoaded() { }
         public virtual void Reload() { }
         public virtual void Save() { }
         public virtual bool TryGetOto(string phoneme, out UOto oto) {
