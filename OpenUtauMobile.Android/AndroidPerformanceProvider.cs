@@ -7,11 +7,14 @@ using OpenUtauMobile.Services.Performance;
 
 namespace OpenUtauMobile.Android;
 
-/// <summary>读取 Android PSS、系统内存和 /proc/stat CPU 时间。</summary>
+/// <summary>读取 Android 进程 RSS、系统内存和 /proc/stat CPU 时间。</summary>
 internal sealed class AndroidPerformanceProvider : IPlatformPerformanceProvider
 {
     private const string ProcStatPath = "/proc/stat";
+    private const string ProcSelfStatusPath = "/proc/self/status";
     private const string CpuLinePrefix = "cpu ";
+    private const string ResidentMemoryField = "RssAnon:";
+    private const string KibibyteUnit = "kB";
     private const int MinimumCpuFieldCount = 5;
     private const int CpuTotalFieldCount = 8;
     private const int IdleFieldIndex = 3;
@@ -27,7 +30,7 @@ internal sealed class AndroidPerformanceProvider : IPlatformPerformanceProvider
         ActivityManager? activityManager = global::Android.App.Application.Context
             .GetSystemService(Context.ActivityService) as ActivityManager;
 
-        long? appMemoryBytes = CaptureAppPssBytes(activityManager);
+        long? appMemoryBytes = CaptureAppResidentMemoryBytes();
         long? totalMemoryBytes = null;
         long? availableMemoryBytes = null;
         if (activityManager != null)
@@ -39,27 +42,44 @@ internal sealed class AndroidPerformanceProvider : IPlatformPerformanceProvider
         }
 
         return new PlatformPerformanceMetrics(
-            appMemoryBytes,
+            appMemoryBytes, // 来源：RssAnon 匿名RSS
             totalMemoryBytes,
             availableMemoryBytes,
             CaptureSystemCpuUsage());
     }
 
-    private static long? CaptureAppPssBytes(ActivityManager? activityManager)
+    private static long? CaptureAppResidentMemoryBytes()
     {
-        if (activityManager == null)
+        try
+        {
+            using StreamReader reader = new StreamReader(ProcSelfStatusPath);
+            while (reader.ReadLine() is string line)
+            {
+                if (!line.StartsWith(ResidentMemoryField, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                ReadOnlySpan<char> valueSpan = line.AsSpan(ResidentMemoryField.Length).Trim();
+                if (valueSpan.EndsWith(KibibyteUnit, StringComparison.OrdinalIgnoreCase))
+                {
+                    valueSpan = valueSpan[..^KibibyteUnit.Length].TrimEnd();
+                }
+
+                if (long.TryParse(valueSpan, NumberStyles.None, CultureInfo.InvariantCulture, out long kibibytes))
+                {
+                    return checked(kibibytes * BytesPerKibibyte);
+                }
+
+                return null;
+            }
+
+            return null;
+        }
+        catch
         {
             return null;
         }
-
-        int[] processIds = [global::Android.OS.Process.MyPid()];
-        global::Android.OS.Debug.MemoryInfo[]? memoryInfos = activityManager.GetProcessMemoryInfo(processIds);
-        if (memoryInfos == null || memoryInfos.Length == 0)
-        {
-            return null;
-        }
-
-        return memoryInfos[0].TotalPss * BytesPerKibibyte;
     }
 
     private double? CaptureSystemCpuUsage()
