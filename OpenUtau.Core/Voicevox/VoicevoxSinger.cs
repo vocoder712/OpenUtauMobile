@@ -73,7 +73,7 @@ namespace OpenUtau.Core.Voicevox {
                     Log.Error(e, "Failed to load avatar data.");
                 }
             }
-            Reload();
+return;
         }
 
         public override void Reload() {
