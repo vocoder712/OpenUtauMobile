@@ -81,7 +81,21 @@ public static class ThemeManagerV2
         }
 
         ResourceBridge.EnsureAttached(Application.Current);
-        ApplyGlobalTheme(CurrentSeed, Application.Current.ActualThemeVariant);
+        if (seed.HasValue)
+        {
+            ApplyGlobalTheme(CurrentSeed, Application.Current.ActualThemeVariant);
+        }
+    }
+
+    public static Color ApplyConfiguredTheme(
+        ISystemAccentColorProvider? provider,
+        out string source,
+        out string fallbackReason)
+    {
+        Color seed = ThemeSeedResolver.ResolveSeed(provider, out source, out fallbackReason);
+        ThemeVariant variant = Application.Current?.ActualThemeVariant ?? ThemeVariant.Default;
+        ApplyGlobalTheme(seed, variant);
+        return seed;
     }
 
     public static void ApplyGlobalTheme(Color seed, ThemeVariant variant)

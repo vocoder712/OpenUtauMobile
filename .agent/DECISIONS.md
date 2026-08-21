@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-21
+- Decision: Resolve and apply the persisted theme seed through one `ThemeManagerV2.ApplyConfiguredTheme` entry point during both application startup and settings initialization, and reapply it when Android creates its activity-backed main view.
+- Rationale: Startup previously applied the manager's red default seed before separately resolving preferences with the requested theme variant, while settings resolved preferences with the actual variant after the UI existed. Android creates its main view after application initialization, so replaying the same centralized operation at that boundary prevents the default seed from surviving until settings is opened.
+- Alternatives considered: Duplicate the settings logic in `App`; delay every platform's theme setup until the splash screen; add Android-only color parsing outside the shared theme manager.
+- Impacted areas: Shared runtime theme initialization, application startup, settings appearance initialization, and Android activity-backed main-view creation.
+
 - Date: 2026-08-20
 - Decision: Build final-pitch rendering as one per-frame `StreamGeometry` with a separate figure for each visible render phrase, and never mutate that geometry after submitting it to the drawing context.
 - Rationale: Avalonia drawing commands retain mutable geometry resources rather than snapshotting a shared `Points` collection. Reusing and clearing the same `Points`/`PolylineGeometry` after `DrawGeometry` either joins independent phrases, changes already-submitted drawing, or leaves the retained geometry empty.

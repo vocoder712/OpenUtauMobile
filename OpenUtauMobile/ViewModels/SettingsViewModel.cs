@@ -1081,10 +1081,10 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     private void ApplyResolvedThemeColor()
     {
-        ThemeVariant variant = Application.Current?.ActualThemeVariant ?? ThemeVariant.Default;
-        Color seed = ThemeSeedResolver.ResolveSeed(ServiceHub.SystemAccentColorProvider, out string source,
+        Color seed = ThemeManagerV2.ApplyConfiguredTheme(
+            ServiceHub.SystemAccentColorProvider,
+            out string source,
             out string fallbackReason);
-        ThemeManagerV2.ApplyGlobalTheme(seed, variant);
         ThemeSeedPreviewBrush = new SolidColorBrush(seed);
         ThemeColorSystemSource = source;
         HasThemeColorSystemSource = !string.IsNullOrWhiteSpace(source);

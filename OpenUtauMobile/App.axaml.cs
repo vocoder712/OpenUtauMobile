@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Styling;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
@@ -32,11 +31,7 @@ public partial class App : Application
 
         // Initialize runtime theme resources before creating UI.
         ThemeManagerV2.Initialize();
-        Color seed = ThemeSeedResolver.ResolveSeed(
-            ServiceHub.SystemAccentColorProvider,
-            out _,
-            out _);
-        ThemeManagerV2.ApplyGlobalTheme(seed, RequestedThemeVariant);
+        ThemeManagerV2.ApplyConfiguredTheme(ServiceHub.SystemAccentColorProvider, out _, out _);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -69,6 +64,8 @@ public partial class App : Application
         {
             DataContext = new MainViewModel()
         };
+        // Android 的活动视图工厂晚于应用初始化执行，此处按同一偏好重新应用最终主题。
+        ThemeManagerV2.ApplyConfiguredTheme(ServiceHub.SystemAccentColorProvider, out _, out _);
         ActivityMainView = mainView;
         return mainView;
     }
