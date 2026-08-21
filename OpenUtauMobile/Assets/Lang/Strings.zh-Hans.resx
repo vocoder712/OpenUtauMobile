@@ -1635,4 +1635,17 @@
   <data name="BatchEdit.Validation.SelectionUnavailable" xml:space="preserve">
     <value>所选音符已不在当前分片中。</value>
   </data>
+  <data name="Settings.Render.PerformanceMonitor" xml:space="preserve">
+    <value>性能监视器</value>
+  </data>
+  <data name="Settings.Render.PerformanceMonitor.Desc" xml:space="preserve">
+    <value>在右上角显示实时的资源使用情况</value>
+  </data>
+  <data name="PerformanceMonitor.AppMemory" xml:space="preserve"><value>应用内存</value></data>
+  <data name="PerformanceMonitor.ManagedHeap" xml:space="preserve"><value>托管堆</value></data>
+  <data name="PerformanceMonitor.SystemMemory" xml:space="preserve"><value>系统内存</value></data>
+  <data name="PerformanceMonitor.Cpu" xml:space="preserve"><value>CPU</value></data>
+  <data name="PerformanceMonitor.AppShort" xml:space="preserve"><value>应用</value></data>
+  <data name="PerformanceMonitor.SystemShort" xml:space="preserve"><value>系统</value></data>
+  <data name="PerformanceMonitor.Fps" xml:space="preserve"><value>帧率</value></data>
 </root>

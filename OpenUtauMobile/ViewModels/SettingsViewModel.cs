@@ -18,6 +18,7 @@ using OpenUtauMobile.Audio;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Performance;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using ReactiveUI;
@@ -382,6 +383,10 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     public bool AutoSaveEnabled { get; set; }
 
     // ── Render & Performance ────────────────────────────────────────
+    /// <summary>是否显示全局性能监视悬浮层。</summary>
+    [Reactive]
+    public bool PerformanceMonitorEnabled { get; set; }
+
     /// <summary>DiffSinger 推理步数（音质模型）。</summary>
     [Reactive]
     public int DiffSingerSteps { get; set; }
@@ -679,11 +684,22 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .DisposeWith(_disposables);
 
         // 渲染与性能初始化
+        PerformanceMonitorEnabled = Preferences.Default.PerformanceMonitorEnabled;
         DiffSingerSteps = Preferences.Default.DiffSingerSteps;
         DiffSingerStepsVariance = Preferences.Default.DiffSingerStepsVariance;
         DiffSingerStepsPitch = Preferences.Default.DiffSingerStepsPitch;
         PreRenderEnabled = Preferences.Default.PreRender;
         NumRenderThreads = Preferences.Default.NumRenderThreads;
+
+        this.WhenAnyValue(x => x.PerformanceMonitorEnabled)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.PerformanceMonitorEnabled = enabled;
+                Preferences.Save();
+                PerformanceMonitorService.Instance.SetEnabled(enabled);
+            })
+            .DisposeWith(_disposables);
 
         // 监听 DiffSinger 步数变化
         this.WhenAnyValue(x => x.DiffSingerSteps)

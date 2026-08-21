@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia.Media;
 using OpenUtauMobile.Storage;
+using OpenUtauMobile.Services.Performance;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 
 namespace OpenUtauMobile.Services;
@@ -14,4 +15,6 @@ public static class ServiceHub
     public static IExternalStorageService? ExternalStorageService { get; set; }
     public static ISystemAccentColorProvider? SystemAccentColorProvider { get; set; }
     public static Func<(bool success, Color color, string source)>? TryGetPlatformAccentFallback { get; set; }
+    public static IPlatformPerformanceProvider? PlatformPerformanceProvider { get; set; }
+    public static IFrameRateProvider? FrameRateProvider { get; set; }
 }

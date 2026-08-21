@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-21
+- Decision: Implement the performance monitor as a shared sampling and presentation service with platform metric providers registered through `ServiceHub`; persist its enabled state in the OPUM-specific preferences region. Keep frame rate behind `IFrameRateProvider` without an implementation in this phase.
+- Rationale: Process/GC collection and overlay presentation are portable, while system memory and CPU semantics require platform APIs. Avalonia 12.1 exposes a built-in renderer FPS debug overlay, but its public diagnostics surface only configures the overlay and does not expose the numeric FPS value. `IRenderTimer` is marked private API and measures render-loop ticks rather than guaranteed presentation, so binding production code to it now would create unstable semantics.
+- Alternatives considered: Put all metric APIs in the shared project with runtime OS checks; enable Avalonia's built-in debug overlay directly; consume `IRenderTimer.Tick`; estimate FPS with `DispatcherTimer`.
+- Impacted areas: Shared performance services and overlay, the always-visible global settings entry, OPUM preferences, Windows global memory/CPU sampling, Android PSS/global memory/CPU sampling, and the future FPS integration boundary.
+
+- Date: 2026-08-21
 - Decision: Supersede the earlier Android main-view-factory reapply as the startup fix: refresh follow-system colors from `MainView.OnAttachedToVisualTree`, subscribe to `IPlatformSettings.ColorValuesChanged`, and skip regeneration when the resolved seed and actual variant have not changed.
 - Rationale: On Android 12, both application initialization and `IActivityApplicationLifetime.MainViewFactory` run before Avalonia exposes the Material You palette through `Application.PlatformSettings`. Theme resolution therefore falls back to the persisted `#66CCFF` seed until a later page, such as Settings, resolves it after visual-tree attachment.
 - Alternatives considered: Reapply from the splash screen after a fixed delay; keep refreshing only when Settings opens; read Android dynamic-color resources directly in the shared UI project.

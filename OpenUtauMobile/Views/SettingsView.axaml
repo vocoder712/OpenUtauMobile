@@ -555,6 +555,24 @@
                             Converter={StaticResource EnumEqual},
                             ConverterParameter=RenderAndPerformance}">
                             <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Render.CategoryTitle}" />
+                            
+                            <!-- 全局性能监视器 -->
+                            <Border Classes="SettingCard">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Classes="SectionLabel"
+                                                   Text="{DynamicResource Settings.Render.PerformanceMonitor}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Render.PerformanceMonitor.Desc}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1"
+                                                  IsChecked="{Binding PerformanceMonitorEnabled, Mode=TwoWay}"
+                                                  OffContent=""
+                                                  OnContent=""
+                                                  VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
 
                             <!-- DiffSinger 推理参数 -->
                             <Border Classes="SettingCard">

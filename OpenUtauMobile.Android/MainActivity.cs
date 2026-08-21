@@ -61,6 +61,7 @@ public class MainActivity : AvaloniaMainActivity
         ServiceHub.ExternalStorageService =
             new Storage.AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
+        ServiceHub.PlatformPerformanceProvider = new AndroidPerformanceProvider();
         return builder.UseReactiveUI(reactiveUIBuilder =>
         {
             reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));

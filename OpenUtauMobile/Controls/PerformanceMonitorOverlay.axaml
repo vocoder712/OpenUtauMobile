@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             x:Class="OpenUtauMobile.Controls.PerformanceMonitorOverlay"
+             x:DataType="vm:PerformanceMonitorViewModel"
+             IsHitTestVisible="False"
+             IsVisible="{Binding IsEnabled}"
+             HorizontalAlignment="Right"
+             VerticalAlignment="Top">
+    <Border Margin="12"
+            Padding="10,8"
+            CornerRadius="8"
+            Opacity="0.92"
+            Background="{DynamicResource Sem.Color.InverseSurface}">
+        <StackPanel Spacing="2">
+            <TextBlock Text="{Binding AppMemoryText}"
+                       FontSize="11"
+                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+            <TextBlock Text="{Binding ManagedHeapText}"
+                       FontSize="11"
+                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+            <TextBlock Text="{Binding SystemMemoryText}"
+                       FontSize="11"
+                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+            <TextBlock Text="{Binding CpuText}"
+                       FontSize="11"
+                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+            <TextBlock Text="{Binding FrameRateText}"
+                       FontSize="11"
+                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+        </StackPanel>
+    </Border>
+</UserControl>
+
