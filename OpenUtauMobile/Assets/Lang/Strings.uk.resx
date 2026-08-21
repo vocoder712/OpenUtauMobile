@@ -1614,4 +1614,13 @@
   <data name="BatchEdit.Validation.SelectionUnavailable" xml:space="preserve">
     <value>The selected notes are no longer in the current part.</value>
   </data>
+  <data name="Settings.Render.PerformanceMonitor" xml:space="preserve"><value>Монітор продуктивності</value></data>
+  <data name="Settings.Render.PerformanceMonitor.Desc" xml:space="preserve"><value>Відображати використання ресурсів у режимі реального часу у верхньому правому куті.</value></data>
+  <data name="PerformanceMonitor.AppMemory" xml:space="preserve"><value>Пам’ять застосунку</value></data>
+  <data name="PerformanceMonitor.ManagedHeap" xml:space="preserve"><value>Керована купа</value></data>
+  <data name="PerformanceMonitor.SystemMemory" xml:space="preserve"><value>Системна пам’ять</value></data>
+  <data name="PerformanceMonitor.Cpu" xml:space="preserve"><value>ЦП</value></data>
+  <data name="PerformanceMonitor.AppShort" xml:space="preserve"><value>Заст.</value></data>
+  <data name="PerformanceMonitor.SystemShort" xml:space="preserve"><value>Система</value></data>
+  <data name="PerformanceMonitor.Fps" xml:space="preserve"><value>FPS</value></data>
 </root>

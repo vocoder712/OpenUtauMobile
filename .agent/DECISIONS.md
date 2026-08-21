@@ -13,6 +13,18 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-21
+- Decision: On Android, report the app's current resident memory from `RssAnon` in `/proc/self/status`, falling back to the shared `Process.WorkingSet64` path when procfs data is unavailable; stop using `ActivityManager.getProcessMemoryInfo()` and `TotalPss` for the one-second monitor.
+- Rationale: Android Q and later significantly rate-limit `getProcessMemoryInfo()` and silently return cached samples when it is polled too frequently, which made the displayed app-memory value appear frozen. Reading the current process's own procfs status avoids that API cache, remains available across the project's Android 7+ target range, and has a compatible shared fallback.
+- Alternatives considered: Increase PSS polling to several minutes; display cached PSS beside a separate RSS value; use only `Debug.getNativeHeapAllocatedSize()`, which excludes managed, graphics, code, and other resident mappings.
+- Impacted areas: Android app-memory sampling and the meaning of the displayed app-memory metric, which is now resident set size rather than proportional set size.
+
+- Date: 2026-08-21
+- Decision: Implement the performance monitor as a shared sampling and presentation service with platform metric providers registered through `ServiceHub`; persist its enabled state in the OPUM-specific preferences region. Keep frame rate behind `IFrameRateProvider` without an implementation in this phase.
+- Rationale: Process/GC collection and overlay presentation are portable, while system memory and CPU semantics require platform APIs. Avalonia 12.1 exposes a built-in renderer FPS debug overlay, but its public diagnostics surface only configures the overlay and does not expose the numeric FPS value. `IRenderTimer` is marked private API and measures render-loop ticks rather than guaranteed presentation, so binding production code to it now would create unstable semantics.
+- Alternatives considered: Put all metric APIs in the shared project with runtime OS checks; enable Avalonia's built-in debug overlay directly; consume `IRenderTimer.Tick`; estimate FPS with `DispatcherTimer`.
+- Impacted areas: Shared performance services and overlay, the always-visible global settings entry, OPUM preferences, Windows global memory/CPU sampling, Android PSS/global memory/CPU sampling, and the future FPS integration boundary.
+
+- Date: 2026-08-21
 - Decision: Supersede the earlier Android main-view-factory reapply as the startup fix: refresh follow-system colors from `MainView.OnAttachedToVisualTree`, subscribe to `IPlatformSettings.ColorValuesChanged`, and skip regeneration when the resolved seed and actual variant have not changed.
 - Rationale: On Android 12, both application initialization and `IActivityApplicationLifetime.MainViewFactory` run before Avalonia exposes the Material You palette through `Application.PlatformSettings`. Theme resolution therefore falls back to the persisted `#66CCFF` seed until a later page, such as Settings, resolves it after visual-tree attachment.
 - Alternatives considered: Reapply from the splash screen after a fixed delay; keep refreshing only when Settings opens; read Android dynamic-color resources directly in the shared UI project.

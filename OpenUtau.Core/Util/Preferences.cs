@@ -316,6 +316,10 @@ errors.txt
             /// 各批量编辑类别中置顶操作的稳定 ID，顺序为最近置顶优先。
             /// </summary>
             public Dictionary<string, List<string>> PinnedBatchEdits = new Dictionary<string, List<string>>();
+            /// <summary>
+            /// 是否显示全局性能监视悬浮层。
+            /// </summary>
+            public bool PerformanceMonitorEnabled = false;
             #endregion
         }
     }

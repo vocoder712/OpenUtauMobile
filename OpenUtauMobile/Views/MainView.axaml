@@ -12,24 +12,28 @@
     <!-- Root 根 -->
     <!-- 弹窗容器，覆盖在导航页之上 -->
     <!-- 背景模糊，点击外部不关闭，启用打开动画，禁止多重弹窗 -->
-    <dialogHostAvalonia:DialogHost BlurBackground="True"
-                                   CloseOnClickAway="False"
-                                   Identifier="MainDialogHost"
-                                   IsMultipleDialogsEnabled="True"
-                                   OverlayBackground="Transparent">
-        <dialogHostAvalonia:DialogHost.PopupTemplate>
-            <ControlTemplate>
-                <!-- 这里的 Border 就是弹窗的“背景容器”，透明背景 -->
-                <Border Background="Transparent">
-                    <ContentPresenter Content="{TemplateBinding Content}" />
-                </Border>
-            </ControlTemplate>
-        </dialogHostAvalonia:DialogHost.PopupTemplate>
+    <Panel>
+        <dialogHostAvalonia:DialogHost BlurBackground="True"
+                                       CloseOnClickAway="False"
+                                       Identifier="MainDialogHost"
+                                       IsMultipleDialogsEnabled="True"
+                                       OverlayBackground="Transparent">
+            <dialogHostAvalonia:DialogHost.PopupTemplate>
+                <ControlTemplate>
+                    <!-- 这里的 Border 就是弹窗的“背景容器”，透明背景 -->
+                    <Border Background="Transparent">
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </dialogHostAvalonia:DialogHost.PopupTemplate>
 
-        <Panel>
-            <!-- 导航页的容器 -->
-            <ContentControl Content="{Binding CurrentViewModel}" />
-            <controls:ToastOverlay x:Name="ToastOverlay" />
-        </Panel>
-    </dialogHostAvalonia:DialogHost>
+            <Panel>
+                <!-- 导航页的容器 -->
+                <ContentControl Content="{Binding CurrentViewModel}" />
+                <controls:ToastOverlay x:Name="ToastOverlay" />
+            </Panel>
+        </dialogHostAvalonia:DialogHost>
+        <!-- 位于页面和 DialogHost 之上，且不参与任何输入命中。 -->
+        <controls:PerformanceMonitorOverlay />
+    </Panel>
 </UserControl>

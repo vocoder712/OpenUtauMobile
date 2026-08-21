@@ -32,6 +32,7 @@ sealed class Program
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalStorageService = new Storage.WindowsExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
+        ServiceHub.PlatformPerformanceProvider = new WindowsPerformanceProvider();
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .UseReactiveUI(reactiveUIBuilder =>
