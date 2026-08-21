@@ -1,8 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
+using Avalonia.Platform;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
@@ -32,11 +33,7 @@ public partial class App : Application
 
         // Initialize runtime theme resources before creating UI.
         ThemeManagerV2.Initialize();
-        Color seed = ThemeSeedResolver.ResolveSeed(
-            ServiceHub.SystemAccentColorProvider,
-            out _,
-            out _);
-        ThemeManagerV2.ApplyGlobalTheme(seed, RequestedThemeVariant);
+        ThemeManagerV2.ApplyConfiguredTheme(ServiceHub.SystemAccentColorProvider, out _, out _);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -61,6 +58,12 @@ public partial class App : Application
 
         // Follow system light/dark changes with runtime-generated semantic theme.
         ActualThemeVariantChanged += (_, _) => ThemeManagerV2.OnThemeVariantChanged();
+
+        IPlatformSettings? platformSettings = PlatformSettings;
+        if (platformSettings is not null)
+        {
+            platformSettings.ColorValuesChanged += (_, _) => RefreshSystemThemeColor();
+        }
     }
 
     private static MainView CreateActivityMainView()
@@ -71,6 +74,22 @@ public partial class App : Application
         };
         ActivityMainView = mainView;
         return mainView;
+    }
+
+    internal static void RefreshSystemThemeColor()
+    {
+        if (Preferences.Default.ThemeColorMode != (int)ThemeColorMode.FollowSystem)
+        {
+            return;
+        }
+
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(RefreshSystemThemeColor);
+            return;
+        }
+
+        ThemeManagerV2.ApplyConfiguredTheme(ServiceHub.SystemAccentColorProvider, out _, out _);
     }
 
     private static ThemeVariant ParseThemePreference(string? value) => value switch

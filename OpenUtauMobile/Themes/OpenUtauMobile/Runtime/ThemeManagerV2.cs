@@ -9,6 +9,7 @@ namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 public static class ThemeManagerV2
 {
     private static readonly ThemeResourceBridge ResourceBridge = new();
+    private static ThemeVariant? _currentVariant;
 
     private static readonly IReadOnlyDictionary<string, string> LegacyBrushAliases = new Dictionary<string, string>
     {
@@ -81,7 +82,26 @@ public static class ThemeManagerV2
         }
 
         ResourceBridge.EnsureAttached(Application.Current);
-        ApplyGlobalTheme(CurrentSeed, Application.Current.ActualThemeVariant);
+        if (seed.HasValue)
+        {
+            ApplyGlobalTheme(CurrentSeed, Application.Current.ActualThemeVariant);
+        }
+    }
+
+    public static Color ApplyConfiguredTheme(
+        ISystemAccentColorProvider? provider,
+        out string source,
+        out string fallbackReason)
+    {
+        Color seed = ThemeSeedResolver.ResolveSeed(provider, out source, out fallbackReason);
+        ThemeVariant variant = Application.Current?.ActualThemeVariant ?? ThemeVariant.Default;
+        if (seed == CurrentSeed && variant == _currentVariant)
+        {
+            return seed;
+        }
+
+        ApplyGlobalTheme(seed, variant);
+        return seed;
     }
 
     public static void ApplyGlobalTheme(Color seed, ThemeVariant variant)
@@ -92,6 +112,7 @@ public static class ThemeManagerV2
         }
 
         CurrentSeed = seed;
+        _currentVariant = variant;
 
         ThemeScheme scheme = ThemeGenerator.Generate(seed, variant);
         ResourceBridge.ApplySemanticBrushes(scheme.SemanticColors);

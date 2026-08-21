@@ -13,6 +13,18 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-21
+- Decision: Supersede the earlier Android main-view-factory reapply as the startup fix: refresh follow-system colors from `MainView.OnAttachedToVisualTree`, subscribe to `IPlatformSettings.ColorValuesChanged`, and skip regeneration when the resolved seed and actual variant have not changed.
+- Rationale: On Android 12, both application initialization and `IActivityApplicationLifetime.MainViewFactory` run before Avalonia exposes the Material You palette through `Application.PlatformSettings`. Theme resolution therefore falls back to the persisted `#66CCFF` seed until a later page, such as Settings, resolves it after visual-tree attachment.
+- Alternatives considered: Reapply from the splash screen after a fixed delay; keep refreshing only when Settings opens; read Android dynamic-color resources directly in the shared UI project.
+- Impacted areas: Application theme lifecycle and Android 12+ follow-system theme-color startup behavior.
+
+- Date: 2026-08-21
+- Decision: Resolve and apply the persisted theme seed through one `ThemeManagerV2.ApplyConfiguredTheme` entry point during both application startup and settings initialization, and reapply it when Android creates its activity-backed main view.
+- Rationale: Startup previously applied the manager's red default seed before separately resolving preferences with the requested theme variant, while settings resolved preferences with the actual variant after the UI existed. Android creates its main view after application initialization, so replaying the same centralized operation at that boundary prevents the default seed from surviving until settings is opened.
+- Alternatives considered: Duplicate the settings logic in `App`; delay every platform's theme setup until the splash screen; add Android-only color parsing outside the shared theme manager.
+- Impacted areas: Shared runtime theme initialization, application startup, settings appearance initialization, and Android activity-backed main-view creation.
+
+- Date: 2026-08-21
 - Decision: Materialize singer discovery once for both manager indexes, and preload only singer avatar bytes during splash initialization instead of calling full `Reload()` for every discovered singer; retain full lazy loading through `EnsureLoaded()` when a singer is attached to a track.
 - Rationale: The lazy discovery sequence previously scanned the singer directory tree twice and created different objects for the ID index and UI groups. Classic singer reload then recursively parsed all OTO files, built phoneme maps, validated samples, and started file watchers for every installed singer even though the initial UI only needs metadata and avatar bytes.
 - Alternatives considered: Keep eager full reload and parallelize it; decode avatars lazily on the UI thread; skip avatar initialization.
