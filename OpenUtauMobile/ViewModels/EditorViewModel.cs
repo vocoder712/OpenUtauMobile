@@ -48,6 +48,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 {
     // ── 内部状态 ────────────────────────────────────────────────────────
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
+    private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
 
     #region 响应式命令
 
@@ -398,6 +399,10 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         _onRequestEditLyric = (part, noteIndex) => { _ = ShowLyricEditPopupAsync(part, noteIndex); };
         PianoRollViewModel.RequestEditLyric += _onRequestEditLyric;
 
+        // 订阅音素别名编辑弹窗请求
+        _onRequestEditPhoneme = (part, note, phonemeIndex) => { _ = ShowPhonemeEditPopupAsync(part, note, phonemeIndex); };
+        PianoRollViewModel.RequestEditPhoneme += _onRequestEditPhoneme;
+
         PlaybackTimer = new() // 回放定时器，定时通知回放管理器更新播放位置
         {
             Interval = TimeSpan.FromSeconds(1 / Preferences.Default.PlaybackRefreshRate) // 按用户设置的刷新率计算间隔
@@ -727,6 +732,23 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         finally
         {
             // 弹窗关闭后释放 ViewModel 资源
+            vm.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 显示音素别名编辑弹窗。ViewModel 直接执行命令，弹窗关闭不返回任何信息。
+    /// </summary>
+    private static async Task<object?> ShowPhonemeEditPopupAsync(UVoicePart part, UNote note, int phonemeIndex)
+    {
+        PhonemeEditViewModel vm = new PhonemeEditViewModel(part, note, phonemeIndex);
+        try
+        {
+            return await Dispatcher.UIThread.InvokeAsync(() =>
+                PopupService.Show<object>(new PhonemeEditPopup(), vm));
+        }
+        finally
+        {
             vm.Dispose();
         }
     }
@@ -1968,10 +1990,14 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         _panMotion.Dispose();
         DocManager.Inst.RemoveSubscriber(this); // 取消订阅事件
 
-        // 取消订阅歌词编辑弹窗请求
+        // 取消订阅歌词与音素别名编辑弹窗请求
         if (_onRequestEditLyric != null)
         {
             PianoRollViewModel.RequestEditLyric -= _onRequestEditLyric;
+        }
+        if (_onRequestEditPhoneme != null)
+        {
+            PianoRollViewModel.RequestEditPhoneme -= _onRequestEditPhoneme;
         }
 
         _disposables.Dispose(); // 释放绑定订阅

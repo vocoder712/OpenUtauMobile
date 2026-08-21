@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -320,6 +320,22 @@ errors.txt
             /// 是否显示全局性能监视悬浮层。
             /// </summary>
             public bool PerformanceMonitorEnabled = false;
+            /// <summary>
+            /// 音素与参数面板高度（像素）。
+            /// </summary>
+            public double PhonemePanelHeight = 128;
+            /// <summary>
+            /// 音素与参数面板编辑模式：0=Simple, 1=Advanced, 2=Draw, 3=Erase。
+            /// </summary>
+            public int PhonemePanelMode = 0;
+            /// <summary>
+            /// 参数面板主编辑参数缩写。
+            /// </summary>
+            public string PrimaryExpressionKey = "vel";
+            /// <summary>
+            /// 参数面板背景参数缩写。
+            /// </summary>
+            public string SecondaryExpressionKey = string.Empty;
             #endregion
         }
     }

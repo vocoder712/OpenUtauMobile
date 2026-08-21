@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using YamlDotNet.Serialization;
@@ -25,6 +25,9 @@ namespace OpenUtau.Core.Ustx {
         public string flag;
         public string[] options;
         public bool skipOutputIfDefault = false;
+        [YamlIgnore] public string Name => name;
+        [YamlIgnore] public string Abbr => abbr;
+        [YamlIgnore] public string DisplayName => string.IsNullOrWhiteSpace(abbr) ? (name ?? string.Empty) : abbr.ToUpperInvariant();
         [YamlIgnore]
         public float CustomDefaultValue {
             get => _customDefaultValue ?? defaultValue;

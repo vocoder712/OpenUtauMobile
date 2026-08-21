@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.PhonemeEditPopup"
+             d:DataContext="{d:DesignInstance Type=vm:PhonemeEditViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:PhonemeEditViewModel"
+             Classes="PopupDialogRoot"
+             MinHeight="180">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <!-- 标题栏 -->
+            <Border Classes="PopupTitleBar"
+                    DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{DynamicResource PhonemeEdit.Title}"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Cancel}">
+                        <Path Width="14" Height="14"
+                              Stretch="Uniform"
+                              Fill="{DynamicResource Sem.Color.OnSurface}"
+                              Data="M19,6.41 L17.59,5 L12,10.59 L6.41,5 L5,6.41 L10.59,12 L5,17.59 L6.41,19 L12,13.41 L17.59,19 L19,17.59 L13.41,12 Z" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- 内容区域 -->
+            <Border DockPanel.Dock="Top"
+                    Padding="16,16"
+                    Background="{DynamicResource Sem.Color.Surface}">
+                <StackPanel Spacing="12">
+                    <!-- 当前音素信息与恢复默认操作 -->
+                    <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                        <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="2">
+                            <TextBlock Text="{Binding CurrentPhonemeInfo}"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                            <TextBlock Text="{Binding RawPhonemeHint}"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        </StackPanel>
+                        <Button Grid.Column="1"
+                                Command="{Binding ResetCommand}"
+                                Classes="Secondary"
+                                Padding="8,4"
+                                FontSize="12"
+                                VerticalAlignment="Center"
+                                Content="{DynamicResource PhonemeEdit.Reset}" />
+                    </Grid>
+
+                    <!-- 音素别名输入框 -->
+                    <TextBox x:Name="PhonemeAliasInput"
+                             Text="{Binding CurrentAlias}"
+                             PlaceholderText="{DynamicResource PhonemeEdit.Watermark}"
+                             Padding="12,8"
+                             CornerRadius="8"
+                             FontSize="14"
+                             BorderThickness="1" />
+
+                    <!-- 按钮栏（与歌词编辑完全一致的 3 个按钮） -->
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                        <Button Grid.Column="1"
+                                Command="{Binding CancelCommand}"
+                                Classes="Secondary"
+                                Content="{DynamicResource Common.Cancel}" />
+
+                        <Button Grid.Column="2"
+                                Command="{Binding NextCommand}"
+                                Classes="Secondary"
+                                Content="{DynamicResource Common.Next}" />
+
+                        <Button Grid.Column="3"
+                                Command="{Binding ConfirmCommand}"
+                                Classes="Primary"
+                                Content="{DynamicResource Common.Confirm}" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </DockPanel>
+    </Border>
+
+</UserControl>

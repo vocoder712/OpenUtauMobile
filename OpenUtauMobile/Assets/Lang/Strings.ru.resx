@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1623,4 +1623,46 @@
   <data name="PerformanceMonitor.AppShort" xml:space="preserve"><value>Прил.</value></data>
   <data name="PerformanceMonitor.SystemShort" xml:space="preserve"><value>Система</value></data>
   <data name="PerformanceMonitor.Fps" xml:space="preserve"><value>FPS</value></data>
+  <data name="PhonemePanel.EditMode.Switch" xml:space="preserve">
+    <value>Switch phoneme &amp; parameter edit mode</value>
+  </data>
+  <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
+    <value>Simple phoneme mode</value>
+  </data>
+  <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
+    <value>Advanced phoneme mode</value>
+  </data>
+  <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
+    <value>Parameter draw mode</value>
+  </data>
+  <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
+    <value>Parameter erase mode</value>
+  </data>
+  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
+    <value>Switched to simple phoneme mode</value>
+  </data>
+  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
+    <value>Switched to advanced phoneme mode</value>
+  </data>
+  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
+    <value>Switched to parameter draw mode</value>
+  </data>
+  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
+    <value>Switched to parameter erase mode</value>
+  </data>
+  <data name="PhonemePanel.Param.Primary" xml:space="preserve">
+    <value>Primary parameter</value>
+  </data>
+  <data name="PhonemePanel.Param.Secondary" xml:space="preserve">
+    <value>Background parameter</value>
+  </data>
+  <data name="PhonemePanel.Param.Swap" xml:space="preserve">
+    <value>Swap primary &amp; background parameters</value>
+  </data>
+  <data name="PhonemePanel.Param.None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="PhonemePanel.Split.Tooltip" xml:space="preserve">
+    <value>Drag to resize phoneme/parameter panel</value>
+  </data>
 </root>
