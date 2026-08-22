@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-22
+- Decision: Give each rendered note pitch-bend curve its own finalized `StreamGeometry` instead of submitting the shared mutable `Points` and `PolylineGeometry` caches.
+- Rationale: Every `RenderPitchBend` call cleared and repopulated the same point collection retained by earlier drawing commands, so the last visible note replaced the curves submitted for all preceding notes.
+- Alternatives considered: Clone the shared point collection before every draw; aggregate every visible note curve in the caller; submit interpolated curve segments with individual `DrawLine` calls.
+- Impacted areas: Anchor-mode pitch-bend curve rendering in `NotesCanvas`; anchor handle geometry and pitch interpolation remain unchanged.
+
 - Date: 2026-08-21
 - Decision: On Android, report the app's current resident memory from `RssAnon` in `/proc/self/status`, falling back to the shared `Process.WorkingSet64` path when procfs data is unavailable; stop using `ActivityManager.getProcessMemoryInfo()` and `TotalPss` for the one-second monitor.
 - Rationale: Android Q and later significantly rate-limit `getProcessMemoryInfo()` and silently return cached samples when it is polled too frequently, which made the displayed app-memory value appear frozen. Reading the current process's own procfs status avoids that API cache, remains available across the project's Android 7+ target range, and has a compatible shared fallback.

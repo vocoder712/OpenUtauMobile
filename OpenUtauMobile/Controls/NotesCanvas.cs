@@ -186,39 +186,6 @@ public class NotesCanvas : Control, ICmdSubscriber
 
             RenderNoteBody(note, context, brush); // 主体
         }
-
-        // ———— 绘制最终音高线 ————
-        RenderFinalPitch(leftTick, rightTick, context);
-        // ———— 绘制锚点 ————
-        foreach (UNote note in Part.notes)
-        {
-            if (note.position + Part.position > rightTick)
-            {
-                break; // 后续音符都在右侧不可见，停止绘制
-            }
-
-            if (note.End + Part.position < leftTick)
-            {
-                bool anchorVisible = ViewModel.EditMode == PianoRollEditMode.Anchor
-                    && note.pitch.data.Count >= 2
-                    && DocManager.Inst.Project.timeAxis.MsPosToTickPos(note.PositionMs + note.pitch.data[^1].X) >= leftTick;
-                if (!anchorVisible)
-                    continue; // 音符在左侧不可见，跳过
-            }
-
-            // 绘制锚点
-            if (ViewModel.EditMode == PianoRollEditMode.Anchor)
-            {
-                RenderPitchBend(note, context);
-            }
-        }
-
-        // ———— 绘制颤音控件 ————
-        if (ViewModel.EditMode == PianoRollEditMode.Vibrato &&
-            ViewModel.GetActiveVibratoOverlayLayout() is { } vibratoLayout)
-        {
-            RenderVibratoOverlay(vibratoLayout, context);
-        }
         
         // ———— 绘制边框和调整音符长度手柄 ————
         foreach (UNote note in Part.notes)
@@ -245,6 +212,40 @@ public class NotesCanvas : Control, ICmdSubscriber
             }
 
             DrawNoteResizeHandle(context, rect);
+        }
+
+        // ———— 绘制最终音高线 ————
+        RenderFinalPitch(leftTick, rightTick, context);
+        // ———— 绘制锚点 ————
+        foreach (UNote note in Part.notes)
+        {
+            if (note.pitch.data.Count < 2)
+            {
+                continue; // 没有锚点，跳过
+            }
+            int firstAnchorPos = note.position + Part.position + DocManager.Inst.Project.timeAxis.MsPosToTickPos(note.pitch.data[0].X);
+            if (firstAnchorPos > rightTick)
+            {
+                continue; // 右侧不可见
+            }
+            int lastAnchorPos = note.position + Part.position + DocManager.Inst.Project.timeAxis.MsPosToTickPos(note.pitch.data[^1].X);
+            if (lastAnchorPos < leftTick)
+            {
+                continue; // 左侧不可见
+            }
+
+            // 绘制锚点
+            if (ViewModel.EditMode == PianoRollEditMode.Anchor)
+            {
+                RenderPitchBend(note, context);
+            }
+        }
+
+        // ———— 绘制颤音控件 ————
+        if (ViewModel.EditMode == PianoRollEditMode.Vibrato &&
+            ViewModel.GetActiveVibratoOverlayLayout() is { } vibratoLayout)
+        {
+            RenderVibratoOverlay(vibratoLayout, context);
         }
 
         // ———— 绘制遮罩 ————
@@ -439,18 +440,13 @@ public class NotesCanvas : Control, ICmdSubscriber
     /// <param name="context"></param>
     private void RenderPitchBend(UNote note, DrawingContext context)
     {
-        if (ViewModel == null)
+        if (ViewModel == null || Part == null)
         {
             return;
         }
 
         UPitch pitchExp = note.pitch;
         List<PitchPoint> pts = pitchExp.data;
-        if (pts.Count < 2 || Part == null)
-        {
-            return;
-        }
-
         UProject project = DocManager.Inst.Project;
         bool isAnchorMode = (ViewModel.EditMode == PianoRollEditMode.Anchor);
 
@@ -458,65 +454,72 @@ public class NotesCanvas : Control, ICmdSubscriber
         int p0Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[0].X);
         double p0Tone = note.AdjustedTone + pts[0].Y / 10.0;
         Point p0 = ViewModel.TickPitchToPoint(p0Tick, p0Tone - 0.5);
-        _tmpPoints.Clear();
-        _tmpPoints.Add(p0);
-
-        // 绘制第一个锚点（pts[0]）
+        StreamGeometry pitchGeometry = new();
+        using (StreamGeometryContext pitchGeometryContext = pitchGeometry.Open())
         {
-            bool isSelected = isAnchorMode && ViewModel.SelectedAnchors.Contains(pts[0]);
-            IBrush brush = note.pitch.snapFirst && !isSelected
-                ? ThemeResources.GetBrush("Sem.Color.Secondary")
-                : ThemeResources.GetBrush("Sem.Color.Primary");
-            IPen pen = isSelected
-                ? ThemeResources.GetPen("Sem.Color.Tertiary", 2.2)
-                : ThemeResources.GetPen("Sem.Color.OnSurface", 1.15);
-            Geometry geom = isSelected ? _selectedPointGeometry : _pointGeometry;
-            using (context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y)))
-                context.DrawGeometry(brush, pen, geom);
-        }
+            pitchGeometryContext.BeginFigure(p0, false);
 
-        // 处理剩余点
-        for (int i = 1; i < pts.Count; i++)
-        {
-            int p1Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[i].X);
-            double p1Tone = note.AdjustedTone + pts[i].Y / 10.0;
-            Point p1 = ViewModel.TickPitchToPoint(p1Tick, p1Tone - 0.5);
-
-            // 绘制曲线
-            double x0 = p0.X;
-            double y0 = p0.Y;
-            double x1 = p0.X;
-            if (p1.X - p0.X < 5)
+            // 绘制第一个锚点（pts[0]）
             {
-                _tmpPoints.Add(p1);
-            }
-            else
-            {
-                _tmpPoints.Add(new Point(x0, y0));
-                while (x0 < p1.X)
+                bool isSelected = isAnchorMode && ViewModel.SelectedAnchors.Contains(pts[0]);
+                IBrush brush = note.pitch.snapFirst && !isSelected
+                    ? ThemeResources.GetBrush("Sem.Color.Secondary")
+                    : ThemeResources.GetBrush("Sem.Color.Primary");
+                IPen pen = isSelected
+                    ? ThemeResources.GetPen("Sem.Color.Tertiary", 2.2)
+                    : ThemeResources.GetPen("Sem.Color.OnSurface", 1.15);
+                Geometry geom = isSelected ? _selectedPointGeometry : _pointGeometry;
+                using (context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y)))
                 {
-                    x1 = Math.Min(x1 + 4, p1.X);
-                    double y1 = MusicMath.InterpolateShape(p0.X, p1.X, p0.Y, p1.Y, x1, pts[i - 1].shape);
-                    _tmpPoints.Add(new Point(x1, y1));
-                    x0 = x1;
+                    context.DrawGeometry(brush, pen, geom);
                 }
             }
 
-            p0 = p1; // 往后移一个点
+            // 处理剩余点
+            for (int i = 1; i < pts.Count; i++)
+            {
+                int p1Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[i].X);
+                double p1Tone = note.AdjustedTone + pts[i].Y / 10.0;
+                Point p1 = ViewModel.TickPitchToPoint(p1Tick, p1Tone - 0.5);
 
-            // 绘制第 i 个锚点，根据选中态决定外观
-            bool isSelected = isAnchorMode && ViewModel.SelectedAnchors.Contains(pts[i]);
-            IBrush ptBrush = ThemeResources.GetBrush("Sem.Color.Primary");
-            IPen ptPen = isSelected // 外框
-                ? ThemeResources.GetPen("Sem.Color.Tertiary", 2.2)
-                : ThemeResources.GetPen("Sem.Color.OnSurface", 1.15);
-            Geometry ptGeom = isSelected ? _selectedPointGeometry : _pointGeometry;
-            using (context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y)))
-                context.DrawGeometry(ptBrush, ptPen, ptGeom);
+                // 绘制曲线
+                double x0 = p0.X;
+                double y0 = p0.Y;
+                double x1 = p0.X;
+                if (p1.X - p0.X < 5)
+                {
+                    pitchGeometryContext.LineTo(p1);
+                }
+                else
+                {
+                    while (x0 < p1.X)
+                    {
+                        x1 = Math.Min(x1 + 4, p1.X);
+                        double y1 = MusicMath.InterpolateShape(p0.X, p1.X, p0.Y, p1.Y, x1, pts[i - 1].shape);
+                        pitchGeometryContext.LineTo(new Point(x1, y1));
+                        x0 = x1;
+                    }
+                }
+
+                p0 = p1; // 往后移一个点
+
+                // 绘制第 i 个锚点，根据选中态决定外观
+                bool isSelected = isAnchorMode && ViewModel.SelectedAnchors.Contains(pts[i]);
+                IBrush ptBrush = ThemeResources.GetBrush("Sem.Color.Primary");
+                IPen ptPen = isSelected // 外框
+                    ? ThemeResources.GetPen("Sem.Color.Tertiary", 2.2)
+                    : ThemeResources.GetPen("Sem.Color.OnSurface", 1.15);
+                Geometry ptGeom = isSelected ? _selectedPointGeometry : _pointGeometry;
+                using (context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y)))
+                {
+                    context.DrawGeometry(ptBrush, ptPen, ptGeom);
+                }
+            }
+
+            pitchGeometryContext.EndFigure(false);
         }
 
-        _tmpPolylineGeometry.Points = _tmpPoints;
-        context.DrawGeometry(null, ThemeResources.GetPen("Sem.Color.Primary", 2.0), _tmpPolylineGeometry);
+        context.DrawGeometry(null, ThemeResources.GetPen("Sem.Color.Primary", 2.0), pitchGeometry);
     }
 
     private void RebuildVibratoBrushCache(bool isDark)
