@@ -259,35 +259,44 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public bool IsParameterMode => PhonemePanelMode == PhonemePanelMode.ParameterDraw || PhonemePanelMode == PhonemePanelMode.ParameterErase;
     public bool IsPhonemePanelVisible => IsVoiceMode && PhonemePanelHeight > 0;
 
-    public ObservableCollectionExtended<UExpressionDescriptor> AvailableExpressions { get; init; } = [];
-    public ObservableCollectionExtended<UExpressionDescriptor?> AvailableSecondaryExpressions { get; init; } = [];
+    public ObservableCollectionExtended<ExpressionOption> AvailableExpressions { get; init; } = [];
+    public ObservableCollectionExtended<ExpressionOption> AvailableSecondaryExpressions { get; init; } = [];
 
-    public UExpressionDescriptor? PrimaryExpressionDescriptor
+    public string PrimaryExpressionDisplayName
     {
-        get => AvailableExpressions.FirstOrDefault(x => x.abbr == PrimaryExpressionKey);
-        set
+        get
         {
-            if (value != null && value.abbr != PrimaryExpressionKey)
+            ExpressionOption? opt = AvailableExpressions.FirstOrDefault(x => x.Key == PrimaryExpressionKey);
+            if (opt != null)
             {
-                PrimaryExpressionKey = value.abbr;
-                this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
+                return opt.DisplayName;
             }
+            return string.IsNullOrEmpty(PrimaryExpressionKey) ? string.Empty : PrimaryExpressionKey.ToUpperInvariant();
         }
     }
 
-    public UExpressionDescriptor? SecondaryExpressionDescriptor
+    public string SecondaryExpressionDisplayName
     {
-        get => AvailableSecondaryExpressions.FirstOrDefault(x => (x?.abbr ?? string.Empty) == SecondaryExpressionKey);
-        set
+        get
         {
-            string newKey = value?.abbr ?? string.Empty;
-            if (newKey != SecondaryExpressionKey)
+            if (string.IsNullOrEmpty(SecondaryExpressionKey))
             {
-                SecondaryExpressionKey = newKey;
-                this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
+                return L.S("PhonemePanel.Param.None");
             }
+            ExpressionOption? opt = AvailableSecondaryExpressions.FirstOrDefault(x => x.Key == SecondaryExpressionKey);
+            if (opt != null)
+            {
+                return opt.DisplayName;
+            }
+            return SecondaryExpressionKey.ToUpperInvariant();
         }
     }
+
+    public UExpressionDescriptor? PrimaryExpressionDescriptor =>
+        AvailableExpressions.FirstOrDefault(x => x.Key == PrimaryExpressionKey)?.Descriptor;
+
+    public UExpressionDescriptor? SecondaryExpressionDescriptor =>
+        AvailableSecondaryExpressions.FirstOrDefault(x => x.Key == SecondaryExpressionKey)?.Descriptor;
 
     public System.Windows.Input.ICommand SwapExpressionsCommand { get; }
     public System.Windows.Input.ICommand SelectPrimaryExpressionCommand { get; }
@@ -596,17 +605,26 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             }
         }
 
-        AvailableExpressions.AddRange(list);
-
-        UExpressionDescriptor noneDescriptor = new UExpressionDescriptor(L.S("PhonemePanel.Param.None"), string.Empty, 0, 0, 0);
-        AvailableSecondaryExpressions.Add(noneDescriptor);
-        AvailableSecondaryExpressions.AddRange(list);
-
-        if (!AvailableExpressions.Any(x => x.abbr == PrimaryExpressionKey))
+        foreach (UExpressionDescriptor desc in list)
         {
-            PrimaryExpressionKey = AvailableExpressions.FirstOrDefault()?.abbr ?? "vel";
+            string disp = string.IsNullOrWhiteSpace(desc.abbr) ? (desc.name ?? string.Empty) : desc.abbr.ToUpperInvariant();
+            AvailableExpressions.Add(new ExpressionOption(desc.abbr, disp, desc));
         }
 
+        AvailableSecondaryExpressions.Add(new ExpressionOption(string.Empty, L.S("PhonemePanel.Param.None"), null));
+        foreach (UExpressionDescriptor desc in list)
+        {
+            string disp = string.IsNullOrWhiteSpace(desc.abbr) ? (desc.name ?? string.Empty) : desc.abbr.ToUpperInvariant();
+            AvailableSecondaryExpressions.Add(new ExpressionOption(desc.abbr, disp, desc));
+        }
+
+        if (!AvailableExpressions.Any(x => x.Key == PrimaryExpressionKey))
+        {
+            PrimaryExpressionKey = AvailableExpressions.FirstOrDefault()?.Key ?? "vel";
+        }
+
+        this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
+        this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
         this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
         this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
     }
@@ -625,18 +643,18 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
         IObservable<bool> canSwap = this.WhenAnyValue(x => x.SecondaryExpressionKey, key => !string.IsNullOrEmpty(key));
         SwapExpressionsCommand = ReactiveCommand.Create(SwapExpressions, canSwap);
-        SelectPrimaryExpressionCommand = ReactiveCommand.Create<UExpressionDescriptor>(desc =>
+        SelectPrimaryExpressionCommand = ReactiveCommand.Create<ExpressionOption>(opt =>
         {
-            if (desc != null)
+            if (opt != null && !string.IsNullOrEmpty(opt.Key))
             {
-                PrimaryExpressionDescriptor = desc;
+                PrimaryExpressionKey = opt.Key;
             }
         });
-        SelectSecondaryExpressionCommand = ReactiveCommand.Create<UExpressionDescriptor>(desc =>
+        SelectSecondaryExpressionCommand = ReactiveCommand.Create<ExpressionOption>(opt =>
         {
-            if (desc != null)
+            if (opt != null)
             {
-                SecondaryExpressionDescriptor = desc;
+                SecondaryExpressionKey = opt.Key;
             }
         });
 
@@ -739,6 +757,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 OpenUtau.Core.Util.Preferences.Default.PrimaryExpressionKey = t.Item1;
                 OpenUtau.Core.Util.Preferences.Default.SecondaryExpressionKey = t.Item2;
                 OpenUtau.Core.Util.Preferences.Save();
+                this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
+                this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
                 this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
                 this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
             })
