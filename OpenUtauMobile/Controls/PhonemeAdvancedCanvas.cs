@@ -353,6 +353,18 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             e.Pointer.Capture(this);
             e.Handled = true;
             DocManager.Inst.StartUndoGroup();
+
+            string phonemeName = !string.IsNullOrEmpty(hitPhoneme.phonemeMapped) ? hitPhoneme.phonemeMapped : hitPhoneme.phoneme;
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = hitType switch
+                {
+                    AdvancedHandleType.TimingLine => $"[{phonemeName}] Offset: {(int)_initialDelta:+0;-0;0} tick",
+                    AdvancedHandleType.Preutter => $"[{phonemeName}] Preutter: {_initialDelta:+0.0;-0.0;0.0} ms",
+                    AdvancedHandleType.Overlap => $"[{phonemeName}] Overlap: {_initialDelta:+0.0;-0.0;0.0} ms",
+                    _ => string.Empty
+                };
+            }
             return;
         }
 
@@ -391,19 +403,34 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         double deltaMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.position + (int)deltaTicks)
                        - DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.position);
 
+        string phonemeName = !string.IsNullOrEmpty(_activePhoneme.phonemeMapped) ? _activePhoneme.phonemeMapped : _activePhoneme.phoneme;
         switch (_activeHandleType)
         {
             case AdvancedHandleType.TimingLine:
                 int newOffset = (int)(_initialDelta + deltaTicks);
                 DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(Part, _activePhoneme.Parent, _activePhoneme.index, newOffset));
+                double offsetMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.rawPosition + newOffset)
+                                - DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.rawPosition);
+                if (ViewModel != null)
+                {
+                    ViewModel.EditingTip = $"[{phonemeName}] Offset: {newOffset:+0;-0;0} tick ({offsetMs:+0.0;-0.0;0.0} ms)";
+                }
                 break;
             case AdvancedHandleType.Preutter:
                 float newPreutter = (float)(_initialDelta - deltaMs);
                 DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(Part, _activePhoneme.Parent, _activePhoneme.index, newPreutter));
+                if (ViewModel != null)
+                {
+                    ViewModel.EditingTip = $"[{phonemeName}] Preutter: {newPreutter:+0.0;-0.0;0.0} ms";
+                }
                 break;
             case AdvancedHandleType.Overlap:
                 float newOverlap = (float)(_initialDelta + deltaMs);
                 DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(Part, _activePhoneme.Parent, _activePhoneme.index, newOverlap));
+                if (ViewModel != null)
+                {
+                    ViewModel.EditingTip = $"[{phonemeName}] Overlap: {newOverlap:+0.0;-0.0;0.0} ms";
+                }
                 break;
         }
 
@@ -424,6 +451,10 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             _activePhoneme = null;
             DocManager.Inst.EndUndoGroup();
             e.Pointer.Capture(null);
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = string.Empty;
+            }
             InvalidateVisual();
             e.Handled = true;
         }
@@ -441,6 +472,10 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
             DocManager.Inst.EndUndoGroup();
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = string.Empty;
+            }
             InvalidateVisual();
         }
     }

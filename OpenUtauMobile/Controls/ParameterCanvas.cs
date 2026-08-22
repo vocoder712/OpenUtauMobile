@@ -382,6 +382,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
         _lastValue = value;
 
         ApplyEditAt(project, track, descriptor, tick, value, tick, value);
+        UpdateEditingTip(descriptor, tick, value);
         InvalidateVisual();
         e.Handled = true;
     }
@@ -413,6 +414,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
         int value = CalculateValueFromY(pos.Y, descriptor);
 
         ApplyEditAt(project, track, descriptor, tick, value, _lastTick, _lastValue);
+        UpdateEditingTip(descriptor, tick, value);
 
         _lastTick = tick;
         _lastValue = value;
@@ -430,6 +432,10 @@ public class ParameterCanvas : Control, ICmdSubscriber
             _drawingPointer = null;
             DocManager.Inst.EndUndoGroup();
             e.Pointer.Capture(null);
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = string.Empty;
+            }
             InvalidateVisual();
             e.Handled = true;
         }
@@ -443,8 +449,83 @@ public class ParameterCanvas : Control, ICmdSubscriber
             _isDrawing = false;
             _drawingPointer = null;
             DocManager.Inst.EndUndoGroup();
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = string.Empty;
+            }
             InvalidateVisual();
         }
+    }
+
+    private void UpdateEditingTip(UExpressionDescriptor descriptor, int tick, int value)
+    {
+        if (ViewModel == null)
+        {
+            return;
+        }
+
+        if (descriptor.type == UExpressionType.Curve)
+        {
+            if (IsEraseMode)
+            {
+                ViewModel.EditingTip = $"{descriptor.name}: Erase (Default: {descriptor.defaultValue:F0})";
+            }
+            else
+            {
+                ViewModel.EditingTip = $"{descriptor.name}: {value:+0;-0;0}";
+            }
+            return;
+        }
+
+        UPhoneme? phoneme = FindPhonemeAtTick(tick);
+        string phonemePrefix = phoneme != null
+            ? $"[{(string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phoneme : phoneme.phonemeMapped)}] "
+            : string.Empty;
+
+        if (descriptor.type == UExpressionType.Numerical)
+        {
+            if (IsEraseMode)
+            {
+                ViewModel.EditingTip = $"{phonemePrefix}{descriptor.name}: Reset (Default: {descriptor.defaultValue:F0})";
+            }
+            else
+            {
+                ViewModel.EditingTip = $"{phonemePrefix}{descriptor.name}: {value}";
+            }
+        }
+        else if (descriptor.type == UExpressionType.Options)
+        {
+            string optName = (descriptor.options != null && value >= 0 && value < descriptor.options.Length)
+                ? descriptor.options[value]
+                : value.ToString();
+            if (IsEraseMode)
+            {
+                ViewModel.EditingTip = $"{phonemePrefix}{descriptor.name}: Reset";
+            }
+            else
+            {
+                ViewModel.EditingTip = $"{phonemePrefix}{descriptor.name}: {optName}";
+            }
+        }
+    }
+
+    private UPhoneme? FindPhonemeAtTick(int tick)
+    {
+        if (Part == null)
+        {
+            return null;
+        }
+
+        double partRelativeTick = tick - Part.position;
+        foreach (UPhoneme phoneme in Part.phonemes)
+        {
+            if (partRelativeTick >= phoneme.position && partRelativeTick <= phoneme.End)
+            {
+                return phoneme;
+            }
+        }
+
+        return null;
     }
 
     private int CalculateValueFromY(double y, UExpressionDescriptor descriptor)

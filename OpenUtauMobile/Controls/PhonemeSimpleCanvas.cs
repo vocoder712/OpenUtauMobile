@@ -300,6 +300,16 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             e.Pointer.Capture(this);
             e.Handled = true;
             DocManager.Inst.StartUndoGroup();
+
+            string phonemeName = !string.IsNullOrEmpty(hitBoundaryPhoneme.phonemeMapped) ? hitBoundaryPhoneme.phonemeMapped : hitBoundaryPhoneme.phoneme;
+            double offsetMs = DocManager.Inst.Project != null
+                ? DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + hitBoundaryPhoneme.rawPosition + _dragInitialOffset)
+                  - DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + hitBoundaryPhoneme.rawPosition)
+                : 0.0;
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = $"[{phonemeName}] Offset: {_dragInitialOffset:+0;-0;0} tick ({offsetMs:+0.0;-0.0;0.0} ms)";
+            }
             return;
         }
 
@@ -343,6 +353,16 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(Part, _draggingPhoneme.Parent, _draggingPhoneme.index, newOffset));
             InvalidateVisual();
         }
+
+        string phonemeName = !string.IsNullOrEmpty(_draggingPhoneme.phonemeMapped) ? _draggingPhoneme.phonemeMapped : _draggingPhoneme.phoneme;
+        double offsetMs = DocManager.Inst.Project != null
+            ? DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _draggingPhoneme.rawPosition + newOffset)
+              - DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _draggingPhoneme.rawPosition)
+            : 0.0;
+        if (ViewModel != null)
+        {
+            ViewModel.EditingTip = $"[{phonemeName}] Offset: {newOffset:+0;-0;0} tick ({offsetMs:+0.0;-0.0;0.0} ms)";
+        }
         e.Handled = true;
     }
 
@@ -356,6 +376,10 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             StartDragAnimation(0.0);
             DocManager.Inst.EndUndoGroup();
             e.Pointer.Capture(null);
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = string.Empty;
+            }
             e.Handled = true;
         }
     }
@@ -369,6 +393,10 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             _draggingPhoneme = null;
             StartDragAnimation(0.0);
             DocManager.Inst.EndUndoGroup();
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = string.Empty;
+            }
         }
     }
 

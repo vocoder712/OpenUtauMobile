@@ -658,14 +658,6 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             }
         });
 
-        // 加载音素面板偏好
-        PhonemePanelHeight = Math.Max(0.0, OpenUtau.Core.Util.Preferences.Default.PhonemePanelHeight);
-        PhonemePanelMode = (PhonemePanelMode)Math.Clamp(OpenUtau.Core.Util.Preferences.Default.PhonemePanelMode, 0, 3);
-        PrimaryExpressionKey = string.IsNullOrEmpty(OpenUtau.Core.Util.Preferences.Default.PrimaryExpressionKey)
-            ? "vel"
-            : OpenUtau.Core.Util.Preferences.Default.PrimaryExpressionKey;
-        SecondaryExpressionKey = OpenUtau.Core.Util.Preferences.Default.SecondaryExpressionKey ?? string.Empty;
-
         DocManager.Inst.AddSubscriber(this);
 
         PlayPosTick = DocManager.Inst.playPosTick;
@@ -712,10 +704,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
         // 音素面板高度变化监听
         this.WhenAnyValue(x => x.PhonemePanelHeight)
-            .Subscribe(height =>
+            .Subscribe(_ =>
             {
-                OpenUtau.Core.Util.Preferences.Default.PhonemePanelHeight = height;
-                OpenUtau.Core.Util.Preferences.Save();
                 this.RaisePropertyChanged(nameof(IsPhonemePanelVisible));
             })
             .DisposeWith(_disposables);
@@ -724,8 +714,6 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         this.WhenAnyValue(x => x.PhonemePanelMode)
             .Subscribe(mode =>
             {
-                OpenUtau.Core.Util.Preferences.Default.PhonemePanelMode = (int)mode;
-                OpenUtau.Core.Util.Preferences.Save();
                 this.RaisePropertyChanged(nameof(IsPhonemeSimpleMode));
                 this.RaisePropertyChanged(nameof(IsPhonemeAdvancedMode));
                 this.RaisePropertyChanged(nameof(IsParameterDrawMode));
@@ -752,11 +740,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
         // 参数选择变更监听
         this.WhenAnyValue(x => x.PrimaryExpressionKey, x => x.SecondaryExpressionKey)
-            .Subscribe(t =>
+            .Subscribe(_ =>
             {
-                OpenUtau.Core.Util.Preferences.Default.PrimaryExpressionKey = t.Item1;
-                OpenUtau.Core.Util.Preferences.Default.SecondaryExpressionKey = t.Item2;
-                OpenUtau.Core.Util.Preferences.Save();
                 this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
                 this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
                 this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
