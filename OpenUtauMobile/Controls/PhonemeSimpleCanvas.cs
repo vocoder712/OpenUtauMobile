@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
+using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
@@ -44,14 +45,24 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         set => SetValue(TickOffsetProperty, value);
     }
 
-    private PianoRollViewModel? ViewModel => DataContext as PianoRollViewModel;
+    private PianoRollViewModel? _viewModel;
+    private PianoRollViewModel? ViewModel => _viewModel ?? (DataContext as PianoRollViewModel);
 
     // 拖拽与双击状态
     private bool _isDraggingBoundary;
     private UPhoneme? _draggingPhoneme;
+    private UPhoneme? _animatingPhoneme;
     private double _dragStartPointerX;
     private int _dragInitialOffset;
     private int _lastPushedOffset;
+
+    // 手柄展开动效状态
+    private DispatcherTimer? _animTimer;
+    private double _animProgress;
+    private double _animStartProgress;
+    private double _animTargetProgress;
+    private DateTime _animStartTime;
+    private const double AnimDurationMs = 130.0;
 
     private DateTime _lastClickTime = DateTime.MinValue;
     private Point _lastClickPoint;
@@ -65,16 +76,82 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         ClipToBounds = true;
     }
 
+    private void StartDragAnimation(double target)
+    {
+        _animStartProgress = _animProgress;
+        _animTargetProgress = target;
+        _animStartTime = DateTime.UtcNow;
+
+        if (_animTimer == null)
+        {
+            _animTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+            _animTimer.Tick += OnAnimTimerTick;
+        }
+        _animTimer.Start();
+    }
+
+    private void OnAnimTimerTick(object? sender, EventArgs e)
+    {
+        double elapsed = (DateTime.UtcNow - _animStartTime).TotalMilliseconds;
+        double t = Math.Clamp(elapsed / AnimDurationMs, 0.0, 1.0);
+        // CubicEaseOut
+        double eased = 1.0 - Math.Pow(1.0 - t, 3);
+        _animProgress = _animStartProgress + (_animTargetProgress - _animStartProgress) * eased;
+
+        InvalidateVisual();
+
+        if (t >= 1.0)
+        {
+            _animProgress = _animTargetProgress;
+            _animTimer?.Stop();
+            if (_animProgress <= 0.0 && !_isDraggingBoundary)
+            {
+                _animatingPhoneme = null;
+            }
+        }
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+        }
+
+        _viewModel = DataContext as PianoRollViewModel;
+
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
+    }
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        if (DataContext is PianoRollViewModel vm)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+            }
+            _viewModel = vm;
+            _viewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
+        _animTimer?.Stop();
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+            _viewModel = null;
+        }
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -111,7 +188,6 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
 
         IBrush boundaryDefaultBrush = ThemeResources.GetBrush("Sem.Color.Outline");
         IBrush boundaryActiveBrush = ThemeResources.GetBrush("Sem.Color.Primary");
-        IPen boundaryIndicatorPen = ThemeResources.GetPen("Sem.Color.Primary", 2.0);
 
         double canvasHeight = Bounds.Height;
         // 顶部预留 14dp 空隙避开上方悬浮的分割条胶囊手柄，底部预留 6dp
@@ -181,21 +257,19 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
 
             // 3. 绘制卡片之间的垂直边界手柄条（居中在卡片间隙）
             bool isModified = phoneme.rawPosition != phoneme.position;
-            double handleWidth = isModified ? 3.5 : 2.5;
-            IBrush handleBrush = isModified ? boundaryActiveBrush : boundaryDefaultBrush;
+            bool isAnimTarget = _animatingPhoneme == phoneme && _animProgress > 0.001;
+            double progress = isAnimTarget ? _animProgress : 0.0;
+
+            double expansion = 5.0 * progress; // 拖拽时平滑上下延伸 5dp，适度突出于卡片
+            double widthBonus = 1.2 * progress;
+            double handleWidth = (isModified ? 3.5 : 2.5) + widthBonus;
+            IBrush handleBrush = (isModified || progress > 0.001) ? boundaryActiveBrush : boundaryDefaultBrush;
             double handleX = x1 - handleWidth * 0.5;
-            double handleY = topMargin + 2.0;
-            double handleH = Math.Max(4.0, blockHeight - 4.0);
+            double handleY = topMargin + 2.0 - expansion;
+            double handleH = Math.Max(4.0, blockHeight - 4.0) + expansion * 2.0;
 
             Rect handleRect = new Rect(handleX, handleY, handleWidth, handleH);
             context.DrawRectangle(handleBrush, null, handleRect, handleWidth * 0.5, handleWidth * 0.5);
-        }
-
-        // 4. 若正在拖拽边界，绘制全高指示线
-        if (_isDraggingBoundary && _draggingPhoneme != null)
-        {
-            double dragX = (partPos + _draggingPhoneme.position - TickOffset) * TickWidth;
-            context.DrawLine(boundaryIndicatorPen, new Point(dragX, 0), new Point(dragX, Bounds.Height));
         }
     }
 
@@ -217,10 +291,12 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         {
             _isDraggingBoundary = true;
             _draggingPhoneme = hitBoundaryPhoneme;
+            _animatingPhoneme = hitBoundaryPhoneme;
             _dragStartPointerX = pos.X;
             _dragInitialOffset = hitBoundaryPhoneme.Parent.GetPhonemeOverride(hitBoundaryPhoneme.index).offset ?? 0;
             _lastPushedOffset = _dragInitialOffset;
 
+            StartDragAnimation(1.0);
             e.Pointer.Capture(this);
             e.Handled = true;
             DocManager.Inst.StartUndoGroup();
@@ -277,9 +353,9 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         {
             _isDraggingBoundary = false;
             _draggingPhoneme = null;
+            StartDragAnimation(0.0);
             DocManager.Inst.EndUndoGroup();
             e.Pointer.Capture(null);
-            InvalidateVisual();
             e.Handled = true;
         }
     }
@@ -291,8 +367,8 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         {
             _isDraggingBoundary = false;
             _draggingPhoneme = null;
+            StartDragAnimation(0.0);
             DocManager.Inst.EndUndoGroup();
-            InvalidateVisual();
         }
     }
 

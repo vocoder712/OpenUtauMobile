@@ -641,7 +641,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         });
 
         // 加载音素面板偏好
-        PhonemePanelHeight = Math.Clamp(OpenUtau.Core.Util.Preferences.Default.PhonemePanelHeight, 36.0, 400.0);
+        PhonemePanelHeight = Math.Max(0.0, OpenUtau.Core.Util.Preferences.Default.PhonemePanelHeight);
         PhonemePanelMode = (PhonemePanelMode)Math.Clamp(OpenUtau.Core.Util.Preferences.Default.PhonemePanelMode, 0, 3);
         PrimaryExpressionKey = string.IsNullOrEmpty(OpenUtau.Core.Util.Preferences.Default.PrimaryExpressionKey)
             ? "vel"

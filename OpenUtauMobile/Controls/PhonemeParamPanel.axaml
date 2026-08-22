@@ -54,12 +54,12 @@
                 SecondaryKey="{Binding SecondaryExpressionKey}"
                 IsEraseMode="{Binding IsParameterEraseMode}" />
 
-            <!-- 右下角悬浮模式切换胶囊（彻底与上方分割条手柄隔离） -->
+            <!-- 右上角悬浮模式切换胶囊（留有顶部安全边距避开上方分割手柄） -->
             <c:PhonemePanelModeSwitcher
                 ZIndex="10"
                 HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Margin="0,0,10,10"
+                VerticalAlignment="Top"
+                Margin="0,16,10,0"
                 CurrentMode="{Binding PhonemePanelMode, Mode=TwoWay}" />
         </Panel>
     </Grid>

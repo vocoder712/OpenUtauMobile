@@ -8,6 +8,7 @@ using Avalonia.Media.TextFormatting;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
 
@@ -83,21 +84,54 @@ public class ParameterCanvas : Control, ICmdSubscriber
     private readonly Geometry _pointGeometry = new EllipseGeometry(new Rect(-3.0, -3.0, 6.0, 6.0));
     private readonly Geometry _circleGeometry = new EllipseGeometry(new Rect(-4.0, -4.0, 8.0, 8.0));
 
+    private PianoRollViewModel? _viewModel;
+    private PianoRollViewModel? ViewModel => _viewModel ?? (DataContext as PianoRollViewModel);
+
     public ParameterCanvas()
     {
         ClipToBounds = true;
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+        }
+
+        _viewModel = DataContext as PianoRollViewModel;
+
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        if (DataContext is PianoRollViewModel vm)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+            }
+            _viewModel = vm;
+            _viewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+            _viewModel = null;
+        }
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)

@@ -1,110 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -1438,25 +1379,25 @@
     <value>Готово</value>
   </data>
   <data name="BatchEdit.Title" xml:space="preserve">
-    <value>Batch edit</value>
+    <value>Пакетное редактирование</value>
   </data>
   <data name="BatchEdit.Tab.Lyrics" xml:space="preserve">
-    <value>Lyrics</value>
+    <value>Текст</value>
   </data>
   <data name="BatchEdit.Tab.Notes" xml:space="preserve">
-    <value>Notes</value>
+    <value>Ноты</value>
   </data>
   <data name="BatchEdit.Tab.Reset" xml:space="preserve">
-    <value>Reset</value>
+    <value>Сброс</value>
   </data>
   <data name="BatchEdit.Scope.Selected" xml:space="preserve">
-    <value>{0} selected notes</value>
+    <value>Выбранные ноты ({0})</value>
   </data>
   <data name="BatchEdit.Scope.Part" xml:space="preserve">
-    <value>All {0} notes in the current part</value>
+    <value>Все ноты текущей партии ({0})</value>
   </data>
   <data name="BatchEdit.Run" xml:space="preserve">
-    <value>Run</value>
+    <value>Выполнить</value>
   </data>
   <data name="BatchEdit.Pin" xml:space="preserve">
     <value>Закрепить</value>
@@ -1468,201 +1409,252 @@
     <value>Закреплённые</value>
   </data>
   <data name="BatchEdit.Confirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Подтвердить</value>
   </data>
   <data name="BatchEdit.Parameter.Lyric" xml:space="preserve">
-    <value>Lyric</value>
+    <value>Текст</value>
   </data>
   <data name="BatchEdit.Parameter.Semitones" xml:space="preserve">
-    <value>Semitones</value>
+    <value>Полутоны</value>
   </data>
   <data name="BatchEdit.Parameter.Ticks" xml:space="preserve">
-    <value>Ticks</value>
+    <value>Тики</value>
   </data>
   <data name="BatchEdit.Parameter.Ratio" xml:space="preserve">
-    <value>Ratio (0–1)</value>
+    <value>Коэффициент (0–1)</value>
   </data>
   <data name="BatchEdit.Parameter.Cents" xml:space="preserve">
-    <value>Maximum cents</value>
+    <value>Макс. центы</value>
   </data>
   <data name="BatchEdit.Validation.Required" xml:space="preserve">
-    <value>Enter a value.</value>
+    <value>Введите значение.</value>
   </data>
   <data name="BatchEdit.Validation.Number" xml:space="preserve">
-    <value>Enter a valid number in the allowed range.</value>
+    <value>Введите корректное число в допустимом диапазоне.</value>
   </data>
   <data name="BatchEdit.Validation.Confirm" xml:space="preserve">
-    <value>This operation changes or resets note data. Select Confirm to continue.</value>
+    <value>Эта операция изменяет или сбрасывает данные нот. Нажмите «Подтвердить» для продолжения.</value>
   </data>
   <data name="BatchEdit.Status.Running" xml:space="preserve">
-    <value>Running {0}…</value>
+    <value>Выполнение «{0}»…</value>
   </data>
   <data name="BatchEdit.Status.Progress" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
   <data name="BatchEdit.Status.Completed" xml:space="preserve">
-    <value>Completed {0}.</value>
+    <value>Действие «{0}» завершено.</value>
   </data>
   <data name="BatchEdit.Status.Cancelled" xml:space="preserve">
-    <value>Operation cancelled.</value>
+    <value>Операция отменена.</value>
   </data>
   <data name="BatchEdit.Status.Failed" xml:space="preserve">
-    <value>{0} failed.</value>
+    <value>Ошибка выполнения «{0}».</value>
   </data>
   <data name="BatchEdit.Action.RomajiToHiragana" xml:space="preserve">
-    <value>Romaji to Hiragana</value>
+    <value>Ромадзи в хирагану</value>
   </data>
   <data name="BatchEdit.Action.HiraganaToRomaji" xml:space="preserve">
-    <value>Hiragana to Romaji</value>
+    <value>Хирагана в ромадзи</value>
   </data>
   <data name="BatchEdit.Action.JapaneseVcvToCv" xml:space="preserve">
-    <value>Japanese VCV to CV</value>
+    <value>Японский VCV в CV</value>
   </data>
   <data name="BatchEdit.Action.RemoveToneSuffix" xml:space="preserve">
-    <value>Remove tone suffix</value>
+    <value>Удалить суффикс тона</value>
   </data>
   <data name="BatchEdit.Action.RemoveLetterSuffix" xml:space="preserve">
-    <value>Remove letter suffix</value>
+    <value>Удалить буквенный суффикс</value>
   </data>
   <data name="BatchEdit.Action.MoveSuffixToVoiceColor" xml:space="preserve">
-    <value>Move suffix to voice color</value>
+    <value>Перенести суффикс в тембр (Voice Color)</value>
   </data>
   <data name="BatchEdit.Action.RemovePhoneticHint" xml:space="preserve">
-    <value>Remove phonetic hint</value>
+    <value>Удалить фонетическую подсказку</value>
   </data>
   <data name="BatchEdit.Action.DashToPlus" xml:space="preserve">
-    <value>Convert dash to plus</value>
+    <value>Заменить тире на плюс</value>
   </data>
   <data name="BatchEdit.Action.DashToPlusTilde" xml:space="preserve">
-    <value>Convert dash to plus-tilde</value>
+    <value>Заменить тире на плюс-тильду</value>
   </data>
   <data name="BatchEdit.Action.InsertSlur" xml:space="preserve">
-    <value>Insert slur</value>
+    <value>Вставить легато (Slur)</value>
   </data>
   <data name="BatchEdit.Action.AddTailNote" xml:space="preserve">
-    <value>Add tail note</value>
+    <value>Добавить хвостовую ноту</value>
   </data>
   <data name="BatchEdit.Action.RemoveTailNote" xml:space="preserve">
-    <value>Remove tail note</value>
+    <value>Удалить хвостовую ноту</value>
   </data>
   <data name="BatchEdit.Action.AddBreathNote" xml:space="preserve">
-    <value>Add breath note</value>
+    <value>Добавить ноту дыхания</value>
   </data>
   <data name="BatchEdit.Action.Transpose" xml:space="preserve">
-    <value>Transpose</value>
+    <value>Транспонировать</value>
   </data>
   <data name="BatchEdit.Action.Quantize" xml:space="preserve">
-    <value>Quantize notes</value>
+    <value>Квантование нот</value>
   </data>
   <data name="BatchEdit.Action.AutoLegato" xml:space="preserve">
-    <value>Auto legato</value>
+    <value>Авто-легато</value>
   </data>
   <data name="BatchEdit.Action.FixOverlap" xml:space="preserve">
-    <value>Fix overlapping notes</value>
+    <value>Исправить перекрытия нот</value>
   </data>
   <data name="BatchEdit.Action.CommonNoteCopy" xml:space="preserve">
-    <value>Copy as CommonNote</value>
+    <value>Копировать как CommonNote</value>
   </data>
   <data name="BatchEdit.Action.CommonNotePaste" xml:space="preserve">
-    <value>Paste CommonNote</value>
+    <value>Вставить CommonNote</value>
   </data>
   <data name="BatchEdit.Action.HanziToPinyin" xml:space="preserve">
-    <value>Hanzi to Pinyin</value>
+    <value>Иероглифы (Ханьцзы) в пиньинь</value>
   </data>
   <data name="BatchEdit.Action.LengthenCrossfade" xml:space="preserve">
-    <value>Lengthen crossfade</value>
+    <value>Увеличить кроссфейд</value>
   </data>
   <data name="BatchEdit.Action.RandomizeTiming" xml:space="preserve">
-    <value>Randomize timing</value>
+    <value>Случайный сдвиг времени</value>
   </data>
   <data name="BatchEdit.Action.RandomizePhonemeOffset" xml:space="preserve">
-    <value>Randomize phoneme offset</value>
+    <value>Случайный сдвиг фонем</value>
   </data>
   <data name="BatchEdit.Action.RandomizeTuning" xml:space="preserve">
-    <value>Randomize tuning</value>
+    <value>Случайный питч (расстройка)</value>
   </data>
   <data name="BatchEdit.Action.LoadRenderedPitch" xml:space="preserve">
-    <value>Load rendered pitch</value>
+    <value>Загрузить отрендеренный питч</value>
   </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
-    <value>Bake pitch</value>
+    <value>Запечь питч</value>
   </data>
   <data name="BatchEdit.Action.RefreshRealCurves" xml:space="preserve">
-    <value>Refresh rendered curves</value>
+    <value>Обновить отрендеренные кривые</value>
   </data>
   <data name="BatchEdit.Action.ResetPitchBends" xml:space="preserve">
-    <value>Reset pitch bends</value>
+    <value>Сбросить бенды высоты тона</value>
   </data>
   <data name="BatchEdit.Action.ResetExpressions" xml:space="preserve">
-    <value>Reset expressions</value>
+    <value>Сбросить выражения</value>
   </data>
   <data name="BatchEdit.Action.ClearVibratos" xml:space="preserve">
-    <value>Clear vibratos</value>
+    <value>Очистить вибрато</value>
   </data>
   <data name="BatchEdit.Action.ResetVibratos" xml:space="preserve">
-    <value>Reset vibratos</value>
+    <value>Сбросить вибрато</value>
   </data>
   <data name="BatchEdit.Action.ClearTimings" xml:space="preserve">
-    <value>Clear phoneme timings</value>
+    <value>Очистить тайминги фонем</value>
   </data>
   <data name="BatchEdit.Action.ResetAliases" xml:space="preserve">
-    <value>Reset phoneme aliases</value>
+    <value>Сбросить алиасы фонем</value>
   </data>
   <data name="BatchEdit.Action.ResetAll" xml:space="preserve">
-    <value>Reset all note data</value>
+    <value>Сбросить все данные нот</value>
   </data>
   <data name="BatchEdit.Validation.SelectionUnavailable" xml:space="preserve">
-    <value>The selected notes are no longer in the current part.</value>
+    <value>Выбранные ноты больше не находятся в текущей партии.</value>
   </data>
-  <data name="Settings.Render.PerformanceMonitor" xml:space="preserve"><value>Монитор производительности</value></data>
-  <data name="Settings.Render.PerformanceMonitor.Desc" xml:space="preserve"><value>Отображать использование ресурсов в реальном времени в правом верхнем углу.</value></data>
-  <data name="PerformanceMonitor.AppMemory" xml:space="preserve"><value>Память приложения</value></data>
-  <data name="PerformanceMonitor.ManagedHeap" xml:space="preserve"><value>Управляемая куча</value></data>
-  <data name="PerformanceMonitor.SystemMemory" xml:space="preserve"><value>Системная память</value></data>
-  <data name="PerformanceMonitor.Cpu" xml:space="preserve"><value>ЦП</value></data>
-  <data name="PerformanceMonitor.AppShort" xml:space="preserve"><value>Прил.</value></data>
-  <data name="PerformanceMonitor.SystemShort" xml:space="preserve"><value>Система</value></data>
-  <data name="PerformanceMonitor.Fps" xml:space="preserve"><value>FPS</value></data>
+  <data name="Settings.Render.PerformanceMonitor" xml:space="preserve">
+    <value>Монитор производительности</value>
+  </data>
+  <data name="Settings.Render.PerformanceMonitor.Desc" xml:space="preserve">
+    <value>Отображать использование ресурсов в реальном времени в правом верхнем углу.</value>
+  </data>
+  <data name="PerformanceMonitor.AppMemory" xml:space="preserve">
+    <value>Память приложения</value>
+  </data>
+  <data name="PerformanceMonitor.ManagedHeap" xml:space="preserve">
+    <value>Управляемая куча</value>
+  </data>
+  <data name="PerformanceMonitor.SystemMemory" xml:space="preserve">
+    <value>Системная память</value>
+  </data>
+  <data name="PerformanceMonitor.Cpu" xml:space="preserve">
+    <value>ЦП</value>
+  </data>
+  <data name="PerformanceMonitor.AppShort" xml:space="preserve">
+    <value>Прил.</value>
+  </data>
+  <data name="PerformanceMonitor.SystemShort" xml:space="preserve">
+    <value>Система</value>
+  </data>
+  <data name="PerformanceMonitor.Fps" xml:space="preserve">
+    <value>FPS (кадров/с)</value>
+  </data>
   <data name="PhonemePanel.EditMode.Switch" xml:space="preserve">
-    <value>Switch phoneme &amp; parameter edit mode</value>
+    <value>Переключить режим редактирования фонем и параметров</value>
   </data>
   <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
-    <value>Simple phoneme mode</value>
+    <value>Простой режим фонем</value>
   </data>
   <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
-    <value>Advanced phoneme mode</value>
+    <value>Продвинутый режим фонем</value>
   </data>
   <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
-    <value>Parameter draw mode</value>
+    <value>Режим рисования параметров</value>
   </data>
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
-    <value>Parameter erase mode</value>
+    <value>Режим ластика параметров</value>
   </data>
   <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
-    <value>Switched to simple phoneme mode</value>
+    <value>Переключено в простой режим фонем</value>
   </data>
   <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
-    <value>Switched to advanced phoneme mode</value>
+    <value>Переключено в продвинутый режим фонем</value>
   </data>
   <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
-    <value>Switched to parameter draw mode</value>
+    <value>Переключено в режим рисования параметров</value>
   </data>
   <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
-    <value>Switched to parameter erase mode</value>
+    <value>Переключено в режим ластика параметров</value>
   </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
-    <value>Primary parameter</value>
+    <value>Основной параметр</value>
   </data>
   <data name="PhonemePanel.Param.Secondary" xml:space="preserve">
-    <value>Background parameter</value>
+    <value>Фоновый параметр</value>
   </data>
   <data name="PhonemePanel.Param.Swap" xml:space="preserve">
-    <value>Swap primary &amp; background parameters</value>
+    <value>Поменять местами основной и фоновый параметры</value>
   </data>
   <data name="PhonemePanel.Param.None" xml:space="preserve">
-    <value>None</value>
+    <value>Нет</value>
   </data>
   <data name="PhonemePanel.Split.Tooltip" xml:space="preserve">
-    <value>Drag to resize phoneme/parameter panel</value>
+    <value>Потяните, чтобы изменить размер панели фонем и параметров</value>
+  </data>
+  <data name="PhonemeEdit.Title" xml:space="preserve">
+    <value>Изменить алиас фонемы</value>
+  </data>
+  <data name="PhonemeEdit.Watermark" xml:space="preserve">
+    <value>Алиас по умолчанию (оставьте пустым для авто)</value>
+  </data>
+  <data name="PhonemeEdit.Reset" xml:space="preserve">
+    <value>Сбросить</value>
+  </data>
+  <data name="PhonemeEdit.Info" xml:space="preserve">
+    <value>Нота: {0} | Фонема #{1}</value>
+  </data>
+  <data name="Settings.Appearance.Theme.System" xml:space="preserve">
+    <value>Как в системе</value>
+  </data>
+  <data name="Settings.Appearance.Theme.Light" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="Settings.Appearance.Theme.Dark" xml:space="preserve">
+    <value>Тёмная</value>
+  </data>
+  <data name="Settings.Appearance.ThemeColor" xml:space="preserve">
+    <value>Цвет темы</value>
+  </data>
+  <data name="Home.Recovery.OpenAction" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="Home.Recovery.Dismiss" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Editor.Action.Merge" xml:space="preserve">
+    <value>Объединить</value>
   </data>
 </root>

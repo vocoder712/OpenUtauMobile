@@ -470,7 +470,7 @@
                           ClipToBounds="False"
                           ZIndex="50"
                           Cursor="{x:Static local:ViewConstants.cursorSizeNS}"
-                          IsVisible="{Binding IsPhonemePanelVisible}"
+                          IsVisible="{Binding IsVoiceMode}"
                           x:Name="PhonemeSplitHandle"
                           ToolTip.Tip="{DynamicResource PhonemePanel.Split.Tooltip}">
                         <!-- 背景横向细分割线 -->

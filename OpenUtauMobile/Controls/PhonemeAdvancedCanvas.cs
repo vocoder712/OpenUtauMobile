@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
+using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
@@ -44,7 +45,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         set => SetValue(TickOffsetProperty, value);
     }
 
-    private PianoRollViewModel? ViewModel => DataContext as PianoRollViewModel;
+    private PianoRollViewModel? _viewModel;
+    private PianoRollViewModel? ViewModel => _viewModel ?? (DataContext as PianoRollViewModel);
 
     private enum AdvancedHandleType
     {
@@ -56,8 +58,17 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
     private AdvancedHandleType _activeHandleType = AdvancedHandleType.None;
     private UPhoneme? _activePhoneme;
+    private UPhoneme? _animatingTimingPhoneme;
     private double _dragStartPointerX;
     private float _initialDelta;
+
+    // 手柄展开动效状态
+    private DispatcherTimer? _animTimer;
+    private double _animProgress;
+    private double _animStartProgress;
+    private double _animTargetProgress;
+    private DateTime _animStartTime;
+    private const double AnimDurationMs = 130.0;
 
     // 双击检测
     private DateTime _lastClickTime = DateTime.MinValue;
@@ -77,16 +88,82 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         ClipToBounds = true;
     }
 
+    private void StartDragAnimation(double target)
+    {
+        _animStartProgress = _animProgress;
+        _animTargetProgress = target;
+        _animStartTime = DateTime.UtcNow;
+
+        if (_animTimer == null)
+        {
+            _animTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+            _animTimer.Tick += OnAnimTimerTick;
+        }
+        _animTimer.Start();
+    }
+
+    private void OnAnimTimerTick(object? sender, EventArgs e)
+    {
+        double elapsed = (DateTime.UtcNow - _animStartTime).TotalMilliseconds;
+        double t = Math.Clamp(elapsed / AnimDurationMs, 0.0, 1.0);
+        // CubicEaseOut
+        double eased = 1.0 - Math.Pow(1.0 - t, 3);
+        _animProgress = _animStartProgress + (_animTargetProgress - _animStartProgress) * eased;
+
+        InvalidateVisual();
+
+        if (t >= 1.0)
+        {
+            _animProgress = _animTargetProgress;
+            _animTimer?.Stop();
+            if (_animProgress <= 0.0 && _activeHandleType != AdvancedHandleType.TimingLine)
+            {
+                _animatingTimingPhoneme = null;
+            }
+        }
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+        }
+
+        _viewModel = DataContext as PianoRollViewModel;
+
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
+    }
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        if (DataContext is PianoRollViewModel vm)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+            }
+            _viewModel = vm;
+            _viewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
+        _animTimer?.Stop();
+        if (_viewModel != null)
+        {
+            _viewModel.RequestInvalidateVisual -= InvalidateVisual;
+            _viewModel = null;
+        }
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -155,7 +232,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             if (!phoneme.Error && phoneme.envelope.data.Count >= 5)
             {
                 double posMs = phoneme.PositionMs;
-                var timeAxis = DocManager.Inst.Project.timeAxis;
+                TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
 
                 double x0 = (timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[0].X) - TickOffset) * TickWidth;
                 double y0 = envelopeTopY + (1.0 - phoneme.envelope.data[0].Y / 100.0) * envelopeHeight;
@@ -204,8 +281,20 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
 
             // 3. 绘制垂直位置基准线
-            IPen linePen = phoneme.rawPosition != phoneme.position ? timingThickPen : timingPen;
-            context.DrawLine(linePen, new Point(posX, TopMargin + 2), new Point(posX, envelopeTopY + envelopeHeight + 2));
+            bool isModifiedTiming = phoneme.rawPosition != phoneme.position;
+            bool isAnimTarget = _animatingTimingPhoneme == phoneme && _animProgress > 0.001;
+            double progress = isAnimTarget ? _animProgress : 0.0;
+
+            double expansion = 6.0 * progress; // 拖拽时平滑上下延伸 6dp
+            double thicknessBonus = 1.2 * progress;
+            double lineThickness = (isModifiedTiming ? 3.0 : 1.5) + thicknessBonus;
+            IPen linePen = (isModifiedTiming || progress > 0.001)
+                ? ThemeResources.GetPen("Sem.Color.Primary", lineThickness)
+                : (isModifiedTiming ? timingThickPen : timingPen);
+
+            double lineTop = TopMargin + 2.0 - expansion;
+            double lineBottom = envelopeTopY + envelopeHeight + 2.0 + expansion;
+            context.DrawLine(linePen, new Point(posX, lineTop), new Point(posX, lineBottom));
 
             // 4. 绘制音素标签药丸框（置于顶部留白下方）
             string labelText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
@@ -245,6 +334,11 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         {
             _activeHandleType = hitType;
             _activePhoneme = hitPhoneme;
+            if (hitType == AdvancedHandleType.TimingLine)
+            {
+                _animatingTimingPhoneme = hitPhoneme;
+                StartDragAnimation(1.0);
+            }
             _dragStartPointerX = pos.X;
             UPhonemeOverride overrideData = hitPhoneme.Parent.GetPhonemeOverride(hitPhoneme.index);
 
@@ -322,6 +416,10 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         base.OnPointerReleased(e);
         if (_activeHandleType != AdvancedHandleType.None)
         {
+            if (_activeHandleType == AdvancedHandleType.TimingLine)
+            {
+                StartDragAnimation(0.0);
+            }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
             DocManager.Inst.EndUndoGroup();
@@ -336,6 +434,10 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         base.OnPointerCaptureLost(e);
         if (_activeHandleType != AdvancedHandleType.None)
         {
+            if (_activeHandleType == AdvancedHandleType.TimingLine)
+            {
+                StartDragAnimation(0.0);
+            }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
             DocManager.Inst.EndUndoGroup();
@@ -353,7 +455,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         double totalHeight = Bounds.Height;
         double envelopeTopY = TopMargin + LabelHeight + 4.0;
         double envelopeHeight = Math.Max(20.0, totalHeight - envelopeTopY - BottomMargin);
-        var timeAxis = DocManager.Inst.Project.timeAxis;
+        TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
 
         foreach (UPhoneme phoneme in Part.phonemes)
         {

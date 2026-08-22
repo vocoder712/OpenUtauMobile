@@ -534,6 +534,11 @@ public partial class EditorView : UserControl
     private double _phonemeSplitPressHeight;
     private double _phonemeHandleXOffset;
     private double _phonemeSplitPressXOffset;
+    private double _lastUncollapsedPhonemeHeight = 128.0;
+    private DateTime _lastPhonemeSplitClickTime = DateTime.MinValue;
+    private Point _lastPhonemeSplitClickPoint;
+    private const double PhonemeSplitDoubleClickMaxTimeMs = 350;
+    private const double PhonemeSplitDoubleClickMaxDistance = 24.0;
 
     private void OnPhonemeSplitHandlePointerPressed(object? sender, PointerPressedEventArgs e)
     {
@@ -542,11 +547,39 @@ public partial class EditorView : UserControl
             return;
         }
 
-        _phonemeSplitDragging = true;
         Point pos = e.GetPosition(this);
+
+        // 双击手柄快速折叠 / 展开
+        DateTime now = DateTime.UtcNow;
+        double elapsedMs = (now - _lastPhonemeSplitClickTime).TotalMilliseconds;
+        double dist = Math.Abs(pos.X - _lastPhonemeSplitClickPoint.X) + Math.Abs(pos.Y - _lastPhonemeSplitClickPoint.Y);
+        if (elapsedMs < PhonemeSplitDoubleClickMaxTimeMs && dist < PhonemeSplitDoubleClickMaxDistance)
+        {
+            if (vm.PianoRollViewModel.PhonemePanelHeight > 0)
+            {
+                _lastUncollapsedPhonemeHeight = vm.PianoRollViewModel.PhonemePanelHeight;
+                vm.PianoRollViewModel.PhonemePanelHeight = 0;
+            }
+            else
+            {
+                vm.PianoRollViewModel.PhonemePanelHeight = _lastUncollapsedPhonemeHeight > 30 ? _lastUncollapsedPhonemeHeight : 128.0;
+            }
+            _lastPhonemeSplitClickTime = DateTime.MinValue;
+            e.Handled = true;
+            return;
+        }
+
+        _lastPhonemeSplitClickTime = now;
+        _lastPhonemeSplitClickPoint = pos;
+
+        _phonemeSplitDragging = true;
         _phonemeSplitPressX = pos.X;
         _phonemeSplitPressY = pos.Y;
         _phonemeSplitPressHeight = vm.PianoRollViewModel.PhonemePanelHeight;
+        if (_phonemeSplitPressHeight > 30)
+        {
+            _lastUncollapsedPhonemeHeight = _phonemeSplitPressHeight;
+        }
         _phonemeSplitPressXOffset = _phonemeHandleXOffset;
         e.Pointer.Capture(PhonemeSplitHandle);
         e.Handled = true;
@@ -568,7 +601,25 @@ public partial class EditorView : UserControl
 
         Point currentPoint = e.GetPosition(this);
         double deltaY = _phonemeSplitPressY - currentPoint.Y;
-        double newHeight = Math.Clamp(_phonemeSplitPressHeight + deltaY, 36.0, 400.0);
+
+        double availableHeight = PART_PianoRollGrid.Bounds.Height > 0 ? PART_PianoRollGrid.Bounds.Height : Bounds.Height;
+        double maxPanelHeight = Math.Max(0, availableHeight - ViewConstants.PianoRollTickRulerHeight - 40.0);
+        if (maxPanelHeight <= 0)
+        {
+            maxPanelHeight = 2000.0;
+        }
+
+        double newHeight = Math.Clamp(_phonemeSplitPressHeight + deltaY, 0.0, maxPanelHeight);
+        if (newHeight < 16.0 && deltaY < 0)
+        {
+            newHeight = 0.0;
+        }
+
+        if (newHeight > 30)
+        {
+            _lastUncollapsedPhonemeHeight = newHeight;
+        }
+
         vm.PianoRollViewModel.PhonemePanelHeight = newHeight;
 
         // 水平滑动药丸手柄位置
