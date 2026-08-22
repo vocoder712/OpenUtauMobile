@@ -186,6 +186,33 @@ public class NotesCanvas : Control, ICmdSubscriber
 
             RenderNoteBody(note, context, brush); // 主体
         }
+        
+        // ———— 绘制边框和调整音符长度手柄 ————
+        foreach (UNote note in Part.notes)
+        {
+            bool isSelected = ViewModel.SelectedNotes.Contains(note);
+            // 定位
+            Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
+            Size size = ViewModel.TickToneToSize(note.duration, 1);
+            Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
+            // 圆角矩形
+            Rect rect = new(leftTop, rightBottom);
+            RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
+            // 边框：表示选中状态
+            IPen borderPen = isSelected
+                ? ThemeResources.GetPen("Sem.Color.Primary", 1.5)
+                : ThemeResources.GetPen("Sem.Color.OutlineVariant", 0.5);
+            context.DrawRectangle(null, borderPen, roundedRect);
+            
+            if ((ViewModel.EditMode != PianoRollEditMode.MultiSelect &&
+                 ViewModel.EditMode != PianoRollEditMode.Note) ||
+                 !isSelected) // 仅在可直接移动或缩放音符的模式中显示 resize 手柄。
+            {
+                continue;
+            }
+
+            DrawNoteResizeHandle(context, rect);
+        }
 
         // ———— 绘制最终音高线 ————
         RenderFinalPitch(leftTick, rightTick, context);
@@ -218,33 +245,6 @@ public class NotesCanvas : Control, ICmdSubscriber
             ViewModel.GetActiveVibratoOverlayLayout() is { } vibratoLayout)
         {
             RenderVibratoOverlay(vibratoLayout, context);
-        }
-        
-        // ———— 绘制边框和调整音符长度手柄 ————
-        foreach (UNote note in Part.notes)
-        {
-            bool isSelected = ViewModel.SelectedNotes.Contains(note);
-            // 定位
-            Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
-            Size size = ViewModel.TickToneToSize(note.duration, 1);
-            Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
-            // 圆角矩形
-            Rect rect = new(leftTop, rightBottom);
-            RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
-            // 边框：表示选中状态
-            IPen borderPen = isSelected
-                ? ThemeResources.GetPen("Sem.Color.Primary", 1.5)
-                : ThemeResources.GetPen("Sem.Color.OutlineVariant", 0.5);
-            context.DrawRectangle(null, borderPen, roundedRect);
-            
-            if ((ViewModel.EditMode != PianoRollEditMode.MultiSelect &&
-                 ViewModel.EditMode != PianoRollEditMode.Note) ||
-                 !isSelected) // 仅在可直接移动或缩放音符的模式中显示 resize 手柄。
-            {
-                continue;
-            }
-
-            DrawNoteResizeHandle(context, rect);
         }
 
         // ———— 绘制遮罩 ————
