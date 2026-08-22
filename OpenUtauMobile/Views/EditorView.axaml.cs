@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
@@ -41,6 +41,11 @@ public partial class EditorView : UserControl
         SplitDragHandle.PointerMoved += OnSplitHandlePointerMoved;
         SplitDragHandle.PointerReleased += OnSplitHandlePointerReleased;
         SplitDragHandle.PointerCaptureLost += OnSplitHandlePointerCaptureLost;
+
+        PhonemeSplitHandle.PointerPressed += OnPhonemeSplitHandlePointerPressed;
+        PhonemeSplitHandle.PointerMoved += OnPhonemeSplitHandlePointerMoved;
+        PhonemeSplitHandle.PointerReleased += OnPhonemeSplitHandlePointerReleased;
+        PhonemeSplitHandle.PointerCaptureLost += OnPhonemeSplitHandlePointerCaptureLost;
         AttachedToVisualTree += (_, _) => InitializeResponsiveLayout();
 
         // 初始化轨道头列宽动画
@@ -517,6 +522,86 @@ public partial class EditorView : UserControl
     private void OnSplitHandlePointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
         ResetSplitDragState();
+    }
+
+    #endregion
+
+    #region 音素与参数面板分割手势
+
+    private bool _phonemeSplitDragging;
+    private double _phonemeSplitPressX;
+    private double _phonemeSplitPressY;
+    private double _phonemeSplitPressHeight;
+    private double _phonemeHandleXOffset;
+    private double _phonemeSplitPressXOffset;
+
+    private void OnPhonemeSplitHandlePointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (DataContext is not EditorViewModel vm || !e.GetCurrentPoint(PhonemeSplitHandle).Properties.IsLeftButtonPressed)
+        {
+            return;
+        }
+
+        Point pos = e.GetPosition(this);
+
+        _phonemeSplitDragging = true;
+        _phonemeSplitPressX = pos.X;
+        _phonemeSplitPressY = pos.Y;
+        _phonemeSplitPressHeight = vm.PianoRollViewModel.PhonemePanelHeight;
+        _phonemeSplitPressXOffset = _phonemeHandleXOffset;
+        e.Pointer.Capture(PhonemeSplitHandle);
+        e.Handled = true;
+    }
+
+    private void OnPhonemeSplitHandlePointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_phonemeSplitDragging || DataContext is not EditorViewModel vm)
+        {
+            return;
+        }
+
+        if (!e.GetCurrentPoint(null).Properties.IsLeftButtonPressed)
+        {
+            e.Pointer.Capture(null);
+            _phonemeSplitDragging = false;
+            return;
+        }
+
+        Point currentPoint = e.GetPosition(this);
+        double deltaY = _phonemeSplitPressY - currentPoint.Y;
+
+        double availableHeight = PART_PianoRollGrid.Bounds.Height > 0 ? PART_PianoRollGrid.Bounds.Height : Bounds.Height;
+        double maxPanelHeight = Math.Max(0, availableHeight - ViewConstants.PianoRollTickRulerHeight - 40.0);
+        if (maxPanelHeight <= 0)
+        {
+            maxPanelHeight = 2000.0;
+        }
+
+        double newHeight = Math.Clamp(_phonemeSplitPressHeight + deltaY, 0.0, maxPanelHeight);
+        vm.PianoRollViewModel.PhonemePanelHeight = newHeight;
+
+        // 水平滑动药丸手柄位置
+        double deltaX = currentPoint.X - _phonemeSplitPressX;
+        double maxOffset = Math.Max(10.0, (Bounds.Width - ViewConstants.EditorSplitHandleWidth) * 0.5 - 50.0);
+        _phonemeHandleXOffset = Math.Clamp(_phonemeSplitPressXOffset + deltaX, -maxOffset, maxOffset);
+        PhonemeSplitHandlePill.RenderTransform = new TranslateTransform(_phonemeHandleXOffset, 0);
+
+        e.Handled = true;
+    }
+
+    private void OnPhonemeSplitHandlePointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (_phonemeSplitDragging)
+        {
+            _phonemeSplitDragging = false;
+            e.Pointer.Capture(null);
+            e.Handled = true;
+        }
+    }
+
+    private void OnPhonemeSplitHandlePointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    {
+        _phonemeSplitDragging = false;
     }
 
     #endregion

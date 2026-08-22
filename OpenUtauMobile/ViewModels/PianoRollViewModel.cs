@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -28,6 +28,17 @@ using Point = Avalonia.Point;
 using Size = Avalonia.Size;
 
 namespace OpenUtauMobile.ViewModels;
+
+/// <summary>
+/// 音素与参数面板编辑模式
+/// </summary>
+public enum PhonemePanelMode
+{
+    PhonemeSimple, // 简易音素 (SynthV 风格块状)
+    PhonemeAdvanced, // 高级音素 (OpenUtau 风格包络与控制点)
+    ParameterDraw, // 参数绘制
+    ParameterErase // 参数擦除
+}
 
 /// <summary>
 /// 钢琴卷帘编辑模式
@@ -234,6 +245,62 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     [Reactive]
     public bool IsSelecting { get; private set; }
+
+    // ── 音素与参数面板属性 ────────────────────────────
+    [Reactive] public PhonemePanelMode PhonemePanelMode { get; set; } = PhonemePanelMode.PhonemeSimple;
+    [Reactive] public double PhonemePanelHeight { get; set; } = 128;
+    [Reactive] public string PrimaryExpressionKey { get; set; } = "vel";
+    [Reactive] public string SecondaryExpressionKey { get; set; } = string.Empty;
+
+    public bool IsPhonemeSimpleMode => PhonemePanelMode == PhonemePanelMode.PhonemeSimple;
+    public bool IsPhonemeAdvancedMode => PhonemePanelMode == PhonemePanelMode.PhonemeAdvanced;
+    public bool IsParameterDrawMode => PhonemePanelMode == PhonemePanelMode.ParameterDraw;
+    public bool IsParameterEraseMode => PhonemePanelMode == PhonemePanelMode.ParameterErase;
+    public bool IsParameterMode => PhonemePanelMode == PhonemePanelMode.ParameterDraw || PhonemePanelMode == PhonemePanelMode.ParameterErase;
+    public bool IsPhonemePanelVisible => IsVoiceMode && PhonemePanelHeight > 0;
+
+    public ObservableCollectionExtended<ExpressionOption> AvailableExpressions { get; init; } = [];
+    public ObservableCollectionExtended<ExpressionOption> AvailableSecondaryExpressions { get; init; } = [];
+
+    public string PrimaryExpressionDisplayName
+    {
+        get
+        {
+            ExpressionOption? opt = AvailableExpressions.FirstOrDefault(x => x.Key == PrimaryExpressionKey);
+            if (opt != null)
+            {
+                return opt.DisplayName;
+            }
+            return string.IsNullOrEmpty(PrimaryExpressionKey) ? string.Empty : PrimaryExpressionKey.ToUpperInvariant();
+        }
+    }
+
+    public string SecondaryExpressionDisplayName
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(SecondaryExpressionKey))
+            {
+                return L.S("PhonemePanel.Param.None");
+            }
+            ExpressionOption? opt = AvailableSecondaryExpressions.FirstOrDefault(x => x.Key == SecondaryExpressionKey);
+            if (opt != null)
+            {
+                return opt.DisplayName;
+            }
+            return SecondaryExpressionKey.ToUpperInvariant();
+        }
+    }
+
+    public UExpressionDescriptor? PrimaryExpressionDescriptor =>
+        AvailableExpressions.FirstOrDefault(x => x.Key == PrimaryExpressionKey)?.Descriptor;
+
+    public UExpressionDescriptor? SecondaryExpressionDescriptor =>
+        AvailableSecondaryExpressions.FirstOrDefault(x => x.Key == SecondaryExpressionKey)?.Descriptor;
+
+    public System.Windows.Input.ICommand SwapExpressionsCommand { get; }
+    public System.Windows.Input.ICommand SelectPrimaryExpressionCommand { get; }
+    public System.Windows.Input.ICommand SelectSecondaryExpressionCommand { get; }
 
     #endregion
 
@@ -477,6 +544,91 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     public event Action<UVoicePart, int>? RequestEditLyric;
 
+    public void RaiseRequestEditLyric(UVoicePart part, int noteIndex)
+    {
+        RequestEditLyric?.Invoke(part, noteIndex);
+    }
+
+    /// <summary>
+    /// 请求打开音素别名编辑弹窗。
+    /// 参数：(EditingVoicePart, 所属音符 UNote, 音素索引 index)
+    /// </summary>
+    public event Action<UVoicePart, UNote, int>? RequestEditPhoneme;
+
+    public void RaiseRequestEditPhoneme(UVoicePart part, UNote note, int phonemeIndex)
+    {
+        RequestEditPhoneme?.Invoke(part, note, phonemeIndex);
+    }
+
+    public void SwapExpressions()
+    {
+        if (string.IsNullOrEmpty(SecondaryExpressionKey) || SecondaryExpressionKey == PrimaryExpressionKey)
+        {
+            return;
+        }
+
+        string temp = PrimaryExpressionKey;
+        PrimaryExpressionKey = SecondaryExpressionKey;
+        SecondaryExpressionKey = temp;
+        this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
+        this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
+    }
+
+    public void RefreshAvailableExpressions()
+    {
+        AvailableExpressions.Clear();
+        AvailableSecondaryExpressions.Clear();
+
+        UProject? project = DocManager.Inst.Project;
+        if (project == null)
+        {
+            return;
+        }
+
+        List<UExpressionDescriptor> list = new();
+        UTrack? track = null;
+        if (EditingVoicePart != null && EditingVoicePart.trackNo >= 0 && EditingVoicePart.trackNo < project.tracks.Count)
+        {
+            track = project.tracks[EditingVoicePart.trackNo];
+        }
+
+        if (track != null)
+        {
+            list = track.GetSupportedExps(project);
+        }
+
+        if (list.Count == 0)
+        {
+            foreach (KeyValuePair<string, UExpressionDescriptor> pair in project.expressions)
+            {
+                list.Add(pair.Value);
+            }
+        }
+
+        foreach (UExpressionDescriptor desc in list)
+        {
+            string disp = string.IsNullOrWhiteSpace(desc.abbr) ? (desc.name ?? string.Empty) : desc.abbr.ToUpperInvariant();
+            AvailableExpressions.Add(new ExpressionOption(desc.abbr, disp, desc));
+        }
+
+        AvailableSecondaryExpressions.Add(new ExpressionOption(string.Empty, L.S("PhonemePanel.Param.None"), null));
+        foreach (UExpressionDescriptor desc in list)
+        {
+            string disp = string.IsNullOrWhiteSpace(desc.abbr) ? (desc.name ?? string.Empty) : desc.abbr.ToUpperInvariant();
+            AvailableSecondaryExpressions.Add(new ExpressionOption(desc.abbr, disp, desc));
+        }
+
+        if (!AvailableExpressions.Any(x => x.Key == PrimaryExpressionKey))
+        {
+            PrimaryExpressionKey = AvailableExpressions.FirstOrDefault()?.Key ?? "vel";
+        }
+
+        this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
+        this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
+        this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
+        this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
+    }
+
     // 拆分放大镜事件
     public event Action<Point>? RequestMagnifierOpen;
     public event Action<Point>? RequestMagnifierUpdate;
@@ -488,6 +640,23 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     {
         _toneTimer = new DispatcherTimer();
         _toneTimer.Tick += (_, _) => { StopPreviewTone(); };
+
+        IObservable<bool> canSwap = this.WhenAnyValue(x => x.SecondaryExpressionKey, key => !string.IsNullOrEmpty(key));
+        SwapExpressionsCommand = ReactiveCommand.Create(SwapExpressions, canSwap);
+        SelectPrimaryExpressionCommand = ReactiveCommand.Create<ExpressionOption>(opt =>
+        {
+            if (opt != null && !string.IsNullOrEmpty(opt.Key))
+            {
+                PrimaryExpressionKey = opt.Key;
+            }
+        });
+        SelectSecondaryExpressionCommand = ReactiveCommand.Create<ExpressionOption>(opt =>
+        {
+            if (opt != null)
+            {
+                SecondaryExpressionKey = opt.Key;
+            }
+        });
 
         DocManager.Inst.AddSubscriber(this);
 
@@ -525,9 +694,58 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             .Subscribe(_ =>
             {
                 this.RaisePropertyChanged(nameof(IsVoiceMode));
+                this.RaisePropertyChanged(nameof(IsPhonemePanelVisible));
+                RefreshAvailableExpressions();
                 InvalidateMaxOffsets();
                 ApplyViewportLimits();
                 var __ = UpdatePortraitAsync(); // 更新立绘
+            })
+            .DisposeWith(_disposables);
+
+        // 音素面板高度变化监听
+        this.WhenAnyValue(x => x.PhonemePanelHeight)
+            .Subscribe(_ =>
+            {
+                this.RaisePropertyChanged(nameof(IsPhonemePanelVisible));
+            })
+            .DisposeWith(_disposables);
+
+        // 音素面板模式切换监听
+        this.WhenAnyValue(x => x.PhonemePanelMode)
+            .Subscribe(mode =>
+            {
+                this.RaisePropertyChanged(nameof(IsPhonemeSimpleMode));
+                this.RaisePropertyChanged(nameof(IsPhonemeAdvancedMode));
+                this.RaisePropertyChanged(nameof(IsParameterDrawMode));
+                this.RaisePropertyChanged(nameof(IsParameterEraseMode));
+                this.RaisePropertyChanged(nameof(IsParameterMode));
+
+                switch (mode)
+                {
+                    case PhonemePanelMode.PhonemeSimple:
+                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Simple"));
+                        break;
+                    case PhonemePanelMode.PhonemeAdvanced:
+                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Advanced"));
+                        break;
+                    case PhonemePanelMode.ParameterDraw:
+                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Draw"));
+                        break;
+                    case PhonemePanelMode.ParameterErase:
+                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Erase"));
+                        break;
+                }
+            })
+            .DisposeWith(_disposables);
+
+        // 参数选择变更监听
+        this.WhenAnyValue(x => x.PrimaryExpressionKey, x => x.SecondaryExpressionKey)
+            .Subscribe(_ =>
+            {
+                this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
+                this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
+                this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
+                this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
             })
             .DisposeWith(_disposables);
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1648,4 +1648,58 @@
   <data name="PerformanceMonitor.AppShort" xml:space="preserve"><value>应用</value></data>
   <data name="PerformanceMonitor.SystemShort" xml:space="preserve"><value>系统</value></data>
   <data name="PerformanceMonitor.Fps" xml:space="preserve"><value>帧率</value></data>
+  <data name="PhonemePanel.EditMode.Switch" xml:space="preserve">
+    <value>切换音素与参数编辑模式</value>
+  </data>
+  <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
+    <value>简易音素模式</value>
+  </data>
+  <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
+    <value>高级音素模式</value>
+  </data>
+  <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
+    <value>参数绘制模式</value>
+  </data>
+  <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
+    <value>参数擦除模式</value>
+  </data>
+  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
+    <value>简易音素模式</value>
+  </data>
+  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
+    <value>高级音素模式</value>
+  </data>
+  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
+    <value>参数绘制模式</value>
+  </data>
+  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
+    <value>参数擦除模式</value>
+  </data>
+  <data name="PhonemePanel.Param.Primary" xml:space="preserve">
+    <value>主编辑参数</value>
+  </data>
+  <data name="PhonemePanel.Param.Secondary" xml:space="preserve">
+    <value>背景参考参数</value>
+  </data>
+  <data name="PhonemePanel.Param.Swap" xml:space="preserve">
+    <value>交换主/次参数</value>
+  </data>
+  <data name="PhonemePanel.Param.None" xml:space="preserve">
+    <value>无</value>
+  </data>
+  <data name="PhonemePanel.Split.Tooltip" xml:space="preserve">
+    <value>拖动调节音素与参数面板高度</value>
+  </data>
+  <data name="PhonemeEdit.Title" xml:space="preserve">
+    <value>编辑音素别名</value>
+  </data>
+  <data name="PhonemeEdit.Watermark" xml:space="preserve">
+    <value>默认别名（留空以恢复默认）</value>
+  </data>
+  <data name="PhonemeEdit.Reset" xml:space="preserve">
+    <value>恢复默认</value>
+  </data>
+  <data name="PhonemeEdit.Info" xml:space="preserve">
+    <value>音符: {0} | 音素 #{1}</value>
+  </data>
 </root>

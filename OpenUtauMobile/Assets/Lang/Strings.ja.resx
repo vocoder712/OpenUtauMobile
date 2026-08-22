@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1641,4 +1641,58 @@
   <data name="PerformanceMonitor.AppShort" xml:space="preserve"><value>アプリ</value></data>
   <data name="PerformanceMonitor.SystemShort" xml:space="preserve"><value>システム</value></data>
   <data name="PerformanceMonitor.Fps" xml:space="preserve"><value>FPS</value></data>
+  <data name="PhonemePanel.EditMode.Switch" xml:space="preserve">
+    <value>音素・パラメータ編集モードの切替</value>
+  </data>
+  <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
+    <value>シンプル音素モード</value>
+  </data>
+  <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
+    <value>詳細音素モード</value>
+  </data>
+  <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
+    <value>パラメータ描画モード</value>
+  </data>
+  <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
+    <value>パラメータ消しゴムモード</value>
+  </data>
+  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
+    <value>シンプル音素モード</value>
+  </data>
+  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
+    <value>詳細音素モード</value>
+  </data>
+  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
+    <value>パラメータ描画モード</value>
+  </data>
+  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
+    <value>パラメータ消しゴムモード</value>
+  </data>
+  <data name="PhonemePanel.Param.Primary" xml:space="preserve">
+    <value>主パラメータ</value>
+  </data>
+  <data name="PhonemePanel.Param.Secondary" xml:space="preserve">
+    <value>背景パラメータ</value>
+  </data>
+  <data name="PhonemePanel.Param.Swap" xml:space="preserve">
+    <value>主/背景パラメータの入れ替え</value>
+  </data>
+  <data name="PhonemePanel.Param.None" xml:space="preserve">
+    <value>なし</value>
+  </data>
+  <data name="PhonemePanel.Split.Tooltip" xml:space="preserve">
+    <value>ドラッグしてパネル高さを調整</value>
+  </data>
+  <data name="PhonemeEdit.Title" xml:space="preserve">
+    <value>音素エイリアスの編集</value>
+  </data>
+  <data name="PhonemeEdit.Watermark" xml:space="preserve">
+    <value>デフォルト（空欄で自動）</value>
+  </data>
+  <data name="PhonemeEdit.Reset" xml:space="preserve">
+    <value>初期化</value>
+  </data>
+  <data name="PhonemeEdit.Info" xml:space="preserve">
+    <value>ノート: {0} | 音素 #{1}</value>
+  </data>
 </root>

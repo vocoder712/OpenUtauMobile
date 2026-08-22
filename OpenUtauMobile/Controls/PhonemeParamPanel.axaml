@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:local="clr-namespace:OpenUtauMobile"
+             xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             x:Class="OpenUtauMobile.Controls.PhonemeParamPanel"
+             x:DataType="vm:PianoRollViewModel">
+
+    <UserControl.Resources>
+        <tools:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{Binding Source={x:Static local:ViewConstants.PianoKeysWidth}, Converter={StaticResource DoubleToGridLengthConverter}}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- 左侧工具栏列（与上方钢琴键宽度对齐） -->
+        <Border Grid.Column="0"
+                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                BorderThickness="0,0,1,0">
+            <c:ParameterPanelToolbar IsVisible="{Binding IsParameterMode}"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch" />
+        </Border>
+
+        <!-- 右侧画布区 -->
+        <Panel Grid.Column="1" ClipToBounds="True">
+            <!-- 简易音素画布 -->
+            <c:PhonemeSimpleCanvas
+                IsVisible="{Binding IsPhonemeSimpleMode}"
+                Part="{Binding EditingVoicePart}"
+                TickWidth="{Binding TickWidth}"
+                TickOffset="{Binding TickOffset}" />
+
+            <!-- 高级音素画布 -->
+            <c:PhonemeAdvancedCanvas
+                IsVisible="{Binding IsPhonemeAdvancedMode}"
+                Part="{Binding EditingVoicePart}"
+                TickWidth="{Binding TickWidth}"
+                TickOffset="{Binding TickOffset}" />
+
+            <!-- 参数曲线/表情画布 -->
+            <c:ParameterCanvas
+                IsVisible="{Binding IsParameterMode}"
+                Part="{Binding EditingVoicePart}"
+                TickWidth="{Binding TickWidth}"
+                TickOffset="{Binding TickOffset}"
+                PrimaryKey="{Binding PrimaryExpressionKey}"
+                SecondaryKey="{Binding SecondaryExpressionKey}"
+                IsEraseMode="{Binding IsParameterEraseMode}" />
+
+            <!-- 右上角悬浮模式切换胶囊（留有顶部安全边距避开上方分割手柄） -->
+            <c:PhonemePanelModeSwitcher
+                ZIndex="10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,16,10,0"
+                CurrentMode="{Binding PhonemePanelMode, Mode=TwoWay}" />
+        </Panel>
+    </Grid>
+</UserControl>
