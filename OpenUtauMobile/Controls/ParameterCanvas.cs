@@ -219,9 +219,11 @@ public class ParameterCanvas : Control, ICmdSubscriber
         double usableHeight = Math.Max(16.0, canvasHeight - TopMargin - BottomMargin);
         double valueRange = descriptor.max - descriptor.min;
 
-        IPen linePen = isPrimary ? ThemeResources.GetPen("Sem.Color.Primary", 2.0) : ThemeResources.GetPen("Sem.Color.Secondary", 1.5);
-        IPen faintPen = ThemeResources.GetPen("Sem.Color.OutlineVariant", 1.0);
-        IBrush fillBrush = isPrimary ? ThemeResources.GetBrush("Sem.Color.Primary") : ThemeResources.GetBrush("Sem.Color.Secondary");
+        IPen primaryEditedPen = ThemeResources.GetPen("Sem.Color.Primary", 2.0); // 已编辑的主参数
+        IPen primaryDefaultPen = ThemeResources.GetPen("Sem.Color.Primary", 0.5); // 未编辑的主参数
+        IPen faintPen = ThemeResources.GetPen("Sem.Color.OutlineVariant"); // 参考线
+        IBrush fillBrush = isPrimary ? 
+            ThemeResources.GetBrush("Sem.Color.Primary") : ThemeResources.GetBrush("Sem.Color.Secondary");
 
         // ── 曲线类型 ─────────────────────────────────────────────────────────
         if (descriptor.type == UExpressionType.Curve)
@@ -229,45 +231,79 @@ public class ParameterCanvas : Control, ICmdSubscriber
             UCurve? curve = Part.curves.FirstOrDefault(c => c.descriptor == descriptor || c.abbr == descriptor.abbr);
             double defaultHeight = Math.Round(TopMargin + usableHeight * (1.0 - (descriptor.defaultValue - descriptor.min) / valueRange));
 
-            // 绘制默认值参考基线
-            context.DrawLine(faintPen, new Point(0, defaultHeight), new Point(Bounds.Width, defaultHeight));
+            // 仅正在编辑的参数绘制默认值参考基线
+            if (isPrimary)
+            {
+                context.DrawLine(faintPen, new Point(0, defaultHeight), new Point(Bounds.Width, defaultHeight));
+            }
 
+            // 没有任何编辑
             if (curve == null || curve.xs.Count == 0)
             {
-                context.DrawLine(linePen, new Point(0, defaultHeight), new Point(Bounds.Width, defaultHeight));
+                context.DrawLine(primaryDefaultPen, new Point(0, defaultHeight), new Point(Bounds.Width, defaultHeight));
                 return;
             }
 
-            int lTick = (int)Math.Floor(leftTick / 5) * 5;
-            int rTick = (int)Math.Ceiling(rightTick / 5) * 5;
+            int lTick = (int)Math.Floor(leftTick / 5) * 5; // 屏幕左边界
+            int rTick = (int)Math.Ceiling(rightTick / 5) * 5; // 屏幕右边界
 
-            int index = curve.xs.BinarySearch(lTick);
+            int index = curve.xs.BinarySearch(lTick); // 运气很好，屏幕左边缘恰好有一个点
             if (index < 0)
             {
-                index = ~index;
+                index = ~index; // 得到第一个大于 lTick 的曲线点索引
+                if (index == 0 && isPrimary)
+                {
+                    double firstCurveX = Math.Clamp(
+                        (curve.xs[0] - TickOffset) * TickWidth,
+                        0,
+                        Bounds.Width);
+                    context.DrawLine(
+                        primaryDefaultPen,
+                        new Point(0, defaultHeight),
+                        new Point(firstCurveX, defaultHeight));
+                }
             }
-            index = Math.Max(0, index - 1);
+            index = Math.Max(0, index - 1); // 向前移动一个其实索引，确保横跨左边界的曲线段也能被绘制
 
-            while (index < curve.xs.Count)
+            while (index < curve.xs.Count - 1)
             {
                 float tick1 = index < 0 ? lTick : curve.xs[index];
                 float val1 = index < 0 ? descriptor.defaultValue : curve.ys[index];
                 double x1 = (tick1 - TickOffset) * TickWidth;
                 double y1 = TopMargin + usableHeight * (1.0 - (val1 - descriptor.min) / valueRange);
 
-                float tick2 = index == curve.xs.Count - 1 ? rTick : curve.xs[index + 1];
-                float val2 = index == curve.xs.Count - 1 ? descriptor.defaultValue : curve.ys[index + 1];
+                float tick2 = index == curve.xs.Count - 1 ? 
+                    rTick : curve.xs[index + 1];
+                float val2 = index == curve.xs.Count - 1 ? 
+                    descriptor.defaultValue : curve.ys[index + 1];
                 double x2 = (tick2 - TickOffset) * TickWidth;
                 double y2 = TopMargin + usableHeight * (1.0 - (val2 - descriptor.min) / valueRange);
+                
+                bool overridden = curve.ys[index] != descriptor.defaultValue || curve.ys[index + 1] != descriptor.defaultValue; // 是否是默认值
 
-                context.DrawLine(linePen, new Point(x1, y1), new Point(x2, y2));
+                context.DrawLine(overridden ? primaryEditedPen : primaryDefaultPen, new Point(x1, y1), new Point(x2, y2));
 
                 index++;
-                if (tick2 >= rTick)
+                if (tick2 >= rTick) // 剪枝
                 {
                     break;
                 }
             }
+
+            // 绘制曲线末端的默认值延伸线
+            if (curve.xs[^1] >= rTick)
+            {
+                return;
+            }
+
+            double lastCurveX = Math.Clamp(
+                (curve.xs[^1] - TickOffset) * TickWidth,
+                0,
+                Bounds.Width);
+            context.DrawLine(
+                primaryDefaultPen,
+                new Point(lastCurveX, defaultHeight),
+                new Point(Bounds.Width, defaultHeight));
             return;
         }
 
@@ -300,12 +336,12 @@ public class ParameterCanvas : Control, ICmdSubscriber
                 double valY = Math.Round(TopMargin + usableHeight * (1.0 - (value - descriptor.min) / valueRange));
                 double zeroY = Math.Round(TopMargin + usableHeight * (1.0 - (0f - descriptor.min) / valueRange));
 
-                context.DrawLine(linePen, new Point(x1 + 0.5, zeroY), new Point(x1 + 0.5, valY));
-                context.DrawLine(linePen, new Point(x1, valY), new Point(Math.Max(x1 + 4.0, x2 - 2.0), valY));
+                context.DrawLine(primaryEditedPen, new Point(x1 + 0.5, zeroY), new Point(x1 + 0.5, valY));
+                context.DrawLine(primaryEditedPen, new Point(x1, valY), new Point(Math.Max(x1 + 4.0, x2 - 2.0), valY));
 
                 using (context.PushTransform(Matrix.CreateTranslation(x1 + 0.5, valY)))
                 {
-                    context.DrawGeometry(overridden ? fillBrush : Brushes.Transparent, linePen, _pointGeometry);
+                    context.DrawGeometry(overridden ? fillBrush : Brushes.Transparent, primaryEditedPen, _pointGeometry);
                 }
             }
             else if (descriptor.type == UExpressionType.Options && descriptor.options != null)
@@ -317,7 +353,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
                     {
                         if ((int)value == i)
                         {
-                            context.DrawGeometry(overridden ? fillBrush : Brushes.Transparent, linePen, _circleGeometry);
+                            context.DrawGeometry(overridden ? fillBrush : Brushes.Transparent, primaryEditedPen, _circleGeometry);
                         }
                         else
                         {
