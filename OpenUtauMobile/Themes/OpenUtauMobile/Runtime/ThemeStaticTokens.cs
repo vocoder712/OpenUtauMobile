@@ -205,6 +205,18 @@ public static class ThemeSemComponentTokens
     public static double SliderMinHeight => 48d;
 }
 
+public static class ThemeSemPhonemePanelTokens
+{
+    public static double ResetTargetHitSize => 72d;
+    public static double ResetTargetSize => 48d;
+    public static double ResetTargetActiveSize => 60d;
+    public static double ResetTargetBottomInset => ThemeBaseLayoutTokens.SpaceS;
+    public static double ResetTargetIconSize => ThemeBaseLayoutTokens.SpaceL;
+    public static double ResetTargetIconActiveSize => 30d;
+    public static double ResetTargetIconViewBoxSize => ThemeBaseLayoutTokens.SpaceL;
+    public static double ResetTargetIconStroke => 2d;
+}
+
 public static class ThemeSemTabItemTokens
 {
     public static double ContainerHeight => 48d;

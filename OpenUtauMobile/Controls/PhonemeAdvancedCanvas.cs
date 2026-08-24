@@ -59,6 +59,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private AdvancedHandleType _activeHandleType = AdvancedHandleType.None;
     private UPhoneme? _activePhoneme;
     private UPhoneme? _animatingTimingPhoneme;
+    private bool _isResetTargetActive;
     private double _dragStartPointerX;
     private float _initialDelta;
 
@@ -82,6 +83,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private const double BottomMargin = 8.0;    // 底部留白
 
     private readonly Geometry _handleGeometry = new EllipseGeometry(new Rect(-3.5, -3.5, 7.0, 7.0));
+    private static readonly StreamGeometry ResetIconGeometry = StreamGeometry.Parse(
+        "M7,8 L17,8 M9,8 L10,19 L14,19 L15,8 M10,5 L14,5 L15,8 L9,8 Z");
 
     public PhonemeAdvancedCanvas()
     {
@@ -316,6 +319,61 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                 }
             }
         }
+
+        if (_activeHandleType != AdvancedHandleType.None)
+        {
+            RenderResetTarget(context);
+        }
+    }
+
+    private void RenderResetTarget(DrawingContext context)
+    {
+        double targetSize = _isResetTargetActive
+            ? ThemeSemPhonemePanelTokens.ResetTargetActiveSize
+            : ThemeSemPhonemePanelTokens.ResetTargetSize;
+        Point center = GetResetTargetCenter();
+        IBrush backgroundBrush = ThemeResources.GetBrush(
+            _isResetTargetActive ? "Sem.Color.Error" : "Sem.Color.ErrorContainer");
+        IBrush iconBrush = ThemeResources.GetBrush(
+            _isResetTargetActive ? "Sem.Color.OnError" : "Sem.Color.OnErrorContainer");
+
+        context.DrawEllipse(backgroundBrush, null, center, targetSize * 0.5, targetSize * 0.5);
+
+        double iconSize = _isResetTargetActive
+            ? ThemeSemPhonemePanelTokens.ResetTargetIconActiveSize
+            : ThemeSemPhonemePanelTokens.ResetTargetIconSize;
+        double iconViewBoxSize = ThemeSemPhonemePanelTokens.ResetTargetIconViewBoxSize;
+        double iconScale = iconSize / iconViewBoxSize;
+        Matrix iconTransform = Matrix.CreateTranslation(-iconViewBoxSize * 0.5, -iconViewBoxSize * 0.5)
+            * Matrix.CreateScale(iconScale, iconScale)
+            * Matrix.CreateTranslation(center.X, center.Y);
+        using (context.PushTransform(iconTransform))
+        {
+            context.DrawGeometry(
+                null,
+                new Pen(iconBrush, ThemeSemPhonemePanelTokens.ResetTargetIconStroke),
+                ResetIconGeometry);
+        }
+    }
+
+    private Point GetResetTargetCenter()
+    {
+        double halfHitSize = ThemeSemPhonemePanelTokens.ResetTargetHitSize * 0.5;
+        return new Point(
+            Bounds.Width * 0.5,
+            Bounds.Height - ThemeSemPhonemePanelTokens.ResetTargetBottomInset - halfHitSize);
+    }
+
+    private bool IsInsideResetTarget(Point point)
+    {
+        double hitSize = ThemeSemPhonemePanelTokens.ResetTargetHitSize;
+        Point center = GetResetTargetCenter();
+        Rect hitRect = new(
+            center.X - hitSize * 0.5,
+            center.Y - hitSize * 0.5,
+            hitSize,
+            hitSize);
+        return hitRect.Contains(point);
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -336,6 +394,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         {
             _activeHandleType = hitType;
             _activePhoneme = hitPhoneme;
+            _isResetTargetActive = false;
             if (hitType == AdvancedHandleType.TimingLine)
             {
                 _animatingTimingPhoneme = hitPhoneme;
@@ -400,6 +459,23 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         }
 
         Point pos = e.GetPosition(this);
+        bool isInsideResetTarget = IsInsideResetTarget(pos);
+        if (_isResetTargetActive != isInsideResetTarget)
+        {
+            _isResetTargetActive = isInsideResetTarget;
+            InvalidateVisual();
+        }
+
+        if (_isResetTargetActive)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = "Release to reset parameter";
+            }
+            e.Handled = true;
+            return;
+        }
+
         double deltaPx = pos.X - _dragStartPointerX;
         double deltaTicks = deltaPx / TickWidth;
         double deltaMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.position + (int)deltaTicks)
@@ -445,12 +521,18 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         base.OnPointerReleased(e);
         if (_activeHandleType != AdvancedHandleType.None)
         {
+            _isResetTargetActive = IsInsideResetTarget(e.GetPosition(this));
+            if (_isResetTargetActive)
+            {
+                ResetActiveParameter();
+            }
             if (_activeHandleType == AdvancedHandleType.TimingLine)
             {
                 StartDragAnimation(0.0);
             }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
+            _isResetTargetActive = false;
             DocManager.Inst.EndUndoGroup();
             e.Pointer.Capture(null);
             if (ViewModel != null)
@@ -473,12 +555,37 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
+            _isResetTargetActive = false;
             DocManager.Inst.EndUndoGroup();
             if (ViewModel != null)
             {
                 ViewModel.EditingTip = string.Empty;
             }
             InvalidateVisual();
+        }
+    }
+
+    private void ResetActiveParameter()
+    {
+        if (Part == null || _activePhoneme?.Parent == null)
+        {
+            return;
+        }
+
+        switch (_activeHandleType)
+        {
+            case AdvancedHandleType.TimingLine:
+                DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(
+                    Part, _activePhoneme.Parent, _activePhoneme.index, 0));
+                break;
+            case AdvancedHandleType.Preutter:
+                DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(
+                    Part, _activePhoneme.Parent, _activePhoneme.index, 0));
+                break;
+            case AdvancedHandleType.Overlap:
+                DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(
+                    Part, _activePhoneme.Parent, _activePhoneme.index, 0));
+                break;
         }
     }
 

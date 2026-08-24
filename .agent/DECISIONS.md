@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-24
+- Decision: Show a bottom-center reset target while an advanced phoneme timing handle is captured; suspend value updates while the pointer is over it and reset only the active Offset, Preutter, or Overlap override when released there.
+- Rationale: A capture-scoped target keeps the touch gesture discoverable without permanently consuming panel space. Resetting with the existing typed commands keeps the change in the same undo group as the drag and preserves command validation and undo behavior.
+- Alternatives considered: Add permanent reset buttons for every phoneme; reset all timing fields together; cancel the whole drag by undoing intermediate commands.
+- Impacted areas: Advanced phoneme-panel handle dragging and semantic layout tokens. Core command behavior is unchanged.
+
+- Date: 2026-08-24
 - Decision: Reuse the editor's existing magnifier and unchanged `PART_PianoRollGrid` source for curve-parameter brush and eraser gestures, translating parameter-canvas pointer coordinates into that source's coordinate space at the view boundary.
 - Rationale: The magnifier already owns source sampling and pitch editing behavior. Forwarding only curve-parameter gesture lifecycle events avoids duplicating the control, preserves numerical/options editing behavior, and keeps coordinates accurate across responsive piano-roll and parameter-panel sizes.
 - Alternatives considered: Give the parameter panel a second magnifier; change the magnifier source to the parameter canvas; reuse pitch events while applying fixed row offsets.
