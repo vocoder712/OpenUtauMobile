@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
+using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
@@ -91,12 +92,23 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private const double BottomMargin = 8.0;    // 底部留白
 
     private readonly Geometry _handleGeometry = new EllipseGeometry(new Rect(-3.5, -3.5, 7.0, 7.0));
-    private static readonly StreamGeometry ResetIconGeometry = StreamGeometry.Parse(
-        "M7,8 L17,8 M9,8 L10,19 L14,19 L15,8 M10,5 L14,5 L15,8 L9,8 Z");
+    private readonly Geometry _resetIconGeometry;
+    private readonly SolidColorBrush _resetTargetBackgroundBrush = new(Colors.Transparent);
+    private readonly SolidColorBrush _resetTargetIconBrush = new(Colors.Transparent);
+    private Color _resetTargetIdleBackgroundColor;
+    private Color _resetTargetActiveBackgroundColor;
+    private Color _resetTargetIdleIconColor;
+    private Color _resetTargetActiveIconColor;
 
     public PhonemeAdvancedCanvas()
     {
         ClipToBounds = true;
+        PackIconPhosphorIcons resetIcon = new()
+        {
+            Kind = PackIconPhosphorIconsKind.ArrowCounterClockwise
+        };
+        _resetIconGeometry = resetIcon.Data
+            ?? throw new InvalidOperationException("Phosphor Trash icon geometry was not initialized.");
     }
 
     private void StartDragAnimation(double target)
@@ -363,7 +375,6 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
         }
 
-        // 如果当前有手柄被拖拽，则绘制重置目标（Reset Target）提示区
         if (_activeHandleType != AdvancedHandleType.None)
         {
             RenderResetTarget(context);
@@ -372,39 +383,40 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
     private void RenderResetTarget(DrawingContext context)
     {
+        double progress = _resetTargetAnimProgress;
         double targetSize = Interpolate(
             ThemeSemPhonemePanelTokens.ResetTargetSize,
             ThemeSemPhonemePanelTokens.ResetTargetActiveSize,
-            _resetTargetAnimProgress);
-        Point center = GetResetTargetCenter();
-        Color backgroundColor = InterpolateColor(
-            ThemeResources.GetColor("Sem.Color.ErrorContainer"),
-            ThemeResources.GetColor("Sem.Color.Error"),
-            _resetTargetAnimProgress);
-        Color iconColor = InterpolateColor(
-            ThemeResources.GetColor("Sem.Color.OnErrorContainer"),
-            ThemeResources.GetColor("Sem.Color.OnError"),
-            _resetTargetAnimProgress);
-        IBrush backgroundBrush = new SolidColorBrush(backgroundColor);
-        IBrush iconBrush = new SolidColorBrush(iconColor);
-
-        context.DrawEllipse(backgroundBrush, null, center, targetSize * 0.5, targetSize * 0.5);
-
+            progress);
         double iconSize = Interpolate(
             ThemeSemPhonemePanelTokens.ResetTargetIconSize,
             ThemeSemPhonemePanelTokens.ResetTargetIconActiveSize,
-            _resetTargetAnimProgress);
-        double iconViewBoxSize = ThemeSemPhonemePanelTokens.ResetTargetIconViewBoxSize;
-        double iconScale = iconSize / iconViewBoxSize;
-        Matrix iconTransform = Matrix.CreateTranslation(-iconViewBoxSize * 0.5, -iconViewBoxSize * 0.5)
+            progress);
+        Point center = GetResetTargetCenter();
+
+        _resetTargetBackgroundBrush.Color = InterpolateColor(
+            _resetTargetIdleBackgroundColor,
+            _resetTargetActiveBackgroundColor,
+            progress);
+        _resetTargetIconBrush.Color = InterpolateColor(
+            _resetTargetIdleIconColor,
+            _resetTargetActiveIconColor,
+            progress);
+        context.DrawEllipse(
+            _resetTargetBackgroundBrush,
+            null,
+            center,
+            targetSize * 0.5,
+            targetSize * 0.5);
+
+        Rect iconBounds = _resetIconGeometry.Bounds;
+        double iconScale = iconSize / Math.Max(iconBounds.Width, iconBounds.Height);
+        Matrix iconTransform = Matrix.CreateTranslation(-iconBounds.Center.X, -iconBounds.Center.Y)
             * Matrix.CreateScale(iconScale, iconScale)
             * Matrix.CreateTranslation(center.X, center.Y);
         using (context.PushTransform(iconTransform))
         {
-            context.DrawGeometry(
-                null,
-                new Pen(iconBrush, ThemeSemPhonemePanelTokens.ResetTargetIconStroke),
-                ResetIconGeometry);
+            context.DrawGeometry(_resetTargetIconBrush, null, _resetIconGeometry);
         }
     }
 
@@ -420,6 +432,14 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         byte green = (byte)Math.Round(Interpolate(from.G, to.G, progress));
         byte blue = (byte)Math.Round(Interpolate(from.B, to.B, progress));
         return Color.FromArgb(alpha, red, green, blue);
+    }
+
+    private void CacheResetTargetColors()
+    {
+        _resetTargetIdleBackgroundColor = ThemeResources.GetColor("Sem.Color.ErrorContainer");
+        _resetTargetActiveBackgroundColor = ThemeResources.GetColor("Sem.Color.Error");
+        _resetTargetIdleIconColor = ThemeResources.GetColor("Sem.Color.OnErrorContainer");
+        _resetTargetActiveIconColor = ThemeResources.GetColor("Sem.Color.OnError");
     }
 
     private Point GetResetTargetCenter()
@@ -459,6 +479,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         (AdvancedHandleType hitType, UPhoneme? hitPhoneme) = HitTestHandle(pos);
         if (hitType != AdvancedHandleType.None && hitPhoneme != null)
         {
+            CacheResetTargetColors();
             _activeHandleType = hitType;
             _activePhoneme = hitPhoneme;
             _isResetTargetActive = false;

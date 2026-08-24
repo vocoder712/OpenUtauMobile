@@ -214,8 +214,6 @@ public static class ThemeSemPhonemePanelTokens
     public static double ResetTargetOuterInset => ThemeBaseLayoutTokens.SpaceS;
     public static double ResetTargetIconSize => ThemeBaseLayoutTokens.SpaceL;
     public static double ResetTargetIconActiveSize => 30d;
-    public static double ResetTargetIconViewBoxSize => ThemeBaseLayoutTokens.SpaceL;
-    public static double ResetTargetIconStroke => 2d;
 }
 
 public static class ThemeSemTabItemTokens
