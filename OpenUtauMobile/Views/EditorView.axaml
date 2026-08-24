@@ -515,7 +515,8 @@
                     </Grid>
 
                     <!-- 音素与参数编辑面板（Row 3） -->
-                    <c:PhonemeParamPanel Grid.Row="3"
+                    <c:PhonemeParamPanel x:Name="PhonemeParamPanel"
+                                         Grid.Row="3"
                                          Grid.Column="0"
                                          Grid.ColumnSpan="2"
                                          Height="{Binding PhonemePanelHeight}"

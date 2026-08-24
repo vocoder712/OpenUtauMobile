@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-24
+- Decision: Reuse the editor's existing magnifier and unchanged `PART_PianoRollGrid` source for curve-parameter brush and eraser gestures, translating parameter-canvas pointer coordinates into that source's coordinate space at the view boundary.
+- Rationale: The magnifier already owns source sampling and pitch editing behavior. Forwarding only curve-parameter gesture lifecycle events avoids duplicating the control, preserves numerical/options editing behavior, and keeps coordinates accurate across responsive piano-roll and parameter-panel sizes.
+- Alternatives considered: Give the parameter panel a second magnifier; change the magnifier source to the parameter canvas; reuse pitch events while applying fixed row offsets.
+- Impacted areas: Parameter-curve pointer lifecycle, phoneme-parameter panel event forwarding, and editor magnifier coordinate routing. Existing pitch editing and magnifier source selection are unchanged.
+
 - Date: 2026-08-22
 - Decision: Give each rendered note pitch-bend curve its own finalized `StreamGeometry` instead of submitting the shared mutable `Points` and `PolylineGeometry` caches.
 - Rationale: Every `RenderPitchBend` call cleared and repopulated the same point collection retained by earlier drawing commands, so the last visible note replaced the curves submitted for all preceding notes.

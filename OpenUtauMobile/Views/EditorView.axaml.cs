@@ -46,6 +46,9 @@ public partial class EditorView : UserControl
         PhonemeSplitHandlePill.PointerMoved += OnPhonemeSplitHandlePointerMoved;
         PhonemeSplitHandlePill.PointerReleased += OnPhonemeSplitHandlePointerReleased;
         PhonemeSplitHandlePill.PointerCaptureLost += OnPhonemeSplitHandlePointerCaptureLost;
+        PhonemeParamPanel.RequestMagnifierOpen += OnParameterMagnifierOpen;
+        PhonemeParamPanel.RequestMagnifierUpdate += OnParameterMagnifierUpdate;
+        PhonemeParamPanel.RequestMagnifierClose += OnMagnifierClose;
         AttachedToVisualTree += (_, _) => InitializeResponsiveLayout();
 
         // 初始化轨道头列宽动画
@@ -97,6 +100,20 @@ public partial class EditorView : UserControl
 
     private void OnMagnifierOpen(Point point)
     {
+        OpenMagnifier(MapPointFromNotesCanvasToPianoRoll(point));
+    }
+
+    private void OnParameterMagnifierOpen(Point point)
+    {
+        Point? targetPoint = PhonemeParamPanel.TranslateParameterPoint(point, PART_PianoRollGrid);
+        if (targetPoint.HasValue)
+        {
+            OpenMagnifier(targetPoint.Value);
+        }
+    }
+
+    private void OpenMagnifier(Point targetPoint)
+    {
         if (!PitchMagnifier.IsVisible)
         {
             // 使用 PART_PianoRollGrid 作为 source，以包含完整的钢琴卷帘区域：
@@ -106,14 +123,32 @@ public partial class EditorView : UserControl
             PitchMagnifier.IsVisible = true;
         }
 
-        OnMagnifierUpdate(point);
+        UpdateMagnifier(targetPoint);
     }
 
     private void OnMagnifierUpdate(Point point)
     {
         if (!PitchMagnifier.IsVisible) return;
 
-        Point targetPoint = MapPointFromNotesCanvasToPianoRoll(point);
+        UpdateMagnifier(MapPointFromNotesCanvasToPianoRoll(point));
+    }
+
+    private void OnParameterMagnifierUpdate(Point point)
+    {
+        Point? targetPoint = PhonemeParamPanel.TranslateParameterPoint(point, PART_PianoRollGrid);
+        if (targetPoint.HasValue)
+        {
+            UpdateMagnifier(targetPoint.Value);
+        }
+    }
+
+    private void UpdateMagnifier(Point targetPoint)
+    {
+        if (!PitchMagnifier.IsVisible)
+        {
+            return;
+        }
+
         PitchMagnifier.UpdateView(targetPoint);
     }
 

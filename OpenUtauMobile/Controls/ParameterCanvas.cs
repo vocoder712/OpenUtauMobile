@@ -18,6 +18,10 @@ namespace OpenUtauMobile.Controls;
 /// </summary>
 public class ParameterCanvas : Control, ICmdSubscriber
 {
+    public event Action<Point>? RequestMagnifierOpen;
+    public event Action<Point>? RequestMagnifierUpdate;
+    public event Action? RequestMagnifierClose;
+
     public static readonly StyledProperty<UVoicePart?> PartProperty =
         AvaloniaProperty.Register<ParameterCanvas, UVoicePart?>(nameof(Part));
 
@@ -77,6 +81,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
     // 绘制与触摸交互状态
     private bool _isDrawing;
+    private bool _isMagnifierOpen;
     private int _lastTick;
     private int _lastValue;
     private Point? _drawingPointer;
@@ -419,6 +424,12 @@ public class ParameterCanvas : Control, ICmdSubscriber
         _lastTick = tick;
         _lastValue = value;
 
+        if (descriptor.type == UExpressionType.Curve)
+        {
+            _isMagnifierOpen = true;
+            RequestMagnifierOpen?.Invoke(pos);
+        }
+
         ApplyEditAt(project, track, descriptor, tick, value, tick, value);
         UpdateEditingTip(descriptor, tick, value);
         InvalidateVisual();
@@ -447,6 +458,10 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
         Point pos = e.GetPosition(this);
         _drawingPointer = pos;
+        if (_isMagnifierOpen)
+        {
+            RequestMagnifierUpdate?.Invoke(pos);
+        }
 
         int tick = (int)(pos.X / TickWidth + TickOffset);
         int value = CalculateValueFromY(pos.Y, descriptor);
@@ -474,6 +489,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
             {
                 ViewModel.EditingTip = string.Empty;
             }
+            CloseMagnifier();
             InvalidateVisual();
             e.Handled = true;
         }
@@ -491,8 +507,20 @@ public class ParameterCanvas : Control, ICmdSubscriber
             {
                 ViewModel.EditingTip = string.Empty;
             }
+            CloseMagnifier();
             InvalidateVisual();
         }
+    }
+
+    private void CloseMagnifier()
+    {
+        if (!_isMagnifierOpen)
+        {
+            return;
+        }
+
+        _isMagnifierOpen = false;
+        RequestMagnifierClose?.Invoke();
     }
 
     private void UpdateEditingTip(UExpressionDescriptor descriptor, int tick, int value)

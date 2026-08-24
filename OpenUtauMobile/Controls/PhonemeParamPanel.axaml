@@ -45,6 +45,7 @@
 
             <!-- 参数曲线/表情画布 -->
             <c:ParameterCanvas
+                x:Name="ParameterCurveCanvas"
                 IsVisible="{Binding IsParameterMode}"
                 Part="{Binding EditingVoicePart}"
                 TickWidth="{Binding TickWidth}"
