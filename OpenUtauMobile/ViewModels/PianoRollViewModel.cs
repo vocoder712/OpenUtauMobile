@@ -247,9 +247,21 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public bool IsSelecting { get; private set; }
 
     // ── 音素与参数面板属性 ────────────────────────────
+    /// <summary>
+    /// 参数面板编辑模式
+    /// </summary>
     [Reactive] public PhonemePanelMode PhonemePanelMode { get; set; } = PhonemePanelMode.PhonemeSimple;
+    /// <summary>
+    /// 参数面板高度
+    /// </summary>
     [Reactive] public double PhonemePanelHeight { get; set; } = 128;
+    /// <summary>
+    /// 正在编辑的表情
+    /// </summary>
     [Reactive] public string PrimaryExpressionKey { get; set; } = "vel";
+    /// <summary>
+    /// 背景表情
+    /// </summary>
     [Reactive] public string SecondaryExpressionKey { get; set; } = string.Empty;
 
     public bool IsPhonemeSimpleMode => PhonemePanelMode == PhonemePanelMode.PhonemeSimple;
@@ -304,7 +316,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     #endregion
 
-    // ── 内部字段 ──────────────────────────────────────────────────────
+    #region 内部字段
     private readonly CompositeDisposable _disposables = new();
     private readonly ViewportMotionController _panMotion = new();
 
@@ -316,6 +328,9 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     private double _cachedMaxTickOffset;
     private double _cachedMaxKeyOffset;
     public double ContentEndTick;
+    
+    private bool _hasSkippedFirstPianoRollEditModeChange = false; // 用于跳过第一次 EditMode 变更的 Toast 提示
+    #endregion
 
     /// <summary>
     /// 标记动态上限缓存失效。
@@ -567,9 +582,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             return;
         }
 
-        string temp = PrimaryExpressionKey;
-        PrimaryExpressionKey = SecondaryExpressionKey;
-        SecondaryExpressionKey = temp;
+        (PrimaryExpressionKey, SecondaryExpressionKey) = (SecondaryExpressionKey, PrimaryExpressionKey);
         this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
         this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
     }
@@ -698,7 +711,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 RefreshAvailableExpressions();
                 InvalidateMaxOffsets();
                 ApplyViewportLimits();
-                var __ = UpdatePortraitAsync(); // 更新立绘
+                Task __ = UpdatePortraitAsync(); // 更新立绘
             })
             .DisposeWith(_disposables);
 
@@ -719,7 +732,14 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 this.RaisePropertyChanged(nameof(IsParameterDrawMode));
                 this.RaisePropertyChanged(nameof(IsParameterEraseMode));
                 this.RaisePropertyChanged(nameof(IsParameterMode));
-
+            })
+            .DisposeWith(_disposables);
+        
+        // 音素面板模式切换监听 跳过第一次，用于toast
+        this.WhenAnyValue(x => x.PhonemePanelMode)
+            .Skip(1)
+            .Subscribe(mode =>
+            {
                 switch (mode)
                 {
                     case PhonemePanelMode.PhonemeSimple:
@@ -768,6 +788,14 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
                 RebuildPianoRollContextActions();
                 RequestInvalidateVisual?.Invoke();
+                EditingTip = string.Empty;
+                
+                if (!_hasSkippedFirstPianoRollEditModeChange)
+                {
+                    _hasSkippedFirstPianoRollEditModeChange = true;
+                    return; // 跳过第一次变更的提示
+                }
+                
                 switch (EditMode)
                 {
                     case PianoRollEditMode.Vibrato:
@@ -791,8 +819,6 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                         ToastService.Enqueue(L.S("PianoRoll.Toast.NoteMode"));
                         break;
                 }
-
-                EditingTip = string.Empty;
             })
             .DisposeWith(_disposables);
 
