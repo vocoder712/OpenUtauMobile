@@ -157,8 +157,10 @@ public class ParameterCanvas : Control, ICmdSubscriber
         }
 
         IBrush bgBrush = ThemeResources.GetBrush("Sem.Color.SurfaceContainerLow");
-        context.DrawRectangle(bgBrush, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
-
+        using (context.PushOpacity(0.5))
+        {
+            context.DrawRectangle(bgBrush, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
+        }
         UProject project = DocManager.Inst.Project;
         if (Part.trackNo < 0 || Part.trackNo >= project.tracks.Count)
         {
