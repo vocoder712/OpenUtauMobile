@@ -42,10 +42,13 @@ public partial class EditorView : UserControl
         SplitDragHandle.PointerReleased += OnSplitHandlePointerReleased;
         SplitDragHandle.PointerCaptureLost += OnSplitHandlePointerCaptureLost;
 
-        PhonemeSplitHandle.PointerPressed += OnPhonemeSplitHandlePointerPressed;
-        PhonemeSplitHandle.PointerMoved += OnPhonemeSplitHandlePointerMoved;
-        PhonemeSplitHandle.PointerReleased += OnPhonemeSplitHandlePointerReleased;
-        PhonemeSplitHandle.PointerCaptureLost += OnPhonemeSplitHandlePointerCaptureLost;
+        PhonemeSplitHandlePill.PointerPressed += OnPhonemeSplitHandlePointerPressed;
+        PhonemeSplitHandlePill.PointerMoved += OnPhonemeSplitHandlePointerMoved;
+        PhonemeSplitHandlePill.PointerReleased += OnPhonemeSplitHandlePointerReleased;
+        PhonemeSplitHandlePill.PointerCaptureLost += OnPhonemeSplitHandlePointerCaptureLost;
+        PhonemeParamPanel.RequestMagnifierOpen += OnParameterMagnifierOpen;
+        PhonemeParamPanel.RequestMagnifierUpdate += OnParameterMagnifierUpdate;
+        PhonemeParamPanel.RequestMagnifierClose += OnMagnifierClose;
         AttachedToVisualTree += (_, _) => InitializeResponsiveLayout();
 
         // 初始化轨道头列宽动画
@@ -97,6 +100,20 @@ public partial class EditorView : UserControl
 
     private void OnMagnifierOpen(Point point)
     {
+        OpenMagnifier(MapPointFromNotesCanvasToPianoRoll(point));
+    }
+
+    private void OnParameterMagnifierOpen(Point point)
+    {
+        Point? targetPoint = PhonemeParamPanel.TranslateParameterPoint(point, PART_PianoRollGrid);
+        if (targetPoint.HasValue)
+        {
+            OpenMagnifier(targetPoint.Value);
+        }
+    }
+
+    private void OpenMagnifier(Point targetPoint)
+    {
         if (!PitchMagnifier.IsVisible)
         {
             // 使用 PART_PianoRollGrid 作为 source，以包含完整的钢琴卷帘区域：
@@ -106,14 +123,32 @@ public partial class EditorView : UserControl
             PitchMagnifier.IsVisible = true;
         }
 
-        OnMagnifierUpdate(point);
+        UpdateMagnifier(targetPoint);
     }
 
     private void OnMagnifierUpdate(Point point)
     {
         if (!PitchMagnifier.IsVisible) return;
 
-        Point targetPoint = MapPointFromNotesCanvasToPianoRoll(point);
+        UpdateMagnifier(MapPointFromNotesCanvasToPianoRoll(point));
+    }
+
+    private void OnParameterMagnifierUpdate(Point point)
+    {
+        Point? targetPoint = PhonemeParamPanel.TranslateParameterPoint(point, PART_PianoRollGrid);
+        if (targetPoint.HasValue)
+        {
+            UpdateMagnifier(targetPoint.Value);
+        }
+    }
+
+    private void UpdateMagnifier(Point targetPoint)
+    {
+        if (!PitchMagnifier.IsVisible)
+        {
+            return;
+        }
+
         PitchMagnifier.UpdateView(targetPoint);
     }
 
@@ -349,7 +384,7 @@ public partial class EditorView : UserControl
 
     private void SetColWidth(double targetWidth)
     {
-        var currentWidth = TrackAreaGrid.ColumnDefinitions[0].Width.Value;
+        double currentWidth = TrackAreaGrid.ColumnDefinitions[0].Width.Value;
 
         if (Math.Abs(currentWidth - targetWidth) < 0.1)
         {
@@ -371,15 +406,15 @@ public partial class EditorView : UserControl
     private void OnWidthAnimTick(object? sender, EventArgs e)
     {
         const double durationMs = 200;
-        var elapsed = (DateTime.Now - _widthAnimStartTime).TotalMilliseconds;
-        var progress = Math.Min(elapsed / durationMs, 1.0);
+        double elapsed = (DateTime.Now - _widthAnimStartTime).TotalMilliseconds;
+        double progress = Math.Min(elapsed / durationMs, 1.0);
 
         // CubicEaseInOut函数
-        var eased = progress < 0.5
+        double eased = progress < 0.5
             ? 4 * progress * progress * progress
             : 1 - Math.Pow(-2 * progress + 2, 3) / 2;
 
-        var currentWidth = _widthAnimStart + (_widthAnimTarget - _widthAnimStart) * eased;
+        double currentWidth = _widthAnimStart + (_widthAnimTarget - _widthAnimStart) * eased;
         TrackAreaGrid.ColumnDefinitions[0].Width = new GridLength(currentWidth, GridUnitType.Pixel);
 
         if (progress >= 1.0)
@@ -537,7 +572,7 @@ public partial class EditorView : UserControl
 
     private void OnPhonemeSplitHandlePointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (DataContext is not EditorViewModel vm || !e.GetCurrentPoint(PhonemeSplitHandle).Properties.IsLeftButtonPressed)
+        if (DataContext is not EditorViewModel vm || !e.GetCurrentPoint(PhonemeSplitHandlePill).Properties.IsLeftButtonPressed)
         {
             return;
         }
@@ -549,7 +584,7 @@ public partial class EditorView : UserControl
         _phonemeSplitPressY = pos.Y;
         _phonemeSplitPressHeight = vm.PianoRollViewModel.PhonemePanelHeight;
         _phonemeSplitPressXOffset = _phonemeHandleXOffset;
-        e.Pointer.Capture(PhonemeSplitHandle);
+        e.Pointer.Capture(PhonemeSplitHandlePill);
         e.Handled = true;
     }
 

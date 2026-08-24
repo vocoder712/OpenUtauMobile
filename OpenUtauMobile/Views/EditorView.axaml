@@ -22,7 +22,7 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <Style Selector="Grid#SplitDragHandle, Grid#PhonemeSplitHandle">
+        <Style Selector="Grid#SplitDragHandle, Grid#PhonemeSplitHandlePill">
             <Setter Property="Opacity" Value="0.92" />
             <Setter Property="Cursor" Value="{x:Static local:ViewConstants.cursorSizeNS}" />
             <Setter Property="Transitions">
@@ -32,10 +32,10 @@
                 </Transitions>
             </Setter>
         </Style>
-        <Style Selector="Grid#SplitDragHandle:pointerover, Grid#PhonemeSplitHandle:pointerover">
+        <Style Selector="Grid#SplitDragHandle:pointerover, Grid#PhonemeSplitHandlePill:pointerover">
             <Setter Property="Opacity" Value="1" />
         </Style>
-        <Style Selector="Grid#SplitDragHandle:pressed, Grid#PhonemeSplitHandle:pressed">
+        <Style Selector="Grid#SplitDragHandle:pressed, Grid#PhonemeSplitHandlePill:pressed">
             <Setter Property="Opacity" Value="1" />
         </Style>
     </UserControl.Styles>
@@ -326,7 +326,7 @@
                   Grid.Row="1"
                   Grid.Column="0"
                   Grid.ColumnSpan="2"
-                Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
+                  Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
                 <!-- 上下文为PianoRollViewModel，放大镜的Source -->
                 <Grid Grid.Row="0" ClipToBounds="True"
@@ -392,7 +392,7 @@
                     <c:NotesCanvas Grid.Row="1"
                                    Grid.Column="1"
                                    IsVisible="{Binding IsVoiceMode}"
-                                   ClipToBounds="True"
+                                   ClipToBounds="False"
                                    Part="{Binding EditingVoicePart}"
                                    TickWidth="{Binding TickWidth}"
                                    KeyHeight="{Binding KeyHeight}"
@@ -466,13 +466,10 @@
                           Grid.ColumnSpan="2"
                           Height="24"
                           Margin="0,-12,0,-12"
-                          Background="Transparent"
-                          ClipToBounds="False"
+                          ClipToBounds="True"
                           ZIndex="50"
-                          Cursor="{x:Static local:ViewConstants.cursorSizeNS}"
                           IsVisible="{Binding IsVoiceMode}"
-                          x:Name="PhonemeSplitHandle"
-                          ToolTip.Tip="{DynamicResource PhonemePanel.Split.Tooltip}">
+                          x:Name="PhonemeSplitHandle">
                         <!-- 背景横向细分割线 -->
                         <Border Height="1"
                                 VerticalAlignment="Center"
@@ -485,7 +482,9 @@
                               Height="{x:Static local:ViewConstants.EditorSplitHandleHeight}"
                               HorizontalAlignment="Center"
                               VerticalAlignment="Center"
-                              IsHitTestVisible="False">
+                              Cursor="{x:Static local:ViewConstants.cursorSizeNS}"
+                              IsHitTestVisible="True"
+                              ToolTip.Tip="{DynamicResource PhonemePanel.Split.Tooltip}">
                             <Path Data="M 0,12 
                                        C 0,12 3,12 6,6 
                                        C 9,0 12,0 12,0 
@@ -516,7 +515,8 @@
                     </Grid>
 
                     <!-- 音素与参数编辑面板（Row 3） -->
-                    <c:PhonemeParamPanel Grid.Row="3"
+                    <c:PhonemeParamPanel x:Name="PhonemeParamPanel"
+                                         Grid.Row="3"
                                          Grid.Column="0"
                                          Grid.ColumnSpan="2"
                                          Height="{Binding PhonemePanelHeight}"

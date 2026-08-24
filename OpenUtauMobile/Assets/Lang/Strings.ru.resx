@@ -1657,4 +1657,7 @@
   <data name="Editor.Action.Merge" xml:space="preserve">
     <value>Объединить</value>
   </data>
+  <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
+    <value>Отпустите, чтобы сбросить параметр</value>
+  </data>
 </root>

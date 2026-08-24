@@ -5,8 +5,10 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
+using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.ViewModels;
 
@@ -59,6 +61,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private AdvancedHandleType _activeHandleType = AdvancedHandleType.None;
     private UPhoneme? _activePhoneme;
     private UPhoneme? _animatingTimingPhoneme;
+    private bool _isResetTargetActive;
     private double _dragStartPointerX;
     private float _initialDelta;
 
@@ -69,6 +72,13 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private double _animTargetProgress;
     private DateTime _animStartTime;
     private const double AnimDurationMs = 130.0;
+
+    // 重置目标动效状态
+    private DispatcherTimer? _resetTargetAnimTimer;
+    private double _resetTargetAnimProgress;
+    private double _resetTargetAnimStartProgress;
+    private double _resetTargetAnimTargetProgress;
+    private DateTime _resetTargetAnimStartTime;
 
     // 双击检测
     private DateTime _lastClickTime = DateTime.MinValue;
@@ -82,10 +92,23 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private const double BottomMargin = 8.0;    // 底部留白
 
     private readonly Geometry _handleGeometry = new EllipseGeometry(new Rect(-3.5, -3.5, 7.0, 7.0));
+    private readonly Geometry _resetIconGeometry;
+    private readonly SolidColorBrush _resetTargetBackgroundBrush = new(Colors.Transparent);
+    private readonly SolidColorBrush _resetTargetIconBrush = new(Colors.Transparent);
+    private Color _resetTargetIdleBackgroundColor;
+    private Color _resetTargetActiveBackgroundColor;
+    private Color _resetTargetIdleIconColor;
+    private Color _resetTargetActiveIconColor;
 
     public PhonemeAdvancedCanvas()
     {
         ClipToBounds = true;
+        PackIconPhosphorIcons resetIcon = new()
+        {
+            Kind = PackIconPhosphorIconsKind.ArrowCounterClockwise
+        };
+        _resetIconGeometry = resetIcon.Data
+            ?? throw new InvalidOperationException("Phosphor Trash icon geometry was not initialized.");
     }
 
     private void StartDragAnimation(double target)
@@ -120,6 +143,40 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             {
                 _animatingTimingPhoneme = null;
             }
+        }
+    }
+
+    private void StartResetTargetAnimation(double target)
+    {
+        _resetTargetAnimStartProgress = _resetTargetAnimProgress;
+        _resetTargetAnimTargetProgress = target;
+        _resetTargetAnimStartTime = DateTime.UtcNow;
+
+        if (_resetTargetAnimTimer == null)
+        {
+            _resetTargetAnimTimer = new DispatcherTimer
+            {
+                Interval = ThemeBaseMotionTokens.FrameInterval
+            };
+            _resetTargetAnimTimer.Tick += OnResetTargetAnimTimerTick;
+        }
+        _resetTargetAnimTimer.Start();
+    }
+
+    private void OnResetTargetAnimTimerTick(object? sender, EventArgs e)
+    {
+        double elapsed = (DateTime.UtcNow - _resetTargetAnimStartTime).TotalMilliseconds;
+        double duration = ThemeBaseMotionTokens.DurationShort2.TotalMilliseconds;
+        double t = Math.Clamp(elapsed / duration, 0.0, 1.0);
+        double eased = 1.0 - Math.Pow(1.0 - t, 3);
+        _resetTargetAnimProgress = _resetTargetAnimStartProgress
+            + (_resetTargetAnimTargetProgress - _resetTargetAnimStartProgress) * eased;
+        InvalidateVisual();
+
+        if (t >= 1.0)
+        {
+            _resetTargetAnimProgress = _resetTargetAnimTargetProgress;
+            _resetTargetAnimTimer?.Stop();
         }
     }
 
@@ -159,6 +216,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
         _animTimer?.Stop();
+        _resetTargetAnimTimer?.Stop();
         if (_viewModel != null)
         {
             _viewModel.RequestInvalidateVisual -= InvalidateVisual;
@@ -186,8 +244,10 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         }
 
         IBrush bgBrush = ThemeResources.GetBrush("Sem.Color.SurfaceContainerLow");
-        context.DrawRectangle(bgBrush, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
-
+        using (context.PushOpacity(0.5))
+        {
+            context.DrawRectangle(bgBrush, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
+        }
         double partPos = Part.position;
         double viewLeftTick = TickOffset - 480;
         double viewRightTick = TickOffset + Bounds.Width / TickWidth + 480;
@@ -199,7 +259,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         IPen timingPen = ThemeResources.GetPen("Sem.Color.Primary", 1.5);
         IPen timingThickPen = ThemeResources.GetPen("Sem.Color.Primary", 3.0);
         IBrush textBgBrush = ThemeResources.GetBrush("Sem.Color.SurfaceContainerHighest");
-        IPen textBorderPen = ThemeResources.GetPen("Sem.Color.OutlineVariant", 1.0);
+        IPen textBorderPen = ThemeResources.GetPen("Sem.Color.OutlineVariant");
         IBrush textBrush = ThemeResources.GetBrush("Sem.Color.OnSurface");
 
         double totalHeight = Bounds.Height;
@@ -251,11 +311,11 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
                 Point[] pts =
                 [
-                    new Point(x0, y0),
-                    new Point(x1, y1),
-                    new Point(x2, y2),
-                    new Point(x3, y3),
-                    new Point(x4, y4)
+                    new(x0, y0),
+                    new(x1, y1),
+                    new(x2, y2),
+                    new(x3, y3),
+                    new(x4, y4)
                 ];
 
                 PolylineGeometry polyline = new PolylineGeometry(pts, true);
@@ -314,6 +374,93 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                 }
             }
         }
+
+        if (_activeHandleType != AdvancedHandleType.None)
+        {
+            RenderResetTarget(context);
+        }
+    }
+
+    private void RenderResetTarget(DrawingContext context)
+    {
+        double progress = _resetTargetAnimProgress;
+        double targetSize = Interpolate(
+            ThemeSemPhonemePanelTokens.ResetTargetSize,
+            ThemeSemPhonemePanelTokens.ResetTargetActiveSize,
+            progress);
+        double iconSize = Interpolate(
+            ThemeSemPhonemePanelTokens.ResetTargetIconSize,
+            ThemeSemPhonemePanelTokens.ResetTargetIconActiveSize,
+            progress);
+        Point center = GetResetTargetCenter();
+
+        _resetTargetBackgroundBrush.Color = InterpolateColor(
+            _resetTargetIdleBackgroundColor,
+            _resetTargetActiveBackgroundColor,
+            progress);
+        _resetTargetIconBrush.Color = InterpolateColor(
+            _resetTargetIdleIconColor,
+            _resetTargetActiveIconColor,
+            progress);
+        context.DrawEllipse(
+            _resetTargetBackgroundBrush,
+            null,
+            center,
+            targetSize * 0.5,
+            targetSize * 0.5);
+
+        Rect iconBounds = _resetIconGeometry.Bounds;
+        double iconScale = iconSize / Math.Max(iconBounds.Width, iconBounds.Height);
+        Matrix iconTransform = Matrix.CreateTranslation(-iconBounds.Center.X, -iconBounds.Center.Y)
+            * Matrix.CreateScale(iconScale, iconScale)
+            * Matrix.CreateTranslation(center.X, center.Y);
+        using (context.PushTransform(iconTransform))
+        {
+            context.DrawGeometry(_resetTargetIconBrush, null, _resetIconGeometry);
+        }
+    }
+
+    private static double Interpolate(double from, double to, double progress)
+    {
+        return from + (to - from) * progress;
+    }
+
+    private static Color InterpolateColor(Color from, Color to, double progress)
+    {
+        byte alpha = (byte)Math.Round(Interpolate(from.A, to.A, progress));
+        byte red = (byte)Math.Round(Interpolate(from.R, to.R, progress));
+        byte green = (byte)Math.Round(Interpolate(from.G, to.G, progress));
+        byte blue = (byte)Math.Round(Interpolate(from.B, to.B, progress));
+        return Color.FromArgb(alpha, red, green, blue);
+    }
+
+    private void CacheResetTargetColors()
+    {
+        _resetTargetIdleBackgroundColor = ThemeResources.GetColor("Sem.Color.ErrorContainer");
+        _resetTargetActiveBackgroundColor = ThemeResources.GetColor("Sem.Color.Error");
+        _resetTargetIdleIconColor = ThemeResources.GetColor("Sem.Color.OnErrorContainer");
+        _resetTargetActiveIconColor = ThemeResources.GetColor("Sem.Color.OnError");
+    }
+
+    private Point GetResetTargetCenter()
+    {
+        double halfHitSize = ThemeSemPhonemePanelTokens.ResetTargetHitSize * 0.5;
+        double targetInset = ThemeSemPhonemePanelTokens.ResetTargetOuterInset;
+        return new Point(
+            targetInset + halfHitSize,
+            targetInset + halfHitSize);
+    }
+
+    private bool IsInsideResetTarget(Point point)
+    {
+        double hitSize = ThemeSemPhonemePanelTokens.ResetTargetHitSize;
+        Point center = GetResetTargetCenter();
+        Rect hitRect = new(
+            center.X - hitSize * 0.5,
+            center.Y - hitSize * 0.5,
+            hitSize,
+            hitSize);
+        return hitRect.Contains(point);
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -332,8 +479,12 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         (AdvancedHandleType hitType, UPhoneme? hitPhoneme) = HitTestHandle(pos);
         if (hitType != AdvancedHandleType.None && hitPhoneme != null)
         {
+            CacheResetTargetColors();
             _activeHandleType = hitType;
             _activePhoneme = hitPhoneme;
+            _isResetTargetActive = false;
+            _resetTargetAnimProgress = 0.0;
+            _resetTargetAnimTimer?.Stop();
             if (hitType == AdvancedHandleType.TimingLine)
             {
                 _animatingTimingPhoneme = hitPhoneme;
@@ -398,6 +549,23 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         }
 
         Point pos = e.GetPosition(this);
+        bool isInsideResetTarget = IsInsideResetTarget(pos);
+        if (_isResetTargetActive != isInsideResetTarget)
+        {
+            _isResetTargetActive = isInsideResetTarget;
+            StartResetTargetAnimation(_isResetTargetActive ? 1.0 : 0.0);
+        }
+
+        if (_isResetTargetActive)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.EditingTip = L.S("PhonemePanel.Reset.ReleaseHint");
+            }
+            e.Handled = true;
+            return;
+        }
+
         double deltaPx = pos.X - _dragStartPointerX;
         double deltaTicks = deltaPx / TickWidth;
         double deltaMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.position + (int)deltaTicks)
@@ -443,12 +611,20 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         base.OnPointerReleased(e);
         if (_activeHandleType != AdvancedHandleType.None)
         {
+            _isResetTargetActive = IsInsideResetTarget(e.GetPosition(this));
+            if (_isResetTargetActive)
+            {
+                ResetActiveParameter();
+            }
             if (_activeHandleType == AdvancedHandleType.TimingLine)
             {
                 StartDragAnimation(0.0);
             }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
+            _isResetTargetActive = false;
+            _resetTargetAnimProgress = 0.0;
+            _resetTargetAnimTimer?.Stop();
             DocManager.Inst.EndUndoGroup();
             e.Pointer.Capture(null);
             if (ViewModel != null)
@@ -471,12 +647,39 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
+            _isResetTargetActive = false;
+            _resetTargetAnimProgress = 0.0;
+            _resetTargetAnimTimer?.Stop();
             DocManager.Inst.EndUndoGroup();
             if (ViewModel != null)
             {
                 ViewModel.EditingTip = string.Empty;
             }
             InvalidateVisual();
+        }
+    }
+
+    private void ResetActiveParameter()
+    {
+        if (Part == null || _activePhoneme?.Parent == null)
+        {
+            return;
+        }
+
+        switch (_activeHandleType)
+        {
+            case AdvancedHandleType.TimingLine:
+                DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(
+                    Part, _activePhoneme.Parent, _activePhoneme.index, 0));
+                break;
+            case AdvancedHandleType.Preutter:
+                DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(
+                    Part, _activePhoneme.Parent, _activePhoneme.index, 0));
+                break;
+            case AdvancedHandleType.Overlap:
+                DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(
+                    Part, _activePhoneme.Parent, _activePhoneme.index, 0));
+                break;
         }
     }
 

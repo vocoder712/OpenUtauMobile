@@ -1702,4 +1702,7 @@
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>音符: {0} | 音素 #{1}</value>
   </data>
+  <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
+    <value>松开以重置参数</value>
+  </data>
 </root>
