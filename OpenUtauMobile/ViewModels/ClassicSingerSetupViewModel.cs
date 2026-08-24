@@ -18,7 +18,7 @@ using SharpCompress.Readers;
 namespace OpenUtauMobile.ViewModels;
 
 /// <summary>
-/// Classic/Enunu/DiffSinger 歌手安装向导的 ViewModel。
+/// Classic/Enunu/DiffSinger/NEUTRINO 歌手安装向导的 ViewModel。
 /// 四步流程：Step 0 压缩包编码 → Step 1 文本编码 → Step 2 歌手类型 → Step 3 安装摘要
 /// </summary>
 public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
@@ -43,7 +43,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
     [Reactive] public Encoding TextEncoding { get; set; }
     [Reactive] public bool MissingInfo { get; set; }
 
-    public string[] SingerTypes { get; set; } = ["utau", "enunu", "diffsinger"];
+    public string[] SingerTypes { get; set; } = ["utau", "enunu", "diffsinger", "neutrino"];
     [Reactive] public string SingerType { get; set; }
 
     public ObservableCollection<string> TextItems => _textItems;
