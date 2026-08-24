@@ -253,7 +253,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
             if (index < 0)
             {
                 index = ~index; // 得到第一个大于 lTick 的曲线点索引
-                if (index == 0 && isPrimary)
+                if (index == 0) // 补充从屏幕左侧至第一个点的默认值线
                 {
                     double firstCurveX = Math.Clamp(
                         (curve.xs[0] - TickOffset) * TickWidth,

@@ -4,7 +4,6 @@
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:local="clr-namespace:OpenUtauMobile"
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
              x:Class="OpenUtauMobile.Controls.PhonemeParamPanel"
              x:DataType="vm:PianoRollViewModel">
 
