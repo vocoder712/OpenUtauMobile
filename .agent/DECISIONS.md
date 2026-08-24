@@ -13,10 +13,10 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-24
-- Decision: Show a bottom-center reset target while an advanced phoneme timing handle is captured; suspend value updates while the pointer is over it and reset only the active Offset, Preutter, or Overlap override when released there.
-- Rationale: A capture-scoped target keeps the touch gesture discoverable without permanently consuming panel space. Resetting with the existing typed commands keeps the change in the same undo group as the drag and preserves command validation and undo behavior.
+- Decision: Show a top-left reset target while an advanced phoneme timing handle is captured. Its idle geometry follows the MD3 icon-button proportions: a 48dp target, 24dp icon, 12dp internal padding, and 8dp canvas inset. Animate size and semantic error colors with a 150ms cubic ease-out transition when the pointer crosses the target boundary. Suspend value updates while the pointer is over it and reset only the active Offset, Preutter, or Overlap override when released there.
+- Rationale: A capture-scoped target keeps the touch gesture discoverable without permanently consuming panel space. Top-left placement avoids the finger travel and bottom-edge conflict of the earlier centered placement. Resetting with the existing typed commands keeps the change in the same undo group as the drag and preserves command validation and undo behavior.
 - Alternatives considered: Add permanent reset buttons for every phoneme; reset all timing fields together; cancel the whole drag by undoing intermediate commands.
-- Impacted areas: Advanced phoneme-panel handle dragging and semantic layout tokens. Core command behavior is unchanged.
+- Impacted areas: Advanced phoneme-panel handle dragging, localized reset guidance, motion rendering, and semantic layout tokens. Core command behavior is unchanged.
 
 - Date: 2026-08-24
 - Decision: Reuse the editor's existing magnifier and unchanged `PART_PianoRollGrid` source for curve-parameter brush and eraser gestures, translating parameter-canvas pointer coordinates into that source's coordinate space at the view boundary.

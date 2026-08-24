@@ -53,6 +53,7 @@ public static class ThemeBaseTypographyTokens
 /// </summary>
 public static class ThemeBaseMotionTokens
 {
+    public static TimeSpan FrameInterval => TimeSpan.FromMilliseconds(16);
     public static TimeSpan DurationBase => TimeSpan.Parse("00:00:00.300");
     public static TimeSpan DurationLargeMove => TimeSpan.Parse("00:00:00.375");
 
@@ -207,10 +208,10 @@ public static class ThemeSemComponentTokens
 
 public static class ThemeSemPhonemePanelTokens
 {
-    public static double ResetTargetHitSize => 72d;
-    public static double ResetTargetSize => 48d;
+    public static double ResetTargetHitSize => ThemeBaseLayoutTokens.SpaceXXL;
+    public static double ResetTargetSize => ThemeBaseLayoutTokens.SpaceXXL;
     public static double ResetTargetActiveSize => 60d;
-    public static double ResetTargetBottomInset => ThemeBaseLayoutTokens.SpaceS;
+    public static double ResetTargetOuterInset => ThemeBaseLayoutTokens.SpaceS;
     public static double ResetTargetIconSize => ThemeBaseLayoutTokens.SpaceL;
     public static double ResetTargetIconActiveSize => 30d;
     public static double ResetTargetIconViewBoxSize => ThemeBaseLayoutTokens.SpaceL;

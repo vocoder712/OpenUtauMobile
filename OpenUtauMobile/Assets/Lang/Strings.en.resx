@@ -1702,4 +1702,7 @@
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>Note: {0} | Phoneme #{1}</value>
   </data>
+  <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
+    <value>Release to reset parameter</value>
+  </data>
 </root>

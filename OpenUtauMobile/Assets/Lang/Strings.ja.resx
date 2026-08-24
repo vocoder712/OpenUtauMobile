@@ -1695,4 +1695,7 @@
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>ノート: {0} | 音素 #{1}</value>
   </data>
+  <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
+    <value>指を離すとパラメーターをリセット</value>
+  </data>
 </root>
