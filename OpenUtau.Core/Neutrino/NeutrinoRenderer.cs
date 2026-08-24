@@ -323,7 +323,7 @@ namespace OpenUtau.Core.Neutrino
                 float[] scorePitchesHz,
                 float[] scoreDurations,
                 long[] phonePositions,
-                double?[] manualBoundaries) = BuildPhonemeSequence(phrase);
+                double?[] manualBoundaries) = BuildPhonemeSequence(phrase, singer);
 
             int numPhones = phonemeIds.Length;
             if (numPhones == 0)
@@ -611,7 +611,9 @@ namespace OpenUtau.Core.Neutrino
             float[] ScorePitchesHz,
             float[] ScoreDurations,
             long[] PhonePositions,
-            double?[] ManualBoundaries) BuildPhonemeSequence(RenderPhrase phrase)
+            double?[] ManualBoundaries) BuildPhonemeSequence(
+                RenderPhrase phrase,
+                NeutrinoSinger singer)
         {
             List<long> phonemeIds = new List<long>();
             List<float> scorePitchesHz = new List<float>();
@@ -625,7 +627,7 @@ namespace OpenUtau.Core.Neutrino
             foreach (RenderPhone phone in phrase.phones)
             {
                 string[] phonePhonemes =
-                    NeutrinoPhoneme.RenderPhoneToPhonemes(phone.phoneme);
+                    singer.RenderPhoneToPhonemes(phone.phoneme);
                 int noteIndex = Math.Clamp(phone.noteIndex, 0, phrase.notes.Length - 1);
                 if (noteIndex != lastNoteIndex)
                 {

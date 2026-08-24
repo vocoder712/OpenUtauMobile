@@ -31,6 +31,8 @@ namespace OpenUtau.Core.Neutrino
         private string melspecModelPath = string.Empty;
         private string vocoderModelPath = string.Empty;
         private ulong modelFingerprint;
+        private IReadOnlyDictionary<string, string[]> lyricDictionary =
+            new Dictionary<string, string[]>(StringComparer.Ordinal);
 
         public NeutrinoConfig Config { get; private set; } = new NeutrinoConfig();
 
@@ -121,11 +123,14 @@ namespace OpenUtau.Core.Neutrino
             Config = NeutrinoConfig.Load(Location);
             EnsureModelPaths();
 
+            IReadOnlyDictionary<string, string[]> loadedDictionary =
+                new Dictionary<string, string[]>(StringComparer.Ordinal);
             string dictionaryPath = ResolveDictionaryPath();
             if (!string.IsNullOrEmpty(dictionaryPath))
             {
-                NeutrinoPhoneme.LoadDictionary(dictionaryPath);
+                loadedDictionary = NeutrinoPhoneme.LoadDictionary(dictionaryPath);
             }
+            lyricDictionary = loadedDictionary;
 
             subbanks.Clear();
             subbanks.Add(new USubbank(new Subbank()
@@ -145,6 +150,16 @@ namespace OpenUtau.Core.Neutrino
                 }
             }
             LoadAvatarData();
+        }
+
+        public string[] LyricToPhonemes(string lyric)
+        {
+            return NeutrinoPhoneme.KanaToPhonemes(lyric, lyricDictionary);
+        }
+
+        public string[] RenderPhoneToPhonemes(string phone)
+        {
+            return NeutrinoPhoneme.RenderPhoneToPhonemes(phone, lyricDictionary);
         }
 
         private void LoadAvatarData()

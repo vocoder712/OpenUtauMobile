@@ -102,7 +102,8 @@ namespace OpenUtau.Core.Neutrino
 
         protected virtual string[] LyricToPhonemes(string lyric)
         {
-            return NeutrinoPhoneme.KanaToPhonemes(lyric);
+            return neutrinoSinger?.LyricToPhonemes(lyric)
+                ?? NeutrinoPhoneme.KanaToPhonemes(lyric);
         }
 
         protected virtual Phoneme[] PostProcessPhonemePositions(

@@ -63,9 +63,6 @@ namespace OpenUtau.Core.Neutrino
 
         private static readonly Dictionary<string, string[]> RomajiToPhonemes =
             BuildRomajiMap();
-        private static readonly Dictionary<string, string[]> KanaToPhonemeMap =
-            new Dictionary<string, string[]>();
-        private static readonly object DictionaryLock = new object();
 
         public static IEnumerable<string> AllPhonemes => PhonemeToId
             .Where(pair => pair.Key != "sil" && pair.Key != "ap")
@@ -74,14 +71,16 @@ namespace OpenUtau.Core.Neutrino
             .Select(pair => pair.Key)
             .Distinct();
 
-        public static void LoadDictionary(string tablePath)
+        public static IReadOnlyDictionary<string, string[]> LoadDictionary(
+            string tablePath)
         {
+            Dictionary<string, string[]> entries =
+                new Dictionary<string, string[]>(StringComparer.Ordinal);
             if (!File.Exists(tablePath))
             {
-                return;
+                return entries;
             }
 
-            Dictionary<string, string[]> entries = new Dictionary<string, string[]>();
             foreach (string line in File.ReadAllLines(tablePath, Encoding.UTF8))
             {
                 string trimmed = line.Trim();
@@ -105,20 +104,11 @@ namespace OpenUtau.Core.Neutrino
                 }
             }
 
-            lock (DictionaryLock)
-            {
-                foreach (KeyValuePair<string, string[]> entry in entries)
-                {
-                    if (!KanaToPhonemeMap.ContainsKey(entry.Key))
-                    {
-                        KanaToPhonemeMap[entry.Key] = entry.Value.ToArray();
-                    }
-                }
-            }
             Log.Information(
                 "Loaded {Count} NEUTRINO dictionary entries from {Path}",
                 entries.Count,
                 tablePath);
+            return entries;
         }
 
         public static int GetPhonemeId(string phoneme)
@@ -146,7 +136,9 @@ namespace OpenUtau.Core.Neutrino
             return PAU;
         }
 
-        public static string[] RenderPhoneToPhonemes(string phone)
+        public static string[] RenderPhoneToPhonemes(
+            string phone,
+            IReadOnlyDictionary<string, string[]> dictionary = null)
         {
             phone = phone?.Trim();
             if (string.IsNullOrEmpty(phone))
@@ -157,7 +149,7 @@ namespace OpenUtau.Core.Neutrino
             {
                 return new string[] { NormalizePhoneme(phone) };
             }
-            return KanaToPhonemes(phone);
+            return KanaToPhonemes(phone, dictionary);
         }
 
         public static bool IsVowelPhoneme(string phoneme)
@@ -173,7 +165,9 @@ namespace OpenUtau.Core.Neutrino
                 || normalized == "AP";
         }
 
-        public static string[] KanaToPhonemes(string kana)
+        public static string[] KanaToPhonemes(
+            string kana,
+            IReadOnlyDictionary<string, string[]> dictionary = null)
         {
             kana = kana?.Trim();
             if (string.IsNullOrEmpty(kana))
@@ -211,12 +205,10 @@ namespace OpenUtau.Core.Neutrino
             }
 
             string normalizedKana = kana.Normalize(NormalizationForm.FormC);
-            lock (DictionaryLock)
+            if (dictionary != null
+                && dictionary.TryGetValue(normalizedKana, out string[] phonemes))
             {
-                if (KanaToPhonemeMap.TryGetValue(normalizedKana, out string[] phonemes))
-                {
-                    return phonemes.ToArray();
-                }
+                return phonemes.ToArray();
             }
             if (RomajiToPhonemes.TryGetValue(kana, out string[] directPhonemes))
             {
