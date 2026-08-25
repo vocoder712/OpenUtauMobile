@@ -348,15 +348,6 @@
                     <Border Grid.Row="0"
                             Grid.Column="0"
                             Background="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-                    <!-- 钢琴键画布（Row 1, Col 0） -->
-                    <Border Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsVoiceMode}">
-                        <c:PianoKeysCanvas ClipToBounds="True"
-                                           KeyHeight="{Binding KeyHeight}"
-                                           KeyOffset="{Binding KeyOffset}" />
-                        <!-- <Border.Effect> -->
-                        <!--     <DropShadowEffect Color="{DynamicResource ShadowColor}" BlurRadius="12" OffsetX="4" OffsetY="4" Opacity="0.5"/> -->
-                        <!-- </Border.Effect> -->
-                    </Border>
                     <!-- 横向琴键网格（Row 1, Col 1） -->
                     <c:PianoRollBackground
                         Grid.Row="1"
@@ -405,6 +396,15 @@
                                   WavePart="{Binding EditingWavePart}"
                                   TickWidth="{Binding TickWidth}"
                                   TickOffset="{Binding TickOffset}" />
+                    <!-- 钢琴键画布（Row 1, Col 0） -->
+                    <Border Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsVoiceMode}">
+                        <c:PianoKeysCanvas ClipToBounds="True"
+                                           KeyHeight="{Binding KeyHeight}"
+                                           KeyOffset="{Binding KeyOffset}" />
+                        <!-- <Border.Effect> -->
+                        <!--     <DropShadowEffect Color="{DynamicResource ShadowColor}" BlurRadius="12" OffsetX="4" OffsetY="4" Opacity="0.5"/> -->
+                        <!-- </Border.Effect> -->
+                    </Border>
                     <!-- 钢琴卷帘固定居中播放标记 -->
                     <c:PianoRollPlayPosCanvas
                         Grid.Row="1" Grid.Column="1"
