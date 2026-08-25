@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-25
+- Decision: In PitchPen mode, lock the single-finger drag intent from the original press point: begin pitch drawing or erasing only when that point intersects a note rectangle expanded by 60 px horizontally on each side and 120 px vertically on each side; otherwise reuse the existing canvas-pan path.
+- Rationale: The enlarged, screen-space note target makes near-note pitch editing touch-friendly while leaving blank-space drags available for navigation. Resolving the intent once at drag start prevents the gesture from switching between drawing and panning as the pointer moves.
+- Alternatives considered: Always draw in PitchPen mode; switch intent continuously during movement; change the existing note hit test globally; add a new raw pointer-pressed callback to the shared gesture interpreter.
+- Impacted areas: Piano-roll PitchPen and pitch-eraser single-finger drag initiation. Existing note selection, note movement, anchor editing, multi-touch zooming, magnifier lifecycle, and pan inertia paths are unchanged.
+
 - Date: 2026-08-24
 - Decision: Show a top-left reset target while an advanced phoneme timing handle is captured. Its idle geometry follows the MD3 icon-button proportions: a 48dp target, 24dp icon, 12dp internal padding, and 8dp canvas inset. Animate size and semantic error colors with a 150ms cubic ease-out transition when the pointer crosses the target boundary. Suspend value updates while the pointer is over it and reset only the active Offset, Preutter, or Overlap override when released there.
 - Rationale: A capture-scoped target keeps the touch gesture discoverable without permanently consuming panel space. Top-left placement avoids the finger travel and bottom-edge conflict of the earlier centered placement. Resetting with the existing typed commands keeps the change in the same undo group as the drag and preserves command validation and undo behavior.

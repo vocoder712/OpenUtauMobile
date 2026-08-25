@@ -66,6 +66,10 @@ namespace OpenUtauMobile
         public const double NoteResizeHandleGap = 6.0; // 手柄左边缘与音符右边缘的间距（px）
         public const double NoteResizeHandleHitWidth = 32.0; // 命中测试宽度（px，移动端友好）
 
+        // 音高线编辑模式下，音符用于判断绘制意图的扩展命中范围（px）
+        public const double PitchPenNoteHitHorizontalExtension = 60.0;
+        public const double PitchPenNoteHitVerticalExtension = 120.0;
+
         // 钢琴卷帘区横向缩放（PianoRollViewModel.TickWidth，单位：像素/Tick）
         public const double PianoRollTickWidthMax = 1;
         public const double PianoRollTickWidthMin = 8.0 / 480.0;
