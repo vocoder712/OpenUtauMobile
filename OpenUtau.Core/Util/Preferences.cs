@@ -320,6 +320,28 @@ errors.txt
             /// 是否显示全局性能监视悬浮层。
             /// </summary>
             public bool PerformanceMonitorEnabled = false;
+
+            public const int PitchPenNoteHitTickExtensionMinimum = 0;
+            public const int PitchPenNoteHitTickExtensionMaximum = 960;
+            public const int PitchPenNoteHitTickExtensionDefault = 240;
+            public const int PitchPenNoteHitToneExtensionMinimum = 0;
+            public const int PitchPenNoteHitToneExtensionMaximum = 12;
+            public const int PitchPenNoteHitToneExtensionDefault = 1;
+
+            /// <summary>
+            /// 音高线编辑模式下是否允许从扩展音符命中范围外拖拽画布。
+            /// </summary>
+            public bool PitchPenCanvasDragEnabled = true;
+
+            /// <summary>
+            /// 音高线编辑模式下音符命中范围前后扩展的 Tick 数。
+            /// </summary>
+            public int PitchPenNoteHitTickExtension = PitchPenNoteHitTickExtensionDefault;
+
+            /// <summary>
+            /// 音高线编辑模式下音符命中范围上下扩展的半音数。
+            /// </summary>
+            public int PitchPenNoteHitToneExtension = PitchPenNoteHitToneExtensionDefault;
             #endregion
         }
     }

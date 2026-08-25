@@ -204,6 +204,15 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     [Reactive]
     public Point? PitchDrawPointer { get; private set; }
 
+    /// <summary>音高线编辑模式下是否允许从音符命中范围外拖拽画布。</summary>
+    public bool IsPitchPenCanvasDragEnabled { get; }
+
+    /// <summary>扩展音符命中范围前后增加的 Tick 数。</summary>
+    public int PitchPenNoteHitTickExtension { get; }
+
+    /// <summary>扩展音符命中范围上下增加的半音数。</summary>
+    public int PitchPenNoteHitToneExtension { get; }
+
     /// <summary>
     /// 钢琴卷帘当前编辑模式下的上下文操作列表。
     /// 由 RebuildPianoRollContextActions() 重新计算后推送给 ContextActionPanel.Actions。
@@ -651,6 +660,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public PianoRollViewModel()
     {
+        IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
+        PitchPenNoteHitTickExtension = Math.Clamp(
+            Preferences.Default.PitchPenNoteHitTickExtension,
+            Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum,
+            Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMaximum);
+        PitchPenNoteHitToneExtension = Math.Clamp(
+            Preferences.Default.PitchPenNoteHitToneExtension,
+            Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMinimum,
+            Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMaximum);
+
         _toneTimer = new DispatcherTimer();
         _toneTimer.Tick += (_, _) => { StopPreviewTone(); };
 
@@ -1042,8 +1061,6 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     public UNote? HitTestExpandedNote(Point canvasPoint)
     {
-        const int tickExp = 240; // 命中范围扩展：前后各 240 tick
-        const int toneExp = 1; // 命中范围扩展：上下各 1 个半音
         if (EditingVoicePart == null)
         {
             return null;
@@ -1059,12 +1076,14 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
         foreach (UNote note in EditingVoicePart.notes)
         {
-            if (note.position - tickExp > tick)
+            if (note.position - PitchPenNoteHitTickExtension > tick)
             {
                 break;
             }
 
-            if (note.tone + toneExp >= toneInt && toneInt >= note.tone - toneExp && tick < note.End + tickExp)
+            if (note.tone + PitchPenNoteHitToneExtension >= toneInt &&
+                toneInt >= note.tone - PitchPenNoteHitToneExtension &&
+                tick < note.End + PitchPenNoteHitTickExtension)
             {
                 return note;
             }
@@ -1686,7 +1705,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                     break;
                 }
 
-                if (HitTestExpandedNote(point) == null)
+                if (IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
                 {
                     _inputState = PianoRollInputState.Panning;
                     break;

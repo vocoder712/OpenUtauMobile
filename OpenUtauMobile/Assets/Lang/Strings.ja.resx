@@ -231,6 +231,24 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>再生中の自動ページめくり動作の設定</value>
   </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
+    <value>ピッチ編集時のキャンバスドラッグ</value>
+  </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag.Desc" xml:space="preserve">
+    <value>有効にすると、拡張されたノート判定範囲の外側をドラッグしてキャンバスを移動し、内側ではピッチを編集します。</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension" xml:space="preserve">
+    <value>横方向の判定拡張（Tick）</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension.Desc" xml:space="preserve">
+    <value>ノートの前後の判定範囲を 0～960 Tick 拡張します。</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension" xml:space="preserve">
+    <value>縦方向の判定拡張（半音）</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension.Desc" xml:space="preserve">
+    <value>ノートの上下の判定範囲を 0～12 半音拡張します。</value>
+  </data>
   <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
     <value>再生更新レート</value>
   </data>

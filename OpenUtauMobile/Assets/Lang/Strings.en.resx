@@ -231,6 +231,24 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Automatic page-turning behavior during playback</value>
   </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
+    <value>Canvas Dragging in Pitch Editing</value>
+  </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag.Desc" xml:space="preserve">
+    <value>When enabled, dragging outside the expanded note hit area pans the canvas; dragging inside edits pitch.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension" xml:space="preserve">
+    <value>Horizontal Hit Extension (ticks)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension.Desc" xml:space="preserve">
+    <value>Extends the note hit area before and after the note by 0–960 ticks.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension" xml:space="preserve">
+    <value>Vertical Hit Extension (semitones)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension.Desc" xml:space="preserve">
+    <value>Extends the note hit area above and below the note by 0–12 semitones.</value>
+  </data>
   <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
     <value>Playback Refresh Rate</value>
   </data>

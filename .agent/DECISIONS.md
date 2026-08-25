@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-25
+- Decision: Persist PitchPen blank-area canvas dragging as an enabled-by-default preference, with independently configurable note-hit extensions of 0–960 ticks horizontally (default 240) and 0–12 semitones vertically (default 1). Each new PianoRollViewModel snapshots the clamped preference values in its constructor; disabling the feature bypasses the expanded hit test and retains full-canvas pitch drawing.
+- Rationale: Tick/semitone ranges remain stable across zoom levels and let touch users tune intent recognition without changing global note hit testing. Constructor snapshots keep one editor session internally consistent while settings changes apply to subsequently created editors.
+- Alternatives considered: Read preferences during every pointer gesture; update the active piano-roll view model live; keep fixed constants; express expansion in screen pixels.
+- Impacted areas: Mobile preferences, Settings editing-and-behaviour controls and localization, PitchPen/eraser drag initiation, and PianoRollViewModel construction. Other edit modes and the original note hit test are unchanged.
+
+- Date: 2026-08-25
 - Decision: In PitchPen mode, lock the single-finger drag intent from the original press point: begin pitch drawing or erasing only when that point intersects a note rectangle expanded by 60 px horizontally on each side and 120 px vertically on each side; otherwise reuse the existing canvas-pan path.
 - Rationale: The enlarged, screen-space note target makes near-note pitch editing touch-friendly while leaving blank-space drags available for navigation. Resolving the intent once at drag start prevents the gesture from switching between drawing and panning as the pointer moves.
 - Alternatives considered: Always draw in PitchPen mode; switch intent continuously during movement; change the existing note hit test globally; add a new raw pointer-pressed callback to the shared gesture interpreter.

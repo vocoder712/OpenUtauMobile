@@ -231,6 +231,24 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>设置走带时的自动翻页行为</value>
   </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
+    <value>音高编辑模式下拖拽画布</value>
+  </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag.Desc" xml:space="preserve">
+    <value>启用后，在扩展音符命中范围外拖拽会移动画布，范围内拖拽仍编辑音高线。</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension" xml:space="preserve">
+    <value>横向命中扩展（Tick）</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension.Desc" xml:space="preserve">
+    <value>音符前后各扩展 0–960 Tick 的命中范围。</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension" xml:space="preserve">
+    <value>纵向命中扩展（半音）</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension.Desc" xml:space="preserve">
+    <value>音符上下各扩展 0–12 个半音的命中范围。</value>
+  </data>
   <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
     <value>回放刷新率</value>
   </data>
