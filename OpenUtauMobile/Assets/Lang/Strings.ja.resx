@@ -1083,6 +1083,18 @@
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: オーディオをエクスポート</value>
   </data>
+  <data name="EditorMore.TranscribeAudio" xml:space="preserve">
+    <value>音声書き起こし</value>
+  </data>
+  <data name="EditorMore.TranscribeProgress" xml:space="preserve">
+    <value>音声書き起こし中…</value>
+  </data>
+  <data name="EditorMore.Toast.TranscribeDone" xml:space="preserve">
+    <value>書き起こし完了</value>
+  </data>
+  <data name="EditorMore.Toast.TranscribeFailed" xml:space="preserve">
+    <value>書き起こしに失敗しました</value>
+  </data>
   <data name="ExportAudioPopup.Title" xml:space="preserve">
     <value>オーディオを書き出し</value>
   </data>

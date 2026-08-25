@@ -1086,6 +1086,18 @@
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: 导出音频功能</value>
   </data>
+  <data name="EditorMore.TranscribeAudio" xml:space="preserve">
+    <value>音频转写</value>
+  </data>
+  <data name="EditorMore.TranscribeProgress" xml:space="preserve">
+    <value>正在转写音频…</value>
+  </data>
+  <data name="EditorMore.Toast.TranscribeDone" xml:space="preserve">
+    <value>转写完成</value>
+  </data>
+  <data name="EditorMore.Toast.TranscribeFailed" xml:space="preserve">
+    <value>转写失败</value>
+  </data>
   <data name="ExportAudioPopup.Title" xml:space="preserve">
     <value>导出音频</value>
   </data>

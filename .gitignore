@@ -453,3 +453,16 @@ $RECYCLE.BIN/
 
 ## 质量分析
 analysis/
+
+# OpenUtauMobile native/ (game_capi shim) build artifacts
+native/build*/
+native/*/build*/
+native/**/_deps/
+native/**/CMakeCache.txt
+native/**/CMakeFiles/
+native/**/cmake_install.cmake
+native/**/CTestTestfile.cmake
+native/**/Testing/
+
+# Machine-specific CMake user presets (keep local absolute paths out of the repo)
+native/CMakeUserPresets.json

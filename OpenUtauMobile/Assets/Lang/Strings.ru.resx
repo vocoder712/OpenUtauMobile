@@ -1009,6 +1009,18 @@
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: Экспорт аудио</value>
   </data>
+  <data name="EditorMore.TranscribeAudio" xml:space="preserve">
+    <value>Транскрипция аудио</value>
+  </data>
+  <data name="EditorMore.TranscribeProgress" xml:space="preserve">
+    <value>Идёт транскрипция…</value>
+  </data>
+  <data name="EditorMore.Toast.TranscribeDone" xml:space="preserve">
+    <value>Транскрипция завершена</value>
+  </data>
+  <data name="EditorMore.Toast.TranscribeFailed" xml:space="preserve">
+    <value>Не удалось выполнить транскрипцию</value>
+  </data>
   <data name="ExportAudioPopup.Title" xml:space="preserve">
     <value>Экспорт аудио</value>
   </data>

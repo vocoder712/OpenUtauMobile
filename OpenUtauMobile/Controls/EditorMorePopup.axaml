@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -66,6 +66,13 @@
                                 Command="{Binding ConfirmCommand}">
                             <Button.CommandParameter>
                                 <vm:EditorMoreAction>ImportTrack</vm:EditorMoreAction>
+                            </Button.CommandParameter>
+                        </Button>
+                        <Button Classes="ActionBtn"
+                                Content="{DynamicResource EditorMore.TranscribeAudio}"
+                                Command="{Binding ConfirmCommand}">
+                            <Button.CommandParameter>
+                                <vm:EditorMoreAction>TranscribeAudio</vm:EditorMoreAction>
                             </Button.CommandParameter>
                         </Button>
                     </StackPanel>

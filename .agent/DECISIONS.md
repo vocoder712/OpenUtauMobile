@@ -1,4 +1,4 @@
-﻿# Decisions Log
+# Decisions Log
 
 Record meaningful technical decisions here. Use one entry per decision.
 
@@ -36,6 +36,53 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Give the parameter panel a second magnifier; change the magnifier source to the parameter canvas; reuse pitch events while applying fixed row offsets.
 - Impacted areas: Parameter-curve pointer lifecycle, phoneme-parameter panel event forwarding, and editor magnifier coordinate routing. Existing pitch editing and magnifier source selection are unchanged.
 
+- Date: 2026-08-24
+- Decision: M4 — wire GAME transcription into the Mobile layer by subclassing Core's `MidiExtractor<GameOptions>` (`GameGgmlMidiExtractor`), replacing only `TranscribeWaveform` to call our `GameGgml.Infer`; add an EditorMore "Transcribe Audio" action + progress popup.
+- Rationale: Core's base MidiExtractor already owns the battle-tested orchestration (mono conversion, 44.1k resample, AudioSlicer chunking, tick conversion, UVoicePart assembly). Subclassing lets us reuse all of it without touching Core, swapping only the inference backend ONNX→ggml C ABI. This is consistent with the "don't modify Core" constraint (read-only reuse).
+- Alternatives considered: A standalone mobile-side transcriber duplicating mono/resample/part-assembly (more code, risk of subtle timing divergence from Core); modifying Core to swap backend (violates constraint).
+- Impacted areas: OpenUtauMobile/Services/Game/GameGgmlMidiExtractor.cs; EditorMoreAction enum; EditorMorePopup.axaml; EditorViewModel; 5 resx files; M4 UI flow.
+
+- Date: 2026-08-24
+- Decision: (SUPERSEDED below) M3 originally bundled the Q8 GAME weights directly into the shared project as an EmbeddedResource copied from a checked-in `Models/game_medium.gguf`. This proved unworkable for repo hygiene (55 MB binary in git), so it was replaced by the build-time `.oudep` extraction decision immediately below. Net effect on impacted areas unchanged: model still ships with the app, still materialized to `LocalApplicationData/game/` at runtime, same `GameModelResolver` code path.
+- Rationale: See superseding decision below.
+- Alternatives considered: AndroidAsset + platform copy; runtime download.
+- Impacted areas: OpenUtauMobile.csproj, Services/Game/*, M4 wiring, M5 packaging/APK size.
+
+- Date: 2026-08-24
+- Decision: Do NOT commit the model binary. Extract `game_medium.gguf` at **build time** from the local game.cpp release `.oudep` (zip; `J:\GGML-GAME\vendor\game-cpp-release\game_ggml-windows-x64-vulkan-q8.oudep`) into `obj/` and register that copy as an EmbeddedResource so the shared assembly still carries the model. If the local `.oudep` is absent, download it from the pinned GitHub release URL (HEAD-verified 200) via `tools/extract_game_model.ps1` (property `GameOudepLocalPath`/`GameOudepUrl`/`GameModelLogicalName` + `EnsureGameEmbeddedModel` MSBuild target). Delete the `Models/` directory. Desktop C# smoke verified: deleting the local model reproduces a fresh unpack from the assembly (57.7 MB) — packaging chain is complete.
+- Rationale: The app needs the model in the assembly for zero-network installs, but a 57 MB binary doesn't belong in git. Building from the release `.oudep` recovers it deterministically and reproducibly without a checked-in blob, keyed to the pinned game.cpp v0.1.3.
+- Alternatives considered (superseded): committing Models/game_medium.gguf into git; AndroidAsset-only packing; runtime download (needs network at first run, rejected).
+- Impacted areas: OpenUtauMobile.csproj (`EnsureGameEmbeddedModel` target + properties), `tools/extract_game_model.ps1` (new), Services/Game/GameModelResolver.cs, M5 packaging/APK size (~55 MB in APK).
+
+- Date: 2026-08-24
+- Decision: Use `.NET 10 [LibraryImport]` source-generated P/Invoke with explicit `EntryPoint = "game_capi_*"` for the 9 C exports; enable `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>` in the shared project.
+- Rationale: LibraryImport is AOT/trim-safe on mobile, and sourcegen needs AllowUnsafeBlocks. Without `EntryPoint`, the generator resolves the native symbol from the C# method name (`Version`→`game_capi_version`), causing EntryPointNotFoundException at runtime — caught by the C# desktop smoke.
+- Alternatives considered: Classic DllImport (works but trimming/AOT riskier on Android); no-entry-point naming trick (would obscure intent).
+- Impacted areas: GameGgmlNative.cs, OpenUtauMobile/OpenUtauMobile.csproj, future Android interop.
+
+- Date: 2026-08-24
+- Decision: Installed user-scoped .NET SDK 10.0.300 (+10.0.400 via channel) to `%USERPROFILE%\.dotnet` using the official dotnet-install script (no admin), because the machine only had .NET 8.0.424/9.0.317 while global.json pins 10.0.300.
+- Rationale: Without the matching SDK the shared project (net10.0) cannot compile at all, blocking M3+; the user asked to continue M3. User-scoped install avoids admin and Program Files writes.
+- Alternatives considered: Relaxing global.json to accept 9.0.x (breaks the .NET 10 migration decision); changing global.json band to 10.0.4xx (premature — upstream pins 10.0.300).
+- Impacted areas: Local toolchain, all future `dotnet build` commands must use `%USERPROFILE%\.dotnet\dotnet.exe` or PATH.
+
+- Date: 2026-08-24
+- Decision: Configure all Android ABIs through `native/CMakeUserPresets.json` + `cmake --preset`, with NDK toolchain / ninja / all `-D` (ANDROID_PLATFORM=24, ANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=OFF, GGML_NATIVE=OFF, GGML_OPENMP=OFF, BUILD_SHARED_LIBS=OFF, GGML_BACKEND_DL=OFF, GAME_GGML_LLAMAFILE=OFF, accelerators OFF) baked into one hidden `android-common` preset; `--fresh` + retry loop around each configure.
+- Rationale: PowerShell 5.1 passing `-DCMAKE_TOOLCHAIN_FILE=...` on the cmake command line split/quoted args, producing empty CMAKE_MAKE_PROGRAM and broken configure. The preset route writes every option as cache variables in one validated block, is reproducible, and avoids fragile array/quoting.
+- Alternatives considered: Start-Process -ArgumentList array; temporary .bat with quoted args — all more fragile than a checked-in preset.
+- Impacted areas: native/CMakeUserPresets.json; build-android-{arm64,arm,x86,x64}; OpenUtauMobile.Android/Libs/<abi>/libgame_ggml_shared.so (4 files); HANDOFF.md.
+
+- Date: 2026-08-24
+- Decision: In ggml v0.19 use standard `BUILD_SHARED_LIBS=OFF` (not `GGML_SHARED`, which ggml v0.19 does not define; it was silently ignored). Also disable `GAME_GGML_LLAMAFILE` for all Android ABIs.
+- Rationale: `GGML_SHARED=OFF` had no effect — ggml still emitted shared libs, contradicting the static-link plan. Setting the real option `BUILD_SHARED_LIBS=OFF` (plus GGML_BACKEND_DL=OFF) makes ggml static (.a) and merges everything into a single self-contained game_ggml_shared.so whose NEEDED is only libc/libm/libdl. LLAMAFILE must be off for armeabi-v7a (ARMv7 lacks the FP16 NEON intrinsics vld1q_f16/vld1_f16 used by llamafile sgemm.cpp), and off everywhere keeps the 4 ABIs consistent and smaller.
+- Alternatives considered: Keep GGML_SHARED=OFF; build shared ggml and ship the extra .so.
+- Impacted areas: native/CMakeUserPresets.json; all Android build outputs and the delivered .so; version-consistent reproducible builds.
+
+- Date: 2026-08-22
+- Decision: Deep-embed KakaruHayate/game.cpp (GAME ggml inference) into OpenUtauMobile as a `native/` submodule plus a C ABI shim, replacing the ONNX-based GAME path entirely; no plugin/switching framework, no subprocess, every platform ships the CPU backend with GPU-first runtime fallback (Vulkan/Metal/CUDA as compiled).
+- Rationale: ONNX Runtime GAME is far too heavy for mobile and effectively infeasible to ship; embedding game.cpp natively is the only viable path. The per-platform accelerator is chosen at build time (Metal on Apple, Vulkan/CUDA on desktop, Vulkan on Android) and `init_best_backend()` provides GPU→CPU fallback automatically, so a single C ABI (`game_capi`) is all the .NET layer needs. Keep the user's fork as the build baseline and git-submodule the upstream game.cpp pinned to release v0.1.3.
+- Alternatives considered: ONNX Runtime Electron/CLI subprocess (.oudep Executable) — rejected for iOS sandbox and mobile memory; plugin-switching framework — rejected as over-engineering; using only prebuilt release .oudep binaries — no long-term mobile control.
+- Impacted areas: New `native/` tree (game.cpp submodule + shim + CMake host); C# `GameGgml` integration code placed in the Mobile layer (not `OpenUtau.Core`); future Android/Windows/Linux/macOS/iOS ship artifacts; CI additions.
 - Date: 2026-08-22
 - Decision: Give each rendered note pitch-bend curve its own finalized `StreamGeometry` instead of submitting the shared mutable `Points` and `PolylineGeometry` caches.
 - Rationale: Every `RenderPitchBend` call cleared and repopulated the same point collection retained by earlier drawing commands, so the last visible note replaced the curves submitted for all preceding notes.
