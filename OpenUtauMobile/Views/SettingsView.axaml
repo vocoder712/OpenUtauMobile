@@ -349,7 +349,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Edit.PianoKeyBehavior}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.PianoKeyBehavior.Desc}" />
@@ -376,7 +376,7 @@
                                                 IsVisible="{Binding SelectedPianoKeyBehavior.Value,
                                                     Converter={StaticResource EnumEqual},
                                                     ConverterParameter=SoundFont}">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Edit.SoundFontPath}" />
                                         <Grid ColumnDefinitions="*,Auto">
                                             <Border Grid.Column="0"
@@ -415,7 +415,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Edit.AutoScrollBehavior}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.AutoScrollBehavior.Desc}" />
@@ -436,7 +436,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Edit.StopButtonBehavior}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.StopButtonBehavior.Desc}" />
@@ -453,16 +453,79 @@
                                 </StackPanel>
                             </Border>
 
+                            <!-- 音高线编辑模式画布拖拽 -->
+                            <Border Classes="SettingCard">
+                                <StackPanel Spacing="12">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                        <StackPanel Grid.Column="0" Spacing="2">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.PitchPenCanvasDrag}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.PitchPenCanvasDrag.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      IsChecked="{Binding PitchPenCanvasDragEnabled, Mode=TwoWay}"
+                                                      OffContent=""
+                                                      OnContent=""
+                                                      VerticalAlignment="Center" />
+                                    </Grid>
+
+                                    <Border Height="1"
+                                            Margin="-20,0,-20,0"
+                                            Opacity="0.08"
+                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+
+                                    <StackPanel Spacing="8" IsEnabled="{Binding PitchPenCanvasDragEnabled}">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                            <StackPanel Grid.Column="0" Spacing="2">
+                                                <TextBlock Classes="SettingItemTitle"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension}" />
+                                                <TextBlock Classes="PlaceholderText"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension.Desc}"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding PitchPenNoteHitTickExtension}"
+                                                       VerticalAlignment="Center"
+                                                       Opacity="0.65" />
+                                        </Grid>
+                                        <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMinimum}"
+                                                Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMaximum}"
+                                                Value="{Binding PitchPenNoteHitTickExtension, Mode=TwoWay}"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True" />
+
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="0,8,0,0">
+                                            <StackPanel Grid.Column="0" Spacing="2">
+                                                <TextBlock Classes="SettingItemTitle"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension}" />
+                                                <TextBlock Classes="PlaceholderText"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension.Desc}"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding PitchPenNoteHitToneExtension}"
+                                                       VerticalAlignment="Center"
+                                                       Opacity="0.65" />
+                                        </Grid>
+                                        <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMinimum}"
+                                                Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMaximum}"
+                                                Value="{Binding PitchPenNoteHitToneExtension, Mode=TwoWay}"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
                             <!-- 回放刷新率 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="8">
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
-                                                   FontSize="14"
-                                                   FontWeight="SemiBold" />
+                                                   Classes="SettingItemTitle" />
                                         <TextBlock Text="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
-                                                   FontSize="13"
-                                                   Opacity="0.65" />
+                                                   Classes="PlaceholderText" />
                                     </StackPanel>
                                     <Slider Minimum="1" Maximum="60"
                                             Value="{Binding PlaybackRefreshRate, Mode=TwoWay}"
@@ -478,7 +541,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Edit.ShowPortrait}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.ShowPortrait.Desc}" />
@@ -494,11 +557,9 @@
                                 <StackPanel Spacing="8">
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="{DynamicResource Settings.Edit.UndoLimit}"
-                                                   FontSize="14"
-                                                   FontWeight="SemiBold" />
+                                                   Classes="SettingItemTitle" />
                                         <TextBlock Text="{Binding UndoLimit, StringFormat='{}{0} steps'}"
-                                                   FontSize="13"
-                                                   Opacity="0.65" />
+                                                   Classes="PlaceholderText" />
                                     </StackPanel>
                                     <Slider Minimum="10" Maximum="100"
                                             Value="{Binding UndoLimit, Mode=TwoWay}"
@@ -515,24 +576,20 @@
                                 <StackPanel Spacing="8">
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
-                                                   FontSize="14"
-                                                   FontWeight="SemiBold" />
+                                                   Classes="SettingItemTitle" />
                                         <StackPanel Orientation="Horizontal" Spacing="4">
                                             <TextBlock Text="{Binding AutoSaveInterval}"
-                                                       FontSize="13"
-                                                       Opacity="0.65" />
+                                                       Classes="PlaceholderText" />
                                             <TextBlock Text="s"
-                                                       FontSize="13"
-                                                       Opacity="0.65" />
+                                                       Classes="PlaceholderText" />
                                         </StackPanel>
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Spacing="12">
+                                        <TextBlock Text="{DynamicResource Settings.Edit.AutoSave.Enabled}"
+                                                   Classes="PlaceholderText" />          
                                         <ToggleSwitch IsChecked="{Binding AutoSaveEnabled}"
                                                       OffContent=""
                                                       OnContent="" />
-                                        <TextBlock Text="{DynamicResource Settings.Edit.AutoSave.Enabled}"
-                                                   VerticalAlignment="Center"
-                                                   FontSize="13" />
                                     </StackPanel>
                                     <Slider Minimum="30" Maximum="600"
                                             Value="{Binding AutoSaveInterval, Mode=TwoWay}"
@@ -560,7 +617,7 @@
                             <Border Classes="SettingCard">
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Render.PerformanceMonitor}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Render.PerformanceMonitor.Desc}"
@@ -577,17 +634,15 @@
                             <!-- DiffSinger 推理参数 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="16">
-                                    <TextBlock Classes="SectionLabel"
+                                    <TextBlock Classes="SettingItemTitle"
                                                Text="{DynamicResource Settings.Render.DiffSingerParams}" />
 
                                     <StackPanel Spacing="8">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{DynamicResource Settings.Render.AcousticSteps}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold" />
+                                                       Classes="SettingItemTitle" />
                                             <TextBlock Text="{Binding DiffSingerSteps, StringFormat='{}{0} steps'}"
-                                                       FontSize="13"
-                                                       Opacity="0.65" />
+                                                       Classes="PlaceholderText" />
                                         </StackPanel>
                                         <Slider Minimum="1" Maximum="100"
                                                 Value="{Binding DiffSingerSteps, Mode=TwoWay}"
@@ -606,11 +661,9 @@
                                     <StackPanel Spacing="8">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{DynamicResource Settings.Render.VarianceSteps}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold" />
+                                                       Classes="SettingItemTitle" />
                                             <TextBlock Text="{Binding DiffSingerStepsVariance, StringFormat='{}{0} steps'}"
-                                                       FontSize="13"
-                                                       Opacity="0.65" />
+                                                       Classes="PlaceholderText" />
                                         </StackPanel>
                                         <Slider Minimum="1" Maximum="100"
                                                 Value="{Binding DiffSingerStepsVariance, Mode=TwoWay}"
@@ -629,11 +682,9 @@
                                     <StackPanel Spacing="8">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{DynamicResource Settings.Render.PitchSteps}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold" />
+                                                       Classes="SettingItemTitle" />
                                             <TextBlock Text="{Binding DiffSingerStepsPitch, StringFormat='{}{0} steps'}"
-                                                       FontSize="13"
-                                                       Opacity="0.65" />
+                                                       Classes="PlaceholderText" />
                                         </StackPanel>
                                         <Slider Minimum="1" Maximum="100"
                                                 Value="{Binding DiffSingerStepsPitch, Mode=TwoWay}"
@@ -650,7 +701,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Render.OnnxRunner}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Render.OnnxRunner.Desc}" />
@@ -678,7 +729,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Render.PreRender}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Render.PreRender.Desc}" />
@@ -697,11 +748,9 @@
                                                 IsVisible="{Binding PreRenderEnabled}">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{DynamicResource Settings.Render.ThreadCount}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold" />
+                                                       Classes="SettingItemTitle" />
                                             <TextBlock Text="{Binding NumRenderThreads, StringFormat='{}{0} threads'}"
-                                                       FontSize="13"
-                                                       Opacity="0.65" />
+                                                       Classes="PlaceholderText" />
                                         </StackPanel>
                                         <Slider Minimum="1" Maximum="16"
                                                 Value="{Binding NumRenderThreads, Mode=TwoWay}"
@@ -717,17 +766,15 @@
                             <!-- 音频输出设置 -->
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="16">
-                                    <TextBlock Classes="SectionLabel"
+                                    <TextBlock Classes="SettingItemTitle"
                                                Text="{DynamicResource Settings.Render.AudioOutput}" />
 
                                     <StackPanel Spacing="12">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{DynamicResource Settings.Render.AudioBackend}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold" />
+                                                       Classes="SettingItemTitle" />
                                             <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Render.AudioBackend.Desc}"
-                                                       FontSize="12" />
+                                                       Text="{DynamicResource Settings.Render.AudioBackend.Desc}"/>
                                         </StackPanel>
                                         <ComboBox HorizontalAlignment="Stretch"
                                                   ItemsSource="{Binding AvailableAudioBackends}"
@@ -748,8 +795,7 @@
                                     <StackPanel Spacing="8">
                                         <StackPanel Spacing="2">
                                             <TextBlock Text="{DynamicResource Settings.Render.OutputDevice}"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold" />
+                                                       Classes="SettingItemTitle" />
                                             <TextBlock Classes="PlaceholderText"
                                                        Text="{DynamicResource Settings.Render.OutputDevice.Desc}"
                                                        FontSize="12" />
@@ -793,7 +839,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.File.AdditionalSingerPath}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.File.AdditionalSingerPath.Desc}" />
@@ -835,7 +881,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="10">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.File.RenderCache}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.File.RenderCache.Desc}" />
@@ -862,7 +908,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Appearance.Theme}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Appearance.Theme.Desc}" />
@@ -883,7 +929,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Appearance.ThemeColor}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Appearance.ThemeColor.Desc}" />
@@ -926,7 +972,7 @@
                                         </Grid>
 
                                         <StackPanel Spacing="6">
-                                            <TextBlock Classes="SectionLabel"
+                                            <TextBlock Classes="SettingItemTitle"
                                                        Text="{DynamicResource Settings.Appearance.ThemeColor.Presets}" />
                                             <ItemsControl ItemsSource="{Binding PresetSeedColors}">
                                                 <ItemsControl.ItemsPanel>
@@ -971,7 +1017,7 @@
                             <Border Classes="SettingCard">
                                 <StackPanel Spacing="12">
                                     <StackPanel Spacing="2">
-                                        <TextBlock Classes="SectionLabel"
+                                        <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Appearance.Language}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Appearance.Language.Desc}" />

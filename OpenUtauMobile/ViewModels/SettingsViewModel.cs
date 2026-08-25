@@ -311,6 +311,15 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> ClearRenderCacheCommand { get; }
 
     // ── Edit & Behaviour ─────────────────────────────────────────────
+    public const double PitchPenNoteHitTickExtensionSliderMinimum =
+        Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum;
+    public const double PitchPenNoteHitTickExtensionSliderMaximum =
+        Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMaximum;
+    public const double PitchPenNoteHitToneExtensionSliderMinimum =
+        Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMinimum;
+    public const double PitchPenNoteHitToneExtensionSliderMaximum =
+        Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMaximum;
+
     /// <summary>可选钢琴键行为列表。</summary>
     public IReadOnlyList<PianoKeyBehaviorOption> AvailablePianoKeyBehaviors { get; } = new List<PianoKeyBehaviorOption>
     {
@@ -373,6 +382,18 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>撤销步数上限（10-100）。</summary>
     [Reactive]
     public int UndoLimit { get; set; }
+
+    /// <summary>音高线编辑模式下是否允许拖拽画布。</summary>
+    [Reactive]
+    public bool PitchPenCanvasDragEnabled { get; set; }
+
+    /// <summary>扩展音符命中范围前后增加的 Tick 数。</summary>
+    [Reactive]
+    public int PitchPenNoteHitTickExtension { get; set; }
+
+    /// <summary>扩展音符命中范围上下增加的半音数。</summary>
+    [Reactive]
+    public int PitchPenNoteHitToneExtension { get; set; }
 
     /// <summary>自动保存间隔秒数（0=禁用，30-600）。</summary>
     [Reactive]
@@ -608,10 +629,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             })
             .DisposeWith(_disposables);
 
-        // 编辑与行为：回放刷新率 / 立绘开关 / 撤销上限
+        // 编辑与行为：回放刷新率 / 立绘开关 / 撤销上限 / 音高线拖拽
         PlaybackRefreshRate = Math.Clamp((int)Math.Round(Preferences.Default.PlaybackRefreshRate), 1, 60);
         ShowPortraitEnabled = Preferences.Default.ShowPortrait;
         UndoLimit = Math.Clamp(Preferences.Default.UndoLimit, 10, 100);
+        PitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
+        PitchPenNoteHitTickExtension = Math.Clamp(
+            Preferences.Default.PitchPenNoteHitTickExtension,
+            Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum,
+            Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMaximum);
+        PitchPenNoteHitToneExtension = Math.Clamp(
+            Preferences.Default.PitchPenNoteHitToneExtension,
+            Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMinimum,
+            Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMaximum);
 
         this.WhenAnyValue(x => x.PlaybackRefreshRate)
             .Skip(1)
@@ -650,6 +680,53 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 }
 
                 Preferences.Default.UndoLimit = clamped;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.PitchPenCanvasDragEnabled)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.PitchPenCanvasDragEnabled = enabled;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.PitchPenNoteHitTickExtension)
+            .Skip(1)
+            .Subscribe(value =>
+            {
+                int clamped = Math.Clamp(
+                    value,
+                    Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum,
+                    Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMaximum);
+                if (clamped != value)
+                {
+                    PitchPenNoteHitTickExtension = clamped;
+                    return;
+                }
+
+                Preferences.Default.PitchPenNoteHitTickExtension = clamped;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.PitchPenNoteHitToneExtension)
+            .Skip(1)
+            .Subscribe(value =>
+            {
+                int clamped = Math.Clamp(
+                    value,
+                    Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMinimum,
+                    Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMaximum);
+                if (clamped != value)
+                {
+                    PitchPenNoteHitToneExtension = clamped;
+                    return;
+                }
+
+                Preferences.Default.PitchPenNoteHitToneExtension = clamped;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);

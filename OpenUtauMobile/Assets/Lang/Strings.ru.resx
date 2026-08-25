@@ -172,6 +172,24 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Поведение автоматической прокрутки во время воспроизведения</value>
   </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
+    <value>Перетаскивание холста при редактировании высоты</value>
+  </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag.Desc" xml:space="preserve">
+    <value>Если включено, перетаскивание вне расширенной области ноты перемещает холст, а внутри редактирует высоту.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension" xml:space="preserve">
+    <value>Расширение по горизонтали (тики)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension.Desc" xml:space="preserve">
+    <value>Расширяет область ноты до и после неё на 0–960 тиков.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension" xml:space="preserve">
+    <value>Расширение по вертикали (полутоны)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension.Desc" xml:space="preserve">
+    <value>Расширяет область ноты сверху и снизу на 0–12 полутонов.</value>
+  </data>
   <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
     <value>Частота обновления воспроизведения</value>
   </data>

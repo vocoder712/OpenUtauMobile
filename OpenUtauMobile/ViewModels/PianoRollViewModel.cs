@@ -204,6 +204,15 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     [Reactive]
     public Point? PitchDrawPointer { get; private set; }
 
+    /// <summary>音高线编辑模式下是否允许从音符命中范围外拖拽画布。</summary>
+    public bool IsPitchPenCanvasDragEnabled { get; }
+
+    /// <summary>扩展音符命中范围前后增加的 Tick 数。</summary>
+    public int PitchPenNoteHitTickExtension { get; }
+
+    /// <summary>扩展音符命中范围上下增加的半音数。</summary>
+    public int PitchPenNoteHitToneExtension { get; }
+
     /// <summary>
     /// 钢琴卷帘当前编辑模式下的上下文操作列表。
     /// 由 RebuildPianoRollContextActions() 重新计算后推送给 ContextActionPanel.Actions。
@@ -329,7 +338,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     private double _cachedMaxKeyOffset;
     public double ContentEndTick;
     
-    private bool _hasSkippedFirstPianoRollEditModeChange = false; // 用于跳过第一次 EditMode 变更的 Toast 提示
+    private bool _hasSkippedFirstPianoRollEditModeChange; // 用于跳过第一次 EditMode 变更的 Toast 提示
     #endregion
 
     /// <summary>
@@ -419,7 +428,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         _portraitCts?.Cancel();
         _portraitCts?.Dispose();
         _portraitCts = new CancellationTokenSource();
-        var token = _portraitCts.Token;
+        CancellationToken token = _portraitCts.Token;
 
         // 2. 捕获当前请求的 VoicePart
         UVoicePart? targetPart = EditingVoicePart;
@@ -651,6 +660,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public PianoRollViewModel()
     {
+        IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
+        PitchPenNoteHitTickExtension = Math.Clamp(
+            Preferences.Default.PitchPenNoteHitTickExtension,
+            Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum,
+            Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMaximum);
+        PitchPenNoteHitToneExtension = Math.Clamp(
+            Preferences.Default.PitchPenNoteHitToneExtension,
+            Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMinimum,
+            Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMaximum);
+
         _toneTimer = new DispatcherTimer();
         _toneTimer.Tick += (_, _) => { StopPreviewTone(); };
 
@@ -725,7 +744,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
         // 音素面板模式切换监听
         this.WhenAnyValue(x => x.PhonemePanelMode)
-            .Subscribe(mode =>
+            .Subscribe(_ =>
             {
                 this.RaisePropertyChanged(nameof(IsPhonemeSimpleMode));
                 this.RaisePropertyChanged(nameof(IsPhonemeAdvancedMode));
@@ -1029,6 +1048,42 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             }
 
             if (note.tone == toneInt && tick < note.End)
+            {
+                return note;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 在音符显示矩形四周扩展命中范围，用于音高线编辑模式判断落笔意图。
+    /// </summary>
+    public UNote? HitTestExpandedNote(Point canvasPoint)
+    {
+        if (EditingVoicePart == null)
+        {
+            return null;
+        }
+
+        int tick = PointXToTick(canvasPoint.X) - EditingVoicePart.position;
+        if (tick < 0)
+        {
+            return null;
+        }
+
+        int toneInt = PointYToToneInt(canvasPoint.Y);
+
+        foreach (UNote note in EditingVoicePart.notes)
+        {
+            if (note.position - PitchPenNoteHitTickExtension > tick)
+            {
+                break;
+            }
+
+            if (note.tone + PitchPenNoteHitToneExtension >= toneInt &&
+                toneInt >= note.tone - PitchPenNoteHitToneExtension &&
+                tick < note.End + PitchPenNoteHitTickExtension)
             {
                 return note;
             }
@@ -1344,7 +1399,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     private VibratoOverlayHit? HitTestVibratoControl(Point point)
     {
         VibratoOverlayLayout? maybeLayout = GetActiveVibratoOverlayLayout();
-        if (maybeLayout is not VibratoOverlayLayout layout)
+        if (maybeLayout is not { } layout)
         {
             return null;
         }
@@ -1528,11 +1583,11 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
                 break;
             case PianoRollEditMode.Anchor:
-                if (HitTestPitchPoint(point) is PitchPointHit anchorHit)
+                if (HitTestPitchPoint(point) is { } anchorHit)
                 {
                     SelectSingleAnchor(anchorHit.Note, anchorHit.Point);
                 }
-                else if (HitTestPitchCurve(point) is PitchCurveHit curveHit)
+                else if (HitTestPitchCurve(point) is { } curveHit)
                 {
                     InsertAnchorAtCurveHit(curveHit);
                 }
@@ -1650,6 +1705,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                     break;
                 }
 
+                if (IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
+                {
+                    _inputState = PianoRollInputState.Panning;
+                    break;
+                }
+
                 _inputState = PianoRollInputState.DrawingPitch;
                 IsPitchDrawingActive = true;
                 PitchDrawPointer = point;
@@ -1661,12 +1722,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 RequestInvalidateVisual?.Invoke();
                 break;
             case PianoRollEditMode.Anchor:
-                if (HitTestPitchPoint(point) is PitchPointHit anchorHit)
+                if (HitTestPitchPoint(point) is { } anchorHit)
                 {
                     SelectSingleAnchor(anchorHit.Note, anchorHit.Point);
                     StartToMoveAnchors();
                 }
-                else if (HitTestPitchCurve(point) is PitchCurveHit curveHit)
+                else if (HitTestPitchCurve(point) is { } curveHit)
                 {
                     StartToInsertAndMoveAnchor(curveHit);
                 }
@@ -1678,7 +1739,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
                 break;
             case PianoRollEditMode.Vibrato:
-                if (HitTestVibratoControl(point) is VibratoOverlayHit vibratoHit)
+                if (HitTestVibratoControl(point) is { } vibratoHit)
                 {
                     StartToEditVibrato(vibratoHit);
                 }
@@ -2528,8 +2589,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             return;
         }
 
-        var project = DocManager.Inst.Project;
-        var notes = DocManager.Inst.NotesClipboard.Select(n => n.Clone()).ToList();
+        UProject project = DocManager.Inst.Project;
+        List<UNote> notes = DocManager.Inst.NotesClipboard.Select(n => n.Clone()).ToList();
 
         int left = PlayPosTick;
         int minPosition = notes.Min(n => n.position);
@@ -3093,7 +3154,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     private static UVibrato CreateDefaultVibrato(float length)
     {
-        var preset = NotePresets.Default.DefaultVibrato;
+        NotePresets.VibratoPreset preset = NotePresets.Default.DefaultVibrato;
         return new UVibrato
         {
             length = length,
