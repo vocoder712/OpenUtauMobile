@@ -21,7 +21,7 @@ public static class LocalizationManager
     public const string FollowSystemLanguageCode = "system";
 
     private const string ExplicitLanguageFallbackCode = "en";
-    private const string SystemLanguageFallbackCode = "zh-Hans";
+    private const string SystemLanguageFallbackCode = "en";
 
     /// <summary>Supported languages (language code => display name).</summary>
     public static readonly IReadOnlyList<(string Code, string DisplayName)> AvailableLanguages =
