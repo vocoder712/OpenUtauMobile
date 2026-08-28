@@ -216,3 +216,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Clear pending toast messages during shutdown; keep invoking a captured consumer after its view detaches; move toast lifetime management into the Windows host.
 - Impacted areas: Shared toast callback registration and shutdown behavior on all application hosts.
 
+- Date: 2026-08-28
+- Decision: Use `main.yml` as the sole independently triggered build workflow, derive the shared integer build number as `github.run_number + 20000`, and pass it into a reusable full-platform workflow; derive product versions from reachable `v2.X.Y.Z` tags for dev Canary builds and from validated manual input for release builds. This supersedes the earlier `10000 + GITHUB_RUN_NUMBER` Android version-code rule.
+- Rationale: Renaming the workflow resets its run-number sequence, so the 20000 offset prevents integer-version downgrade while keeping every platform artifact, build metadata field, and Android version code on one value. Product versions and optional GitHub Releases retain separate lifecycles, and the annotated tag is created only after every reusable-workflow build job succeeds.
+- Alternatives considered: Keep separate manual and automatic workflows using unrelated run numbers; hardcode the product version in MSBuild properties; create a tag or Release before compiling all platforms.
+- Impacted areas: GitHub Actions build/release orchestration, artifact version metadata, Android version-code inputs, and local version fallback in `Directory.Build.props`.
+
