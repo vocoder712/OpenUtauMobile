@@ -33,7 +33,6 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 - Expression parameter display and editing.
 - Rendered waveform display.
 - Deleting singers.
-- Opening external URL links.
 - Intent filter: opening project/audio files.
 - Help/tutorial system.
 - Log export.

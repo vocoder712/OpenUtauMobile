@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-29
+- Decision: Introduce an asynchronous Mobile-layer external URL launcher that accepts only absolute HTTP/HTTPS URLs and is injected through `ServiceHub`; implement native launchers for Android, Windows, Linux, macOS, iOS, and browser WASM.
+- Rationale: A typed service keeps MVVM callers independent of platform APIs, reports launch failure without exceptions reaching commands, and fits the existing ServiceHub host-injection pattern. Restricting schemes to web URLs prevents About-page links from unexpectedly opening mail, telephone, or custom-scheme handlers.
+- Alternatives considered: Put `OperatingSystem` branches in AboutViewModel; expose a raw `Action<string>` delegate; allow every absolute URI scheme; use one shell command on every desktop platform.
+- Impacted areas: Shared services, platform bootstraps, browser JS module, and About-page homepage/feedback actions. OpenUtau.Core is unchanged.
+
+- Date: 2026-08-29
 - Decision: Treat parameter-curve sample positions as voice-part-relative ticks, add the active part position only when mapping them into the absolute piano-roll canvas, and clip all parameter rendering and pointer edits to the active `UVoicePart` interval.
 - Rationale: `UCurve.xs` and `SetCurveCommand` use part-relative ticks, while the parameter canvas scroll offset uses absolute project ticks. Mixing those spaces made both curve rendering/pruning and edits diverge from synthesized output whenever the part position was nonzero, and allowed default/reference lines to extend beyond the part.
 - Alternatives considered: Store absolute ticks in curves; offset only the rendered geometry without correcting input; rely only on the control bounds rather than a part-range clip.
