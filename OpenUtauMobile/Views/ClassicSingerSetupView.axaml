@@ -265,6 +265,8 @@
                                                    FontSize="11" TextWrapping="Wrap" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeDiffSinger}"
                                                    FontSize="11" TextWrapping="Wrap" />
+                                        <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeNeutrino}"
+                                                   FontSize="11" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>

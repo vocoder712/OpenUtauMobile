@@ -30,6 +30,7 @@ public class SingerTypeToColorConverter : IValueConverter
                 USingerType.DiffSinger => ThemeResources.GetBrush("Sem.Color.Singer.DiffSinger"),
                 USingerType.Vogen => ThemeResources.GetBrush("Sem.Color.Singer.Vogen"),
                 USingerType.Voicevox => ThemeResources.GetBrush("Sem.Color.Singer.Voicevox"),
+                USingerType.Neutrino => ThemeResources.GetBrush("Sem.Color.Singer.Neutrino"),
                 _ => ThemeResources.GetBrush("Sem.Color.Singer.Unknown"),
             };
         }
@@ -115,6 +116,7 @@ public class SingerTypeToLabelConverter : IValueConverter
                 USingerType.DiffSinger => "DiffSinger",
                 USingerType.Vogen => "Vogen",
                 USingerType.Voicevox => "Voicevox",
+                USingerType.Neutrino => "NEUTRINO v3",
                 _ => "Unknown",
             };
         }

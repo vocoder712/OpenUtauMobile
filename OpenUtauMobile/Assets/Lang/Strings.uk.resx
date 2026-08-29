@@ -1267,6 +1267,9 @@
   <data name="SingerSetup.Step3.TypeDiffSinger" xml:space="preserve">
     <value>• diffsinger: використовує AI-синтезатор DiffSinger</value>
   </data>
+  <data name="SingerSetup.Step3.TypeNeutrino" xml:space="preserve">
+    <value>• neutrino: використовує ШІ-рушій синтезу NEUTRINO v3</value>
+  </data>
   <data name="SingerSetup.Step4.Title" xml:space="preserve">
     <value>Підсумок встановлення</value>
   </data>

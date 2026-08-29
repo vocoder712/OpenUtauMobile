@@ -12,6 +12,11 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-23
+- Decision: Add an in-process NEUTRINO v3 singer and renderer to Core using the native `t.bin`, optional `p.bin`, `s.bin`, and `v.bin` ONNX pipeline; support CPU and NNAPI with CPU fallback, and deliberately exclude v2 models and HNSEP audio post-processing in this phase.
+- Rationale: OpenUtau Mobile cannot depend on the desktop NEUTRINO executable. Keeping timing, optional natural-pitch loading, acoustic inference, and vocoding in the shared Core allows the same implementation to run on Android while preserving the verified v3 model contracts. Model metadata is part of the render cache key so replacing a model cannot reuse stale audio.
+- Alternatives considered: Invoke an external NEUTRINO executable; add the renderer only as a mobile plugin; port v2 and HNSEP parameters together with v3.
+- Impacted areas: NEUTRINO singer discovery and installation, phonemization and timing display, render phrase metadata, renderer registration and caching, mobile singer setup UI and localization, and Android ONNX Runtime execution.
 - Date: 2026-08-29
 - Decision: Extend the pitch-anchor context actions with a four-state per-anchor shape cycle and a first-anchor snap toggle that appears only for a single selected first anchor. Reuse Core's existing undoable pitch-shape and snap commands; show the active shape and snap state through localized Toast messages, with outlined/filled magnet icons reflecting the current switch state.
 - Rationale: Keeping both operations in the selection-sensitive anchor menu makes them reachable on touch devices without introducing a second editor surface. Reusing the existing commands preserves validation, undo/redo, and the established `snapFirst` semantics.
