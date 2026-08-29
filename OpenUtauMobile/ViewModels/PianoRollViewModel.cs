@@ -422,6 +422,9 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ApplyViewportLimits();
     }
 
+    /// <summary>
+    /// 异步更新立绘
+    /// </summary>
     private async Task UpdatePortraitAsync()
     {
         // 1. 取消正在执行的旧任务（如果存在），不再让 CPU 做无用功
@@ -584,6 +587,9 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         RequestEditPhoneme?.Invoke(part, note, phonemeIndex);
     }
 
+    /// <summary>
+    /// 交换背景表情和前景表情。
+    /// </summary>
     public void SwapExpressions()
     {
         if (string.IsNullOrEmpty(SecondaryExpressionKey) || SecondaryExpressionKey == PrimaryExpressionKey)
@@ -649,6 +655,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
         this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
         this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
+    }
+    
+    /// <summary>
+    /// 核验当前选中的音符列表，移除不属于当前 EditingVoicePart 的音符。
+    /// </summary>
+    public void ValidateSelectedNotes()
+    {
+        if (EditingVoicePart == null)
+        {
+            SelectedNotes.Clear();
+            return;
+        }
+
+        // 移除不属于当前分片的音符
+        for (int i = SelectedNotes.Count - 1; i >= 0; i--)
+        {
+            UNote note = SelectedNotes[i];
+            if (!EditingVoicePart.notes.Contains(note))
+            {
+                SelectedNotes.RemoveAt(i);
+            }
+        }
     }
 
     // 拆分放大镜事件
@@ -3265,6 +3293,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 break;
             case TrackChangeSingerCommand: // 切换歌手
                 _ = UpdatePortraitAsync(); // 更新立绘
+                break;
+            case AddNoteCommand:
+                if (isUndo) // 修复撤销添加音符后，选区仍然保留已删除音符的bug
+                {
+                    ValidateSelectedNotes();
+                }
                 break;
         }
     }
