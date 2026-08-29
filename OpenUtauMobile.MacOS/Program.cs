@@ -28,6 +28,7 @@ sealed class Program
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
+        ServiceHub.ExternalUrlLauncher = new MacOSExternalUrlLauncher();
         ServiceHub.ExternalStorageService = new Storage.MacOSExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>()

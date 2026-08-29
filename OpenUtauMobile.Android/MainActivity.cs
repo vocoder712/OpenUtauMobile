@@ -58,6 +58,7 @@ public class MainActivity : AvaloniaMainActivity
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
+        ServiceHub.ExternalUrlLauncher = new AndroidExternalUrlLauncher(() => CurrentActivity);
         ServiceHub.ExternalStorageService =
             new Storage.AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;

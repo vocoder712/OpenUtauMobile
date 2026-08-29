@@ -27,6 +27,7 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 注册编码提供程序以支持更多编码格式
         InitLogging();
         // TODO: iOS尚未实现音频输出
+        ServiceHub.ExternalUrlLauncher = new IosExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return base.CustomizeAppBuilder(builder)
             .UseReactiveUI(_ =>
