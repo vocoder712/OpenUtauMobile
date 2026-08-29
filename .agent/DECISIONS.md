@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-29
+- Decision: Treat parameter-curve sample positions as voice-part-relative ticks, add the active part position only when mapping them into the absolute piano-roll canvas, and clip all parameter rendering and pointer edits to the active `UVoicePart` interval.
+- Rationale: `UCurve.xs` and `SetCurveCommand` use part-relative ticks, while the parameter canvas scroll offset uses absolute project ticks. Mixing those spaces made both curve rendering/pruning and edits diverge from synthesized output whenever the part position was nonzero, and allowed default/reference lines to extend beyond the part.
+- Alternatives considered: Store absolute ticks in curves; offset only the rendered geometry without correcting input; rely only on the control bounds rather than a part-range clip.
+- Impacted areas: Mobile curve-parameter rendering, default/reference-line bounds, curve drawing and erasing coordinates, and parameter hit/edit boundaries. Core curve storage and commands are unchanged.
+
 - Date: 2026-08-23
 - Decision: Add an in-process NEUTRINO v3 singer and renderer to Core using the native `t.bin`, optional `p.bin`, `s.bin`, and `v.bin` ONNX pipeline; support CPU and NNAPI with CPU fallback, and deliberately exclude v2 models and HNSEP audio post-processing in this phase.
 - Rationale: OpenUtau Mobile cannot depend on the desktop NEUTRINO executable. Keeping timing, optional natural-pitch loading, acoustic inference, and vocoding in the shared Core allows the same implementation to run on Android while preserving the verified v3 model contracts. Model metadata is part of the render cache key so replacing a model cannot reuse stale audio.
