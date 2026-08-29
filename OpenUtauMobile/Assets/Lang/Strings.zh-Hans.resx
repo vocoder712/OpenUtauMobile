@@ -795,6 +795,30 @@
   <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
     <value>控制点形状</value>
   </data>
+  <data name="PianoRoll.Action.ToggleFirstAnchorSnap" xml:space="preserve">
+    <value>切换首个锚点吸附</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorShape" xml:space="preserve">
+    <value>当前锚点形状：{0}</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseInOut" xml:space="preserve">
+    <value>缓入缓出</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.Linear" xml:space="preserve">
+    <value>线性</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseIn" xml:space="preserve">
+    <value>缓入</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseOut" xml:space="preserve">
+    <value>缓出</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapEnabled" xml:space="preserve">
+    <value>已开启首个锚点吸附</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapDisabled" xml:space="preserve">
+    <value>已关闭首个锚点吸附</value>
+  </data>
   <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
     <value>重置颤音</value>
   </data>

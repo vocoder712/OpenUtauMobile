@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-29
+- Decision: Extend the pitch-anchor context actions with a four-state per-anchor shape cycle and a first-anchor snap toggle that appears only for a single selected first anchor. Reuse Core's existing undoable pitch-shape and snap commands; show the active shape and snap state through localized Toast messages, with outlined/filled magnet icons reflecting the current switch state.
+- Rationale: Keeping both operations in the selection-sensitive anchor menu makes them reachable on touch devices without introducing a second editor surface. Reusing the existing commands preserves validation, undo/redo, and the established `snapFirst` semantics.
+- Alternatives considered: Add permanent toolbar buttons; expose snap for every anchor; mutate pitch data directly in the Mobile view model; include the spline-only enum value in the user-facing four-shape cycle.
+- Impacted areas: Mobile piano-roll anchor context actions and localization. Core pitch data and command behavior are unchanged.
+
 - Date: 2026-08-25
 - Decision: Persist PitchPen blank-area canvas dragging as an enabled-by-default preference, with independently configurable note-hit extensions of 0–960 ticks horizontally (default 240) and 0–12 semitones vertically (default 1). Each new PianoRollViewModel snapshots the clamped preference values in its constructor; disabling the feature bypasses the expanded hit test and retains full-canvas pitch drawing.
 - Rationale: Tick/semitone ranges remain stable across zoom levels and let touch users tune intent recognition without changing global note hit testing. Constructor snapshots keep one editor session internally consistent while settings changes apply to subsequently created editors.
