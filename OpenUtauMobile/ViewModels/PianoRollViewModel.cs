@@ -678,6 +678,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             }
         }
     }
+    
+    /// <summary>
+    /// 校验当前选中的音高锚点列表，移除不存在的锚点。
+    /// </summary>
+    public void ValidateSelectedAnchors()
+    {
+        if (EditingVoicePart == null)
+        {
+            SelectedAnchors.Clear();
+            return;
+        }
+
+        // 移除不属于当前分片的音高锚点
+        for (int i = SelectedAnchors.Count - 1; i >= 0; i--)
+        {
+            PitchPoint anchor = SelectedAnchors[i];
+            if (FindNoteForPitchPoint(anchor) == null)
+            {
+                SelectedAnchors.RemoveAt(i);
+            }
+        }
+    }
 
     // 拆分放大镜事件
     public event Action<Point>? RequestMagnifierOpen;
@@ -2269,6 +2291,26 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 {
                     items.Add(new ContextActionItem
                     {
+                        Icon = PackIconPhosphorIconsKind.BezierCurve,
+                        Tip = L.S("PianoRoll.Action.ControlPointShape"),
+                        Command = ReactiveCommand.Create(CyclePitchPointShape)
+                    });
+
+                    UNote? firstAnchorNote = GetSingleSelectedFirstAnchorNote();
+                    if (firstAnchorNote != null)
+                    {
+                        items.Add(new ContextActionItem
+                        {
+                            Icon = firstAnchorNote.pitch.snapFirst
+                                ? PackIconPhosphorIconsKind.MagnetFill
+                                : PackIconPhosphorIconsKind.Magnet,
+                            Tip = L.S("PianoRoll.Action.ToggleFirstAnchorSnap"),
+                            Command = ReactiveCommand.Create(ToggleFirstAnchorSnap)
+                        });
+                    }
+
+                    items.Add(new ContextActionItem
+                    {
                         Icon = PackIconPhosphorIconsKind.Trash,
                         Tip = L.S("Common.Delete"),
                         IsDanger = true,
@@ -3025,17 +3067,86 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     private void CyclePitchPointShape()
     {
-        if (EditingVoicePart == null || SelectedAnchors.Count == 0) return;
+        if (EditingVoicePart == null || SelectedAnchors.Count == 0)
+        {
+            return;
+        }
+
+        PitchPointShape displayedShape = GetNextPitchPointShape(SelectedAnchors[0].shape);
 
         DocManager.Inst.StartUndoGroup();
         foreach (PitchPoint pp in SelectedAnchors)
         {
-            // io(0) → l(1) → i(2) → o(3) → io(0) ...
-            PitchPointShape nextShape = (PitchPointShape)(((int)pp.shape + 1) % 4);
+            PitchPointShape nextShape = GetNextPitchPointShape(pp.shape);
             DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(EditingVoicePart, pp, nextShape));
         }
 
         DocManager.Inst.EndUndoGroup();
+        ToastService.Enqueue(string.Format(
+            L.S("PianoRoll.Toast.AnchorShape"),
+            GetPitchPointShapeName(displayedShape)));
+    }
+
+    private static PitchPointShape GetNextPitchPointShape(PitchPointShape shape)
+    {
+        return shape switch
+        {
+            PitchPointShape.io => PitchPointShape.l,
+            PitchPointShape.l => PitchPointShape.i,
+            PitchPointShape.i => PitchPointShape.o,
+            PitchPointShape.o => PitchPointShape.io,
+            _ => PitchPointShape.io,
+        };
+    }
+
+    private static string GetPitchPointShapeName(PitchPointShape shape)
+    {
+        string key = shape switch
+        {
+            PitchPointShape.l => "PianoRoll.AnchorShape.Linear",
+            PitchPointShape.i => "PianoRoll.AnchorShape.EaseIn",
+            PitchPointShape.o => "PianoRoll.AnchorShape.EaseOut",
+            _ => "PianoRoll.AnchorShape.EaseInOut",
+        };
+        return L.S(key);
+    }
+
+    private UNote? GetSingleSelectedFirstAnchorNote()
+    {
+        if (SelectedAnchors.Count != 1)
+        {
+            return null;
+        }
+
+        PitchPoint selectedAnchor = SelectedAnchors[0];
+        UNote? note = FindNoteForPitchPoint(selectedAnchor);
+        return note != null &&
+            note.pitch.data.Count > 0 &&
+            ReferenceEquals(note.pitch.data[0], selectedAnchor)
+            ? note
+            : null;
+    }
+
+    private void ToggleFirstAnchorSnap()
+    {
+        if (EditingVoicePart == null)
+        {
+            return;
+        }
+
+        UNote? note = GetSingleSelectedFirstAnchorNote();
+        if (note == null)
+        {
+            return;
+        }
+
+        DocManager.Inst.StartUndoGroup();
+        DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(EditingVoicePart, note));
+        DocManager.Inst.EndUndoGroup();
+        ToastService.Enqueue(L.S(note.pitch.snapFirst
+            ? "PianoRoll.Toast.FirstAnchorSnapEnabled"
+            : "PianoRoll.Toast.FirstAnchorSnapDisabled"));
+        RebuildPianoRollContextActions();
     }
 
     private void StartToEditVibrato(VibratoOverlayHit hit)
@@ -3280,9 +3391,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     {
         switch (cmd)
         {
-            case DeletePitchPointCommand deletePitchPointCommand
-                : // TODO: 这里由于core项目设计缺陷，撤回时实际执行的是 AddPitchPointCommand，无法简单地判断删除了哪个点，会导致使用出现bug
-                SelectedAnchors.Remove(deletePitchPointCommand.Point);
+            case AddPitchPointCommand addPitchPointCommand:
+                ValidateSelectedAnchors();
                 break;
             case VibratoCommand:
                 RebuildPianoRollContextActions();
