@@ -222,3 +222,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Keep separate manual and automatic workflows using unrelated run numbers; hardcode the product version in MSBuild properties; create a tag or Release before compiling all platforms.
 - Impacted areas: GitHub Actions build/release orchestration, artifact version metadata, Android version-code inputs, and local version fallback in `Directory.Build.props`.
 
+- Date: 2026-08-29
+- Decision: Keep multi-touch tap candidates alive through the final pointer release, require movement beyond the tap tolerance before beginning a pinch, key suspended-touch snapshots by `IPointer`, and treat any capture loss as cancellation of the complete pointer session.
+- Rationale: Platform-generated zero-distance or jitter `PointerMoved` events previously invalidated every two-finger tap, undo could run while another pointer remained captured, coordinate/timestamp snapshot matching was not a stable touch identity, and partial capture-loss recovery could retain another pointer as a false pinch participant.
+- Alternatives considered: Add logging without changing recognition; rely on tighter platform event filtering; continue reinitializing a reduced gesture after capture loss.
+- Impacted areas: Shared Windows/Android pointer gesture recognition for tap, undo/redo, pinch, cancellation, and post-cancellation single-finger input.
+
