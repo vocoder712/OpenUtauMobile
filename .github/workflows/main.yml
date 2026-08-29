@@ -32,6 +32,12 @@ on:
 permissions:
   contents: read
 
+# 正式发布串行执行，避免两个 workflow_dispatch 同时通过版本校验后乱序创建 Tag。
+# push 构建使用唯一 run_id 分组，因此不会互相阻塞。
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && 'release' || github.run_id }}
+  queue: max
+
 jobs:
   prepare:
     name: Resolve and validate version
@@ -42,9 +48,10 @@ jobs:
       build_number: ${{ steps.version.outputs.build_number }}
     steps:
       - name: Checkout complete history and tags
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          fetch-tags: true
           persist-credentials: false
 
       - name: Resolve version
@@ -56,37 +63,44 @@ jobs:
           RUN_NUMBER: ${{ github.run_number }}
         run: |
           set -euo pipefail
+          export LC_ALL=C
 
           BUILD_NUMBER=$((RUN_NUMBER + 20000))
 
+          # 仅把严格的 vX.Y.Z 视为正式产品版本；忽略 prerelease、Canary 和其他历史 Tag。
+          latest_release_tag() {
+            git tag --list 'v*' --sort=-version:refname |
+              grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' |
+              head -n 1 || true
+          }
+
+          version_is_greater() {
+            local candidate="$1"
+            local current="$2"
+            local highest
+
+            highest="$(printf '%s\n%s\n' "$current" "$candidate" | sort -V | tail -n 1)"
+            [ "$highest" = "$candidate" ] && [ "$candidate" != "$current" ]
+          }
+
+          LATEST_TAG="$(latest_release_tag)"
+
           if [ "$EVENT_NAME" = "push" ]; then
-            # 只考虑当前提交历史中严格符合 v2.Y.Z 的 tag，避免回退到 V1。
-            TAG="$({
-              git for-each-ref \
-                --merged HEAD \
-                --format='%(refname:short)' \
-                'refs/tags/v2.*' |
-                grep -E '^v2\.[0-9]+\.[0-9]+$' |
-                while IFS= read -r candidate; do
-                  printf '%s %s\n' \
-                    "$(git rev-list --count "${candidate}..HEAD")" \
-                    "$candidate"
-                done |
-                sort -n -k1,1 |
-                head -n 1 |
-                cut -d ' ' -f 2-
-            } || true)"
+            # Canary 跟随仓库中最高的正式版本，不要求该 Tag 位于当前 HEAD 的祖先历史中。
+            # 这样即使 dev 经历 squash/rebase/cherry-pick/强制推送，也不会丢失产品版本基线。
+            TAG="$LATEST_TAG"
 
             if [ -z "$TAG" ]; then
-              echo "::error::没有找到符合 v2.Y.Z 的 tag。 请手动运行一次全平台构建来创建第一个V2 tag."
+              echo "::error::没有找到符合 vX.Y.Z 格式的正式版本 Tag。请先手动运行一次全平台构建创建正式 Tag。"
               exit 1
             fi
 
             BASE_VERSION="${TAG#v}"
             VERSION="${BASE_VERSION}-Canary.${BUILD_NUMBER}"
           else
-            if [[ ! "$REQUESTED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              echo "::error::版本号必须使用 X.Y.Z 格式，且各部分必须为数字，不能有前导 'v'"
+            # 严格使用三段数字版本，并拒绝 01.2.3 之类带前导零的写法。
+            if [[ ! "$REQUESTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+              echo "::error::版本号必须使用 X.Y.Z 格式，各部分必须为非负整数且不能有前导零，也不能包含前导 'v'。"
               exit 1
             fi
 
@@ -94,8 +108,16 @@ jobs:
             TAG="v${REQUESTED_VERSION}"
 
             if git show-ref --verify --quiet "refs/tags/$TAG"; then
-              echo "::error::Tag $TAG 已经存在; 拒绝覆盖。"
+              echo "::error::Tag $TAG 已经存在；拒绝覆盖。"
               exit 1
+            fi
+
+            if [ -n "$LATEST_TAG" ]; then
+              LATEST_VERSION="${LATEST_TAG#v}"
+              if ! version_is_greater "$REQUESTED_VERSION" "$LATEST_VERSION"; then
+                echo "::error::新版本 $REQUESTED_VERSION 必须高于当前最高正式版本 $LATEST_VERSION。"
+                exit 1
+              fi
             fi
           fi
 
@@ -103,6 +125,7 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
           echo "Resolved product version: $VERSION"
+          echo "Base release tag: $TAG"
           echo "Build number: $BUILD_NUMBER"
 
   android-canary:
@@ -128,10 +151,10 @@ jobs:
           swapon --show
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -139,7 +162,7 @@ jobs:
         run: dotnet workload install android
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: 17
@@ -203,7 +226,7 @@ jobs:
             "$ARTIFACT_DIR/OpenUtauMobile-预览版-build${{ needs.prepare.outputs.build_number }}-arm64.apk"
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: OpenUtauMobile-android-arm64
           path: artifacts/android-arm64/OpenUtauMobile-预览版-build${{ needs.prepare.outputs.build_number }}-arm64.apk
@@ -234,22 +257,43 @@ jobs:
       contents: write
     steps:
       - name: Checkout the built commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
+          fetch-tags: true
 
       - name: Create and push annotated tag
         shell: bash
         env:
           TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
           SOURCE_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          export LC_ALL=C
+
+          # 构建可能持续较久；创建 Tag 前重新同步远端 Tag，避免使用过期的版本视图。
+          git fetch --force --tags origin
 
           if git show-ref --verify --quiet "refs/tags/$TAG"; then
-            echo "::error::Tag $TAG 在本次构建期间被创建。"
+            echo "::error::Tag $TAG 在本次构建期间已被创建；拒绝覆盖。"
             exit 1
+          fi
+
+          LATEST_TAG="$(
+            git tag --list 'v*' --sort=-version:refname |
+              grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' |
+              head -n 1 || true
+          )"
+
+          if [ -n "$LATEST_TAG" ]; then
+            LATEST_VERSION="${LATEST_TAG#v}"
+            HIGHEST="$(printf '%s\n%s\n' "$LATEST_VERSION" "$VERSION" | sort -V | tail -n 1)"
+            if [ "$HIGHEST" != "$VERSION" ] || [ "$VERSION" = "$LATEST_VERSION" ]; then
+              echo "::error::版本状态在构建期间发生变化：$VERSION 不再高于当前最高正式版本 $LATEST_VERSION。"
+              exit 1
+            fi
           fi
 
           git config user.name "github-actions[bot]"
@@ -259,7 +303,7 @@ jobs:
 
       - name: Download release artifacts
         if: inputs.release != 'none'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: OpenUtauMobile-*
           path: release-assets
