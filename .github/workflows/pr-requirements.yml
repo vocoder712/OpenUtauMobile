@@ -1,0 +1,45 @@
+﻿name: PR Build
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  android-build:
+    name: PR build test for Android ARM64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Android workload
+        run: dotnet workload install android
+
+      - name: Restore
+        run: dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj
+
+      - name: Build Android ARM64
+        run: |
+          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
+            -c Release \
+            -f net10.0-android36.0 \
+            -p:RuntimeIdentifier=android-arm64

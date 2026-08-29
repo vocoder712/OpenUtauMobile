@@ -718,6 +718,30 @@
   <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
     <value>Форма контрольної точки</value>
   </data>
+  <data name="PianoRoll.Action.ToggleFirstAnchorSnap" xml:space="preserve">
+    <value>Перемкнути прив’язку першого якоря</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorShape" xml:space="preserve">
+    <value>Форма якоря: {0}</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseInOut" xml:space="preserve">
+    <value>Плавно з обох боків</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.Linear" xml:space="preserve">
+    <value>Лінійна</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseIn" xml:space="preserve">
+    <value>Плавний початок</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseOut" xml:space="preserve">
+    <value>Плавне завершення</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapEnabled" xml:space="preserve">
+    <value>Прив’язку першого якоря ввімкнено</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapDisabled" xml:space="preserve">
+    <value>Прив’язку першого якоря вимкнено</value>
+  </data>
   <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
     <value>Скинути вібрато</value>
   </data>
@@ -1254,6 +1278,9 @@
   </data>
   <data name="SingerSetup.Step3.TypeDiffSinger" xml:space="preserve">
     <value>• diffsinger: використовує AI-синтезатор DiffSinger</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeNeutrino" xml:space="preserve">
+    <value>• neutrino: використовує ШІ-рушій синтезу NEUTRINO v3</value>
   </data>
   <data name="SingerSetup.Step4.Title" xml:space="preserve">
     <value>Підсумок встановлення</value>

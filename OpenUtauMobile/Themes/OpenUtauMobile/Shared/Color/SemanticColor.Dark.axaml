@@ -5,6 +5,7 @@
     <SolidColorBrush x:Key="Sem.Color.Singer.Voicevox" Color="#67B6D8" />
     <SolidColorBrush x:Key="Sem.Color.Singer.Vogen" Color="#E3A658" />
     <SolidColorBrush x:Key="Sem.Color.Singer.DiffSinger" Color="#E28A97" />
+    <SolidColorBrush x:Key="Sem.Color.Singer.Neutrino" Color="#55C5C9" />
     <SolidColorBrush x:Key="Sem.Color.Singer.Unknown" Color="#A1A8B3" />
 
     <!-- 小节线 -->

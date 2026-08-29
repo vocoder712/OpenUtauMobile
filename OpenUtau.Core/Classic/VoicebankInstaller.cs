@@ -38,7 +38,7 @@ namespace OpenUtau.Classic {
             var extractionOptions = new ExtractionOptions {
                 Overwrite = true,
             };
-            using (var archive = ArchiveFactory.Open(path, readerOptions)) {
+            using (var archive = ArchiveFactory.OpenArchive(path, readerOptions)) {
                 var touches = new List<string>();
                 AdjustBasePath(archive, path, touches);
                 int total = archive.Entries.Count();
@@ -71,9 +71,7 @@ namespace OpenUtau.Classic {
                             }
                             if (string.IsNullOrEmpty(config.SingerType)) {
                                 config.SingerType = singerType;
-                                using (var stream = File.Open(filePath, FileMode.Open)) {
-                                    config.Save(stream);
-                                }
+                                SaveConfigSafely(filePath, config);
                             }
                         }
                     }
@@ -82,10 +80,29 @@ namespace OpenUtau.Classic {
                     File.WriteAllText(touch, "\n");
                     var config = new VoicebankConfig() {
                         TextFileEncoding = textEncoding.WebName,
+                        SingerType = singerType,
                     };
                     using (var stream = File.Open(touch.Replace(".txt", ".yaml"), FileMode.Create)) {
                         config.Save(stream);
                     }
+                }
+            }
+        }
+
+        private static void SaveConfigSafely(string path, VoicebankConfig config) {
+            string temporaryPath = $"{path}.{Guid.NewGuid():N}.tmp";
+            try {
+                using (FileStream stream = File.Open(
+                    temporaryPath,
+                    FileMode.CreateNew,
+                    FileAccess.Write,
+                    FileShare.None)) {
+                    config.Save(stream);
+                }
+                File.Move(temporaryPath, path, true);
+            } finally {
+                if (File.Exists(temporaryPath)) {
+                    File.Delete(temporaryPath);
                 }
             }
         }

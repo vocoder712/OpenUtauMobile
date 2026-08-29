@@ -466,3 +466,7 @@ native/**/Testing/
 
 # Machine-specific CMake user presets (keep local absolute paths out of the repo)
 native/CMakeUserPresets.json
+
+
+## codex
+.codex/

@@ -1,9 +1,33 @@
-name: Build All Platforms
-
-run-name: "Build All Platforms #${{ github.run_number }} · ${{ github.ref_name }}"
+name: Reusable Full Platform Build
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: User-visible product version
+        required: true
+        type: string
+      build_number:
+        description: Build number supplied by the caller workflow
+        required: true
+        type: number
+      source_sha:
+        description: Exact commit being built
+        required: true
+        type: string
+      action_run_id:
+        description: Caller workflow run ID
+        required: true
+        type: string
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: true
+      ANDROID_KEYSTORE_PASSWORD:
+        required: true
+      ANDROID_KEY_ALIAS:
+        required: true
+      ANDROID_KEY_PASSWORD:
+        required: true
 
 permissions:
   contents: read
@@ -93,11 +117,12 @@ jobs:
             -c Release \
             -f net10.0-android36.0 \
             -r "${{ matrix.rid }}" \
-            -p:BuildNumber=${{ github.run_number }} \
+            -p:Version="${{ inputs.version }}" \
+            -p:BuildNumber=${{ inputs.build_number }} \
             -p:BuildTimestamp="$BUILD_TIMESTAMP" \
             -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ github.sha }} \
-            -p:ActionRunId=${{ github.run_id }} \
+            -p:SourceCommit=${{ inputs.source_sha }} \
+            -p:ActionRunId=${{ inputs.action_run_id }} \
             -p:AndroidPackageFormat=apk \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
@@ -131,13 +156,13 @@ jobs:
           fi
 
           cp "$SIGNED_APK" \
-            "$ARTIFACT_DIR/OpenUtauMobile-build${{ github.run_number }}-android-${{ matrix.arch }}.apk"
+            "$ARTIFACT_DIR/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ matrix.arch }}.apk"
 
       - name: Upload Android ${{ matrix.arch }}
         uses: actions/upload-artifact@v4
         with:
           name: OpenUtauMobile-android-${{ matrix.arch }}
-          path: artifacts/android-${{ matrix.arch }}/OpenUtauMobile-build${{ github.run_number }}-android-${{ matrix.arch }}.apk
+          path: artifacts/android-${{ matrix.arch }}/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ matrix.arch }}.apk
           if-no-files-found: error
           compression-level: 0
 
@@ -190,11 +215,12 @@ jobs:
             -r "${{ matrix.rid }}" \
             --self-contained true \
             -p:PublishDir="$PUBLISH_DIR/" \
-            -p:BuildNumber=${{ github.run_number }} \
+            -p:Version="${{ inputs.version }}" \
+            -p:BuildNumber=${{ inputs.build_number }} \
             -p:BuildTimestamp="$BUILD_TIMESTAMP" \
             -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ github.sha }} \
-            -p:ActionRunId=${{ github.run_id }}
+            -p:SourceCommit=${{ inputs.source_sha }} \
+            -p:ActionRunId=${{ inputs.action_run_id }}
 
       # 再次显式复制当前 RID 的 worldline，保证架构正确
       - name: Select Correct Linux Native Library
@@ -220,7 +246,7 @@ jobs:
         shell: bash
         run: |
           PUBLISH_DIR="${GITHUB_WORKSPACE}/artifacts/publish/${{ matrix.rid }}"
-          PACKAGE="${GITHUB_WORKSPACE}/artifacts/OpenUtauMobile-build${{ github.run_number }}-linux-${{ matrix.arch }}.tar.gz"
+          PACKAGE="${GITHUB_WORKSPACE}/artifacts/OpenUtauMobile-build${{ inputs.build_number }}-linux-${{ matrix.arch }}.tar.gz"
 
           chmod +x "$PUBLISH_DIR/OpenUtauMobile.Linux" || true
 
@@ -235,7 +261,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OpenUtauMobile-linux-${{ matrix.arch }}
-          path: artifacts/OpenUtauMobile-build${{ github.run_number }}-linux-${{ matrix.arch }}.tar.gz
+          path: artifacts/OpenUtauMobile-build${{ inputs.build_number }}-linux-${{ matrix.arch }}.tar.gz
           if-no-files-found: error
           compression-level: 0
 
@@ -293,11 +319,12 @@ jobs:
             -r "${{ matrix.rid }}" `
             --self-contained true `
             -p:PublishDir="$publishDir/" `
-            -p:BuildNumber=${{ github.run_number }} `
+            -p:Version="${{ inputs.version }}" `
+            -p:BuildNumber=${{ inputs.build_number }} `
             -p:BuildTimestamp="$env:BUILD_TIMESTAMP" `
             -p:BuildMachine="$env:BUILD_MACHINE" `
-            -p:SourceCommit=${{ github.sha }} `
-            -p:ActionRunId=${{ github.run_id }}
+            -p:SourceCommit=${{ inputs.source_sha }} `
+            -p:ActionRunId=${{ inputs.action_run_id }}
 
       # 明确覆盖为本 RID 对应的 worldline.dll
       - name: Select Correct Windows Native Library
@@ -325,7 +352,7 @@ jobs:
         run: |
           $publishDir = "$env:GITHUB_WORKSPACE/artifacts/publish/${{ matrix.rid }}"
 
-          $package = "$env:GITHUB_WORKSPACE/artifacts/OpenUtauMobile-build${{ github.run_number }}-windows-${{ matrix.arch }}.zip"
+          $package = "$env:GITHUB_WORKSPACE/artifacts/OpenUtauMobile-build${{ inputs.build_number }}-windows-${{ matrix.arch }}.zip"
 
           Compress-Archive `
             -Path "$publishDir/*" `
@@ -339,7 +366,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OpenUtauMobile-windows-${{ matrix.arch }}
-          path: artifacts/OpenUtauMobile-build${{ github.run_number }}-windows-${{ matrix.arch }}.zip
+          path: artifacts/OpenUtauMobile-build${{ inputs.build_number }}-windows-${{ matrix.arch }}.zip
           if-no-files-found: error
           compression-level: 0
 
@@ -394,11 +421,12 @@ jobs:
             -r "${{ matrix.rid }}" \
             --self-contained true \
             -p:PublishDir="$PUBLISH_DIR/" \
-            -p:BuildNumber=${{ github.run_number }} \
+            -p:Version="${{ inputs.version }}" \
+            -p:BuildNumber=${{ inputs.build_number }} \
             -p:BuildTimestamp="$BUILD_TIMESTAMP" \
             -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ github.sha }} \
-            -p:ActionRunId=${{ github.run_id }}
+            -p:SourceCommit=${{ inputs.source_sha }} \
+            -p:ActionRunId=${{ inputs.action_run_id }}
 
       - name: Validate macOS Native Library
         shell: bash
@@ -430,7 +458,7 @@ jobs:
         shell: bash
         run: |
           PUBLISH_DIR="${GITHUB_WORKSPACE}/artifacts/publish/${{ matrix.rid }}"
-          PACKAGE="${GITHUB_WORKSPACE}/artifacts/OpenUtauMobile-build${{ github.run_number }}-macos-${{ matrix.arch }}.tar.gz"
+          PACKAGE="${GITHUB_WORKSPACE}/artifacts/OpenUtauMobile-build${{ inputs.build_number }}-macos-${{ matrix.arch }}.tar.gz"
 
           chmod +x "$PUBLISH_DIR/OpenUtauMobile.MacOS" || true
 
@@ -445,6 +473,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OpenUtauMobile-macos-${{ matrix.arch }}
-          path: artifacts/OpenUtauMobile-build${{ github.run_number }}-macos-${{ matrix.arch }}.tar.gz
+          path: artifacts/OpenUtauMobile-build${{ inputs.build_number }}-macos-${{ matrix.arch }}.tar.gz
           if-no-files-found: error
           compression-level: 0

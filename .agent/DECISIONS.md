@@ -12,6 +12,23 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-29
+- Decision: Treat parameter-curve sample positions as voice-part-relative ticks, add the active part position only when mapping them into the absolute piano-roll canvas, and clip all parameter rendering and pointer edits to the active `UVoicePart` interval.
+- Rationale: `UCurve.xs` and `SetCurveCommand` use part-relative ticks, while the parameter canvas scroll offset uses absolute project ticks. Mixing those spaces made both curve rendering/pruning and edits diverge from synthesized output whenever the part position was nonzero, and allowed default/reference lines to extend beyond the part.
+- Alternatives considered: Store absolute ticks in curves; offset only the rendered geometry without correcting input; rely only on the control bounds rather than a part-range clip.
+- Impacted areas: Mobile curve-parameter rendering, default/reference-line bounds, curve drawing and erasing coordinates, and parameter hit/edit boundaries. Core curve storage and commands are unchanged.
+
+- Date: 2026-08-23
+- Decision: Add an in-process NEUTRINO v3 singer and renderer to Core using the native `t.bin`, optional `p.bin`, `s.bin`, and `v.bin` ONNX pipeline; support CPU and NNAPI with CPU fallback, and deliberately exclude v2 models and HNSEP audio post-processing in this phase.
+- Rationale: OpenUtau Mobile cannot depend on the desktop NEUTRINO executable. Keeping timing, optional natural-pitch loading, acoustic inference, and vocoding in the shared Core allows the same implementation to run on Android while preserving the verified v3 model contracts. Model metadata is part of the render cache key so replacing a model cannot reuse stale audio.
+- Alternatives considered: Invoke an external NEUTRINO executable; add the renderer only as a mobile plugin; port v2 and HNSEP parameters together with v3.
+- Impacted areas: NEUTRINO singer discovery and installation, phonemization and timing display, render phrase metadata, renderer registration and caching, mobile singer setup UI and localization, and Android ONNX Runtime execution.
+- Date: 2026-08-29
+- Decision: Extend the pitch-anchor context actions with a four-state per-anchor shape cycle and a first-anchor snap toggle that appears only for a single selected first anchor. Reuse Core's existing undoable pitch-shape and snap commands; show the active shape and snap state through localized Toast messages, with outlined/filled magnet icons reflecting the current switch state.
+- Rationale: Keeping both operations in the selection-sensitive anchor menu makes them reachable on touch devices without introducing a second editor surface. Reusing the existing commands preserves validation, undo/redo, and the established `snapFirst` semantics.
+- Alternatives considered: Add permanent toolbar buttons; expose snap for every anchor; mutate pitch data directly in the Mobile view model; include the spline-only enum value in the user-facing four-shape cycle.
+- Impacted areas: Mobile piano-roll anchor context actions and localization. Core pitch data and command behavior are unchanged.
+
 - Date: 2026-08-25
 - Decision: Persist PitchPen blank-area canvas dragging as an enabled-by-default preference, with independently configurable note-hit extensions of 0–960 ticks horizontally (default 240) and 0–12 semitones vertically (default 1). Each new PianoRollViewModel snapshots the clamped preference values in its constructor; disabling the feature bypasses the expanded hit test and retains full-canvas pitch drawing.
 - Rationale: Tick/semitone ranges remain stable across zoom levels and let touch users tune intent recognition without changing global note hit testing. Constructor snapshots keep one editor session internally consistent while settings changes apply to subsequently created editors.
@@ -262,4 +279,16 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Window shutdown detaches `MainView` and unregisters the toast consumer after a save notification can already have posted a dispatcher callback. Reading the mutable callback inside that delayed callback creates a check-then-use race and a null dereference.
 - Alternatives considered: Clear pending toast messages during shutdown; keep invoking a captured consumer after its view detaches; move toast lifetime management into the Windows host.
 - Impacted areas: Shared toast callback registration and shutdown behavior on all application hosts.
+
+- Date: 2026-08-28
+- Decision: Use `main.yml` as the sole independently triggered build workflow, derive the shared integer build number as `github.run_number + 20000`, and pass it into a reusable full-platform workflow; derive product versions from reachable `v2.X.Y.Z` tags for dev Canary builds and from validated manual input for release builds. This supersedes the earlier `10000 + GITHUB_RUN_NUMBER` Android version-code rule.
+- Rationale: Renaming the workflow resets its run-number sequence, so the 20000 offset prevents integer-version downgrade while keeping every platform artifact, build metadata field, and Android version code on one value. Product versions and optional GitHub Releases retain separate lifecycles, and the annotated tag is created only after every reusable-workflow build job succeeds.
+- Alternatives considered: Keep separate manual and automatic workflows using unrelated run numbers; hardcode the product version in MSBuild properties; create a tag or Release before compiling all platforms.
+- Impacted areas: GitHub Actions build/release orchestration, artifact version metadata, Android version-code inputs, and local version fallback in `Directory.Build.props`.
+
+- Date: 2026-08-29
+- Decision: Keep multi-touch tap candidates alive through the final pointer release, require movement beyond the tap tolerance before beginning a pinch, key suspended-touch snapshots by `IPointer`, and treat any capture loss as cancellation of the complete pointer session.
+- Rationale: Platform-generated zero-distance or jitter `PointerMoved` events previously invalidated every two-finger tap, undo could run while another pointer remained captured, coordinate/timestamp snapshot matching was not a stable touch identity, and partial capture-loss recovery could retain another pointer as a false pinch participant.
+- Alternatives considered: Add logging without changing recognition; rely on tighter platform event filtering; continue reinitializing a reduced gesture after capture loss.
+- Impacted areas: Shared Windows/Android pointer gesture recognition for tap, undo/redo, pinch, cancellation, and post-cancellation single-finger input.
 

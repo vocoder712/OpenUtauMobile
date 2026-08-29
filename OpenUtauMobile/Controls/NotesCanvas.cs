@@ -190,6 +190,16 @@ public class NotesCanvas : Control, ICmdSubscriber
         // ———— 绘制边框和调整音符长度手柄 ————
         foreach (UNote note in Part.notes)
         {
+            if (note.position + Part.position > rightTick)
+            {
+                break; // 后续音符都在右侧不可见，停止绘制
+            }
+
+            if (note.End + Part.position < leftTick)
+            {
+                continue; // 音符在左侧不可见，跳过
+            }
+
             bool isSelected = ViewModel.SelectedNotes.Contains(note);
             // 定位
             Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);

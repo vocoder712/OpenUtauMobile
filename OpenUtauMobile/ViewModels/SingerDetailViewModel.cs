@@ -93,6 +93,7 @@ public class SingerDetailViewModel : NavigateViewModelBase
             USingerType.DiffSinger => "DiffSinger",
             USingerType.Voicevox => "VOICEVOX",
             USingerType.Vogen => "Vogen",
+            USingerType.Neutrino => "NEUTRINO v3",
             _ => "Unknown"
         };
     }
