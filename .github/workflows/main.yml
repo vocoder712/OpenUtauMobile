@@ -60,13 +60,13 @@ jobs:
           BUILD_NUMBER=$((RUN_NUMBER + 20000))
 
           if [ "$EVENT_NAME" = "push" ]; then
-            # 只考虑当前提交历史中严格符合 v2.X.Y.Z 的 tag，避免回退到 V1。
+            # 只考虑当前提交历史中严格符合 v2.Y.Z 的 tag，避免回退到 V1。
             TAG="$({
               git for-each-ref \
                 --merged HEAD \
                 --format='%(refname:short)' \
                 'refs/tags/v2.*' |
-                grep -E '^v2\.[0-9]+\.[0-9]+\.[0-9]+$' |
+                grep -E '^v2\.[0-9]+\.[0-9]+$' |
                 while IFS= read -r candidate; do
                   printf '%s %s\n' \
                     "$(git rev-list --count "${candidate}..HEAD")" \
@@ -78,7 +78,7 @@ jobs:
             } || true)"
 
             if [ -z "$TAG" ]; then
-              echo "::error::No reachable V2 tag matching v2.X.Y.Z exists. Create the first V2 tag through a successful manual full-platform run."
+              echo "::error::没有找到符合 v2.Y.Z 的 tag。 请手动运行一次全平台构建来创建第一个V2 tag."
               exit 1
             fi
 
@@ -86,7 +86,7 @@ jobs:
             VERSION="${BASE_VERSION}-Canary.${BUILD_NUMBER}"
           else
             if [[ ! "$REQUESTED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              echo "::error::version must use X.Y.Z with numeric components and no leading v"
+              echo "::error::版本号必须使用 X.Y.Z 格式，且各部分必须为数字，不能有前导 'v'"
               exit 1
             fi
 
@@ -94,7 +94,7 @@ jobs:
             TAG="v${REQUESTED_VERSION}"
 
             if git show-ref --verify --quiet "refs/tags/$TAG"; then
-              echo "::error::Tag $TAG already exists; refusing to overwrite it."
+              echo "::error::Tag $TAG 已经存在; 拒绝覆盖。"
               exit 1
             fi
           fi
@@ -123,7 +123,7 @@ jobs:
             sudo mkswap "$SWAP_FILE"
           fi
           sudo swapon "$SWAP_FILE" 2>/dev/null || true
-          echo "===== Swap status ====="
+          echo "===== 交换分区状态 ====="
           free -h
           swapon --show
 
@@ -248,7 +248,7 @@ jobs:
           set -euo pipefail
 
           if git show-ref --verify --quiet "refs/tags/$TAG"; then
-            echo "::error::Tag $TAG was created while this workflow was building."
+            echo "::error::Tag $TAG 在本次构建期间被创建。"
             exit 1
           fi
 
