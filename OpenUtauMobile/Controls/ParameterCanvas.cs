@@ -215,10 +215,22 @@ public class ParameterCanvas : Control, ICmdSubscriber
         UExpressionDescriptor descriptor,
         bool isPrimary)
     {
-        if (descriptor.max <= descriptor.min || Part == null)
+        if (descriptor.max <= descriptor.min || Part == null || TickWidth <= 0)
         {
             return;
         }
+
+        double partLeft = (Part.position - TickOffset) * TickWidth;
+        double partRight = (Part.End - TickOffset) * TickWidth;
+        double clipLeft = Math.Clamp(partLeft, 0, Bounds.Width);
+        double clipRight = Math.Clamp(partRight, 0, Bounds.Width);
+        if (clipRight <= clipLeft)
+        {
+            return;
+        }
+
+        using IDisposable partClip = context.PushClip(
+            new Rect(clipLeft, 0, clipRight - clipLeft, Bounds.Height));
 
         double leftTick = TickOffset - 480;
         double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
@@ -237,22 +249,26 @@ public class ParameterCanvas : Control, ICmdSubscriber
         {
             UCurve? curve = Part.curves.FirstOrDefault(c => c.descriptor == descriptor || c.abbr == descriptor.abbr);
             double defaultHeight = Math.Round(TopMargin + usableHeight * (1.0 - (descriptor.defaultValue - descriptor.min) / valueRange));
+            double partStartX = (Part.position - TickOffset) * TickWidth;
+            double partEndX = (Part.End - TickOffset) * TickWidth;
 
             // 仅正在编辑的参数绘制默认值参考基线
             if (isPrimary)
             {
-                context.DrawLine(faintPen, new Point(0, defaultHeight), new Point(Bounds.Width, defaultHeight));
+                context.DrawLine(faintPen, new Point(partStartX, defaultHeight), new Point(partEndX, defaultHeight));
             }
 
             // 没有任何编辑
             if (curve == null || curve.xs.Count == 0)
             {
-                context.DrawLine(primaryDefaultPen, new Point(0, defaultHeight), new Point(Bounds.Width, defaultHeight));
+                context.DrawLine(primaryDefaultPen, new Point(partStartX, defaultHeight), new Point(partEndX, defaultHeight));
                 return;
             }
 
-            int lTick = (int)Math.Floor(leftTick / 5) * 5; // 屏幕左边界
-            int rTick = (int)Math.Ceiling(rightTick / 5) * 5; // 屏幕右边界
+            double leftPartTick = Math.Max(0, leftTick - Part.position);
+            double rightPartTick = Math.Min(Part.duration, rightTick - Part.position);
+            int lTick = (int)Math.Floor(leftPartTick / 5) * 5; // 分片内屏幕左边界
+            int rTick = (int)Math.Ceiling(rightPartTick / 5) * 5; // 分片内屏幕右边界
 
             int index = curve.xs.BinarySearch(lTick); // 运气很好，屏幕左边缘恰好有一个点
             if (index < 0)
@@ -261,12 +277,12 @@ public class ParameterCanvas : Control, ICmdSubscriber
                 if (index == 0) // 补充从屏幕左侧至第一个点的默认值线
                 {
                     double firstCurveX = Math.Clamp(
-                        (curve.xs[0] - TickOffset) * TickWidth,
-                        0,
-                        Bounds.Width);
+                        (Part.position + curve.xs[0] - TickOffset) * TickWidth,
+                        partStartX,
+                        partEndX);
                     context.DrawLine(
                         primaryDefaultPen,
-                        new Point(0, defaultHeight),
+                        new Point(partStartX, defaultHeight),
                         new Point(firstCurveX, defaultHeight));
                 }
             }
@@ -276,14 +292,14 @@ public class ParameterCanvas : Control, ICmdSubscriber
             {
                 float tick1 = index < 0 ? lTick : curve.xs[index];
                 float val1 = index < 0 ? descriptor.defaultValue : curve.ys[index];
-                double x1 = (tick1 - TickOffset) * TickWidth;
+                double x1 = (Part.position + tick1 - TickOffset) * TickWidth;
                 double y1 = TopMargin + usableHeight * (1.0 - (val1 - descriptor.min) / valueRange);
 
                 float tick2 = index == curve.xs.Count - 1 ? 
                     rTick : curve.xs[index + 1];
                 float val2 = index == curve.xs.Count - 1 ? 
                     descriptor.defaultValue : curve.ys[index + 1];
-                double x2 = (tick2 - TickOffset) * TickWidth;
+                double x2 = (Part.position + tick2 - TickOffset) * TickWidth;
                 double y2 = TopMargin + usableHeight * (1.0 - (val2 - descriptor.min) / valueRange);
                 
                 bool overridden = curve.ys[index] != descriptor.defaultValue || curve.ys[index + 1] != descriptor.defaultValue; // 是否是默认值
@@ -304,13 +320,13 @@ public class ParameterCanvas : Control, ICmdSubscriber
             }
 
             double lastCurveX = Math.Clamp(
-                (curve.xs[^1] - TickOffset) * TickWidth,
-                0,
-                Bounds.Width);
+                (Part.position + curve.xs[^1] - TickOffset) * TickWidth,
+                partStartX,
+                partEndX);
             context.DrawLine(
                 primaryDefaultPen,
                 new Point(lastCurveX, defaultHeight),
-                new Point(Bounds.Width, defaultHeight));
+                new Point(partEndX, defaultHeight));
             return;
         }
 
@@ -413,12 +429,16 @@ public class ParameterCanvas : Control, ICmdSubscriber
         }
 
         Point pos = e.GetPosition(this);
+        if (!TryGetPartTick(pos.X, false, out int tick))
+        {
+            return;
+        }
+
         _isDrawing = true;
         _drawingPointer = pos;
         e.Pointer.Capture(this);
         DocManager.Inst.StartUndoGroup();
 
-        int tick = (int)(pos.X / TickWidth + TickOffset);
         int value = CalculateValueFromY(pos.Y, descriptor);
 
         _lastTick = tick;
@@ -463,7 +483,11 @@ public class ParameterCanvas : Control, ICmdSubscriber
             RequestMagnifierUpdate?.Invoke(pos);
         }
 
-        int tick = (int)(pos.X / TickWidth + TickOffset);
+        if (!TryGetPartTick(pos.X, true, out int tick))
+        {
+            return;
+        }
+
         int value = CalculateValueFromY(pos.Y, descriptor);
 
         ApplyEditAt(project, track, descriptor, tick, value, _lastTick, _lastValue);
@@ -613,6 +637,24 @@ public class ParameterCanvas : Control, ICmdSubscriber
         return (int)Math.Round(val);
     }
 
+    private bool TryGetPartTick(double x, bool clampToPart, out int tick)
+    {
+        tick = 0;
+        if (Part == null || TickWidth <= 0)
+        {
+            return false;
+        }
+
+        double absoluteTick = x / TickWidth + TickOffset;
+        if (!clampToPart && (absoluteTick < Part.position || absoluteTick > Part.End))
+        {
+            return false;
+        }
+
+        tick = (int)Math.Clamp(absoluteTick, Part.position, Part.End);
+        return true;
+    }
+
     private void ApplyEditAt(
         UProject project,
         UTrack track,
@@ -631,7 +673,16 @@ public class ParameterCanvas : Control, ICmdSubscriber
         {
             int targetVal = IsEraseMode ? (int)descriptor.defaultValue : value;
             int targetLastVal = IsEraseMode ? (int)descriptor.defaultValue : lastValue;
-            DocManager.Inst.ExecuteCmd(new SetCurveCommand(project, Part, descriptor.abbr, tick, targetVal, lastTick, targetLastVal));
+            int partTick = Math.Clamp(tick - Part.position, 0, Part.duration);
+            int lastPartTick = Math.Clamp(lastTick - Part.position, 0, Part.duration);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                project,
+                Part,
+                descriptor.abbr,
+                partTick,
+                targetVal,
+                lastPartTick,
+                targetLastVal));
             return;
         }
 
