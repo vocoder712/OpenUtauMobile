@@ -375,7 +375,18 @@
                            VerticalAlignment="Bottom"
                            Opacity="{Binding PortraitOpacity}"
                            Source="{Binding PortraitBitmap}" />
-                    <!-- 标尺行透明占位（阻挡穿透点击，Row 0, Col 1） -->
+                    <!-- 标尺空白区：仅显示已渲染歌声的单侧半波，且不参与命中测试。 -->
+                    <c:RenderedWaveformCanvas Grid.Row="0"
+                                              Grid.Column="1"
+                                              Height="{x:Static local:ViewConstants.PianoRollTickRulerHeight}"
+                                              IsVisible="{Binding IsVoiceMode}"
+                                              IsHitTestVisible="False"
+                                              Opacity="{x:Static local:ViewConstants.RenderedWaveformOpacity}"
+                                              Part="{Binding EditingVoicePart}"
+                                              TickWidth="{Binding TickWidth}"
+                                              TickOffset="{Binding TickOffset}"
+                                              WaveformBrush="{DynamicResource Sem.Color.Primary}" />
+                    <!-- 透明占位继续阻挡标尺点击穿透到音符画布。 -->
                     <Border Grid.Row="0" Grid.Column="1"
                             Background="Transparent"
                             Height="{x:Static local:ViewConstants.PianoRollTickRulerHeight}" />

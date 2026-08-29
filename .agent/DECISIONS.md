@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-29
+- Decision: Display the active voice part's rendered mix as a one-sided peak envelope in the piano-roll ruler placeholder. Build a bounded 4 kHz envelope asynchronously once per rendered result, then cache an overscanned `StreamGeometry` so ordinary `NotesCanvas` panning only changes a translation and clip instead of remixing audio or uploading a bitmap.
+- Rationale: The upstream source of truth is `UVoicePart.Mix`, while a fixed-rate peak envelope preserves transients at the editor's supported zoom range. Reused pooled mix buffers, a bounded envelope, and compositor-friendly retained geometry minimize UI-thread work, allocations, and mobile GPU uploads during high-frequency viewport redraws.
+- Alternatives considered: Port upstream's per-frame full-view `WriteableBitmap` renderer; remix raw samples on every pan; keep a full-resolution sample copy; draw both positive and negative waveform halves.
+- Impacted areas: Mobile piano-roll ruler rendering and shared view constants. OpenUtau.Core and renderer output remain unchanged.
+
+- Date: 2026-08-29
 - Decision: Introduce an asynchronous Mobile-layer external URL launcher that accepts only absolute HTTP/HTTPS URLs and is injected through `ServiceHub`; implement native launchers for Android, Windows, Linux, macOS, iOS, and browser WASM.
 - Rationale: A typed service keeps MVVM callers independent of platform APIs, reports launch failure without exceptions reaching commands, and fits the existing ServiceHub host-injection pattern. Restricting schemes to web URLs prevents About-page links from unexpectedly opening mail, telephone, or custom-scheme handlers.
 - Alternatives considered: Put `OperatingSystem` branches in AboutViewModel; expose a raw `Action<string>` delegate; allow every absolute URI scheme; use one shell command on every desktop platform.
