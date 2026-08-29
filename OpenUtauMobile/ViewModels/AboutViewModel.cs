@@ -27,10 +27,11 @@ public class AboutViewModel : NavigateViewModelBase
         BackCommand = ReactiveCommand.Create(OnBack);
         OpenHomepageCommand = ReactiveCommand.CreateFromTask(
             () => OpenUrlAsync("https://github.com/vocoder712/OpenUtauMobile"));
-        OpenLicenseCommand = ReactiveCommand.Create(() => ToastService.Enqueue(L.S("About.Toast.LicenseNotImpl")));
-        OpenCreditsCommand = ReactiveCommand.Create(() => ToastService.Enqueue(L.S("About.Toast.CreditsNotImpl")));
-        OpenFeedbackCommand =
-            ReactiveCommand.CreateFromTask(
+        OpenLicenseCommand = ReactiveCommand.CreateFromTask(
+            () => OpenUrlAsync("https://github.com/vocoder712/OpenUtauMobile/blob/dev/LICENSE"));
+        OpenCreditsCommand = ReactiveCommand.CreateFromTask(
+            () => OpenUrlAsync("https://github.com/vocoder712/OpenUtauMobile/graphs/contributors?all=1"));
+        OpenFeedbackCommand = ReactiveCommand.CreateFromTask(
                 () => OpenUrlAsync("https://github.com/vocoder712/OpenUtauMobile/issues"));
 
         // 使用 typeof(...).Assembly 替代 GetEntryAssembly()，
