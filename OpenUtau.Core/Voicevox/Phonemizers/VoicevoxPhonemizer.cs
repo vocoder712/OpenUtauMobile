@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
@@ -17,6 +16,7 @@ namespace OpenUtau.Core.Voicevox {
         }
 
         public override void SetUp(Note[][] notes, UProject project, UTrack track) {
+            base.SetUp(notes, project, track);
             partResult.Clear();
             VoicevoxNote[] vNotes = new VoicevoxNote[notes.Length];
             for (int i = 0; i < notes.Length; i++) {
@@ -94,13 +94,10 @@ namespace OpenUtau.Core.Voicevox {
                     }).ToArray(),
                 };
             }
-            return new Result {
-                phonemes = new Phoneme[] {
-                    new Phoneme {
-                        phoneme = "error",
-                    }
-                },
-            };
+            if (SetUpException != null) {
+                throw new Exception("Phonemizer failed to process.", SetUpException);
+            }
+            throw new Exception("Part result not found");
 
         }
 

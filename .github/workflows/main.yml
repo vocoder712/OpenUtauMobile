@@ -1,0 +1,338 @@
+name: Build and Release
+
+run-name: >-
+  ${{ github.event_name == 'workflow_dispatch'
+      && format('Build {0} · workflow run #{1}', inputs.version, github.run_number)
+      || format('Android Canary · workflow run #{0} · {1}', github.run_number, github.ref_name) }}
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Product version without the v prefix (X.Y.Z)
+        required: true
+        type: string
+      release:
+        description: GitHub Release behavior after all builds succeed
+        required: true
+        default: draft
+        type: choice
+        options:
+          - none
+          - draft
+          - publish
+      release_notes:
+        description: Optional short text prepended to generated release notes
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+# 正式发布串行执行，避免两个 workflow_dispatch 同时通过版本校验后乱序创建 Tag。
+# push 构建使用唯一 run_id 分组，因此不会互相阻塞。
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'workflow_dispatch' && 'release' || github.run_id }}
+  queue: max
+
+jobs:
+  prepare:
+    name: Resolve and validate version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      build_number: ${{ steps.version.outputs.build_number }}
+    steps:
+      - name: Checkout complete history and tags
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_VERSION: ${{ inputs.version }}
+          RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+
+          BUILD_NUMBER=$((RUN_NUMBER + 20000))
+
+          # 仅把严格的 vX.Y.Z 视为正式产品版本；忽略 prerelease、Canary 和其他历史 Tag。
+          latest_release_tag() {
+            git tag --list 'v*' --sort=-version:refname |
+              grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' |
+              head -n 1 || true
+          }
+
+          version_is_greater() {
+            local candidate="$1"
+            local current="$2"
+            local highest
+
+            highest="$(printf '%s\n%s\n' "$current" "$candidate" | sort -V | tail -n 1)"
+            [ "$highest" = "$candidate" ] && [ "$candidate" != "$current" ]
+          }
+
+          LATEST_TAG="$(latest_release_tag)"
+
+          if [ "$EVENT_NAME" = "push" ]; then
+            # Canary 跟随仓库中最高的正式版本，不要求该 Tag 位于当前 HEAD 的祖先历史中。
+            # 这样即使 dev 经历 squash/rebase/cherry-pick/强制推送，也不会丢失产品版本基线。
+            TAG="$LATEST_TAG"
+
+            if [ -z "$TAG" ]; then
+              echo "::error::没有找到符合 vX.Y.Z 格式的正式版本 Tag。请先手动运行一次全平台构建创建正式 Tag。"
+              exit 1
+            fi
+
+            BASE_VERSION="${TAG#v}"
+            VERSION="${BASE_VERSION}-Canary.${BUILD_NUMBER}"
+          else
+            # 严格使用三段数字版本，并拒绝 01.2.3 之类带前导零的写法。
+            if [[ ! "$REQUESTED_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+              echo "::error::版本号必须使用 X.Y.Z 格式，各部分必须为非负整数且不能有前导零，也不能包含前导 'v'。"
+              exit 1
+            fi
+
+            VERSION="$REQUESTED_VERSION"
+            TAG="v${REQUESTED_VERSION}"
+
+            if git show-ref --verify --quiet "refs/tags/$TAG"; then
+              echo "::error::Tag $TAG 已经存在；拒绝覆盖。"
+              exit 1
+            fi
+
+            if [ -n "$LATEST_TAG" ]; then
+              LATEST_VERSION="${LATEST_TAG#v}"
+              if ! version_is_greater "$REQUESTED_VERSION" "$LATEST_VERSION"; then
+                echo "::error::新版本 $REQUESTED_VERSION 必须高于当前最高正式版本 $LATEST_VERSION。"
+                exit 1
+              fi
+            fi
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "build_number=$BUILD_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "Resolved product version: $VERSION"
+          echo "Base release tag: $TAG"
+          echo "Build number: $BUILD_NUMBER"
+
+  android-canary:
+    name: Android ARM64 Canary
+    if: github.event_name == 'push'
+    needs: prepare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Create Swap Space
+        shell: bash
+        run: |
+          SWAP_FILE=/runner-swapfile
+          if [ ! -f "$SWAP_FILE" ]; then
+            sudo fallocate -l 6G "$SWAP_FILE"
+            sudo chmod 600 "$SWAP_FILE"
+            sudo mkswap "$SWAP_FILE"
+          fi
+          sudo swapon "$SWAP_FILE" 2>/dev/null || true
+          echo "===== 交换分区状态 ====="
+          free -h
+          swapon --show
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Install Android workload
+        run: dotnet workload install android
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Collect Build Metadata
+        shell: bash
+        run: |
+          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
+
+      - name: Decode Keystore
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > signing.keystore
+
+      - name: Restore
+        run: dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj
+
+      - name: Publish Android ARM64
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          dotnet publish OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
+            -c Release \
+            -f net10.0-android36.0 \
+            -p:Version="${{ needs.prepare.outputs.version }}" \
+            -p:BuildNumber=${{ needs.prepare.outputs.build_number }} \
+            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
+            -p:BuildMachine="$BUILD_MACHINE" \
+            -p:SourceCommit=${{ github.sha }} \
+            -p:ActionRunId=${{ github.run_id }} \
+            -p:AndroidPackageFormat=apk \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
+            -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
+            -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
+            -p:AndroidSigningKeyPass="$KEY_PASSWORD" \
+            -p:RuntimeIdentifier=android-arm64
+
+      - name: Prepare APK Artifact
+        shell: bash
+        run: |
+          PUBLISH_DIR="OpenUtauMobile.Android/bin/Release/net10.0-android36.0/android-arm64/publish"
+          ARTIFACT_DIR="artifacts/android-arm64"
+
+          echo "===== 准备上传 ====="
+          find "$PUBLISH_DIR" -maxdepth 1 -type f -printf '%f\n'
+          mkdir -p "$ARTIFACT_DIR"
+
+          SIGNED_APK="$(find "$PUBLISH_DIR" -maxdepth 1 -type f -iname '*-signed.apk' -print -quit)"
+          if [ -z "$SIGNED_APK" ]; then
+            echo "::error::找不到已签名的 APK 文件"
+            exit 1
+          fi
+
+          cp "$SIGNED_APK" \
+            "$ARTIFACT_DIR/OpenUtauMobile-预览版-build${{ needs.prepare.outputs.build_number }}-arm64.apk"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: OpenUtauMobile-android-arm64
+          path: artifacts/android-arm64/OpenUtauMobile-预览版-build${{ needs.prepare.outputs.build_number }}-arm64.apk
+          if-no-files-found: error
+
+  all-platforms:
+    name: Full platform build
+    if: github.event_name == 'workflow_dispatch'
+    needs: prepare
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-all-platforms.yml
+    with:
+      version: ${{ needs.prepare.outputs.version }}
+      build_number: ${{ fromJSON(needs.prepare.outputs.build_number) }}
+      source_sha: ${{ github.sha }}
+      action_run_id: ${{ github.run_id }}
+    secrets: inherit
+
+  tag-and-release:
+    name: Tag and optional release
+    if: github.event_name == 'workflow_dispatch'
+    needs:
+      - prepare
+      - all-platforms
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout the built commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Create and push annotated tag
+        shell: bash
+        env:
+          TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+
+          # 构建可能持续较久；创建 Tag 前重新同步远端 Tag，避免使用过期的版本视图。
+          git fetch --force --tags origin
+
+          if git show-ref --verify --quiet "refs/tags/$TAG"; then
+            echo "::error::Tag $TAG 在本次构建期间已被创建；拒绝覆盖。"
+            exit 1
+          fi
+
+          LATEST_TAG="$(
+            git tag --list 'v*' --sort=-version:refname |
+              grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' |
+              head -n 1 || true
+          )"
+
+          if [ -n "$LATEST_TAG" ]; then
+            LATEST_VERSION="${LATEST_TAG#v}"
+            HIGHEST="$(printf '%s\n%s\n' "$LATEST_VERSION" "$VERSION" | sort -V | tail -n 1)"
+            if [ "$HIGHEST" != "$VERSION" ] || [ "$VERSION" = "$LATEST_VERSION" ]; then
+              echo "::error::版本状态在构建期间发生变化：$VERSION 不再高于当前最高正式版本 $LATEST_VERSION。"
+              exit 1
+            fi
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag --annotate "$TAG" "$SOURCE_SHA" --message "OpenUtau Mobile ${TAG#v}"
+          git push origin "refs/tags/$TAG"
+
+      - name: Download release artifacts
+        if: inputs.release != 'none'
+        uses: actions/download-artifact@v8
+        with:
+          pattern: OpenUtauMobile-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        if: inputs.release != 'none'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+          RELEASE_MODE: ${{ inputs.release }}
+          CUSTOM_NOTES: ${{ inputs.release_notes }}
+        run: |
+          set -euo pipefail
+
+          release_args=(
+            --verify-tag
+            --generate-notes
+            --title "OpenUtau Mobile $VERSION"
+          )
+
+          if [ "$RELEASE_MODE" = "draft" ]; then
+            release_args+=(--draft)
+          fi
+
+          if [ -n "$CUSTOM_NOTES" ]; then
+            release_args+=(--notes "$CUSTOM_NOTES")
+          fi
+
+          gh release create "$TAG" "${release_args[@]}" release-assets/*

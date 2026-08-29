@@ -453,3 +453,6 @@ $RECYCLE.BIN/
 
 ## 质量分析
 analysis/
+
+## codex
+.codex/

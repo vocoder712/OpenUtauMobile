@@ -172,6 +172,24 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Поведінка автоматичного перегортання під час відтворення</value>
   </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
+    <value>Перетягування полотна під час редагування висоти</value>
+  </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag.Desc" xml:space="preserve">
+    <value>Якщо ввімкнено, перетягування поза розширеною областю ноти рухає полотно, а всередині редагує висоту.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension" xml:space="preserve">
+    <value>Розширення по горизонталі (тіки)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension.Desc" xml:space="preserve">
+    <value>Розширює область ноти до та після неї на 0–960 тіків.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension" xml:space="preserve">
+    <value>Розширення по вертикалі (півтони)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension.Desc" xml:space="preserve">
+    <value>Розширює область ноти зверху та знизу на 0–12 півтонів.</value>
+  </data>
   <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
     <value>Частота оновлення відтворення</value>
   </data>
@@ -699,6 +717,30 @@
   </data>
   <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
     <value>Форма контрольної точки</value>
+  </data>
+  <data name="PianoRoll.Action.ToggleFirstAnchorSnap" xml:space="preserve">
+    <value>Перемкнути прив’язку першого якоря</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorShape" xml:space="preserve">
+    <value>Форма якоря: {0}</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseInOut" xml:space="preserve">
+    <value>Плавно з обох боків</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.Linear" xml:space="preserve">
+    <value>Лінійна</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseIn" xml:space="preserve">
+    <value>Плавний початок</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseOut" xml:space="preserve">
+    <value>Плавне завершення</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapEnabled" xml:space="preserve">
+    <value>Прив’язку першого якоря ввімкнено</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapDisabled" xml:space="preserve">
+    <value>Прив’язку першого якоря вимкнено</value>
   </data>
   <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
     <value>Скинути вібрато</value>
@@ -1659,5 +1701,8 @@
   </data>
   <data name="Editor.Action.Merge" xml:space="preserve">
     <value>Об'єднати</value>
+  </data>
+  <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
+    <value>Відпустіть, щоб скинути параметр</value>
   </data>
 </root>

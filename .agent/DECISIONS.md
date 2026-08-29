@@ -17,6 +17,35 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: OpenUtau Mobile cannot depend on the desktop NEUTRINO executable. Keeping timing, optional natural-pitch loading, acoustic inference, and vocoding in the shared Core allows the same implementation to run on Android while preserving the verified v3 model contracts. Model metadata is part of the render cache key so replacing a model cannot reuse stale audio.
 - Alternatives considered: Invoke an external NEUTRINO executable; add the renderer only as a mobile plugin; port v2 and HNSEP parameters together with v3.
 - Impacted areas: NEUTRINO singer discovery and installation, phonemization and timing display, render phrase metadata, renderer registration and caching, mobile singer setup UI and localization, and Android ONNX Runtime execution.
+- Date: 2026-08-29
+- Decision: Extend the pitch-anchor context actions with a four-state per-anchor shape cycle and a first-anchor snap toggle that appears only for a single selected first anchor. Reuse Core's existing undoable pitch-shape and snap commands; show the active shape and snap state through localized Toast messages, with outlined/filled magnet icons reflecting the current switch state.
+- Rationale: Keeping both operations in the selection-sensitive anchor menu makes them reachable on touch devices without introducing a second editor surface. Reusing the existing commands preserves validation, undo/redo, and the established `snapFirst` semantics.
+- Alternatives considered: Add permanent toolbar buttons; expose snap for every anchor; mutate pitch data directly in the Mobile view model; include the spline-only enum value in the user-facing four-shape cycle.
+- Impacted areas: Mobile piano-roll anchor context actions and localization. Core pitch data and command behavior are unchanged.
+
+- Date: 2026-08-25
+- Decision: Persist PitchPen blank-area canvas dragging as an enabled-by-default preference, with independently configurable note-hit extensions of 0–960 ticks horizontally (default 240) and 0–12 semitones vertically (default 1). Each new PianoRollViewModel snapshots the clamped preference values in its constructor; disabling the feature bypasses the expanded hit test and retains full-canvas pitch drawing.
+- Rationale: Tick/semitone ranges remain stable across zoom levels and let touch users tune intent recognition without changing global note hit testing. Constructor snapshots keep one editor session internally consistent while settings changes apply to subsequently created editors.
+- Alternatives considered: Read preferences during every pointer gesture; update the active piano-roll view model live; keep fixed constants; express expansion in screen pixels.
+- Impacted areas: Mobile preferences, Settings editing-and-behaviour controls and localization, PitchPen/eraser drag initiation, and PianoRollViewModel construction. Other edit modes and the original note hit test are unchanged.
+
+- Date: 2026-08-25
+- Decision: In PitchPen mode, lock the single-finger drag intent from the original press point: begin pitch drawing or erasing only when that point intersects a note rectangle expanded by 60 px horizontally on each side and 120 px vertically on each side; otherwise reuse the existing canvas-pan path.
+- Rationale: The enlarged, screen-space note target makes near-note pitch editing touch-friendly while leaving blank-space drags available for navigation. Resolving the intent once at drag start prevents the gesture from switching between drawing and panning as the pointer moves.
+- Alternatives considered: Always draw in PitchPen mode; switch intent continuously during movement; change the existing note hit test globally; add a new raw pointer-pressed callback to the shared gesture interpreter.
+- Impacted areas: Piano-roll PitchPen and pitch-eraser single-finger drag initiation. Existing note selection, note movement, anchor editing, multi-touch zooming, magnifier lifecycle, and pan inertia paths are unchanged.
+
+- Date: 2026-08-24
+- Decision: Show a top-left reset target while an advanced phoneme timing handle is captured. Its idle geometry follows the MD3 icon-button proportions: a 48dp target, 24dp icon, 12dp internal padding, and 8dp canvas inset. Animate size and semantic error colors with a 150ms cubic ease-out transition when the pointer crosses the target boundary. Suspend value updates while the pointer is over it and reset only the active Offset, Preutter, or Overlap override when released there.
+- Rationale: A capture-scoped target keeps the touch gesture discoverable without permanently consuming panel space. Top-left placement avoids the finger travel and bottom-edge conflict of the earlier centered placement. Resetting with the existing typed commands keeps the change in the same undo group as the drag and preserves command validation and undo behavior.
+- Alternatives considered: Add permanent reset buttons for every phoneme; reset all timing fields together; cancel the whole drag by undoing intermediate commands.
+- Impacted areas: Advanced phoneme-panel handle dragging, localized reset guidance, motion rendering, cached Phosphor Icons geometry, and semantic layout tokens. Core command behavior is unchanged.
+
+- Date: 2026-08-24
+- Decision: Reuse the editor's existing magnifier and unchanged `PART_PianoRollGrid` source for curve-parameter brush and eraser gestures, translating parameter-canvas pointer coordinates into that source's coordinate space at the view boundary.
+- Rationale: The magnifier already owns source sampling and pitch editing behavior. Forwarding only curve-parameter gesture lifecycle events avoids duplicating the control, preserves numerical/options editing behavior, and keeps coordinates accurate across responsive piano-roll and parameter-panel sizes.
+- Alternatives considered: Give the parameter panel a second magnifier; change the magnifier source to the parameter canvas; reuse pitch events while applying fixed row offsets.
+- Impacted areas: Parameter-curve pointer lifecycle, phoneme-parameter panel event forwarding, and editor magnifier coordinate routing. Existing pitch editing and magnifier source selection are unchanged.
 
 - Date: 2026-08-22
 - Decision: Give each rendered note pitch-bend curve its own finalized `StreamGeometry` instead of submitting the shared mutable `Points` and `PolylineGeometry` caches.
@@ -197,4 +226,16 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Window shutdown detaches `MainView` and unregisters the toast consumer after a save notification can already have posted a dispatcher callback. Reading the mutable callback inside that delayed callback creates a check-then-use race and a null dereference.
 - Alternatives considered: Clear pending toast messages during shutdown; keep invoking a captured consumer after its view detaches; move toast lifetime management into the Windows host.
 - Impacted areas: Shared toast callback registration and shutdown behavior on all application hosts.
+
+- Date: 2026-08-28
+- Decision: Use `main.yml` as the sole independently triggered build workflow, derive the shared integer build number as `github.run_number + 20000`, and pass it into a reusable full-platform workflow; derive product versions from reachable `v2.X.Y.Z` tags for dev Canary builds and from validated manual input for release builds. This supersedes the earlier `10000 + GITHUB_RUN_NUMBER` Android version-code rule.
+- Rationale: Renaming the workflow resets its run-number sequence, so the 20000 offset prevents integer-version downgrade while keeping every platform artifact, build metadata field, and Android version code on one value. Product versions and optional GitHub Releases retain separate lifecycles, and the annotated tag is created only after every reusable-workflow build job succeeds.
+- Alternatives considered: Keep separate manual and automatic workflows using unrelated run numbers; hardcode the product version in MSBuild properties; create a tag or Release before compiling all platforms.
+- Impacted areas: GitHub Actions build/release orchestration, artifact version metadata, Android version-code inputs, and local version fallback in `Directory.Build.props`.
+
+- Date: 2026-08-29
+- Decision: Keep multi-touch tap candidates alive through the final pointer release, require movement beyond the tap tolerance before beginning a pinch, key suspended-touch snapshots by `IPointer`, and treat any capture loss as cancellation of the complete pointer session.
+- Rationale: Platform-generated zero-distance or jitter `PointerMoved` events previously invalidated every two-finger tap, undo could run while another pointer remained captured, coordinate/timestamp snapshot matching was not a stable touch identity, and partial capture-loss recovery could retain another pointer as a false pinch participant.
+- Alternatives considered: Add logging without changing recognition; rely on tighter platform event filtering; continue reinitializing a reduced gesture after capture loss.
+- Impacted areas: Shared Windows/Android pointer gesture recognition for tap, undo/redo, pinch, cancellation, and post-cancellation single-finger input.
 

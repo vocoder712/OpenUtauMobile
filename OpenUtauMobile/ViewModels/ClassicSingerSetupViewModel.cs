@@ -180,7 +180,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
             {
                 ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
-            using (IArchive archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions))
+            using (IArchive archive = ArchiveFactory.OpenArchive(ArchiveFilePath, readerOptions))
             {
                 _textItems.Clear();
                 _textItems.AddRange(archive.Entries
@@ -214,7 +214,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
             {
                 ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
-            using (IArchive archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions))
+            using (IArchive archive = ArchiveFactory.OpenArchive(ArchiveFilePath, readerOptions))
             {
                 _textItems.Clear();
                 foreach (IArchiveEntry entry in archive.Entries.Where(entry =>
@@ -255,7 +255,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
     {
         try
         {
-            using (IArchive archive = ArchiveFactory.Open(archiveFilePath))
+            using (IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath))
             {
                 return archive.Entries.Any(e => e.IsEncrypted);
             }
@@ -270,7 +270,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
     {
         try
         {
-            using (IArchive archive = ArchiveFactory.Open(archiveFilePath))
+            using (IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath))
             {
                 IArchiveEntry? entry = archive.Entries.FirstOrDefault(e =>
                     Path.GetFileName(e.Key) == "character.yaml");

@@ -231,6 +231,24 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Automatic page-turning behavior during playback</value>
   </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
+    <value>Canvas Dragging in Pitch Editing</value>
+  </data>
+  <data name="Settings.Edit.PitchPenCanvasDrag.Desc" xml:space="preserve">
+    <value>When enabled, dragging outside the expanded note hit area pans the canvas; dragging inside edits pitch.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension" xml:space="preserve">
+    <value>Horizontal Hit Extension (ticks)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitTickExtension.Desc" xml:space="preserve">
+    <value>Extends the note hit area before and after the note by 0–960 ticks.</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension" xml:space="preserve">
+    <value>Vertical Hit Extension (semitones)</value>
+  </data>
+  <data name="Settings.Edit.PitchPenHitToneExtension.Desc" xml:space="preserve">
+    <value>Extends the note hit area above and below the note by 0–12 semitones.</value>
+  </data>
   <data name="Settings.Edit.PlaybackRefreshRate" xml:space="preserve">
     <value>Playback Refresh Rate</value>
   </data>
@@ -776,6 +794,30 @@
   </data>
   <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
     <value>Control Point Shape</value>
+  </data>
+  <data name="PianoRoll.Action.ToggleFirstAnchorSnap" xml:space="preserve">
+    <value>Toggle First Anchor Snap</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorShape" xml:space="preserve">
+    <value>Anchor shape: {0}</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseInOut" xml:space="preserve">
+    <value>Ease in/out</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.Linear" xml:space="preserve">
+    <value>Linear</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseIn" xml:space="preserve">
+    <value>Ease in</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseOut" xml:space="preserve">
+    <value>Ease out</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapEnabled" xml:space="preserve">
+    <value>First anchor snap enabled</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapDisabled" xml:space="preserve">
+    <value>First anchor snap disabled</value>
   </data>
   <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
     <value>Reset Vibrato</value>
@@ -1704,5 +1746,8 @@
   </data>
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>Note: {0} | Phoneme #{1}</value>
+  </data>
+  <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
+    <value>Release to reset parameter</value>
   </data>
 </root>
