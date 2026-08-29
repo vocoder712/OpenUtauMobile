@@ -35,6 +35,7 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public override void SetUp(Note[][] notes, UProject project, UTrack track) {
+            base.SetUp(notes, project, track);
             partResult.Clear();
             if (notes.Length == 0 || singer == null || !singer.Found) {
                 return;
@@ -164,13 +165,10 @@ namespace OpenUtau.Core.Enunu {
                     }).ToArray(),
                 };
             }
-            return new Result {
-                phonemes = new Phoneme[] {
-                    new Phoneme {
-                        phoneme = "error",
-                    }
-                },
-            };
+            if (SetUpException != null) {
+                throw new Exception("Phonemizer failed to process.", SetUpException);
+            }
+            throw new Exception("Part result not found");
         }
 
         public override void CleanUp() {
