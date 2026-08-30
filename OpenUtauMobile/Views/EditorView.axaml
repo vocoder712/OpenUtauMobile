@@ -417,7 +417,7 @@
                     <c:NotesCanvas Grid.Row="1"
                                    Grid.Column="1"
                                    IsVisible="{Binding IsVoiceMode}"
-                                   ClipToBounds="False"
+                                   ClipToBounds="True"
                                    Part="{Binding EditingVoicePart}"
                                    TickWidth="{Binding TickWidth}"
                                    KeyHeight="{Binding KeyHeight}"
@@ -493,68 +493,69 @@
                                    MaxWidth="80" TextTrimming="CharacterEllipsis"
                                    ToolTip.Tip="{Binding EditingWavePart.DisplayName}" />
                     </StackPanel>
-
-                    <!-- 钢琴卷帘与音素/参数面板分隔条（Row 2） -->
-                    <Grid Grid.Row="2"
-                          Grid.Column="0"
-                          Grid.ColumnSpan="2"
-                          Height="24"
-                          Margin="0,-12,0,-12"
-                          ClipToBounds="True"
-                          ZIndex="50"
-                          IsVisible="{Binding IsVoiceMode}"
-                          x:Name="PhonemeSplitHandle">
-                        <!-- 背景横向细分割线 -->
-                        <Border Height="1"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Stretch"
-                                Background="{DynamicResource Sem.Color.OutlineVariant}"
-                                IsHitTestVisible="False" />
-                        <!-- 中间胶囊手柄（悬浮居中跨越分割线，与主分割条完全一致） -->
-                        <Grid x:Name="PhonemeSplitHandlePill"
-                              Width="{x:Static local:ViewConstants.EditorSplitHandleWidth}"
-                              Height="{x:Static local:ViewConstants.EditorSplitHandleHeight}"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Center"
-                              Cursor="{x:Static local:ViewConstants.cursorSizeNS}"
-                              IsHitTestVisible="True"
-                              ToolTip.Tip="{DynamicResource PhonemePanel.Split.Tooltip}">
-                            <Path Data="M 0,12 
-                                       C 0,12 3,12 6,6 
-                                       C 9,0 12,0 12,0 
-                                       H 36 
-                                       C 36,0 39,0 42,6 
-                                       C 45,12 48,12 48,12 
-                                       C 48,12 45,12 42,18 
-                                       C 39,24 36,24 36,24 
-                                       H 12 
-                                       C 12,24 9,24 6,18 
-                                       C 3,12 0,12 0,12 
-                                       Z"
-                                  Fill="{DynamicResource Sem.Color.Surface}"
-                                  Stroke="{DynamicResource Sem.Color.Outline}"
-                                  StrokeThickness="1"
-                                  Stretch="Fill" />
-                            <StackPanel Orientation="Vertical"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Spacing="3"
-                                        IsHitTestVisible="False">
-                                <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
-                                           Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
-                                <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
-                                           Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
-                            </StackPanel>
+                    
+                    <!-- 音素与参数面板层 -->
+                    <Grid Grid.Row="1"
+                          Grid.Column="0" Grid.ColumnSpan="2"
+                          RowDefinitions="*, 0, Auto">
+                        <!-- 钢琴卷帘与音素/参数面板分隔条（Row 2） -->
+                        <Grid Grid.Row="1"
+                              Height="24"
+                              Margin="0,-12,0,-12"
+                              ClipToBounds="True"
+                              ZIndex="50"
+                              IsVisible="{Binding IsVoiceMode}"
+                              x:Name="PhonemeSplitHandle">
+                            <!-- 背景横向细分割线 -->
+                            <Border Height="1"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Stretch"
+                                    Background="{DynamicResource Sem.Color.OutlineVariant}"
+                                    IsHitTestVisible="False" />
+                            <!-- 中间胶囊手柄（悬浮居中跨越分割线，与主分割条完全一致） -->
+                            <Grid x:Name="PhonemeSplitHandlePill"
+                                  Width="{x:Static local:ViewConstants.EditorSplitHandleWidth}"
+                                  Height="{x:Static local:ViewConstants.EditorSplitHandleHeight}"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  Cursor="{x:Static local:ViewConstants.cursorSizeNS}"
+                                  IsHitTestVisible="True"
+                                  ToolTip.Tip="{DynamicResource PhonemePanel.Split.Tooltip}">
+                                <Path Data="M 0,12 
+                                           C 0,12 3,12 6,6 
+                                           C 9,0 12,0 12,0 
+                                           H 36 
+                                           C 36,0 39,0 42,6 
+                                           C 45,12 48,12 48,12 
+                                           C 48,12 45,12 42,18 
+                                           C 39,24 36,24 36,24 
+                                           H 12 
+                                           C 12,24 9,24 6,18 
+                                           C 3,12 0,12 0,12 
+                                           Z"
+                                      Fill="{DynamicResource Sem.Color.Surface}"
+                                      Stroke="{DynamicResource Sem.Color.Outline}"
+                                      StrokeThickness="1"
+                                      Stretch="Fill" />
+                                <StackPanel Orientation="Vertical"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Spacing="3"
+                                            IsHitTestVisible="False">
+                                    <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
+                                               Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
+                                    <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
+                                               Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
+                                </StackPanel>
+                            </Grid>
                         </Grid>
+    
+                        <!-- 音素与参数编辑面板（Row 3） -->
+                        <c:PhonemeParamPanel x:Name="PhonemeParamPanel"
+                                             Grid.Row="2"
+                                             Height="{Binding PhonemePanelHeight}"
+                                             IsVisible="{Binding IsPhonemePanelVisible}" />
                     </Grid>
-
-                    <!-- 音素与参数编辑面板（Row 3） -->
-                    <c:PhonemeParamPanel x:Name="PhonemeParamPanel"
-                                         Grid.Row="3"
-                                         Grid.Column="0"
-                                         Grid.ColumnSpan="2"
-                                         Height="{Binding PhonemePanelHeight}"
-                                         IsVisible="{Binding IsPhonemePanelVisible}" />
 
                     <!-- 没有活动分片时的遮罩 -->
                     <Border Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Grid.ColumnSpan="2"
