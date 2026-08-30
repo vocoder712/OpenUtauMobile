@@ -1,0 +1,573 @@
+using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
+using OpenUtau.Core;
+using OpenUtau.Core.Render;
+using OpenUtau.Core.SignalChain;
+using OpenUtau.Core.Ustx;
+using Serilog;
+
+namespace OpenUtauMobile.Controls;
+
+/// <summary>
+/// 在钢琴卷帘标尺空白区显示当前歌声分片已经渲染出的单侧波形。
+/// </summary>
+public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
+{
+    public static readonly StyledProperty<UVoicePart?> PartProperty =
+        AvaloniaProperty.Register<RenderedWaveformCanvas, UVoicePart?>(nameof(Part));
+
+    public static readonly StyledProperty<double> TickWidthProperty =
+        AvaloniaProperty.Register<RenderedWaveformCanvas, double>(nameof(TickWidth));
+
+    public static readonly StyledProperty<double> TickOffsetProperty =
+        AvaloniaProperty.Register<RenderedWaveformCanvas, double>(nameof(TickOffset));
+
+    public static readonly StyledProperty<IBrush?> WaveformBrushProperty =
+        AvaloniaProperty.Register<RenderedWaveformCanvas, IBrush?>(nameof(WaveformBrush));
+
+    public static readonly StyledProperty<bool> IsRenderStatusModeProperty =
+        AvaloniaProperty.Register<RenderedWaveformCanvas, bool>(nameof(IsRenderStatusMode));
+
+    private sealed class Envelope
+    {
+        public required float[] Peaks { get; init; }
+        public required double StartMs { get; init; }
+        public required double PeakRate { get; init; }
+        public required double StartTick { get; init; }
+        public required double EndTick { get; init; }
+    }
+
+    private CancellationTokenSource? _envelopeCancellation;
+    private Envelope? _envelope;
+    private UVoicePart? _envelopePart;
+    private UVoicePart? _requestedPart;
+    private double _requestedStartTick;
+    private double _requestedEndTick;
+    private readonly HashSet<UVoicePart> _partsWithPhraseAudio = [];
+    private readonly HashSet<UVoicePart> _explicitlyInvalidatedParts = [];
+    private readonly Dictionary<UVoicePart, HashSet<RenderPhrase>> _renderedPhrases = [];
+    private bool _projectRenderInvalidated;
+    private StreamGeometry? _geometry;
+    private Envelope? _geometryEnvelope;
+    private double _geometryTickWidth;
+    private double _geometryHeight;
+    private IBrush? _statusPenBrush;
+    private IPen? _statusPen;
+
+    public UVoicePart? Part
+    {
+        get => GetValue(PartProperty);
+        set => SetValue(PartProperty, value);
+    }
+
+    public double TickWidth
+    {
+        get => GetValue(TickWidthProperty);
+        set => SetValue(TickWidthProperty, value);
+    }
+
+    public double TickOffset
+    {
+        get => GetValue(TickOffsetProperty);
+        set => SetValue(TickOffsetProperty, value);
+    }
+
+    public IBrush? WaveformBrush
+    {
+        get => GetValue(WaveformBrushProperty);
+        set => SetValue(WaveformBrushProperty, value);
+    }
+
+    public bool IsRenderStatusMode
+    {
+        get => GetValue(IsRenderStatusModeProperty);
+        set => SetValue(IsRenderStatusModeProperty, value);
+    }
+
+    static RenderedWaveformCanvas()
+    {
+        AffectsRender<RenderedWaveformCanvas>(
+            PartProperty,
+            TickWidthProperty,
+            TickOffsetProperty,
+            WaveformBrushProperty,
+            IsRenderStatusModeProperty);
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == PartProperty)
+        {
+            SeedCompletedPhraseState();
+            RefreshDisplay();
+        }
+        else if (change.Property == IsRenderStatusModeProperty)
+        {
+            RefreshDisplay();
+        }
+        else if (change.Property == TickWidthProperty)
+        {
+            InvalidateGeometry();
+            RefreshDisplay();
+        }
+        else if (change.Property == TickOffsetProperty &&
+            !IsRenderStatusMode && !EnvelopeContainsViewport())
+        {
+            QueueEnvelopeBuild();
+        }
+    }
+
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
+    {
+        base.OnSizeChanged(e);
+        InvalidateGeometry();
+        RefreshDisplay();
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        DocManager.Inst.AddSubscriber(this);
+        SeedCompletedPhraseState();
+        if (!ReferenceEquals(_envelopePart, Part))
+        {
+            RefreshDisplay();
+        }
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        DocManager.Inst.RemoveSubscriber(this);
+        CancelEnvelopeBuild();
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    public override void Render(DrawingContext context)
+    {
+        base.Render(context);
+        if (IsRenderStatusMode)
+        {
+            RenderPhraseStatus(context);
+            return;
+        }
+        if (_envelope == null || Part == null || WaveformBrush == null ||
+            TickWidth <= 0 || Bounds.Width <= 0 || Bounds.Height <= 0)
+        {
+            return;
+        }
+
+        EnsureGeometry(_envelope);
+        if (_geometry == null)
+        {
+            return;
+        }
+
+        double translateX = (_envelope.StartTick - TickOffset) * TickWidth;
+        using (context.PushClip(new Rect(Bounds.Size)))
+        using (context.PushTransform(Matrix.CreateTranslation(translateX, 0)))
+        {
+            context.DrawGeometry(WaveformBrush, null, _geometry);
+        }
+    }
+
+    public void OnNext(UCommand cmd, bool isUndo)
+    {
+        if (cmd is PreRenderNotification)
+        {
+            _projectRenderInvalidated = true;
+            _partsWithPhraseAudio.Clear();
+            _renderedPhrases.Clear();
+            ClearWaveform();
+        }
+        else if (cmd is PartRenderInvalidatedNotification invalidated &&
+            invalidated.part is UVoicePart invalidatedPart)
+        {
+            _explicitlyInvalidatedParts.Add(invalidatedPart);
+            _partsWithPhraseAudio.Remove(invalidatedPart);
+            _renderedPhrases.Remove(invalidatedPart);
+            if (ReferenceEquals(invalidatedPart, Part))
+            {
+                ClearWaveform();
+            }
+        }
+        else if (cmd is PhraseRenderedNotification rendered && rendered.part is UVoicePart renderedPart)
+        {
+            _explicitlyInvalidatedParts.Remove(renderedPart);
+            _partsWithPhraseAudio.Add(renderedPart);
+            if (!_renderedPhrases.TryGetValue(renderedPart, out HashSet<RenderPhrase>? phrases))
+            {
+                phrases = [];
+                _renderedPhrases.Add(renderedPart, phrases);
+            }
+            phrases.Add(rendered.phrase);
+            if (ReferenceEquals(renderedPart, Part) && IsRenderStatusMode)
+            {
+                InvalidateVisual();
+            }
+            else if (ReferenceEquals(renderedPart, Part) &&
+                IsAudioRangeVisible(rendered.audioStartMs, rendered.audioEndMs))
+            {
+                QueueEnvelopeBuild();
+            }
+        }
+        else if (cmd is LoadProjectNotification)
+        {
+            _projectRenderInvalidated = false;
+            _partsWithPhraseAudio.Clear();
+            _explicitlyInvalidatedParts.Clear();
+            _renderedPhrases.Clear();
+            ClearWaveform();
+        }
+    }
+
+    private void RenderPhraseStatus(DrawingContext context)
+    {
+        UVoicePart? part = Part;
+        IBrush? brush = WaveformBrush;
+        if (part == null || brush == null || TickWidth <= 0 ||
+            Bounds.Width <= 0 || Bounds.Height <= 0)
+        {
+            return;
+        }
+
+        double leftTick = TickOffset;
+        double rightTick = TickOffset + Bounds.Width / TickWidth;
+        double top = ViewConstants.RenderedPhraseStatusVerticalInset;
+        double height = Math.Max(1, Bounds.Height - top * 2.0);
+        IPen outline = GetStatusOutline(brush);
+        _renderedPhrases.TryGetValue(part, out HashSet<RenderPhrase>? renderedPhrases);
+
+        using (context.PushClip(new Rect(Bounds.Size)))
+        {
+            lock (part)
+            {
+                foreach (RenderPhrase phrase in part.renderPhrases)
+                {
+                    if (phrase.position >= rightTick || phrase.end <= leftTick)
+                    {
+                        continue;
+                    }
+
+                    double left = (phrase.position - TickOffset) * TickWidth +
+                        ViewConstants.RenderedPhraseStatusHorizontalGap;
+                    double right = (phrase.end - TickOffset) * TickWidth -
+                        ViewConstants.RenderedPhraseStatusHorizontalGap;
+                    Rect rect = new(left, top, Math.Max(1, right - left), height);
+                    IBrush? fill = renderedPhrases?.Contains(phrase) == true ? brush : null;
+                    context.DrawRectangle(fill, outline, rect);
+                }
+            }
+        }
+    }
+
+    private IPen GetStatusOutline(IBrush brush)
+    {
+        if (_statusPen == null || !ReferenceEquals(_statusPenBrush, brush))
+        {
+            _statusPenBrush = brush;
+            _statusPen = new Pen(brush, ViewConstants.RenderedPhraseStatusBorderThickness);
+        }
+        return _statusPen;
+    }
+
+    private void SeedCompletedPhraseState()
+    {
+        UVoicePart? part = Part;
+        if (part?.Mix == null || _projectRenderInvalidated ||
+            _explicitlyInvalidatedParts.Contains(part) || _renderedPhrases.ContainsKey(part))
+        {
+            return;
+        }
+
+        lock (part)
+        {
+            _renderedPhrases[part] = new HashSet<RenderPhrase>(part.renderPhrases);
+        }
+    }
+
+    private void RefreshDisplay()
+    {
+        if (IsRenderStatusMode)
+        {
+            CancelEnvelopeBuild();
+            InvalidateVisual();
+        }
+        else
+        {
+            QueueEnvelopeBuild();
+        }
+    }
+
+    private bool IsWaveformDataAvailable(UVoicePart part)
+    {
+        return !_explicitlyInvalidatedParts.Contains(part) &&
+            (!_projectRenderInvalidated || _partsWithPhraseAudio.Contains(part));
+    }
+
+    private bool IsAudioRangeVisible(double audioStartMs, double audioEndMs)
+    {
+        if (TickWidth <= 0 || Bounds.Width <= 0)
+        {
+            return false;
+        }
+        TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
+        double visibleStartMs = timeAxis.TickPosToMsPos(TickOffset);
+        double visibleEndMs = timeAxis.TickPosToMsPos(TickOffset + Bounds.Width / TickWidth);
+        return audioEndMs > visibleStartMs && audioStartMs < visibleEndMs;
+    }
+
+    private bool EnvelopeContainsViewport()
+    {
+        if (TickWidth <= 0 || Bounds.Width <= 0 || Part == null)
+        {
+            return false;
+        }
+        double visibleStartTick = Math.Max(Part.position, TickOffset);
+        double visibleEndTick = Math.Min(Part.End, TickOffset + Bounds.Width / TickWidth);
+        bool envelopeContainsViewport = _envelope != null &&
+            ReferenceEquals(_envelopePart, Part) &&
+            visibleStartTick >= _envelope.StartTick && visibleEndTick <= _envelope.EndTick;
+        bool requestContainsViewport = _envelopeCancellation != null &&
+            ReferenceEquals(_requestedPart, Part) &&
+            visibleStartTick >= _requestedStartTick && visibleEndTick <= _requestedEndTick;
+        return visibleEndTick <= visibleStartTick ||
+            envelopeContainsViewport || requestContainsViewport;
+    }
+
+    private async void QueueEnvelopeBuild()
+    {
+        CancelEnvelopeBuild();
+        if (IsRenderStatusMode)
+        {
+            return;
+        }
+        UVoicePart? part = Part;
+        ISignalSource? mix = part?.Mix;
+        if (part == null || mix == null || !IsWaveformDataAvailable(part))
+        {
+            ClearWaveform();
+            return;
+        }
+
+        if (TickWidth <= 0 || Bounds.Width <= 0)
+        {
+            return;
+        }
+
+        TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
+        double visibleEndTick = TickOffset + Bounds.Width / TickWidth;
+        double cacheWidth = Math.Clamp(
+            Bounds.Width * ViewConstants.RenderedWaveformCacheViewportFactor,
+            ViewConstants.RenderedWaveformMinCacheWidth,
+            ViewConstants.RenderedWaveformMaxCacheWidth);
+        double overscanTicks = Math.Max(0, cacheWidth - Bounds.Width) / (2.0 * TickWidth);
+        double startTick = Math.Max(part.position, TickOffset - overscanTicks);
+        double endTick = Math.Min(part.End, visibleEndTick + overscanTicks);
+        if (endTick <= startTick)
+        {
+            return;
+        }
+        double startMs = timeAxis.TickPosToMsPos(startTick);
+        double endMs = timeAxis.TickPosToMsPos(endTick);
+        CancellationTokenSource cancellation = new();
+        _envelopeCancellation = cancellation;
+        _requestedPart = part;
+        _requestedStartTick = startTick;
+        _requestedEndTick = endTick;
+
+        try
+        {
+            Envelope envelope = await Task.Run(
+                () => BuildEnvelope(
+                    mix, startTick, endTick, startMs, endMs, cancellation.Token),
+                cancellation.Token);
+            if (!cancellation.IsCancellationRequested && ReferenceEquals(Part, part))
+            {
+                _envelope = envelope;
+                _envelopePart = part;
+                InvalidateGeometry();
+                InvalidateVisual();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // 快速切换分片或重复渲染时，旧包络任务按预期终止。
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "构建已渲染歌声波形包络失败");
+        }
+        finally
+        {
+            if (ReferenceEquals(_envelopeCancellation, cancellation))
+            {
+                _envelopeCancellation = null;
+                _requestedPart = null;
+            }
+            cancellation.Dispose();
+        }
+    }
+
+    private static Envelope BuildEnvelope(
+        ISignalSource mix,
+        double startTick,
+        double endTick,
+        double startMs,
+        double endMs,
+        CancellationToken cancellationToken)
+    {
+        double durationSeconds = Math.Max(0, endMs - startMs) / 1000.0;
+        double peakRate = ViewConstants.RenderedWaveformPeakRate;
+        if (durationSeconds * peakRate > ViewConstants.RenderedWaveformMaxEnvelopePointCount)
+        {
+            peakRate = ViewConstants.RenderedWaveformMaxEnvelopePointCount / durationSeconds;
+        }
+
+        int peakCount = Math.Max(1, (int)Math.Ceiling(durationSeconds * peakRate));
+        float[] peaks = new float[peakCount];
+        long totalFrames = Math.Max(0,
+            (long)Math.Ceiling(durationSeconds * ViewConstants.RenderedWaveformAudioSampleRate));
+        int bufferLength = ViewConstants.RenderedWaveformMixBufferFrames *
+            ViewConstants.RenderedWaveformChannelCount;
+        float[] buffer = ArrayPool<float>.Shared.Rent(bufferLength);
+        long startFrame = (long)Math.Floor(
+            startMs * ViewConstants.RenderedWaveformAudioSampleRate / 1000.0);
+
+        try
+        {
+            long frameOffset = 0;
+            while (frameOffset < totalFrames)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                int frameCount = (int)Math.Min(
+                    ViewConstants.RenderedWaveformMixBufferFrames,
+                    totalFrames - frameOffset);
+                int sampleCount = frameCount * ViewConstants.RenderedWaveformChannelCount;
+                Array.Clear(buffer, 0, sampleCount);
+                long samplePosition = (startFrame + frameOffset) *
+                    ViewConstants.RenderedWaveformChannelCount;
+                mix.Mix((int)Math.Clamp(samplePosition, int.MinValue, int.MaxValue), buffer, 0, sampleCount);
+
+                for (int frame = 0; frame < frameCount; frame++)
+                {
+                    int sampleIndex = frame * ViewConstants.RenderedWaveformChannelCount;
+                    float amplitude = Math.Max(
+                        Math.Abs(buffer[sampleIndex]),
+                        Math.Abs(buffer[sampleIndex + 1]));
+                    int peakIndex = Math.Min(
+                        peakCount - 1,
+                        (int)((frameOffset + frame) * peakRate /
+                            ViewConstants.RenderedWaveformAudioSampleRate));
+                    if (amplitude > peaks[peakIndex])
+                    {
+                        peaks[peakIndex] = amplitude;
+                    }
+                }
+                frameOffset += frameCount;
+            }
+        }
+        finally
+        {
+            ArrayPool<float>.Shared.Return(buffer);
+        }
+
+        return new Envelope
+        {
+            Peaks = peaks,
+            StartMs = startMs,
+            PeakRate = peakRate,
+            StartTick = startTick,
+            EndTick = endTick,
+        };
+    }
+
+    private void EnsureGeometry(Envelope envelope)
+    {
+        bool cacheContainsViewport = ReferenceEquals(_geometryEnvelope, envelope) &&
+            Math.Abs(_geometryTickWidth - TickWidth) < double.Epsilon &&
+            Math.Abs(_geometryHeight - Bounds.Height) < double.Epsilon;
+        if (cacheContainsViewport)
+        {
+            return;
+        }
+
+        double startTick = envelope.StartTick;
+        double endTick = envelope.EndTick;
+
+        double geometryWidth = (endTick - startTick) * TickWidth;
+        int columnCount = Math.Max(1, (int)Math.Ceiling(geometryWidth));
+        TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
+        StreamGeometry geometry = new();
+        using (StreamGeometryContext geometryContext = geometry.Open())
+        {
+            geometryContext.BeginFigure(new Point(0, Bounds.Height), true);
+            for (int column = 0; column <= columnCount; column++)
+            {
+                double tick = Math.Min(endTick, startTick + column / TickWidth);
+                double nextTick = Math.Min(endTick, startTick + (column + 1.0) / TickWidth);
+                double startMs = timeAxis.TickPosToMsPos(tick);
+                double endMs = timeAxis.TickPosToMsPos(nextTick);
+                float peak = GetPeak(envelope, startMs, endMs);
+                double y = Bounds.Height * (1.0 - Math.Clamp(
+                    peak,
+                    0,
+                    1.0));
+                geometryContext.LineTo(new Point(column, y));
+            }
+            geometryContext.LineTo(new Point(geometryWidth, Bounds.Height));
+            geometryContext.EndFigure(true);
+        }
+
+        _geometry = geometry;
+        _geometryEnvelope = envelope;
+        _geometryTickWidth = TickWidth;
+        _geometryHeight = Bounds.Height;
+    }
+
+    private static float GetPeak(Envelope envelope, double startMs, double endMs)
+    {
+        int startIndex = Math.Clamp(
+            (int)Math.Floor((startMs - envelope.StartMs) * envelope.PeakRate / 1000.0),
+            0,
+            envelope.Peaks.Length - 1);
+        int endIndex = Math.Clamp(
+            (int)Math.Ceiling((endMs - envelope.StartMs) * envelope.PeakRate / 1000.0),
+            startIndex + 1,
+            envelope.Peaks.Length);
+        float peak = 0;
+        for (int index = startIndex; index < endIndex; index++)
+        {
+            peak = Math.Max(peak, envelope.Peaks[index]);
+        }
+        return peak;
+    }
+
+    private void CancelEnvelopeBuild()
+    {
+        _envelopeCancellation?.Cancel();
+        _envelopeCancellation = null;
+        _requestedPart = null;
+    }
+
+    private void ClearWaveform()
+    {
+        CancelEnvelopeBuild();
+        _envelope = null;
+        _envelopePart = null;
+        InvalidateGeometry();
+        InvalidateVisual();
+    }
+
+    private void InvalidateGeometry()
+    {
+        _geometry = null;
+        _geometryEnvelope = null;
+    }
+}

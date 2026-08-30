@@ -75,6 +75,20 @@ namespace OpenUtauMobile
         public const double PianoRollTickWidthMin = 8.0 / 480.0;
         public const double PianoRollTickWidthDefault = 48.0 / 480.0;
 
+        // 已渲染歌声波形：以固定峰值率建立一次轻量包络，拖动画布时只平移缓存几何。
+        public const int RenderedWaveformAudioSampleRate = 44100;
+        public const int RenderedWaveformChannelCount = 2;
+        public const int RenderedWaveformPeakRate = 4000;
+        public const int RenderedWaveformMixBufferFrames = 16384;
+        public const int RenderedWaveformMaxEnvelopePointCount = 2000000;
+        public const double RenderedWaveformCacheViewportFactor = 2.0;
+        public const double RenderedWaveformMinCacheWidth = 256.0;
+        public const double RenderedWaveformMaxCacheWidth = 4096.0;
+        public const double RenderedWaveformOpacity = 0.5;
+        public const double RenderedPhraseStatusVerticalInset = 4.0;
+        public const double RenderedPhraseStatusHorizontalGap = 1.0;
+        public const double RenderedPhraseStatusBorderThickness = 1.0;
+
         public const double NoteHeightMax = 128;
         public const double NoteHeightMin = 16;
 

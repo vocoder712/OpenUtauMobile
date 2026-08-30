@@ -12,6 +12,18 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-30
+- Decision: Add a persisted ruler display switch in the piano-key/ruler intersection. Waveform mode retains the cached envelope; render-status mode cancels envelope work and draws each visible phrase as an outlined pending block or filled completed block.
+- Rationale: Phrase blocks expose the same progressive render lifecycle at substantially lower CPU and allocation cost during frequent mobile piano-roll movement, while the explicit button and changing icon keep the performance choice discoverable.
+- Alternatives considered: Always draw both layers; replace the waveform permanently; infer completion from nonzero samples; rebuild a retained geometry for simple rectangles.
+- Impacted areas: Mobile piano-roll view model, ruler canvas and layout, OPUM-specific preferences, and shared view constants. Synthesis and render lifecycle are unchanged.
+
+- Date: 2026-08-30
+- Decision: Display the active voice part's available rendered phrases as a one-sided peak envelope in the piano-roll ruler placeholder. Publish the request's initially empty mix when rendering starts, publish each completed phrase's audio interval, clear immediately on invalidation, and rebuild only the visible overscanned range into cached `StreamGeometry`.
+- Rationale: Upstream `UVoicePart.Mix` is the waveform source, but upstream keeps the in-progress `WaveMix` private and assigns it to the part only after every phrase completes. Exposing lifecycle notifications without changing synthesis makes the UI match actual sample availability while pooled visible-range envelope generation and retained geometry keep high-frequency panning inexpensive.
+- Alternatives considered: Port upstream's per-frame full-view `WriteableBitmap` renderer; wait for `PartRenderedNotification`; infer completion from renderer-specific cache files; poll private render state; draw both waveform halves.
+- Impacted areas: Core render lifecycle notifications and mix publication, Mobile piano-roll ruler rendering, and shared view constants. Renderer algorithms and rendered samples are unchanged.
+
 - Date: 2026-08-29
 - Decision: Introduce an asynchronous Mobile-layer external URL launcher that accepts only absolute HTTP/HTTPS URLs and is injected through `ServiceHub`; implement native launchers for Android, Windows, Linux, macOS, iOS, and browser WASM.
 - Rationale: A typed service keeps MVVM callers independent of platform APIs, reports launch failure without exceptions reaching commands, and fits the existing ServiceHub host-injection pattern. Restricting schemes to web URLs prevents About-page links from unexpectedly opening mail, telephone, or custom-scheme handlers.
