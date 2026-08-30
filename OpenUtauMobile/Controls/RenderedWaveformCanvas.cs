@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
@@ -34,15 +35,21 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         public required float[] Peaks { get; init; }
         public required double StartMs { get; init; }
         public required double PeakRate { get; init; }
+        public required double StartTick { get; init; }
+        public required double EndTick { get; init; }
     }
 
     private CancellationTokenSource? _envelopeCancellation;
     private Envelope? _envelope;
     private UVoicePart? _envelopePart;
+    private UVoicePart? _requestedPart;
+    private double _requestedStartTick;
+    private double _requestedEndTick;
+    private readonly HashSet<UVoicePart> _partsWithPhraseAudio = [];
+    private readonly HashSet<UVoicePart> _explicitlyInvalidatedParts = [];
+    private bool _projectRenderInvalidated;
     private StreamGeometry? _geometry;
     private Envelope? _geometryEnvelope;
-    private double _geometryStartTick;
-    private double _geometryEndTick;
     private double _geometryTickWidth;
     private double _geometryHeight;
 
@@ -89,7 +96,19 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         else if (change.Property == TickWidthProperty)
         {
             InvalidateGeometry();
+            QueueEnvelopeBuild();
         }
+        else if (change.Property == TickOffsetProperty && !EnvelopeContainsViewport())
+        {
+            QueueEnvelopeBuild();
+        }
+    }
+
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
+    {
+        base.OnSizeChanged(e);
+        InvalidateGeometry();
+        QueueEnvelopeBuild();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -118,13 +137,13 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
             return;
         }
 
-        EnsureGeometry(_envelope, Part);
+        EnsureGeometry(_envelope);
         if (_geometry == null)
         {
             return;
         }
 
-        double translateX = (_geometryStartTick - TickOffset) * TickWidth;
+        double translateX = (_envelope.StartTick - TickOffset) * TickWidth;
         using (context.PushClip(new Rect(Bounds.Size)))
         using (context.PushTransform(Matrix.CreateTranslation(translateX, 0)))
         {
@@ -134,11 +153,75 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
-        if (cmd is PartRenderedNotification notification &&
-            ReferenceEquals(notification.part, Part))
+        if (cmd is PreRenderNotification)
         {
-            QueueEnvelopeBuild();
+            _projectRenderInvalidated = true;
+            _partsWithPhraseAudio.Clear();
+            ClearWaveform();
         }
+        else if (cmd is PartRenderInvalidatedNotification invalidated &&
+            invalidated.part is UVoicePart invalidatedPart)
+        {
+            _explicitlyInvalidatedParts.Add(invalidatedPart);
+            _partsWithPhraseAudio.Remove(invalidatedPart);
+            if (ReferenceEquals(invalidatedPart, Part))
+            {
+                ClearWaveform();
+            }
+        }
+        else if (cmd is PhraseRenderedNotification rendered && rendered.part is UVoicePart renderedPart)
+        {
+            _explicitlyInvalidatedParts.Remove(renderedPart);
+            _partsWithPhraseAudio.Add(renderedPart);
+            if (ReferenceEquals(renderedPart, Part) &&
+                IsAudioRangeVisible(rendered.audioStartMs, rendered.audioEndMs))
+            {
+                QueueEnvelopeBuild();
+            }
+        }
+        else if (cmd is LoadProjectNotification)
+        {
+            _projectRenderInvalidated = false;
+            _partsWithPhraseAudio.Clear();
+            _explicitlyInvalidatedParts.Clear();
+            ClearWaveform();
+        }
+    }
+
+    private bool IsWaveformDataAvailable(UVoicePart part)
+    {
+        return !_explicitlyInvalidatedParts.Contains(part) &&
+            (!_projectRenderInvalidated || _partsWithPhraseAudio.Contains(part));
+    }
+
+    private bool IsAudioRangeVisible(double audioStartMs, double audioEndMs)
+    {
+        if (TickWidth <= 0 || Bounds.Width <= 0)
+        {
+            return false;
+        }
+        TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
+        double visibleStartMs = timeAxis.TickPosToMsPos(TickOffset);
+        double visibleEndMs = timeAxis.TickPosToMsPos(TickOffset + Bounds.Width / TickWidth);
+        return audioEndMs > visibleStartMs && audioStartMs < visibleEndMs;
+    }
+
+    private bool EnvelopeContainsViewport()
+    {
+        if (TickWidth <= 0 || Bounds.Width <= 0 || Part == null)
+        {
+            return false;
+        }
+        double visibleStartTick = Math.Max(Part.position, TickOffset);
+        double visibleEndTick = Math.Min(Part.End, TickOffset + Bounds.Width / TickWidth);
+        bool envelopeContainsViewport = _envelope != null &&
+            ReferenceEquals(_envelopePart, Part) &&
+            visibleStartTick >= _envelope.StartTick && visibleEndTick <= _envelope.EndTick;
+        bool requestContainsViewport = _envelopeCancellation != null &&
+            ReferenceEquals(_requestedPart, Part) &&
+            visibleStartTick >= _requestedStartTick && visibleEndTick <= _requestedEndTick;
+        return visibleEndTick <= visibleStartTick ||
+            envelopeContainsViewport || requestContainsViewport;
     }
 
     private async void QueueEnvelopeBuild()
@@ -146,25 +229,43 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         CancelEnvelopeBuild();
         UVoicePart? part = Part;
         ISignalSource? mix = part?.Mix;
-        if (part == null || mix == null)
+        if (part == null || mix == null || !IsWaveformDataAvailable(part))
         {
-            _envelope = null;
-            _envelopePart = part;
-            InvalidateGeometry();
-            InvalidateVisual();
+            ClearWaveform();
+            return;
+        }
+
+        if (TickWidth <= 0 || Bounds.Width <= 0)
+        {
             return;
         }
 
         TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
-        double startMs = timeAxis.TickPosToMsPos(part.position);
-        double endMs = timeAxis.TickPosToMsPos(part.End);
+        double visibleEndTick = TickOffset + Bounds.Width / TickWidth;
+        double cacheWidth = Math.Clamp(
+            Bounds.Width * ViewConstants.RenderedWaveformCacheViewportFactor,
+            ViewConstants.RenderedWaveformMinCacheWidth,
+            ViewConstants.RenderedWaveformMaxCacheWidth);
+        double overscanTicks = Math.Max(0, cacheWidth - Bounds.Width) / (2.0 * TickWidth);
+        double startTick = Math.Max(part.position, TickOffset - overscanTicks);
+        double endTick = Math.Min(part.End, visibleEndTick + overscanTicks);
+        if (endTick <= startTick)
+        {
+            return;
+        }
+        double startMs = timeAxis.TickPosToMsPos(startTick);
+        double endMs = timeAxis.TickPosToMsPos(endTick);
         CancellationTokenSource cancellation = new();
         _envelopeCancellation = cancellation;
+        _requestedPart = part;
+        _requestedStartTick = startTick;
+        _requestedEndTick = endTick;
 
         try
         {
             Envelope envelope = await Task.Run(
-                () => BuildEnvelope(mix, startMs, endMs, cancellation.Token),
+                () => BuildEnvelope(
+                    mix, startTick, endTick, startMs, endMs, cancellation.Token),
                 cancellation.Token);
             if (!cancellation.IsCancellationRequested && ReferenceEquals(Part, part))
             {
@@ -187,6 +288,7 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
             if (ReferenceEquals(_envelopeCancellation, cancellation))
             {
                 _envelopeCancellation = null;
+                _requestedPart = null;
             }
             cancellation.Dispose();
         }
@@ -194,6 +296,8 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
 
     private static Envelope BuildEnvelope(
         ISignalSource mix,
+        double startTick,
+        double endTick,
         double startMs,
         double endMs,
         CancellationToken cancellationToken)
@@ -258,33 +362,23 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
             Peaks = peaks,
             StartMs = startMs,
             PeakRate = peakRate,
+            StartTick = startTick,
+            EndTick = endTick,
         };
     }
 
-    private void EnsureGeometry(Envelope envelope, UVoicePart part)
+    private void EnsureGeometry(Envelope envelope)
     {
-        double visibleEndTick = TickOffset + Bounds.Width / TickWidth;
         bool cacheContainsViewport = ReferenceEquals(_geometryEnvelope, envelope) &&
             Math.Abs(_geometryTickWidth - TickWidth) < double.Epsilon &&
-            Math.Abs(_geometryHeight - Bounds.Height) < double.Epsilon &&
-            TickOffset >= _geometryStartTick && visibleEndTick <= _geometryEndTick;
+            Math.Abs(_geometryHeight - Bounds.Height) < double.Epsilon;
         if (cacheContainsViewport)
         {
             return;
         }
 
-        double cacheWidth = Math.Clamp(
-            Bounds.Width * ViewConstants.RenderedWaveformCacheViewportFactor,
-            ViewConstants.RenderedWaveformMinCacheWidth,
-            ViewConstants.RenderedWaveformMaxCacheWidth);
-        double overscanTicks = Math.Max(0, cacheWidth - Bounds.Width) / (2.0 * TickWidth);
-        double startTick = Math.Max(part.position, TickOffset - overscanTicks);
-        double endTick = Math.Min(part.End, visibleEndTick + overscanTicks);
-        if (endTick <= startTick)
-        {
-            InvalidateGeometry();
-            return;
-        }
+        double startTick = envelope.StartTick;
+        double endTick = envelope.EndTick;
 
         double geometryWidth = (endTick - startTick) * TickWidth;
         int columnCount = Math.Max(1, (int)Math.Ceiling(geometryWidth));
@@ -302,7 +396,7 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
                 float peak = GetPeak(envelope, startMs, endMs);
                 double y = Bounds.Height * (1.0 - Math.Clamp(
                     peak,
-                    ViewConstants.RenderedWaveformMinimumPeak,
+                    0,
                     1.0));
                 geometryContext.LineTo(new Point(column, y));
             }
@@ -312,8 +406,6 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
 
         _geometry = geometry;
         _geometryEnvelope = envelope;
-        _geometryStartTick = startTick;
-        _geometryEndTick = endTick;
         _geometryTickWidth = TickWidth;
         _geometryHeight = Bounds.Height;
     }
@@ -340,6 +432,16 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
     {
         _envelopeCancellation?.Cancel();
         _envelopeCancellation = null;
+        _requestedPart = null;
+    }
+
+    private void ClearWaveform()
+    {
+        CancelEnvelopeBuild();
+        _envelope = null;
+        _envelopePart = null;
+        InvalidateGeometry();
+        InvalidateVisual();
     }
 
     private void InvalidateGeometry()

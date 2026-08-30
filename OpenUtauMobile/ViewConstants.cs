@@ -84,7 +84,6 @@ namespace OpenUtauMobile
         public const double RenderedWaveformCacheViewportFactor = 2.0;
         public const double RenderedWaveformMinCacheWidth = 256.0;
         public const double RenderedWaveformMaxCacheWidth = 4096.0;
-        public const double RenderedWaveformMinimumPeak = 0.01;
         public const double RenderedWaveformOpacity = 0.5;
 
         public const double NoteHeightMax = 128;
