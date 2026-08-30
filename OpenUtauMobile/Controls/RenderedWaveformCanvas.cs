@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtau.Core;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -30,6 +31,9 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
     public static readonly StyledProperty<IBrush?> WaveformBrushProperty =
         AvaloniaProperty.Register<RenderedWaveformCanvas, IBrush?>(nameof(WaveformBrush));
 
+    public static readonly StyledProperty<bool> IsRenderStatusModeProperty =
+        AvaloniaProperty.Register<RenderedWaveformCanvas, bool>(nameof(IsRenderStatusMode));
+
     private sealed class Envelope
     {
         public required float[] Peaks { get; init; }
@@ -47,11 +51,14 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
     private double _requestedEndTick;
     private readonly HashSet<UVoicePart> _partsWithPhraseAudio = [];
     private readonly HashSet<UVoicePart> _explicitlyInvalidatedParts = [];
+    private readonly Dictionary<UVoicePart, HashSet<RenderPhrase>> _renderedPhrases = [];
     private bool _projectRenderInvalidated;
     private StreamGeometry? _geometry;
     private Envelope? _geometryEnvelope;
     private double _geometryTickWidth;
     private double _geometryHeight;
+    private IBrush? _statusPenBrush;
+    private IPen? _statusPen;
 
     public UVoicePart? Part
     {
@@ -77,13 +84,20 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         set => SetValue(WaveformBrushProperty, value);
     }
 
+    public bool IsRenderStatusMode
+    {
+        get => GetValue(IsRenderStatusModeProperty);
+        set => SetValue(IsRenderStatusModeProperty, value);
+    }
+
     static RenderedWaveformCanvas()
     {
         AffectsRender<RenderedWaveformCanvas>(
             PartProperty,
             TickWidthProperty,
             TickOffsetProperty,
-            WaveformBrushProperty);
+            WaveformBrushProperty,
+            IsRenderStatusModeProperty);
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -91,14 +105,20 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         base.OnPropertyChanged(change);
         if (change.Property == PartProperty)
         {
-            QueueEnvelopeBuild();
+            SeedCompletedPhraseState();
+            RefreshDisplay();
+        }
+        else if (change.Property == IsRenderStatusModeProperty)
+        {
+            RefreshDisplay();
         }
         else if (change.Property == TickWidthProperty)
         {
             InvalidateGeometry();
-            QueueEnvelopeBuild();
+            RefreshDisplay();
         }
-        else if (change.Property == TickOffsetProperty && !EnvelopeContainsViewport())
+        else if (change.Property == TickOffsetProperty &&
+            !IsRenderStatusMode && !EnvelopeContainsViewport())
         {
             QueueEnvelopeBuild();
         }
@@ -108,16 +128,17 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
     {
         base.OnSizeChanged(e);
         InvalidateGeometry();
-        QueueEnvelopeBuild();
+        RefreshDisplay();
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        SeedCompletedPhraseState();
         if (!ReferenceEquals(_envelopePart, Part))
         {
-            QueueEnvelopeBuild();
+            RefreshDisplay();
         }
     }
 
@@ -131,6 +152,11 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
     public override void Render(DrawingContext context)
     {
         base.Render(context);
+        if (IsRenderStatusMode)
+        {
+            RenderPhraseStatus(context);
+            return;
+        }
         if (_envelope == null || Part == null || WaveformBrush == null ||
             TickWidth <= 0 || Bounds.Width <= 0 || Bounds.Height <= 0)
         {
@@ -157,6 +183,7 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         {
             _projectRenderInvalidated = true;
             _partsWithPhraseAudio.Clear();
+            _renderedPhrases.Clear();
             ClearWaveform();
         }
         else if (cmd is PartRenderInvalidatedNotification invalidated &&
@@ -164,6 +191,7 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         {
             _explicitlyInvalidatedParts.Add(invalidatedPart);
             _partsWithPhraseAudio.Remove(invalidatedPart);
+            _renderedPhrases.Remove(invalidatedPart);
             if (ReferenceEquals(invalidatedPart, Part))
             {
                 ClearWaveform();
@@ -173,7 +201,17 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
         {
             _explicitlyInvalidatedParts.Remove(renderedPart);
             _partsWithPhraseAudio.Add(renderedPart);
-            if (ReferenceEquals(renderedPart, Part) &&
+            if (!_renderedPhrases.TryGetValue(renderedPart, out HashSet<RenderPhrase>? phrases))
+            {
+                phrases = [];
+                _renderedPhrases.Add(renderedPart, phrases);
+            }
+            phrases.Add(rendered.phrase);
+            if (ReferenceEquals(renderedPart, Part) && IsRenderStatusMode)
+            {
+                InvalidateVisual();
+            }
+            else if (ReferenceEquals(renderedPart, Part) &&
                 IsAudioRangeVisible(rendered.audioStartMs, rendered.audioEndMs))
             {
                 QueueEnvelopeBuild();
@@ -184,7 +222,86 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
             _projectRenderInvalidated = false;
             _partsWithPhraseAudio.Clear();
             _explicitlyInvalidatedParts.Clear();
+            _renderedPhrases.Clear();
             ClearWaveform();
+        }
+    }
+
+    private void RenderPhraseStatus(DrawingContext context)
+    {
+        UVoicePart? part = Part;
+        IBrush? brush = WaveformBrush;
+        if (part == null || brush == null || TickWidth <= 0 ||
+            Bounds.Width <= 0 || Bounds.Height <= 0)
+        {
+            return;
+        }
+
+        double leftTick = TickOffset;
+        double rightTick = TickOffset + Bounds.Width / TickWidth;
+        double top = ViewConstants.RenderedPhraseStatusVerticalInset;
+        double height = Math.Max(1, Bounds.Height - top * 2.0);
+        IPen outline = GetStatusOutline(brush);
+        _renderedPhrases.TryGetValue(part, out HashSet<RenderPhrase>? renderedPhrases);
+
+        using (context.PushClip(new Rect(Bounds.Size)))
+        {
+            lock (part)
+            {
+                foreach (RenderPhrase phrase in part.renderPhrases)
+                {
+                    if (phrase.position >= rightTick || phrase.end <= leftTick)
+                    {
+                        continue;
+                    }
+
+                    double left = (phrase.position - TickOffset) * TickWidth +
+                        ViewConstants.RenderedPhraseStatusHorizontalGap;
+                    double right = (phrase.end - TickOffset) * TickWidth -
+                        ViewConstants.RenderedPhraseStatusHorizontalGap;
+                    Rect rect = new(left, top, Math.Max(1, right - left), height);
+                    IBrush? fill = renderedPhrases?.Contains(phrase) == true ? brush : null;
+                    context.DrawRectangle(fill, outline, rect);
+                }
+            }
+        }
+    }
+
+    private IPen GetStatusOutline(IBrush brush)
+    {
+        if (_statusPen == null || !ReferenceEquals(_statusPenBrush, brush))
+        {
+            _statusPenBrush = brush;
+            _statusPen = new Pen(brush, ViewConstants.RenderedPhraseStatusBorderThickness);
+        }
+        return _statusPen;
+    }
+
+    private void SeedCompletedPhraseState()
+    {
+        UVoicePart? part = Part;
+        if (part?.Mix == null || _projectRenderInvalidated ||
+            _explicitlyInvalidatedParts.Contains(part) || _renderedPhrases.ContainsKey(part))
+        {
+            return;
+        }
+
+        lock (part)
+        {
+            _renderedPhrases[part] = new HashSet<RenderPhrase>(part.renderPhrases);
+        }
+    }
+
+    private void RefreshDisplay()
+    {
+        if (IsRenderStatusMode)
+        {
+            CancelEnvelopeBuild();
+            InvalidateVisual();
+        }
+        else
+        {
+            QueueEnvelopeBuild();
         }
     }
 
@@ -227,6 +344,10 @@ public sealed class RenderedWaveformCanvas : Control, ICmdSubscriber
     private async void QueueEnvelopeBuild()
     {
         CancelEnvelopeBuild();
+        if (IsRenderStatusMode)
+        {
+            return;
+        }
         UVoicePart? part = Part;
         ISignalSource? mix = part?.Mix;
         if (part == null || mix == null || !IsWaveformDataAvailable(part))

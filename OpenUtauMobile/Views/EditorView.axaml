@@ -38,6 +38,15 @@
         <Style Selector="Grid#SplitDragHandle:pressed, Grid#PhonemeSplitHandlePill:pressed">
             <Setter Property="Opacity" Value="1" />
         </Style>
+        <Style Selector="Button.RenderedWaveformModeButton">
+            <Setter Property="Width" Value="56" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
     </UserControl.Styles>
 
     <DockPanel>
@@ -344,10 +353,23 @@
                         <RowDefinition Height="0" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <!-- 左上角占位（标尺行 × 琴键列交叉区） -->
-                    <Border Grid.Row="0"
+                    <!-- 左上角交叉区：切换波形与轻量 phrase 渲染状态显示。 -->
+                    <Button Grid.Row="0"
                             Grid.Column="0"
-                            Background="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+                            Classes="RenderedWaveformModeButton"
+                            IsVisible="{Binding IsVoiceMode}"
+                            Command="{Binding ToggleRenderedWaveformDisplayModeCommand}">
+                        <Grid>
+                            <iconPacks:PackIconPhosphorIcons Kind="Waveform"
+                                                             Width="18"
+                                                             Height="18"
+                                                             IsVisible="{Binding !IsRenderedPhraseStatusMode}" />
+                            <iconPacks:PackIconPhosphorIcons Kind="SquaresFour"
+                                                             Width="18"
+                                                             Height="18"
+                                                             IsVisible="{Binding IsRenderedPhraseStatusMode}" />
+                        </Grid>
+                    </Button>
                     <!-- 横向琴键网格（Row 1, Col 1） -->
                     <c:PianoRollBackground
                         Grid.Row="1"
@@ -383,6 +405,7 @@
                                               IsHitTestVisible="False"
                                               Opacity="{x:Static local:ViewConstants.RenderedWaveformOpacity}"
                                               Part="{Binding EditingVoicePart}"
+                                              IsRenderStatusMode="{Binding IsRenderedPhraseStatusMode}"
                                               TickWidth="{Binding TickWidth}"
                                               TickOffset="{Binding TickOffset}"
                                               WaveformBrush="{DynamicResource Sem.Color.Primary}" />

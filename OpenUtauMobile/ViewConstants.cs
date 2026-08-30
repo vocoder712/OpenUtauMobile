@@ -85,6 +85,9 @@ namespace OpenUtauMobile
         public const double RenderedWaveformMinCacheWidth = 256.0;
         public const double RenderedWaveformMaxCacheWidth = 4096.0;
         public const double RenderedWaveformOpacity = 0.5;
+        public const double RenderedPhraseStatusVerticalInset = 4.0;
+        public const double RenderedPhraseStatusHorizontalGap = 1.0;
+        public const double RenderedPhraseStatusBorderThickness = 1.0;
 
         public const double NoteHeightMax = 128;
         public const double NoteHeightMin = 16;

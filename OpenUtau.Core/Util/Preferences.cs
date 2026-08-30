@@ -259,6 +259,11 @@ errors.txt
             public double PlaybackRefreshRate = 20.0;
 
             /// <summary>
+            /// 钢琴卷帘标尺是否以轻量矩形块显示分片渲染状态，而不是绘制波形。
+            /// </summary>
+            public bool RenderedPhraseStatusMode = false;
+
+            /// <summary>
             /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont
             /// </summary>
             public int PianoKeyBehavior = 1;

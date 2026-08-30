@@ -144,6 +144,9 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     [Reactive] public double TickOffset { get; set; } // X 滚动
     [Reactive] public double KeyOffset { get; set; } = 56; // Y 滚动
 
+    /// <summary>是否以轻量矩形块显示各 phrase 的渲染状态。</summary>
+    [Reactive] public bool IsRenderedPhraseStatusMode { get; private set; }
+
     // ── 播放状态（直接由权威源驱动）─────
     /// <summary>
     /// 当前工程全局播放标记位置（Tick，绝对坐标，与走带编曲区共享同一命令流）。
@@ -322,6 +325,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public System.Windows.Input.ICommand SwapExpressionsCommand { get; }
     public System.Windows.Input.ICommand SelectPrimaryExpressionCommand { get; }
     public System.Windows.Input.ICommand SelectSecondaryExpressionCommand { get; }
+    public System.Windows.Input.ICommand ToggleRenderedWaveformDisplayModeCommand { get; }
 
     #endregion
 
@@ -710,6 +714,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public PianoRollViewModel()
     {
+        IsRenderedPhraseStatusMode = Preferences.Default.RenderedPhraseStatusMode;
         IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
         PitchPenNoteHitTickExtension = Math.Clamp(
             Preferences.Default.PitchPenNoteHitTickExtension,
@@ -738,6 +743,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             {
                 SecondaryExpressionKey = opt.Key;
             }
+        });
+        ToggleRenderedWaveformDisplayModeCommand = ReactiveCommand.Create(() =>
+        {
+            IsRenderedPhraseStatusMode = !IsRenderedPhraseStatusMode;
+            Preferences.Default.RenderedPhraseStatusMode = IsRenderedPhraseStatusMode;
+            Preferences.Save();
         });
 
         DocManager.Inst.AddSubscriber(this);
