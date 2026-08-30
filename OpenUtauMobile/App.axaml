@@ -9,6 +9,12 @@
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
+    
+    <Application.Resources>
+        <FontFamily x:Key="ContentControlThemeFontFamily">
+            $Default
+        </FontFamily>
+    </Application.Resources>
 
     <Application.Styles>
         <!-- Development fallback only; custom Style layer should override and eventually replace this. -->
