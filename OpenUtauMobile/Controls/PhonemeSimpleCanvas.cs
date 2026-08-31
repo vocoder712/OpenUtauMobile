@@ -174,10 +174,8 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         }
 
         IBrush bgBrush = ThemeResources.GetBrush("Sem.Color.SurfaceContainerLow");
-        using (context.PushOpacity(0.5))
-        {
-            context.DrawRectangle(bgBrush, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
-        }
+
+        context.DrawRectangle(bgBrush, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
 
         double partPos = Part.position;
         double viewLeftTick = TickOffset - 480;

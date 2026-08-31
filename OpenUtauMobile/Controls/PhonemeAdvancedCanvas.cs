@@ -244,7 +244,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         }
 
         IBrush bgBrush = ThemeResources.GetBrush("Sem.Color.SurfaceContainerLow");
-        using (context.PushOpacity(0.5))
+        using (context.PushOpacity(0.6))
         {
             context.DrawRectangle(bgBrush, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
         }
