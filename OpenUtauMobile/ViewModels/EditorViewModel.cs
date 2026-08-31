@@ -44,6 +44,14 @@ public enum TrackInputState
     ResizingParts, // 调整分片长度
 }
 
+public enum PartResizeEdge
+{
+    Start,
+    End,
+}
+
+public readonly record struct PartResizeHandleHit(UPart Part, PartResizeEdge Edge);
+
 public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable
 {
     // ── 内部状态 ────────────────────────────────────────────────────────
@@ -423,7 +431,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             {
                 Interval = TimeSpan.FromSeconds(Math.Max(Preferences.Default.AutoSaveInterval, 30))
             };
-            _autoSaveTimer.Tick += (_, _) => DocManager.Inst.AutoSave();
+            _autoSaveTimer.Tick += (_, _) => AutoSaveProject();
             _autoSaveTimer.Start();
         }
 
@@ -456,6 +464,29 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             .DisposeWith(_disposables);
         // 异步加载项目
         _ = LoadProjectAsync(path);
+    }
+
+    private static void AutoSaveProject()
+    {
+        UProject project = DocManager.Inst.Project;
+        string originalProjectPath = project.FilePath;
+        if (!string.IsNullOrEmpty(originalProjectPath))
+        {
+            DocManager.Inst.AutoSave();
+            return;
+        }
+
+        // 未命名工程需要一个临时序列化基准目录，波形分片才能生成相对路径。
+        Directory.CreateDirectory(PathManager.Inst.BackupsPath);
+        project.FilePath = Path.Combine(PathManager.Inst.BackupsPath, "Untitled.ustx");
+        try
+        {
+            DocManager.Inst.AutoSave();
+        }
+        finally
+        {
+            project.FilePath = originalProjectPath;
+        }
     }
 
     /// <summary>
@@ -1035,25 +1066,44 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     }
 
     /// <summary>
-    /// 对选中分片的右侧调整手柄区域进行命中测试。
+    /// 对选中分片两侧的调整手柄区域进行命中测试。
     /// 命中宽度大于视觉宽度，保证移动端触摸友好。
     /// </summary>
-    public UPart? HitTestResizeHandle(Point canvasPoint)
+    public PartResizeHandleHit? HitTestResizeHandle(Point canvasPoint)
     {
+        PartResizeHandleHit? closestHit = null;
+        double closestDistance = double.MaxValue;
         foreach (UPart part in SelectedParts)
         {
+            double partLeft = TickToCanvasX(part.position);
             double partRight = TickToCanvasX(part.position + part.Duration);
             double partTop = TrackNoToCanvasY(part.trackNo);
             double partBottom = partTop + TrackHeight;
-            double hitLeft = partRight - ViewConstants.ResizeHandleHitWidth;
-            if (canvasPoint.X >= hitLeft && canvasPoint.X <= partRight &&
-                canvasPoint.Y >= partTop && canvasPoint.Y <= partBottom)
+            if (canvasPoint.Y < partTop || canvasPoint.Y > partBottom)
             {
-                return part;
+                continue;
+            }
+
+            double startDistance = canvasPoint.X - partLeft;
+            if (startDistance >= 0 &&
+                startDistance <= ViewConstants.ResizeHandleHitWidth &&
+                startDistance < closestDistance)
+            {
+                closestHit = new PartResizeHandleHit(part, PartResizeEdge.Start);
+                closestDistance = startDistance;
+            }
+
+            double endDistance = partRight - canvasPoint.X;
+            if (endDistance >= 0 &&
+                endDistance <= ViewConstants.ResizeHandleHitWidth &&
+                endDistance < closestDistance)
+            {
+                closestHit = new PartResizeHandleHit(part, PartResizeEdge.End);
+                closestDistance = endDistance;
             }
         }
 
-        return null;
+        return closestHit;
     }
 
     #endregion
@@ -1063,8 +1113,9 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     private TrackInputState _inputState = TrackInputState.Idle; // 输入状态机
     private readonly ViewportMotionController _panMotion = new();
     private (int position, int trackNo)[] _movingPartOrigins = []; // 拖动开始时各选中分片的初始位置（position, trackNo），用于从绝对偏移计算目标位置
-    private int[] _resizingPartOriginDurations = []; // 调整时长开始时各选中分片的初始时长（Duration），用于从绝对偏移计算目标时长
     private int _resizingReferencePartIndex; // 触发 resize 的手柄所属分片在 SelectedParts 中的索引，用作吸附基准
+    private PartResizeEdge _resizingEdge = PartResizeEdge.End;
+    private double _resizingPointerTickOffset; // 保留按下点到边界的偏移，避免大触摸命中区导致首次拖动跳变
 
     /// <summary>
     /// 单击
@@ -1183,15 +1234,18 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         }
 
         // 优先检测调整时长手柄（手柄区域在视觉上与 Part 矩形重叠，须先于 MovingParts 判断）
-        UPart? resizeHit = SelectedParts.Count > 0 ? HitTestResizeHandle(point) : null;
-        if (resizeHit != null)
+        PartResizeHandleHit? resizeHit = SelectedParts.Count > 0 ? HitTestResizeHandle(point) : null;
+        if (resizeHit.HasValue)
         {
             _inputState = TrackInputState.ResizingParts;
-            _resizingReferencePartIndex = SelectedParts.IndexOf(resizeHit);
-            _resizingPartOriginDurations = new int[SelectedParts.Count];
-            for (int i = 0; i < SelectedParts.Count; i++)
-                _resizingPartOriginDurations[i] = SelectedParts[i].Duration;
-            DocManager.Inst.StartUndoGroup(deferValidate: true);
+            _resizingReferencePartIndex = SelectedParts.IndexOf(resizeHit.Value.Part);
+            _resizingEdge = resizeHit.Value.Edge;
+            int boundaryTick = _resizingEdge == PartResizeEdge.Start
+                ? resizeHit.Value.Part.position
+                : resizeHit.Value.Part.End;
+            _resizingPointerTickOffset = boundaryTick - CanvasXToTick(point.X);
+            bool containsWavePart = SelectedParts.Any(part => part is UWavePart);
+            DocManager.Inst.StartUndoGroup(deferValidate: !containsWavePart);
             return;
         }
 
@@ -1274,7 +1328,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                 // O(SelectedParts.Count) 线性时间复杂度
                 break;
             case TrackInputState.ResizingParts:
-                UpdateResizePart(totalOffset);
+                UpdateResizePart(point);
                 break;
             case TrackInputState.Panning:
                 if (!_panMotion.IsRunning)
@@ -1287,37 +1341,75 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         }
     }
 
-    private void UpdateResizePart(Vector totalOffset)
+    private void UpdateResizePart(Point point)
     {
-        if (_resizingPartOriginDurations.Length == 0) return;
-        int tickTotal = (int)(totalOffset.X / TickWidth);
-        // 以触发手柄的分片的原始结束 tick 为基准吸附
-        UPart referencePart = SelectedParts[_resizingReferencePartIndex];
-        int rawEndTick = referencePart.position + _resizingPartOriginDurations[_resizingReferencePartIndex] + tickTotal;
-        int snappedEnd = SnapToRound(rawEndTick);
-        // Δ：吸附后的目标时长与 anchor 当前时长之差，所有分片共用
-        int deltaDur = snappedEnd - (referencePart.position + referencePart.Duration);
-        if (deltaDur == 0) return;
-        int snapUnit = ResolveSnapUnit();
-        int minDuration = snapUnit > 0 ? snapUnit : 60;
-        // 第一轮：验证所有分片，任一过短则整体放弃
-        foreach (UPart part in SelectedParts)
+        if (_resizingReferencePartIndex < 0 ||
+            _resizingReferencePartIndex >= SelectedParts.Count)
         {
-            if (part.Duration + deltaDur < minDuration) return;
+            return;
         }
 
-        // 第二轮：对所有分片执行相同的 Δ
+        UProject project = DocManager.Inst.Project;
+        UPart referencePart = SelectedParts[_resizingReferencePartIndex];
+        int pointerTick = SnapToRound((int)Math.Round(
+            CanvasXToTick(point.X) + _resizingPointerTickOffset));
+        int deltaDuration = _resizingEdge == PartResizeEdge.Start
+            ? referencePart.position - pointerTick
+            : pointerTick - referencePart.End;
+
+        if (deltaDuration < 0)
+        {
+            int maxDurationReduction = SelectedParts.Min(part =>
+                _resizingEdge == PartResizeEdge.Start
+                    ? Math.Max(0, part.GetMaxPosiTick(project) - part.position)
+                    : Math.Max(0, part.Duration - part.GetMinDurTick(project)));
+            deltaDuration = Math.Max(deltaDuration, -maxDurationReduction);
+        }
+        else if (deltaDuration > 0)
+        {
+            int maxDurationExtension = int.MaxValue;
+            if (_resizingEdge == PartResizeEdge.Start)
+            {
+                maxDurationExtension = SelectedParts.Min(part =>
+                    part is UWavePart wavePart
+                        ? Math.Min(Math.Max(0, wavePart.skip), Math.Max(0, part.position))
+                        : Math.Max(0, part.position));
+            }
+            else
+            {
+                IEnumerable<UWavePart> selectedWaveParts = SelectedParts.OfType<UWavePart>();
+                if (selectedWaveParts.Any())
+                {
+                    maxDurationExtension = selectedWaveParts.Min(part => Math.Max(0, part.trim));
+                }
+            }
+            deltaDuration = Math.Min(deltaDuration, maxDurationExtension);
+        }
+
+        if (deltaDuration == 0)
+        {
+            return;
+        }
+
         foreach (UPart part in SelectedParts)
         {
             switch (part)
             {
                 case UVoicePart voicePart:
                     DocManager.Inst.ExecuteCmd(
-                        new ResizeVoicePartCommand(DocManager.Inst.Project, voicePart, deltaDur, fromStart: false));
+                        new ResizeVoicePartCommand(
+                            project,
+                            voicePart,
+                            deltaDuration,
+                            fromStart: _resizingEdge == PartResizeEdge.Start));
                     break;
                 case UWavePart wavePart:
                     DocManager.Inst.ExecuteCmd(
-                        new ResizeWavePartCommand(DocManager.Inst.Project, wavePart, deltaDur, fromStart: false));
+                        new ResizeWavePartCommand(
+                            project,
+                            wavePart,
+                            deltaDuration,
+                            fromStart: _resizingEdge == PartResizeEdge.Start));
                     break;
             }
         }
@@ -1330,6 +1422,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// <param name="timestamp"></param>
     public void OnGestureDragEnd(Point point, ulong timestamp)
     {
+        bool completedResize = _inputState == TrackInputState.ResizingParts;
         if (_inputState == TrackInputState.MovingParts || _inputState == TrackInputState.ResizingParts)
         {
             DocManager.Inst.EndUndoGroup();
@@ -1341,8 +1434,17 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
         _inputState = TrackInputState.Idle;
         _movingPartOrigins = [];
-        _resizingPartOriginDurations = [];
         _resizingReferencePartIndex = 0;
+        _resizingEdge = PartResizeEdge.End;
+        _resizingPointerTickOffset = 0;
+
+        if (completedResize)
+        {
+            InvalidateMaxOffsets();
+            ApplyViewportLimits();
+            PianoRollViewModel.InvalidateMaxOffsets();
+            RequestInvalidateVisual?.Invoke();
+        }
     }
 
     /// <summary>
