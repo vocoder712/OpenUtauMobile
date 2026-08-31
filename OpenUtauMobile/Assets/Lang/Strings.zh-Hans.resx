@@ -1072,7 +1072,7 @@
     <value>无法打开链接</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>发生错误</value>
+    <value>OpenUtau Mobile 运行时错误</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>未知错误</value>
@@ -1749,5 +1749,11 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>松开以重置参数</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>已复制报错信息</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>复制报错信息失败</value>
   </data>
 </root>

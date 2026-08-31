@@ -995,7 +995,7 @@
     <value>Не удалось открыть ссылку</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>Произошла ошибка</value>
+    <value>Ошибка выполнения OpenUtau Mobile</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>Неизвестная ошибка</value>
@@ -1704,5 +1704,11 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>Отпустите, чтобы сбросить параметр</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>Информация об ошибке скопирована</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>Не удалось скопировать информацию об ошибке</value>
   </data>
 </root>

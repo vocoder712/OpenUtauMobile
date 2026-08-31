@@ -1,6 +1,9 @@
-﻿using System.Reactive;
+using System.Reactive;
+using System.Text;
+using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;
@@ -11,19 +14,19 @@ namespace OpenUtauMobile.ViewModels;
 /// </summary>
 public class ErrorDialogViewModel : PopupViewModelBase
 {
-    public string Title { get; }
+    public string Title { get; } = L.S("ErrorDialog.Title");
     public string Message { get; }
     public string Detail { get; }
     public bool HasDetail => !string.IsNullOrWhiteSpace(Detail);
 
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+    public ReactiveCommand<Unit, Unit> CopyCommand { get; }
 
     public ErrorDialogViewModel(ErrorMessageNotification notification)
     {
         // 提取友好摘要
         if (notification.e is MessageCustomizableException mce)
         {
-            Title = L.S("ErrorDialog.Title");
             Message = string.IsNullOrWhiteSpace(mce.Message)
                 ? mce.SubstanceException.Message
                 : mce.Message;
@@ -31,7 +34,6 @@ public class ErrorDialogViewModel : PopupViewModelBase
         }
         else if (notification.e != null)
         {
-            Title = L.S("ErrorDialog.Title");
             Message = string.IsNullOrWhiteSpace(notification.message)
                 ? notification.e.Message
                 : notification.message;
@@ -39,7 +41,6 @@ public class ErrorDialogViewModel : PopupViewModelBase
         }
         else
         {
-            Title = L.S("ErrorDialog.Title");
             Message = string.IsNullOrWhiteSpace(notification.message)
                 ? L.S("ErrorDialog.UnknownError")
                 : notification.message;
@@ -47,6 +48,24 @@ public class ErrorDialogViewModel : PopupViewModelBase
         }
 
         CloseCommand = ReactiveCommand.Create(RequestBack);
+        CopyCommand = ReactiveCommand.CreateFromTask(CopyErrorAsync);
+    }
+
+    private async Task CopyErrorAsync()
+    {
+        StringBuilder text = new();
+        text.AppendLine(Title);
+        text.AppendLine(Message);
+        if (HasDetail)
+        {
+            text.AppendLine();
+            text.Append(Detail);
+        }
+
+        bool copied = await ServiceHub.ClipboardService.SetTextAsync(text.ToString());
+        ToastService.Enqueue(L.S(copied
+            ? "ErrorDialog.CopySucceeded"
+            : "ErrorDialog.CopyFailed"));
     }
 
     public override void RequestBack()

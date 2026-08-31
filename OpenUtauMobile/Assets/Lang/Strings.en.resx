@@ -1072,7 +1072,7 @@
     <value>Failed to open link</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>An error occurred</value>
+    <value>OpenUtau Mobile Runtime Error</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>Unknown error</value>
@@ -1749,5 +1749,11 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>Release to reset parameter</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>Error information copied</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>Failed to copy error information</value>
   </data>
 </root>

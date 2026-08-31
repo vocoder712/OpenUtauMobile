@@ -12,6 +12,7 @@ namespace OpenUtauMobile.Services;
 public static class ServiceHub
 {
     public static Action? InitAudioOutput { get; set; }
+    public static IClipboardService ClipboardService { get; set; } = new AvaloniaClipboardService();
     public static IExternalUrlLauncher? ExternalUrlLauncher { get; set; }
     public static IExternalStorageService? ExternalStorageService { get; set; }
     public static ISystemAccentColorProvider? SystemAccentColorProvider { get; set; }

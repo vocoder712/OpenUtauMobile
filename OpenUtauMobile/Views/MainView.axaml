@@ -30,10 +30,10 @@
             <Panel>
                 <!-- 导航页的容器 -->
                 <ContentControl Content="{Binding CurrentViewModel}" />
-                <controls:ToastOverlay x:Name="ToastOverlay" />
             </Panel>
         </dialogHostAvalonia:DialogHost>
         <!-- 位于页面和 DialogHost 之上，且不参与任何输入命中。 -->
+        <controls:ToastOverlay x:Name="ToastOverlay" />
         <controls:PerformanceMonitorOverlay />
     </Panel>
 </UserControl>
