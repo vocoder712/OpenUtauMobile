@@ -304,7 +304,7 @@ public class PartsCanvas : Control, ICmdSubscriber
     public override void Render(DrawingContext context)
     {
         base.Render(context);
-        IList<UPart> parts = DocManager.Inst.Project.parts;
+        List<UPart> parts = DocManager.Inst.Project.parts;
         // 透明矩形确保控件能接收指针事件
         context.DrawRectangle(Brushes.Transparent, null, new Rect(Bounds.Size));
         if (parts.Count <= 0) return;
