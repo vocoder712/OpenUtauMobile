@@ -171,7 +171,7 @@ public class PartsCanvas : Control, ICmdSubscriber
         _gesture.Tap = pt => vm.OnGestureTap(pt);
         _gesture.DoubleTap = pt => vm.OnGestureDoubleTap(pt);
         _gesture.DragBegin = start => vm.OnGestureDragBegin(start);
-        _gesture.DragUpdate = (start, step, total, _, ts) => vm.OnGestureDragUpdate(start, step, total, ts);
+        _gesture.DragUpdate = (_, step, total, current, ts) => vm.OnGestureDragUpdate(current, step, total, ts);
         _gesture.DragEnd = (end, _, ts) => vm.OnGestureDragEnd(end, ts);
         _gesture.PinchUpdate = (scaleX, scaleY, center, panDelta) =>
             vm.OnGesturePinchUpdate(scaleX, scaleY, center, panDelta);
@@ -349,7 +349,7 @@ public class PartsCanvas : Control, ICmdSubscriber
             // 4. 绘制拖拽手柄
             if (selected)
             {
-                DrawResizeHandle(context, rect);
+                DrawResizeHandles(context, rect);
             }
         }
     }
@@ -536,7 +536,8 @@ public class PartsCanvas : Control, ICmdSubscriber
         Array.Clear(data, 0, data.Length);
 
         TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
-        double offsetMs = timeAxis.TickPosToMsPos(part.position);
+        double partStartMs = timeAxis.TickPosToMsPos(part.position);
+        double skipMs = part.GetSkipMs(DocManager.Inst.Project);
 
         // 振幅到像素的缩放系数（上下各留 2px 内边距）
         double monoChnlAmp = (bmpH - 4.0) / 2.0; // 单声道：全高居中
@@ -552,7 +553,7 @@ public class PartsCanvas : Control, ICmdSubscriber
         int posTick = (int)(TickOffset + x / TickWidth);
         double posMs = timeAxis.TickPosToMsPos(posTick);
         int sampleIndex = Math.Clamp(
-            (int)(part.peaksSampleRate * (posMs - offsetMs) * 0.001),
+            (int)(part.peaksSampleRate * (skipMs + posMs - partStartMs) * 0.001),
             0, peaks[0].Length);
 
         float[] lastSMin = new float[channelCount];
@@ -568,7 +569,7 @@ public class PartsCanvas : Control, ICmdSubscriber
             int nextPosTick = (int)(TickOffset + (x + 1) / TickWidth);
             double nextPosMs = timeAxis.TickPosToMsPos(nextPosTick);
             int nextSampleIndex = Math.Clamp(
-                (int)(part.peaksSampleRate * (nextPosMs - offsetMs) * 0.001),
+                (int)(part.peaksSampleRate * (skipMs + nextPosMs - partStartMs) * 0.001),
                 0, peaks[0].Length);
 
             if (nextSampleIndex > sampleIndex)
@@ -640,18 +641,27 @@ public class PartsCanvas : Control, ICmdSubscriber
     }
 
     /// <summary>
-    /// 在 Part 矩形右侧绘制调整时长手柄
-    /// TODO: 实现从左侧调整
+    /// 在 Part 矩形两侧绘制调整时长手柄。
     /// </summary>
-    private static void DrawResizeHandle(DrawingContext context, Rect rect)
+    private static void DrawResizeHandles(DrawingContext context, Rect rect)
     {
-        if (rect.Width < ViewConstants.ResizeHandleVisualWidth) return; // Part 太窄时不绘制手柄
+        if (rect.Width < ViewConstants.ResizeHandleVisualWidth * 2)
+        {
+            return;
+        }
+
+        DrawResizeHandle(context, rect, PartResizeEdge.Start);
+        DrawResizeHandle(context, rect, PartResizeEdge.End);
+    }
+
+    private static void DrawResizeHandle(DrawingContext context, Rect rect, PartResizeEdge edge)
+    {
         const double hW = ViewConstants.ResizeHandleVisualWidth;
-        const double pad = 1.0; // 手柄右边缘与 Part 右边缘的间距
+        const double pad = 1.0; // 手柄与分片边缘的间距
         const double vPad = 4.0; // 手柄上下内边距
 
         Rect handleRect = new(
-            rect.Right - hW - pad,
+            edge == PartResizeEdge.Start ? rect.Left + pad : rect.Right - hW - pad,
             rect.Y + vPad,
             hW,
             rect.Height - vPad * 2);
@@ -669,9 +679,9 @@ public class PartsCanvas : Control, ICmdSubscriber
             double ly1 = handleRect.Y + (handleRect.Height - lineH) / 2.0;
             double ly2 = ly1 + lineH;
 
-            context.DrawLine(ThemeResources.GetPen("Sem.Color.OnPrimary", 1.5),
+            context.DrawLine(ThemeResources.GetPen("Sem.Color.OnPrimaryContainer", 1.5),
                 new Point(cx - 2.5, ly1), new Point(cx - 2.5, ly2));
-            context.DrawLine(ThemeResources.GetPen("Sem.Color.OnPrimary", 1.5),
+            context.DrawLine(ThemeResources.GetPen("Sem.Color.OnPrimaryContainer", 1.5),
                 new Point(cx + 2.5, ly1), new Point(cx + 2.5, ly2));
         }
     }

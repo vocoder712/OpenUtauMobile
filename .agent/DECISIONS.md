@@ -12,6 +12,18 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-08-31
+- Decision: Pass the gesture interpreter's current pointer position into part-resize updates. During autosave of an untitled project, temporarily use `Backups/Untitled.ustx` as the project serialization base, call `DocManager.AutoSave`, and restore the empty path in `finally`.
+- Rationale: The prior binding passed the fixed press point, so all four resize modes always calculated a zero delta. Wave parts need a non-null project directory when producing relative audio paths before save; the temporary path preserves DocManager's autosave bookkeeping without changing Core.
+- Alternatives considered: Modify Core path handling; bypass DocManager and call `Ustx.AutoSave` directly; skip autosave for untitled projects containing wave parts.
+- Impacted areas: Mobile part gesture wiring and untitled-project autosave serialization context. OpenUtau.Core remains unchanged.
+
+- Date: 2026-08-31
+- Decision: Resize selected track parts from either edge using pointer-to-current-boundary command deltas. Preserve mixed voice/wave selections; use immediate validation when any selected part is a wave part and deferred one-time validation for voice-only selections.
+- Rationale: `UWavePart.Duration` is derived from `position`, `skip`, and `trim` during validation, so deferred validation makes its current boundary stale and compounds drag deltas. Voice-part commands update `Duration` directly and retain the cheaper deferred path. A press-to-boundary tick offset preserves touch-friendly hit targets without a second preview geometry state.
+- Alternatives considered: Maintain Mobile-only resize preview bounds; change Core commands; split mixed selections by part type; validate every voice-only drag command.
+- Impacted areas: Mobile track-part resize hit testing, double-ended handles, gesture orchestration, undo-group validation policy, wave source bounds, and waveform peak indexing. OpenUtau.Core is unchanged.
+
 - Date: 2026-08-30
 - Decision: Add a persisted ruler display switch in the piano-key/ruler intersection. Waveform mode retains the cached envelope; render-status mode cancels envelope work and draws each visible phrase as an outlined pending block or filled completed block.
 - Rationale: Phrase blocks expose the same progressive render lifecycle at substantially lower CPU and allocation cost during frequent mobile piano-roll movement, while the explicit button and changing icon keep the performance choice discoverable.
