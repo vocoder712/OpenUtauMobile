@@ -96,6 +96,9 @@ public class PartsCanvas : Control, ICmdSubscriber
     // 名称标签字号（px）
     private const double LabelFontSize = 11;
 
+    // MD3 中等尺寸容器使用 4px 圆角。
+    private const double PartCornerRadius = 4;
+
     #endregion
 
     #region 内部缓存结构
@@ -127,6 +130,7 @@ public class PartsCanvas : Control, ICmdSubscriber
 
         public int PartPosition;
         public int PartDuration;
+        public int PeakColor;
 
         public void Dispose()
         {
@@ -329,7 +333,8 @@ public class PartsCanvas : Control, ICmdSubscriber
             // 1. 背景色块 + 边框
             using (context.PushOpacity(selected ? 1 : 0.64))
             {
-                context.DrawRectangle(brush, borderPen, rect);
+                context.DrawRectangle(brush, borderPen, rect,
+                    radiusX: PartCornerRadius, radiusY: PartCornerRadius);
             }
 
             // 2. 内容缩略图（音符 / 波形）
@@ -364,7 +369,7 @@ public class PartsCanvas : Control, ICmdSubscriber
         // 文字加左右各 3px 内边距后仍超过 part 宽度时跳过
         if (textLayout.Width + 6 > rect.Width) return;
 
-        using (context.PushClip(rect))
+        using (context.PushClip(new RoundedRect(rect, PartCornerRadius)))
         using (context.PushTransform(Matrix.CreateTranslation(rect.X + 3, rect.Y + 2)))
         {
             using (context.PushOpacity(0.6))
@@ -385,7 +390,7 @@ public class PartsCanvas : Control, ICmdSubscriber
     /// </summary>
     private void DrawNotePreview(DrawingContext context, UVoicePart part, Rect rect)
     {
-        IPen notePen = ThemeResources.GetPen("Sem.Color.OnSurface", 2);
+        IPen notePen = ThemeResources.GetPen("Sem.Color.OnSurfaceVariant", 2);
 
         // 快速剪枝：检查 rect 是否在视口范围内完全可见
         if (rect.Right <= 0 || rect.Left >= Bounds.Width) return;
@@ -425,7 +430,7 @@ public class PartsCanvas : Control, ICmdSubscriber
         // 视口右边缘在 part 内部坐标系下的 x，用于提前终止有序音符遍历
         double viewRightX = (TickOffset + Bounds.Width / TickWidth - part.position) * TickWidth;
 
-        using (context.PushClip(rect))
+        using (context.PushClip(new RoundedRect(rect, PartCornerRadius)))
         using (context.PushTransform(Matrix.CreateTranslation(rect.X, rect.Y + 2)))
         {
             foreach (UNote note in part.notes)
@@ -464,14 +469,20 @@ public class PartsCanvas : Control, ICmdSubscriber
         if (ReferenceEquals(part.Peaks.Result, null)) return;
 
         WaveCache cache = GetOrCreateWaveCache(part);
+        int peakColor = PackRgba8888(ThemeResources.GetColor("Sem.Color.OnSurfaceVariant"));
 
         // 检测 part 属性变更（拖拽/裁剪等），自动标记脏
-        if (!cache.IsDirty && (cache.PartPosition != part.position || cache.PartDuration != part.Duration))
+        if (!cache.IsDirty &&
+            (cache.PartPosition != part.position ||
+             cache.PartDuration != part.Duration ||
+             cache.PeakColor != peakColor))
+        {
             cache.IsDirty = true;
+        }
 
         if (cache.IsDirty)
         {
-            RedrawWaveCache(cache, part);
+            RedrawWaveCache(cache, part, peakColor);
             cache.IsDirty = false;
         }
 
@@ -486,8 +497,10 @@ public class PartsCanvas : Control, ICmdSubscriber
         Rect srcRect = new(srcLeft, 0, srcRight - srcLeft, cache.Bitmap.PixelSize.Height);
         Rect dstRect = new(srcLeft, rect.Y, srcRight - srcLeft, rect.Height);
 
-        using (context.PushClip(rect))
+        using (context.PushClip(new RoundedRect(rect, PartCornerRadius)))
+        {
             context.DrawImage(cache.Bitmap, srcRect, dstRect);
+        }
     }
 
     /// <summary>
@@ -524,7 +537,7 @@ public class PartsCanvas : Control, ICmdSubscriber
     /// <summary>
     /// 将 Peaks 数据写入 <see cref="WaveCache.Bitmap"/>。
     /// </summary>
-    private void RedrawWaveCache(WaveCache cache, UWavePart part)
+    private void RedrawWaveCache(WaveCache cache, UWavePart part, int peakColor)
     {
         DiscreteSignal[] peaks = part.Peaks.Result;
         WriteableBitmap bitmap = cache.Bitmap!;
@@ -609,7 +622,7 @@ public class PartsCanvas : Control, ICmdSubscriber
 
                     int y1 = (int)(ySpan * (1.0 - lastSMin[ch]) + yOffset) + 2;
                     int y2 = (int)(ySpan * (1.0 - lastSMax[ch]) + yOffset) + 2;
-                    DrawPeak(data, bmpW, bmpH, x, y1, y2);
+                    DrawPeak(data, bmpW, bmpH, x, y1, y2, peakColor);
                 }
             }
 
@@ -624,20 +637,38 @@ public class PartsCanvas : Control, ICmdSubscriber
 
         cache.PartPosition = part.position;
         cache.PartDuration = part.Duration;
+        cache.PeakColor = peakColor;
     }
 
     /// <summary>
     /// 在像素缓冲 <paramref name="data"/> 的第 <paramref name="x"/> 列，
-    /// 从 y1 到 y2 写入白色像素
+    /// 从 y1 到 y2 写入主题颜色像素。
     /// </summary>
-    private static void DrawPeak(int[] data, int width, int height, int x, int y1, int y2)
+    private static void DrawPeak(int[] data, int width, int height, int x, int y1, int y2, int peakColor)
     {
-        const int white = unchecked((int)0xFFFFFFFF); // TODO: 跟随主题变化
-        if (y1 > y2) (y1, y2) = (y2, y1);
+        if (y1 > y2)
+        {
+            (y1, y2) = (y2, y1);
+        }
+
         y1 = Math.Clamp(y1, 0, height - 1);
         y2 = Math.Clamp(y2, 0, height - 1);
         for (int y = y1; y <= y2; y++)
-            data[x + width * y] = white;
+        {
+            data[x + width * y] = peakColor;
+        }
+    }
+
+    /// <summary>
+    /// 将 Avalonia 颜色转换为 Rgba8888 位图使用的本机整数布局。
+    /// </summary>
+    private static int PackRgba8888(Color color)
+    {
+        uint packed = ((uint)color.A << 24) |
+                      ((uint)color.B << 16) |
+                      ((uint)color.G << 8) |
+                      color.R;
+        return unchecked((int)packed);
     }
 
     /// <summary>
@@ -669,7 +700,7 @@ public class PartsCanvas : Control, ICmdSubscriber
         if (handleRect.Height <= 0) return;
 
         // 背景圆角矩形
-        using (context.PushClip(rect))
+        using (context.PushClip(new RoundedRect(rect, PartCornerRadius)))
         {
             context.DrawRectangle(ThemeResources.GetBrush("Sem.Color.PrimaryContainer"), null, handleRect,
                 radiusX: 3, radiusY: 3);

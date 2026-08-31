@@ -13,6 +13,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 ## Entries
 
 - Date: 2026-08-31
+- Decision: Render track parts with a 4 px rounded container and use `Sem.Color.OnSurfaceVariant` for note and waveform previews. Cache the resolved waveform RGBA value and redraw cached waveforms when the active theme changes it.
+- Rationale: Note and waveform previews are supporting graphics rather than primary text, so MD3's on-surface-variant role gives them appropriate visual hierarchy while adapting to light, dark, and dynamic color schemes. Rounded clipping keeps cached bitmap content inside the same silhouette as the part background.
+- Alternatives considered: Keep hard-coded white waveform pixels; use the higher-emphasis `OnSurface`; use `OnPrimaryContainer` despite track colors not being primary-container surfaces.
+- Impacted areas: Mobile track-part background, preview clipping, note color, waveform pixel color, and waveform theme invalidation. Core is unchanged.
+
+- Date: 2026-08-31
 - Decision: Pass the gesture interpreter's current pointer position into part-resize updates. During autosave of an untitled project, temporarily use `Backups/Untitled.ustx` as the project serialization base, call `DocManager.AutoSave`, and restore the empty path in `finally`.
 - Rationale: The prior binding passed the fixed press point, so all four resize modes always calculated a zero delta. Wave parts need a non-null project directory when producing relative audio paths before save; the temporary path preserves DocManager's autosave bookkeeping without changing Core.
 - Alternatives considered: Modify Core path handling; bypass DocManager and call `Ustx.AutoSave` directly; skip autosave for untitled projects containing wave parts.
