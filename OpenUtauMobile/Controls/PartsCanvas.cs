@@ -99,6 +99,9 @@ public class PartsCanvas : Control, ICmdSubscriber
     // MD3 中等尺寸容器使用 4px 圆角。
     private const double PartCornerRadius = 4;
 
+    private const double LabelHorizontalPadding = 3;
+    private const double ResizeHandleEdgePadding = 1;
+
     #endregion
 
     #region 内部缓存结构
@@ -349,7 +352,7 @@ public class PartsCanvas : Control, ICmdSubscriber
             }
 
             // 3. 名称标签（最顶层，覆盖在缩略图上）
-            DrawPartLabel(context, part, rect, brush);
+            DrawPartLabel(context, part, rect, brush, selected);
 
             // 4. 绘制拖拽手柄
             if (selected)
@@ -362,15 +365,29 @@ public class PartsCanvas : Control, ICmdSubscriber
     /// <summary>
     /// 在 part 矩形左上角绘制名称标签。
     /// </summary>
-    private static void DrawPartLabel(DrawingContext context, UPart part, Rect rect, IBrush partBrush)
+    private void DrawPartLabel(DrawingContext context, UPart part, Rect rect, IBrush partBrush, bool selected)
     {
         TextLayout textLayout = TextLayoutCache.Get(part.DisplayName, ThemeResources.GetBrush("Sem.Color.OnSurface"),
             LabelFontSize);
-        // 文字加左右各 3px 内边距后仍超过 part 宽度时跳过
-        if (textLayout.Width + 6 > rect.Width) return;
+        double labelLeft = Math.Max(rect.Left + LabelHorizontalPadding, LabelHorizontalPadding);
+        double labelRight = Math.Min(rect.Right - LabelHorizontalPadding, Bounds.Width - LabelHorizontalPadding);
+
+        if (selected)
+        {
+            // 分片边缘在视口内时避让调整手柄；边缘移出视口后标签仍贴在视口左侧。
+            double leftHandleRight = rect.Left + ResizeHandleEdgePadding + ViewConstants.ResizeHandleVisualWidth;
+            double rightHandleLeft = rect.Right - ResizeHandleEdgePadding - ViewConstants.ResizeHandleVisualWidth;
+            labelLeft = Math.Max(labelLeft, leftHandleRight + LabelHorizontalPadding);
+            labelRight = Math.Min(labelRight, rightHandleLeft - LabelHorizontalPadding);
+        }
+
+        if (labelLeft + textLayout.Width > labelRight)
+        {
+            return;
+        }
 
         using (context.PushClip(new RoundedRect(rect, PartCornerRadius)))
-        using (context.PushTransform(Matrix.CreateTranslation(rect.X + 3, rect.Y + 2)))
+        using (context.PushTransform(Matrix.CreateTranslation(labelLeft, rect.Y + 2)))
         {
             using (context.PushOpacity(0.6))
             {
@@ -688,11 +705,12 @@ public class PartsCanvas : Control, ICmdSubscriber
     private static void DrawResizeHandle(DrawingContext context, Rect rect, PartResizeEdge edge)
     {
         const double hW = ViewConstants.ResizeHandleVisualWidth;
-        const double pad = 1.0; // 手柄与分片边缘的间距
         const double vPad = 4.0; // 手柄上下内边距
 
         Rect handleRect = new(
-            edge == PartResizeEdge.Start ? rect.Left + pad : rect.Right - hW - pad,
+            edge == PartResizeEdge.Start
+                ? rect.Left + ResizeHandleEdgePadding
+                : rect.Right - hW - ResizeHandleEdgePadding,
             rect.Y + vPad,
             hW,
             rect.Height - vPad * 2);
