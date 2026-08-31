@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Media;
 
@@ -282,6 +282,18 @@ public static class ThemeSemDependencyManagerTokens
     public static CornerRadius SearchFieldCorner => ThemeBaseShapeTokens.CornerXXXXL;
     public static CornerRadius IconButtonCorner => ThemeBaseShapeTokens.CornerXXXXL;
     public static CornerRadius BadgeCorner => ThemeBaseShapeTokens.CornerM;
+}
+
+public static class ThemeSemErrorDialogTokens
+{
+    public static double ViewportVerticalInset => ThemeBaseLayoutTokens.SpaceXXL;
+    public static double MessageMaxHeight => 120d;
+    public static double DetailMaxHeight => 280d;
+    public static double ActionMinHeight => ThemeSemLayoutTokens.SizeNavToggleMin;
+
+    public static Thickness ContentInset => new(16, 12);
+    public static Thickness FooterInset => new(12);
+    public static Thickness ActionSpacing => new(8, 0, 0, 0);
 }
 
 public static class ThemeSemOpacityTokens

@@ -1069,7 +1069,7 @@
     <value>リンクを開けませんでした</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>エラーが発生しました</value>
+    <value>OpenUtau Mobile 実行時エラー</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>不明なエラー</value>
@@ -1742,5 +1742,11 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>指を離すとパラメーターをリセット</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>エラー情報をコピーしました</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>エラー情報をコピーできませんでした</value>
   </data>
 </root>

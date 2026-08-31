@@ -1,4 +1,4 @@
-﻿# Decisions Log
+# Decisions Log
 
 Record meaningful technical decisions here. Use one entry per decision.
 
@@ -11,6 +11,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Impacted areas:
 
 ## Entries
+
+- Date: 2026-08-31
+- Decision: Expose clipboard text writes through an injectable `IClipboardService` in `ServiceHub`, backed by Avalonia's current `TopLevel` clipboard. Keep error-detail selection and copy orchestration in the Mobile UI/ViewModel layer.
+- Rationale: The service follows the existing cross-platform capability pattern, keeps ViewModels independent of window/platform APIs, and uses Avalonia's native clipboard bridge across desktop, mobile, and browser hosts without duplicating platform code.
+- Alternatives considered: Access `TopLevel.Clipboard` directly from the popup code-behind; add one native clipboard implementation to every platform host; place clipboard behavior in Core.
+- Impacted areas: Shared Mobile services, error-dialog ViewModel/layout/styles, localization, and responsive dialog sizing. Core and platform hosts are unchanged.
 
 - Date: 2026-08-31
 - Decision: Render track parts with a 4 px rounded container and use `Sem.Color.OnSurfaceVariant` for note and waveform previews. Cache the resolved waveform RGBA value and redraw cached waveforms when the active theme changes it. Keep the part label inside the visible viewport and reserve space for selected-part resize handles.
@@ -280,4 +286,3 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Platform-generated zero-distance or jitter `PointerMoved` events previously invalidated every two-finger tap, undo could run while another pointer remained captured, coordinate/timestamp snapshot matching was not a stable touch identity, and partial capture-loss recovery could retain another pointer as a false pinch participant.
 - Alternatives considered: Add logging without changing recognition; rely on tighter platform event filtering; continue reinitializing a reduced gesture after capture loss.
 - Impacted areas: Shared Windows/Android pointer gesture recognition for tap, undo/redo, pinch, cancellation, and post-cancellation single-finger input.
-
