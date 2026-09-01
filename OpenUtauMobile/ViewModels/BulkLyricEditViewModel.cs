@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Text.RegularExpressions;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -13,7 +13,7 @@ namespace OpenUtauMobile.ViewModels;
 /// <summary>
 /// 歌词批量编辑弹窗 ViewModel。
 /// </summary>
-public sealed partial class BulkLyricEditViewModel : PopupViewModelBase, IDisposable
+public sealed class BulkLyricEditViewModel : PopupViewModelBase, IDisposable
 {
     private readonly UVoicePart _part;
     private readonly List<UNote> _partNotes;
@@ -35,14 +35,16 @@ public sealed partial class BulkLyricEditViewModel : PopupViewModelBase, IDispos
     public BulkLyricEditViewModel(UVoicePart part, IReadOnlyCollection<UNote> selectedNotes)
     {
         _part = part;
-        _partNotes = part.notes.ToList();
-        _selectedNotes = _partNotes
-            .Where(selectedNotes.Contains)
-            .ToList();
+        _partNotes = [.. part.notes];
+        _selectedNotes =
+        [
+            .. _partNotes
+                .Where(selectedNotes.Contains)
+        ];
 
         UNote? firstSelectedNote = _selectedNotes.FirstOrDefault();
         _startNoteIndex = firstSelectedNote == null ? 0 : _partNotes.IndexOf(firstSelectedNote);
-        LyricsText = string.Join(" ", _partNotes.Skip(_startNoteIndex).Select(note => note.lyric));
+        LyricsText = SplitLyrics.Join(_partNotes.Skip(_startNoteIndex).Select(note => note.lyric));
 
         CancelCommand = ReactiveCommand.Create(OnCancel);
         ApplyCommand = ReactiveCommand.Create(OnApply);
@@ -55,11 +57,8 @@ public sealed partial class BulkLyricEditViewModel : PopupViewModelBase, IDispos
 
     private void OnApply()
     {
-        string[] lyrics = LyricSeparatorRegex()
-            .Split(LyricsText)
-            .Where(lyric => lyric.Length > 0)
-            .ToArray();
-        if (lyrics.Length == 0)
+        List<string> lyrics = SplitLyrics.Split(LyricsText);
+        if (lyrics.Count == 0)
         {
             RaiseClose(null);
             return;
@@ -68,10 +67,10 @@ public sealed partial class BulkLyricEditViewModel : PopupViewModelBase, IDispos
         IEnumerable<UNote> candidates = ApplyToSelectedNotesOnly
             ? _selectedNotes
             : _partNotes.Skip(_startNoteIndex);
-        UNote[] notes = candidates.Take(lyrics.Length).ToArray();
+        UNote[] notes = [.. candidates.Take(lyrics.Count)];
         if (notes.Length > 0)
         {
-            string[] appliedLyrics = lyrics.Take(notes.Length).ToArray();
+            string[] appliedLyrics = [.. lyrics.Take(notes.Length)];
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(_part, notes, appliedLyrics));
             DocManager.Inst.EndUndoGroup();
@@ -92,6 +91,4 @@ public sealed partial class BulkLyricEditViewModel : PopupViewModelBase, IDispos
         GC.SuppressFinalize(this);
     }
 
-    [GeneratedRegex("[ ,\\r\\n]+")]
-    private static partial Regex LyricSeparatorRegex();
 }

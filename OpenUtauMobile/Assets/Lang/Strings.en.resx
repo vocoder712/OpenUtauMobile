@@ -1760,7 +1760,7 @@
     <value>Batch edit lyrics</value>
   </data>
   <data name="BulkLyricEdit.Watermark" xml:space="preserve">
-    <value>Separate lyrics with spaces, commas, or line breaks</value>
+    <value>Enter lyrics; use quotes to keep spaces or character groups together</value>
   </data>
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>Apply to selected notes only</value>

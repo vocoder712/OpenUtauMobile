@@ -1715,7 +1715,7 @@
     <value>Пакетное изменение текста</value>
   </data>
   <data name="BulkLyricEdit.Watermark" xml:space="preserve">
-    <value>Разделяйте слоги пробелами, запятыми или переносами строк</value>
+    <value>Введите текст; кавычки сохраняют пробелы и группы символов</value>
   </data>
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>Применить только к выбранным нотам</value>

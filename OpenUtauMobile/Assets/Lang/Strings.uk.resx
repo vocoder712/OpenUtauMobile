@@ -1715,7 +1715,7 @@
     <value>Пакетне редагування тексту</value>
   </data>
   <data name="BulkLyricEdit.Watermark" xml:space="preserve">
-    <value>Розділяйте склади пробілами, комами або переносами рядків</value>
+    <value>Введіть текст; лапки зберігають пробіли та групи символів</value>
   </data>
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>Застосувати лише до вибраних нот</value>

@@ -1753,7 +1753,7 @@
     <value>歌詞を一括編集</value>
   </data>
   <data name="BulkLyricEdit.Watermark" xml:space="preserve">
-    <value>歌詞をスペース、半角コンマ、または改行で区切ります</value>
+    <value>歌詞を入力します。空白や文字列をまとめるには引用符を使用します</value>
   </data>
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>選択したノートにのみ適用</value>

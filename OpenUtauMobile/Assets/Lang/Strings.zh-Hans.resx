@@ -1760,7 +1760,7 @@
     <value>批量编辑歌词</value>
   </data>
   <data name="BulkLyricEdit.Watermark" xml:space="preserve">
-    <value>使用空格、半角逗号或换行分隔歌词</value>
+    <value>输入歌词；使用双引号保留含空格或需组合的内容</value>
   </data>
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>仅应用到选中的音符</value>
