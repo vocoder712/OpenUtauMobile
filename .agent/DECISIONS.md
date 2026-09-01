@@ -12,6 +12,12 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-09-01
+- Decision: Add a dedicated batch-lyric popup to the Hand, Note, and MultiSelect piano-roll context menus. Initialize it from the earliest selected note through the end of the active voice part, and apply one undoable multi-note lyric command either sequentially or to the selected-note snapshot.
+- Rationale: A focused text editor supports fast paste-and-replace workflows while preserving the current note selection and Core's existing undo/validation behavior. Keeping parsing and scope selection in the Mobile ViewModel avoids changes to upstream-derived Core.
+- Alternatives considered: Extend the single-note lyric navigator; route the workflow through the generic batch-edit catalog; mutate note lyrics directly.
+- Impacted areas: Mobile piano-roll context actions, batch-lyric popup/ViewModel, and localization. OpenUtau.Core is unchanged.
+
 - Date: 2026-08-31
 - Decision: Expose clipboard text writes through an injectable `IClipboardService` in `ServiceHub`, backed by Avalonia's current `TopLevel` clipboard. Keep error-detail selection and copy orchestration in the Mobile UI/ViewModel layer.
 - Rationale: The service follows the existing cross-platform capability pattern, keeps ViewModels independent of window/platform APIs, and uses Avalonia's native clipboard bridge across desktop, mobile, and browser hosts without duplicating platform code.

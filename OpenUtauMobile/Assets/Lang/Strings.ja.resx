@@ -1749,4 +1749,16 @@
   <data name="ErrorDialog.CopyFailed" xml:space="preserve">
     <value>エラー情報をコピーできませんでした</value>
   </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>歌詞を一括編集</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>歌詞をスペース、半角コンマ、または改行で区切ります</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>選択したノートにのみ適用</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>適用</value>
+  </data>
 </root>

@@ -1756,4 +1756,16 @@
   <data name="ErrorDialog.CopyFailed" xml:space="preserve">
     <value>Failed to copy error information</value>
   </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>Batch edit lyrics</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>Separate lyrics with spaces, commas, or line breaks</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>Apply to selected notes only</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
 </root>

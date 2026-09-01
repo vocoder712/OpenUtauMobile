@@ -2191,11 +2191,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         switch (EditMode)
         {
             case PianoRollEditMode.Hand:
+                if (EditingVoicePart != null)
+                {
+                    items.Add(CreateBulkLyricEditAction());
+                }
                 break;
 
             case PianoRollEditMode.Note:
                 if (EditingVoicePart != null)
                 {
+                    items.Add(CreateBulkLyricEditAction());
                     // 批量编辑
                     items.Add(CreateBatchEditAction());
                 }
@@ -2253,6 +2258,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 });
                 if (EditingVoicePart != null)
                 {
+                    items.Add(CreateBulkLyricEditAction());
                     items.Add(CreateBatchEditAction());
                 }
                 if (hasNoteSelection)
@@ -2370,6 +2376,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         PianoRollContextActions = items;
+    }
+
+    private ContextActionItem CreateBulkLyricEditAction()
+    {
+        return new ContextActionItem
+        {
+            Icon = PackIconPhosphorIconsKind.TextAa,
+            Tip = L.S("BulkLyricEdit.Title"),
+            Command = ReactiveCommand.CreateFromTask(ShowBulkLyricEditPopupAsync),
+        };
+    }
+
+    private async Task ShowBulkLyricEditPopupAsync()
+    {
+        UVoicePart? part = EditingVoicePart;
+        if (part == null || part.notes.Count == 0)
+        {
+            return;
+        }
+
+        BulkLyricEditViewModel viewModel = new(part, SelectedNotes.ToList());
+        await PopupService.Show<object>(new BulkLyricEditPopup(), viewModel);
     }
 
     private ContextActionItem CreateBatchEditAction()

@@ -1756,4 +1756,16 @@
   <data name="ErrorDialog.CopyFailed" xml:space="preserve">
     <value>复制报错信息失败</value>
   </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>批量编辑歌词</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>使用空格、半角逗号或换行分隔歌词</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>仅应用到选中的音符</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
 </root>
