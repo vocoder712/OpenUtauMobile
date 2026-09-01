@@ -12,6 +12,18 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-09-01
+- Decision: Add a dedicated batch-lyric popup to the Hand, Note, and MultiSelect piano-roll context menus. Initialize it from the earliest selected note through the end of the active voice part, and apply one undoable multi-note lyric command either sequentially or to the selected-note snapshot.
+- Rationale: A focused text editor supports fast paste-and-replace workflows while preserving the current note selection and Core's existing undo/validation behavior. Keeping parsing and scope selection in the Mobile ViewModel avoids changes to upstream-derived Core.
+- Alternatives considered: Extend the single-note lyric navigator; route the workflow through the generic batch-edit catalog; mutate note lyrics directly.
+- Impacted areas: Mobile piano-roll context actions, batch-lyric popup/ViewModel, and localization. OpenUtau.Core is unchanged.
+
+- Date: 2026-09-01
+- Decision: Reuse Core's upstream `SplitLyrics.Split` and `SplitLyrics.Join` for the batch-lyric editor instead of maintaining a Mobile-only delimiter expression.
+- Rationale: The upstream algorithm handles Unicode text elements, automatic CJK/Hiragana/Katakana/Hangul segmentation, contracted Japanese kana, empty lyrics, whitespace-containing lyrics, and quoted groups with matching round-trip serialization.
+- Alternatives considered: Expand the Mobile regular expression; fork and maintain a second parser in the Mobile project.
+- Impacted areas: Mobile batch-lyric initialization, parsing, and input guidance. Core remains unchanged because the synchronized utility already exists.
+
 - Date: 2026-08-31
 - Decision: Expose clipboard text writes through an injectable `IClipboardService` in `ServiceHub`, backed by Avalonia's current `TopLevel` clipboard. Keep error-detail selection and copy orchestration in the Mobile UI/ViewModel layer.
 - Rationale: The service follows the existing cross-platform capability pattern, keeps ViewModels independent of window/platform APIs, and uses Avalonia's native clipboard bridge across desktop, mobile, and browser hosts without duplicating platform code.

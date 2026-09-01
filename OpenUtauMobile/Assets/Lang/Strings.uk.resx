@@ -1711,4 +1711,16 @@
   <data name="ErrorDialog.CopyFailed" xml:space="preserve">
     <value>Не вдалося скопіювати інформацію про помилку</value>
   </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>Пакетне редагування тексту</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>Введіть текст; лапки зберігають пробіли та групи символів</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>Застосувати лише до вибраних нот</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>Застосувати</value>
+  </data>
 </root>
