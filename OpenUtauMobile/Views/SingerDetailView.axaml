@@ -224,7 +224,7 @@
                                           Stretch="Uniform"
                                           Fill="{DynamicResource Sem.Color.Error}"
                                           Data="{StaticResource IconDelete}" />
-                                    <TextBlock Text="{DynamicResource SingerDetail.Delete}"
+                                    <TextBlock Text="{DynamicResource Common.Uninstall}"
                                                FontWeight="SemiBold" />
                                 </StackPanel>
                             </Button>

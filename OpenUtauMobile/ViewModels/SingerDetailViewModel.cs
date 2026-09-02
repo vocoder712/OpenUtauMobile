@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Reactive;
+using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -51,7 +54,7 @@ public class SingerDetailViewModel : NavigateViewModelBase
         _singer = singer;
 
         BackCommand = ReactiveCommand.Create(OnBack);
-        DeleteCommand = ReactiveCommand.Create(OnDelete);
+        DeleteCommand = ReactiveCommand.CreateFromTask(OnDeleteAsync);
 
         // Create OpenWebCommand - enabled only when HasWeb is true
         IObservable<bool> canOpenWeb = this.WhenAnyValue(x => x.HasWeb);
@@ -103,15 +106,26 @@ public class SingerDetailViewModel : NavigateViewModelBase
         Navigator.NavigateBack(this);
     }
 
-    private void OnDelete()
+    private async Task OnDeleteAsync()
     {
-        // TODO: Implement singer deletion
-        // This should:
-        // 1. Show a confirmation dialog
-        // 2. Delete the singer folder from disk
-        // 3. Refresh the singer list
-        // 4. Navigate back
-        ToastService.Enqueue("删除功能暂未实现，建议将歌手安装至外部存储");
+        try
+        {
+            await LoadingPopupService.RunAsync(
+                L.S("SingerDetail.Uninstalling"),
+                _ => Task.Run(() => SingerManager.Inst.UninstallSinger(_singer)));
+            ToastService.Enqueue(string.Format(
+                L.S("SingerDetail.UninstallSucceeded"),
+                SingerName));
+            Navigator.NavigateBack(this);
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to uninstall singer {Singer}", _singer.Name);
+            ErrorMessageNotification notification = new(
+                string.Format(L.S("SingerDetail.UninstallFailed"), SingerName),
+                exception);
+            ErrorDialogService.Show(new ErrorDialogViewModel(notification));
+        }
     }
 
     private void OnOpenWeb()

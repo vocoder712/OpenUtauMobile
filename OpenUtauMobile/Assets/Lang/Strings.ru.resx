@@ -535,6 +535,15 @@
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>Удалить банк</value>
   </data>
+  <data name="SingerDetail.Uninstalling" xml:space="preserve">
+    <value>Удаление банка…</value>
+  </data>
+  <data name="SingerDetail.UninstallSucceeded" xml:space="preserve">
+    <value>Банк {0} удалён</value>
+  </data>
+  <data name="SingerDetail.UninstallFailed" xml:space="preserve">
+    <value>Не удалось удалить банк {0}.</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>Отменить</value>
   </data>
