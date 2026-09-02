@@ -618,6 +618,12 @@
   <data name="SingerDetail.UninstallFailed" xml:space="preserve">
     <value>{0} のアンインストールに失敗しました。</value>
   </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>シンガーをアンインストールしますか？</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>{0} をアンインストールし、すべてのファイルを完全に削除しますか？この操作は元に戻せません。</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>元に戻す</value>
   </data>

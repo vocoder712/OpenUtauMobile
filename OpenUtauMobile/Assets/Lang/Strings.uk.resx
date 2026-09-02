@@ -544,6 +544,12 @@
   <data name="SingerDetail.UninstallFailed" xml:space="preserve">
     <value>Не вдалося видалити банк {0}.</value>
   </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>Видалити банк?</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>Видалити банк {0} і назавжди стерти всі його файли? Цю дію неможливо скасувати.</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>Скасувати</value>
   </data>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -15,6 +16,9 @@ namespace OpenUtauMobile.ViewModels;
 
 public class SingerDetailViewModel : NavigateViewModelBase
 {
+    private const string CancelUninstallOption = "cancel";
+    private const string ConfirmUninstallOption = "uninstall";
+
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
     public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenWebCommand { get; }
@@ -108,6 +112,23 @@ public class SingerDetailViewModel : NavigateViewModelBase
 
     private async Task OnDeleteAsync()
     {
+        List<OptionConfirmOption> options =
+        [
+            new(L.S("Common.Cancel"), CancelUninstallOption),
+            new(
+                L.S("Common.Uninstall"),
+                ConfirmUninstallOption,
+                isDestructive: true),
+        ];
+        string? selectedOption = await OptionConfirmPopupService.ShowAsync(
+            L.S("SingerDetail.UninstallConfirmTitle"),
+            string.Format(L.S("SingerDetail.UninstallConfirmMessage"), SingerName),
+            options);
+        if (selectedOption != ConfirmUninstallOption)
+        {
+            return;
+        }
+
         try
         {
             await LoadingPopupService.RunAsync(

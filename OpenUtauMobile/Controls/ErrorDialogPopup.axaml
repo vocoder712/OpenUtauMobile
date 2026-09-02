@@ -12,9 +12,7 @@
              Classes="PopupDialogRoot">
 
     <UserControl.Resources>
-        <StreamGeometry x:Key="IconError">M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 Z M13,17 L11,17 L11,15 L13,15 L13,17 Z M13,13 L11,13 L11,7 L13,7 L13,13 Z</StreamGeometry>
         <StreamGeometry x:Key="IconChevronDown">M7.41,8.59 L12,13.17 L16.59,8.59 L18,10 L12,16 L6,10 L7.41,8.59 Z</StreamGeometry>
-        <StreamGeometry x:Key="IconChevronUp">M7.41,15.41 L12,10.83 L16.59,15.41 L18,14 L12,8 L6,14 L7.41,15.41 Z</StreamGeometry>
     </UserControl.Resources>
 
     <Border Classes="PopupDialogSurface">

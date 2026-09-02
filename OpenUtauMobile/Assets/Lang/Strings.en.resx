@@ -621,6 +621,12 @@
   <data name="SingerDetail.UninstallFailed" xml:space="preserve">
     <value>Failed to uninstall {0}.</value>
   </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>Uninstall singer?</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>Uninstall {0} and permanently remove all of its files? This action cannot be undone.</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>Undo</value>
   </data>

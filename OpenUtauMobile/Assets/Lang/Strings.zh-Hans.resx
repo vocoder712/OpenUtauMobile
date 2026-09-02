@@ -621,6 +621,12 @@
   <data name="SingerDetail.UninstallFailed" xml:space="preserve">
     <value>卸载 {0} 失败。</value>
   </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>确认卸载歌手？</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>确定卸载 {0} 并永久移除其全部文件吗？此操作不可撤销。</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>撤销</value>
   </data>
