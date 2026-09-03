@@ -310,3 +310,8 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Platform-generated zero-distance or jitter `PointerMoved` events previously invalidated every two-finger tap, undo could run while another pointer remained captured, coordinate/timestamp snapshot matching was not a stable touch identity, and partial capture-loss recovery could retain another pointer as a false pinch participant.
 - Alternatives considered: Add logging without changing recognition; rely on tighter platform event filtering; continue reinitializing a reduced gesture after capture loss.
 - Impacted areas: Shared Windows/Android pointer gesture recognition for tap, undo/redo, pinch, cancellation, and post-cancellation single-finger input.
+- Date: 2026-09-03
+- Decision: Allow dependency archives without `entrypoints` or legacy `@class` metadata while continuing to validate every explicitly declared entrypoint.
+- Rationale: Legacy data-only packages identify themselves with `name` and are consumed directly from their installed dependency directory; they do not expose a loadable entrypoint. Requiring one regressed file installation after the Core update.
+- Alternatives considered: Rewrite legacy archives during installation; infer a synthetic loader from package contents; special-case known vocoder package names in the Mobile layer.
+- Impacted areas: `OpenUtau.Core.PackageManager` archive validation; legacy data/model `.oudep` packages can be installed again, while malformed explicit entrypoints remain rejected.

@@ -310,7 +310,7 @@ namespace OpenUtau.Core {
                 throw new ArgumentException("Invalid package id");
             }
 
-            // Validate entrypoints if present
+            // 仅校验显式声明的入口点；旧版纯数据依赖包可以没有入口点
             if (metadata.entrypoints != null && metadata.entrypoints.Length > 0) {
                 foreach (var ep in metadata.entrypoints) {
                     if (string.IsNullOrEmpty(ep.loader)) {
@@ -320,8 +320,6 @@ namespace OpenUtau.Core {
                         throw new ArgumentException($"Invalid entrypoint path: {ep.path}");
                     }
                 }
-            } else if (string.IsNullOrEmpty(metadata.@class)) {
-                throw new ArgumentException("Missing entrypoints and @class in oudep.yaml");
             }
 
             await Task.Run(() => {
