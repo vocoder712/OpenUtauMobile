@@ -301,7 +301,7 @@ public static class ThemeSemOptionConfirmTokens
     public static double CloseIconSize => ThemeBaseTypographyTokens.SizeL;
     public static double MessageMaxHeight => 160d;
     public static double OptionsHeight => ThemeBaseLayoutTokens.SpaceXXL;
-    public static double OptionMinHeight => ThemeSemLayoutTokens.SizeNavToggleMin;
+    public static double OptionHeight => ThemeBaseLayoutTokens.SpaceXL;
     public static double SectionSpacing => ThemeSemLayoutTokens.SpaceMD;
     public static double OptionSpacing => ThemeSemLayoutTokens.SpaceSM;
 

@@ -50,6 +50,7 @@
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Spacing="{x:Static theme:ThemeSemOptionConfirmTokens.OptionSpacing}" 
+                                            VerticalAlignment="Center"
                                             Orientation="Horizontal"
                                             HorizontalAlignment="Right"/>
                             </ItemsPanelTemplate>
@@ -59,7 +60,7 @@
                                 <Button Classes="OptionAction"
                                         Classes.Primary="{Binding IsPrimary}"
                                         Classes.Destructive="{Binding IsDestructive}"
-                                        MinHeight="{x:Static theme:ThemeSemOptionConfirmTokens.OptionMinHeight}"
+                                        Height="{x:Static theme:ThemeSemOptionConfirmTokens.OptionHeight}"
                                         Content="{Binding Label}"
                                         Command="{Binding $parent[UserControl].((vm:OptionConfirmPopupViewModel)DataContext).SelectOptionCommand}"
                                         CommandParameter="{Binding}" />

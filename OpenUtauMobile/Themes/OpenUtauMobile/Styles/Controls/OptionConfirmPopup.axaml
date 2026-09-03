@@ -4,6 +4,8 @@
     <Style Selector="Button.OptionAction">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerM}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
