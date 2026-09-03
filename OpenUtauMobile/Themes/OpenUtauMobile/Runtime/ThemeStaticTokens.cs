@@ -296,6 +296,18 @@ public static class ThemeSemErrorDialogTokens
     public static Thickness ActionSpacing => new(8, 0, 0, 0);
 }
 
+public static class ThemeSemOptionConfirmTokens
+{
+    public static double CloseIconSize => ThemeBaseTypographyTokens.SizeL;
+    public static double MessageMaxHeight => 160d;
+    public static double OptionsHeight => ThemeBaseLayoutTokens.SpaceXXL;
+    public static double OptionHeight => ThemeBaseLayoutTokens.SpaceXL;
+    public static double SectionSpacing => ThemeSemLayoutTokens.SpaceMD;
+    public static double OptionSpacing => ThemeSemLayoutTokens.SpaceSM;
+
+    public static Thickness ContentInset => ThemeSemLayoutTokens.InsetL;
+}
+
 public static class ThemeSemOpacityTokens
 {
     // ── Semantic Opacity Levels ──

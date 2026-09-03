@@ -12,6 +12,18 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-09-02
+- Decision: Add a reusable mobile-first option confirmation popup that accepts a title, content, and typed display/value options, lays actions out as full-width touch targets, and returns the selected stable string value or null when dismissed. Require this confirmation before singer uninstall.
+- Rationale: The existing exit-editor confirmation is fixed to editor-specific labels and a byte register. A generic string-valued popup supports localized labels without coupling callers to displayed text and keeps destructive operations explicit on narrow screens.
+- Alternatives considered: Reuse the fixed exit-editor popup; add a singer-only confirmation popup; compare localized option labels as results.
+- Impacted areas: Mobile popup controls/services/theme tokens, singer uninstall interaction, and localization.
+
+- Date: 2026-09-02
+- Decision: Centralize installed-singer removal in `SingerManager.UninstallSinger`. Remove directory-based voicebanks recursively and single-file Vogen packages directly, release singer memory first, and always rescan installed singers in `finally`. Run the operation from the singer detail page inside the shared loading popup.
+- Rationale: Core owns singer location semantics and the installed-singer index, while Mobile owns progress and error presentation. Keeping the rescan in Core guarantees that success and failure paths expose the current filesystem state.
+- Alternatives considered: Delete `USinger.Location` directly in the Mobile ViewModel; refresh only after successful deletion; route removal through a platform storage service.
+- Impacted areas: Core singer lifecycle, Mobile singer detail interaction, and singer-detail localization.
+
 - Date: 2026-09-01
 - Decision: Add a dedicated batch-lyric popup to the Hand, Note, and MultiSelect piano-roll context menus. Initialize it from the earliest selected note through the end of the active voice part, and apply one undoable multi-note lyric command either sequentially or to the selected-note snapshot.
 - Rationale: A focused text editor supports fast paste-and-replace workflows while preserving the current note selection and Core's existing undo/validation behavior. Keeping parsing and scope selection in the Mobile ViewModel avoids changes to upstream-derived Core.
