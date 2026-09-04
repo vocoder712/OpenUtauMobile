@@ -144,6 +144,9 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     [Reactive] public double TickOffset { get; set; } // X 滚动
     [Reactive] public double KeyOffset { get; set; } = 56; // Y 滚动
 
+    /// <summary>是否以轻量矩形块显示各 phrase 的渲染状态。</summary>
+    [Reactive] public bool IsRenderedPhraseStatusMode { get; private set; }
+
     // ── 播放状态（直接由权威源驱动）─────
     /// <summary>
     /// 当前工程全局播放标记位置（Tick，绝对坐标，与走带编曲区共享同一命令流）。
@@ -322,6 +325,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public System.Windows.Input.ICommand SwapExpressionsCommand { get; }
     public System.Windows.Input.ICommand SelectPrimaryExpressionCommand { get; }
     public System.Windows.Input.ICommand SelectSecondaryExpressionCommand { get; }
+    public System.Windows.Input.ICommand ToggleRenderedWaveformDisplayModeCommand { get; }
 
     #endregion
 
@@ -422,6 +426,9 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ApplyViewportLimits();
     }
 
+    /// <summary>
+    /// 异步更新立绘
+    /// </summary>
     private async Task UpdatePortraitAsync()
     {
         // 1. 取消正在执行的旧任务（如果存在），不再让 CPU 做无用功
@@ -584,6 +591,9 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         RequestEditPhoneme?.Invoke(part, note, phonemeIndex);
     }
 
+    /// <summary>
+    /// 交换背景表情和前景表情。
+    /// </summary>
     public void SwapExpressions()
     {
         if (string.IsNullOrEmpty(SecondaryExpressionKey) || SecondaryExpressionKey == PrimaryExpressionKey)
@@ -650,6 +660,50 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
         this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
     }
+    
+    /// <summary>
+    /// 核验当前选中的音符列表，移除不属于当前 EditingVoicePart 的音符。
+    /// </summary>
+    public void ValidateSelectedNotes()
+    {
+        if (EditingVoicePart == null)
+        {
+            SelectedNotes.Clear();
+            return;
+        }
+
+        // 移除不属于当前分片的音符
+        for (int i = SelectedNotes.Count - 1; i >= 0; i--)
+        {
+            UNote note = SelectedNotes[i];
+            if (!EditingVoicePart.notes.Contains(note))
+            {
+                SelectedNotes.RemoveAt(i);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// 校验当前选中的音高锚点列表，移除不存在的锚点。
+    /// </summary>
+    public void ValidateSelectedAnchors()
+    {
+        if (EditingVoicePart == null)
+        {
+            SelectedAnchors.Clear();
+            return;
+        }
+
+        // 移除不属于当前分片的音高锚点
+        for (int i = SelectedAnchors.Count - 1; i >= 0; i--)
+        {
+            PitchPoint anchor = SelectedAnchors[i];
+            if (FindNoteForPitchPoint(anchor) == null)
+            {
+                SelectedAnchors.RemoveAt(i);
+            }
+        }
+    }
 
     // 拆分放大镜事件
     public event Action<Point>? RequestMagnifierOpen;
@@ -660,6 +714,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public PianoRollViewModel()
     {
+        IsRenderedPhraseStatusMode = Preferences.Default.RenderedPhraseStatusMode;
         IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
         PitchPenNoteHitTickExtension = Math.Clamp(
             Preferences.Default.PitchPenNoteHitTickExtension,
@@ -688,6 +743,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             {
                 SecondaryExpressionKey = opt.Key;
             }
+        });
+        ToggleRenderedWaveformDisplayModeCommand = ReactiveCommand.Create(() =>
+        {
+            IsRenderedPhraseStatusMode = !IsRenderedPhraseStatusMode;
+            Preferences.Default.RenderedPhraseStatusMode = IsRenderedPhraseStatusMode;
+            Preferences.Save();
         });
 
         DocManager.Inst.AddSubscriber(this);
@@ -2130,11 +2191,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         switch (EditMode)
         {
             case PianoRollEditMode.Hand:
+                if (EditingVoicePart != null)
+                {
+                    items.Add(CreateBulkLyricEditAction());
+                }
                 break;
 
             case PianoRollEditMode.Note:
                 if (EditingVoicePart != null)
                 {
+                    items.Add(CreateBulkLyricEditAction());
                     // 批量编辑
                     items.Add(CreateBatchEditAction());
                 }
@@ -2192,6 +2258,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 });
                 if (EditingVoicePart != null)
                 {
+                    items.Add(CreateBulkLyricEditAction());
                     items.Add(CreateBatchEditAction());
                 }
                 if (hasNoteSelection)
@@ -2239,6 +2306,26 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             case PianoRollEditMode.Anchor:
                 if (hasAnchorSelection)
                 {
+                    items.Add(new ContextActionItem
+                    {
+                        Icon = PackIconPhosphorIconsKind.BezierCurve,
+                        Tip = L.S("PianoRoll.Action.ControlPointShape"),
+                        Command = ReactiveCommand.Create(CyclePitchPointShape)
+                    });
+
+                    UNote? firstAnchorNote = GetSingleSelectedFirstAnchorNote();
+                    if (firstAnchorNote != null)
+                    {
+                        items.Add(new ContextActionItem
+                        {
+                            Icon = firstAnchorNote.pitch.snapFirst
+                                ? PackIconPhosphorIconsKind.MagnetFill
+                                : PackIconPhosphorIconsKind.Magnet,
+                            Tip = L.S("PianoRoll.Action.ToggleFirstAnchorSnap"),
+                            Command = ReactiveCommand.Create(ToggleFirstAnchorSnap)
+                        });
+                    }
+
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Trash,
@@ -2289,6 +2376,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         PianoRollContextActions = items;
+    }
+
+    private ContextActionItem CreateBulkLyricEditAction()
+    {
+        return new ContextActionItem
+        {
+            Icon = PackIconPhosphorIconsKind.TextAa,
+            Tip = L.S("BulkLyricEdit.Title"),
+            Command = ReactiveCommand.CreateFromTask(ShowBulkLyricEditPopupAsync),
+        };
+    }
+
+    private async Task ShowBulkLyricEditPopupAsync()
+    {
+        UVoicePart? part = EditingVoicePart;
+        if (part == null || part.notes.Count == 0)
+        {
+            return;
+        }
+
+        BulkLyricEditViewModel viewModel = new(part, SelectedNotes.ToList());
+        await PopupService.Show<object>(new BulkLyricEditPopup(), viewModel);
     }
 
     private ContextActionItem CreateBatchEditAction()
@@ -2997,17 +3106,86 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     private void CyclePitchPointShape()
     {
-        if (EditingVoicePart == null || SelectedAnchors.Count == 0) return;
+        if (EditingVoicePart == null || SelectedAnchors.Count == 0)
+        {
+            return;
+        }
+
+        PitchPointShape displayedShape = GetNextPitchPointShape(SelectedAnchors[0].shape);
 
         DocManager.Inst.StartUndoGroup();
         foreach (PitchPoint pp in SelectedAnchors)
         {
-            // io(0) → l(1) → i(2) → o(3) → io(0) ...
-            PitchPointShape nextShape = (PitchPointShape)(((int)pp.shape + 1) % 4);
+            PitchPointShape nextShape = GetNextPitchPointShape(pp.shape);
             DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(EditingVoicePart, pp, nextShape));
         }
 
         DocManager.Inst.EndUndoGroup();
+        ToastService.Enqueue(string.Format(
+            L.S("PianoRoll.Toast.AnchorShape"),
+            GetPitchPointShapeName(displayedShape)));
+    }
+
+    private static PitchPointShape GetNextPitchPointShape(PitchPointShape shape)
+    {
+        return shape switch
+        {
+            PitchPointShape.io => PitchPointShape.l,
+            PitchPointShape.l => PitchPointShape.i,
+            PitchPointShape.i => PitchPointShape.o,
+            PitchPointShape.o => PitchPointShape.io,
+            _ => PitchPointShape.io,
+        };
+    }
+
+    private static string GetPitchPointShapeName(PitchPointShape shape)
+    {
+        string key = shape switch
+        {
+            PitchPointShape.l => "PianoRoll.AnchorShape.Linear",
+            PitchPointShape.i => "PianoRoll.AnchorShape.EaseIn",
+            PitchPointShape.o => "PianoRoll.AnchorShape.EaseOut",
+            _ => "PianoRoll.AnchorShape.EaseInOut",
+        };
+        return L.S(key);
+    }
+
+    private UNote? GetSingleSelectedFirstAnchorNote()
+    {
+        if (SelectedAnchors.Count != 1)
+        {
+            return null;
+        }
+
+        PitchPoint selectedAnchor = SelectedAnchors[0];
+        UNote? note = FindNoteForPitchPoint(selectedAnchor);
+        return note != null &&
+            note.pitch.data.Count > 0 &&
+            ReferenceEquals(note.pitch.data[0], selectedAnchor)
+            ? note
+            : null;
+    }
+
+    private void ToggleFirstAnchorSnap()
+    {
+        if (EditingVoicePart == null)
+        {
+            return;
+        }
+
+        UNote? note = GetSingleSelectedFirstAnchorNote();
+        if (note == null)
+        {
+            return;
+        }
+
+        DocManager.Inst.StartUndoGroup();
+        DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(EditingVoicePart, note));
+        DocManager.Inst.EndUndoGroup();
+        ToastService.Enqueue(L.S(note.pitch.snapFirst
+            ? "PianoRoll.Toast.FirstAnchorSnapEnabled"
+            : "PianoRoll.Toast.FirstAnchorSnapDisabled"));
+        RebuildPianoRollContextActions();
     }
 
     private void StartToEditVibrato(VibratoOverlayHit hit)
@@ -3252,9 +3430,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     {
         switch (cmd)
         {
-            case DeletePitchPointCommand deletePitchPointCommand
-                : // TODO: 这里由于core项目设计缺陷，撤回时实际执行的是 AddPitchPointCommand，无法简单地判断删除了哪个点，会导致使用出现bug
-                SelectedAnchors.Remove(deletePitchPointCommand.Point);
+            case AddPitchPointCommand addPitchPointCommand:
+                ValidateSelectedAnchors();
                 break;
             case VibratoCommand:
                 RebuildPianoRollContextActions();
@@ -3265,6 +3442,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 break;
             case TrackChangeSingerCommand: // 切换歌手
                 _ = UpdatePortraitAsync(); // 更新立绘
+                break;
+            case AddNoteCommand:
+                if (isUndo) // 修复撤销添加音符后，选区仍然保留已删除音符的bug
+                {
+                    ValidateSelectedNotes();
+                }
                 break;
         }
     }

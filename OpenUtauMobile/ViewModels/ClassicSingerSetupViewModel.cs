@@ -18,7 +18,7 @@ using SharpCompress.Readers;
 namespace OpenUtauMobile.ViewModels;
 
 /// <summary>
-/// Classic/Enunu/DiffSinger 歌手安装向导的 ViewModel。
+/// Classic/Enunu/DiffSinger/NEUTRINO 歌手安装向导的 ViewModel。
 /// 四步流程：Step 0 压缩包编码 → Step 1 文本编码 → Step 2 歌手类型 → Step 3 安装摘要
 /// </summary>
 public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
@@ -43,7 +43,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
     [Reactive] public Encoding TextEncoding { get; set; }
     [Reactive] public bool MissingInfo { get; set; }
 
-    public string[] SingerTypes { get; set; } = ["utau", "enunu", "diffsinger"];
+    public string[] SingerTypes { get; set; } = ["utau", "enunu", "diffsinger", "neutrino"];
     [Reactive] public string SingerType { get; set; }
 
     public ObservableCollection<string> TextItems => _textItems;
@@ -196,7 +196,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
             {
                 ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
-            using (IArchive archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions))
+            using (IArchive archive = ArchiveFactory.OpenArchive(ArchiveFilePath, readerOptions))
             {
                 _textItems.Clear();
                 _textItems.AddRange(archive.Entries
@@ -230,7 +230,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
             {
                 ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
-            using (IArchive archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions))
+            using (IArchive archive = ArchiveFactory.OpenArchive(ArchiveFilePath, readerOptions))
             {
                 _textItems.Clear();
                 foreach (IArchiveEntry entry in archive.Entries.Where(entry =>
@@ -271,7 +271,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
     {
         try
         {
-            using (IArchive archive = ArchiveFactory.Open(archiveFilePath))
+            using (IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath))
             {
                 return archive.Entries.Any(e => e.IsEncrypted);
             }
@@ -286,7 +286,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
     {
         try
         {
-            using (IArchive archive = ArchiveFactory.Open(archiveFilePath))
+            using (IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath))
             {
                 IArchiveEntry? entry = archive.Entries.FirstOrDefault(e =>
                     Path.GetFileName(e.Key) == "character.yaml");
@@ -308,14 +308,14 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
     }
 
     /// <summary>
-    /// Scans archive entries for dsconfig.yaml or enuconfig.yaml to infer singer type.
-    /// Mirrors the legacy detection heuristic in VoicebankLoader.LoadInfo.
+    /// Scans archive entries for dsconfig.yaml, enuconfig.yaml, or info.toml to infer singer type.
+    /// Mirrors the legacy detection heuristic in VoicebankLoader.LoadInfo and NeutrinoConfig.Load.
     /// </summary>
     private string DetectSingerTypeFromArchive(string archiveFilePath)
     {
         try
         {
-            using (IArchive archive = ArchiveFactory.Open(archiveFilePath))
+            using (IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath))
             {
                 bool hasDsconfig = archive.Entries.Any(e =>
                     Path.GetFileName(e.Key) == "dsconfig.yaml");
@@ -329,6 +329,13 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
                 if (hasEnuconfig)
                 {
                     return "enunu";
+                }
+
+                bool hasNeutrino = archive.Entries.Any(e =>
+                    Path.GetFileName(e.Key) == "info.toml");
+                if (hasNeutrino)
+                {
+                    return "neutrino";
                 }
             }
         }

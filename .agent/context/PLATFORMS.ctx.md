@@ -64,7 +64,7 @@ Run from the `OpenUtauMobile.Browser` project folder. Note: initialization hangs
 - Android uses `IActivityApplicationLifetime.MainViewFactory`; iOS and browser continue to use `ISingleViewApplicationLifetime`.
 - Android Debug builds embed managed assemblies. Fast Deployment produced startup and focus-event ANRs while loading a 151 MB override directory on an Android 14 device.
 - Immersive-mode clicks still fail after the first click on the Android 12 emulator. The issue does not reproduce on an Android 14 physical device and is not caused by normalizing mouse, touch, or pen input.
-- Known issue: undo/redo gesture invalid; triggers non-recoverable state machine fault.
+- Undo/redo multi-touch gesture state-machine fix is implemented and awaits Windows/Android device validation.
 
 ### Windows
 - Audio and storage integrations in respective folders under `OpenUtauMobile.Windows`.

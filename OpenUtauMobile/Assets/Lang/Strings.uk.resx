@@ -535,6 +535,21 @@
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>Видалити банк</value>
   </data>
+  <data name="SingerDetail.Uninstalling" xml:space="preserve">
+    <value>Видалення банку…</value>
+  </data>
+  <data name="SingerDetail.UninstallSucceeded" xml:space="preserve">
+    <value>Банк {0} видалено</value>
+  </data>
+  <data name="SingerDetail.UninstallFailed" xml:space="preserve">
+    <value>Не вдалося видалити банк {0}.</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>Видалити банк?</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>Видалити банк {0} і назавжди стерти всі його файли? Цю дію неможливо скасувати.</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>Скасувати</value>
   </data>
@@ -717,6 +732,30 @@
   </data>
   <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
     <value>Форма контрольної точки</value>
+  </data>
+  <data name="PianoRoll.Action.ToggleFirstAnchorSnap" xml:space="preserve">
+    <value>Перемкнути прив’язку першого якоря</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorShape" xml:space="preserve">
+    <value>Форма якоря: {0}</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseInOut" xml:space="preserve">
+    <value>Плавно з обох боків</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.Linear" xml:space="preserve">
+    <value>Лінійна</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseIn" xml:space="preserve">
+    <value>Плавний початок</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseOut" xml:space="preserve">
+    <value>Плавне завершення</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapEnabled" xml:space="preserve">
+    <value>Прив’язку першого якоря ввімкнено</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapDisabled" xml:space="preserve">
+    <value>Прив’язку першого якоря вимкнено</value>
   </data>
   <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
     <value>Скинути вібрато</value>
@@ -971,7 +1010,7 @@
     <value>Не вдалося відкрити посилання</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>Сталася помилка</value>
+    <value>Помилка виконання OpenUtau Mobile</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>Невідома помилка</value>
@@ -1242,6 +1281,9 @@
   </data>
   <data name="SingerSetup.Step3.TypeDiffSinger" xml:space="preserve">
     <value>• diffsinger: використовує AI-синтезатор DiffSinger</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeNeutrino" xml:space="preserve">
+    <value>• neutrino: використовує ШІ-рушій синтезу NEUTRINO v3</value>
   </data>
   <data name="SingerSetup.Step4.Title" xml:space="preserve">
     <value>Підсумок встановлення</value>
@@ -1677,5 +1719,23 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>Відпустіть, щоб скинути параметр</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>Інформацію про помилку скопійовано</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>Не вдалося скопіювати інформацію про помилку</value>
+  </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>Пакетне редагування тексту</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>Введіть текст; лапки зберігають пробіли та групи символів</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>Застосувати лише до вибраних нот</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>Застосувати</value>
   </data>
 </root>

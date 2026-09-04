@@ -1,4 +1,4 @@
-﻿# Decisions Log
+# Decisions Log
 
 Record meaningful technical decisions here. Use one entry per decision.
 
@@ -11,6 +11,89 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Impacted areas:
 
 ## Entries
+
+- Date: 2026-09-02
+- Decision: Add a reusable mobile-first option confirmation popup that accepts a title, content, and typed display/value options, lays actions out as full-width touch targets, and returns the selected stable string value or null when dismissed. Require this confirmation before singer uninstall.
+- Rationale: The existing exit-editor confirmation is fixed to editor-specific labels and a byte register. A generic string-valued popup supports localized labels without coupling callers to displayed text and keeps destructive operations explicit on narrow screens.
+- Alternatives considered: Reuse the fixed exit-editor popup; add a singer-only confirmation popup; compare localized option labels as results.
+- Impacted areas: Mobile popup controls/services/theme tokens, singer uninstall interaction, and localization.
+
+- Date: 2026-09-02
+- Decision: Centralize installed-singer removal in `SingerManager.UninstallSinger`. Remove directory-based voicebanks recursively and single-file Vogen packages directly, release singer memory first, and always rescan installed singers in `finally`. Run the operation from the singer detail page inside the shared loading popup.
+- Rationale: Core owns singer location semantics and the installed-singer index, while Mobile owns progress and error presentation. Keeping the rescan in Core guarantees that success and failure paths expose the current filesystem state.
+- Alternatives considered: Delete `USinger.Location` directly in the Mobile ViewModel; refresh only after successful deletion; route removal through a platform storage service.
+- Impacted areas: Core singer lifecycle, Mobile singer detail interaction, and singer-detail localization.
+
+- Date: 2026-09-01
+- Decision: Add a dedicated batch-lyric popup to the Hand, Note, and MultiSelect piano-roll context menus. Initialize it from the earliest selected note through the end of the active voice part, and apply one undoable multi-note lyric command either sequentially or to the selected-note snapshot.
+- Rationale: A focused text editor supports fast paste-and-replace workflows while preserving the current note selection and Core's existing undo/validation behavior. Keeping parsing and scope selection in the Mobile ViewModel avoids changes to upstream-derived Core.
+- Alternatives considered: Extend the single-note lyric navigator; route the workflow through the generic batch-edit catalog; mutate note lyrics directly.
+- Impacted areas: Mobile piano-roll context actions, batch-lyric popup/ViewModel, and localization. OpenUtau.Core is unchanged.
+
+- Date: 2026-09-01
+- Decision: Reuse Core's upstream `SplitLyrics.Split` and `SplitLyrics.Join` for the batch-lyric editor instead of maintaining a Mobile-only delimiter expression.
+- Rationale: The upstream algorithm handles Unicode text elements, automatic CJK/Hiragana/Katakana/Hangul segmentation, contracted Japanese kana, empty lyrics, whitespace-containing lyrics, and quoted groups with matching round-trip serialization.
+- Alternatives considered: Expand the Mobile regular expression; fork and maintain a second parser in the Mobile project.
+- Impacted areas: Mobile batch-lyric initialization, parsing, and input guidance. Core remains unchanged because the synchronized utility already exists.
+
+- Date: 2026-08-31
+- Decision: Expose clipboard text writes through an injectable `IClipboardService` in `ServiceHub`, backed by Avalonia's current `TopLevel` clipboard. Keep error-detail selection and copy orchestration in the Mobile UI/ViewModel layer.
+- Rationale: The service follows the existing cross-platform capability pattern, keeps ViewModels independent of window/platform APIs, and uses Avalonia's native clipboard bridge across desktop, mobile, and browser hosts without duplicating platform code.
+- Alternatives considered: Access `TopLevel.Clipboard` directly from the popup code-behind; add one native clipboard implementation to every platform host; place clipboard behavior in Core.
+- Impacted areas: Shared Mobile services, error-dialog ViewModel/layout/styles, localization, and responsive dialog sizing. Core and platform hosts are unchanged.
+
+- Date: 2026-08-31
+- Decision: Render track parts with a 4 px rounded container and use `Sem.Color.OnSurfaceVariant` for note and waveform previews. Cache the resolved waveform RGBA value and redraw cached waveforms when the active theme changes it. Keep the part label inside the visible viewport and reserve space for selected-part resize handles.
+- Rationale: Note and waveform previews are supporting graphics rather than primary text, so MD3's on-surface-variant role gives them appropriate visual hierarchy while adapting to light, dark, and dynamic color schemes. Rounded clipping keeps cached bitmap content inside the same silhouette as the part background. A viewport-clamped label remains readable while a long part is scrolled, and handle clearance prevents selected-state controls from covering its leading characters.
+- Alternatives considered: Keep hard-coded white waveform pixels; use the higher-emphasis `OnSurface`; use `OnPrimaryContainer` despite track colors not being primary-container surfaces.
+- Impacted areas: Mobile track-part background, preview clipping, note color, waveform pixel color, waveform theme invalidation, and part-label placement. Core is unchanged.
+
+- Date: 2026-08-31
+- Decision: Pass the gesture interpreter's current pointer position into part-resize updates. During autosave of an untitled project, temporarily use `Backups/Untitled.ustx` as the project serialization base, call `DocManager.AutoSave`, and restore the empty path in `finally`.
+- Rationale: The prior binding passed the fixed press point, so all four resize modes always calculated a zero delta. Wave parts need a non-null project directory when producing relative audio paths before save; the temporary path preserves DocManager's autosave bookkeeping without changing Core.
+- Alternatives considered: Modify Core path handling; bypass DocManager and call `Ustx.AutoSave` directly; skip autosave for untitled projects containing wave parts.
+- Impacted areas: Mobile part gesture wiring and untitled-project autosave serialization context. OpenUtau.Core remains unchanged.
+
+- Date: 2026-08-31
+- Decision: Resize selected track parts from either edge using pointer-to-current-boundary command deltas. Preserve mixed voice/wave selections; use immediate validation when any selected part is a wave part and deferred one-time validation for voice-only selections.
+- Rationale: `UWavePart.Duration` is derived from `position`, `skip`, and `trim` during validation, so deferred validation makes its current boundary stale and compounds drag deltas. Voice-part commands update `Duration` directly and retain the cheaper deferred path. A press-to-boundary tick offset preserves touch-friendly hit targets without a second preview geometry state.
+- Alternatives considered: Maintain Mobile-only resize preview bounds; change Core commands; split mixed selections by part type; validate every voice-only drag command.
+- Impacted areas: Mobile track-part resize hit testing, double-ended handles, gesture orchestration, undo-group validation policy, wave source bounds, and waveform peak indexing. OpenUtau.Core is unchanged.
+
+- Date: 2026-08-30
+- Decision: Add a persisted ruler display switch in the piano-key/ruler intersection. Waveform mode retains the cached envelope; render-status mode cancels envelope work and draws each visible phrase as an outlined pending block or filled completed block.
+- Rationale: Phrase blocks expose the same progressive render lifecycle at substantially lower CPU and allocation cost during frequent mobile piano-roll movement, while the explicit button and changing icon keep the performance choice discoverable.
+- Alternatives considered: Always draw both layers; replace the waveform permanently; infer completion from nonzero samples; rebuild a retained geometry for simple rectangles.
+- Impacted areas: Mobile piano-roll view model, ruler canvas and layout, OPUM-specific preferences, and shared view constants. Synthesis and render lifecycle are unchanged.
+
+- Date: 2026-08-30
+- Decision: Display the active voice part's available rendered phrases as a one-sided peak envelope in the piano-roll ruler placeholder. Publish the request's initially empty mix when rendering starts, publish each completed phrase's audio interval, clear immediately on invalidation, and rebuild only the visible overscanned range into cached `StreamGeometry`.
+- Rationale: Upstream `UVoicePart.Mix` is the waveform source, but upstream keeps the in-progress `WaveMix` private and assigns it to the part only after every phrase completes. Exposing lifecycle notifications without changing synthesis makes the UI match actual sample availability while pooled visible-range envelope generation and retained geometry keep high-frequency panning inexpensive.
+- Alternatives considered: Port upstream's per-frame full-view `WriteableBitmap` renderer; wait for `PartRenderedNotification`; infer completion from renderer-specific cache files; poll private render state; draw both waveform halves.
+- Impacted areas: Core render lifecycle notifications and mix publication, Mobile piano-roll ruler rendering, and shared view constants. Renderer algorithms and rendered samples are unchanged.
+
+- Date: 2026-08-29
+- Decision: Introduce an asynchronous Mobile-layer external URL launcher that accepts only absolute HTTP/HTTPS URLs and is injected through `ServiceHub`; implement native launchers for Android, Windows, Linux, macOS, iOS, and browser WASM.
+- Rationale: A typed service keeps MVVM callers independent of platform APIs, reports launch failure without exceptions reaching commands, and fits the existing ServiceHub host-injection pattern. Restricting schemes to web URLs prevents About-page links from unexpectedly opening mail, telephone, or custom-scheme handlers.
+- Alternatives considered: Put `OperatingSystem` branches in AboutViewModel; expose a raw `Action<string>` delegate; allow every absolute URI scheme; use one shell command on every desktop platform.
+- Impacted areas: Shared services, platform bootstraps, browser JS module, and About-page homepage/feedback actions. OpenUtau.Core is unchanged.
+
+- Date: 2026-08-29
+- Decision: Treat parameter-curve sample positions as voice-part-relative ticks, add the active part position only when mapping them into the absolute piano-roll canvas, and clip all parameter rendering and pointer edits to the active `UVoicePart` interval.
+- Rationale: `UCurve.xs` and `SetCurveCommand` use part-relative ticks, while the parameter canvas scroll offset uses absolute project ticks. Mixing those spaces made both curve rendering/pruning and edits diverge from synthesized output whenever the part position was nonzero, and allowed default/reference lines to extend beyond the part.
+- Alternatives considered: Store absolute ticks in curves; offset only the rendered geometry without correcting input; rely only on the control bounds rather than a part-range clip.
+- Impacted areas: Mobile curve-parameter rendering, default/reference-line bounds, curve drawing and erasing coordinates, and parameter hit/edit boundaries. Core curve storage and commands are unchanged.
+
+- Date: 2026-08-23
+- Decision: Add an in-process NEUTRINO v3 singer and renderer to Core using the native `t.bin`, optional `p.bin`, `s.bin`, and `v.bin` ONNX pipeline; support CPU and NNAPI with CPU fallback, and deliberately exclude v2 models and HNSEP audio post-processing in this phase.
+- Rationale: OpenUtau Mobile cannot depend on the desktop NEUTRINO executable. Keeping timing, optional natural-pitch loading, acoustic inference, and vocoding in the shared Core allows the same implementation to run on Android while preserving the verified v3 model contracts. Model metadata is part of the render cache key so replacing a model cannot reuse stale audio.
+- Alternatives considered: Invoke an external NEUTRINO executable; add the renderer only as a mobile plugin; port v2 and HNSEP parameters together with v3.
+- Impacted areas: NEUTRINO singer discovery and installation, phonemization and timing display, render phrase metadata, renderer registration and caching, mobile singer setup UI and localization, and Android ONNX Runtime execution.
+- Date: 2026-08-29
+- Decision: Extend the pitch-anchor context actions with a four-state per-anchor shape cycle and a first-anchor snap toggle that appears only for a single selected first anchor. Reuse Core's existing undoable pitch-shape and snap commands; show the active shape and snap state through localized Toast messages, with outlined/filled magnet icons reflecting the current switch state.
+- Rationale: Keeping both operations in the selection-sensitive anchor menu makes them reachable on touch devices without introducing a second editor surface. Reusing the existing commands preserves validation, undo/redo, and the established `snapFirst` semantics.
+- Alternatives considered: Add permanent toolbar buttons; expose snap for every anchor; mutate pitch data directly in the Mobile view model; include the spline-only enum value in the user-facing four-shape cycle.
+- Impacted areas: Mobile piano-roll anchor context actions and localization. Core pitch data and command behavior are unchanged.
 
 - Date: 2026-08-25
 - Decision: Persist PitchPen blank-area canvas dragging as an enabled-by-default preference, with independently configurable note-hit extensions of 0–960 ticks horizontally (default 240) and 0–12 semitones vertically (default 1). Each new PianoRollViewModel snapshots the clamped preference values in its constructor; disabling the feature bypasses the expanded hit test and retains full-canvas pitch drawing.
@@ -216,3 +299,19 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Alternatives considered: Clear pending toast messages during shutdown; keep invoking a captured consumer after its view detaches; move toast lifetime management into the Windows host.
 - Impacted areas: Shared toast callback registration and shutdown behavior on all application hosts.
 
+- Date: 2026-08-28
+- Decision: Use `main.yml` as the sole independently triggered build workflow, derive the shared integer build number as `github.run_number + 20000`, and pass it into a reusable full-platform workflow; derive product versions from reachable `v2.X.Y.Z` tags for dev Canary builds and from validated manual input for release builds. This supersedes the earlier `10000 + GITHUB_RUN_NUMBER` Android version-code rule.
+- Rationale: Renaming the workflow resets its run-number sequence, so the 20000 offset prevents integer-version downgrade while keeping every platform artifact, build metadata field, and Android version code on one value. Product versions and optional GitHub Releases retain separate lifecycles, and the annotated tag is created only after every reusable-workflow build job succeeds.
+- Alternatives considered: Keep separate manual and automatic workflows using unrelated run numbers; hardcode the product version in MSBuild properties; create a tag or Release before compiling all platforms.
+- Impacted areas: GitHub Actions build/release orchestration, artifact version metadata, Android version-code inputs, and local version fallback in `Directory.Build.props`.
+
+- Date: 2026-08-29
+- Decision: Keep multi-touch tap candidates alive through the final pointer release, require movement beyond the tap tolerance before beginning a pinch, key suspended-touch snapshots by `IPointer`, and treat any capture loss as cancellation of the complete pointer session.
+- Rationale: Platform-generated zero-distance or jitter `PointerMoved` events previously invalidated every two-finger tap, undo could run while another pointer remained captured, coordinate/timestamp snapshot matching was not a stable touch identity, and partial capture-loss recovery could retain another pointer as a false pinch participant.
+- Alternatives considered: Add logging without changing recognition; rely on tighter platform event filtering; continue reinitializing a reduced gesture after capture loss.
+- Impacted areas: Shared Windows/Android pointer gesture recognition for tap, undo/redo, pinch, cancellation, and post-cancellation single-finger input.
+- Date: 2026-09-03
+- Decision: Allow dependency archives without `entrypoints` or legacy `@class` metadata while continuing to validate every explicitly declared entrypoint.
+- Rationale: Legacy data-only packages identify themselves with `name` and are consumed directly from their installed dependency directory; they do not expose a loadable entrypoint. Requiring one regressed file installation after the Core update.
+- Alternatives considered: Rewrite legacy archives during installation; infer a synthetic loader from package contents; special-case known vocoder package names in the Mobile layer.
+- Impacted areas: `OpenUtau.Core.PackageManager` archive validation; legacy data/model `.oudep` packages can be installed again, while malformed explicit entrypoints remain rejected.

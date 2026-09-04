@@ -612,6 +612,21 @@
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>删除歌手</value>
   </data>
+  <data name="SingerDetail.Uninstalling" xml:space="preserve">
+    <value>正在卸载歌手…</value>
+  </data>
+  <data name="SingerDetail.UninstallSucceeded" xml:space="preserve">
+    <value>已卸载 {0}</value>
+  </data>
+  <data name="SingerDetail.UninstallFailed" xml:space="preserve">
+    <value>卸载 {0} 失败。</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>确认卸载歌手？</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>确定卸载 {0} 并永久移除其全部文件吗？此操作不可撤销。</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>撤销</value>
   </data>
@@ -794,6 +809,30 @@
   </data>
   <data name="PianoRoll.Action.ControlPointShape" xml:space="preserve">
     <value>控制点形状</value>
+  </data>
+  <data name="PianoRoll.Action.ToggleFirstAnchorSnap" xml:space="preserve">
+    <value>切换首个锚点吸附</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorShape" xml:space="preserve">
+    <value>当前锚点形状：{0}</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseInOut" xml:space="preserve">
+    <value>缓入缓出</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.Linear" xml:space="preserve">
+    <value>线性</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseIn" xml:space="preserve">
+    <value>缓入</value>
+  </data>
+  <data name="PianoRoll.AnchorShape.EaseOut" xml:space="preserve">
+    <value>缓出</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapEnabled" xml:space="preserve">
+    <value>已开启首个锚点吸附</value>
+  </data>
+  <data name="PianoRoll.Toast.FirstAnchorSnapDisabled" xml:space="preserve">
+    <value>已关闭首个锚点吸附</value>
   </data>
   <data name="PianoRoll.Action.ResetVibrato" xml:space="preserve">
     <value>重置颤音</value>
@@ -1048,7 +1087,7 @@
     <value>无法打开链接</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>发生错误</value>
+    <value>OpenUtau Mobile 运行时错误</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>未知错误</value>
@@ -1319,6 +1358,9 @@
   </data>
   <data name="SingerSetup.Step3.TypeDiffSinger" xml:space="preserve">
     <value>• diffsinger: 使用 DiffSinger AI 合成引擎</value>
+  </data>
+  <data name="SingerSetup.Step3.TypeNeutrino" xml:space="preserve">
+    <value>• neutrino: 使用 NEUTRINO v3 AI 合成引擎</value>
   </data>
   <data name="SingerSetup.Step4.Title" xml:space="preserve">
     <value>安装摘要</value>
@@ -1722,5 +1764,23 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>松开以重置参数</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>已复制报错信息</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>复制报错信息失败</value>
+  </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>批量编辑歌词</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>输入歌词；使用双引号保留含空格或需组合的内容</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>仅应用到选中的音符</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>应用</value>
   </data>
 </root>

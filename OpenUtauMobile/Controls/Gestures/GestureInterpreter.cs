@@ -1,4 +1,4 @@
-﻿/* TODO: 手势识别器有已知bug，会出现多指点击时，手势识别系统混乱 */
+﻿
 using System;
 using System.Collections.Generic;
 using Avalonia;
@@ -97,7 +97,7 @@ public class GestureInterpreter
     public double TapMoveThreshold { get; set; } = 15.0;
 
     /// <summary>二指点击最大持续时间（ms）。从第一指按下到最后一指抬起的时间上限。</summary>
-    public double TwoFingerTapMaxMs { get; set; } = 200.0;
+    public double TwoFingerTapMaxMs { get; set; } = 350.0;
 
     /// <summary>三指点击时间窗口（ms）。三个触点全部按下的时间跨度上限。</summary>
     public double ThreeFingerTapWindowMs { get; set; } = 250.0;
@@ -189,12 +189,17 @@ public class GestureInterpreter
     // 本轮 TwoFinger 期间是否曾触发过 PinchUpdate（用于区分捏合与二指点击）
     private bool _hadPinched;
 
+    // 二指依次抬起时暂存第一根手指，等最后一根也抬起后再触发点击。
+    // 避免撤销回调在仍有触点捕获时改变可视树，进而打断剩余触点的释放事件。
+    private bool _pendingTwoFingerTap;
+    private TouchPoint _firstReleasedTwoFingerTouch;
+
     // 轴意图锁定（仅 EnableAxisLock=true 时使用）
     private PinchAxisMode _pinchAxisMode; // 当前轴策略（在 InitTwoFingerState 时决定）
 
     // Suspended 状态
     // 保存所有进入过 Suspended 的触点快照，LastPoint 实时更新，用于三指点击判定
-    private readonly List<TouchPoint> _suspendedTouches = [];
+    private readonly Dictionary<IPointer, TouchPoint> _suspendedTouches = [];
 
     // 当前正在从 Suspended 退出（触点依次抬起降回）。
     // 置 true 后，经过的 TwoFinger/SingleFinger 中间状态禁止触发 TwoFingerTap/Tap，
@@ -224,7 +229,7 @@ public class GestureInterpreter
         _touches[e.Pointer] = tp;
         e.Pointer.Capture(relativeTo);
 
-        HandlePressedWithTouchCount(pos, ts, tp);
+        HandlePressedWithTouchCount(e.Pointer, pos, ts, tp);
 
         e.Handled = true;
     }
@@ -244,7 +249,7 @@ public class GestureInterpreter
         // Suspended（含 _exitingSuspended 期间）：同步更新快照的 LastPoint
         if (_state == GestureState.Suspended || _exitingSuspended)
         {
-            UpdateSuspendedLastPoint(tp, pos);
+            UpdateSuspendedLastPoint(e.Pointer, pos);
         }
 
         switch (_state)
@@ -277,7 +282,7 @@ public class GestureInterpreter
 
         // Suspended（含 _exitingSuspended 期间）：同步更新快照的 LastPoint
         if (_state == GestureState.Suspended || _exitingSuspended)
-            UpdateSuspendedLastPoint(tp, pos);
+            UpdateSuspendedLastPoint(e.Pointer, pos);
 
         _touches.Remove(e.Pointer);
         e.Pointer.Capture(null);
@@ -285,7 +290,7 @@ public class GestureInterpreter
         switch (_state)
         {
             case GestureState.SingleFinger:
-                HandleSingleFingerRelease(pos, ts);
+                HandleSingleFingerRelease(pos, ts, tp);
                 break;
 
             case GestureState.TwoFinger:
@@ -306,9 +311,12 @@ public class GestureInterpreter
     /// </summary>
     public void OnPointerCancelled(PointerCaptureLostEventArgs e, Control relativeTo)
     {
-        if (!_touches.Remove(e.Pointer)) return;
+        if (!_touches.ContainsKey(e.Pointer)) return;
 
-        // 取消时强制结束所有进行中的手势
+        List<IPointer> cancelledPointers = [.. _touches.Keys];
+
+        // 捕获丢失意味着平台不再保证其余触点仍会收到 Released。
+        // 整轮作废并清空全部触点，防止残留触点污染下一轮单指操作。
         if (_state == GestureState.TwoFinger && _isPinching)
             CommitPinchEnd();
         else if (_state == GestureState.SingleFinger && _isDragging)
@@ -317,22 +325,20 @@ public class GestureInterpreter
             _isDragging = false;
         }
 
-        // 重置所有多指状态
+        _touches.Clear();
+        foreach (IPointer pointer in cancelledPointers)
+        {
+            pointer.Capture(null);
+        }
+
         _exitingSuspended = false;
         _suppressNextTap = false;
+        _pendingTwoFingerTap = false;
         _suspendedTouches.Clear();
         _hadPinched = false;
-
-        _state = _touches.Count switch
-        {
-            0 => GestureState.Idle,
-            1 => GestureState.SingleFinger,
-            2 => GestureState.TwoFinger,
-            _ => GestureState.Suspended,
-        };
-
-        if (_state == GestureState.SingleFinger) ReinitSingleFinger();
-        if (_state == GestureState.TwoFinger) InitTwoFingerState();
+        _isPinching = false;
+        _isDragging = false;
+        _state = GestureState.Idle;
     }
 
     #endregion
@@ -447,6 +453,16 @@ public class GestureInterpreter
         double scaleY = curDistY / _pinchPrevDistY;
         Vector panDelta = center - _pinchPrevCenter;
 
+        // 平台通常会在手指静止时仍发送零位移或轻微抖动的 Moved。
+        // 在任一触点越过点击容差前只更新基线，不把二指点击候选误判为捏合。
+        if (!_isPinching && !HasAnyTouchMovedBeyond(TapMoveThreshold))
+        {
+            _pinchPrevDistX = curDistX;
+            _pinchPrevDistY = curDistY;
+            _pinchPrevCenter = center;
+            return;
+        }
+
         if (EnableAxisLock)
         {
             switch (_pinchAxisMode)
@@ -495,29 +511,20 @@ public class GestureInterpreter
     /// 且 _exitingSuspended == false）。
     /// 若两指均未明显移动、整个过程在时间阈值内、且从未触发过 PinchUpdate，则触发 TwoFingerTap。
     /// </summary>
-    private void TryFireTwoFingerTap(ulong releaseTs, TouchPoint releasedTouch)
+    private void TryFireTwoFingerTap(ulong releaseTs, TouchPoint firstReleasedTouch, TouchPoint lastReleasedTouch)
     {
-        // 若已发生过捏合（两指有相对移动），不视为点击
-        if (_hadPinched)
-        {
-            _hadPinched = false;
-            return;
-        }
-
-        _hadPinched = false;
-
-        bool releasedStill = IsDistanceWithin(releasedTouch.PressPoint, releasedTouch.LastPoint, TapMoveThreshold);
-
-        // 另一指必须还在 _touches 中（2→1）；若已全部抬起（2→0）则保守地不触发
-        if (_touches.Count != 1) return;
-
-        if (!TryGetFirstTouch(out TouchPoint other)) return;
-
-        bool otherStill = IsDistanceWithin(other.PressPoint, other.LastPoint, TapMoveThreshold);
-        ulong firstPress = Math.Min(releasedTouch.PressTimestamp, other.PressTimestamp);
+        bool firstStill = IsDistanceWithin(
+            firstReleasedTouch.PressPoint,
+            firstReleasedTouch.LastPoint,
+            TapMoveThreshold);
+        bool lastStill = IsDistanceWithin(
+            lastReleasedTouch.PressPoint,
+            lastReleasedTouch.LastPoint,
+            TapMoveThreshold);
+        ulong firstPress = Math.Min(firstReleasedTouch.PressTimestamp, lastReleasedTouch.PressTimestamp);
         bool inTime = (releaseTs - firstPress) <= (ulong)TwoFingerTapMaxMs;
 
-        if (releasedStill && otherStill && inTime)
+        if (firstStill && lastStill && inTime)
         {
             TwoFingerTap?.Invoke();
             _waitingSecondTap = false;
@@ -538,9 +545,9 @@ public class GestureInterpreter
             ulong firstPress = ulong.MaxValue;
             ulong lastPress = 0;
             bool allStill = true;
-            for (int i = 0; i < _suspendedTouches.Count; i++)
+            foreach (KeyValuePair<IPointer, TouchPoint> kv in _suspendedTouches)
             {
-                TouchPoint t = _suspendedTouches[i];
+                TouchPoint t = kv.Value;
                 if (t.PressTimestamp < firstPress)
                 {
                     firstPress = t.PressTimestamp;
@@ -573,19 +580,13 @@ public class GestureInterpreter
     //  Suspended 辅助
     // -------------------------------------------------------
 
-    /// <summary>在 _suspendedTouches 快照中找到对应触点并更新其 LastPoint。</summary>
-    private void UpdateSuspendedLastPoint(TouchPoint source, Point newLastPoint)
+    /// <summary>按触点身份更新 Suspended 快照中的最新位置。</summary>
+    private void UpdateSuspendedLastPoint(IPointer pointer, Point newLastPoint)
     {
-        for (int i = 0; i < _suspendedTouches.Count; i++)
+        if (_suspendedTouches.TryGetValue(pointer, out TouchPoint touch))
         {
-            TouchPoint s = _suspendedTouches[i];
-            if (s.PressTimestamp == source.PressTimestamp &&
-                s.PressPoint == source.PressPoint)
-            {
-                s.LastPoint = newLastPoint;
-                _suspendedTouches[i] = s;
-                break;
-            }
+            touch.LastPoint = newLastPoint;
+            _suspendedTouches[pointer] = touch;
         }
     }
 
@@ -593,7 +594,7 @@ public class GestureInterpreter
     //  内部辅助
     // -------------------------------------------------------
 
-    private void HandlePressedWithTouchCount(Point pos, ulong ts, TouchPoint newTouch)
+    private void HandlePressedWithTouchCount(IPointer pointer, Point pos, ulong ts, TouchPoint newTouch)
     {
         switch (_touches.Count)
         {
@@ -604,7 +605,7 @@ public class GestureInterpreter
                 EnterTwoFinger(ts);
                 break;
             default:
-                EnterSuspended(pos, ts, newTouch);
+                EnterSuspended(pointer, pos, ts, newTouch);
                 break;
         }
     }
@@ -617,6 +618,7 @@ public class GestureInterpreter
         _isDragging = false;
         _exitingSuspended = false;
         _suppressNextTap = false;
+        _pendingTwoFingerTap = false;
     }
 
     private void EnterTwoFinger(ulong ts)
@@ -630,10 +632,12 @@ public class GestureInterpreter
         _state = GestureState.TwoFinger;
         _waitingSecondTap = false;
         _exitingSuspended = false;
+        _suppressNextTap = false;
+        _pendingTwoFingerTap = false;
         InitTwoFingerState();
     }
 
-    private void EnterSuspended(Point pos, ulong ts, TouchPoint newTouch)
+    private void EnterSuspended(IPointer pointer, Point pos, ulong ts, TouchPoint newTouch)
     {
         if (_state == GestureState.TwoFinger && _isPinching)
         {
@@ -648,20 +652,21 @@ public class GestureInterpreter
         {
             _suspendedTouches.Clear();
             _exitingSuspended = false;
+            _pendingTwoFingerTap = false;
             foreach (KeyValuePair<IPointer, TouchPoint> kv in _touches)
             {
-                _suspendedTouches.Add(kv.Value);
+                _suspendedTouches[kv.Key] = kv.Value;
             }
         }
         else
         {
-            _suspendedTouches.Add(newTouch);
+            _suspendedTouches[pointer] = newTouch;
         }
 
         _state = GestureState.Suspended;
     }
 
-    private void HandleSingleFingerRelease(Point pos, ulong ts)
+    private void HandleSingleFingerRelease(Point pos, ulong ts, TouchPoint releasedTouch)
     {
         if (_exitingSuspended)
         {
@@ -670,7 +675,13 @@ public class GestureInterpreter
         }
         else if (_suppressNextTap)
         {
+            if (_pendingTwoFingerTap)
+            {
+                TryFireTwoFingerTap(ts, _firstReleasedTwoFingerTouch, releasedTouch);
+            }
+
             _suppressNextTap = false;
+            _pendingTwoFingerTap = false;
         }
         else
         {
@@ -701,15 +712,19 @@ public class GestureInterpreter
             return;
         }
 
-        TryFireTwoFingerTap(ts, releasedTouch);
         if (_touches.Count == 1)
         {
+            _pendingTwoFingerTap = !_hadPinched;
+            _firstReleasedTwoFingerTouch = releasedTouch;
+            _hadPinched = false;
             _suppressNextTap = true;
             _state = GestureState.SingleFinger;
             ReinitSingleFinger();
         }
         else
         {
+            _pendingTwoFingerTap = false;
+            _hadPinched = false;
             _state = GestureState.Idle;
         }
     }
@@ -768,6 +783,20 @@ public class GestureInterpreter
 
         p1 = it.Current.Value.LastPoint;
         return true;
+    }
+
+    private bool HasAnyTouchMovedBeyond(double threshold)
+    {
+        foreach (KeyValuePair<IPointer, TouchPoint> kv in _touches)
+        {
+            TouchPoint touch = kv.Value;
+            if (IsDistanceGreaterThan(touch.PressPoint, touch.LastPoint, threshold))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool IsDistanceWithin(Point a, Point b, double threshold)

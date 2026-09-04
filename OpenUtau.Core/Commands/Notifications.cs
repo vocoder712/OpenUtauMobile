@@ -1,4 +1,5 @@
 ﻿using System;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -113,6 +114,20 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set play position to tick {playPosTick}";
     }
 
+    /// <summary>
+    /// Notification for both views to sync time range selection.
+    /// </summary>
+    public class SetRangeSelectionNotification : UNotification {
+        public readonly int startTick;
+        public readonly int endTick;
+        public override bool Silent => true;
+        public SetRangeSelectionNotification(int startTick, int endTick) {
+            this.startTick = startTick;
+            this.endTick = endTick;
+        }
+        public override string ToString() => $"Set range selection {startTick}-{endTick}";
+    }
+
     // Notification for playback manager to change play position
     public class SeekPlayPosTickNotification : UNotification {
         public int playPosTick;
@@ -224,6 +239,26 @@ namespace OpenUtau.Core {
 
     public class PreRenderNotification : UNotification {
         public override string ToString() => $"Pre-render notification.";
+    }
+
+    public class PartRenderInvalidatedNotification : UNotification {
+        public PartRenderInvalidatedNotification(UVoicePart part) {
+            this.part = part;
+        }
+        public override string ToString() => "Part render invalidated.";
+    }
+
+    public class PhraseRenderedNotification : UNotification {
+        public readonly RenderPhrase phrase;
+        public readonly double audioStartMs;
+        public readonly double audioEndMs;
+        public PhraseRenderedNotification(UVoicePart part, RenderPhrase phrase, double audioStartMs, double audioEndMs) {
+            this.part = part;
+            this.phrase = phrase;
+            this.audioStartMs = audioStartMs;
+            this.audioEndMs = audioEndMs;
+        }
+        public override string ToString() => "Phrase rendered.";
     }
 
     public class PartRenderedNotification : UNotification {

@@ -97,12 +97,21 @@ namespace OpenUtau.Core.DiffSinger
         public Tensor<float> PhraseSpeakerEmbedByPhone(string[] speakerByPhone) {
             var hiddenSize = dsConfig.hiddenSize;
             var speakerEmbeds = getSpeakerEmbeds();
+            if (speakerEmbeds == null) {
+                return null;
+            }
+            int speakerCount = dsConfig.speakers.Count;
+            var speakerEmbedArrays = new float[speakerCount][];
+            for (int spk = 0; spk < speakerCount; spk++) {
+                speakerEmbedArrays[spk] = speakerEmbeds[":", spk].ToArray<float>();
+            }
+
             var totalPhones = speakerByPhone.Length;
             var result = new float[totalPhones * hiddenSize];
 
             for (int phoneId = 0; phoneId < totalPhones; phoneId++) {
                 var spkId = getSpeakerIndexBySuffix(speakerByPhone[phoneId]);
-                var embed = speakerEmbeds[":", spkId].ToArray<float>();
+                var embed = speakerEmbedArrays[spkId];
                 var dest = result.AsSpan(phoneId * hiddenSize, hiddenSize);
                 embed.AsSpan().CopyTo(dest);
             }
@@ -116,6 +125,9 @@ namespace OpenUtau.Core.DiffSinger
             var singer = phrase.singer;
             var hiddenSize = dsConfig.hiddenSize;
             var speakerEmbeds = getSpeakerEmbeds();
+            if (speakerEmbeds == null) {
+                return null;
+            }
             // Per-frame CLR / phoneme suffix is always weight 1.0 ("100%").
             // Voice-color curves add on top; then weights are normalized to a convex mix.
             // Example: CLR=A and cl_B=100% → A:B = 1:1 (not pure B).
@@ -139,6 +151,11 @@ namespace OpenUtau.Core.DiffSinger
             }
 
             int speakerCount = dsConfig.speakers.Count;
+            var speakerEmbedArrays = new float[speakerCount][];
+            for (int spk = 0; spk < speakerCount; spk++) {
+                speakerEmbedArrays[spk] = speakerEmbeds[":", spk].ToArray<float>();
+            }
+
             var result = new float[totalFrames * hiddenSize];
             var weights = new float[speakerCount];
             for (int frameId = 0; frameId < totalFrames; frameId++) {
@@ -168,7 +185,7 @@ namespace OpenUtau.Core.DiffSinger
                     if (w < 1e-8f) {
                         continue;
                     }
-                    var embed = speakerEmbeds[":", spk].ToArray<float>();
+                    var embed = speakerEmbedArrays[spk];
                     for (int j = 0; j < dest.Length; j++) {
                         dest[j] += w * embed[j];
                     }

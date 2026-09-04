@@ -33,13 +33,14 @@ internal sealed partial class Program
 
         try
         {
-            await BuildAvaloniaApp()
+            AppBuilder appBuilder = BuildAvaloniaApp()
                 .WithInterFont()
                 .UseReactiveUI(reactiveUIBuilder =>
                 {
                     reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
-                })
-                .StartBrowserAppAsync("out");
+                });
+            await OpenUtauMobile.Browser.BrowserExternalUrlLauncher.InitializeAsync();
+            await appBuilder.StartBrowserAppAsync("out");
         }
         catch (Exception ex)
         {
@@ -67,6 +68,7 @@ internal sealed partial class Program
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
+        ServiceHub.ExternalUrlLauncher = new OpenUtauMobile.Browser.BrowserExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>();
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -77,7 +77,7 @@ public static class LocalizationManager
 
     /// <summary>
     /// Resolves language preference to a supported resource language code.
-    /// Empty or "system" preference uses system UI language and falls back to zh-Hans.
+    /// Empty or "system" preference uses system UI language and falls back to en.
     /// Explicit codes fall back to en when unsupported.
     /// </summary>
     public static string ResolveLanguagePreference(string? preferenceCode)
@@ -93,7 +93,7 @@ public static class LocalizationManager
 
     /// <summary>
     /// Resolves current system language to a supported resource language code.
-    /// Falls back to zh-Hans when system language is not in the supported list.
+    /// Falls back to en when system language is not in the supported list.
     /// </summary>
     public static string ResolveSystemLanguage()
     {
