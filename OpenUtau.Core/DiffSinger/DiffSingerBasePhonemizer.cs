@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,10 +49,11 @@ namespace OpenUtau.Core.DiffSinger
             if (singer == null) {
                 throw new Exception("Singer is null.");
             }
-            if(singer.Location == null){
-                throw new Exception("Singer location is null.");
+            if (File.Exists(Path.Join(singer.Location, "dsdur", "dsconfig.yaml"))) {
+                rootPath = Path.Combine(singer.Location, "dsdur");
+            } else {
+                rootPath = singer.Location;
             }
-            rootPath = Path.Combine(singer.Location, "dsdur");
             //Load Config
             var configPath = Path.Join(rootPath, "dsconfig.yaml");
             try {
@@ -207,9 +208,10 @@ namespace OpenUtau.Core.DiffSinger
                 speaker = singer.Subbanks.FirstOrDefault();
             }
             if (speaker is null) {
-                throw new Exception(
-                    $"No subbanks defined for singer \"{singer.Name}\". " +
-                    "Please check the singer's configuration.");
+                if (dsConfig.speakers != null && dsConfig.speakers.Count > 0) {
+                    return dsConfig.speakers[0];
+                }
+                return "";
             }
             return speaker.Suffix;
         }

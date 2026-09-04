@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -98,6 +98,22 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
 
                         VoicebankConfig? config = LoadCharacterYaml(ArchiveFilePath);
                         MissingInfo = config == null || string.IsNullOrEmpty(config.SingerType);
+
+                        if (!MissingInfo)
+                        {
+                            // character.yaml has a SingerType — use it as default selection.
+                            var declaredType = config!.SingerType;
+                            if (SingerTypes.Contains(declaredType))
+                            {
+                                SingerType = declaredType;
+                            }
+                        }
+                        else
+                        {
+                            // No SingerType in yaml (or no yaml at all).
+                            // Mirror VoicebankLoader.LoadInfo heuristic: scan archive for config files.
+                            SingerType = DetectSingerTypeFromArchive(ArchiveFilePath);
+                        }
 
                         if (!string.IsNullOrEmpty(config?.TextFileEncoding))
                         {
@@ -289,6 +305,45 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Scans archive entries for dsconfig.yaml, enuconfig.yaml, or info.toml to infer singer type.
+    /// Mirrors the legacy detection heuristic in VoicebankLoader.LoadInfo and NeutrinoConfig.Load.
+    /// </summary>
+    private string DetectSingerTypeFromArchive(string archiveFilePath)
+    {
+        try
+        {
+            using (IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath))
+            {
+                bool hasDsconfig = archive.Entries.Any(e =>
+                    Path.GetFileName(e.Key) == "dsconfig.yaml");
+                if (hasDsconfig)
+                {
+                    return "diffsinger";
+                }
+
+                bool hasEnuconfig = archive.Entries.Any(e =>
+                    Path.GetFileName(e.Key) == "enuconfig.yaml");
+                if (hasEnuconfig)
+                {
+                    return "enunu";
+                }
+
+                bool hasNeutrino = archive.Entries.Any(e =>
+                    Path.GetFileName(e.Key) == "info.toml");
+                if (hasNeutrino)
+                {
+                    return "neutrino";
+                }
+            }
+        }
+        catch
+        {
+            // Fall through to default
+        }
+        return "utau";
     }
 
     private async Task InstallAsync()
