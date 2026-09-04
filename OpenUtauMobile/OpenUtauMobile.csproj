@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
@@ -19,6 +20,58 @@
         <AvaloniaResource Include="Assets\Lang\Strings.ru.resx"/>
         <AvaloniaResource Include="Assets\Lang\Strings.uk.resx"/>
     </ItemGroup>
+
+    <!--
+    GAME 模型（game_medium.gguf Q8 ~55MB）构建期来源：
+    * 不在仓库提交 55MB 二进制；从 game.cpp 官方 release 的 .oudep 里"扒"出来。
+    * 优先用本机 vendor 的 .oudep（免网络）；没有则从 GitHub release 下载到 obj 缓存。
+    * 解出的 gguf 由 EnsureGameEmbeddedModel 目标动态注册为 EmbeddedResource。
+    -->
+    <PropertyGroup>
+        <!-- 本地 vendor .oudep 存在才使用（CI runner 无该路径则留空 → 走下载） -->
+        <GameOudepLocalPath Condition="'$(GameOudepLocalPath)' == '' and Exists('J:\GGML-GAME\vendor\game-cpp-release\game_ggml-windows-x64-vulkan-q8.oudep')">J:\GGML-GAME\vendor\game-cpp-release\game_ggml-windows-x64-vulkan-q8.oudep</GameOudepLocalPath>
+        <GameOudepUrl Condition="'$(GameOudepUrl)' == ''">https://github.com/KakaruHayate/game.cpp/releases/download/v0.1.3/game_ggml-windows-x64-vulkan-q8.oudep</GameOudepUrl>
+        <GameOudepSha256 Condition="'$(GameOudepSha256)' == ''">895A85B56AAEEB15CD541469ACFA1AEDB2D3DC58B1A6890A2F8B6FB629AD990D</GameOudepSha256>
+        <GameModelLogicalName>OpenUtauMobile.Models.game_medium.gguf</GameModelLogicalName>
+    </PropertyGroup>
+
+    <!-- 构建期拉取模型：下载/拷贝 .oudep -> 解出 game_medium.gguf -> 动态加入 EmbeddedResource -->
+    <Target Name="EnsureGameEmbeddedModel" BeforeTargets="PrepareResourceNames;CoreCompile">
+        <PropertyGroup>
+            <GameOudepCache>$(IntermediateOutputPath)game.oudep</GameOudepCache>
+            <GameModelFile>$(IntermediateOutputPath)game_medium.gguf</GameModelFile>
+        </PropertyGroup>
+
+        <!-- 1) 已有解出的模型则跳过 -->
+        <MakeDir Directories="$(IntermediateOutputPath)"/>
+        <Message Condition="Exists('$(GameModelFile)')" Text="GAME 模型已存在: $(GameModelFile)"/>
+
+        <!-- 2) 没有模型：确保有 .oudep（优先本地 vendor，否则从 release 下载到 obj） -->
+        <Copy Condition="!Exists('$(GameModelFile)') and Exists('$(GameOudepLocalPath)') and '$(GameOudepLocalPath)' != ''"
+              SourceFiles="$(GameOudepLocalPath)" DestinationFiles="$(GameOudepCache)"/>
+        <DownloadFile Condition="!Exists('$(GameModelFile)') and !Exists('$(GameOudepCache)') and !Exists('$(GameOudepLocalPath)')"
+                      SourceUrl="$(GameOudepUrl)" DestinationFolder="$(IntermediateOutputPath)" DestinationFileName="game.oudep"/>
+        <Error Condition="!Exists('$(GameOudepCache)') and !Exists('$(GameModelFile)')"
+               Text="无法获得 GAME 模型的 .oudep（本地未找到且下载失败）。请先手动放置 $(GameOudepLocalPath) 或设置 GameOudepUrl"/>
+
+        <!-- 3) 校验 .oudep 哈希（固定到 release 资产，防篡改；本地 vendor 与下载均校验） -->
+        <GetFileHash Condition="Exists('$(GameOudepCache)')" Files="$(GameOudepCache)" Algorithm="SHA256">
+            <Output TaskParameter="Hash" PropertyName="GameOudepActualHash"/>
+        </GetFileHash>
+        <Error Condition="Exists('$(GameOudepCache)') and '$(GameOudepActualHash)' != '' and '$(GameOudepActualHash)' != '$(GameOudepSha256)'"
+               Text="GAME 模型 .oudep SHA-256 校验失败：预期 $(GameOudepSha256)，实测 $(GameOudepActualHash)"/>
+
+        <!-- 4) 从 .oudep 解出 game_medium.gguf（跨平台：pwsh + 正斜杠路径修正） -->
+        <Exec Condition="!Exists('$(GameModelFile)') and Exists('$(GameOudepCache)')"
+              Command="pwsh -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)/Tools/extract_game_model.ps1&quot; -Oudep &quot;$(GameOudepCache)&quot; -Target &quot;$(GameModelFile)&quot;"/>
+
+        <Error Condition="!Exists('$(GameModelFile)')" Text="解压 GAME 模型失败"/>
+
+        <!-- 5) 动态注册为嵌入式资源（只在 obj 下生成，不进 git） -->
+        <ItemGroup>
+            <EmbeddedResource Include="$(GameModelFile)" LogicalName="$(GameModelLogicalName)"/>
+        </ItemGroup>
+    </Target>
 
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)"/>

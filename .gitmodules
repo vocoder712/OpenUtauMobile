@@ -1,0 +1,3 @@
+[submodule "native/game.cpp"]
+	path = native/game.cpp
+	url = https://github.com/KakaruHayate/game.cpp
