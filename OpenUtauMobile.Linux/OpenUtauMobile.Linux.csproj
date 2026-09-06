@@ -8,11 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu.Linux" Version="1.29.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj" />
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -20,19 +21,19 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
-	<!--
+    <!--
       Ensure native runtime libraries (runtimes\<rid>\native\*) are copied to the publish output root.
       Some native libraries end up under a rid-specific runtimes folder after publish and are not found by
       DllImport("worldline") at runtime. This target copies those native files into the publish directory
       root so P/Invoke can locate them next to the executable.
     -->
-	<Target Name="CopyNativeRuntimeAssetsToPublish" AfterTargets="Publish">
-		<ItemGroup>
-			<NativeRuntimeAssets Include="$(PublishDir)runtimes\**\native\**\*.*" />
-		</ItemGroup>
-		<Copy SourceFiles="@(NativeRuntimeAssets)"
+    <Target Name="CopyNativeRuntimeAssetsToPublish" AfterTargets="Publish">
+        <ItemGroup>
+            <NativeRuntimeAssets Include="$(PublishDir)runtimes\**\native\**\*.*"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(NativeRuntimeAssets)"
               DestinationFiles="@(NativeRuntimeAssets->'$(PublishDir)%(Filename)%(Extension)')"
-              SkipUnchangedFiles="true" />
-	</Target>
+              SkipUnchangedFiles="true"/>
+    </Target>
 </Project>
 
