@@ -100,32 +100,65 @@ namespace OpenUtau.Core.Util {
         }
 
         private static void Load() {
-            try {
-                if (File.Exists(PathManager.Inst.PrefsFilePath)) {
-                    Default = JsonConvert.DeserializeObject<SerializablePreferences>(
-                        File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
-                    if(Default == null) {
-                        Reset();
-                        return;
-                    }
+            if (!File.Exists(PathManager.Inst.PrefsFilePath)) {
+                Reset();
+                return;
+            }
 
-                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty;
-                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
-                    if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
-                    if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
-                    if (Default.Theme != null) {
-                        Default.ThemeName = Default.Theme switch {
-                            1 => "Dark",
-                            _ => "Light"
-                        };
-                        Default.Theme = null;
-                    }
-                } else {
-                    Reset();
+            try {
+                Default = JsonConvert.DeserializeObject<SerializablePreferences>(
+                    File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
+                if (Default == null) {
+                    Log.Error("Failed to load prefs: deserialized prefs is null.");
+                    Default = new SerializablePreferences();
+                    return;
                 }
             } catch (Exception e) {
-                Log.Error(e, "Failed to load prefs.");
+                Log.Error(e, "Failed to read or deserialize prefs.");
                 Default = new SerializablePreferences();
+                return;
+            }
+
+            ValidateLoadedPreferences();
+        }
+
+        private static void ValidateLoadedPreferences() {
+            ValidatePreference("Language", () => {
+                if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) {
+                    Default.Language = string.Empty;
+                }
+            });
+            ValidatePreference("SortingOrder", () => {
+                if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) {
+                    Default.SortingOrder = string.Empty;
+                }
+            });
+            ValidatePreference("DefaultRenderer", () => {
+                if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) {
+                    Default.DefaultRenderer = string.Empty;
+                }
+            });
+            ValidatePreference("OnnxRunner", () => {
+                if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) {
+                    Default.OnnxRunner = string.Empty;
+                }
+            });
+            ValidatePreference("Theme", () => {
+                if (Default.Theme != null) {
+                    Default.ThemeName = Default.Theme switch {
+                        1 => "Dark",
+                        _ => "Light"
+                    };
+                    Default.Theme = null;
+                }
+            });
+        }
+
+        private static void ValidatePreference(string name, Action action) {
+            try {
+                action();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to validate prefs field {Name}.", name);
             }
         }
 

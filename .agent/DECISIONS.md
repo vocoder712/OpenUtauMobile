@@ -315,3 +315,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Legacy data-only packages identify themselves with `name` and are consumed directly from their installed dependency directory; they do not expose a loadable entrypoint. Requiring one regressed file installation after the Core update.
 - Alternatives considered: Rewrite legacy archives during installation; infer a synthetic loader from package contents; special-case known vocoder package names in the Mobile layer.
 - Impacted areas: `OpenUtau.Core.PackageManager` archive validation; legacy data/model `.oudep` packages can be installed again, while malformed explicit entrypoints remain rejected.
+
+- Date: 2026-09-06
+- Decision: Split preferences loading into file deserialization and per-field validation. Only missing preference files call `Reset`; null or unreadable preference files create in-memory defaults without immediately saving, and validation failures are logged per field without replacing the loaded preferences object.
+- Rationale: Platform or dependency initialization failures, such as ONNX Runtime native loading during runner validation, must not discard user preferences, recent files, or history after a successful JSON load.
+- Alternatives considered: Keep the single broad load catch; remove all validation during load; special-case only ONNX runner validation.
+- Impacted areas: Core preferences startup loading and validation behavior.

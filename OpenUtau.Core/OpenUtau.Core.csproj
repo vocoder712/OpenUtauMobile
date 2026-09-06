@@ -39,10 +39,12 @@
     <PackageReference Include="YamlDotNet" Version="15.1.2" />
     <PackageReference Include="NetMQ" Version="4.0.1.13" />
   </ItemGroup>
+    <!-- 仅在 Windows 平台下使用 NAudio 和 DirectML -->
   <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.23.0" />
   </ItemGroup>
+    <!-- 仅在非 Windows 平台下使用 ONNX Runtime -->
   <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'false'">
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.26.0" />
   </ItemGroup>
