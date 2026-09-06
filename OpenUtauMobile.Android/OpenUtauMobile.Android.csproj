@@ -44,6 +44,8 @@
 
     <!-- 原生库 -->
     <ItemGroup>
+        <!-- 避免默认项与显式项重复，先排除，再包含 -->
+        <AndroidNativeLibrary Remove="Libs\**\*.so"/>
         <AndroidNativeLibrary Include="Libs\armeabi-v7a\*">
             <Abi>armeabi-v7a</Abi>
         </AndroidNativeLibrary>
