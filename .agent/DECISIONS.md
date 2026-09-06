@@ -326,3 +326,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: A shared build contract prevents restore and RID drift between nightly and release builds. Native-library hashes and ELF dependency inspection allow artifacts for the same RID to be cross-checked without treating expected version, build metadata, and signing differences as native payload differences.
 - Alternatives considered: Keep duplicated Android jobs synchronized manually; rely on implicit publish restore; compare only whole signed APK hashes.
 - Impacted areas: GitHub Actions Android nightly/full builds, artifact naming, pre-upload native payload validation, and verification artifacts.
+
+- Date: 2026-09-06
+- Decision: Exclude the ONNX Runtime NuGet package's automatic runtime and build asset injection in the Android head, then explicitly include only its official Android AAR.
+- Rationale: .NET for Android can otherwise package the NuGet package's Linux ARM64 `libonnxruntime.so` before resolving the AAR entry with the same APK path, producing XA4301 and retaining a glibc-linked binary. A single explicit AAR source makes native selection deterministic.
+- Alternatives considered: Depend on RID-specific restore alone; copy ONNX `.so` files into the repository; suppress XA4301.
+- Impacted areas: Android NuGet/native-library resolution and Android package contents. Managed ONNX APIs and other platforms are unchanged.
