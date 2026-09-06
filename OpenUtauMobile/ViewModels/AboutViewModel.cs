@@ -32,7 +32,7 @@ public class AboutViewModel : NavigateViewModelBase
         OpenCreditsCommand = ReactiveCommand.CreateFromTask(
             () => OpenUrlAsync("https://github.com/vocoder712/OpenUtauMobile/graphs/contributors?all=1"));
         OpenFeedbackCommand = ReactiveCommand.CreateFromTask(
-                () => OpenUrlAsync("https://github.com/vocoder712/OpenUtauMobile/issues"));
+                () => OpenUrlAsync("https://github.com/vocoder712/OpenUtauMobile/blob/dev/CONTRIBUTING.md"));
 
         // 使用 typeof(...).Assembly 替代 GetEntryAssembly()，
         // 因为在 Android 等平台上 GetEntryAssembly() 可能无法正确识别入口程序集
