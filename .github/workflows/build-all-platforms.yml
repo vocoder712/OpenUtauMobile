@@ -38,8 +38,6 @@ jobs:
   # ============================================================
   android:
     name: Android ${{ matrix.arch }}
-    runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       # 矩阵
@@ -53,115 +51,15 @@ jobs:
 
           - arch: x64
             rid: android-x64
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          global-json-file: global.json
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
-      - name: Install Android workload
-        run: dotnet workload install android
-
-      # 交换分区
-      - name: Create Swap Space
-        shell: bash
-        run: |
-          SWAP_FILE=/runner-swapfile
-
-          if [ ! -f "$SWAP_FILE" ]; then
-            sudo fallocate -l 6G "$SWAP_FILE"
-            sudo chmod 600 "$SWAP_FILE"
-            sudo mkswap "$SWAP_FILE"
-          fi
-
-          sudo swapon "$SWAP_FILE" 2>/dev/null || true
-          free -h
-          swapon --show
-
-      - name: Collect Build Metadata
-        shell: bash
-        run: |
-          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
-          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
-
-      - name: Decode Android Keystore
-        shell: bash
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        run: |
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > signing.keystore
-
-      # 核心构建步骤
-      - name: Publish Android ${{ matrix.arch }}
-        shell: bash
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: |
-          dotnet publish \
-            OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
-            -c Release \
-            -f net10.0-android36.0 \
-            -r "${{ matrix.rid }}" \
-            -p:Version="${{ inputs.version }}" \
-            -p:BuildNumber=${{ inputs.build_number }} \
-            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
-            -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ inputs.source_sha }} \
-            -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:AndroidPackageFormat=apk \
-            -p:AndroidKeyStore=true \
-            -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
-            -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
-            -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
-            -p:AndroidSigningKeyPass="$KEY_PASSWORD"
-
-      - name: Prepare Android Artifact
-        shell: bash
-        run: |
-          PUBLISH_DIR="OpenUtauMobile.Android/bin/Release/net10.0-android36.0/${{ matrix.rid }}/publish"
-          ARTIFACT_DIR="artifacts/android-${{ matrix.arch }}"
-
-          mkdir -p "$ARTIFACT_DIR"
-
-          echo "===== Publish files ====="
-          find "$PUBLISH_DIR" -maxdepth 1 -type f -printf '%f\n'
-
-          SIGNED_APK="$(
-            find "$PUBLISH_DIR" \
-              -maxdepth 1 \
-              -type f \
-              -iname '*-signed.apk' \
-              -print \
-              -quit
-          )"
-
-          if [ -z "$SIGNED_APK" ]; then
-            echo "::error::无法找到已签名的 APK"
-            exit 1
-          fi
-
-          cp "$SIGNED_APK" \
-            "$ARTIFACT_DIR/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ matrix.arch }}.apk"
-
-      - name: Upload Android ${{ matrix.arch }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: OpenUtauMobile-android-${{ matrix.arch }}
-          path: artifacts/android-${{ matrix.arch }}/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ matrix.arch }}.apk
-          if-no-files-found: error
-          compression-level: 0
+    uses: ./.github/workflows/build-android.yml
+    with:
+      version: ${{ inputs.version }}
+      build_number: ${{ inputs.build_number }}
+      source_sha: ${{ inputs.source_sha }}
+      action_run_id: ${{ inputs.action_run_id }}
+      arch: ${{ matrix.arch }}
+      rid: ${{ matrix.rid }}
+    secrets: inherit
 
 
   # ============================================================
