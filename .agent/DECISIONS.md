@@ -328,7 +328,7 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Impacted areas: GitHub Actions Android nightly/full builds, artifact naming, pre-upload native payload validation, and verification artifacts.
 
 - Date: 2026-09-06
-- Decision: Exclude the ONNX Runtime NuGet package's automatic runtime and build asset injection in the Android head, then explicitly include only its official Android AAR.
-- Rationale: .NET for Android can otherwise package the NuGet package's Linux ARM64 `libonnxruntime.so` before resolving the AAR entry with the same APK path, producing XA4301 and retaining a glibc-linked binary. A single explicit AAR source makes native selection deterministic.
+- Decision: Exclude the ONNX Runtime NuGet package's automatic native, runtime, and build asset injection in the Android head, then explicitly include only its official Android AAR.
+- Rationale: NuGet classifies `libonnxruntime.so` as a distinct `native` asset, not only as a `runtime` asset. On a Linux build host, leaving that category enabled can package `runtimes/linux-arm64/native/libonnxruntime.so` before resolving the AAR entry with the same APK path, producing XA4301 and retaining a glibc-linked binary. A single explicit AAR source makes native selection deterministic on every host OS.
 - Alternatives considered: Depend on RID-specific restore alone; copy ONNX `.so` files into the repository; suppress XA4301.
 - Impacted areas: Android NuGet/native-library resolution and Android package contents. Managed ONNX APIs and other platforms are unchanged.
