@@ -321,3 +321,8 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Platform or dependency initialization failures, such as ONNX Runtime native loading during runner validation, must not discard user preferences, recent files, or history after a successful JSON load.
 - Alternatives considered: Keep the single broad load catch; remove all validation during load; special-case only ONNX runner validation.
 - Impacted areas: Core preferences startup loading and validation behavior.
+- Date: 2026-09-06
+- Decision: Route both dev-branch Android ARM64 nightly builds and full-release Android matrix builds through one reusable Android workflow. Restore explicitly for the Release configuration and final RID, publish the same RID with `--no-restore`, and verify the packaged ABI and ONNX native libraries before upload.
+- Rationale: A shared build contract prevents restore and RID drift between nightly and release builds. Native-library hashes and ELF dependency inspection allow artifacts for the same RID to be cross-checked without treating expected version, build metadata, and signing differences as native payload differences.
+- Alternatives considered: Keep duplicated Android jobs synchronized manually; rely on implicit publish restore; compare only whole signed APK hashes.
+- Impacted areas: GitHub Actions Android nightly/full builds, artifact naming, pre-upload native payload validation, and verification artifacts.
