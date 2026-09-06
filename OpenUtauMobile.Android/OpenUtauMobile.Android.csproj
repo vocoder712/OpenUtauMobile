@@ -35,11 +35,11 @@
     <ItemGroup>
         <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)"/>
         <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.1"/>
-        <!-- 避免 NuGet 的 Linux RID 原生资产与 Android AAR 中的同名库竞争。 -->
+        <!-- 避免 NuGet 的宿主平台原生资产与 Android AAR 中的同名库竞争。 -->
         <PackageReference Include="Microsoft.ML.OnnxRuntime"
                           Version="1.29.0"
                           GeneratePathProperty="true"
-                          ExcludeAssets="runtime;build;buildTransitive"/>
+                          ExcludeAssets="native;runtime;build;buildTransitive"/>
     </ItemGroup>
     <!-- 项目引用 -->
     <ItemGroup>
