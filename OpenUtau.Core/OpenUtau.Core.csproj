@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -40,7 +40,7 @@
         <PackageReference Include="NetMQ" Version="4.0.1.13"/>
         <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.29.0"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <Compile Update="Analysis\Crepe\Resources.Designer.cs">
             <DesignTime>True</DesignTime>
@@ -84,4 +84,13 @@
     <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
         <DefineConstants>WINDOWS</DefineConstants>
     </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="SDL3-CS" Version="3.4.14" />
+        <PackageReference Include="SDL3-CS.Linux" Version="3.4.14" />
+        <PackageReference Include="SDL3-CS.MacOS" Version="3.4.14" />
+        <PackageReference Include="SDL3-CS.Windows" Version="3.4.14" />
+        <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.11" />
+        <PackageReference Include="Tmds.DBus.Protocol" Version="0.94.2" />
+        <PackageReference Include="NAudio" Version="2.2.1" />
+    </ItemGroup>
 </Project>

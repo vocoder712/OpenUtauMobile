@@ -332,3 +332,9 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: .NET for Android can otherwise package the NuGet package's Linux ARM64 `libonnxruntime.so` before resolving the AAR entry with the same APK path, producing XA4301 and retaining a glibc-linked binary. A single explicit AAR source makes native selection deterministic.
 - Alternatives considered: Depend on RID-specific restore alone; copy ONNX `.so` files into the repository; suppress XA4301.
 - Impacted areas: Android NuGet/native-library resolution and Android package contents. Managed ONNX APIs and other platforms are unchanged.
+
+- Date: 2026-09-07
+- Decision: Port the reviewed Core and mobile UI changes from `audit/core-sync` into the existing sync branch as a corrective commit, preserving its Plugin subtree history, updated Plugin content, renderer package versions, frozen CoreVersion, and sync documentation.
+- Rationale: The audit worktree reconstructs only the Core merge and still contains the old Plugin. Its reviewed files preserve OPUM project configuration, per-field preference validation, and Neutrino noteIndex/availableLeadingMs alongside upstream XSY. The user approved removing the legacy rendered-waveform notifications and UI; no replacement mobile waveform UI is introduced here. Remove the unused System.Drawing.Common reference, which brought Windows assemblies into Android AOT.
+- Verification scope: Old Plugin customizations consist only of net10.0 and NoWarn, both retained in the sync result. All other Plugin content matches frozen split 1e74269e69f9d721238f966e4e09841743b56375. Build the final sync combination separately; the audit worktree's earlier AOT result alone does not validate the updated Plugin.
+- Impacted areas: Core/mobile compatibility and Android dependencies. Upstream target remains 2b03ad562fa6ee2937fdcfe24e790ad92c58064c; no new upstream fetch or cache reconstruction.
