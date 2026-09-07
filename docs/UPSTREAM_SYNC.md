@@ -40,17 +40,19 @@ opu-plugin/eaaf2e88a0be    1e74269e69f9d721238f966e4e09841743b56375
 ## 1. 永久规则
 
 1. 每次开始先运行 `git status --short`。有任何输出就停止，不 stash、不 clean、不覆盖，先向用户报告。
-2. 一次同步中 Core 和 Plugin 必须固定到同一个 `$OpuSha`。
-3. 正式分支只使用 `git subtree merge --squash`，禁止省略 `--squash`。
-4. `--rejoin` 只在两个 `cache/opu-*` 分支上执行。
-5. 禁止手写 `git-subtree-*` 元数据、`commit-tree`、复制/移动缓存或混用 prefix。
-6. cache 与 synthetic 分支只推送到 `opu-sync`，不合入 `dev`。
-7. **每次使用两个 cache 分支完成 merge/split 后，必须执行第 6 节，把 cache 的最新位置备份到 `opu-sync` 并验证远程 SHA；未完成远程验证，不进入正式同步。**
-8. 即使新 OPU 提交没有修改 Core/Plugin，也要推送 cache 分支，因为 cache 仍记录了新的上游合并位置；只有没有产生新 synthetic 分支时才省略该 synthetic 分支的 push。
-9. 所有推送都应是新建或 fast-forward；禁止 force push。
-10. 同步 PR 必须使用 **Create a merge commit**；禁止 **Squash and merge** 和 **Rebase and merge**。
-11. 出现冲突时先列出冲突文件、三方含义和保留计划，取得用户确认后再修改；禁止机械选择全部 ours/theirs。
-12. 构建 Avalonia 项目前设置 `$env:AVALONIA_TELEMETRY_OPTOUT='1'`。
+2. **一次同步只允许在启动阶段执行一次 `git fetch opu --tags --prune`。紧接着冻结 `$OpuSha`；直到该次同步彻底完成，禁止再次 fetch/pull `opu`、禁止 `git fetch --all`/`git remote update`，也禁止重新解析 `opu/master`。期间出现的新上游提交留给下一次同步。**
+3. Core、Plugin、`Directory.Build.props` 和 PR 描述必须始终使用同一个冻结的 `$OpuSha`。
+4. 同步完成前必须把 `Directory.Build.props` 的 `CoreVersion` 更新为 `<OPU_VERSION>-<SHORT_SHA>`。
+5. 正式分支只使用 `git subtree merge --squash`，禁止省略 `--squash`。
+6. `--rejoin` 只在两个 `cache/opu-*` 分支上执行。
+7. 禁止手写 `git-subtree-*` 元数据、`commit-tree`、复制/移动缓存或混用 prefix。
+8. cache 与 synthetic 分支只推送到 `opu-sync`，不合入 `dev`。
+9. **每次使用两个 cache 分支完成 merge/split 后，必须执行第 6 节，把 cache 的最新位置备份到 `opu-sync` 并验证远程 SHA；未完成远程验证，不进入正式同步。**
+10. 即使新 OPU 提交没有修改 Core/Plugin，也要推送 cache 分支；只有没有产生新 synthetic 分支时才省略该 synthetic 分支的 push。
+11. 所有推送都应是新建或 fast-forward；禁止 force push。
+12. 同步 PR 必须使用 **Create a merge commit**；禁止 **Squash and merge** 和 **Rebase and merge**。
+13. 出现冲突时先列出冲突文件、三方含义和保留计划，取得用户确认后再修改；禁止机械选择全部 ours/theirs。
+14. 构建 Avalonia 项目前设置 `$env:AVALONIA_TELEMETRY_OPTOUT='1'`。
 
 ## 2. 每次同步前
 
@@ -79,15 +81,15 @@ if ($LASTEXITCODE -ne 0) {
 }
 ```
 
-获取最新引用：
+先获取 OPUM 与缓存引用，然后执行本次同步唯一一次 OPU fetch：
 
 ```powershell
 git fetch origin --prune
-git fetch opu --tags --prune
 git fetch opu-sync --prune
+git fetch opu --tags --prune
 ```
 
-固定本次目标；后续不要再次读取移动中的 `opu/master`：
+立即冻结目标和版本。执行本代码块后，直到 PR 以 merge commit 合入 `dev` 且本地 `dev` 更新完成，不得再运行任何会访问 `opu` 的 fetch/pull/update 命令，也不得重新赋值 `$OpuSha`：
 
 ```powershell
 $OpuSha = (git rev-parse opu/master).Trim()
@@ -96,9 +98,21 @@ $SyncBranch = "chore/sync-opu-$Short"
 $CoreSplitBranch = "opu-core/$Short"
 $PluginSplitBranch = "opu-plugin/$Short"
 
+$OpuVersion = git describe --tags --exact-match $OpuSha 2>$null
+if ($LASTEXITCODE -ne 0) {
+    $OpuVersion = git describe --tags --abbrev=0 $OpuSha
+}
+$OpuVersion = "$OpuVersion".Trim()
+if (-not $OpuVersion) { throw 'Cannot determine OPU version tag.' }
+$CoreVersion = "$OpuVersion-$Short"
+
 Write-Output "OPU_SHA=$OpuSha"
 Write-Output "SHORT_SHA=$Short"
+Write-Output "OPU_VERSION=$OpuVersion"
+Write-Output "CORE_VERSION=$CoreVersion"
 ```
+
+记录以上四项。即使操作期间 GitHub 上的 OPU 主线前移，本次也继续使用冻结值。
 
 ## 3. 本地缓存不存在时从 `opu-sync` 恢复
 
@@ -306,7 +320,43 @@ git commit --no-edit
 
 确认没有冲突标记和未合并索引。
 
-## 9. 兼容检查与构建
+## 9. 更新内核版本、兼容检查与构建
+
+### 9.1 更新 `Directory.Build.props`
+
+正式合并和冲突解决完成后，把内核版本更新为启动时计算的 `$CoreVersion`：
+
+```powershell
+$PropsPath = 'Directory.Build.props'
+$PropsText = [System.IO.File]::ReadAllText($PropsPath)
+$CoreVersionMatches = [regex]::Matches(
+    $PropsText,
+    '<CoreVersion>[^<]*</CoreVersion>')
+if ($CoreVersionMatches.Count -ne 1) {
+    throw "Expected exactly one CoreVersion, found $($CoreVersionMatches.Count)."
+}
+$PropsText = [regex]::Replace(
+    $PropsText,
+    '<CoreVersion>[^<]*</CoreVersion>',
+    "<CoreVersion>$CoreVersion</CoreVersion>")
+[System.IO.File]::WriteAllText(
+    $PropsPath,
+    $PropsText,
+    [System.Text.UTF8Encoding]::new($false))
+
+Select-String -Path $PropsPath -Pattern '<CoreVersion>'
+git diff -- Directory.Build.props
+```
+
+结果必须严格为 `<OPU_VERSION>-<SHORT_SHA>`。例如本次冻结目标具有标签 `0.1.570.1-alpha`，短 SHA 为 `2b03ad562fa6`：
+
+```text
+<CoreVersion>0.1.570.1-alpha-2b03ad562fa6</CoreVersion>
+```
+
+必须在构建和 PR 前提交该修改。
+
+### 9.2 兼容检查
 
 至少检查：
 
@@ -315,7 +365,9 @@ rg -n "RenderPhraseEvents|GetSuggestions\(|EnsureAvatarLoaded|PhraseRenderedNoti
     OpenUtau.Core OpenUtauMobile.Plugin.Renderers OpenUtauMobile
 ```
 
-上游 API 引起的 OPUM 兼容修复作为普通提交提交。然后构建：
+上游 API 引起的 OPUM 兼容修复作为普通提交提交。
+
+### 9.3 构建
 
 ```powershell
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
@@ -351,6 +403,7 @@ PR：`chore/sync-opu-<SHORT_SHA> -> dev`。描述必须记录：
 OpenUtau target: <FULL_OPU_SHA>
 Core split:       <CORE_SPLIT>
 Plugin split:     <PLUGIN_SPLIT>
+CoreVersion:      <OPU_VERSION>-<SHORT_SHA>
 Plugin build:     exit 0
 Mobile build:     exit 0
 ```
@@ -361,6 +414,8 @@ GitHub 必须选择 **Create a merge commit**。禁止 Squash and merge、Rebase
 git switch dev
 git pull --ff-only origin dev
 ```
+
+至此本次冻结快照同步才算彻底完成。之后若要同步新的 `opu/master`，必须作为下一次独立同步从第 2 节重新开始。
 
 ## 11. 全新电脑/本地什么都没有
 
@@ -375,9 +430,10 @@ git remote add opu https://github.com/openutau/OpenUtau.git
 git remote add opu-sync https://github.com/vocoder712/OpenUtauMobile-sync.git
 
 git fetch origin --prune
-git fetch opu --tags --prune
 git fetch opu-sync --prune
 ```
+
+这里故意不 fetch `opu`。缓存恢复完成后，从第 2 节启动一次新同步，并且只在第 2 节 fetch `opu` 一次。
 
 恢复 cache：
 
@@ -424,13 +480,9 @@ git status --short
 
 ## 12. 仅当 `opu-sync` 不可用时完整重建
 
-第一次重建会扫描全部 OPU 历史。先确保本地没有同名缓存：
+第一次重建会扫描全部 OPU 历史。本节必须复用第 2 节已经冻结的 `$OpuSha` 和 `$Short`；不得再次 fetch `opu` 或重新解析 `opu/master`。先确保本地没有同名缓存：
 
 ```powershell
-git fetch opu --tags --prune
-$OpuSha = (git rev-parse opu/master).Trim()
-$Short = $OpuSha.Substring(0, 12)
-
 git show-ref --verify --quiet refs/heads/cache/opu-core
 if ($LASTEXITCODE -eq 0) { throw 'cache/opu-core exists; do not overwrite.' }
 git show-ref --verify --quiet refs/heads/cache/opu-plugin
@@ -498,13 +550,14 @@ git subtree split `
 ```text
 status clean
 → fetch origin/opu/opu-sync
-→ 固定一个完整 OPU SHA
+→ 立即冻结 OPU SHA 和版本；本次不再 fetch/读取 opu/master
 → 更新 Core cache + split
 → 更新 Plugin cache + split
 → fast-forward 备份 cache 和 synthetic 到 opu-sync
 → 从最新 dev 建 chore/sync-opu-<SHA>
 → 两次 subtree merge --squash
 → 冲突先报告并获确认
+→ 更新 Directory.Build.props 的 CoreVersion
 → Plugin/Mobile build
 → 推送同步分支到 origin
 → PR 使用 Create a merge commit 合入 dev

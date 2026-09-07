@@ -2,7 +2,7 @@
     <PropertyGroup>
         <AvaloniaVersion>12.1.0</AvaloniaVersion>
         <!-- OpenUtau.Core 及附加插件版本号 -->
-        <CoreVersion>0.1.569-2b03ad562fa6</CoreVersion>
+        <CoreVersion>0.1.570.1-alpha-2b03ad562fa6</CoreVersion>
         <!-- CI 传入产品版本和构建号；本地使用明显的非发布版本 -->
         <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
         <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
