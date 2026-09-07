@@ -2,6 +2,8 @@
 
 本文是 OpenUtauMobile（OPUM）同步 OpenUtau（OPU）内核的标准流程。命令以 PowerShell 7 为准。
 
+执行方式：同一 PowerShell 会话按顺序执行；每条 Git/dotnet 命令检查 `$LASTEXITCODE`。除文档明确预期的分支不存在、无差异或冲突检查外，非零立即停止，禁止继续下一条。会话中断后恢复已经记录的冻结 SHA/版本，不重新获取上游目标。
+
 同步单元始终包含两个目录，并且必须使用同一个 OPU 完整提交 SHA：
 
 ```text
@@ -28,14 +30,7 @@ OpenUtau.Plugin.Builtin/
 
 `<SHORT_SHA>` 固定为完整 OPU SHA 的前 12 位。两个 cache 分支不能混用 prefix。
 
-当前已备份检查点：
-
-```text
-cache/opu-core             93824a6195d228936af4abe570934391341fd790
-cache/opu-plugin           caa54281bef0b164c157104f80d9354943b8384d
-opu-core/eaaf2e88a0be      3f58ccb44522b9d6560fb7cbe0a3a6b0261ae320
-opu-plugin/eaaf2e88a0be    1e74269e69f9d721238f966e4e09841743b56375
-```
+缓存 SHA 以 `git ls-remote --heads opu-sync` 的实时结果为准；文档不维护易过期的检查点列表。
 
 ## 1. 永久规则
 
@@ -115,6 +110,8 @@ Write-Output "CORE_VERSION=$CoreVersion"
 记录以上四项。即使操作期间 GitHub 上的 OPU 主线前移，本次也继续使用冻结值。
 
 ## 3. 本地缓存不存在时从 `opu-sync` 恢复
+
+本地缓存已存在时也需检查远程是否领先：在对应 cache 分支执行 `git merge --ff-only opu-sync/cache/opu-core`（Plugin 使用自己的引用）。若本地独有提交或双方分叉，先检查 `git log --left-right --oneline cache/opu-core...opu-sync/cache/opu-core`；有分叉就停止协调，不把两份独立重建的缓存随意合并。
 
 ```powershell
 git fetch opu-sync --prune
@@ -358,6 +355,12 @@ git diff -- Directory.Build.props
 
 ### 9.2 兼容检查
 
+必须审计全部既有定制，而不仅是 Git 报冲突的文件。记录上一正式同步的 Core/Plugin split SHA 和本次 OPUM 基线 SHA，分别比较「旧上游→旧 OPUM」「旧上游→新上游」「旧 OPUM→合并结果」。每个定制明确标为保留、适配或经用户批准删除。
+
+重点：Core 项目资源命名空间、包版本与 native/build 排除；ONNX 按目标平台分发；Preferences 的字段级异常隔离和移动端默认值；Neutrino 的 noteIndex、availableLeadingMs；公共 API 和插件兼容。无文本冲突不代表行为正确。
+
+禁止从先前失败的同步提交整文件复制解析结果。noteIndex 与上游 xsyAvailable 应同时保留；删除定制必须记录理由及受影响调用端。
+
 至少检查：
 
 ```powershell
@@ -372,16 +375,27 @@ rg -n "RenderPhraseEvents|GetSuggestions\(|EnsureAvatarLoaded|PhraseRenderedNoti
 ```powershell
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
 dotnet build OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj `
-    --no-restore --nologo -v:minimal
+    --nologo -v:minimal
 if ($LASTEXITCODE -ne 0) { throw 'Plugin build failed.' }
 
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
 dotnet build OpenUtauMobile\OpenUtauMobile.csproj `
-    --no-restore --nologo -v:minimal
+    --nologo -v:minimal
 if ($LASTEXITCODE -ne 0) { throw 'Mobile build failed.' }
 ```
 
-若新环境尚未 restore，先联网运行不带 `--no-restore` 的同一 build，再重复上述验证。
+依赖变更后必须实际 restore；旧 assets 上的 `--no-restore` 成功不是依赖正确性的证据。还需执行 PR 的目标平台构建（以仓库当前 workflow 为准）：
+
+```powershell
+$env:AVALONIA_TELEMETRY_OPTOUT='1'
+dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj
+if ($LASTEXITCODE -ne 0) { throw 'Android restore failed.' }
+dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj `
+    -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-arm64
+if ($LASTEXITCODE -ne 0) { throw 'Android build failed.' }
+```
+
+本地缺少 SDK/JDK/workload 时明确记录未验证的目标，由 PR CI 补齐。所有必需云检查通过之前，不宣称同步验证完成，也不合并 PR。
 
 终检：
 
@@ -435,44 +449,7 @@ git fetch opu-sync --prune
 
 这里故意不 fetch `opu`。缓存恢复完成后，从第 2 节启动一次新同步，并且只在第 2 节 fetch `opu` 一次。
 
-恢复 cache：
-
-```powershell
-git branch cache/opu-core opu-sync/cache/opu-core
-git branch cache/opu-plugin opu-sync/cache/opu-plugin
-```
-
-恢复所有 synthetic 本地分支：
-
-```powershell
-$splitBranches = git for-each-ref --format='%(refname:strip=3)' `
-    refs/remotes/opu-sync/opu-core `
-    refs/remotes/opu-sync/opu-plugin
-
-foreach ($name in $splitBranches) {
-    git branch $name "opu-sync/$name"
-}
-```
-
-验证缓存引用的对象：
-
-```powershell
-$CoreMeta = git log cache/opu-core --grep='git-subtree-dir: OpenUtau.Core' --format='%B' -n 1
-$CoreLine = $CoreMeta | Where-Object { $_ -match '^git-subtree-split: [0-9a-f]{40}$' } | Select-Object -First 1
-if (-not $CoreLine) { throw 'Core metadata missing.' }
-$CoreSplit = ($CoreLine -replace '^git-subtree-split: ', '').Trim()
-
-$PluginMeta = git log cache/opu-plugin --grep='git-subtree-dir: OpenUtau.Plugin.Builtin' --format='%B' -n 1
-$PluginLine = $PluginMeta | Where-Object { $_ -match '^git-subtree-split: [0-9a-f]{40}$' } | Select-Object -First 1
-if (-not $PluginLine) { throw 'Plugin metadata missing.' }
-$PluginSplit = ($PluginLine -replace '^git-subtree-split: ', '').Trim()
-
-git cat-file -e "$CoreSplit^{commit}"
-if ($LASTEXITCODE -ne 0) { throw "Missing Core split $CoreSplit" }
-git cat-file -e "$PluginSplit^{commit}"
-if ($LASTEXITCODE -ne 0) { throw "Missing Plugin split $PluginSplit" }
-git status --short
-```
+接着完整执行第 3 节的恢复命令（两个 cache 和全部 synthetic 引用），不重复定义另一套恢复流程。第 4、5 节已经提供 split 元数据读取与对象存在性检查。
 
 至此缓存已经恢复。继续执行第 2 节以后步骤时，只处理远程检查点之后的增量，不完整扫描旧历史，也不重新解决已经通过 merge commit 合入 `dev` 的旧冲突。
 
