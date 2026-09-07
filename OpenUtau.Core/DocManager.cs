@@ -98,10 +98,13 @@ namespace OpenUtau.Core {
                         continue;
                     }
                     assembly = Assembly.LoadFile(file);
+                    // 遍历所有类型
                     foreach (var type in assembly.GetExportedTypes()) {
+                        // 对于音素器
                         if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
                             PhonemizerFactory.Get(type);
                         }
+                        // 对于批量编辑工具
                         if (Path.GetFileName(file) != kBuiltin
                             && typeof(BatchEdit).IsAssignableFrom(type)
                             && !type.IsInterface
@@ -281,7 +284,7 @@ namespace OpenUtau.Core {
                 cmd.Execute();
             }
             if (!cmd.Silent) {
-                Log.Information($"ExecuteCmd {cmd}");
+                //Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
             if (!undoGroup.DeferValidate) {
@@ -350,33 +353,6 @@ namespace OpenUtau.Core {
         }
 
         /// <summary>
-        /// Apply commands without recording undo. Still notifies subscribers.
-        /// </summary>
-        public void ApplyTransient(IEnumerable<UCommand> commands, ValidateOptions? validateOptions = null, bool preRender = true) {
-            if (mainThread != Thread.CurrentThread) {
-                PostOnUIThread(() => ApplyTransient(commands, validateOptions, preRender));
-                return;
-            }
-            RealTimePitchGenerationService.SuppressCallbacks = true;
-            try {
-                foreach (var cmd in commands) {
-                    lock (Project) {
-                        cmd.Execute();
-                    }
-                    Publish(cmd);
-                }
-                if (validateOptions != null) {
-                    Project.Validate(validateOptions.Value);
-                    if (preRender) {
-                        ExecuteCmd(new PreRenderNotification());
-                    }
-                }
-            } finally {
-                RealTimePitchGenerationService.SuppressCallbacks = false;
-            }
-        }
-
-        /// <summary>
         /// 在后台运行批量逻辑，并按调用顺序等待其中的命令在主线程完成。
         /// </summary>
         public void RunWithSynchronousMainThreadDispatch(Action action) {
@@ -409,6 +385,33 @@ namespace OpenUtau.Core {
             completed.Wait();
             if (exception != null) {
                 ExceptionDispatchInfo.Capture(exception).Throw();
+            }
+        }
+
+        /// <summary>
+        /// Apply commands without recording undo. Still notifies subscribers.
+        /// </summary>
+        public void ApplyTransient(IEnumerable<UCommand> commands, ValidateOptions? validateOptions = null, bool preRender = true) {
+            if (mainThread != Thread.CurrentThread) {
+                PostOnUIThread(() => ApplyTransient(commands, validateOptions, preRender));
+                return;
+            }
+            RealTimePitchGenerationService.SuppressCallbacks = true;
+            try {
+                foreach (var cmd in commands) {
+                    lock (Project) {
+                        cmd.Execute();
+                    }
+                    Publish(cmd);
+                }
+                if (validateOptions != null) {
+                    Project.Validate(validateOptions.Value);
+                    if (preRender) {
+                        ExecuteCmd(new PreRenderNotification());
+                    }
+                }
+            } finally {
+                RealTimePitchGenerationService.SuppressCallbacks = false;
             }
         }
 

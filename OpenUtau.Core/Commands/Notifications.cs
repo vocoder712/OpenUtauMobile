@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
@@ -285,26 +285,6 @@ namespace OpenUtau.Core {
         }
 
         public override string ToString() => "Pre-render notification.";
-    }
-
-    public class PartRenderInvalidatedNotification : UNotification {
-        public PartRenderInvalidatedNotification(UVoicePart part) {
-            this.part = part;
-        }
-        public override string ToString() => "Part render invalidated.";
-    }
-
-    public class PhraseRenderedNotification : UNotification {
-        public readonly RenderPhrase phrase;
-        public readonly double audioStartMs;
-        public readonly double audioEndMs;
-        public PhraseRenderedNotification(UVoicePart part, RenderPhrase phrase, double audioStartMs, double audioEndMs) {
-            this.part = part;
-            this.phrase = phrase;
-            this.audioStartMs = audioStartMs;
-            this.audioEndMs = audioEndMs;
-        }
-        public override string ToString() => "Phrase rendered.";
     }
 
     public class PartRenderedNotification : UNotification {

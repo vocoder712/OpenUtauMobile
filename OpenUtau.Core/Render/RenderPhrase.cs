@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -88,8 +88,7 @@ namespace OpenUtau.Core.Render {
             UNote note,
             UPhoneme phoneme,
             int phrasePosition,
-            int noteIndex,
-            bool xsyAvailable) {
+            int noteIndex, bool xsyAvailable) {
             position = part.position + phoneme.position - phrasePosition;
             duration = phoneme.Duration;
             end = position + duration;
@@ -289,8 +288,6 @@ namespace OpenUtau.Core.Render {
             notes = uNotes
                 .Select(n => new RenderNote(project, part, n, position))
                 .ToArray();
-            // xsy (cross synthesis) work is skipped entirely unless the part
-            // actually carries an xsy curve, so default renders pay nothing.
             bool xsyAvailable = part.curves.Any(c => c.abbr == Format.Ustx.XSY);
             Dictionary<UNote, int> noteIndexByNote = uNotes
                 .Select((note, index) => new { note, index })
@@ -303,8 +300,7 @@ namespace OpenUtau.Core.Render {
                     p.Parent,
                     p,
                     position,
-                    noteIndexByNote.TryGetValue(p.Parent, out int noteIndex) ? noteIndex : 0,
-                    xsyAvailable))
+                    noteIndexByNote.TryGetValue(p.Parent, out int noteIndex) ? noteIndex : 0, xsyAvailable))
                 .ToArray();
 
             leading = phones.First().leading;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -256,10 +256,6 @@ namespace OpenUtau.Core.Render {
             if (requests.Length == 0 || cancellation.IsCancellationRequested) {
                 return;
             }
-            foreach (RenderPartRequest request in requests) {
-                request.part.SetMix(request.mix);
-                DocManager.Inst.ExecuteCmd(new PartRenderInvalidatedNotification(request.part));
-            }
             var tuples = requests
                 .SelectMany(req => req.phrases
                     .Zip(req.sources, (phrase, source) => (phrase, source, request: req)))
@@ -380,8 +376,6 @@ namespace OpenUtau.Core.Render {
                         ranges.Count > 0) {
                         DocManager.Inst.ExecuteCmd(new RealCurveCoverageNotification(request.part, ranges));
                     }
-                DocManager.Inst.ExecuteCmd(new PhraseRenderedNotification(
-                    request.part, phrase, source.offsetMs, source.EndMs));
                     DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part));
                 }
             }

@@ -107,8 +107,7 @@ namespace OpenUtau.Core.Neutrino
             Progress progress,
             int trackNo,
             CancellationTokenSource cancellation,
-            bool isPreRender = false,
-            RenderPhraseEvents? renderEvents = null)
+            bool isPreRender = false, RenderPhraseEvents? renderEvents = null)
         {
             return Task.Run(() =>
             {
