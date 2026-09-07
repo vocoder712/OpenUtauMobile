@@ -45,10 +45,12 @@ opu-plugin/eaaf2e88a0be    1e74269e69f9d721238f966e4e09841743b56375
 4. `--rejoin` 只在两个 `cache/opu-*` 分支上执行。
 5. 禁止手写 `git-subtree-*` 元数据、`commit-tree`、复制/移动缓存或混用 prefix。
 6. cache 与 synthetic 分支只推送到 `opu-sync`，不合入 `dev`。
-7. 所有推送都应是新建或 fast-forward；禁止 force push。
-8. 同步 PR 必须使用 **Create a merge commit**；禁止 **Squash and merge** 和 **Rebase and merge**。
-9. 出现冲突时先列出冲突文件、三方含义和保留计划，取得用户确认后再修改；禁止机械选择全部 ours/theirs。
-10. 构建 Avalonia 项目前设置 `$env:AVALONIA_TELEMETRY_OPTOUT='1'`。
+7. **每次使用两个 cache 分支完成 merge/split 后，必须执行第 6 节，把 cache 的最新位置备份到 `opu-sync` 并验证远程 SHA；未完成远程验证，不进入正式同步。**
+8. 即使新 OPU 提交没有修改 Core/Plugin，也要推送 cache 分支，因为 cache 仍记录了新的上游合并位置；只有没有产生新 synthetic 分支时才省略该 synthetic 分支的 push。
+9. 所有推送都应是新建或 fast-forward；禁止 force push。
+10. 同步 PR 必须使用 **Create a merge commit**；禁止 **Squash and merge** 和 **Rebase and merge**。
+11. 出现冲突时先列出冲突文件、三方含义和保留计划，取得用户确认后再修改；禁止机械选择全部 ours/theirs。
+12. 构建 Avalonia 项目前设置 `$env:AVALONIA_TELEMETRY_OPTOUT='1'`。
 
 ## 2. 每次同步前
 
@@ -189,7 +191,11 @@ Write-Output "PLUGIN_SPLIT=$PluginSplit"
 
 若新提交没有修改 Plugin，继续使用读取出的旧 `$PluginSplit`。
 
-## 6. 立即备份缓存
+## 6. 每次使用 cache 后必须立即备份
+
+本节是每次缓存更新的强制收尾步骤，不是可选归档。第 4、5 节执行完毕后立即执行本节；远程验证通过后，才能切回 `dev` 创建正式同步分支。
+
+即使本次上游没有修改 Core/Plugin、实际 split SHA 没变，cache 分支也可能因为合入了新的 `$OpuSha` 而前移，因此仍要推送两个 cache 分支。
 
 先 fast-forward 推送两个 cache 分支：
 
@@ -213,15 +219,40 @@ if ($LASTEXITCODE -eq 0) {
 }
 ```
 
-验证：
+验证远程 cache SHA 与本地完全一致，并确认远程至少有一条 synthetic 分支指向实际 split SHA：
 
 ```powershell
-git ls-remote --heads opu-sync cache/opu-core cache/opu-plugin
-git cat-file -e "$CoreSplit^{commit}"
-git cat-file -e "$PluginSplit^{commit}"
+$LocalCoreCache = (git rev-parse cache/opu-core).Trim()
+$LocalPluginCache = (git rev-parse cache/opu-plugin).Trim()
+
+$RemoteCoreCacheLine = git ls-remote --heads opu-sync cache/opu-core
+$RemotePluginCacheLine = git ls-remote --heads opu-sync cache/opu-plugin
+$RemoteCoreCache = ($RemoteCoreCacheLine -split '\s+')[0]
+$RemotePluginCache = ($RemotePluginCacheLine -split '\s+')[0]
+
+if ($RemoteCoreCache -ne $LocalCoreCache) {
+    throw "Remote Core cache mismatch: local=$LocalCoreCache remote=$RemoteCoreCache"
+}
+if ($RemotePluginCache -ne $LocalPluginCache) {
+    throw "Remote Plugin cache mismatch: local=$LocalPluginCache remote=$RemotePluginCache"
+}
+
+$RemoteCoreSplits = git ls-remote --heads opu-sync 'opu-core/*'
+$RemotePluginSplits = git ls-remote --heads opu-sync 'opu-plugin/*'
+if (-not ($RemoteCoreSplits -match "^$CoreSplit\s")) {
+    throw "Remote Core synthetic branch for $CoreSplit is missing."
+}
+if (-not ($RemotePluginSplits -match "^$PluginSplit\s")) {
+    throw "Remote Plugin synthetic branch for $PluginSplit is missing."
+}
+
+Write-Output "REMOTE_CORE_CACHE=$RemoteCoreCache"
+Write-Output "REMOTE_PLUGIN_CACHE=$RemotePluginCache"
+Write-Output "REMOTE_CORE_SPLIT=$CoreSplit"
+Write-Output "REMOTE_PLUGIN_SPLIT=$PluginSplit"
 ```
 
-如果 push 被拒绝，停止并 fetch/审查远程差异；禁止 `--force`。
+只有以上四项检查全部通过，缓存使用才算完成。如果 push 被拒绝或 SHA 不一致，停止并 fetch/审查远程差异；禁止 `--force`。
 
 ## 7. 创建正式同步分支
 
