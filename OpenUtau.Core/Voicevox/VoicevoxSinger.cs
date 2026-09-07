@@ -56,6 +56,26 @@ namespace OpenUtau.Core.Voicevox {
             Reload();
         }
 
+        public override void EnsureAvatarLoaded() {
+            if (avatarData != null) {
+                return;
+            }
+            string avatarPath = Avatar;
+            if (string.IsNullOrEmpty(avatarPath) && Directory.Exists(Location)) {
+                avatarPath = Directory.EnumerateFiles(Location, "*_icon.png", SearchOption.TopDirectoryOnly)
+                    .FirstOrDefault();
+            }
+            if (!string.IsNullOrEmpty(avatarPath)) {
+                try {
+                    avatarData = File.ReadAllBytes(avatarPath);
+                    return;
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to load avatar data.");
+                }
+            }
+return;
+        }
+
         public override void Reload() {
             if (!Found) {
                 return;

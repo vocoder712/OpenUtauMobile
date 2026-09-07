@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -100,32 +100,65 @@ namespace OpenUtau.Core.Util {
         }
 
         private static void Load() {
-            try {
-                if (File.Exists(PathManager.Inst.PrefsFilePath)) {
-                    Default = JsonConvert.DeserializeObject<SerializablePreferences>(
-                        File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
-                    if(Default == null) {
-                        Reset();
-                        return;
-                    }
+            if (!File.Exists(PathManager.Inst.PrefsFilePath)) {
+                Reset();
+                return;
+            }
 
-                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty;
-                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
-                    if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
-                    if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
-                    if (Default.Theme != null) {
-                        Default.ThemeName = Default.Theme switch {
-                            1 => "Dark",
-                            _ => "Light"
-                        };
-                        Default.Theme = null;
-                    }
-                } else {
-                    Reset();
+            try {
+                Default = JsonConvert.DeserializeObject<SerializablePreferences>(
+                    File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
+                if (Default == null) {
+                    Log.Error("Failed to load prefs: deserialized prefs is null.");
+                    Default = new SerializablePreferences();
+                    return;
                 }
             } catch (Exception e) {
-                Log.Error(e, "Failed to load prefs.");
+                Log.Error(e, "Failed to read or deserialize prefs.");
                 Default = new SerializablePreferences();
+                return;
+            }
+
+            ValidateLoadedPreferences();
+        }
+
+        private static void ValidateLoadedPreferences() {
+            ValidatePreference("Language", () => {
+                if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) {
+                    Default.Language = string.Empty;
+                }
+            });
+            ValidatePreference("SortingOrder", () => {
+                if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) {
+                    Default.SortingOrder = string.Empty;
+                }
+            });
+            ValidatePreference("DefaultRenderer", () => {
+                if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) {
+                    Default.DefaultRenderer = string.Empty;
+                }
+            });
+            ValidatePreference("OnnxRunner", () => {
+                if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) {
+                    Default.OnnxRunner = string.Empty;
+                }
+            });
+            ValidatePreference("Theme", () => {
+                if (Default.Theme != null) {
+                    Default.ThemeName = Default.Theme switch {
+                        1 => "Dark",
+                        _ => "Light"
+                    };
+                    Default.Theme = null;
+                }
+            });
+        }
+
+        private static void ValidatePreference(string name, Action action) {
+            try {
+                action();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to validate prefs field {Name}.", name);
             }
         }
 
@@ -149,25 +182,25 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public string ThemeName = "Light";
+            public string ThemeName = "System";
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
-            public int NumRenderThreads = 2;
+            public int NumRenderThreads = 1;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
             public double DiffSingerDepth = 1.0;
-            public int DiffSingerSteps = 20;
-            public int DiffSingerStepsVariance = 20;
+            public int DiffSingerSteps = 5;
+            public int DiffSingerStepsVariance = 5;
             public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
             public bool DiffSingerVarianceLocalPitchPatch = false;
             public bool DiffSingerLangCodeHide = false;
             public bool SkipRenderingMutedTracks = false;
-            public string Language = string.Empty;
+            public string Language = "system";
             public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
@@ -254,6 +287,112 @@ errors.txt
 ";
             public string RecoveryPath = string.Empty;
             public bool DetachPianoRoll = false;
+
+            #region OpenUtau Mobile 特定选项
+            public double PlaybackRefreshRate = 20.0;
+
+            /// <summary>
+            /// 钢琴卷帘标尺是否以轻量矩形块显示分片渲染状态，而不是绘制波形。
+            /// </summary>
+            public bool RenderedPhraseStatusMode = false;
+
+            /// <summary>
+            /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont
+            /// </summary>
+            public int PianoKeyBehavior = 1;
+
+            /// <summary>
+            /// Path to SoundFont (SF2) file for piano key playback.
+            /// If empty or file not found, falls back to SineWave.
+            /// </summary>
+            public string SoundFontPath = string.Empty;
+
+            /// <summary>
+            /// Preferred audio backend. Empty string means auto-select based on platform.
+            /// Supported values:
+            /// - "" or "Auto": Auto-select (default)
+            /// - "MiniAudio": Use MiniAudio (Windows/Linux/macOS/Android)
+            /// - "NAudio": Use NAudio (Windows only)
+            /// - "AudioTrack": Use Android AudioTrack (Android only)
+            /// - "Dummy": Use dummy audio output (all platforms, no sound)
+            /// Platform-specific availability:
+            /// - Windows: MiniAudio, NAudio, Dummy
+            /// - Linux/macOS: MiniAudio, Dummy
+            /// - Android: MiniAudio, AudioTrack, Dummy
+            /// - iOS/Browser: Dummy (future support)
+            /// </summary>
+            public string AudioBackend = string.Empty;
+
+            /// <summary>
+            /// Theme color mode: 0 = FollowSystem, 1 = Custom.
+            /// </summary>
+            public int ThemeColorMode = 0;
+
+            /// <summary>
+            /// Custom theme seed in #RRGGBB format.
+            /// </summary>
+            public string ThemeColorSeedHex = "#66CCFF";
+
+            /// <summary>
+            /// Current selected preset id; empty when manually adjusted.
+            /// </summary>
+            public string ThemeColorPresetId = "tianyi";
+            /// <summary>
+            /// 上一次打开工程文件的目录
+            /// </summary>
+            public string LastOpenProjectDirectory = string.Empty;
+            /// <summary>
+            /// 上一次保存工程文件的目录
+            /// </summary>
+            public string LastSaveProjectDirectory = string.Empty;
+            /// <summary>
+            /// 首次启动设置向导是否已完成。
+            /// </summary>
+            public bool SetupWizardCompleted = false;
+            /// <summary>
+            /// 是否启用自动保存。
+            /// </summary>
+            public bool AutoSaveEnabled = true;
+            /// <summary>
+            /// 自动保存间隔，单位秒（仅在启用时生效）。
+            /// </summary>
+            public int AutoSaveInterval = 120;
+            /// <summary>
+            /// Stop button behavior: 1 = StartTick -> SelectedPart -> 0 (default),
+            /// 2 = StartTick -> 0, 3 = Always 0.
+            /// </summary>
+            public int StopButtonBehavior = 1;
+            /// <summary>
+            /// 各批量编辑类别中置顶操作的稳定 ID，顺序为最近置顶优先。
+            /// </summary>
+            public Dictionary<string, List<string>> PinnedBatchEdits = new Dictionary<string, List<string>>();
+            /// <summary>
+            /// 是否显示全局性能监视悬浮层。
+            /// </summary>
+            public bool PerformanceMonitorEnabled = false;
+
+            public const int PitchPenNoteHitTickExtensionMinimum = 0;
+            public const int PitchPenNoteHitTickExtensionMaximum = 960;
+            public const int PitchPenNoteHitTickExtensionDefault = 240;
+            public const int PitchPenNoteHitToneExtensionMinimum = 0;
+            public const int PitchPenNoteHitToneExtensionMaximum = 12;
+            public const int PitchPenNoteHitToneExtensionDefault = 1;
+
+            /// <summary>
+            /// 音高线编辑模式下是否允许从扩展音符命中范围外拖拽画布。
+            /// </summary>
+            public bool PitchPenCanvasDragEnabled = true;
+
+            /// <summary>
+            /// 音高线编辑模式下音符命中范围前后扩展的 Tick 数。
+            /// </summary>
+            public int PitchPenNoteHitTickExtension = PitchPenNoteHitTickExtensionDefault;
+
+            /// <summary>
+            /// 音高线编辑模式下音符命中范围上下扩展的半音数。
+            /// </summary>
+            public int PitchPenNoteHitToneExtension = PitchPenNoteHitToneExtensionDefault;
+            #endregion
 
             // ----- Mix FX (post-processing) -----
             // Per-track FX state lives in UTrack.MixFx and the project ustx.

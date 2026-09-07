@@ -236,6 +236,10 @@ namespace OpenUtau.Core.Render {
             if (requests.Length == 0 || cancellation.IsCancellationRequested) {
                 return;
             }
+            foreach (RenderPartRequest request in requests) {
+                request.part.SetMix(request.mix);
+                DocManager.Inst.ExecuteCmd(new PartRenderInvalidatedNotification(request.part));
+            }
             var tuples = requests
                 .SelectMany(req => req.phrases
                     .Zip(req.sources, (phrase, source) => Tuple.Create(phrase, source, req)))
@@ -259,8 +263,9 @@ namespace OpenUtau.Core.Render {
                     break;
                 }
                 source.SetSamples(task.Result.samples);
+                DocManager.Inst.ExecuteCmd(new PhraseRenderedNotification(
+                    request.part, phrase, source.offsetMs, source.EndMs));
                 if (request.sources.All(s => s.HasSamples)) {
-                    request.part.SetMix(request.mix);
                     DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part));
                 }
             }

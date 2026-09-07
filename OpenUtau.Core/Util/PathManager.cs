@@ -14,7 +14,14 @@ namespace OpenUtau.Core {
 
     public class PathManager : SingletonBase<PathManager> {
         public PathManager() {
-            RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            try
+            {
+                RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            }
+            catch
+            {
+                return;
+            }
             if (OS.IsMacOS()) {
                 string userHome = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 DataPath = Path.Combine(userHome, "Library", "OpenUtau");

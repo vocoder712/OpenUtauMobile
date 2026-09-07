@@ -13,7 +13,7 @@ using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 
 namespace OpenUtau.Classic {
-    class SharpWavtool : IWavtool {
+    public class SharpWavtool : IWavtool {
         public const string nameConvergence = "convergence";
         public const string nameSimple = "simple";
 

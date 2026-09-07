@@ -29,9 +29,10 @@ namespace OpenUtau.Core {
             Log.Information("Searching singers.");
             Directory.CreateDirectory(PathManager.Inst.SingersPath);
             var stopWatch = Stopwatch.StartNew();
-            var singers = ClassicSingerLoader.FindAllSingers()
+            List<USinger> singers = ClassicSingerLoader.FindAllSingers()
                 .Concat(Vogen.VogenSingerLoader.FindAllSingers())
-                .Distinct();
+                .Distinct()
+                .ToList();
             Singers = singers
                 .ToLookup(s => s.Id)
                 .ToDictionary(g => g.Key, g => g.First());
@@ -49,6 +50,41 @@ namespace OpenUtau.Core {
                 return Singers[name];
             }
             return null;
+        }
+
+        /// <summary>
+        /// 卸载歌手，并在操作结束后重新扫描已安装歌手。
+        /// </summary>
+        /// <param name="singer">要卸载的已安装歌手。</param>
+        public void UninstallSinger(USinger singer)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(singer);
+                string location = singer.Location;
+                if (string.IsNullOrWhiteSpace(location))
+                {
+                    throw new InvalidOperationException("Singer location is empty.");
+                }
+
+                singer.FreeMemory();
+                if (Directory.Exists(location))
+                {
+                    Directory.Delete(location, true);
+                }
+                else if (File.Exists(location))
+                {
+                    File.Delete(location);
+                }
+                else
+                {
+                    throw new DirectoryNotFoundException($"Singer location does not exist: {location}");
+                }
+            }
+            finally
+            {
+                SearchAllSingers();
+            }
         }
 
         public void ScheduleReload(USinger singer) {
