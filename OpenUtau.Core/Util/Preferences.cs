@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using OpenUtau.Core.Render;
@@ -100,65 +101,45 @@ namespace OpenUtau.Core.Util {
         }
 
         private static void Load() {
-            if (!File.Exists(PathManager.Inst.PrefsFilePath)) {
-                Reset();
-                return;
-            }
-
             try {
-                Default = JsonConvert.DeserializeObject<SerializablePreferences>(
-                    File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
-                if (Default == null) {
-                    Log.Error("Failed to load prefs: deserialized prefs is null.");
-                    Default = new SerializablePreferences();
-                    return;
+                if (File.Exists(PathManager.Inst.PrefsFilePath)) {
+                    Default = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
+                    if(Default == null) {
+                        Reset();
+                        return;
+                    }
+
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) Default.Language = string.Empty;
+                    if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) Default.SortingOrder = string.Empty;
+                    if (Default.Beta) {
+                        Default.Channel = "beta";
+                        Default.Beta = false;
+                    }
+                    if (!new[] { "stable", "beta", "alpha" }.Contains(Default.Channel)) Default.Channel = "stable";
+                    if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) Default.DefaultRenderer = string.Empty;
+                    if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) Default.OnnxRunner = string.Empty;
+                    if (Default.Theme != null) {
+                        Default.ThemeName = Default.Theme switch {
+                            1 => "Dark",
+                            _ => "Light"
+                        };
+                        Default.Theme = null;
+                    }
+                    if (Default.PreferPortAudio != null) {
+                        Default.AudioBackEnd = Default.PreferPortAudio switch {
+                            false => 0,
+                            true => 1
+                        };
+                        Default.PreferPortAudio = null;
+                    }
+                    Default.MigrateRealTimePitchMode();
+                } else {
+                    Reset();
                 }
             } catch (Exception e) {
-                Log.Error(e, "Failed to read or deserialize prefs.");
+                Log.Error(e, "Failed to load prefs.");
                 Default = new SerializablePreferences();
-                return;
-            }
-
-            ValidateLoadedPreferences();
-        }
-
-        private static void ValidateLoadedPreferences() {
-            ValidatePreference("Language", () => {
-                if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) {
-                    Default.Language = string.Empty;
-                }
-            });
-            ValidatePreference("SortingOrder", () => {
-                if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.SortingOrder)))) {
-                    Default.SortingOrder = string.Empty;
-                }
-            });
-            ValidatePreference("DefaultRenderer", () => {
-                if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) {
-                    Default.DefaultRenderer = string.Empty;
-                }
-            });
-            ValidatePreference("OnnxRunner", () => {
-                if (!Onnx.getRunnerOptions().Contains(Default.OnnxRunner)) {
-                    Default.OnnxRunner = string.Empty;
-                }
-            });
-            ValidatePreference("Theme", () => {
-                if (Default.Theme != null) {
-                    Default.ThemeName = Default.Theme switch {
-                        1 => "Dark",
-                        _ => "Light"
-                    };
-                    Default.Theme = null;
-                }
-            });
-        }
-
-        private static void ValidatePreference(string name, Action action) {
-            try {
-                action();
-            } catch (Exception e) {
-                Log.Error(e, "Failed to validate prefs field {Name}.", name);
             }
         }
 
@@ -182,25 +163,32 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public string ThemeName = "System";
+            public string ThemeName = "Light";
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
             public bool PreRender = true;
-            public int NumRenderThreads = 1;
+            public int NumRenderThreads = 2;
             public string DefaultRenderer = string.Empty;
             public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
+            /// <summary>
+            /// GAME MIDI extractor backend preference: "onnx" (default) or "ggml".
+            /// Affects which inference engine Game uses; see GameBackendFactory.
+            /// </summary>
+            public string GameBackend = "onnx";
             public double DiffSingerDepth = 1.0;
-            public int DiffSingerSteps = 5;
-            public int DiffSingerStepsVariance = 5;
+            public int DiffSingerSteps = 20;
+            public int DiffSingerStepsVariance = 20;
             public int DiffSingerStepsPitch = 10;
             public bool DiffSingerTensorCache = true;
             public bool DiffSingerVarianceLocalPitchPatch = false;
             public bool DiffSingerLangCodeHide = false;
+            public bool DiffSingerLocalRetaking = false;
+            public bool Metronome = false;
             public bool SkipRenderingMutedTracks = false;
-            public string Language = "system";
+            public string Language = string.Empty;
             public string? SortingOrder = null;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
@@ -213,17 +201,26 @@ namespace OpenUtau.Core.Util {
             public List<string> FavoriteSingers = new List<string>();
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
             public List<string> RecentPhonemizers = new List<string>();
-            public bool PreferPortAudio = false;
+            public uint AudioBackEnd = 0; // 0 = Automatic, 1 = MiniAudio, 2 = SDL
             public bool UseSystemDefaultAudioDevice = true;
             public double PlayPosMarkerMargin = 0.9;
+            public int MetronomeVolume = 60;
+            public int MetronomeHighFrequency = 2200;
+            public int MetronomeLowFrequency = 1320;
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
             public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
+            public bool NoteHoverGlow = true;
+            public bool ShowPlaybackNoteHighlight = true;
+            public bool ShowPlaybackNoteBounce = false;
             public EditTool EditTool = new EditTool();
             public bool PlayTone = true;
+            /// <summary>Legacy; migrated to <see cref="RealTimePitchMode"/> on load.</summary>
+            public bool RealTimePitchGeneration = false;
+            public int RealTimePitchMode = (int)LivePitchMode.Off;
             public bool ShowVibrato = true;
             public bool ShowPitch = true;
             public bool ShowFinalPitch = true;
@@ -239,11 +236,17 @@ namespace OpenUtau.Core.Util {
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
             public string SetParamPath = string.Empty;
-            public bool Beta = false;
+            public bool Beta = false; // deprecated, migrated to Channel
+            /// <summary>
+            /// Release channel for the auto updater: "stable", "beta" or "alpha".
+            /// </summary>
+            public string Channel = "stable";
             public bool RememberMid = false;
             public bool RememberUst = true;
             public bool RememberVsqx = true;
             public string WinePath = string.Empty;
+            public bool UseWayland  = Environment.GetEnvironmentVariable("WAYLAND_DISPLAY") != null
+                                         || Environment.GetEnvironmentVariable("XDG_SESSION_TYPE") == "wayland"; //Check for Wayland
             public string PhoneticAssistant = string.Empty;
             public string RecentOpenSingerDirectory = string.Empty;
             public string RecentOpenProjectDirectory = string.Empty;
@@ -286,7 +289,7 @@ namespace OpenUtau.Core.Util {
 errors.txt
 ";
             public string RecoveryPath = string.Empty;
-            public bool DetachPianoRoll = false;
+            public bool DetachPianoRoll = true;
 
             #region OpenUtau Mobile 特定选项
             public double PlaybackRefreshRate = 20.0;
@@ -404,6 +407,18 @@ errors.txt
             // Legacy
             [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public int? Theme;
+            public bool? PreferPortAudio = false;
+
+            public void MigrateRealTimePitchMode() {
+                if (RealTimePitchGeneration && RealTimePitchMode == (int)LivePitchMode.Off) {
+                    RealTimePitchMode = (int)LivePitchMode.Normal;
+                }
+                RealTimePitchGeneration = false;
+                if (RealTimePitchMode < (int)LivePitchMode.Off
+                    || RealTimePitchMode > (int)LivePitchMode.Fast) {
+                    RealTimePitchMode = (int)LivePitchMode.Off;
+                }
+            }
         }
 
         /// <summary>
