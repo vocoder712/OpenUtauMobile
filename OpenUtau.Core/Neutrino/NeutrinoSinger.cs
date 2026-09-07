@@ -511,11 +511,14 @@ namespace OpenUtau.Core.Neutrino
             return true;
         }
 
-        public override IEnumerable<UOto> GetSuggestions(string text)
+        public override Dictionary<string, UOto> GetSuggestions(string text, bool isAlias)
         {
             string query = text?.Replace(" ", string.Empty) ?? string.Empty;
-            return otos.Where(oto => string.IsNullOrEmpty(query)
-                || oto.Alias.Contains(query, StringComparison.OrdinalIgnoreCase));
+            return otos
+                .Where(oto => string.IsNullOrEmpty(query)
+                    || oto.Alias.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .GroupBy(oto => oto.Alias)
+                .ToDictionary(group => group.Key, group => group.First());
         }
 
         public override byte[] LoadPortrait()
