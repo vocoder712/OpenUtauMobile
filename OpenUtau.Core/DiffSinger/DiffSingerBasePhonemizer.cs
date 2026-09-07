@@ -49,10 +49,23 @@ namespace OpenUtau.Core.DiffSinger
             if (singer == null) {
                 throw new Exception("Singer is null.");
             }
-            if(singer.Location == null){
-                throw new Exception("Singer location is null.");
+            if (string.IsNullOrEmpty(singer.Location))
+            {
+                throw new InvalidOperationException("Singer location is null or empty.");
             }
-            rootPath = Path.Combine(singer.Location, "dsdur");
+            if (File.Exists(Path.Combine(singer.Location, "dsdur", "dsconfig.yaml")))
+            {
+                rootPath = Path.Combine(singer.Location, "dsdur");
+            }
+            else if (File.Exists(Path.Combine(singer.Location, "dsconfig.yaml")))
+            {
+                rootPath = singer.Location;
+            }
+            else
+            {
+                throw new FileNotFoundException(
+                    $"No dsconfig.yaml found in singer directory \"{singer.Location}\" or its dsdur subdirectory.");
+            }
             //Load Config
             var configPath = Path.Join(rootPath, "dsconfig.yaml");
             try {
@@ -194,6 +207,10 @@ namespace OpenUtau.Core.DiffSinger
 
         string GetSpeakerAtIndex(Note note, int index) {
             if (dsConfig.speakers == null) return "";
+            if (dsConfig.speakers.Count == 0)
+            {
+                throw new InvalidOperationException("\"speakers\" is empty in dsconfig.yaml.");
+            }
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == index) ?? default;
             var speaker = singer.Subbanks
                 .FirstOrDefault(subbank => subbank.Color == attr.voiceColor && subbank.toneSet.Contains(note.tone));
@@ -207,9 +224,7 @@ namespace OpenUtau.Core.DiffSinger
                 speaker = singer.Subbanks.FirstOrDefault();
             }
             if (speaker is null) {
-                throw new Exception(
-                    $"No subbanks defined for singer \"{singer.Name}\". " +
-                    "Please check the singer's configuration.");
+                return dsConfig.speakers[0];
             }
             return speaker.Suffix;
         }

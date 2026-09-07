@@ -11,6 +11,7 @@ using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -98,6 +99,8 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
 
                         VoicebankConfig? config = LoadCharacterYaml(ArchiveFilePath);
                         MissingInfo = config == null || string.IsNullOrEmpty(config.SingerType);
+
+                        SingerType = DetermineSingerType(config, ArchiveFilePath);
 
                         if (!string.IsNullOrEmpty(config?.TextFileEncoding))
                         {
@@ -289,6 +292,49 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
         {
             return null;
         }
+    }
+
+    private string DetermineSingerType(VoicebankConfig? config, string archiveFilePath)
+    {
+        if (!string.IsNullOrEmpty(config?.SingerType))
+        {
+            if (SingerTypes.Contains(config.SingerType))
+            {
+                return config.SingerType;
+            }
+            Log.Warning("Unknown SingerType {SingerType} in {ArchivePath}; using UTAU.",
+                config.SingerType, archiveFilePath);
+            return SingerTypes[0];
+        }
+        return DetectSingerTypeFromArchive(archiveFilePath);
+    }
+
+    private string DetectSingerTypeFromArchive(string archiveFilePath)
+    {
+        try
+        {
+            using IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath);
+            string?[] names = archive.Entries.Where(entry => !entry.IsDirectory)
+                .Select(entry => Path.GetFileName(entry.Key?.Replace('\\', '/'))).ToArray();
+            // 与 Core 保持一致：Enunu 优先于 DiffSinger。
+            if (names.Contains(VoicebankLoader.kEnuconfigYaml))
+            {
+                return "enunu";
+            }
+            if (names.Contains(VoicebankLoader.kDsconfigYaml))
+            {
+                return "diffsinger";
+            }
+            if (names.Contains("info.toml"))
+            {
+                return "neutrino";
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to detect singer type from {ArchivePath}; using UTAU.", archiveFilePath);
+        }
+        return "utau";
     }
 
     private async Task InstallAsync()
