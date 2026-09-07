@@ -522,6 +522,8 @@ Subtree is already at commit <SPLIT_SHA>.
 
 它不应再次扫描全部上游历史。
 
+如果 `<NEW_SHA>` 之后的提交没有修改 `OpenUtau.Core/`，官方 `git subtree` 会直接返回上一次相同的 split commit，并且可能不创建请求的新 `opu-core/<NEW_SHA>` 分支。这表示 Core 内容已经与新目标一致，不是缓存损坏；记录命令实际返回的 split SHA 即可，不要手工创建/移动 synthetic 引用。重复检查可能仍检查这几个不涉及 prefix 的新提交，但不应退化为扫描全部历史。
+
 ---
 
 # 13. 更新 Plugin 缓存
@@ -545,6 +547,8 @@ git subtree split \
     --squash \
     --branch opu-plugin/<NEW_SHA>
 ```
+
+如果新上游提交没有修改 `OpenUtau.Plugin.Builtin/`，同样可能直接返回上一次 split commit 而不创建新别名分支；处理规则与 Core 相同。
 
 ---
 
