@@ -75,7 +75,20 @@ Plugin -> commit B
 
 # 2. 分支职责
 
-同步过程中使用四类分支。
+同步过程中使用以下分支/引用。名称和职责不得混用。
+
+| 名称 | 所在仓库历史 | 作用 | 是否推送/合入 `dev` |
+| --- | --- | --- | --- |
+| `dev` | OPUM | 正式开发基线，保存已完成的 subtree squash 关系 | 正常推送 |
+| `origin/dev` | OPUM 远端跟踪引用 | GitHub 上的 `dev` 状态，只用于比较和更新本地 `dev` | 不直接操作 |
+| `chore/sync-opu-<SHORT_SHA>` | OPUM | 单次同步工作分支，承载两个正式 `subtree merge --squash` 及兼容修复 | 建 PR，使用 merge commit 合入 `dev` |
+| `cache/opu-core` | 本地 OPU 完整历史 + Core rejoin | 仅用于增量拆分 Core | 永不推送、永不合入 OPUM 分支 |
+| `cache/opu-plugin` | 本地 OPU 完整历史 + Plugin rejoin | 仅用于增量拆分 Plugin | 永不推送、永不合入 OPUM 分支 |
+| `opu-core/<SHORT_SHA>` | synthetic Core-only 历史 | 某一固定 OPU 提交的临时 split 输出 | 不推送；同步完成后删除 |
+| `opu-plugin/<SHORT_SHA>` | synthetic Plugin-only 历史 | 某一固定 OPU 提交的临时 split 输出 | 不推送；同步完成后删除 |
+| `opu/master`、`opu/<tag>` | OPU 远端跟踪引用 | 表示 fetch 得到的上游状态 | 只读使用 |
+
+`<SHORT_SHA>` 统一使用目标上游完整 SHA 的前 12 位；所有实际命令仍应先把目标解析并固定为完整 SHA。
 
 ## 正式 OPUM 分支
 
@@ -83,7 +96,7 @@ Plugin -> commit B
 dev
 ```
 
-正常开发分支。
+正常开发分支，也是下一次正式同步识别上一个 subtree squash 点的历史来源。
 
 **禁止把 OPU synthetic history 直接 merge 到该分支。**
 
@@ -112,7 +125,7 @@ cache/opu-core
 cache/opu-plugin
 ```
 
-用途：
+两个缓存分支必须各自从 **OPU 完整提交**创建，不能从 `dev`、另一个缓存分支或 synthetic 分支创建。用途：
 
 * 保存 `git subtree split --rejoin` 的缓存记录；
 * 加快未来 split；
@@ -276,6 +289,8 @@ git subtree split \
 
 Core 和 Plugin 使用不同缓存分支，避免两个 prefix 的 rejoin 历史互相干扰，也更容易维护和排查。
 
+缓存只能由上述 `git branch`、`git merge` 和 `git subtree split --rejoin --squash` 命令生成。禁止手写 `git-subtree-*` 提交信息、伪造元数据、复制/移动引用或把一个 prefix 的缓存改名后供另一个 prefix 使用。
+
 至此得到：
 
 ```text
@@ -359,7 +374,10 @@ git merge --continue
 至少执行：
 
 ```bash
-dotnet build OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj
+$env:AVALONIA_TELEMETRY_OPTOUT='1'
+dotnet build OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj --no-restore
+$env:AVALONIA_TELEMETRY_OPTOUT='1'
+dotnet build OpenUtauMobile/OpenUtauMobile.csproj --no-restore
 ```
 
 然后执行 OPUM 完整构建和测试。
@@ -496,6 +514,14 @@ git subtree split \
 
 因为缓存分支已经存在上一次 rejoin 信息，所以这次不应该再次完整计算数千个旧 commit，而主要处理新增历史。
 
+更新后可以立刻原样再执行一次 split 作为命中检查。目标分支已存在时，正常结果应快速显示类似：
+
+```text
+Subtree is already at commit <SPLIT_SHA>.
+```
+
+它不应再次扫描全部上游历史。
+
 ---
 
 # 13. 更新 Plugin 缓存
@@ -593,7 +619,46 @@ cache/opu-plugin
 
 ---
 
-# 17. 禁止操作
+# 17. 缓存失效与重建
+
+出现以下任一情况时，直接弃用对应缓存，不修补元数据：
+
+* 同一目标的命中检查仍扫描全部历史；
+* `git subtree` 报告无法识别 rejoin；
+* 缓存分支来源不明、曾被改名/移动/手工构造；
+* Core 与 Plugin 的 rejoin 被写在同一缓存分支。
+
+先回到干净的 OPUM 分支，删除失效缓存和对应临时 split 分支，再严格按第 5、6 节重建：
+
+```bash
+git switch dev
+git branch -D cache/opu-core opu-core/<SHORT_SHA>
+git branch cache/opu-core <FULL_OPU_SHA>
+git switch cache/opu-core
+git subtree split --prefix=OpenUtau.Core --rejoin --squash --branch opu-core/<SHORT_SHA>
+```
+
+Plugin 使用自己的分支和 prefix 做同样操作。首次重建完整扫描是预期的一次性成本；不得通过手写缓存提交、手写 subtree 元数据或手动移动缓存来规避。
+
+---
+
+# 18. 正式分支缺少 subtree 元数据时
+
+如果历史整理导致正式 OPUM 分支仍有目录内容、但 `git subtree merge --squash` 报告该 prefix 从未 add，使用一次性的标准 Git 重新引导；不要伪造提交说明或元数据。
+
+以 Core 为例：
+
+1. 在专用同步分支用 `git rm -r OpenUtau.Core` 并提交；
+2. 若只剩 `bin/obj` 等忽略构建产物，用 `git clean -fdx -- OpenUtau.Core` 删除；
+3. 用 `git subtree add --prefix=OpenUtau.Core --squash <OLD_CORE_SPLIT>` 添加最后一次已知上游基线；
+4. 用 `git checkout dev -- OpenUtau.Core` 恢复 OPUM 定制并提交；
+5. 用正常的 `git subtree merge --prefix=OpenUtau.Core --squash opu-core/<SHORT_SHA>` 同步新版本。
+
+Plugin 使用相同方法和自己的旧 split 基线。重新引导只用于修复正式分支的标准 subtree ancestry，不代替缓存分支，也不在 `dev` 上使用 `--rejoin`。
+
+---
+
+# 19. 禁止操作
 
 以下操作禁止用于正式 OPU 同步。
 
@@ -656,6 +721,12 @@ cache/opu-plugin
 
 ---
 
+## 禁止手工构造或迁移缓存
+
+不得手写 subtree 元数据、用 `commit-tree` 伪造 rejoin、复制/移动缓存引用，或通过重命名把旧缓存当作另一个 prefix 的缓存。缓存有疑问时按第 17 节从 OPU 完整提交重建。
+
+---
+
 ## 禁止 Core 与 Plugin 使用不同 upstream SHA
 
 它们属于同一个同步单元。
@@ -682,7 +753,7 @@ Create a merge commit
 
 ---
 
-# 18. 同步流程速查
+# 20. 同步流程速查
 
 ## 第一次在本机
 
@@ -735,6 +806,6 @@ Create a merge commit
 
 ---
 
-# 19. 一句话原则
+# 21. 一句话原则
 
 > `rejoin` 只负责本地 split 加速，`squash` 负责防止上游历史污染 OPUM；Core 和 Plugin.Builtin 始终作为同一个 OPU 版本同步单元。
