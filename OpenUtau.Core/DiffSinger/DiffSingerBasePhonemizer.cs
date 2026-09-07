@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -49,10 +49,22 @@ namespace OpenUtau.Core.DiffSinger
             if (singer == null) {
                 throw new Exception("Singer is null.");
             }
-            if (File.Exists(Path.Join(singer.Location, "dsdur", "dsconfig.yaml"))) {
+            if (string.IsNullOrEmpty(singer.Location))
+            {
+                throw new InvalidOperationException("Singer location is null or empty.");
+            }
+            if (File.Exists(Path.Combine(singer.Location, "dsdur", "dsconfig.yaml")))
+            {
                 rootPath = Path.Combine(singer.Location, "dsdur");
-            } else {
+            }
+            else if (File.Exists(Path.Combine(singer.Location, "dsconfig.yaml")))
+            {
                 rootPath = singer.Location;
+            }
+            else
+            {
+                throw new FileNotFoundException(
+                    $"No dsconfig.yaml found in singer directory \"{singer.Location}\" or its dsdur subdirectory.");
             }
             //Load Config
             var configPath = Path.Join(rootPath, "dsconfig.yaml");
@@ -195,6 +207,10 @@ namespace OpenUtau.Core.DiffSinger
 
         string GetSpeakerAtIndex(Note note, int index) {
             if (dsConfig.speakers == null) return "";
+            if (dsConfig.speakers.Count == 0)
+            {
+                throw new InvalidOperationException("\"speakers\" is empty in dsconfig.yaml.");
+            }
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == index) ?? default;
             var speaker = singer.Subbanks
                 .FirstOrDefault(subbank => subbank.Color == attr.voiceColor && subbank.toneSet.Contains(note.tone));
@@ -208,10 +224,7 @@ namespace OpenUtau.Core.DiffSinger
                 speaker = singer.Subbanks.FirstOrDefault();
             }
             if (speaker is null) {
-                if (dsConfig.speakers != null && dsConfig.speakers.Count > 0) {
-                    return dsConfig.speakers[0];
-                }
-                return "";
+                return dsConfig.speakers[0];
             }
             return speaker.Suffix;
         }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -11,6 +11,7 @@ using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -99,21 +100,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
                         VoicebankConfig? config = LoadCharacterYaml(ArchiveFilePath);
                         MissingInfo = config == null || string.IsNullOrEmpty(config.SingerType);
 
-                        if (!MissingInfo)
-                        {
-                            // character.yaml has a SingerType — use it as default selection.
-                            var declaredType = config!.SingerType;
-                            if (SingerTypes.Contains(declaredType))
-                            {
-                                SingerType = declaredType;
-                            }
-                        }
-                        else
-                        {
-                            // No SingerType in yaml (or no yaml at all).
-                            // Mirror VoicebankLoader.LoadInfo heuristic: scan archive for config files.
-                            SingerType = DetectSingerTypeFromArchive(ArchiveFilePath);
-                        }
+                        SingerType = DetermineSingerType(config, ArchiveFilePath);
 
                         if (!string.IsNullOrEmpty(config?.TextFileEncoding))
                         {
@@ -307,41 +294,45 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
         }
     }
 
-    /// <summary>
-    /// Scans archive entries for dsconfig.yaml, enuconfig.yaml, or info.toml to infer singer type.
-    /// Mirrors the legacy detection heuristic in VoicebankLoader.LoadInfo and NeutrinoConfig.Load.
-    /// </summary>
+    private string DetermineSingerType(VoicebankConfig? config, string archiveFilePath)
+    {
+        if (!string.IsNullOrEmpty(config?.SingerType))
+        {
+            if (SingerTypes.Contains(config.SingerType))
+            {
+                return config.SingerType;
+            }
+            Log.Warning("Unknown SingerType {SingerType} in {ArchivePath}; using UTAU.",
+                config.SingerType, archiveFilePath);
+            return SingerTypes[0];
+        }
+        return DetectSingerTypeFromArchive(archiveFilePath);
+    }
+
     private string DetectSingerTypeFromArchive(string archiveFilePath)
     {
         try
         {
-            using (IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath))
+            using IArchive archive = ArchiveFactory.OpenArchive(archiveFilePath);
+            string?[] names = archive.Entries.Where(entry => !entry.IsDirectory)
+                .Select(entry => Path.GetFileName(entry.Key?.Replace('\\', '/'))).ToArray();
+            // 与 Core 保持一致：Enunu 优先于 DiffSinger。
+            if (names.Contains(VoicebankLoader.kEnuconfigYaml))
             {
-                bool hasDsconfig = archive.Entries.Any(e =>
-                    Path.GetFileName(e.Key) == "dsconfig.yaml");
-                if (hasDsconfig)
-                {
-                    return "diffsinger";
-                }
-
-                bool hasEnuconfig = archive.Entries.Any(e =>
-                    Path.GetFileName(e.Key) == "enuconfig.yaml");
-                if (hasEnuconfig)
-                {
-                    return "enunu";
-                }
-
-                bool hasNeutrino = archive.Entries.Any(e =>
-                    Path.GetFileName(e.Key) == "info.toml");
-                if (hasNeutrino)
-                {
-                    return "neutrino";
-                }
+                return "enunu";
+            }
+            if (names.Contains(VoicebankLoader.kDsconfigYaml))
+            {
+                return "diffsinger";
+            }
+            if (names.Contains("info.toml"))
+            {
+                return "neutrino";
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Fall through to default
+            Log.Warning(ex, "Failed to detect singer type from {ArchivePath}; using UTAU.", archiveFilePath);
         }
         return "utau";
     }
