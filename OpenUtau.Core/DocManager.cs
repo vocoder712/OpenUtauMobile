@@ -9,8 +9,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Classic;
+using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Lib;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -58,6 +60,7 @@ namespace OpenUtau.Core {
             this.mainThread = mainThread;
             this.mainScheduler = mainScheduler;
             PhonemizerRunner = new PhonemizerRunner(mainScheduler);
+            RealTimePitchGenerationService.Inst.Initialize();
         }
 
         public void SearchAllLegacyPlugins() {
@@ -83,7 +86,7 @@ namespace OpenUtau.Core {
                 if (File.Exists(oldBuiltin)) {
                     File.Delete(oldBuiltin);
                 }
-                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
+                SearchPluginInternal(PathManager.Inst.PluginsPath, files);
             } catch (Exception e) {
                 Log.Error(e, "Failed to search plugins.");
             }
@@ -123,6 +126,16 @@ namespace OpenUtau.Core {
             PhonemizerFactory.BuildList();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
+        }
+        private void SearchPluginInternal(string path, List<string> result) {
+            if (Directory.EnumerateFiles(path, "plugin.txt", SearchOption.TopDirectoryOnly).Any()) {
+                return;
+            }
+            result.AddRange(Directory.EnumerateFiles(path, "*.dll", SearchOption.TopDirectoryOnly));
+            var directories = Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly);
+            foreach (var directory in directories) {
+                SearchPluginInternal(directory, result);
+            }
         }
 
         #region Command Queue
@@ -232,9 +245,17 @@ namespace OpenUtau.Core {
                     rangeEndTick = 0;
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTickNotif) {
                     playPosTick = setPlayPosTickNotif.playPosTick;
-                } else if (cmd is SetRangeSelectionNotification setRange) {
+} else if (cmd is SetRangeSelectionNotification setRange) {
                     rangeStartTick = setRange.startTick;
                     rangeEndTick = setRange.endTick;
+                } else if (cmd is RealCurvesUpdatedNotification realCurvesNotif) {
+                    if (realCurvesNotif.part is UVoicePart voicePart) {
+                        RealCurveUpdater.Apply(Project, voicePart, realCurvesNotif.updates);
+                    }
+                } else if (cmd is RealCurveCoverageNotification coverageNotif) {
+                    if (coverageNotif.part is UVoicePart coveragePart) {
+                        RealCurveUpdater.TrimToCoverage(Project, coveragePart, coverageNotif.ranges);
+                    }
                 } else if (cmd is SingersChangedNotification) {
                     SingerManager.Inst.SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {
@@ -268,6 +289,27 @@ namespace OpenUtau.Core {
             Publish(cmd);
             if (!undoGroup.DeferValidate) {
                 Project.Validate(cmd.ValidateOptions);
+                ScheduleRealCurveRefresh(cmd);
+            }
+        }
+
+        void ScheduleRealCurveRefresh(UCommand cmd) {
+            if (cmd is not ExpCommand expCommand) {
+                return;
+            }
+            var part = expCommand.Part;
+            if (!Project.parts.Contains(part) ||
+                part.trackNo < 0 ||
+                part.trackNo >= Project.tracks.Count) {
+                return;
+            }
+            Project.tracks[part.trackNo].RendererSettings.Renderer
+                ?.ScheduleRealCurveRefresh(Project, part, cmd);
+        }
+
+        void ScheduleRealCurveRefresh(IEnumerable<UCommand> commands) {
+            foreach (var cmd in commands) {
+                ScheduleRealCurveRefresh(cmd);
             }
         }
 
@@ -304,6 +346,7 @@ namespace OpenUtau.Core {
                 Project.ValidateFull();
             }
             undoGroup.Merge();
+            ScheduleRealCurveRefresh(undoGroup.Commands);
             undoGroup = null;
             Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());
@@ -345,6 +388,33 @@ namespace OpenUtau.Core {
             }
         }
 
+        /// <summary>
+        /// Apply commands without recording undo. Still notifies subscribers.
+        /// </summary>
+        public void ApplyTransient(IEnumerable<UCommand> commands, ValidateOptions? validateOptions = null, bool preRender = true) {
+            if (mainThread != Thread.CurrentThread) {
+                PostOnUIThread(() => ApplyTransient(commands, validateOptions, preRender));
+                return;
+            }
+            RealTimePitchGenerationService.SuppressCallbacks = true;
+            try {
+                foreach (var cmd in commands) {
+                    lock (Project) {
+                        cmd.Execute();
+                    }
+                    Publish(cmd);
+                }
+                if (validateOptions != null) {
+                    Project.Validate(validateOptions.Value);
+                    if (preRender) {
+                        ExecuteCmd(new PreRenderNotification());
+                    }
+                }
+            } finally {
+                RealTimePitchGenerationService.SuppressCallbacks = false;
+            }
+        }
+
         public void RollBackUndoGroup() {
             if (undoGroup == null) {
                 Log.Error("No active undoGroup to rollback.");
@@ -358,7 +428,9 @@ namespace OpenUtau.Core {
                 }
                 Publish(cmd, true);
             }
+            ScheduleRealCurveRefresh(undoGroup.Commands);
             undoGroup.Commands.Clear();
+            ExecuteCmd(new PreRenderNotification());
         }
 
         public void Undo() {
@@ -375,6 +447,7 @@ namespace OpenUtau.Core {
                 Publish(cmd, true);
             }
             redoQueue.AddToBack(group);
+            ScheduleRealCurveRefresh(group.Commands);
             ExecuteCmd(new PreRenderNotification());
         }
 
@@ -392,6 +465,7 @@ namespace OpenUtau.Core {
                 Publish(cmd);
             }
             undoQueue.AddToBack(group);
+            ScheduleRealCurveRefresh(group.Commands);
             ExecuteCmd(new PreRenderNotification());
         }
 

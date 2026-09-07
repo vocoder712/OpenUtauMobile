@@ -315,3 +315,26 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Legacy data-only packages identify themselves with `name` and are consumed directly from their installed dependency directory; they do not expose a loadable entrypoint. Requiring one regressed file installation after the Core update.
 - Alternatives considered: Rewrite legacy archives during installation; infer a synthetic loader from package contents; special-case known vocoder package names in the Mobile layer.
 - Impacted areas: `OpenUtau.Core.PackageManager` archive validation; legacy data/model `.oudep` packages can be installed again, while malformed explicit entrypoints remain rejected.
+
+- Date: 2026-09-06
+- Decision: Split preferences loading into file deserialization and per-field validation. Only missing preference files call `Reset`; null or unreadable preference files create in-memory defaults without immediately saving, and validation failures are logged per field without replacing the loaded preferences object.
+- Rationale: Platform or dependency initialization failures, such as ONNX Runtime native loading during runner validation, must not discard user preferences, recent files, or history after a successful JSON load.
+- Alternatives considered: Keep the single broad load catch; remove all validation during load; special-case only ONNX runner validation.
+- Impacted areas: Core preferences startup loading and validation behavior.
+- Date: 2026-09-06
+- Decision: Route both dev-branch Android ARM64 nightly builds and full-release Android matrix builds through one reusable Android workflow. Restore explicitly for the Release configuration and final RID, publish the same RID with `--no-restore`, and verify the packaged ABI and ONNX native libraries before upload.
+- Rationale: A shared build contract prevents restore and RID drift between nightly and release builds. Native-library hashes and ELF dependency inspection allow artifacts for the same RID to be cross-checked without treating expected version, build metadata, and signing differences as native payload differences.
+- Alternatives considered: Keep duplicated Android jobs synchronized manually; rely on implicit publish restore; compare only whole signed APK hashes.
+- Impacted areas: GitHub Actions Android nightly/full builds, artifact naming, pre-upload native payload validation, and verification artifacts.
+
+- Date: 2026-09-06
+- Decision: Exclude the ONNX Runtime NuGet package's automatic runtime and build asset injection in the Android head, then explicitly include only its official Android AAR.
+- Rationale: .NET for Android can otherwise package the NuGet package's Linux ARM64 `libonnxruntime.so` before resolving the AAR entry with the same APK path, producing XA4301 and retaining a glibc-linked binary. A single explicit AAR source makes native selection deterministic.
+- Alternatives considered: Depend on RID-specific restore alone; copy ONNX `.so` files into the repository; suppress XA4301.
+- Impacted areas: Android NuGet/native-library resolution and Android package contents. Managed ONNX APIs and other platforms are unchanged.
+
+- Date: 2026-09-07
+- Decision: Port the reviewed Core and mobile UI changes from `audit/core-sync` into the existing sync branch as a corrective commit, preserving its Plugin subtree history, updated Plugin content, renderer package versions, frozen CoreVersion, and sync documentation.
+- Rationale: The audit worktree reconstructs only the Core merge and still contains the old Plugin. Its reviewed files preserve OPUM project configuration, per-field preference validation, and Neutrino noteIndex/availableLeadingMs alongside upstream XSY. The user approved removing the legacy rendered-waveform notifications and UI; no replacement mobile waveform UI is introduced here. Remove the unused System.Drawing.Common reference, which brought Windows assemblies into Android AOT.
+- Verification scope: Old Plugin customizations consist only of net10.0 and NoWarn, both retained in the sync result. All other Plugin content matches frozen split 1e74269e69f9d721238f966e4e09841743b56375. Build the final sync combination separately; the audit worktree's earlier AOT result alone does not validate the updated Plugin.
+- Impacted areas: Core/mobile compatibility and Android dependencies. Upstream target remains 2b03ad562fa6ee2937fdcfe24e790ad92c58064c; no new upstream fetch or cache reconstruction.

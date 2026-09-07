@@ -9,11 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj" />
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
