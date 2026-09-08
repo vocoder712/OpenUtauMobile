@@ -55,13 +55,6 @@
                             </Button.CommandParameter>
                         </Button>
                         <Button Classes="ActionBtn"
-                                Content="{DynamicResource EditorMore.ImportMIDI}"
-                                Command="{Binding ConfirmCommand}">
-                            <Button.CommandParameter>
-                                <vm:EditorMoreAction>ImportMidi</vm:EditorMoreAction>
-                            </Button.CommandParameter>
-                        </Button>
-                        <Button Classes="ActionBtn"
                                 Content="{DynamicResource EditorMore.ImportTrack}"
                                 Command="{Binding ConfirmCommand}">
                             <Button.CommandParameter>

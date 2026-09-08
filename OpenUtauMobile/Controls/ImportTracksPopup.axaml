@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             x:Class="OpenUtauMobile.Controls.ImportTracksPopup"
+             x:DataType="vm:ImportTracksViewModel" Classes="PopupDialogRoot">
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border DockPanel.Dock="Top" Classes="PopupTitleBar">
+                <TextBlock Text="{DynamicResource EditorMore.ImportTrack}" Classes="PopupTitle" />
+            </Border>
+            <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,*" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}">
+                <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                <Button Grid.Column="1" Content="{Binding ImportLabel}" Command="{Binding ImportCommand}" HorizontalAlignment="Right" />
+            </Grid>
+            <ScrollViewer MaxHeight="{x:Static theme:ThemeSemImportTracksTokens.ContentMaxHeight}"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}" Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                    <TextBlock Text="{DynamicResource ImportTracks.AppendHint}" TextWrapping="Wrap" />
+                    <Grid ColumnDefinitions="*,*">
+                        <Button Content="{DynamicResource ImportTracks.SelectAll}" Command="{Binding SelectAllCommand}" />
+                        <Button Grid.Column="1" Content="{DynamicResource ImportTracks.SelectNone}" Command="{Binding SelectNoneCommand}" HorizontalAlignment="Right" />
+                    </Grid>
+                    <ItemsControl ItemsSource="{Binding Sources}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ImportSourceViewModel">
+                                <StackPanel Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetS}">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding Summary}" />
+                                    <TextBlock Text="{Binding Error}" IsVisible="{Binding HasError}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
+                                    <Button Content="{DynamicResource ImportTracks.RemoveFile}"
+                                            Command="{Binding $parent[UserControl].((vm:ImportTracksViewModel)DataContext).RemoveSourceCommand}"
+                                            CommandParameter="{Binding}" />
+                                    <ItemsControl ItemsSource="{Binding Tracks}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:ImportTrackViewModel">
+                                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" HorizontalAlignment="Stretch"
+                                                          HorizontalContentAlignment="Stretch" MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{Binding Summary}" FontSize="{x:Static theme:ThemeSemTypographyTokens.BodySSize}" />
+                                                        <TextBlock Text="{Binding Warning}" IsVisible="{Binding HasWarning}" TextWrapping="Wrap"
+                                                                   Foreground="{DynamicResource Sem.Color.Warning}" />
+                                                    </StackPanel>
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="{DynamicResource ImportTracks.ExpressionsHint}" TextWrapping="Wrap" />
+                    <TextBlock Text="{DynamicResource ImportTracks.HistoryNotice}" TextWrapping="Wrap" />
+                    <CheckBox IsChecked="{Binding UseSourceTiming, Mode=TwoWay}">
+                        <TextBlock Text="{DynamicResource ImportTracks.UseSourceTiming}" TextWrapping="Wrap" />
+                    </CheckBox>
+                    <StackPanel IsVisible="{Binding UseSourceTiming}" Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                        <TextBlock Text="{DynamicResource ImportTracks.TimingSource}" />
+                        <TextBlock Text="{Binding TimingSource.Name}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding TimingSummary}" TextWrapping="Wrap" />
+                        <TextBlock Text="{DynamicResource ImportTracks.ReplaceTimingWarning}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Sem.Color.Warning}" />
+                        <Expander Header="{DynamicResource ImportTracks.MarkerDetails}">
+                            <TextBlock Text="{Binding TimingDetails}" TextWrapping="Wrap" />
+                        </Expander>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</UserControl>

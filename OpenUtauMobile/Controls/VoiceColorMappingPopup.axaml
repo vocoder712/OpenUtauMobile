@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             x:Class="OpenUtauMobile.Controls.VoiceColorMappingPopup"
+             x:DataType="vm:VoiceColorMappingViewModel" Classes="PopupDialogRoot">
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <Border DockPanel.Dock="Top" Classes="PopupTitleBar">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" Classes="PopupTitle" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding TrackName}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,*" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}">
+                <Button Content="{DynamicResource VoiceMapping.Skip}" Command="{Binding CancelCommand}" />
+                <Button Grid.Column="1" Content="{DynamicResource VoiceMapping.Apply}" Command="{Binding ApplyCommand}"
+                        HorizontalAlignment="Right" />
+            </Grid>
+            <ScrollViewer MaxHeight="{x:Static theme:ThemeSemImportTracksTokens.ContentMaxHeight}"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}" Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Mappings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:VoiceColorMappingRow">
+                                <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetS}"
+                                            Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                                    <ComboBox ItemsSource="{Binding NewColors}" SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                                              HorizontalAlignment="Stretch" MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</UserControl>

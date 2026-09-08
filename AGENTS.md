@@ -10,3 +10,7 @@ Read [`.agent/README.md`](.agent/README.md) for a detailed explanation of the ag
 ## Avalonia build command
 
 - Remember to execute `$env:AVALONIA_TELEMETRY_OPTOUT='1';` before running `dotnet build` to disable Avalonia telemetry.
+
+## Unit test
+
+- Mustn't run or create any unit tests after implementing new features.

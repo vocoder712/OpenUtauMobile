@@ -338,3 +338,15 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: The audit worktree reconstructs only the Core merge and still contains the old Plugin. Its reviewed files preserve OPUM project configuration, per-field preference validation, and Neutrino noteIndex/availableLeadingMs alongside upstream XSY. The user approved removing the legacy rendered-waveform notifications and UI; no replacement mobile waveform UI is introduced here. Remove the unused System.Drawing.Common reference, which brought Windows assemblies into Android AOT.
 - Verification scope: Old Plugin customizations consist only of net10.0 and NoWarn, both retained in the sync result. All other Plugin content matches frozen split 1e74269e69f9d721238f966e4e09841743b56375. Build the final sync combination separately; the audit worktree's earlier AOT result alone does not validate the updated Plugin.
 - Impacted areas: Core/mobile compatibility and Android dependencies. Upstream target remains 2b03ad562fa6ee2937fdcfe24e790ad92c58064c; no new upstream fetch or cache reconstruction.
+
+- Date: 2026-09-08
+- Decision: Use Core Formats.ImportTracks directly, matching desktop track merging, first-source tempo/time signatures, project reload, and history reset semantics. Remove the mobile ImportTracksCommand and its custom transaction and subscriber branches.
+- Rationale: The user prefers desktop behavior and a simpler dependency surface over a separate undoable mobile implementation. Mobile code only prepares the selected source tracks and provides multi-file selection, previews, diagnostics, and confirmation. The confirmation explicitly explains history reset.
+- Verification: Build checks only. The user requested deleting tests and ignoring /tests/; no unit tests are created or run.
+- Impacted areas: Mobile track-import UI and orchestration; Core and Plugin remain unchanged.
+
+- Date: 2026-09-08
+- Decision: Port desktop origin/master 7c68a087 post-import voice-color validation and DiffSinger imported-vocal-mode mapping to mobile popup UX. Also handle the existing VoiceColorRemappingNotification after the singer-selection command group has closed.
+- Rationale: Formats.ImportTracks itself is unchanged upstream, but its desktop caller includes post-import mappings. Keep desktop mapping defaults, source-curve classification, clNN targets, scaling/clamping, and no-overwrite behavior. Use the existing SetPhonemeExpressionCommand for phoneme colors; imported vocal-mode curves are copied directly as on desktop, not made into a new undoable import transaction. A validation notification refreshes derived data after those curve additions.
+- UX: Scrollable touch-sized mapping rows, localized defaults and explanations, fixed apply/skip footer, and viewport-aware sizing. Skipping a mapping keeps the imported tracks.
+- Verification: Windows build and source review only; no unit tests. Core and Plugin sources remain untouched.

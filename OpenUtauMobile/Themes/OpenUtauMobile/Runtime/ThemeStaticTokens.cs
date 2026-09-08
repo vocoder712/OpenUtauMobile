@@ -4,6 +4,15 @@ using Avalonia.Media;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 
+/// <summary>导入弹窗的列表与触屏布局尺寸。</summary>
+public static class ThemeSemImportTracksTokens
+{
+    public static double DialogMaxWidth => 560d;
+    public static double ViewportMargin => ThemeBaseLayoutTokens.SpaceXXL;
+    public static double ListMaxHeight => 280d;
+    public static double ContentMaxHeight => 360d;
+}
+
 /// <summary>
 /// base double
 /// </summary>

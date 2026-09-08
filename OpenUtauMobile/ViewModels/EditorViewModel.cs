@@ -549,6 +549,25 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                     ProgressMessage = progressNotif.Info;
                 });
                 break;
+            case VoiceColorRemappingNotification remapping:
+                UProject mappingProject = DocManager.Inst.Project;
+                UTrack? mappingTrack = remapping.TrackNo >= 0 && remapping.TrackNo < mappingProject.tracks.Count
+                    ? mappingProject.tracks[remapping.TrackNo] : null;
+                // 歌手选择仍处于原命令组中；下一轮 UI 调度再打开映射弹窗。
+                Dispatcher.UIThread.Post(async () =>
+                {
+                    try
+                    {
+                        await VoiceColorMappingService.ValidateAsync(mappingProject, mappingTrack,
+                            mappingTrack == null || remapping.Validate);
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error(exception, "Failed to remap voice colors");
+                        ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+                    }
+                });
+                break;
             case LoadProjectNotification loadProjectNotification:
                 // 添加最近打开的项目
                 Preferences.AddRecentFileIfEnabled(loadProjectNotification.project.FilePath);
@@ -676,12 +695,8 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             case EditorMoreAction.ImportAudio:
                 _ = ImportAudio();
                 break;
-            case EditorMoreAction.ImportMidi: // TODO: 合并到导入轨道
-                _ = ImportMidi();
-                break;
             case EditorMoreAction.ImportTrack:
-                // TODO: Handle ImportTrack action
-                ToastService.Enqueue(L.S("EditorMore.Toast.ImportTrack"));
+                await ImportTracksAsync();
                 break;
             case EditorMoreAction.ExportAudio:
                 _ = ShowExportAudioPopupAsync();
@@ -715,38 +730,55 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         DocManager.Inst.EndUndoGroup();
     }
 
-    private static async Task ImportMidi()
+    private bool importingTracks;
+
+    private async Task ImportTracksAsync()
     {
-        string file = await FilePicker.PickSingleFileAsync(L.S("FilePicker.ImportMIDI"), ["*.mid", "*.midi"]);
-        if (file == string.Empty)
+        if (importingTracks) return;
+        importingTracks = true;
+        try
         {
-            return;
-        }
-
-        UProject project = DocManager.Inst.Project;
-        List<UVoicePart> parts = MidiWriter.Load(file, project);
-        DocManager.Inst.StartUndoGroup("导入MIDI", true);
-        foreach (UVoicePart part in parts)
-        {
-            UTrack track = new(project)
+            UProject project = DocManager.Inst.Project;
+            string[] files = await FilePicker.PickMultipleFilesAsync(L.S("EditorMore.ImportTrack"), TrackImportService.FilePatterns);
+            if (files.Length == 0) return;
+            IReadOnlyList<TrackImportSource> sources = [];
+            await LoadingPopupService.RunAsync(L.S("ImportTracks.Reading"), async _ =>
             {
-                TrackNo = project.tracks.Count,
-                TrackColor = TrackPalette.TrackColors[new Random().Next(TrackPalette.TrackColors.Count)].Name
-            };
-            part.trackNo = track.TrackNo;
-            if (part.name != "New Part") // 这个逻辑，ennn……
+                sources = await Task.Run(() => TrackImportService.ReadFiles(files));
+            });
+            ImportTracksViewModel viewModel = new(project, sources);
+            bool confirmed = await PopupService.Show<bool>(new ImportTracksPopup(), viewModel);
+            if (!confirmed) return;
+            if (!ReferenceEquals(project, DocManager.Inst.Project))
             {
-                track.TrackName = part.name;
+                throw new InvalidOperationException(L.S("ImportTracks.ProjectChanged"));
             }
-
-            part.AfterLoad(project, track);
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
-            DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
+            PlaybackManager.Inst.StopPlayback();
+            UProject[] loadedProjects = viewModel.GetSelectedProjects();
+            int firstTrackIndex = project.tracks.Count;
+            int importedTrackCount = loadedProjects.Sum(source => source.tracks.Count);
+            await LoadingPopupService.RunAsync(L.S("ImportTracks.Importing"), _ =>
+            {
+                // 当前工程的修改与命令通知保持在 UI 线程。
+                Formats.ImportTracks(project, loadedProjects, viewModel.UseSourceTiming);
+                return Task.CompletedTask;
+            });
+            // 加载弹窗完全关闭后，按桌面顺序检查所有轨道的音色与导入人声模式。
+            await VoiceColorMappingService.ValidateAsync(project);
+            TrackOffset = firstTrackIndex * TrackHeight;
+            ApplyViewportLimits();
+            ToastService.Enqueue(string.Format(L.S("ImportTracks.Success"), importedTrackCount));
         }
-
-        DocManager.Inst.EndUndoGroup();
-        // TODO
-        ToastService.Enqueue(L.S("Editor.SyncTempoTodo"));
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to import tracks");
+            await PopupService.Show<object>(new ErrorDialogPopup(),
+                new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+        }
+        finally
+        {
+            importingTracks = false;
+        }
     }
 
     /// <summary>
