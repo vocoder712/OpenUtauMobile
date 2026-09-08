@@ -609,6 +609,21 @@
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>シンガーを削除</value>
   </data>
+  <data name="SingerDetail.Uninstalling" xml:space="preserve">
+    <value>シンガーをアンインストールしています…</value>
+  </data>
+  <data name="SingerDetail.UninstallSucceeded" xml:space="preserve">
+    <value>{0} をアンインストールしました</value>
+  </data>
+  <data name="SingerDetail.UninstallFailed" xml:space="preserve">
+    <value>{0} のアンインストールに失敗しました。</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>シンガーをアンインストールしますか？</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>{0} をアンインストールし、すべてのファイルを完全に削除しますか？この操作は元に戻せません。</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>元に戻す</value>
   </data>
@@ -1069,7 +1084,7 @@
     <value>リンクを開けませんでした</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>エラーが発生しました</value>
+    <value>OpenUtau Mobile 実行時エラー</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>不明なエラー</value>
@@ -1754,5 +1769,23 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>指を離すとパラメーターをリセット</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>エラー情報をコピーしました</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>エラー情報をコピーできませんでした</value>
+  </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>歌詞を一括編集</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>歌詞を入力します。空白や文字列をまとめるには引用符を使用します</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>選択したノートにのみ適用</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>適用</value>
   </data>
 </root>

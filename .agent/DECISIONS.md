@@ -12,6 +12,72 @@ Record meaningful technical decisions here. Use one entry per decision.
 
 ## Entries
 
+- Date: 2026-09-02
+- Decision: Add a reusable mobile-first option confirmation popup that accepts a title, content, and typed display/value options, lays actions out as full-width touch targets, and returns the selected stable string value or null when dismissed. Require this confirmation before singer uninstall.
+- Rationale: The existing exit-editor confirmation is fixed to editor-specific labels and a byte register. A generic string-valued popup supports localized labels without coupling callers to displayed text and keeps destructive operations explicit on narrow screens.
+- Alternatives considered: Reuse the fixed exit-editor popup; add a singer-only confirmation popup; compare localized option labels as results.
+- Impacted areas: Mobile popup controls/services/theme tokens, singer uninstall interaction, and localization.
+
+- Date: 2026-09-02
+- Decision: Centralize installed-singer removal in `SingerManager.UninstallSinger`. Remove directory-based voicebanks recursively and single-file Vogen packages directly, release singer memory first, and always rescan installed singers in `finally`. Run the operation from the singer detail page inside the shared loading popup.
+- Rationale: Core owns singer location semantics and the installed-singer index, while Mobile owns progress and error presentation. Keeping the rescan in Core guarantees that success and failure paths expose the current filesystem state.
+- Alternatives considered: Delete `USinger.Location` directly in the Mobile ViewModel; refresh only after successful deletion; route removal through a platform storage service.
+- Impacted areas: Core singer lifecycle, Mobile singer detail interaction, and singer-detail localization.
+
+- Date: 2026-09-01
+- Decision: Add a dedicated batch-lyric popup to the Hand, Note, and MultiSelect piano-roll context menus. Initialize it from the earliest selected note through the end of the active voice part, and apply one undoable multi-note lyric command either sequentially or to the selected-note snapshot.
+- Rationale: A focused text editor supports fast paste-and-replace workflows while preserving the current note selection and Core's existing undo/validation behavior. Keeping parsing and scope selection in the Mobile ViewModel avoids changes to upstream-derived Core.
+- Alternatives considered: Extend the single-note lyric navigator; route the workflow through the generic batch-edit catalog; mutate note lyrics directly.
+- Impacted areas: Mobile piano-roll context actions, batch-lyric popup/ViewModel, and localization. OpenUtau.Core is unchanged.
+
+- Date: 2026-09-01
+- Decision: Reuse Core's upstream `SplitLyrics.Split` and `SplitLyrics.Join` for the batch-lyric editor instead of maintaining a Mobile-only delimiter expression.
+- Rationale: The upstream algorithm handles Unicode text elements, automatic CJK/Hiragana/Katakana/Hangul segmentation, contracted Japanese kana, empty lyrics, whitespace-containing lyrics, and quoted groups with matching round-trip serialization.
+- Alternatives considered: Expand the Mobile regular expression; fork and maintain a second parser in the Mobile project.
+- Impacted areas: Mobile batch-lyric initialization, parsing, and input guidance. Core remains unchanged because the synchronized utility already exists.
+
+- Date: 2026-08-31
+- Decision: Expose clipboard text writes through an injectable `IClipboardService` in `ServiceHub`, backed by Avalonia's current `TopLevel` clipboard. Keep error-detail selection and copy orchestration in the Mobile UI/ViewModel layer.
+- Rationale: The service follows the existing cross-platform capability pattern, keeps ViewModels independent of window/platform APIs, and uses Avalonia's native clipboard bridge across desktop, mobile, and browser hosts without duplicating platform code.
+- Alternatives considered: Access `TopLevel.Clipboard` directly from the popup code-behind; add one native clipboard implementation to every platform host; place clipboard behavior in Core.
+- Impacted areas: Shared Mobile services, error-dialog ViewModel/layout/styles, localization, and responsive dialog sizing. Core and platform hosts are unchanged.
+
+- Date: 2026-08-31
+- Decision: Render track parts with a 4 px rounded container and use `Sem.Color.OnSurfaceVariant` for note and waveform previews. Cache the resolved waveform RGBA value and redraw cached waveforms when the active theme changes it. Keep the part label inside the visible viewport and reserve space for selected-part resize handles.
+- Rationale: Note and waveform previews are supporting graphics rather than primary text, so MD3's on-surface-variant role gives them appropriate visual hierarchy while adapting to light, dark, and dynamic color schemes. Rounded clipping keeps cached bitmap content inside the same silhouette as the part background. A viewport-clamped label remains readable while a long part is scrolled, and handle clearance prevents selected-state controls from covering its leading characters.
+- Alternatives considered: Keep hard-coded white waveform pixels; use the higher-emphasis `OnSurface`; use `OnPrimaryContainer` despite track colors not being primary-container surfaces.
+- Impacted areas: Mobile track-part background, preview clipping, note color, waveform pixel color, waveform theme invalidation, and part-label placement. Core is unchanged.
+
+- Date: 2026-08-31
+- Decision: Pass the gesture interpreter's current pointer position into part-resize updates. During autosave of an untitled project, temporarily use `Backups/Untitled.ustx` as the project serialization base, call `DocManager.AutoSave`, and restore the empty path in `finally`.
+- Rationale: The prior binding passed the fixed press point, so all four resize modes always calculated a zero delta. Wave parts need a non-null project directory when producing relative audio paths before save; the temporary path preserves DocManager's autosave bookkeeping without changing Core.
+- Alternatives considered: Modify Core path handling; bypass DocManager and call `Ustx.AutoSave` directly; skip autosave for untitled projects containing wave parts.
+- Impacted areas: Mobile part gesture wiring and untitled-project autosave serialization context. OpenUtau.Core remains unchanged.
+
+- Date: 2026-08-31
+- Decision: Resize selected track parts from either edge using pointer-to-current-boundary command deltas. Preserve mixed voice/wave selections; use immediate validation when any selected part is a wave part and deferred one-time validation for voice-only selections.
+- Rationale: `UWavePart.Duration` is derived from `position`, `skip`, and `trim` during validation, so deferred validation makes its current boundary stale and compounds drag deltas. Voice-part commands update `Duration` directly and retain the cheaper deferred path. A press-to-boundary tick offset preserves touch-friendly hit targets without a second preview geometry state.
+- Alternatives considered: Maintain Mobile-only resize preview bounds; change Core commands; split mixed selections by part type; validate every voice-only drag command.
+- Impacted areas: Mobile track-part resize hit testing, double-ended handles, gesture orchestration, undo-group validation policy, wave source bounds, and waveform peak indexing. OpenUtau.Core is unchanged.
+
+- Date: 2026-08-30
+- Decision: Add a persisted ruler display switch in the piano-key/ruler intersection. Waveform mode retains the cached envelope; render-status mode cancels envelope work and draws each visible phrase as an outlined pending block or filled completed block.
+- Rationale: Phrase blocks expose the same progressive render lifecycle at substantially lower CPU and allocation cost during frequent mobile piano-roll movement, while the explicit button and changing icon keep the performance choice discoverable.
+- Alternatives considered: Always draw both layers; replace the waveform permanently; infer completion from nonzero samples; rebuild a retained geometry for simple rectangles.
+- Impacted areas: Mobile piano-roll view model, ruler canvas and layout, OPUM-specific preferences, and shared view constants. Synthesis and render lifecycle are unchanged.
+
+- Date: 2026-08-30
+- Decision: Display the active voice part's available rendered phrases as a one-sided peak envelope in the piano-roll ruler placeholder. Publish the request's initially empty mix when rendering starts, publish each completed phrase's audio interval, clear immediately on invalidation, and rebuild only the visible overscanned range into cached `StreamGeometry`.
+- Rationale: Upstream `UVoicePart.Mix` is the waveform source, but upstream keeps the in-progress `WaveMix` private and assigns it to the part only after every phrase completes. Exposing lifecycle notifications without changing synthesis makes the UI match actual sample availability while pooled visible-range envelope generation and retained geometry keep high-frequency panning inexpensive.
+- Alternatives considered: Port upstream's per-frame full-view `WriteableBitmap` renderer; wait for `PartRenderedNotification`; infer completion from renderer-specific cache files; poll private render state; draw both waveform halves.
+- Impacted areas: Core render lifecycle notifications and mix publication, Mobile piano-roll ruler rendering, and shared view constants. Renderer algorithms and rendered samples are unchanged.
+
+- Date: 2026-08-29
+- Decision: Introduce an asynchronous Mobile-layer external URL launcher that accepts only absolute HTTP/HTTPS URLs and is injected through `ServiceHub`; implement native launchers for Android, Windows, Linux, macOS, iOS, and browser WASM.
+- Rationale: A typed service keeps MVVM callers independent of platform APIs, reports launch failure without exceptions reaching commands, and fits the existing ServiceHub host-injection pattern. Restricting schemes to web URLs prevents About-page links from unexpectedly opening mail, telephone, or custom-scheme handlers.
+- Alternatives considered: Put `OperatingSystem` branches in AboutViewModel; expose a raw `Action<string>` delegate; allow every absolute URI scheme; use one shell command on every desktop platform.
+- Impacted areas: Shared services, platform bootstraps, browser JS module, and About-page homepage/feedback actions. OpenUtau.Core is unchanged.
+
 - Date: 2026-08-29
 - Decision: Treat parameter-curve sample positions as voice-part-relative ticks, add the active part position only when mapping them into the absolute piano-roll canvas, and clip all parameter rendering and pointer edits to the active `UVoicePart` interval.
 - Rationale: `UCurve.xs` and `SetCurveCommand` use part-relative ticks, while the parameter canvas scroll offset uses absolute project ticks. Mixing those spaces made both curve rendering/pruning and edits diverge from synthesized output whenever the part position was nonzero, and allowed default/reference lines to extend beyond the part.
@@ -291,4 +357,31 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Platform-generated zero-distance or jitter `PointerMoved` events previously invalidated every two-finger tap, undo could run while another pointer remained captured, coordinate/timestamp snapshot matching was not a stable touch identity, and partial capture-loss recovery could retain another pointer as a false pinch participant.
 - Alternatives considered: Add logging without changing recognition; rely on tighter platform event filtering; continue reinitializing a reduced gesture after capture loss.
 - Impacted areas: Shared Windows/Android pointer gesture recognition for tap, undo/redo, pinch, cancellation, and post-cancellation single-finger input.
+- Date: 2026-09-03
+- Decision: Allow dependency archives without `entrypoints` or legacy `@class` metadata while continuing to validate every explicitly declared entrypoint.
+- Rationale: Legacy data-only packages identify themselves with `name` and are consumed directly from their installed dependency directory; they do not expose a loadable entrypoint. Requiring one regressed file installation after the Core update.
+- Alternatives considered: Rewrite legacy archives during installation; infer a synthetic loader from package contents; special-case known vocoder package names in the Mobile layer.
+- Impacted areas: `OpenUtau.Core.PackageManager` archive validation; legacy data/model `.oudep` packages can be installed again, while malformed explicit entrypoints remain rejected.
 
+- Date: 2026-09-06
+- Decision: Split preferences loading into file deserialization and per-field validation. Only missing preference files call `Reset`; null or unreadable preference files create in-memory defaults without immediately saving, and validation failures are logged per field without replacing the loaded preferences object.
+- Rationale: Platform or dependency initialization failures, such as ONNX Runtime native loading during runner validation, must not discard user preferences, recent files, or history after a successful JSON load.
+- Alternatives considered: Keep the single broad load catch; remove all validation during load; special-case only ONNX runner validation.
+- Impacted areas: Core preferences startup loading and validation behavior.
+- Date: 2026-09-06
+- Decision: Route both dev-branch Android ARM64 nightly builds and full-release Android matrix builds through one reusable Android workflow. Restore explicitly for the Release configuration and final RID, publish the same RID with `--no-restore`, and verify the packaged ABI and ONNX native libraries before upload.
+- Rationale: A shared build contract prevents restore and RID drift between nightly and release builds. Native-library hashes and ELF dependency inspection allow artifacts for the same RID to be cross-checked without treating expected version, build metadata, and signing differences as native payload differences.
+- Alternatives considered: Keep duplicated Android jobs synchronized manually; rely on implicit publish restore; compare only whole signed APK hashes.
+- Impacted areas: GitHub Actions Android nightly/full builds, artifact naming, pre-upload native payload validation, and verification artifacts.
+
+- Date: 2026-09-06
+- Decision: Exclude the ONNX Runtime NuGet package's automatic runtime and build asset injection in the Android head, then explicitly include only its official Android AAR.
+- Rationale: .NET for Android can otherwise package the NuGet package's Linux ARM64 `libonnxruntime.so` before resolving the AAR entry with the same APK path, producing XA4301 and retaining a glibc-linked binary. A single explicit AAR source makes native selection deterministic.
+- Alternatives considered: Depend on RID-specific restore alone; copy ONNX `.so` files into the repository; suppress XA4301.
+- Impacted areas: Android NuGet/native-library resolution and Android package contents. Managed ONNX APIs and other platforms are unchanged.
+
+- Date: 2026-09-07
+- Decision: Port the reviewed Core and mobile UI changes from `audit/core-sync` into the existing sync branch as a corrective commit, preserving its Plugin subtree history, updated Plugin content, renderer package versions, frozen CoreVersion, and sync documentation.
+- Rationale: The audit worktree reconstructs only the Core merge and still contains the old Plugin. Its reviewed files preserve OPUM project configuration, per-field preference validation, and Neutrino noteIndex/availableLeadingMs alongside upstream XSY. The user approved removing the legacy rendered-waveform notifications and UI; no replacement mobile waveform UI is introduced here. Remove the unused System.Drawing.Common reference, which brought Windows assemblies into Android AOT.
+- Verification scope: Old Plugin customizations consist only of net10.0 and NoWarn, both retained in the sync result. All other Plugin content matches frozen split 1e74269e69f9d721238f966e4e09841743b56375. Build the final sync combination separately; the audit worktree's earlier AOT result alone does not validate the updated Plugin.
+- Impacted areas: Core/mobile compatibility and Android dependencies. Upstream target remains 2b03ad562fa6ee2937fdcfe24e790ad92c58064c; no new upstream fetch or cache reconstruction.

@@ -612,6 +612,21 @@
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>Delete Singer</value>
   </data>
+  <data name="SingerDetail.Uninstalling" xml:space="preserve">
+    <value>Uninstalling singer…</value>
+  </data>
+  <data name="SingerDetail.UninstallSucceeded" xml:space="preserve">
+    <value>Uninstalled {0}</value>
+  </data>
+  <data name="SingerDetail.UninstallFailed" xml:space="preserve">
+    <value>Failed to uninstall {0}.</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmTitle" xml:space="preserve">
+    <value>Uninstall singer?</value>
+  </data>
+  <data name="SingerDetail.UninstallConfirmMessage" xml:space="preserve">
+    <value>Uninstall {0} and permanently remove all of its files? This action cannot be undone.</value>
+  </data>
   <data name="Editor.Undo" xml:space="preserve">
     <value>Undo</value>
   </data>
@@ -1072,7 +1087,7 @@
     <value>Failed to open link</value>
   </data>
   <data name="ErrorDialog.Title" xml:space="preserve">
-    <value>An error occurred</value>
+    <value>OpenUtau Mobile Runtime Error</value>
   </data>
   <data name="ErrorDialog.UnknownError" xml:space="preserve">
     <value>Unknown error</value>
@@ -1761,5 +1776,23 @@
   </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>Release to reset parameter</value>
+  </data>
+  <data name="ErrorDialog.CopySucceeded" xml:space="preserve">
+    <value>Error information copied</value>
+  </data>
+  <data name="ErrorDialog.CopyFailed" xml:space="preserve">
+    <value>Failed to copy error information</value>
+  </data>
+  <data name="BulkLyricEdit.Title" xml:space="preserve">
+    <value>Batch edit lyrics</value>
+  </data>
+  <data name="BulkLyricEdit.Watermark" xml:space="preserve">
+    <value>Enter lyrics; use quotes to keep spaces or character groups together</value>
+  </data>
+  <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
+    <value>Apply to selected notes only</value>
+  </data>
+  <data name="BulkLyricEdit.Apply" xml:space="preserve">
+    <value>Apply</value>
   </data>
 </root>

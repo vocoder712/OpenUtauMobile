@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.Controls.OptionConfirmPopup"
+             d:DataContext="{d:DesignInstance Type=vm:OptionConfirmPopupViewModel, IsDesignTimeCreatable=False}"
+             x:DataType="vm:OptionConfirmPopupViewModel"
+             Classes="PopupDialogRoot">
+
+    <Border Classes="PopupDialogSurface">
+        <DockPanel>
+            <!-- 标题栏 -->
+            <Border Classes="PopupTitleBar" DockPanel.Dock="Top">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0"
+                               Text="{Binding Title}"
+                               TextWrapping="Wrap"
+                               Classes="PopupTitle" />
+                    <Button Grid.Column="1"
+                            Classes="PopupCloseBtn"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Close}">
+                        <iconPacks:PackIconPhosphorIcons
+                            Width="{x:Static theme:ThemeSemOptionConfirmTokens.CloseIconSize}"
+                            Height="{x:Static theme:ThemeSemOptionConfirmTokens.CloseIconSize}"
+                            Kind="X" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <StackPanel Margin="{x:Static theme:ThemeSemOptionConfirmTokens.ContentInset}"
+                        Spacing="{x:Static theme:ThemeSemOptionConfirmTokens.SectionSpacing}">
+                <!-- 内容 -->
+                <ScrollViewer MaxHeight="{x:Static theme:ThemeSemOptionConfirmTokens.MessageMaxHeight}"
+                              VerticalScrollBarVisibility="Auto">
+                    <TextBlock Text="{Binding Content}"
+                               TextWrapping="Wrap"
+                               FontSize="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}" />
+                </ScrollViewer>
+
+                <!-- 选项 -->
+                <ScrollViewer Height="{x:Static theme:ThemeSemOptionConfirmTokens.OptionsHeight}"
+                              VerticalScrollBarVisibility="Disabled"
+                              HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Options}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="{x:Static theme:ThemeSemOptionConfirmTokens.OptionSpacing}" 
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal"
+                                            HorizontalAlignment="Right"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:OptionConfirmOption">
+                                <Button Classes="OptionAction"
+                                        Classes.Primary="{Binding IsPrimary}"
+                                        Classes.Destructive="{Binding IsDestructive}"
+                                        Height="{x:Static theme:ThemeSemOptionConfirmTokens.OptionHeight}"
+                                        Content="{Binding Label}"
+                                        Command="{Binding $parent[UserControl].((vm:OptionConfirmPopupViewModel)DataContext).SelectOptionCommand}"
+                                        CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+</UserControl>

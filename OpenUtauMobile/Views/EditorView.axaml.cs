@@ -606,7 +606,7 @@ public partial class EditorView : UserControl
         double deltaY = _phonemeSplitPressY - currentPoint.Y;
 
         double availableHeight = PART_PianoRollGrid.Bounds.Height > 0 ? PART_PianoRollGrid.Bounds.Height : Bounds.Height;
-        double maxPanelHeight = Math.Max(0, availableHeight - ViewConstants.PianoRollTickRulerHeight - 40.0);
+        double maxPanelHeight = Math.Max(0, availableHeight - ViewConstants.PianoRollTickRulerHeight);
         if (maxPanelHeight <= 0)
         {
             maxPanelHeight = 2000.0;

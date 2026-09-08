@@ -395,7 +395,7 @@ public class NotesCanvas : Control, ICmdSubscriber
     private void RenderFinalPitch(int leftTick, int rightTick, DrawingContext context)
     {
         if (ViewModel == null || Part == null) return;
-        IPen pen = ThemeResources.GetPen("Sem.Color.Outline", 2);
+        IPen pen = ViewModel.EditMode == PianoRollEditMode.PitchPen ? ThemeResources.GetPen("Sem.Color.Primary", 2) : ThemeResources.GetPen("Sem.Color.Outline", 2);
         StreamGeometry geometry = new();
         bool hasVisibleSegment = false;
         lock (Part)

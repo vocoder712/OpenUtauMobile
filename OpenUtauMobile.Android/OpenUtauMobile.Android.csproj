@@ -35,14 +35,27 @@
     <ItemGroup>
         <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)"/>
         <PackageReference Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.1"/>
+        <!-- 避免 NuGet 的宿主平台原生资产与 Android AAR 中的同名库竞争。 -->
+        <PackageReference Include="Microsoft.ML.OnnxRuntime"
+                          Version="1.29.0"
+                          GeneratePathProperty="true"
+                          ExcludeAssets="native;runtime;build;buildTransitive"/>
     </ItemGroup>
     <!-- 项目引用 -->
     <ItemGroup>
         <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
     </ItemGroup>
 
+    <!-- 仅从官方 Android AAR 提取 ONNX Runtime 原生库。 -->
+    <ItemGroup>
+        <AndroidLibrary Include="$(PkgMicrosoft_ML_OnnxRuntime)/runtimes/android/native/onnxruntime.aar"
+                        Bind="false"/>
+    </ItemGroup>
+
     <!-- 原生库 -->
     <ItemGroup>
+        <!-- 避免默认项与显式项重复，先排除，再包含 -->
+        <AndroidNativeLibrary Remove="Libs\**\*.so"/>
         <AndroidNativeLibrary Include="Libs\armeabi-v7a\*">
             <Abi>armeabi-v7a</Abi>
         </AndroidNativeLibrary>

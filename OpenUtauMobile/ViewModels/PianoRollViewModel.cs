@@ -144,6 +144,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     [Reactive] public double TickOffset { get; set; } // X 滚动
     [Reactive] public double KeyOffset { get; set; } = 56; // Y 滚动
 
+    /// <summary>是否以轻量矩形块显示各 phrase 的渲染状态。</summary>
+
     // ── 播放状态（直接由权威源驱动）─────
     /// <summary>
     /// 当前工程全局播放标记位置（Tick，绝对坐标，与走带编曲区共享同一命令流）。
@@ -2180,11 +2182,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         switch (EditMode)
         {
             case PianoRollEditMode.Hand:
+                if (EditingVoicePart != null)
+                {
+                    items.Add(CreateBulkLyricEditAction());
+                }
                 break;
 
             case PianoRollEditMode.Note:
                 if (EditingVoicePart != null)
                 {
+                    items.Add(CreateBulkLyricEditAction());
                     // 批量编辑
                     items.Add(CreateBatchEditAction());
                 }
@@ -2242,6 +2249,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 });
                 if (EditingVoicePart != null)
                 {
+                    items.Add(CreateBulkLyricEditAction());
                     items.Add(CreateBatchEditAction());
                 }
                 if (hasNoteSelection)
@@ -2359,6 +2367,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         PianoRollContextActions = items;
+    }
+
+    private ContextActionItem CreateBulkLyricEditAction()
+    {
+        return new ContextActionItem
+        {
+            Icon = PackIconPhosphorIconsKind.TextAa,
+            Tip = L.S("BulkLyricEdit.Title"),
+            Command = ReactiveCommand.CreateFromTask(ShowBulkLyricEditPopupAsync),
+        };
+    }
+
+    private async Task ShowBulkLyricEditPopupAsync()
+    {
+        UVoicePart? part = EditingVoicePart;
+        if (part == null || part.notes.Count == 0)
+        {
+            return;
+        }
+
+        BulkLyricEditViewModel viewModel = new(part, SelectedNotes.ToList());
+        await PopupService.Show<object>(new BulkLyricEditPopup(), viewModel);
     }
 
     private ContextActionItem CreateBatchEditAction()

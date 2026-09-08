@@ -65,7 +65,8 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
         }
 
         public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, int trackNo,
-            CancellationTokenSource cancellation, bool isPreRender) {
+            CancellationTokenSource cancellation, bool isPreRender = false,
+            RenderPhraseEvents? renderEvents = null) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
                 resamplerItems.Add(new ResamplerItem(phrase, phone));

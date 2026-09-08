@@ -38,6 +38,7 @@
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ErrorDialogPopup.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/FilePickerPopup.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/LyricEditPopup.axaml" />
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/OptionConfirmPopup.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/PianoRollEditModeSwitcher.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/PopupCommon.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ProjectInfoEditPopup.axaml" />

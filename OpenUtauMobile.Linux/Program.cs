@@ -29,6 +29,7 @@ sealed class Program
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
+        ServiceHub.ExternalUrlLauncher = new LinuxExternalUrlLauncher();
         ServiceHub.ExternalStorageService = new Storage.LinuxExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>()

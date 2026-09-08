@@ -13,12 +13,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
-        <PackageReference Include="NAudio" Version="2.2.1" />
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="NAudio" Version="2.2.1"/>
+        <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.24.4"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj" />
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -35,11 +36,11 @@
     -->
     <Target Name="CopyNativeRuntimeAssetsToPublish" AfterTargets="Publish">
         <ItemGroup>
-            <NativeRuntimeAssets Include="$(PublishDir)runtimes\**\native\**\*.*" />
+            <NativeRuntimeAssets Include="$(PublishDir)runtimes\**\native\**\*.*"/>
         </ItemGroup>
         <Copy SourceFiles="@(NativeRuntimeAssets)"
               DestinationFiles="@(NativeRuntimeAssets->'$(PublishDir)%(Filename)%(Extension)')"
-              SkipUnchangedFiles="true" />
+              SkipUnchangedFiles="true"/>
     </Target>
 </Project>
 

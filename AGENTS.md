@@ -6,3 +6,7 @@ Read [`.agent/README.md`](.agent/README.md) for a detailed explanation of the ag
 
 - Use Git directly for diffs, restoration, and rollback. Do not create or maintain manual backup copies, rollback scripts, rollback directories, or other rollback artifacts.
 - At the start of every task, run `git status --short`. If the working tree contains any pending uncommitted changes, stop before making changes and notify the user. Do not alter, stash, discard, or clean those pending changes unless the user explicitly instructs you to do so.
+
+## Avalonia build command
+
+- Remember to execute `$env:AVALONIA_TELEMETRY_OPTOUT='1';` before running `dotnet build` to disable Avalonia telemetry.

@@ -1,0 +1,245 @@
+name: Reusable Android Build
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: User-visible product version
+        required: true
+        type: string
+      build_number:
+        description: Build number supplied by the caller workflow
+        required: true
+        type: number
+      source_sha:
+        description: Exact commit being built
+        required: true
+        type: string
+      action_run_id:
+        description: Caller workflow run ID
+        required: true
+        type: string
+      arch:
+        description: Artifact architecture name
+        required: true
+        type: string
+      rid:
+        description: .NET Android runtime identifier
+        required: true
+        type: string
+    secrets:
+      ANDROID_KEYSTORE_BASE64:
+        required: true
+      ANDROID_KEYSTORE_PASSWORD:
+        required: true
+      ANDROID_KEY_ALIAS:
+        required: true
+      ANDROID_KEY_PASSWORD:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Android ${{ inputs.arch }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Android workload
+        run: dotnet workload install android
+
+      - name: Create Swap Space
+        shell: bash
+        run: |
+          SWAP_FILE=/runner-swapfile
+          if [ ! -f "$SWAP_FILE" ]; then
+            sudo fallocate -l 6G "$SWAP_FILE"
+            sudo chmod 600 "$SWAP_FILE"
+            sudo mkswap "$SWAP_FILE"
+          fi
+          sudo swapon "$SWAP_FILE" 2>/dev/null || true
+          free -h
+          swapon --show
+
+      - name: Collect Build Metadata
+        shell: bash
+        run: |
+          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
+
+      - name: Decode Android Keystore
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > signing.keystore
+
+      # 必须按最终 RID 显式还原；发布阶段复用同一资产图，防止宿主平台原生资产混入 APK。
+      - name: Restore Android ${{ inputs.arch }}
+        shell: bash
+        run: |
+          dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
+            -r "${{ inputs.rid }}" \
+            -p:Configuration=Release
+
+      - name: Publish Android ${{ inputs.arch }}
+        shell: bash
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          dotnet publish OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
+            --no-restore \
+            -c Release \
+            -f net10.0-android36.0 \
+            -r "${{ inputs.rid }}" \
+            -p:Version="${{ inputs.version }}" \
+            -p:BuildNumber=${{ inputs.build_number }} \
+            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
+            -p:BuildMachine="$BUILD_MACHINE" \
+            -p:SourceCommit=${{ inputs.source_sha }} \
+            -p:ActionRunId=${{ inputs.action_run_id }} \
+            -p:AndroidPackageFormat=apk \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
+            -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
+            -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
+            -p:AndroidSigningKeyPass="$KEY_PASSWORD"
+
+      - name: Verify and prepare Android artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PUBLISH_DIR="OpenUtauMobile.Android/bin/Release/net10.0-android36.0/${{ inputs.rid }}/publish"
+          ARTIFACT_DIR="artifacts/android-${{ inputs.arch }}"
+          VERIFY_DIR="artifacts/verification-android-${{ inputs.arch }}"
+
+          case "${{ inputs.rid }}" in
+            android-arm64) EXPECTED_ABI=arm64-v8a ;;
+            android-arm) EXPECTED_ABI=armeabi-v7a ;;
+            android-x64) EXPECTED_ABI=x86_64 ;;
+            android-x86) EXPECTED_ABI=x86 ;;
+            *) echo "::error::不支持的 Android RID：${{ inputs.rid }}"; exit 1 ;;
+          esac
+
+          mkdir -p "$ARTIFACT_DIR" "$VERIFY_DIR/native"
+          echo "===== Publish files ====="
+          find "$PUBLISH_DIR" -maxdepth 1 -type f -printf '%f\n'
+
+          mapfile -t SIGNED_APKS < <(find "$PUBLISH_DIR" -maxdepth 1 -type f -iname '*-signed.apk' -print)
+          if [ "${#SIGNED_APKS[@]}" -ne 1 ]; then
+            echo "::error::应当生成且仅生成一个已签名 APK，实际为 ${#SIGNED_APKS[@]} 个"
+            exit 1
+          fi
+          SIGNED_APK="${SIGNED_APKS[0]}"
+
+          ANDROID_SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
+          if [ -z "$ANDROID_SDK" ] || [ ! -d "$ANDROID_SDK/build-tools" ]; then
+            echo "::error::找不到 Android SDK build-tools 目录，无法核对 APK 版本号"
+            exit 1
+          fi
+          AAPT="$(find "$ANDROID_SDK/build-tools" -type f -name aapt -print | sort -V | tail -n 1)"
+          if [ -z "$AAPT" ]; then
+            echo "::error::找不到 Android Asset Packaging Tool，无法核对 APK 版本号"
+            exit 1
+          fi
+          PACKAGE_BADGING="$("$AAPT" dump badging "$SIGNED_APK")"
+          APK_VERSION_CODE="$(sed -n "s/.*versionCode='\([^']*\)'.*/\1/p" <<< "$PACKAGE_BADGING")"
+          APK_VERSION_NAME="$(sed -n "s/.*versionName='\([^']*\)'.*/\1/p" <<< "$PACKAGE_BADGING")"
+          if [ "$APK_VERSION_CODE" != "${{ inputs.build_number }}" ]; then
+            echo "::error::APK versionCode 未继承调用方构建号。期望 ${{ inputs.build_number }}，实际 $APK_VERSION_CODE"
+            exit 1
+          fi
+          if [ "$APK_VERSION_NAME" != "${{ inputs.version }}" ]; then
+            echo "::error::APK versionName 未继承调用方版本。期望 ${{ inputs.version }}，实际 $APK_VERSION_NAME"
+            exit 1
+          fi
+
+          mapfile -t PACKAGED_ABIS < <(
+            unzip -Z1 "$SIGNED_APK" |
+              sed -n 's#^lib/\([^/]*\)/.*\.so$#\1#p' |
+              sort -u
+          )
+          if [ "${#PACKAGED_ABIS[@]}" -ne 1 ] || [ "${PACKAGED_ABIS[0]}" != "$EXPECTED_ABI" ]; then
+            printf '::error::APK 原生 ABI 与 RID 不一致。期望 %s，实际：%s\n' \
+              "$EXPECTED_ABI" "${PACKAGED_ABIS[*]:-<none>}"
+            exit 1
+          fi
+
+          for LIBRARY in libonnxruntime.so libonnxruntime4j_jni.so; do
+            ENTRY="lib/$EXPECTED_ABI/$LIBRARY"
+            COUNT="$(unzip -Z1 "$SIGNED_APK" | grep -Fxc "$ENTRY" || true)"
+            if [ "$COUNT" -ne 1 ]; then
+              echo "::error::$ENTRY 应当在 APK 中恰好出现一次，实际为 $COUNT 次"
+              exit 1
+            fi
+            unzip -p "$SIGNED_APK" "$ENTRY" > "$VERIFY_DIR/native/$LIBRARY"
+          done
+
+          readelf -d "$VERIFY_DIR/native/libonnxruntime.so" > "$VERIFY_DIR/libonnxruntime.dynamic.txt"
+          if grep -E 'libdl\.so\.2|libc\.so\.6|libm\.so\.6|libpthread\.so\.0|librt\.so\.1|ld-linux' \
+              "$VERIFY_DIR/libonnxruntime.dynamic.txt"; then
+            echo "::error::libonnxruntime.so 包含 Linux/glibc 依赖，不是 Android 原生库"
+            exit 1
+          fi
+
+          find "$VERIFY_DIR/native" -maxdepth 1 -type f -name '*.so' -print0 |
+            sort -z |
+            xargs -0 sha256sum |
+            sed "s#$VERIFY_DIR/native/##" > "$VERIFY_DIR/native-libraries.sha256"
+
+          cat > "$VERIFY_DIR/build-contract.txt" <<EOF
+          configuration=Release
+          target_framework=net10.0-android36.0
+          runtime_identifier=${{ inputs.rid }}
+          android_abi=$EXPECTED_ABI
+          package_format=apk
+          restore=explicit-rid
+          publish=no-restore
+          product_version=${{ inputs.version }}
+          build_number=${{ inputs.build_number }}
+          source_commit=${{ inputs.source_sha }}
+          caller_run_id=${{ inputs.action_run_id }}
+          EOF
+
+          cp "$SIGNED_APK" \
+            "$ARTIFACT_DIR/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk"
+
+          echo "===== Android build contract ====="
+          cat "$VERIFY_DIR/build-contract.txt"
+          echo "===== ONNX native hashes ====="
+          cat "$VERIFY_DIR/native-libraries.sha256"
+
+      - name: Upload Android ${{ inputs.arch }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: OpenUtauMobile-android-${{ inputs.arch }}
+          path: artifacts/android-${{ inputs.arch }}/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Upload Android ${{ inputs.arch }} verification
+        uses: actions/upload-artifact@v7
+        with:
+          name: verification-android-${{ inputs.arch }}
+          path: |
+            artifacts/verification-android-${{ inputs.arch }}/build-contract.txt
+            artifacts/verification-android-${{ inputs.arch }}/native-libraries.sha256
+            artifacts/verification-android-${{ inputs.arch }}/libonnxruntime.dynamic.txt
+          if-no-files-found: error

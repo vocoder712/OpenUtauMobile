@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Avalonia.Input;
 using OpenUtauMobile.Helpers;
 
@@ -74,6 +74,7 @@ namespace OpenUtauMobile
         public const double PianoRollTickWidthMax = 1;
         public const double PianoRollTickWidthMin = 8.0 / 480.0;
         public const double PianoRollTickWidthDefault = 48.0 / 480.0;
+
 
         public const double NoteHeightMax = 128;
         public const double NoteHeightMin = 16;

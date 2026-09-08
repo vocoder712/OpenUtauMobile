@@ -1,6 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <!-- 宸ュ叿鏍忓浘鏍囨寜閽?-->
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
     <Style Selector="Button.IconBtn">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -16,7 +16,6 @@
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
     </Style>
 
-    <!-- 纭鎸夐挳 -->
     <Style Selector="Button.PrimaryBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
@@ -24,7 +23,9 @@
         <Setter Property="Padding" Value="20,8" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.PrimaryBtn:pointerover /template/ ContentPresenter">
         <Setter Property="Opacity" Value="0.85" />
@@ -33,17 +34,38 @@
         <Setter Property="Opacity" Value="0.70" />
     </Style>
 
-    <!-- 璇︽儏鍒囨崲鎸夐挳 -->
+    <Style Selector="Button.SecondaryBtn">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
     <Style Selector="Button.DetailToggle">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="4,4" />
+        <Setter Property="Padding" Value="4,8" />
         <Setter Property="CornerRadius" Value="6" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Opacity" Value="0.6" />
+        <Setter Property="Opacity" Value="0.7" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
     <Style Selector="Button.DetailToggle:pointerover /template/ ContentPresenter">
         <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector="TextBox.ErrorDetail">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="FontFamily" Value="Consolas, Courier New, monospace" />
+        <Setter Property="FontSize" Value="11" />
     </Style>
 </Styles>
