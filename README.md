@@ -33,7 +33,7 @@
 >
 > Project structure and internal implementations may change frequently during this stage.
 >
-> If you want to test the new update, [download the latest nightly version here](https://nightly.link/vocoder712/OpenUtauMobile/workflows/build-android-dev/dev/OpenUtauMobile-android-arm64.zip).
+> If you want to test the new update, [download the latest nightly version here](https://nightly.link/vocoder712/OpenUtauMobile/workflows/main/dev/OpenUtauMobile-android-arm64.zip).
 
 ## Special Thanks
 
