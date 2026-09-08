@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <AssemblyName>game-capi-cs-smoke</AssemblyName>
+        <RootNamespace>GameCapiSmoke</RootNamespace>
+        <PublishSingleFile>false</PublishSingleFile>
+        <!-- 桌面冒烟：把 M1 桌面原生输出拷贝到运行目录，验证托管封装与原生 DLL 对接 -->
+        <GameDesktopNativeDir>..\..\..\native\build-desktop\app</GameDesktopNativeDir>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\OpenUtauMobile\OpenUtauMobile.csproj"/>
+    </ItemGroup>
+
+    <!-- 拷贝桌面原生运行库（game_ggml_shared + ggml 各层 + VC CRT）到输出 -->
+    <Target Name="CopyGameNativeRuntime" AfterTargets="Build">
+        <ItemGroup>
+            <GameNativeDlls Include="$(GameDesktopNativeDir)\game_ggml_shared.dll"/>
+            <GameNativeDlls Include="$(GameDesktopNativeDir)\ggml*.dll"/>
+            <GameNativeDlls Include="$(GameDesktopNativeDir)\msvcp140.dll"/>
+            <GameNativeDlls Include="$(GameDesktopNativeDir)\vcruntime140.dll"/>
+            <GameNativeDlls Include="$(GameDesktopNativeDir)\vccorlib140.dll"/>
+            <GameNativeDlls Include="$(GameDesktopNativeDir)\concrt140.dll"/>
+        </ItemGroup>
+        <Copy Condition="Exists('$(GameDesktopNativeDir)')" SourceFiles="@(GameNativeDlls)" DestinationFolder="$(OutputPath)"/>
+    </Target>
+</Project>

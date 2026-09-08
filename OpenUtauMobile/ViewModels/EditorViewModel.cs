@@ -13,12 +13,14 @@ using IconPacks.Avalonia.PhosphorIcons;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.Analysis;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Game;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using ReactiveUI;
@@ -683,6 +685,9 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                 // TODO: Handle ImportTrack action
                 ToastService.Enqueue(L.S("EditorMore.Toast.ImportTrack"));
                 break;
+            case EditorMoreAction.TranscribeAudio:
+                _ = TranscribeAudio();
+                break;
             case EditorMoreAction.ExportAudio:
                 _ = ShowExportAudioPopupAsync();
                 break;
@@ -713,6 +718,88 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = trackNo }));
         DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
         DocManager.Inst.EndUndoGroup();
+    }
+
+    /// <summary>
+    /// 导入音频并直接用 GAME ggml 后端转写为音符（替代 Core 的 ONNX Game）。
+    /// 流程：选音频 → UWavePart 仅作输入（不加入项目）→ GameGgmlMidiExtractor.Transcribe
+    /// （基类负责 mono/重采样/分块/UVoicePart 组装）→ 产出的 UVoicePart 作为新轨插入，
+    /// 全部并入一个 undo group。不插入原音频轨。
+    /// </summary>
+    private static async Task TranscribeAudio()
+    {
+        string file = await FilePicker.PickSingleFileAsync(L.S("FilePicker.ImportAudio"),
+            ["*.mp3", "*.wav", "*.flac", "*.aac", "*.ogg", "*.aiff", "*.aif", "*.aifc"]);
+        if (file == string.Empty)
+        {
+            return;
+        }
+
+        try
+        {
+            UProject project = DocManager.Inst.Project;
+            UWavePart wavePart = new()
+            {
+                FilePath = file,
+            };
+            wavePart.Load(project); // 填充 channels/sampleRate；Samples 在 Peaks Task 内生成
+            await wavePart.Peaks;    // 等待 Samples 就绪（基类 Transcribe 直接读 wavePart.Samples）
+            if (wavePart.Samples == null)
+            {
+                ToastService.Enqueue(L.S("EditorMore.Toast.TranscribeFailed"));
+                return;
+            }
+
+            int trackNo = project.tracks.Count;
+            UVoicePart? voicePart = null;
+            using (GameGgmlMidiExtractor extractor = new())
+            {
+                GameOptions options = new()
+                {
+                    SamplingSteps = 8, // 与 ONNX 版默认一致
+                };
+
+                await LoadingPopupService.RunAsync(
+                    L.S("EditorMore.TranscribeProgress"),
+                    0d,
+                    async loading =>
+                    {
+                        voicePart = await Task.Run(() => extractor.Transcribe(
+                            project, wavePart, options, null, null,
+                            (done, total) =>
+                            {
+                                double progress = total > 0 ? done * 100d / total : 0d;
+                                Dispatcher.UIThread.Post(
+                                    () => loading.UpdateProgress(progress, $"{done}s / {total}s"));
+                            }));
+                    });
+            }
+
+            if (voicePart == null)
+            {
+                ToastService.Enqueue(L.S("EditorMore.Toast.TranscribeFailed"));
+                return;
+            }
+
+            UTrack track = new(project)
+            {
+                TrackNo = trackNo,
+                TrackName = Path.GetFileNameWithoutExtension(file),
+            };
+            voicePart.trackNo = trackNo;
+
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(project, voicePart));
+            DocManager.Inst.EndUndoGroup();
+
+            ToastService.Enqueue(L.S("EditorMore.Toast.TranscribeDone"));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "TranscribeAudio failed for file={File}", file);
+            ToastService.Enqueue(L.S("EditorMore.Toast.TranscribeFailed"));
+        }
     }
 
     private static async Task ImportMidi()

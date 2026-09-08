@@ -1,4 +1,4 @@
-﻿using System.Reactive;
+using System.Reactive;
 using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;
@@ -9,6 +9,7 @@ public enum EditorMoreAction
     ImportAudio, // 导入音频
     ImportMidi, // 导入MIDI
     ImportTrack, // 导入轨道
+    TranscribeAudio, // 音频转写（GAME ggml 后端）
     ExportAudio, // 导出音频
     SaveAs // 另存为
 }

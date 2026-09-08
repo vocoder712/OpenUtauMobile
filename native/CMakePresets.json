@@ -1,0 +1,94 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25
+  },
+  "configurePresets": [
+    {
+      "name": "android-common",
+      "hidden": true,
+      "description": "Android cross-compile base: NDK toolchain + ninja + CPU-only static ggml. Portable preset — machine-specific paths live in the untracked CMakeUserPresets.json override.",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ANDROID_PLATFORM": "24",
+        "ANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES": "OFF",
+        "GGML_NATIVE": "OFF",
+        "GGML_OPENMP": "OFF",
+        "BUILD_SHARED_LIBS": "OFF",
+        "GGML_BACKEND_DL": "OFF",
+        "GAME_GGML_VULKAN": "OFF",
+        "GAME_GGML_METAL": "OFF",
+        "GAME_GGML_CUDA": "OFF",
+        "GAME_GGML_LLAMAFILE": "OFF",
+        "GAME_GGML_BUILD_CLI": "OFF",
+        "GAME_GGML_BUILD_TESTS": "OFF",
+        "OPUM_NATIVE_SMOKE": "OFF",
+        "FETCHCONTENT_UPDATES_DISCONNECTED": "ON"
+      }
+    },
+    {
+      "name": "android-arm64",
+      "inherits": "android-common",
+      "description": "Android arm64-v8a, CPU-only static ggml.",
+      "binaryDir": "${sourceDir}/build-android-arm64",
+      "cacheVariables": {
+        "ANDROID_ABI": "arm64-v8a"
+      }
+    },
+    {
+      "name": "android-arm",
+      "inherits": "android-common",
+      "description": "Android armeabi-v7a (32-bit ARM), CPU-only static ggml.",
+      "binaryDir": "${sourceDir}/build-android-arm",
+      "cacheVariables": {
+        "ANDROID_ABI": "armeabi-v7a"
+      }
+    },
+    {
+      "name": "android-x86",
+      "inherits": "android-common",
+      "description": "Android x86 (32-bit) emulator ABI, CPU-only static ggml.",
+      "binaryDir": "${sourceDir}/build-android-x86",
+      "cacheVariables": {
+        "ANDROID_ABI": "x86"
+      }
+    },
+    {
+      "name": "android-x64",
+      "inherits": "android-common",
+      "description": "Android x86_64 emulator ABI, CPU-only static ggml.",
+      "binaryDir": "${sourceDir}/build-android-x64",
+      "cacheVariables": {
+        "ANDROID_ABI": "x86_64"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-android-arm64",
+      "configurePreset": "android-arm64",
+      "description": "Build arm64-v8a",
+      "jobs": 16
+    },
+    {
+      "name": "build-android-arm",
+      "configurePreset": "android-arm",
+      "description": "Build armeabi-v7a",
+      "jobs": 16
+    },
+    {
+      "name": "build-android-x86",
+      "configurePreset": "android-x86",
+      "description": "Build x86",
+      "jobs": 16
+    },
+    {
+      "name": "build-android-x64",
+      "configurePreset": "android-x64",
+      "description": "Build x86_64",
+      "jobs": 16
+    }
+  ]
+}
