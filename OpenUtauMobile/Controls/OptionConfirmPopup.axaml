@@ -14,21 +14,32 @@
     Classes="PopupDialogRoot">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{Binding Title}">
         <dialogs:DialogShell.Footer>
-            <ItemsControl ItemsSource="{Binding Options}">
+            <ItemsControl ItemsSource="{Binding OptionRows}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <dialogs:DialogActions />
+                        <dialogs:DialogActionRows />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="vm:OptionConfirmOption">
-                        <Button
-                            Classes="DialogAction"
-                            Content="{Binding Label}"
-                            Command="{Binding $parent[UserControl].((vm:OptionConfirmPopupViewModel)DataContext).SelectOptionCommand}"
-                            CommandParameter="{Binding}"
-                            Classes.DialogPrimary="{Binding IsPrimary}"
-                            Classes.DialogDestructive="{Binding IsDestructive}" />
+                    <DataTemplate x:DataType="vm:OptionConfirmRow">
+                        <ItemsControl ItemsSource="{Binding Options}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <dialogs:DialogActionRow />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:OptionConfirmOption">
+                                    <Button
+                                        Classes="DialogAction"
+                                        Content="{Binding Label}"
+                                        Command="{Binding $parent[UserControl].((vm:OptionConfirmPopupViewModel)DataContext).SelectOptionCommand}"
+                                        CommandParameter="{Binding}"
+                                        Classes.DialogPrimary="{Binding IsPrimary}"
+                                        Classes.DialogDestructive="{Binding IsDestructive}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

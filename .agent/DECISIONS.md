@@ -364,3 +364,16 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Compatibility: Preserve business commands, named inputs, conditional actions and existing width/height base classes. Move file navigation out of the title bar and wizard Skip into the footer. Retain one legacy Primary/Secondary definition for non-dialog pages; remove duplicate popup action styles and eight unused chrome tokens.
 - Verification: Shared-project and Windows-host builds plus source review; no unit tests. Runtime visual acceptance on devices remains pending.
 - Impacted areas: Mobile modal-dialog views, shared popup theme, DialogShell component and dialog-authoring documentation. Core and Plugin unchanged.
+
+- Date: 2026-09-09
+- Decision: Replace DialogActions' right-aligned WrapPanel with a responsive equal-width Panel. Determine fitting columns from the widest visible action's natural desired width; distribute each row (including the last) across the full available width and remeasure labels at the allocated width to support multiple text lines and equal row heights.
+- Rationale: Mobile footers should expose balanced, full-width touch actions instead of a trailing cluster. Content-derived wrapping avoids another breakpoint/token layer and works with localization, visibility changes and dynamically generated options.
+- Compatibility: Existing DialogActions markup remains valid. Hidden actions do not reserve space, disabled actions keep their position, and ItemsControl ContentPresenters stretch their buttons. No ViewModel command or popup lifecycle changes.
+- Documentation: Updated DIALOGS.ctx.md with mobile layout rules, three-action and dynamic-option usage; linked the contract from README and the context index.
+- Verification: Windows-host build succeeded with zero errors; no unit tests created or run. Device visual acceptance remains pending.
+
+- Date: 2026-09-09
+- Decision: Supersede width-driven action wrapping with explicit DialogActionRows/DialogActionRow grouping. Each specified row divides its full width among visible actions; resizing wraps labels only, never moves buttons to another row. DialogActions remains a single-row compatibility alias, sharing all styles through a base-type selector.
+- Rationale: Some dialogs require deliberate multi-row action groups independent of viewport width. A two-dimensional structure expresses this requirement without per-view geometry or extra tokens.
+- Dynamic API: OptionConfirmPopupViewModel accepts nested option enumerables, snapshots typed read-only rows, skips empty rows and preserves the existing flat constructor as one row. OptionConfirmPopup binds nested ItemsControls; option selection and cancellation contracts stay unchanged.
+- Verification: Windows build succeeded (13 warnings, zero errors), compiled nested XAML bindings included. No unit tests created or run; runtime device visual acceptance remains pending.

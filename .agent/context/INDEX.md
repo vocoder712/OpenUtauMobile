@@ -7,6 +7,7 @@
 | Task                                               | File to Read                                          |
 |----------------------------------------------------|-------------------------------------------------------|
 | Understand project constraints and rules           | `context/GENERAL.ctx.md`                              |
+| Add or update a modal dialog                       | `context/DIALOGS.ctx.md` + `context/GENERAL.ctx.md`     |
 | Work on Android/iOS/Windows/platform-specific code | `context/PLATFORMS.ctx.md` + `context/GENERAL.ctx.md` |
 | Find module boundaries and ownership               | `context/MODULE_INDEX.ctx.json`                       |
 | Check what's left to do                            | `context/TODO.ctx.md`                                 |

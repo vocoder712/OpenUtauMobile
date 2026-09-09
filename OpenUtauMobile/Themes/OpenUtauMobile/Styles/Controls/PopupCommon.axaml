@@ -71,11 +71,23 @@
     <Style Selector="Border.DialogBodyBorder">
         <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetM}" />
     </Style>
-    <Style Selector="controls|DialogActions">
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="Orientation" Value="Horizontal" />
+    <Style Selector="controls|DialogActionRows">
+        <Setter Property="Orientation" Value="Vertical" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
-    <Style Selector="Button.DialogAction, controls|DialogActions Button">
+    <Style Selector="controls|DialogActionRows > ContentPresenter">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector=":is(controls|DialogActionRow)">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector=":is(controls|DialogActionRow) > ContentPresenter">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="Button.DialogAction, :is(controls|DialogActionRow) Button">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
         <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetButtonComfortable}" />
         <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetXS}" />
@@ -97,12 +109,12 @@
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Error}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
     </Style>
-    <Style Selector="Button.DialogAction:pointerover /template/ ContentPresenter, controls|DialogActions Button:pointerover /template/ ContentPresenter">
+    <Style Selector="Button.DialogAction:pointerover /template/ ContentPresenter, :is(controls|DialogActionRow) Button:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{ReflectionBinding Background, RelativeSource={RelativeSource TemplatedParent}}" />
         <Setter Property="Foreground" Value="{ReflectionBinding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
         <Setter Property="Opacity" Value="{x:Static theme:ThemeBaseOpacityTokens.LevelHigh}" />
     </Style>
-    <Style Selector="Button.DialogAction:pressed /template/ ContentPresenter, controls|DialogActions Button:pressed /template/ ContentPresenter">
+    <Style Selector="Button.DialogAction:pressed /template/ ContentPresenter, :is(controls|DialogActionRow) Button:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{ReflectionBinding Background, RelativeSource={RelativeSource TemplatedParent}}" />
         <Setter Property="Foreground" Value="{ReflectionBinding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
         <Setter Property="Opacity" Value="{x:Static theme:ThemeBaseOpacityTokens.LevelMedium}" />
@@ -125,7 +137,7 @@
     <Style Selector="Button.DialogClose:pressed /template/ ContentPresenter, Button.DialogNavigation:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
     </Style>
-    <Style Selector="Button.DialogAction /template/ ContentPresenter TextBlock, controls|DialogActions Button /template/ ContentPresenter TextBlock">
+    <Style Selector="Button.DialogAction /template/ ContentPresenter TextBlock, :is(controls|DialogActionRow) Button /template/ ContentPresenter TextBlock">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="TextAlignment" Value="Center" />
     </Style>

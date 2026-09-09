@@ -53,3 +53,5 @@ Your job is to **execute tasks efficiently and safely within constraints**.
 - **`PLATFORMS.ctx.md`**: Platform-specific status, build/run commands, target OS versions. Read when working on platform-specific code.
 - **`MODULE_INDEX.ctx.json`**: Module boundaries and ownership.
 - **`TODO.ctx.md`**: Ongoing task checklist.
+- **`DIALOGS.ctx.md`**: Required before adding/editing a modal dialog; shared shell,
+  explicit equal-width footer rows, two-dimensional option lists and copyable examples.
