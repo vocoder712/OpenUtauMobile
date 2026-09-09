@@ -24,6 +24,11 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 
 ## UI/UX Status
 
+- All modal dialogs use `DialogShell` and `DialogActions`. Read `DIALOGS.ctx.md`
+  before adding or changing a dialog. `PopupCommon.axaml` is the single owner
+  of dialog chrome and action design; do not add per-dialog chrome tokens or
+  duplicate title/close/footer markup.
+
 - Singer installation UI is rough and needs improvement.
 - The product is still in the basic feature stage and not feature-complete.
 

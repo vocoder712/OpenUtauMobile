@@ -300,21 +300,13 @@ public static class ThemeSemErrorDialogTokens
     public static double DetailMaxHeight => 280d;
     public static double ActionMinHeight => ThemeSemLayoutTokens.SizeNavToggleMin;
 
-    public static Thickness ContentInset => new(16, 12);
-    public static Thickness FooterInset => new(12);
-    public static Thickness ActionSpacing => new(8, 0, 0, 0);
 }
 
 public static class ThemeSemOptionConfirmTokens
 {
-    public static double CloseIconSize => ThemeBaseTypographyTokens.SizeL;
     public static double MessageMaxHeight => 160d;
-    public static double OptionsHeight => ThemeBaseLayoutTokens.SpaceXXL;
-    public static double OptionHeight => ThemeBaseLayoutTokens.SpaceXL;
     public static double SectionSpacing => ThemeSemLayoutTokens.SpaceMD;
-    public static double OptionSpacing => ThemeSemLayoutTokens.SpaceSM;
 
-    public static Thickness ContentInset => ThemeSemLayoutTokens.InsetL;
 }
 
 public static class ThemeSemOpacityTokens

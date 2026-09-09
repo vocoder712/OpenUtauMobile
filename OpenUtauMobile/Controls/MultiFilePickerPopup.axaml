@@ -1,39 +1,57 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
-             x:Class="OpenUtauMobile.Controls.MultiFilePickerPopup"
-             x:DataType="vm:MultiFilePickerViewModel" Classes="PopupDialogRoot">
-    <Border Classes="PopupDialogSurface">
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+    xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    x:Class="OpenUtauMobile.Controls.MultiFilePickerPopup"
+    x:DataType="vm:MultiFilePickerViewModel"
+    Classes="PopupDialogRoot">
+    <dialogs:DialogShell CloseCommand="{Binding CloseCommand}" Header="{Binding Title}">
+        <dialogs:DialogShell.Footer>
+            <StackPanel>
+                <TextBlock Text="{Binding SelectionSummary}" />
+                <dialogs:DialogActions>
+                    <Button
+                        Content="{DynamicResource Common.Cancel}"
+                        Command="{Binding CloseCommand}"
+                        Classes="DialogAction" />
+                    <Button
+                        Content="{DynamicResource ImportTracks.Next}"
+                        Command="{Binding ConfirmCommand}"
+                        Classes="DialogAction DialogPrimary" />
+                </dialogs:DialogActions>
+            </StackPanel>
+        </dialogs:DialogShell.Footer>
         <DockPanel>
-            <Border Classes="PopupTitleBar" DockPanel.Dock="Top">
-                <TextBlock Text="{Binding Title}" Classes="PopupTitle" />
-            </Border>
-            <StackPanel DockPanel.Dock="Top" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}">
+            <StackPanel DockPanel.Dock="Top" Classes="DialogBody">
                 <Button Content="{DynamicResource FilePicker.GoUp}" Command="{Binding GoUpCommand}" />
                 <TextBox Text="{Binding CurrentPath}" />
                 <ProgressBar IsVisible="{Binding IsLoading}" IsIndeterminate="True" />
-                <TextBlock IsVisible="{Binding ShowEmptyState}" Text="{Binding EmptyStateMessage}" TextWrapping="Wrap" />
+                <TextBlock
+                    IsVisible="{Binding ShowEmptyState}"
+                    Text="{Binding EmptyStateMessage}"
+                    TextWrapping="Wrap" />
             </StackPanel>
-            <StackPanel DockPanel.Dock="Bottom" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}"
-                        Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
-                <TextBlock Text="{Binding SelectionSummary}" />
-                <Grid ColumnDefinitions="*,*">
-                    <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CloseCommand}" />
-                    <Button Grid.Column="1" Content="{DynamicResource ImportTracks.Next}" Command="{Binding ConfirmCommand}"
-                            HorizontalAlignment="Right" />
-                </Grid>
-            </StackPanel>
-            <ListBox ItemsSource="{Binding Entries}" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetS}"
-                     MaxHeight="{x:Static theme:ThemeSemImportTracksTokens.ListMaxHeight}"
-                     IsEnabled="{Binding !IsLoading}">
+            <ListBox
+                ItemsSource="{Binding Entries}"
+                MaxHeight="{x:Static theme:ThemeSemImportTracksTokens.ListMaxHeight}"
+                IsEnabled="{Binding !IsLoading}"
+                Classes="DialogBody">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:MultiFilePickerEntry">
                         <Panel>
-                            <Button IsVisible="{Binding IsDirectory}" Content="{Binding Name}" Command="{Binding OpenCommand}"
-                                    HorizontalAlignment="Stretch" MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
-                            <CheckBox IsVisible="{Binding IsFile}" IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                      HorizontalAlignment="Stretch" MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}">
+                            <Button
+                                IsVisible="{Binding IsDirectory}"
+                                Content="{Binding Name}"
+                                Command="{Binding OpenCommand}"
+                                HorizontalAlignment="Stretch"
+                                MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
+                            <CheckBox
+                                IsVisible="{Binding IsFile}"
+                                IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                HorizontalAlignment="Stretch"
+                                MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}">
                                 <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
                             </CheckBox>
                         </Panel>
@@ -41,5 +59,5 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </DockPanel>
-    </Border>
+    </dialogs:DialogShell>
 </UserControl>
