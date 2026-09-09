@@ -1,0 +1,33 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <!-- 保留颜色选择弹窗原先从设置页全局样式获得的外观。 -->
+    <Style Selector="TextBlock.PlaceholderText">
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.InfoLabelSize}" />
+        <Setter Property="Opacity" Value="0.65" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="{x:Static theme:ThemeSemTypographyTokens.BodyPlaceholderLineHeight}" />
+    </Style>
+
+    <Style Selector="Button.AccentBtn">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerButton}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetButtonMedium}" />
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.LabelActionSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+    </Style>
+
+    <Style Selector="Button.AccentBtn:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Opacity" Value="0.85" />
+    </Style>
+
+    <Style Selector="Button.AccentBtn:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Opacity" Value="0.70" />
+    </Style>
+</Styles>

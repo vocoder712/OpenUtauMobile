@@ -9,6 +9,10 @@
     x:Class="OpenUtauMobile.Controls.ExportAudioPopup"
     x:DataType="vm:ExportAudioPopupViewModel"
     Classes="PopupDialogRoot">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/ExportAudioPopup.axaml" />
+    </UserControl.Styles>
+
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource ExportAudioPopup.Title}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActions>

@@ -8,6 +8,9 @@
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
              mc:Ignorable="d"
              x:Class="OpenUtauMobile.Controls.SingerList">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/SingerList.axaml" />
+    </UserControl.Styles>
 
     <UserControl.Resources>
         <conv:SingerTypeToColorConverter x:Key="SingerTypeToColor" />

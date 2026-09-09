@@ -15,6 +15,10 @@
     MaxHeight="{x:Static theme:ThemeSemBatchEditTokens.PopupMaxHeight}"
     d:DesignWidth="560"
     d:DesignHeight="620">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/BatchEditPopup.axaml" />
+    </UserControl.Styles>
+
     <UserControl.Resources>
         <!-- Action 项目模板 -->
         <DataTemplate x:Key="BatchEditItemTemplate" x:DataType="vm:BatchEditItemViewModel">

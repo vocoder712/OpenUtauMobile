@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="8">
+            <Button Classes="OptionEntry">
+                <TextBlock Text="Option Entry" />
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
+    <!-- 选项页与关于页共用的入口按钮 -->
+    <Style Selector="Button.OptionEntry">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.OptionEntry:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+    </Style>
+
+    <Style Selector="Button.OptionEntry:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+</Styles>

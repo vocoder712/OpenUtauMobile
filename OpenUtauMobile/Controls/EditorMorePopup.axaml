@@ -13,6 +13,10 @@
     x:DataType="vm:EditorMoreViewModel"
     Classes="PopupDialogRoot"
     MinHeight="400">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/EditorMorePopup.axaml" />
+    </UserControl.Styles>
+
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource EditorMore.Title}">
         <DockPanel>
             <!-- 标题栏 -->

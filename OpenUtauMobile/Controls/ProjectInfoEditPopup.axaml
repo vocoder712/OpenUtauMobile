@@ -12,6 +12,10 @@
     d:DataContext="{d:DesignInstance Type=vm:ProjectInfoEditViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:ProjectInfoEditViewModel"
     Classes="PopupDialogRoot">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/ProjectInfoEditPopup.axaml" />
+    </UserControl.Styles>
+
     <UserControl.Resources>
         <tools:EnumEqualConverter x:Key="EnumEq" />
     </UserControl.Resources>

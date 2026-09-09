@@ -1,6 +1,17 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="8">
+            <Button Classes="HomeActionButton">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="4">
+                    <Path Data="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
+                    <TextBlock Text="Home Action" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
     <!-- Recent item row button -->
     <Style Selector="Button.RecentItem">
         <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
@@ -74,5 +85,41 @@
     </Style>
     <Style Selector="Button.RecoveryBannerPrimaryAction:pressed /template/ ContentPresenter">
         <Setter Property="Opacity" Value="0.78" />
+    </Style>
+    <!-- 首页操作按钮仅在首页加载。 -->
+    <Style Selector="Button.HomeActionButton">
+        <Setter Property="Width" Value="{x:Static theme:ThemeSemLayoutTokens.SizeHomeAction}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeSemLayoutTokens.SizeHomeAction}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.LabelMSize}" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton StackPanel">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton Path">
+        <Setter Property="Stroke" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton:pointerover">
+        <Setter Property="Opacity" Value="0.92" />
+    </Style>
+
+    <Style Selector="Button.HomeActionButton:pressed">
+        <Setter Property="Opacity" Value="0.82" />
     </Style>
 </Styles>

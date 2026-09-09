@@ -4,13 +4,13 @@
         <ResourceDictionary x:Key="Light">
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude
-                    Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Shared/Color/SemanticColor.Light.axaml" />
+                    Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Resources/Color/SemanticColor.Light.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude
-                    Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Shared/Color/SemanticColor.Dark.axaml" />
+                    Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Resources/Color/SemanticColor.Dark.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>

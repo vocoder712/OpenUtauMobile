@@ -27,7 +27,7 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 - All modal dialogs use `DialogShell`; new footers use `DialogActionRows` and
   `DialogActionRow` for explicit equal-width rows (`DialogActions` is the legacy
   single-row alias). Read `DIALOGS.ctx.md`
-  before adding or changing a dialog. `PopupCommon.axaml` is the single owner
+  before adding or changing a dialog. `Styles/Components/Dialog.axaml` is the single owner
   of dialog chrome and action design; do not add per-dialog chrome tokens or
   duplicate title/close/footer markup.
 

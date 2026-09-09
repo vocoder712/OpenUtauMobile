@@ -12,7 +12,7 @@
              x:DataType="vm:SingerManagementViewModel">
 
     <UserControl.Styles>
-        <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SingerManagementView.axaml" />
+        <StyleInclude Source="/Views/Styles/SingerManagementView.axaml" />
     </UserControl.Styles>
 
     <!-- Root -->

@@ -12,6 +12,10 @@
     d:DataContext="{d:DesignInstance Type=vm:ErrorDialogViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:ErrorDialogViewModel"
     Classes="PopupDialogRoot">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/ErrorDialogPopup.axaml" />
+    </UserControl.Styles>
+
     <UserControl.Resources>
         <StreamGeometry x:Key="IconChevronDown">M7.41,8.59 L12,13.17 L16.59,8.59 L18,10 L12,16 L6,10 L7.41,8.59 Z</StreamGeometry>
     </UserControl.Resources>

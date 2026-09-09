@@ -16,7 +16,7 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SettingsView.axaml" />
+        <StyleInclude Source="/Views/Styles/SettingsView.axaml" />
     </UserControl.Styles>
 
     <Panel Background="{DynamicResource Sem.Color.Surface}">

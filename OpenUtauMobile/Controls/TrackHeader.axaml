@@ -7,6 +7,10 @@
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              x:Class="OpenUtauMobile.Controls.TrackHeader"
              x:DataType="vm:TrackHeaderViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/TrackHeader.axaml" />
+    </UserControl.Styles>
+
     <UserControl.Resources>
         <!-- 反转布尔值转换器：用于根据 IsExpanded 切换显示轨道名 -->
         <tools:BoolInvertConverter x:Key="BoolInvertConverter" />

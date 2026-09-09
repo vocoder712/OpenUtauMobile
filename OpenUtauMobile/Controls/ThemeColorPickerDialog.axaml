@@ -12,6 +12,10 @@
     x:Class="OpenUtauMobile.Controls.ThemeColorPickerDialog"
     x:DataType="vm:ThemeColorPickerDialogViewModel"
     Classes="PopupDialogRoot">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/ThemeColorPickerDialog.axaml" />
+    </UserControl.Styles>
+
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Settings.Appearance.ThemeColor.Picker.Title}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActions>

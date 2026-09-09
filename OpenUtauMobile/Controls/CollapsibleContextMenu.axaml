@@ -3,6 +3,10 @@
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
              x:Class="OpenUtauMobile.Controls.CollapsibleContextMenu"
              HorizontalAlignment="Right">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/CollapsibleContextMenu.axaml" />
+    </UserControl.Styles>
+
     <!-- 上下文菜单，胶囊 -->
     <Border x:Name="Capsule"
             Background="{DynamicResource Sem.Color.SurfaceContainer}"

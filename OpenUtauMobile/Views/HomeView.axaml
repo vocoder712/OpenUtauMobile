@@ -9,6 +9,9 @@
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              x:Class="OpenUtauMobile.Views.HomeView"
              x:DataType="vm:HomeViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="/Views/Styles/HomeView.axaml" />
+    </UserControl.Styles>
 
     <UserControl.Resources>
         <conv:PathToFileNameConverter x:Key="PathToFileName" />

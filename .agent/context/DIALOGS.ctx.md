@@ -2,7 +2,7 @@
 
 ## Single owner
 
-`OpenUtauMobile/Themes/OpenUtauMobile/Styles/Controls/PopupCommon.axaml` owns
+`OpenUtauMobile/Themes/OpenUtauMobile/Styles/Components/Dialog.axaml` owns
 dialog surfaces, headers, close icons, footer spacing, action typography,
 colors, geometry and interaction states. `Controls/DialogShell.cs` supplies
 content slots, logical parenting and the explicitly grouped equal-width action-row

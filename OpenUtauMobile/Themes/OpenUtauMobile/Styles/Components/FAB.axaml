@@ -1,0 +1,70 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="8">
+            <Button Classes="FAB">
+                <Path
+                    Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2ZM13.5,17H10.5V14H7.5V11H10.5V8H13.5V11H16.5V14H13.5V17Z" />
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
+    <!-- 共享悬浮操作按钮 -->
+    <Style Selector="Button.FAB">
+        <Setter Property="Width" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXXL}" />
+        <Setter Property="Height" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXXL}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="10" OffsetX="0" OffsetY="3" Opacity="0.24"
+                              Color="{DynamicResource Sem.Value.Shadow}" />
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate TargetType="Button">
+                <Border Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <Grid>
+                        <!-- 鐢ㄤ簬鎮诞鐘舵€佺殑閬僵灞?-->
+                        <Border x:Name="StateLayer"
+                                Background="{TemplateBinding Foreground}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Opacity="0" />
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Margin="{TemplateBinding Padding}" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.FAB:pointerover">
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="14" OffsetX="0" OffsetY="5" Opacity="0.28"
+                              Color="{DynamicResource Sem.Value.Shadow}" />
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.FAB:pointerover /template/ Border#StateLayer">
+        <Setter Property="Opacity" Value="0.08" />
+    </Style>
+
+    <Style Selector="Button.FAB:pressed">
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="6" OffsetX="0" OffsetY="1" Opacity="0.2"
+                              Color="{DynamicResource Sem.Value.Shadow}" />
+        </Setter>
+    </Style>
+
+    <Style Selector="Button.FAB:pressed /template/ Border#StateLayer">
+        <Setter Property="Opacity" Value="0.12" />
+    </Style>
+</Styles>

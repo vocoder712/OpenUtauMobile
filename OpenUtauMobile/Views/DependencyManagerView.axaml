@@ -10,7 +10,7 @@
              x:DataType="vm:DependencyManagerViewModel">
 
     <UserControl.Styles>
-        <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/DependencyManagerView.axaml" />
+        <StyleInclude Source="/Views/Styles/DependencyManagerView.axaml" />
     </UserControl.Styles>
 
     <Panel Background="{DynamicResource Sem.Color.Surface}">

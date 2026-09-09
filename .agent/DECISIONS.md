@@ -377,3 +377,11 @@ Record meaningful technical decisions here. Use one entry per decision.
 - Rationale: Some dialogs require deliberate multi-row action groups independent of viewport width. A two-dimensional structure expresses this requirement without per-view geometry or extra tokens.
 - Dynamic API: OptionConfirmPopupViewModel accepts nested option enumerables, snapshots typed read-only rows, skips empty rows and preserves the existing flat constructor as one row. OptionConfirmPopup binds nested ItemsControls; option selection and cancellation contracts stay unchanged.
 - Verification: Windows build succeeded (13 warnings, zero errors), compiled nested XAML bindings included. No unit tests created or run; runtime device visual acceptance remains pending.
+
+
+- 日期：2026-09-09
+- 决策：按资源、内置控件、共享组件和运行时职责重组 OpenUtauMobile 主题；页面与业务控件样式分别由 Views/Styles、Controls/Styles 的所有者局部加载。
+- 原因：消除主题入口对页面和业务弹窗的全局依赖，明确样式边界；DialogShell 与共享操作行仍由 Styles/Components/Dialog.axaml 统一持有。
+- 兼容：保留原有选择器、Setter、布局值、颜色键、FluentTheme 和运行时代码；显式补齐 ActionBtn 原先的跨文件叠加效果，颜色选择弹窗局部保留原先借用的设置页样式。三个编辑模式切换控件显式共用局部样式。Runtime 子目录调整不改变命名空间，ThemeStaticTokens.cs 和 TrackPalette 数值不变。
+- 取舍：不以外观相似为依据增加全局抽象，不把设置页整体样式加载到颜色选择弹窗，不在本次调整令牌或模板。
+- 验证：共享项目和 Windows 宿主构建成功，均为零错误；37 条本地样式/资源引用有效，10 个运行时源文件与原版本内容一致，原组件抽象的 20 条样式完整保留。仅构建和静态核查，不创建或运行单元测试；设备视觉验收待人工进行。
