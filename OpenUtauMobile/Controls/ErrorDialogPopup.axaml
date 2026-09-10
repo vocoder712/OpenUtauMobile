@@ -1,5 +1,7 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -25,11 +27,11 @@
                     <StackPanel
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
-                        Spacing="8">
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                         <iconPacks:PackIconPhosphorIcons
                             Kind="Copy"
-                            Width="18"
-                            Height="18" />
+                            Width="{x:Static theme:IconTokens.Compact}"
+                            Height="{x:Static theme:IconTokens.Compact}" />
                         <TextBlock Text="{DynamicResource Common.Copy}" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
@@ -39,39 +41,41 @@
                     Command="{Binding CloseCommand}" />
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
-        <Grid RowDefinitions="Auto,Auto,*" Classes="DialogBody">
-            <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
-                <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
-            </ScrollViewer>
-            <Button
-                Grid.Row="1"
-                Classes="DetailToggle"
-                IsVisible="{Binding HasDetail}"
-                x:Name="DetailToggleBtn"
-                Click="OnDetailToggleClicked">
-                <StackPanel Orientation="Horizontal" Spacing="4">
-                    <PathIcon
-                        Width="12"
-                        Height="12"
-                        x:Name="DetailChevron"
-                        Data="{StaticResource IconChevronDown}"
-                        Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                    <TextBlock Text="{DynamicResource Common.Details}" VerticalAlignment="Center" />
-                </StackPanel>
-            </Button>
-            <TextBox
-                Grid.Row="2"
-                x:Name="DetailPanel"
-                Classes="ErrorDetail"
-                IsVisible="False"
-                IsReadOnly="True"
-                AcceptsReturn="True"
-                Text="{Binding Detail}"
-                MaxHeight="280"
-                Margin="0,6,0,0"
-                ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                TextWrapping="Wrap" />
-        </Grid>
+        <Border Classes="DialogBodyBorder">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                </ScrollViewer>
+                <Button
+                    Grid.Row="1"
+                    Classes="DetailToggle"
+                    IsVisible="{Binding HasDetail}"
+                    x:Name="DetailToggleBtn"
+                    Click="OnDetailToggleClicked">
+                    <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                        <PathIcon
+                            Width="12"
+                            Height="12"
+                            x:Name="DetailChevron"
+                            Data="{StaticResource IconChevronDown}"
+                            Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                        <TextBlock Text="{DynamicResource Common.Details}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <TextBox
+                    Grid.Row="2"
+                    x:Name="DetailPanel"
+                    Classes="ErrorDetail"
+                    IsVisible="False"
+                    IsReadOnly="True"
+                    AcceptsReturn="True"
+                    Text="{Binding Detail}"
+                    MaxHeight="280"
+                    Margin="0,6,0,0"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    TextWrapping="Wrap" />
+            </Grid>
+        </Border>
     </dialogs:DialogShell>
 </UserControl>

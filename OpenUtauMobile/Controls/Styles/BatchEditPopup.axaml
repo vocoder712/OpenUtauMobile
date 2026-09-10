@@ -9,14 +9,14 @@
 
     <Style Selector="Border.BatchEditScope">
         <Setter Property="Margin" Value="12,12,12,4" />
-        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="Padding" Value="12,12" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
 
     <Style Selector="Border.BatchEditItem">
         <Setter Property="Margin" Value="0,4" />
-        <Setter Property="Padding" Value="12" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetSM}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
@@ -24,9 +24,8 @@
     <Style Selector="Border.BatchEditItemIcon">
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ItemIconSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ItemIconSize}" />
-        <Setter Property="Margin" Value="0,0,12,0" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
-        <Setter Property="CornerRadius" Value="20" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
@@ -42,12 +41,11 @@
     <Style Selector="TextBlock.BatchEditParameterLabel">
         <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodySSize}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-        <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
     <Style Selector="Border.BatchEditPinnedGroup">
         <Setter Property="Margin" Value="0,4,0,8" />
-        <Setter Property="Padding" Value="4" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetXS}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
@@ -62,7 +60,6 @@
     <Style Selector="Button.BatchEditPinIconButton">
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.PinIconButtonSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.PinIconButtonSize}" />
-        <Setter Property="Margin" Value="4,0,0,0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
@@ -91,12 +88,11 @@
     <Style Selector="Button.BatchEditRunIconButton">
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
-        <Setter Property="Margin" Value="8,0,0,0" />
         <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetM}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="28" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
@@ -107,7 +103,7 @@
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ActionIconVisualSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ActionIconVisualSize}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
-        <Setter Property="CornerRadius" Value="28" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />

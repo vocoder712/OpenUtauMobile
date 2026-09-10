@@ -29,9 +29,11 @@ ViewModel lifecycle. Put one `DialogShell` inside the AXAML UserControl:
                     Command="{Binding ConfirmCommand}" />
         </dialogs:DialogActionRow>
     </dialogs:DialogShell.Footer>
-    <StackPanel Classes="DialogBody">
-        <!-- 业务内容 -->
-    </StackPanel>
+    <Border Classes="DialogBodyBorder">
+        <StackPanel>
+            <!-- 业务内容 -->
+        </StackPanel>
+    </Border>
 </dialogs:DialogShell>
 ```
 
@@ -53,8 +55,13 @@ Declare `xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"`.
   footer visibility on its root control so no empty footer inset remains.
 - For a composite header, use `DialogShell.Header` with `PopupTitle` and
   optional `DialogSubtitle`; supply text and visibility only, not typography.
-- `DialogBody` supplies a shared content margin; `DialogBodyBorder` supplies
-  the equivalent padding for a Border. Do not nest both for the same inset.
+- Wrap the body in `Border Classes="DialogBodyBorder"`; the container owns
+  content padding. The old `DialogBody` child-margin class has been removed.
+  Do not add a second inset to the child ScrollViewer or panel.
+- Leave ScrollViewer.Padding at zero. If the inset should scroll with content,
+  put the padded Border **inside** the ScrollViewer; if it should stay fixed,
+  put it outside. Avalonia 12.1.0 presenter padding can leave the bottom of the
+  content unreachable at maximum offset. Preserve finite height constraints.
 - Existing named inputs and event handlers stay in the view's namescope.
   Footer controls retain their ViewModel through the shell's logical tree.
 
@@ -68,8 +75,9 @@ may contain different numbers of buttons. A single-button row spans the width.
 - No automatic button wrapping, merging or repartitioning on resize.
 - Button **text** still wraps, and each row grows to its tallest button.
 - Hidden actions do not reserve cells; disabled actions remain in place.
-- An empty/all-hidden row measures to zero height. No extra row spacing is
-  added: button spacing remains owned by the shared action style.
+- An empty/all-hidden row measures to zero height and contributes no gap.
+  `DialogActionRow.Spacing` owns the horizontal gap; `DialogActionRows.Spacing`
+  owns the vertical gap (both styled to 8dp). Buttons have no external margin.
 - Do not set per-view `Width`, `Height`, `HorizontalAlignment`, `Orientation`,
   or margins to control this layout. Use explicit row containers instead.
 - Keep the footer outside the body ScrollViewer and give it a finite width.

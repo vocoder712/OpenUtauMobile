@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -27,63 +28,65 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <StackPanel Spacing="14" Classes="DialogBody">
-                <StackPanel Spacing="6">
-                    <TextBlock
-                        Text="{DynamicResource ExportAudioPopup.PathLabel}"
-                        FontSize="12"
-                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                    <Border Classes="ExportPathPreview">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                         <TextBlock
-                            Text="{Binding ExportPath}"
-                            TextWrapping="Wrap"
-                            MinHeight="20" />
-                    </Border>
-                    <TextBlock
-                        Text="{DynamicResource ExportAudioPopup.PathPlaceholder}"
-                        FontSize="11"
-                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                        TextWrapping="Wrap" />
-                    <Button
-                        Classes="ExportPathBtn"
-                        Content="{DynamicResource ExportAudioPopup.SelectPath}"
-                        Command="{Binding PickPathCommand}" />
+                            Text="{DynamicResource ExportAudioPopup.PathLabel}"
+                            FontSize="12"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <Border Classes="ExportPathPreview">
+                            <TextBlock
+                                Text="{Binding ExportPath}"
+                                TextWrapping="Wrap"
+                                MinHeight="20" />
+                        </Border>
+                        <TextBlock
+                            Text="{DynamicResource ExportAudioPopup.PathPlaceholder}"
+                            FontSize="11"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                            TextWrapping="Wrap" />
+                        <Button
+                            Classes="ExportPathBtn"
+                            Content="{DynamicResource ExportAudioPopup.SelectPath}"
+                            Command="{Binding PickPathCommand}" />
+                    </StackPanel>
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock
+                            Text="{DynamicResource ExportAudioPopup.ModeLabel}"
+                            FontSize="12"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <Grid ColumnDefinitions="*,10,*">
+                            <RadioButton
+                                Grid.Column="0"
+                                GroupName="ExportMode"
+                                Classes="ExportModeCard"
+                                IsEnabled="{Binding !IsExporting}"
+                                IsChecked="{Binding IsMixdownSelected, Mode=TwoWay}"
+                                Content="{DynamicResource ExportAudioPopup.Mode.Mixdown}" />
+                            <RadioButton
+                                Grid.Column="2"
+                                GroupName="ExportMode"
+                                Classes="ExportModeCard"
+                                IsEnabled="{Binding !IsExporting}"
+                                IsChecked="{Binding IsTracksSelected, Mode=TwoWay}"
+                                Content="{DynamicResource ExportAudioPopup.Mode.Tracks}" />
+                        </Grid>
+                        <TextBlock
+                            Text="{DynamicResource ExportAudioPopup.Mode.TracksHint}"
+                            FontSize="11"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" IsVisible="{Binding IsExporting}">
+                        <ProgressBar IsIndeterminate="True" Height="6" />
+                        <TextBlock
+                            Text="{DynamicResource ExportAudioPopup.Exporting}"
+                            HorizontalAlignment="Center"
+                            Foreground="{DynamicResource Sem.Color.Primary}" />
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Spacing="6">
-                    <TextBlock
-                        Text="{DynamicResource ExportAudioPopup.ModeLabel}"
-                        FontSize="12"
-                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                    <Grid ColumnDefinitions="*,10,*">
-                        <RadioButton
-                            Grid.Column="0"
-                            GroupName="ExportMode"
-                            Classes="ExportModeCard"
-                            IsEnabled="{Binding !IsExporting}"
-                            IsChecked="{Binding IsMixdownSelected, Mode=TwoWay}"
-                            Content="{DynamicResource ExportAudioPopup.Mode.Mixdown}" />
-                        <RadioButton
-                            Grid.Column="2"
-                            GroupName="ExportMode"
-                            Classes="ExportModeCard"
-                            IsEnabled="{Binding !IsExporting}"
-                            IsChecked="{Binding IsTracksSelected, Mode=TwoWay}"
-                            Content="{DynamicResource ExportAudioPopup.Mode.Tracks}" />
-                    </Grid>
-                    <TextBlock
-                        Text="{DynamicResource ExportAudioPopup.Mode.TracksHint}"
-                        FontSize="11"
-                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                        TextWrapping="Wrap" />
-                </StackPanel>
-                <StackPanel Spacing="6" IsVisible="{Binding IsExporting}">
-                    <ProgressBar IsIndeterminate="True" Height="6" />
-                    <TextBlock
-                        Text="{DynamicResource ExportAudioPopup.Exporting}"
-                        HorizontalAlignment="Center"
-                        Foreground="{DynamicResource Sem.Color.Primary}" />
-                </StackPanel>
-            </StackPanel>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

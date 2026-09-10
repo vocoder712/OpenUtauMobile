@@ -1,24 +1,26 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style Selector="Border.ExportPathPreview">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="10" />
-        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
+        <Setter Property="Padding" Value="12,8" />
     </Style>
 
     <Style Selector="Button.ExportPathBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="Padding" Value="16,8" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
         <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.ExportPathBtn:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="0.9" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}" />
     </Style>
 
     <Style Selector="RadioButton.ExportModeCard">
@@ -26,8 +28,8 @@
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="12,10" />
-        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="12,12" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />

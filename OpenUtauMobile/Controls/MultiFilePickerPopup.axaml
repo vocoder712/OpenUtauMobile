@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
@@ -23,20 +24,21 @@
             </StackPanel>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <StackPanel DockPanel.Dock="Top" Classes="DialogBody">
-                <Button Content="{DynamicResource FilePicker.GoUp}" Command="{Binding GoUpCommand}" />
-                <TextBox Text="{Binding CurrentPath}" />
-                <ProgressBar IsVisible="{Binding IsLoading}" IsIndeterminate="True" />
-                <TextBlock
-                    IsVisible="{Binding ShowEmptyState}"
-                    Text="{Binding EmptyStateMessage}"
-                    TextWrapping="Wrap" />
-            </StackPanel>
-            <ListBox
+            <Border Classes="DialogBodyBorder" DockPanel.Dock="Top">
+                <StackPanel>
+                    <Button Content="{DynamicResource FilePicker.GoUp}" Command="{Binding GoUpCommand}" />
+                    <TextBox Text="{Binding CurrentPath}" />
+                    <ProgressBar IsVisible="{Binding IsLoading}" IsIndeterminate="True" />
+                    <TextBlock
+                        IsVisible="{Binding ShowEmptyState}"
+                        Text="{Binding EmptyStateMessage}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Border Classes="DialogBodyBorder"><ListBox
                 ItemsSource="{Binding Entries}"
                 MaxHeight="280"
-                IsEnabled="{Binding !IsLoading}"
-                Classes="DialogBody">
+                IsEnabled="{Binding !IsLoading}">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:MultiFilePickerEntry">
                         <Panel>
@@ -45,18 +47,18 @@
                                 Content="{Binding Name}"
                                 Command="{Binding OpenCommand}"
                                 HorizontalAlignment="Stretch"
-                                MinHeight="48" />
+                                MinHeight="{x:Static theme:InteractionTokens.TouchTarget}" />
                             <CheckBox
                                 IsVisible="{Binding IsFile}"
                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                 HorizontalAlignment="Stretch"
-                                MinHeight="48">
+                                MinHeight="{x:Static theme:InteractionTokens.TouchTarget}">
                                 <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
                             </CheckBox>
                         </Panel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
-            </ListBox>
+            </ListBox></Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

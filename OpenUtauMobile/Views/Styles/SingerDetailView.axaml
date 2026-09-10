@@ -7,19 +7,17 @@
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
         <Setter Property="Padding" Value="20,12" />
-        <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
     <!-- Info row label -->
     <Style Selector="TextBlock.InfoLabel">
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodySSize}" />
         <Setter Property="Opacity" Value="0.6" />
-        <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
     <!-- Info row value -->
     <Style Selector="TextBlock.InfoValue">
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
@@ -33,9 +31,8 @@
         <Setter Property="Cursor" Value="Hand" />
         <!-- 保留迁移前由全局同名按钮样式补充的属性。 -->
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
-        <Setter Property="Margin" Value="0,0,0,12" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>

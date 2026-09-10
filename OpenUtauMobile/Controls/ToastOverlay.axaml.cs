@@ -1,10 +1,12 @@
-﻿using System;
+using System;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 using System.Threading.Tasks;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Controls.Tokens;
 
 namespace OpenUtauMobile.Controls;
 
@@ -23,13 +25,13 @@ public partial class ToastOverlay : UserControl
             new DoubleTransition
             {
                 Property = OpacityProperty,
-                Duration = TimeSpan.FromMilliseconds(250),
+                Duration = MotionTokens.DurationMedium1,
                 Easing = new CubicEaseOut()
             },
             new TransformOperationsTransition
             {
                 Property = Border.RenderTransformProperty,
-                Duration = TimeSpan.FromMilliseconds(250),
+                Duration = MotionTokens.DurationMedium1,
                 Easing = new CubicEaseOut()
             }
         };
@@ -61,7 +63,7 @@ public partial class ToastOverlay : UserControl
     {
         // Disable transitions for instant pre-position
         ToastBorder.Transitions = null;
-        _translate.Y = 24;
+        _translate.Y = ToastTokens.EnterOffset;
         ToastBorder.Opacity = 0;
         ToastBorder.IsVisible = true;
 
@@ -71,7 +73,7 @@ public partial class ToastOverlay : UserControl
             new DoubleTransition
             {
                 Property = OpacityProperty,
-                Duration = TimeSpan.FromMilliseconds(250),
+                Duration = MotionTokens.DurationMedium1,
                 Easing = new CubicEaseOut()
             }
         };
@@ -79,7 +81,7 @@ public partial class ToastOverlay : UserControl
         _translate.Y = 0;
         ToastBorder.Opacity = 1;
 
-        await Task.Delay(250);
+        await Task.Delay(MotionTokens.DurationMedium1);
     }
 
     private async Task HideAsync()
@@ -89,12 +91,12 @@ public partial class ToastOverlay : UserControl
             new DoubleTransition
             {
                 Property = OpacityProperty,
-                Duration = TimeSpan.FromMilliseconds(167),
+                Duration = MotionTokens.DurationExit,
                 Easing = new LinearEasing()
             }
         };
         ToastBorder.Opacity = 0;
-        await Task.Delay(167);
+        await Task.Delay(MotionTokens.DurationExit);
         ToastBorder.IsVisible = false;
     }
 }

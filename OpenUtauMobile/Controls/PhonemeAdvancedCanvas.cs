@@ -72,7 +72,6 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private double _animStartProgress;
     private double _animTargetProgress;
     private DateTime _animStartTime;
-    private const double AnimDurationMs = 130.0;
 
     // 重置目标动效状态
     private DispatcherTimer? _resetTargetAnimTimer;
@@ -120,7 +119,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
         if (_animTimer == null)
         {
-            _animTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+            _animTimer = new DispatcherTimer { Interval = PhonemeCanvasTokens.FrameInterval };
             _animTimer.Tick += OnAnimTimerTick;
         }
         _animTimer.Start();
@@ -129,7 +128,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private void OnAnimTimerTick(object? sender, EventArgs e)
     {
         double elapsed = (DateTime.UtcNow - _animStartTime).TotalMilliseconds;
-        double t = Math.Clamp(elapsed / AnimDurationMs, 0.0, 1.0);
+        double t = Math.Clamp(elapsed / PhonemeCanvasTokens.SelectionAnimationDuration.TotalMilliseconds, 0.0, 1.0);
         // CubicEaseOut
         double eased = 1.0 - Math.Pow(1.0 - t, 3);
         _animProgress = _animStartProgress + (_animTargetProgress - _animStartProgress) * eased;

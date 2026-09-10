@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -30,75 +31,77 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <StackPanel Spacing="14" Classes="DialogBody">
-                <Border
-                    CornerRadius="12"
-                    Height="88"
-                    BorderBrush="{DynamicResource Sem.Color.Outline}"
-                    BorderThickness="1"
-                    Background="{Binding PreviewBrush}" />
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <Border
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                        Height="88"
+                        BorderBrush="{DynamicResource Sem.Color.Outline}"
+                        BorderThickness="1"
+                        Background="{Binding PreviewBrush}" />
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Hue}" />
+                        <Slider
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="360"
+                            Value="{Binding Hue, Mode=TwoWay}" />
+                        <TextBlock
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Text="{Binding Hue, StringFormat={}{0:F0}}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Saturation}" />
+                        <Slider
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="{Binding Saturation, Mode=TwoWay}" />
+                        <TextBlock
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Text="{Binding Saturation, StringFormat={}{0:F0}%}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Value}" />
+                        <Slider
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="{Binding Value, Mode=TwoWay}" />
+                        <TextBlock
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            Text="{Binding Value, StringFormat={}{0:F0}%}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                        <TextBox
+                            Grid.Column="0"
+                            Text="{Binding HexInput, Mode=TwoWay}"
+                            Watermark="#RRGGBB" />
+                        <Button
+                            Grid.Column="1"
+                            Classes="AccentBtn"
+                            Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
+                            Command="{Binding ApplyHexCommand}" />
+                    </Grid>
                     <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Hue}" />
-                    <Slider
-                        Grid.Column="1"
-                        Minimum="0"
-                        Maximum="360"
-                        Value="{Binding Hue, Mode=TwoWay}" />
-                    <TextBlock
-                        Grid.Column="2"
-                        VerticalAlignment="Center"
-                        Text="{Binding Hue, StringFormat={}{0:F0}}" />
-                </Grid>
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Saturation}" />
-                    <Slider
-                        Grid.Column="1"
-                        Minimum="0"
-                        Maximum="100"
-                        Value="{Binding Saturation, Mode=TwoWay}" />
-                    <TextBlock
-                        Grid.Column="2"
-                        VerticalAlignment="Center"
-                        Text="{Binding Saturation, StringFormat={}{0:F0}%}" />
-                </Grid>
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Text="{DynamicResource Settings.Appearance.ThemeColor.Picker.Value}" />
-                    <Slider
-                        Grid.Column="1"
-                        Minimum="0"
-                        Maximum="100"
-                        Value="{Binding Value, Mode=TwoWay}" />
-                    <TextBlock
-                        Grid.Column="2"
-                        VerticalAlignment="Center"
-                        Text="{Binding Value, StringFormat={}{0:F0}%}" />
-                </Grid>
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                    <TextBox
-                        Grid.Column="0"
-                        Text="{Binding HexInput, Mode=TwoWay}"
-                        Watermark="#RRGGBB" />
-                    <Button
-                        Grid.Column="1"
-                        Classes="AccentBtn"
-                        Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
-                        Command="{Binding ApplyHexCommand}" />
-                </Grid>
-                <TextBlock
-                    Classes="PlaceholderText"
-                    Foreground="{DynamicResource Sem.Color.Error}"
-                    Text="{Binding ErrorText}"
-                    IsVisible="{Binding HasError}" />
-            </StackPanel>
+                        Classes="PlaceholderText"
+                        Foreground="{DynamicResource Sem.Color.Error}"
+                        Text="{Binding ErrorText}"
+                        IsVisible="{Binding HasError}" />
+                </StackPanel>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

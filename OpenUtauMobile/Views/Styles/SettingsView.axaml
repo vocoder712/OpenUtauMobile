@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <!-- NavRail item button -->
     <Style Selector="Button.NavItem">
@@ -28,7 +29,7 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="MinHeight" Value="48" />
+        <Setter Property="MinHeight" Value="{x:Static theme:InteractionTokens.TouchTarget}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="CornerRadius" Value="0" />
     </Style>
@@ -41,29 +42,27 @@
 
     <!-- Category heading in content area -->
     <Style Selector="TextBlock.CategoryTitle">
-        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.TitleLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,0,0,16" />
     </Style>
 
     <!-- Setting group card -->
     <Style Selector="Border.SettingCard">
-        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXL}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
         <Setter Property="Padding" Value="16,8" />
-        <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
     <!-- Section label inside card -->
     <Style Selector="TextBlock.SettingItemTitle">
         <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Margin" Value="0,0,0,6" />
     </Style>
 
     <!-- Placeholder description text -->
     <Style Selector="TextBlock.PlaceholderText">
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodySSize}" />
         <Setter Property="Opacity" Value="0.65" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="LineHeight" Value="22" />
@@ -73,19 +72,19 @@
     <Style Selector="Button.AccentBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
-        <Setter Property="CornerRadius" Value="4" />
-        <Setter Property="Padding" Value="14,7" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerS}" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="Button.AccentBtn:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="0.85" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}" />
     </Style>
     <Style Selector="Button.AccentBtn:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="0.70" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentPressed}" />
     </Style>
 </Styles>

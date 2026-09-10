@@ -1,11 +1,12 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
         xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia">
     <Design.PreviewWith>
         <Border Padding="128">
             <StackPanel Orientation="Vertical"
-                        Spacing="16">
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
                 <controls:DawKnob Angle="45" />
                 <controls:DawKnob Angle="90" />
                 <controls:DawKnob Angle="135" />

@@ -1,5 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia">
     <!-- 颜色选择器独立持有这些样式与数值，不与设置页建立联动。 -->
     <Style Selector="TextBlock.PlaceholderText">
@@ -12,9 +14,9 @@
     <Style Selector="Button.AccentBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
-        <Setter Property="CornerRadius" Value="4" />
-        <Setter Property="Padding" Value="14,7" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerS}" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="BorderThickness" Value="0" />
@@ -22,11 +24,11 @@
 
     <Style Selector="Button.AccentBtn:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="0.85" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}" />
     </Style>
 
     <Style Selector="Button.AccentBtn:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="0.70" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentPressed}" />
     </Style>
 </Styles>

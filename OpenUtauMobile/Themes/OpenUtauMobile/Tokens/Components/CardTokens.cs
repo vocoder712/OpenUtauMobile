@@ -1,4 +1,5 @@
 using Avalonia;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
 
@@ -6,6 +7,6 @@ namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
 public static class CardTokens
 {
     public static Thickness BorderThickness => new(1);
-    public static Thickness Padding => new(12);
-    public static CornerRadius CornerRadius => new(8);
+    public static Thickness Padding => LayoutTokens.InsetSM;
+    public static CornerRadius CornerRadius => ShapeTokens.CornerM;
 }

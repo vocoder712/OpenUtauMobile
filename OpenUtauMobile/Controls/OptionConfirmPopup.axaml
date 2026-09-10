@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -46,16 +47,18 @@
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <!-- 标题栏 -->
-            <StackPanel Spacing="16" Classes="DialogBody">
-                <!-- 内容 -->
-                <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
-                    <TextBlock
-                        Text="{Binding Content}"
-                        TextWrapping="Wrap"
-                        FontSize="{x:Static theme:TypographyTokens.BodyMSize}" />
-                </ScrollViewer>
-                <!-- 选项 -->
-            </StackPanel>
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <!-- 内容 -->
+                    <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
+                        <TextBlock
+                            Text="{Binding Content}"
+                            TextWrapping="Wrap"
+                            FontSize="{x:Static theme:TypographyTokens.BodyMSize}" />
+                    </ScrollViewer>
+                    <!-- 选项 -->
+                </StackPanel>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

@@ -28,9 +28,8 @@
                             CommandParameter="{Binding .}"
                             HorizontalContentAlignment="Center"
                             HorizontalAlignment="Stretch"
-                            Padding="10,8"
                             Background="Transparent"
-                            BorderThickness="0">
+                            BorderThickness="0" Padding="12,8">
                             <TextBlock
                                 Text="{Binding .}"
                                 FontSize="14"

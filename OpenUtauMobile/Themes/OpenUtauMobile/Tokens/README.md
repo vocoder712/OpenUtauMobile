@@ -24,8 +24,41 @@
 - Global tokens and theme includes must not depend on feature tokens/styles.
   Static definitions use `x:Static`; dynamic color keys and resource lookup are
   unchanged. FluentTheme and ControlTheme rewrites are not part of this work.
-- Do not enlarge existing controls while reorganizing tokens. Changes to hit
-  targets, visual design or sizing policy require an explicit behavior decision.
+- Token-only moves preserve effective values. The subsequent metrics cleanup
+  explicitly allows grid alignment: use 8dp baseline spacing and 4dp details,
+  without rounding typography, motion, strokes or drawing geometry to that grid.
+  The Home delete action now has a 48dp target (formerly 34dp); other compact
+  editor targets retain their separate sizing contracts.
+
+## Layout ownership and metrics follow-up (2026-09-10)
+
+- Sibling gaps belong to `Spacing`, `ColumnSpacing`, `RowSpacing`, or wrapping
+  panel `ItemSpacing`/`LineSpacing`. Container insets belong to `Padding`.
+  Keep Margin for isolated section separation, overlays and optical offsets.
+- Exception: keep `ScrollViewer.Padding` zero on Avalonia 12.1.0. Use a padded
+  content Border inside it so inset contributes to the scroll extent, or an
+  outer Border for fixed viewport inset. Presenter padding can clip the last
+  content even at maximum scroll offset; a successful build does not catch this.
+- Dialog body insets are `Border.DialogBodyBorder`; DialogActionRow and
+  DialogActionRows own their gaps. Never restore per-action margins.
+- LayoutTokens adds the consumed 12dp intermediate step and 24dp large step,
+  with matching uniform insets. ShapeTokens includes a size-independent full
+  corner for circular/pill visuals. Composite one-off padding remains local.
+- IconTokens describes 16/20/24dp visuals; InteractionTokens independently
+  describes a 48dp minimum touch target. Typography adds Title L/M/S roles;
+  Dialog and TabItem retain their component entry points referencing those roles.
+- MotionTokens owns 150/167/200/250/300/375/500ms durations. Toast transition
+  delays reference the same tokens as their transitions. Phoneme selection's
+  130ms interpolation and 16ms frame interval stay feature-owned.
+- ContentHover/ContentPressed are shared direct-content feedback, not state
+  layers. Dialog action content opacity remains its independent component
+  contract. Settings and ThemeColorPicker still own their specialized styles;
+  only generic foundation/semantic defaults are shared.
+- FabTokens owns size and state-specific elevation. OptionEntryTokens owns
+  shared navigation-row metrics. Toast and editor overlay elevation remain
+  beside their owners rather than being equated with FAB shadows.
+- See `.agent/context/UI_METRICS_REVIEW.md` for scope, retained exceptions,
+  verification and the device acceptance checklist.
 
 ## Review map for the 2026-09-10 migration
 

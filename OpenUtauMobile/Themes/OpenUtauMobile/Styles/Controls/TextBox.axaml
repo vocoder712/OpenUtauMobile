@@ -1,10 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <Design.PreviewWith>
         <Border Padding="128">
             <StackPanel Orientation="Vertical"
-                        Spacing="8">
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                 <TextBox Width="200"
                          PlaceholderText="Placeholder" />
                 <TextBox Width="200"

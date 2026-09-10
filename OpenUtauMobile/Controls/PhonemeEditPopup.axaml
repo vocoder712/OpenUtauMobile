@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -32,13 +33,13 @@
             <!-- 标题栏 -->
             <!-- 内容区域 -->
             <Border DockPanel.Dock="Top" Classes="DialogBodyBorder">
-                <StackPanel Spacing="12">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                     <!-- 当前音素信息与恢复默认操作 -->
                     <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
                         <StackPanel
                             Grid.Column="0"
                             Orientation="Vertical"
-                            Spacing="2">
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                             <TextBlock
                                 Text="{Binding CurrentPhonemeInfo}"
                                 FontSize="13"
@@ -53,20 +54,18 @@
                             Grid.Column="1"
                             Command="{Binding ResetCommand}"
                             Classes="Secondary"
-                            Padding="8,4"
                             FontSize="12"
                             VerticalAlignment="Center"
-                            Content="{DynamicResource PhonemeEdit.Reset}" />
+                            Content="{DynamicResource PhonemeEdit.Reset}"  Padding="8,4" />
                     </Grid>
                     <!-- 音素别名输入框 -->
                     <TextBox
                         x:Name="PhonemeAliasInput"
                         Text="{Binding CurrentAlias}"
                         PlaceholderText="{DynamicResource PhonemeEdit.Watermark}"
-                        Padding="12,8"
-                        CornerRadius="8"
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
                         FontSize="14"
-                        BorderThickness="1" />
+                        BorderThickness="1"  Padding="12,8" />
                     <!-- 按钮栏（与歌词编辑完全一致的 3 个按钮） -->
                 </StackPanel>
             </Border>

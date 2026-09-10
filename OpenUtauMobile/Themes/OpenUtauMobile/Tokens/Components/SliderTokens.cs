@@ -5,5 +5,5 @@ public static class SliderTokens
 {
     public static double TrackHeight => 4d;
     public static double ThumbSize => 20d;
-    public static double MinHeight => 48d;
+    public static double MinHeight => InteractionTokens.TouchTarget;
 }

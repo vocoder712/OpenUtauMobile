@@ -24,24 +24,26 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}" Classes="DialogBody">
-                <TextBlock
-                    Text="{Binding Message}"
-                    FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
-                    Foreground="{DynamicResource Sem.Color.OnSurface}"
-                    TextWrapping="Wrap"
-                    TextAlignment="Center" />
-                <ProgressBar
-                    Value="{Binding Progress}"
-                    IsIndeterminate="{Binding IsIndeterminate}"
-                    HorizontalAlignment="Stretch" />
-                <TextBlock
-                    Text="{Binding ProgressText}"
-                    IsVisible="{Binding IsIndeterminate, Converter={x:Static BoolConverters.Not}}"
-                    FontSize="{x:Static theme:TypographyTokens.LabelMSize}"
-                    Foreground="{DynamicResource Sem.Color.Primary}"
-                    HorizontalAlignment="Center" />
-            </StackPanel>
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <TextBlock
+                        Text="{Binding Message}"
+                        FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                        Foreground="{DynamicResource Sem.Color.OnSurface}"
+                        TextWrapping="Wrap"
+                        TextAlignment="Center" />
+                    <ProgressBar
+                        Value="{Binding Progress}"
+                        IsIndeterminate="{Binding IsIndeterminate}"
+                        HorizontalAlignment="Stretch" />
+                    <TextBlock
+                        Text="{Binding ProgressText}"
+                        IsVisible="{Binding IsIndeterminate, Converter={x:Static BoolConverters.Not}}"
+                        FontSize="{x:Static theme:TypographyTokens.LabelMSize}"
+                        Foreground="{DynamicResource Sem.Color.Primary}"
+                        HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

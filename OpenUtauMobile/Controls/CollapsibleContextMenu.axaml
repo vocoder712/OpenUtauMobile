@@ -19,7 +19,7 @@
                     Background="Transparent">
                 <Border.Transitions>
                     <Transitions>
-                        <DoubleTransition Property="Height" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                        <DoubleTransition Property="Height" Duration="{x:Static foundation:MotionTokens.DurationMedium}" Easing="CubicEaseOut" />
                     </Transitions>
                 </Border.Transitions>
                 <Panel x:Name="ContentPanel">

@@ -37,21 +37,19 @@
                         Classes="DialogAction DialogPrimary" />
                 </Border>
                 <Border IsVisible="{Binding Mode, Converter={StaticResource ModeEq}, ConverterParameter=SaveFile}">
-                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                         <!-- 标签 -->
                         <TextBlock
                             Grid.Row="0"
                             Grid.Column="0"
                             Text="{DynamicResource FilePicker.FileName}"
                             FontSize="11"
-                            Opacity="0.5"
-                            Margin="0,0,0,2" />
+                            Opacity="0.5" />
                         <!-- 文件名输入框 + 固定后缀 -->
                         <Grid
                             Grid.Row="1"
                             Grid.Column="0"
-                            ColumnDefinitions="*,Auto"
-                            Margin="0,0,8,0">
+                            ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                             <TextBox
                                 Grid.Column="0"
                                 Text="{Binding FileName}"
@@ -61,7 +59,6 @@
                                 Grid.Column="1"
                                 Text="{Binding Extension}"
                                 VerticalAlignment="Center"
-                                Margin="4,0,0,0"
                                 FontSize="13"
                                 Opacity="0.6" />
                         </Grid>
@@ -83,7 +80,6 @@
                             IsVisible="{Binding IsShowingWarningMessage}"
                             FontSize="12"
                             Foreground="{DynamicResource Sem.Color.Warning}"
-                            Margin="0,4,0,0"
                             TextWrapping="Wrap" />
                     </Grid>
                 </Border>
@@ -91,25 +87,24 @@
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <!-- ── Header ── -->
-            <Grid
-                ColumnDefinitions="Auto,*"
-                Classes="DialogBody"
-                DockPanel.Dock="Top">
-                <Button
-                    Grid.Column="0"
-                    Classes="DialogNavigation"
-                    Command="{Binding GoUpCommand}"
-                    ToolTip.Tip="{DynamicResource FilePicker.GoUp}"
-                    Content="{iconPacks:PhosphorIcons ArrowUp}">
-                    </Button>
-                <TextBox
-                    Text="{Binding CurrentPath}"
-                    FontSize="13"
-                    BorderThickness="0"
-                    Background="Transparent"
-                    Padding="0,1"
-                    Grid.Column="1" />
-            </Grid>
+            <Border Classes="DialogBodyBorder" DockPanel.Dock="Top">
+                <Grid
+                    ColumnDefinitions="Auto,*">
+                    <Button
+                        Grid.Column="0"
+                        Classes="DialogNavigation"
+                        Command="{Binding GoUpCommand}"
+                        ToolTip.Tip="{DynamicResource FilePicker.GoUp}"
+                        Content="{iconPacks:PhosphorIcons ArrowUp}">
+                        </Button>
+                    <TextBox
+                        Text="{Binding CurrentPath}"
+                        FontSize="13"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        Grid.Column="1"  Padding="0,1" />
+                </Grid>
+            </Border>
             <!-- OpenFolder 模式：选择此文件夹 -->
             <!-- SaveFile 模式：文件名输入 + 保存按钮 -->
             <!-- ── Content ── -->
@@ -127,7 +122,7 @@
                     IsVisible="{Binding ShowEmptyState}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Spacing="14"
+                    Spacing="{x:Static foundation:LayoutTokens.SpaceM}"
                     Margin="24">
                     <!-- 无权限：锁图标 -->
                     <iconPacks:PackIconPhosphorIcons
@@ -159,72 +154,74 @@
                     IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}"
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding AllItems}" Margin="{x:Static foundation:LayoutTokens.InsetM}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Spacing="2" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button
-                                    Classes="FileEntry"
-                                    Command="{Binding DataContext.SelectItemCommand, ElementName=Root}"
-                                    CommandParameter="{Binding .}">
-                                    <Grid
-                                        ColumnDefinitions="38,*,Auto"
-                                        Height="44"
-                                        Margin="2,0">
-                                        <!-- 图标列 -->
-                                        <Panel
-                                            Grid.Column="0"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center">
-                                            <!-- 文件夹图标（目录） -->
+                    <Border Padding="{x:Static foundation:LayoutTokens.InsetM}">
+                        <ItemsControl ItemsSource="{Binding AllItems}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Classes="FileEntry"
+                                        Command="{Binding DataContext.SelectItemCommand, ElementName=Root}"
+                                        CommandParameter="{Binding .}">
+                                        <Grid
+                                            ColumnDefinitions="38,*,Auto"
+                                            Height="44"
+                                            Margin="2,0">
+                                            <!-- 图标列 -->
+                                            <Panel
+                                                Grid.Column="0"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                                <!-- 文件夹图标（目录） -->
+                                                <iconPacks:PackIconPhosphorIcons
+                                                    Width="{x:Static theme:IconTokens.Compact}"
+                                                    Height="{x:Static theme:IconTokens.Compact}"
+                                                    Kind="Folder"
+                                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                    IsVisible="{Binding ., Converter={StaticResource IsFile}, ConverterParameter=invert}" />
+                                                <!-- 文件图标 -->
+                                                <iconPacks:PackIconPhosphorIcons
+                                                    Width="{x:Static theme:IconTokens.Compact}"
+                                                    Height="{x:Static theme:IconTokens.Compact}"
+                                                    Kind="File"
+                                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                    IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
+                                            </Panel>
+                                            <!-- 文件名 + 大小副标题 -->
+                                            <StackPanel
+                                                Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock
+                                                    Text="{Binding Name}"
+                                                    FontSize="14"
+                                                    TextTrimming="CharacterEllipsis" />
+                                                <TextBlock
+                                                    Text="{Binding ., Converter={StaticResource FileSize}}"
+                                                    FontSize="11"
+                                                    Opacity="0.45"
+                                                    IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
+                                            </StackPanel>
+                                            <!-- 目录右箭头 -->
                                             <iconPacks:PackIconPhosphorIcons
-                                                Width="20"
-                                                Height="20"
-                                                Kind="Folder"
-                                                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                Grid.Column="2"
+                                                Width="14"
+                                                Height="14"
+                                                Kind="CaretRight"
+                                                Opacity="0.3"
+                                                VerticalAlignment="Center"
+                                                Margin="4,0,6,0"
                                                 IsVisible="{Binding ., Converter={StaticResource IsFile}, ConverterParameter=invert}" />
-                                            <!-- 文件图标 -->
-                                            <iconPacks:PackIconPhosphorIcons
-                                                Width="20"
-                                                Height="20"
-                                                Kind="File"
-                                                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                                IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
-                                        </Panel>
-                                        <!-- 文件名 + 大小副标题 -->
-                                        <StackPanel
-                                            Grid.Column="1"
-                                            VerticalAlignment="Center"
-                                            Spacing="1">
-                                            <TextBlock
-                                                Text="{Binding Name}"
-                                                FontSize="14"
-                                                TextTrimming="CharacterEllipsis" />
-                                            <TextBlock
-                                                Text="{Binding ., Converter={StaticResource FileSize}}"
-                                                FontSize="11"
-                                                Opacity="0.45"
-                                                IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
-                                        </StackPanel>
-                                        <!-- 目录右箭头 -->
-                                        <iconPacks:PackIconPhosphorIcons
-                                            Grid.Column="2"
-                                            Width="14"
-                                            Height="14"
-                                            Kind="CaretRight"
-                                            Opacity="0.3"
-                                            VerticalAlignment="Center"
-                                            Margin="4,0,6,0"
-                                            IsVisible="{Binding ., Converter={StaticResource IsFile}, ConverterParameter=invert}" />
-                                    </Grid>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
                 </ScrollViewer>
             </Panel>
             <!-- ── Footer（按模式显示，OpenFile 模式不显示底部栏） ── -->

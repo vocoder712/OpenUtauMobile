@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -63,176 +64,173 @@
         <DockPanel>
             <!-- 标题栏 -->
             <!-- BPM 模式内容 -->
-            <StackPanel
-                DockPanel.Dock="Top"
-                IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Bpm}"
-                Spacing="16"
-                Classes="DialogBody">
-                <StackPanel Spacing="6">
-                    <TextBlock
-                        Text="{DynamicResource ProjectEdit.TempoLabel}"
-                        FontSize="12"
-                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                    <TextBox
-                        Text="{Binding BpmText, Mode=TwoWay}"
-                        FontSize="22"
-                        FontWeight="Bold"
-                        TextAlignment="Center"
-                        Watermark="{DynamicResource ProjectEdit.TempoWatermark}" />
+            <Border Classes="DialogBodyBorder" DockPanel.Dock="Top" IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Bpm}">
+                <StackPanel
+                    Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock
+                            Text="{DynamicResource ProjectEdit.TempoLabel}"
+                            FontSize="12"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <TextBox
+                            Text="{Binding BpmText, Mode=TwoWay}"
+                            FontSize="22"
+                            FontWeight="Bold"
+                            TextAlignment="Center"
+                            Watermark="{DynamicResource ProjectEdit.TempoWatermark}" />
+                    </StackPanel>
+                    <!-- 底部按钮 -->
                 </StackPanel>
-                <!-- 底部按钮 -->
-            </StackPanel>
+            </Border>
             <!-- 拍号模式内容 -->
-            <StackPanel
-                DockPanel.Dock="Top"
-                IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=TimeSignature}"
-                Spacing="16"
-                Classes="DialogBody">
-                <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto,Auto">
-                    <!-- 分子 -->
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Text="{DynamicResource ProjectEdit.Beats}"
-                        FontSize="12"
-                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                        HorizontalAlignment="Center" />
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        Text="{DynamicResource ProjectEdit.NoteValue}"
-                        FontSize="12"
-                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                        HorizontalAlignment="Center" />
-                    <TextBox
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Text="{Binding BeatPerBarText, Mode=TwoWay}"
-                        FontSize="26"
-                        FontWeight="Bold"
-                        TextAlignment="Center"
-                        Watermark="4" />
-                    <TextBlock
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Text="/"
-                        FontSize="32"
-                        FontWeight="Bold"
-                        VerticalAlignment="Center"
-                        Margin="12,0" />
-                    <TextBox
-                        Grid.Row="1"
-                        Grid.Column="2"
-                        Text="{Binding BeatUnitText, Mode=TwoWay}"
-                        FontSize="26"
-                        FontWeight="Bold"
-                        TextAlignment="Center"
-                        Watermark="4" />
-                </Grid>
-                <!-- 底部按钮 -->
-            </StackPanel>
+            <Border Classes="DialogBodyBorder" DockPanel.Dock="Top" IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=TimeSignature}">
+                <StackPanel
+                    Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <Grid ColumnDefinitions="*,Auto,*" RowDefinitions="Auto,Auto">
+                        <!-- 分子 -->
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Text="{DynamicResource ProjectEdit.Beats}"
+                            FontSize="12"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                            HorizontalAlignment="Center" />
+                        <TextBlock
+                            Grid.Row="0"
+                            Grid.Column="2"
+                            Text="{DynamicResource ProjectEdit.NoteValue}"
+                            FontSize="12"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                            HorizontalAlignment="Center" />
+                        <TextBox
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Text="{Binding BeatPerBarText, Mode=TwoWay}"
+                            FontSize="26"
+                            FontWeight="Bold"
+                            TextAlignment="Center"
+                            Watermark="4" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Text="/"
+                            FontSize="32"
+                            FontWeight="Bold"
+                            VerticalAlignment="Center"
+                            Margin="12,0" />
+                        <TextBox
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Text="{Binding BeatUnitText, Mode=TwoWay}"
+                            FontSize="26"
+                            FontWeight="Bold"
+                            TextAlignment="Center"
+                            Watermark="4" />
+                    </Grid>
+                    <!-- 底部按钮 -->
+                </StackPanel>
+            </Border>
             <!-- 音名模式内容 -->
-            <StackPanel
-                DockPanel.Dock="Top"
-                IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Key}"
-                Spacing="12"
-                Classes="DialogBody">
-                <TextBlock
-                    Text="{DynamicResource ProjectEdit.KeySignature.Hint}"
-                    FontSize="12"
-                    Opacity="0.55"
-                    HorizontalAlignment="Center" />
-                <!-- 12 个音名按钮，3 行 4 列 -->
-                <UniformGrid
-                    Rows="3"
-                    Columns="4"
-                    HorizontalAlignment="Stretch">
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="0"
-                        Content="C" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="1"
-                        Content="C#" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="2"
-                        Content="D" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="3"
-                        Content="D#" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="4"
-                        Content="E" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="5"
-                        Content="F" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="6"
-                        Content="F#" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="7"
-                        Content="G" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="8"
-                        Content="G#" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="9"
-                        Content="A" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="10"
-                        Content="A#" />
-                    <Button
-                        Classes="KeyBtn"
-                        Height="48"
-                        Margin="3"
-                        Command="{Binding SelectKeyCommand}"
-                        CommandParameter="11"
-                        Content="B" />
-                </UniformGrid>
-            </StackPanel>
+            <Border Classes="DialogBodyBorder" DockPanel.Dock="Top" IsVisible="{Binding Mode, Converter={StaticResource EnumEq}, ConverterParameter=Key}">
+                <StackPanel
+                    Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                    <TextBlock
+                        Text="{DynamicResource ProjectEdit.KeySignature.Hint}"
+                        FontSize="12"
+                        Opacity="0.55"
+                        HorizontalAlignment="Center" />
+                    <!-- 12 个音名按钮，3 行 4 列 -->
+                    <UniformGrid
+                        Rows="3"
+                        Columns="4"
+                        HorizontalAlignment="Stretch">
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="0"
+                            Content="C" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="1"
+                            Content="C#" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="2"
+                            Content="D" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="3"
+                            Content="D#" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="4"
+                            Content="E" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="5"
+                            Content="F" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="6"
+                            Content="F#" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="7"
+                            Content="G" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="8"
+                            Content="G#" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="9"
+                            Content="A" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="10"
+                            Content="A#" />
+                        <Button
+                            Classes="KeyBtn"
+                            Height="48"
+                            Margin="3"
+                            Command="{Binding SelectKeyCommand}"
+                            CommandParameter="11"
+                            Content="B" />
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

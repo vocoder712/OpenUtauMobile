@@ -1,10 +1,11 @@
-<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Styles xmlns="https://github.com/avaloniaui" xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style Selector="Button.KeyBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}"/>
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}"/>
         <Setter Property="Width" Value="40"/>
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>

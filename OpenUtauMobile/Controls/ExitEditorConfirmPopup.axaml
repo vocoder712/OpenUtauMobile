@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -28,12 +29,14 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <StackPanel Spacing="20" Classes="DialogBody">
-                <TextBlock
-                    Text="{DynamicResource Editor.BackConfirm.Message}"
-                    TextWrapping="Wrap"
-                    FontSize="14" />
-            </StackPanel>
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceL}">
+                    <TextBlock
+                        Text="{DynamicResource Editor.BackConfirm.Message}"
+                        TextWrapping="Wrap"
+                        FontSize="14" />
+                </StackPanel>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

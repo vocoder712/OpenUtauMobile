@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -33,7 +34,7 @@
             <!-- 标题栏 -->
             <!-- 内容区域 -->
             <Border DockPanel.Dock="Top" Classes="DialogBodyBorder">
-                <StackPanel Spacing="12">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                     <!-- 当前音符信息 -->
                     <TextBlock
                         Text="{Binding CurrentNoteInfo}"
@@ -44,10 +45,9 @@
                         x:Name="LyricInput"
                         Text="{Binding CurrentLyric}"
                         Watermark="{DynamicResource LyricEdit.Watermark}"
-                        Padding="12,8"
-                        CornerRadius="8"
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
                         FontSize="14"
-                        BorderThickness="1" />
+                        BorderThickness="1"  Padding="12,8" />
                     <!-- 按钮栏 -->
                 </StackPanel>
             </Border>

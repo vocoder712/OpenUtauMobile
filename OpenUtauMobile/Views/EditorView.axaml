@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
@@ -24,7 +25,7 @@
 
     <UserControl.Styles>
         <Style Selector="Grid#SplitDragHandle, Grid#PhonemeSplitHandlePill">
-            <Setter Property="Opacity" Value="0.92" />
+            <Setter Property="Opacity" Value="{x:Static localTokens:EditorTokens.HandleRestOpacity}" />
             <Setter Property="Cursor" Value="{x:Static local:ViewConstants.cursorSizeNS}" />
             <Setter Property="Transitions">
                 <Transitions>
@@ -44,7 +45,7 @@
     <DockPanel>
         <!-- 顶部工具栏 -->
         <Border DockPanel.Dock="Top" Classes="TopBar">
-            <Grid ColumnDefinitions="Auto, *, Auto">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                 <Button Grid.Column="0"
                         Classes="TopBarBtn"
                         Command="{Binding BackCommand}"
@@ -54,7 +55,7 @@
                 <!-- 标题 -->
                 <StackPanel Grid.Column="1"
                             VerticalAlignment="Center"
-                            Spacing="2"
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                             Margin="0,0,8,0">
                     <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToFileName}}"
                                FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
@@ -105,7 +106,7 @@
                   RowDefinitions="Auto, 24, *"
                   ColumnDefinitions="64, *"
                   ClipToBounds="True">
-                
+
                 <!-- 轨道编辑工具栏 -->
                 <Border Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"
                         BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
@@ -137,8 +138,7 @@
                             <!-- 量化吸附选择器（走带编曲与钢琴卷帘共用） -->
                             <Border Grid.Column="0" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                                     BorderThickness="1,0,0,0"
-                                    Padding="6,0"
-                                    ZIndex="1">
+                                    ZIndex="1" Padding="8,0">
                                 <ComboBox ItemsSource="{x:Static local:ViewConstants.SnapDivOptions}"
                                           SelectedItem="{Binding SnapDiv, Mode=TwoWay}"
                                           MinWidth="64"
@@ -221,7 +221,7 @@
                             VerticalAlignment="Stretch">
                         <StackPanel Orientation="Horizontal"
                                     VerticalAlignment="Center"
-                                    Spacing="4"
+                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                                     Margin="2,0,2,0">
                             <!-- 曲速 BPM -->
                             <Button Width="56"
@@ -310,7 +310,7 @@
                     <!-- 上下文操作面板（右上角悬浮，ZIndex 置顶） -->
                     <StackPanel ZIndex="100"
                                 Orientation="Vertical"
-                                Spacing="8"
+                                Spacing="{x:Static foundation:LayoutTokens.SpaceS}"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top"
                                 Margin="8">
@@ -422,7 +422,7 @@
                     <StackPanel Grid.Row="1"
                                 Grid.Column="1"
                                 Orientation="Vertical"
-                                Spacing="8"
+                                Spacing="{x:Static foundation:LayoutTokens.SpaceS}"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Top"
                                 Margin="8"
@@ -456,7 +456,7 @@
                                    MaxWidth="80" TextTrimming="CharacterEllipsis"
                                    ToolTip.Tip="{Binding EditingWavePart.DisplayName}" />
                     </StackPanel>
-                    
+
                     <!-- 音素与参数面板层 -->
                     <Grid Grid.Row="1"
                           Grid.Column="0" Grid.ColumnSpan="2"
@@ -484,17 +484,17 @@
                                   Cursor="{x:Static local:ViewConstants.cursorSizeNS}"
                                   IsHitTestVisible="True"
                                   ToolTip.Tip="{DynamicResource PhonemePanel.Split.Tooltip}">
-                                <Path Data="M 0,12 
-                                           C 0,12 3,12 6,6 
-                                           C 9,0 12,0 12,0 
-                                           H 36 
-                                           C 36,0 39,0 42,6 
-                                           C 45,12 48,12 48,12 
-                                           C 48,12 45,12 42,18 
-                                           C 39,24 36,24 36,24 
-                                           H 12 
-                                           C 12,24 9,24 6,18 
-                                           C 3,12 0,12 0,12 
+                                <Path Data="M 0,12
+                                           C 0,12 3,12 6,6
+                                           C 9,0 12,0 12,0
+                                           H 36
+                                           C 36,0 39,0 42,6
+                                           C 45,12 48,12 48,12
+                                           C 48,12 45,12 42,18
+                                           C 39,24 36,24 36,24
+                                           H 12
+                                           C 12,24 9,24 6,18
+                                           C 3,12 0,12 0,12
                                            Z"
                                       Fill="{DynamicResource Sem.Color.Surface}"
                                       Stroke="{DynamicResource Sem.Color.Outline}"
@@ -503,7 +503,7 @@
                                 <StackPanel Orientation="Vertical"
                                             HorizontalAlignment="Center"
                                             VerticalAlignment="Center"
-                                            Spacing="3"
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                                             IsHitTestVisible="False">
                                     <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
                                                Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
@@ -512,7 +512,7 @@
                                 </StackPanel>
                             </Grid>
                         </Grid>
-    
+
                         <!-- 音素与参数编辑面板（Row 3） -->
                         <c:PhonemeParamPanel x:Name="PhonemeParamPanel"
                                              Grid.Row="2"
@@ -563,17 +563,17 @@
                       ToolTip.Tip="拖拽调整编辑区布局"
                       IsHitTestVisible="True">
                     <Path
-                        Data="M 0,12 
-                       C 0,12 3,12 6,6 
-                       C 9,0 12,0 12,0 
-                       H 36 
-                       C 36,0 39,0 42,6 
-                       C 45,12 48,12 48,12 
-                       C 48,12 45,12 42,18 
-                       C 39,24 36,24 36,24 
-                       H 12 
-                       C 12,24 9,24 6,18 
-                       C 3,12 0,12 0,12 
+                        Data="M 0,12
+                       C 0,12 3,12 6,6
+                       C 9,0 12,0 12,0
+                       H 36
+                       C 36,0 39,0 42,6
+                       C 45,12 48,12 48,12
+                       C 48,12 45,12 42,18
+                       C 39,24 36,24 36,24
+                       H 12
+                       C 12,24 9,24 6,18
+                       C 3,12 0,12 0,12
                        Z"
                         Fill="{DynamicResource Sem.Color.Surface}"
                         Stroke="{DynamicResource Sem.Color.Outline}"
@@ -582,7 +582,7 @@
                     <StackPanel Orientation="Vertical"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Spacing="3"
+                                Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                                 IsHitTestVisible="False">
                         <Rectangle Width="12" Height="2" RadiusX="1" RadiusY="1"
                                    Fill="{DynamicResource Sem.Color.OnSurfaceVariant}" Opacity="0.58" />
@@ -601,16 +601,15 @@
                     Background="{DynamicResource Sem.Color.Surface}"
                     BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                     BorderThickness="1"
-                    CornerRadius="14"
-                    Padding="12,6"
+                    CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
                     IsVisible="{Binding IsWaitingRender}"
                     IsHitTestVisible="False"
-                    ZIndex="1000">
+                    ZIndex="1000" Padding="12,8">
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="8" Color="{DynamicResource Sem.Value.Shadow}" Opacity="0.3"
-                                      OffsetX="0" OffsetY="2" />
+                    <DropShadowEffect BlurRadius="{x:Static localTokens:EditorTokens.RenderShadowBlur}" Color="{DynamicResource Sem.Value.Shadow}" Opacity="{x:Static localTokens:EditorTokens.RenderShadowOpacity}"
+                                      OffsetX="0" OffsetY="{x:Static localTokens:EditorTokens.RenderShadowOffset}" />
                 </Border.Effect>
-                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}" VerticalAlignment="Center">
                     <TextBlock Text="●" Foreground="{DynamicResource Sem.Color.Warning}" FontSize="10"
                                VerticalAlignment="Center" />
                     <TextBlock Text="{DynamicResource Editor.Rendering}"

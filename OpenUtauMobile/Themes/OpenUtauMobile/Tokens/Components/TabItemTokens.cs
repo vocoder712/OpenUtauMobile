@@ -8,7 +8,7 @@ public static class TabItemTokens
 {
     public static double ContainerHeight => 48d;
     public static double ActiveIndicatorHeight => 2d;
-    public static double LabelSize => 14d;
+    public static double LabelSize => TypographyTokens.TitleSSize;
     public static Thickness HeaderInset => new(24, 0);
     public static CornerRadius ActiveIndicatorCorner => new(0);
     public static FontWeight LabelWeight => FontWeight.Medium;

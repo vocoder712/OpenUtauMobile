@@ -48,6 +48,20 @@ public class DialogShell : HeaderedContentControl
 /// <summary>显式定义的一行操作，可见按钮等宽铺满，不自动分行。</summary>
 public class DialogActionRow : Panel
 {
+    public static readonly StyledProperty<double> SpacingProperty =
+        AvaloniaProperty.Register<DialogActionRow, double>(nameof(Spacing), validate: value => double.IsFinite(value) && value >= 0);
+
+    static DialogActionRow()
+    {
+        AffectsMeasure<DialogActionRow>(SpacingProperty);
+    }
+
+    public double Spacing
+    {
+        get => GetValue(SpacingProperty);
+        set => SetValue(SpacingProperty, value);
+    }
+
     private readonly List<Control> visibleActions = [];
     private double preferredWidth;
 
@@ -88,10 +102,13 @@ public class DialogActionRow : Panel
             return default;
         }
 
+        double gapCount = visibleActions.Count - 1;
         double width = double.IsPositiveInfinity(availableWidth)
-            ? preferredWidth * visibleActions.Count
+            ? preferredWidth * visibleActions.Count + gapCount * Spacing
             : Math.Max(0, availableWidth);
-        double cellWidth = width / visibleActions.Count;
+        // 极窄视口下先压缩间隔，避免负单元格宽度或越界排列。
+        double gap = gapCount > 0 ? Math.Min(Spacing, width / gapCount) : 0;
+        double cellWidth = Math.Max(0, width - gapCount * gap) / visibleActions.Count;
         double rowHeight = 0;
         foreach (Control child in visibleActions)
         {
@@ -104,7 +121,7 @@ public class DialogActionRow : Panel
             for (int index = 0; index < visibleActions.Count; index++)
             {
                 visibleActions[index].Arrange(
-                    new Rect(index * cellWidth, 0, cellWidth, rowHeight));
+                    new Rect(index * (cellWidth + gap), 0, cellWidth, rowHeight));
             }
         }
 
@@ -115,6 +132,46 @@ public class DialogActionRow : Panel
 /// <summary>纵向排列业务视图指定的操作行，也可用作二维列表的外层项目面板。</summary>
 public class DialogActionRows : StackPanel
 {
+    private readonly List<Control> visibleRows = [];
+
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        visibleRows.Clear();
+        double width = 0;
+        double height = 0;
+        foreach (Control child in Children)
+        {
+            if (!child.IsVisible)
+            {
+                continue;
+            }
+            child.Measure(new Size(availableSize.Width, double.PositiveInfinity));
+            // 动态操作行外面可能还有 ContentPresenter；空行不占用行间隔。
+            if (child.DesiredSize.Height <= 0)
+            {
+                continue;
+            }
+            if (visibleRows.Count > 0)
+            {
+                height += Spacing;
+            }
+            visibleRows.Add(child);
+            width = Math.Max(width, child.DesiredSize.Width);
+            height += child.DesiredSize.Height;
+        }
+        return new Size(width, height);
+    }
+
+    protected override Size ArrangeOverride(Size finalSize)
+    {
+        double y = 0;
+        foreach (Control child in visibleRows)
+        {
+            child.Arrange(new Rect(0, y, finalSize.Width, child.DesiredSize.Height));
+            y += child.DesiredSize.Height + Spacing;
+        }
+        return finalSize;
+    }
 }
 
 /// <summary>兼容旧的单行操作区；新视图使用 DialogActionRow 明确表达行分组。</summary>

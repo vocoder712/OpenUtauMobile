@@ -4,5 +4,5 @@ namespace OpenUtauMobile.Views.Tokens;
 public static class HomeTokens
 {
     public static double ActionSize => 80d;
-    public static double DeleteButtonSize => 34d;
+    public static double DeleteButtonSize => 48d;
 }

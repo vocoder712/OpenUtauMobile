@@ -10,21 +10,19 @@
 
     <Border Background="{DynamicResource Sem.Color.SurfaceContainer}"
             BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
-            BorderThickness="0,0,1,0"
-            Padding="3,4">
+            BorderThickness="0,0,1,0" Padding="4,4">
         <StackPanel Orientation="Vertical"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    Spacing="4">
+                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
             <!-- 主参数选择按钮 -->
             <Button HorizontalAlignment="Stretch"
                     Height="28"
-                    Padding="2,0"
                     CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
                     Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
                     BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                     BorderThickness="1"
-                    ToolTip.Tip="{DynamicResource PhonemePanel.Param.Primary}">
+                    ToolTip.Tip="{DynamicResource PhonemePanel.Param.Primary}" Padding="4,0">
                 <Button.Flyout>
                     <MenuFlyout ItemsSource="{Binding AvailableExpressions}">
                         <MenuFlyout.ItemContainerTheme>
@@ -70,12 +68,11 @@
             <!-- 背景参数选择按钮 -->
             <Button HorizontalAlignment="Stretch"
                     Height="28"
-                    Padding="2,0"
                     CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
                     Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
                     BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                     BorderThickness="1"
-                    ToolTip.Tip="{DynamicResource PhonemePanel.Param.Secondary}">
+                    ToolTip.Tip="{DynamicResource PhonemePanel.Param.Secondary}" Padding="4,0">
                 <Button.Flyout>
                     <MenuFlyout ItemsSource="{Binding AvailableSecondaryExpressions}">
                         <MenuFlyout.ItemContainerTheme>

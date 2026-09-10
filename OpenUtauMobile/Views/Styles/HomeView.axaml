@@ -4,10 +4,10 @@
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
     <Design.PreviewWith>
-        <StackPanel Orientation="Vertical" Spacing="8">
+        <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
             <Button Classes="HomeActionButton">
                 <StackPanel Orientation="Horizontal"
-                            Spacing="4">
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                     <Path Data="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" />
                     <TextBlock Text="Home Action" />
                 </StackPanel>
@@ -35,7 +35,7 @@
         <Setter Property="Width" Value="{x:Static localTokens:HomeTokens.DeleteButtonSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:HomeTokens.DeleteButtonSize}" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="17" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -52,7 +52,7 @@
 
     <!-- MD2 banner for recovery prompt -->
     <Style Selector="Border.RecoveryBanner">
-        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="Padding" Value="16,12" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
@@ -60,12 +60,12 @@
     </Style>
 
     <Style Selector="Button.RecoveryBannerSecondaryAction">
-        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Padding" Value="12,8" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
     <Style Selector="Button.RecoveryBannerSecondaryAction:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
@@ -75,18 +75,18 @@
     </Style>
 
     <Style Selector="Button.RecoveryBannerPrimaryAction">
-        <Setter Property="Padding" Value="12,6" />
+        <Setter Property="Padding" Value="12,8" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
     <Style Selector="Button.RecoveryBannerPrimaryAction:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="0.9" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}" />
     </Style>
     <Style Selector="Button.RecoveryBannerPrimaryAction:pressed /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="0.78" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentPressed}" />
     </Style>
     <!-- 首页操作按钮仅在首页加载。 -->
     <Style Selector="Button.HomeActionButton">
@@ -118,10 +118,10 @@
     </Style>
 
     <Style Selector="Button.HomeActionButton:pointerover">
-        <Setter Property="Opacity" Value="0.92" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}" />
     </Style>
 
     <Style Selector="Button.HomeActionButton:pressed">
-        <Setter Property="Opacity" Value="0.82" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentPressed}" />
     </Style>
 </Styles>

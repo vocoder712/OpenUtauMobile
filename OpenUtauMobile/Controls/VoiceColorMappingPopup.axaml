@@ -30,23 +30,27 @@
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <ScrollViewer MaxHeight="{x:Static localTokens:ImportTokens.ContentMaxHeight}" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="{x:Static foundation:LayoutTokens.InsetM}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
-                    <ItemsControl ItemsSource="{Binding Mappings}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="vm:VoiceColorMappingRow">
-                                <StackPanel Margin="{x:Static foundation:LayoutTokens.InsetS}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
-                                    <ComboBox
-                                        ItemsSource="{Binding NewColors}"
-                                        SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
-                                        HorizontalAlignment="Stretch"
-                                        MinHeight="48" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
+                <Border Padding="{x:Static foundation:LayoutTokens.InsetM}">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding Mappings}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:VoiceColorMappingRow">
+                                    <Border Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                                            <ComboBox
+                                                ItemsSource="{Binding NewColors}"
+                                                SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                                                HorizontalAlignment="Stretch"
+                                                MinHeight="{x:Static theme:InteractionTokens.TouchTarget}" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
             </ScrollViewer>
         </DockPanel>
     </dialogs:DialogShell>

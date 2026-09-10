@@ -97,8 +97,8 @@
                             </Button>
                             <!-- 音素器名 -->
                             <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="1" Kind="Translate"
-                                                             Width="16"
-                                                             Height="16" />
+                                                             Width="{x:Static theme:IconTokens.Small}"
+                                                             Height="{x:Static theme:IconTokens.Small}" />
                             <Button Grid.Row="1" Grid.Column="1"
                                     Classes="TrackHeaderCompactAction"
                                     Command="{Binding SelectPhonemizerCommand}"
@@ -115,8 +115,8 @@
                             </Button>
                             <!-- 渲染器名 -->
                             <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="2" Kind="Cpu"
-                                                             Width="16"
-                                                             Height="16" />
+                                                             Width="{x:Static theme:IconTokens.Small}"
+                                                             Height="{x:Static theme:IconTokens.Small}" />
                             <Button Grid.Row="2" Grid.Column="1"
                                     Classes="TrackHeaderCompactAction"
                                     Command="{Binding SelectRendererCommand}"
@@ -227,7 +227,7 @@
             <!-- TODO: 主题尚未覆盖 -->
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        Spacing="10">
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                 <!-- 数值显示 -->
                 <TextBlock x:Name="HudValue"
                            Text="0.0 dB"

@@ -1,10 +1,10 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.TrackColorPickerPopup"
@@ -15,55 +15,50 @@
     MaxHeight="620">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.TrackColor.Title}">
         <DockPanel>
-            <ScrollViewer
-                VerticalScrollBarVisibility="Auto"
-                HorizontalScrollBarVisibility="Disabled"
-                Classes="DialogBody">
-                <ItemsControl x:Name="ColorList" ItemsSource="{Binding Colors}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Center"
-                                ItemWidth="92"
-                                ItemHeight="98" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <!-- 每个颜色选项的按钮 -->
-                            <!-- TODO: 布局看起来不太好 -->
-                            <Button
-                                Padding="8"
-                                Margin="4"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                Command="{Binding DataContext.SelectColorCommand, ElementName=ColorList}"
-                                CommandParameter="{Binding Name}">
-                                <StackPanel Spacing="8" HorizontalAlignment="Center">
-                                    <Border
-                                        Width="34"
-                                        Height="34"
-                                        CornerRadius="17"
-                                        Background="{Binding AccentColor}"
-                                        BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
-                                        BorderThickness="1" />
-                                    <TextBlock
-                                        Text="{Binding Name}"
-                                        HorizontalAlignment="Center"
-                                        TextAlignment="Center"
-                                        TextTrimming="CharacterEllipsis"
-                                        MaxWidth="78"
-                                        FontSize="12"
-                                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                                </StackPanel>
-                            </Button>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <Border Classes="DialogBodyBorder">
+                <ScrollViewer
+                    VerticalScrollBarVisibility="Auto"
+                    HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="ColorList" ItemsSource="{Binding Colors}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Center"  ItemWidth="84"  ItemHeight="92"  ItemSpacing="{x:Static foundation:LayoutTokens.SpaceS}"  LineSpacing="{x:Static foundation:LayoutTokens.SpaceS}" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <!-- 每个颜色选项的按钮 -->
+                                <!-- TODO: 布局看起来不太好 -->
+                                <Button
+                                    Padding="{x:Static foundation:LayoutTokens.InsetS}"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    HorizontalContentAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Command="{Binding DataContext.SelectColorCommand, ElementName=ColorList}"
+                                    CommandParameter="{Binding Name}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" HorizontalAlignment="Center">
+                                        <Border
+                                            Background="{Binding AccentColor}"
+                                            BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                            BorderThickness="1"  Width="32"  Height="32"  CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}" />
+                                        <TextBlock
+                                            Text="{Binding Name}"
+                                            HorizontalAlignment="Center"
+                                            TextAlignment="Center"
+                                            TextTrimming="CharacterEllipsis"
+                                            MaxWidth="78"
+                                            FontSize="12"
+                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

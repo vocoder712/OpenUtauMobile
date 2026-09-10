@@ -1,5 +1,7 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
@@ -26,7 +28,7 @@
         <DockPanel>
             <!-- 鈹€鈹€ Top App Bar 鈹€鈹€ -->
             <Border DockPanel.Dock="Top" Classes="TopBar">
-                <Grid ColumnDefinitions="Auto,*,Auto">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <!-- Back button -->
                     <Button Grid.Column="0"
                             Classes="TopBarBtn"
@@ -41,15 +43,15 @@
                                   IsChecked="{Binding IsFavorite, Mode=TwoWay}"
                                   Background="Transparent"
                                   BorderThickness="0"
-                                  Padding="12"
+                                  Padding="{x:Static foundation:LayoutTokens.InsetSM}"
                                   Cursor="Hand">
                         <Panel>
-                            <Path Width="20" Height="20"
+                            <Path Width="{x:Static theme:IconTokens.Compact}" Height="{x:Static theme:IconTokens.Compact}"
                                   Stretch="Uniform"
                                   Fill="{DynamicResource Sem.Color.Error}"
                                   Data="{StaticResource IconFavorite}"
                                   IsVisible="{Binding IsFavorite}" />
-                            <Path Width="20" Height="20"
+                            <Path Width="{x:Static theme:IconTokens.Compact}" Height="{x:Static theme:IconTokens.Compact}"
                                   Stretch="Uniform"
                                   Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                   Data="{StaticResource IconFavoriteOutline}"
@@ -62,176 +64,176 @@
             <!-- 鈹€鈹€ Content 鈹€鈹€ -->
             <ScrollViewer VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="20,16,20,24">
+                <Border Padding="20,16,20,24">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
 
-                    <!-- 鈹€鈹€ Hero Section: Avatar + Name + Type 鈹€鈹€ -->
-                    <Border Classes="InfoCard" Padding="24,20">
-                        <Grid ColumnDefinitions="Auto,*">
-                            <!-- Avatar -->
-                            <Border Grid.Column="0"
-                                    Width="80" Height="80"
-                                    CornerRadius="16"
-                                    ClipToBounds="True"
-                                    Background="{DynamicResource Sem.Color.SurfaceContainer}">
-                                <Panel>
-                                    <!-- Placeholder icon -->
-                                    <Path Width="32" Height="32"
-                                          Stretch="Uniform"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center"
-                                          Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                          Data="{StaticResource IconPerson}"
-                                          IsVisible="{Binding !HasAvatar}" />
-                                    <!-- Actual avatar -->
-                                    <Image Source="{Binding AvatarBitmap}"
-                                           Stretch="UniformToFill"
-                                           IsVisible="{Binding HasAvatar}" />
-                                </Panel>
-                            </Border>
+                        <!-- 鈹€鈹€ Hero Section: Avatar + Name + Type 鈹€鈹€ -->
+                        <Border Classes="InfoCard" Padding="24,20">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                <!-- Avatar -->
+                                <Border Grid.Column="0"
+                                        Width="80" Height="80"
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+                                        ClipToBounds="True"
+                                        Background="{DynamicResource Sem.Color.SurfaceContainer}">
+                                    <Panel>
+                                        <!-- Placeholder icon -->
+                                        <Path Width="32" Height="32"
+                                              Stretch="Uniform"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                              Data="{StaticResource IconPerson}"
+                                              IsVisible="{Binding !HasAvatar}" />
+                                        <!-- Actual avatar -->
+                                        <Image Source="{Binding AvatarBitmap}"
+                                               Stretch="UniformToFill"
+                                               IsVisible="{Binding HasAvatar}" />
+                                    </Panel>
+                                </Border>
 
-                            <!-- Name + Type + ID -->
-                            <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding SingerName}"
-                                           FontSize="20"
-                                           FontWeight="SemiBold"
-                                           TextTrimming="CharacterEllipsis" />
-                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0" Spacing="8">
-                                    <!-- Type badge -->
-                                    <Border Background="{DynamicResource Sem.Color.Primary}"
-                                            CornerRadius="6"
-                                            Padding="8,3">
-                                        <TextBlock Text="{Binding SingerType}"
-                                                   FontSize="11"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="{DynamicResource Sem.Color.OnPrimary}" />
-                                    </Border>
-                                    <!-- Version badge -->
-                                    <Border Background="{DynamicResource Sem.Color.SurfaceContainer}"
-                                            CornerRadius="6"
-                                            Padding="8,3"
-                                            IsVisible="{Binding HasVersion}">
-                                        <TextBlock Text="{Binding Version}"
-                                                   FontSize="11"
-                                                   Opacity="0.7" />
-                                    </Border>
+                                <!-- Name + Type + ID -->
+                                <StackPanel Grid.Column="1" Spacing="{x:Static foundation:LayoutTokens.SpaceS}" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding SingerName}"
+                                               FontSize="{x:Static theme:TypographyTokens.TitleLSize}"
+                                               FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <!-- Type badge -->
+                                        <Border Background="{DynamicResource Sem.Color.Primary}"
+                                                CornerRadius="{x:Static foundation:ShapeTokens.CornerM}" Padding="8,4">
+                                            <TextBlock Text="{Binding SingerType}"
+                                                       FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Sem.Color.OnPrimary}" />
+                                        </Border>
+                                        <!-- Version badge -->
+                                        <Border Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                                CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
+                                                IsVisible="{Binding HasVersion}" Padding="8,4">
+                                            <TextBlock Text="{Binding Version}"
+                                                       FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                                                       Opacity="0.7" />
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding SingerId}"
+                                               FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                               Opacity="0.5"
+
+                                               TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
-                                <TextBlock Text="{Binding SingerId}"
-                                           FontSize="12"
-                                           Opacity="0.5"
-                                           Margin="0,6,0,0"
-                                           TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
 
-                    <!-- 鈹€鈹€ Quick Actions 鈹€鈹€ -->
-                    <Grid ColumnDefinitions="*,*" Margin="0,0,0,12">
-                        <!-- Open Web -->
-                        <Button Grid.Column="0"
-                                Classes="ActionBtn"
-                                Margin="0,0,6,0"
-                                Command="{Binding OpenWebCommand}"
-                                IsVisible="{Binding HasWeb}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <Path Width="18" Height="18"
-                                      Stretch="Uniform"
-                                      Fill="{DynamicResource Sem.Color.SurfaceContainerHigh}"
-                                      Data="{StaticResource IconWeb}" />
-                                <TextBlock Text="{DynamicResource SingerDetail.OpenWeb}"
-                                           VerticalAlignment="Center"
-                                           FontSize="13" />
-                            </StackPanel>
-                        </Button>
-                        <!-- Placeholder for future action -->
-                        <Border Grid.Column="1" Margin="6,0,0,0" />
-                    </Grid>
+                        <!-- 鈹€鈹€ Quick Actions 鈹€鈹€ -->
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                            <!-- Open Web -->
+                            <Button Grid.Column="0"
+                                    Classes="ActionBtn"
 
-                    <!-- 鈹€鈹€ Details Card 鈹€鈹€ -->
-                    <Border Classes="InfoCard">
-                        <StackPanel Spacing="16">
-                            <TextBlock Text="{DynamicResource SingerDetail.Details}"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Margin="0,0,0,4" />
-
-                            <!-- Author -->
-                            <StackPanel IsVisible="{Binding HasAuthor}">
-                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Author}" />
-                                <TextBlock Classes="InfoValue" Text="{Binding Author}" />
-                            </StackPanel>
-
-                            <!-- Voice -->
-                            <StackPanel IsVisible="{Binding HasVoice}">
-                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Voice}" />
-                                <TextBlock Classes="InfoValue" Text="{Binding Voice}" />
-                            </StackPanel>
-
-                            <!-- Website -->
-                            <StackPanel IsVisible="{Binding HasWeb}">
-                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Website}" />
-                                <TextBlock Classes="InfoValue" Text="{Binding Web}"
-                                           Foreground="{DynamicResource Sem.Color.Primary}" />
-                            </StackPanel>
-
-                            <!-- Default Phonemizer -->
-                            <StackPanel IsVisible="{Binding HasDefaultPhonemizer}">
-                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.DefaultPhonemizer}" />
-                                <TextBlock Classes="InfoValue" Text="{Binding DefaultPhonemizer}" />
-                            </StackPanel>
-
-                            <!-- Other Info -->
-                            <StackPanel IsVisible="{Binding HasOtherInfo}">
-                                <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.OtherInfo}" />
-                                <TextBlock Classes="InfoValue" Text="{Binding OtherInfo}" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- 鈹€鈹€ Location Card 鈹€鈹€ -->
-                    <Border Classes="InfoCard" IsVisible="{Binding HasLocation}">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
-                                <Path Width="16" Height="16"
-                                      Stretch="Uniform"
-                                      Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                      Data="{StaticResource IconFolder}" />
-                                <TextBlock Text="{DynamicResource SingerDetail.Location}"
-                                           FontSize="14"
-                                           FontWeight="SemiBold" />
-                            </StackPanel>
-                            <TextBlock Text="{Binding Location}"
-                                       FontSize="12"
-                                       Opacity="0.7"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
-
-                    <!-- 鈹€鈹€ Danger Zone 鈹€鈹€ -->
-                    <Border Classes="InfoCard" Margin="0,12,0,0">
-                        <StackPanel Spacing="12">
-                            <TextBlock Text="{DynamicResource SingerDetail.DangerZone}"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Foreground="{DynamicResource Sem.Color.Error}" />
-                            <TextBlock Text="{DynamicResource SingerDetail.DeleteWarning}"
-                                       FontSize="12"
-                                       Opacity="0.7"
-                                       TextWrapping="Wrap" />
-                            <Button Classes="DeleteBtn"
-                                    Command="{Binding DeleteCommand}">
-                                <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <Path Width="16" Height="16"
+                                    Command="{Binding OpenWebCommand}"
+                                    IsVisible="{Binding HasWeb}">
+                                <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                    <Path Width="{x:Static theme:IconTokens.Compact}" Height="{x:Static theme:IconTokens.Compact}"
                                           Stretch="Uniform"
-                                          Fill="{DynamicResource Sem.Color.Error}"
-                                          Data="{StaticResource IconDelete}" />
-                                    <TextBlock Text="{DynamicResource Common.Uninstall}"
-                                               FontWeight="SemiBold" />
+                                          Fill="{DynamicResource Sem.Color.SurfaceContainerHigh}"
+                                          Data="{StaticResource IconWeb}" />
+                                    <TextBlock Text="{DynamicResource SingerDetail.OpenWeb}"
+                                               VerticalAlignment="Center"
+                                               FontSize="{x:Static theme:TypographyTokens.BodyMSize}" />
                                 </StackPanel>
                             </Button>
-                        </StackPanel>
-                    </Border>
+                            <!-- Placeholder for future action -->
+                            <Border Grid.Column="1" />
+                        </Grid>
 
-                </StackPanel>
+                        <!-- 鈹€鈹€ Details Card 鈹€鈹€ -->
+                        <Border Classes="InfoCard">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                <TextBlock Text="{DynamicResource SingerDetail.Details}"
+                                           FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,4" />
+
+                                <!-- Author -->
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" IsVisible="{Binding HasAuthor}">
+                                    <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Author}" />
+                                    <TextBlock Classes="InfoValue" Text="{Binding Author}" />
+                                </StackPanel>
+
+                                <!-- Voice -->
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" IsVisible="{Binding HasVoice}">
+                                    <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Voice}" />
+                                    <TextBlock Classes="InfoValue" Text="{Binding Voice}" />
+                                </StackPanel>
+
+                                <!-- Website -->
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" IsVisible="{Binding HasWeb}">
+                                    <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.Website}" />
+                                    <TextBlock Classes="InfoValue" Text="{Binding Web}"
+                                               Foreground="{DynamicResource Sem.Color.Primary}" />
+                                </StackPanel>
+
+                                <!-- Default Phonemizer -->
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" IsVisible="{Binding HasDefaultPhonemizer}">
+                                    <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.DefaultPhonemizer}" />
+                                    <TextBlock Classes="InfoValue" Text="{Binding DefaultPhonemizer}" />
+                                </StackPanel>
+
+                                <!-- Other Info -->
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" IsVisible="{Binding HasOtherInfo}">
+                                    <TextBlock Classes="InfoLabel" Text="{DynamicResource SingerDetail.OtherInfo}" />
+                                    <TextBlock Classes="InfoValue" Text="{Binding OtherInfo}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 鈹€鈹€ Location Card 鈹€鈹€ -->
+                        <Border Classes="InfoCard" IsVisible="{Binding HasLocation}">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                    <Path Width="{x:Static theme:IconTokens.Small}" Height="{x:Static theme:IconTokens.Small}"
+                                          Stretch="Uniform"
+                                          Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                          Data="{StaticResource IconFolder}" />
+                                    <TextBlock Text="{DynamicResource SingerDetail.Location}"
+                                               FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                               FontWeight="SemiBold" />
+                                </StackPanel>
+                                <TextBlock Text="{Binding Location}"
+                                           FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                           Opacity="0.7"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 鈹€鈹€ Danger Zone 鈹€鈹€ -->
+                        <Border Classes="InfoCard" Margin="0,12,0,0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <TextBlock Text="{DynamicResource SingerDetail.DangerZone}"
+                                           FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Sem.Color.Error}" />
+                                <TextBlock Text="{DynamicResource SingerDetail.DeleteWarning}"
+                                           FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                           Opacity="0.7"
+                                           TextWrapping="Wrap" />
+                                <Button Classes="DeleteBtn"
+                                        Command="{Binding DeleteCommand}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <Path Width="{x:Static theme:IconTokens.Small}" Height="{x:Static theme:IconTokens.Small}"
+                                              Stretch="Uniform"
+                                              Fill="{DynamicResource Sem.Color.Error}"
+                                              Data="{StaticResource IconDelete}" />
+                                        <TextBlock Text="{DynamicResource Common.Uninstall}"
+                                                   FontWeight="SemiBold" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
             </ScrollViewer>
         </DockPanel>
     </Panel>

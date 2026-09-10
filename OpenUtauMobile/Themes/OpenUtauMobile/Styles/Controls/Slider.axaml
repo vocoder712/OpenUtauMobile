@@ -1,10 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <Design.PreviewWith>
         <Border Padding="128">
             <StackPanel Orientation="Vertical"
-                        Spacing="8">
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                 <Slider Minimum="0"
                         Maximum="100"
                         Value="50"
@@ -69,19 +70,19 @@
     <Style Selector="Slider:horizontal">
         <Setter Property="Foreground" Value="#6750A4" />
         <Setter Property="Background" Value="#EADDFF" />
-        <Setter Property="MinHeight" Value="48" />
+        <Setter Property="MinHeight" Value="{x:Static theme:InteractionTokens.TouchTarget}" />
 
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid MinHeight="48" VerticalAlignment="Center">
-                
+                <Grid MinHeight="{x:Static theme:InteractionTokens.TouchTarget}" VerticalAlignment="Center">
+
                     <Track Name="PART_Track"
                            Minimum="{TemplateBinding Minimum}"
                            Maximum="{TemplateBinding Maximum}"
                            Value="{TemplateBinding Value, Mode=TwoWay}"
                            Orientation="Horizontal"
                            IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
-                    
+
                         --><!-- 1. 左侧：已填充的轨道 --><!--
                         <Track.DecreaseButton>
                             <RepeatButton Name="PART_DecreaseButton" Focusable="False">

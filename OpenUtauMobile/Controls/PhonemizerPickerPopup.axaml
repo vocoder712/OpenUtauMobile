@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -26,11 +27,12 @@
                     Background="{DynamicResource Sem.Color.Surface}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock
-                                Text="{Binding Value}"
-                                Margin="8,6"
-                                FontSize="14"
-                                VerticalAlignment="Center" />
+                            <Border Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                                <TextBlock
+                                    Text="{Binding Value}"
+                                    FontSize="14"
+                                    VerticalAlignment="Center" />
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
@@ -44,12 +46,13 @@
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock
-                                Text="{Binding Value}"
-                                Margin="8,6"
-                                FontSize="14"
-                                VerticalAlignment="Center"
-                                TextWrapping="Wrap" />
+                            <Border Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                                <TextBlock
+                                    Text="{Binding Value}"
+                                    FontSize="14"
+                                    VerticalAlignment="Center"
+                                    TextWrapping="Wrap" />
+                            </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

@@ -1,4 +1,5 @@
 using Avalonia;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
 
@@ -7,5 +8,5 @@ public static class InputTokens
 {
     public static Thickness BorderThickness => new(1);
     public static Thickness Padding => new(12, 8);
-    public static CornerRadius CornerRadius => new(4);
+    public static CornerRadius CornerRadius => ShapeTokens.CornerS;
 }

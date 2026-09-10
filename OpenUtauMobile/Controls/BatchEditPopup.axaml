@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -23,7 +24,7 @@
         <!-- Action 项目模板 -->
         <DataTemplate x:Key="BatchEditItemTemplate" x:DataType="vm:BatchEditItemViewModel">
             <Border Classes="BatchEditItem">
-                <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <Border
                         Grid.Row="0"
                         Grid.RowSpan="2"
@@ -43,8 +44,8 @@
                     <StackPanel
                         Grid.Row="1"
                         Grid.Column="1"
-                        Margin="0,6,8,0"
-                        IsVisible="{Binding HasParameter}">
+
+                        IsVisible="{Binding HasParameter}" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                         <TextBlock Text="{Binding ParameterLabel}" Classes="BatchEditParameterLabel" />
                         <TextBox
                             Text="{Binding ParameterValue, Mode=TwoWay}"
@@ -85,7 +86,7 @@
                         Grid.Row="2"
                         Grid.Column="1"
                         Grid.ColumnSpan="3"
-                        Margin="0,6,0,0">
+                        >
                         <TextBlock
                             Text="{Binding ValidationMessage}"
                             Classes="BatchEditValidation"
@@ -98,7 +99,7 @@
     <dialogs:DialogShell CloseCommand="{Binding CloseCommand}" Header="{DynamicResource BatchEdit.Title}">
         <DockPanel>
             <Border DockPanel.Dock="Top" Classes="BatchEditScope">
-                <StackPanel Orientation="Horizontal" Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <iconPacks:PackIconPhosphorIcons
                         Kind="SelectionAll"
                         Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}"
@@ -111,47 +112,49 @@
                 </StackPanel>
             </Border>
             <!-- Tab 页：歌词、音符、重置 -->
-            <TabControl Classes="DialogBody">
-                <TabItem Header="{DynamicResource BatchEdit.Tab.Lyrics}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Border Classes="BatchEditPinnedGroup" IsVisible="{Binding HasPinnedLyrics}">
-                                <StackPanel>
-                                    <TextBlock Classes="BatchEditPinnedHeader" Text="{DynamicResource BatchEdit.Pinned}" />
-                                    <ItemsControl ItemsSource="{Binding PinnedLyricActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
-                                </StackPanel>
-                            </Border>
-                            <ItemsControl ItemsSource="{Binding LyricActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-                <TabItem Header="{DynamicResource BatchEdit.Tab.Notes}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Border Classes="BatchEditPinnedGroup" IsVisible="{Binding HasPinnedNotes}">
-                                <StackPanel>
-                                    <TextBlock Classes="BatchEditPinnedHeader" Text="{DynamicResource BatchEdit.Pinned}" />
-                                    <ItemsControl ItemsSource="{Binding PinnedNoteActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
-                                </StackPanel>
-                            </Border>
-                            <ItemsControl ItemsSource="{Binding NoteActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-                <TabItem Header="{DynamicResource BatchEdit.Tab.Reset}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <Border Classes="BatchEditPinnedGroup" IsVisible="{Binding HasPinnedReset}">
-                                <StackPanel>
-                                    <TextBlock Classes="BatchEditPinnedHeader" Text="{DynamicResource BatchEdit.Pinned}" />
-                                    <ItemsControl ItemsSource="{Binding PinnedResetActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
-                                </StackPanel>
-                            </Border>
-                            <ItemsControl ItemsSource="{Binding ResetActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-            </TabControl>
+            <Border Classes="DialogBodyBorder">
+                <TabControl>
+                    <TabItem Header="{DynamicResource BatchEdit.Tab.Lyrics}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <Border Classes="BatchEditPinnedGroup" IsVisible="{Binding HasPinnedLyrics}">
+                                    <StackPanel>
+                                        <TextBlock Classes="BatchEditPinnedHeader" Text="{DynamicResource BatchEdit.Pinned}" />
+                                        <ItemsControl ItemsSource="{Binding PinnedLyricActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                    </StackPanel>
+                                </Border>
+                                <ItemsControl ItemsSource="{Binding LyricActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="{DynamicResource BatchEdit.Tab.Notes}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <Border Classes="BatchEditPinnedGroup" IsVisible="{Binding HasPinnedNotes}">
+                                    <StackPanel>
+                                        <TextBlock Classes="BatchEditPinnedHeader" Text="{DynamicResource BatchEdit.Pinned}" />
+                                        <ItemsControl ItemsSource="{Binding PinnedNoteActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                    </StackPanel>
+                                </Border>
+                                <ItemsControl ItemsSource="{Binding NoteActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="{DynamicResource BatchEdit.Tab.Reset}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <Border Classes="BatchEditPinnedGroup" IsVisible="{Binding HasPinnedReset}">
+                                    <StackPanel>
+                                        <TextBlock Classes="BatchEditPinnedHeader" Text="{DynamicResource BatchEdit.Pinned}" />
+                                        <ItemsControl ItemsSource="{Binding PinnedResetActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                                    </StackPanel>
+                                </Border>
+                                <ItemsControl ItemsSource="{Binding ResetActions}" ItemTemplate="{StaticResource BatchEditItemTemplate}" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

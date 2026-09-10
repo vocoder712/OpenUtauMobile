@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -21,55 +22,63 @@
         <DockPanel>
             <!-- 标题栏 -->
             <!-- Tab 区域 -->
-            <TabControl Classes="DialogBody">
-                <!-- 导出 -->
-                <TabItem Header="{DynamicResource EditorMore.FileTab}">
-                    <StackPanel Margin="0,16,0,0">
-                        <Button
-                            Classes="ActionBtn"
-                            Content="{DynamicResource EditorMore.SaveAs}"
-                            Command="{Binding ConfirmCommand}">
-                            <Button.CommandParameter>
-                                <vm:EditorMoreAction>SaveAs</vm:EditorMoreAction>
-                            </Button.CommandParameter>
-                        </Button>
-                    </StackPanel>
-                </TabItem>
-                <!-- 导入 -->
-                <TabItem Header="{DynamicResource EditorMore.ImportTab}">
-                    <StackPanel Margin="0,16,0,0">
-                        <Button
-                            Classes="ActionBtn"
-                            Content="{DynamicResource EditorMore.ImportAudio}"
-                            Command="{Binding ConfirmCommand}">
-                            <Button.CommandParameter>
-                                <vm:EditorMoreAction>ImportAudio</vm:EditorMoreAction>
-                            </Button.CommandParameter>
-                        </Button>
-                        <Button
-                            Classes="ActionBtn"
-                            Content="{DynamicResource EditorMore.ImportTrack}"
-                            Command="{Binding ConfirmCommand}">
-                            <Button.CommandParameter>
-                                <vm:EditorMoreAction>ImportTrack</vm:EditorMoreAction>
-                            </Button.CommandParameter>
-                        </Button>
-                    </StackPanel>
-                </TabItem>
-                <!-- 导出 -->
-                <TabItem Header="{DynamicResource EditorMore.ExportTab}">
-                    <StackPanel Margin="0,16,0,0">
-                        <Button
-                            Classes="ActionBtn"
-                            Content="{DynamicResource EditorMore.ExportAudio}"
-                            Command="{Binding ConfirmCommand}">
-                            <Button.CommandParameter>
-                                <vm:EditorMoreAction>ExportAudio</vm:EditorMoreAction>
-                            </Button.CommandParameter>
-                        </Button>
-                    </StackPanel>
-                </TabItem>
-            </TabControl>
+            <Border Classes="DialogBodyBorder">
+                <TabControl>
+                    <!-- 导出 -->
+                    <TabItem Header="{DynamicResource EditorMore.FileTab}">
+                        <Border Padding="0,16,0,0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <Button
+                                    Classes="ActionBtn"
+                                    Content="{DynamicResource EditorMore.SaveAs}"
+                                    Command="{Binding ConfirmCommand}">
+                                    <Button.CommandParameter>
+                                        <vm:EditorMoreAction>SaveAs</vm:EditorMoreAction>
+                                    </Button.CommandParameter>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </TabItem>
+                    <!-- 导入 -->
+                    <TabItem Header="{DynamicResource EditorMore.ImportTab}">
+                        <Border Padding="0,16,0,0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <Button
+                                    Classes="ActionBtn"
+                                    Content="{DynamicResource EditorMore.ImportAudio}"
+                                    Command="{Binding ConfirmCommand}">
+                                    <Button.CommandParameter>
+                                        <vm:EditorMoreAction>ImportAudio</vm:EditorMoreAction>
+                                    </Button.CommandParameter>
+                                </Button>
+                                <Button
+                                    Classes="ActionBtn"
+                                    Content="{DynamicResource EditorMore.ImportTrack}"
+                                    Command="{Binding ConfirmCommand}">
+                                    <Button.CommandParameter>
+                                        <vm:EditorMoreAction>ImportTrack</vm:EditorMoreAction>
+                                    </Button.CommandParameter>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </TabItem>
+                    <!-- 导出 -->
+                    <TabItem Header="{DynamicResource EditorMore.ExportTab}">
+                        <Border Padding="0,16,0,0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <Button
+                                    Classes="ActionBtn"
+                                    Content="{DynamicResource EditorMore.ExportAudio}"
+                                    Command="{Binding ConfirmCommand}">
+                                    <Button.CommandParameter>
+                                        <vm:EditorMoreAction>ExportAudio</vm:EditorMoreAction>
+                                    </Button.CommandParameter>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </TabItem>
+                </TabControl>
+            </Border>
         </DockPanel>
     </dialogs:DialogShell>
 </UserControl>

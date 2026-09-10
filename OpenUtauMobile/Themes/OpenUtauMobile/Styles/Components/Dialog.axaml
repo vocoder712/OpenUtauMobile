@@ -29,8 +29,8 @@
                                             ToolTip.Tip="{DynamicResource Common.Close}"
                                             AutomationProperties.Name="{DynamicResource Common.Close}">
                                         <icons:PackIconPhosphorIcons Kind="X"
-                                            Width="24"
-                                            Height="24" />
+                                            Width="{x:Static theme:IconTokens.Standard}"
+                                            Height="{x:Static theme:IconTokens.Standard}" />
                                     </Button>
                                 </Grid>
                             </Border>
@@ -66,20 +66,19 @@
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
-    <Style Selector=":is(Control).DialogBody">
-        <Setter Property="Margin" Value="{x:Static foundation:LayoutTokens.InsetM}" />
-    </Style>
     <Style Selector="Border.DialogBodyBorder">
         <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetM}" />
     </Style>
     <Style Selector="controls|DialogActionRows">
         <Setter Property="Orientation" Value="Vertical" />
+        <Setter Property="Spacing" Value="{x:Static foundation:LayoutTokens.SpaceS}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
     <Style Selector="controls|DialogActionRows > ContentPresenter">
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     </Style>
     <Style Selector=":is(controls|DialogActionRow)">
+        <Setter Property="Spacing" Value="{x:Static foundation:LayoutTokens.SpaceS}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
     <Style Selector=":is(controls|DialogActionRow) > ContentPresenter">
@@ -91,7 +90,7 @@
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="MinHeight" Value="{x:Static theme:DialogTokens.ControlMinSize}" />
         <Setter Property="Padding" Value="{x:Static theme:DialogTokens.ActionPadding}" />
-        <Setter Property="Margin" Value="{x:Static foundation:LayoutTokens.InsetXS}" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="CornerRadius" Value="{x:Static theme:DialogTokens.ActionCornerRadius}" />
@@ -149,12 +148,12 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Padding" Value="20,8"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}"/>
         <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}"/></Style>
 
 <Style Selector="Button.Primary:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="0.85"/>
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}"/>
     </Style>
 
 <Style Selector="Button.Secondary">
@@ -162,7 +161,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="20,8"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}"/>
         <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}"/></Style>
 

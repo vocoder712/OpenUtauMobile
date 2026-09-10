@@ -1,5 +1,8 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="OpenUtauMobile.Controls.ToastOverlay"
              IsHitTestVisible="False">
 
@@ -8,22 +11,21 @@
                 IsVisible="False"
                 Opacity="0"
                 Background="{DynamicResource Sem.Color.InverseSurface}"
-                CornerRadius="28"
-                Padding="16,12"
+                CornerRadius="{x:Static foundation:ShapeTokens.CornerFull}"
                 MinWidth="48"
                 MaxWidth="320"
                 VerticalAlignment="Bottom"
                 HorizontalAlignment="Center"
-                Margin="16,0,16,88">
+                Margin="16,0,16,88" Padding="16,12">
             <!-- 阴影效果 -->
             <Border.Effect>
-                <DropShadowEffect BlurRadius="14" OffsetX="0" OffsetY="4" Opacity="0.35"
+                <DropShadowEffect BlurRadius="{x:Static localTokens:ToastTokens.ShadowBlur}" OffsetX="0" OffsetY="{x:Static localTokens:ToastTokens.ShadowOffset}" Opacity="{x:Static localTokens:ToastTokens.ShadowOpacity}"
                                   Color="{DynamicResource Sem.Value.Shadow}" />
             </Border.Effect>
             <!-- Toast 消息文本 -->
             <TextBlock x:Name="ToastText"
                        Foreground="{DynamicResource Sem.Color.InverseOnSurface}"
-                       FontSize="14"
+                       FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
                        FontWeight="Medium"
                        MaxLines="2"
                        TextTrimming="CharacterEllipsis"

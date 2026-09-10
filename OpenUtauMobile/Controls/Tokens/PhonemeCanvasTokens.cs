@@ -1,4 +1,5 @@
 using System;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
 namespace OpenUtauMobile.Controls.Tokens;
 
@@ -11,6 +12,7 @@ public static class PhonemeCanvasTokens
     public static double ResetTargetOuterInset => 8d;
     public static double ResetTargetIconSize => 24d;
     public static double ResetTargetIconActiveSize => 30d;
+    public static TimeSpan SelectionAnimationDuration => TimeSpan.FromMilliseconds(130);
     public static TimeSpan FrameInterval => TimeSpan.FromMilliseconds(16);
-    public static TimeSpan ResetAnimationDuration => TimeSpan.Parse("00:00:00.150");
+    public static TimeSpan ResetAnimationDuration => MotionTokens.DurationShort;
 }

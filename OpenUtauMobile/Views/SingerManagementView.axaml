@@ -1,10 +1,10 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:c="clr-namespace:OpenUtauMobile.Controls"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              mc:Ignorable="d"
              d:DesignHeight="880" d:DesignWidth="400"
@@ -17,21 +17,19 @@
 
     <!-- Root -->
     <Panel Background="{DynamicResource Sem.Color.Surface}">
-
         <DockPanel>
             <!-- 顶栏 -->
             <Border DockPanel.Dock="Top"
                     Classes="TopBar">
-                <Grid ColumnDefinitions="Auto,*,Auto">
-                    <!-- Back button -->
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <!-- 返回 -->
                     <Button Grid.Column="0"
                             Classes="TopBarBtn"
                             Command="{Binding BackCommand}"
                             ToolTip.Tip="{DynamicResource Common.Back}"
                             Content="{iconPacks:PhosphorIcons ArrowLeft}">
                     </Button>
-
-                    <!-- Title -->
+                    <!-- 标题 -->
                     <TextBlock Grid.Column="1"
                                Classes="TopBarTitle"
                                Text="{DynamicResource SingerManagement.Title}" />
@@ -39,7 +37,6 @@
             </Border>
 
             <!-- 歌手列表 -->
-            <!-- 允许列表项溢出到标题栏上，以实现视觉上的重叠效果 -->
             <c:SingerList DockPanel.Dock="Top"
                           ClipToBounds="False"
                           Singers="{Binding Singers}"

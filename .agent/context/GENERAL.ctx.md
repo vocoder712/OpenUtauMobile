@@ -24,6 +24,13 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 
 ## UI/UX Status
 
+- Avalonia 12.1.0 scrolling pitfall: do not set nonzero `ScrollViewer.Padding`.
+  Put scrollable content inside a `Border` and set that Border's `Padding` so
+  insets participate in the scroll extent. Fixed viewport insets instead belong
+  to a Border outside the ScrollViewer. Do not replace child Margin with
+  ScrollViewer.Padding during spacing cleanup. A layout diagnostic reproduced
+  unreachable bottom content with presenter padding; see UI_METRICS_REVIEW.md.
+
 - All modal dialogs use `DialogShell`; new footers use `DialogActionRows` and
   `DialogActionRow` for explicit equal-width rows (`DialogActions` is the legacy
   single-row alias). Read `DIALOGS.ctx.md`
