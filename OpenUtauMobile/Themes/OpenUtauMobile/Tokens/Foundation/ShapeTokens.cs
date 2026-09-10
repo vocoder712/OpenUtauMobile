@@ -1,8 +1,8 @@
 using Avalonia;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
-/// <summary>已使用的圆角刻度。</summary>
+/// <summary>圆角刻度</summary>
 public static class ShapeTokens
 {
     public static CornerRadius CornerS => new(4);

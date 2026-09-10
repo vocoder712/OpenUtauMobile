@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="8">
             <Border Classes="TopBar">
@@ -20,7 +21,7 @@
         <Setter Property="Height" Value="56" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
-        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetXS}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetXS}" />
         <Setter Property="Opacity" Value="0.8" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
@@ -30,7 +31,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Width" Value="48" />
         <Setter Property="Height" Value="48" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerXXXL}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXXXL}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Cursor" Value="Hand" />

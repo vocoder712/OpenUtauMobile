@@ -4,7 +4,8 @@
              xmlns:openUtauMobile="clr-namespace:OpenUtauMobile"
              xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-             x:Class="OpenUtauMobile.Controls.TrackEditModeSwitcher"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        x:Class="OpenUtauMobile.Controls.TrackEditModeSwitcher"
              HorizontalAlignment="Right">
     <UserControl.Styles>
         <StyleInclude Source="/Controls/Styles/EditModeSwitcher.axaml" />
@@ -12,7 +13,7 @@
 
     <Border x:Name="Capsule"
             Background="{DynamicResource Sem.Color.SurfaceContainer}"
-            CornerRadius="{x:Static theme:ShapeTokens.CornerXL}"
+            CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
             Height="{x:Static localTokens:EditModeSwitcherTokens.ButtonSize}"
             ClipToBounds="True"
             HorizontalAlignment="Right">
@@ -28,7 +29,7 @@
                 <!-- 动画过渡 -->
                 <Grid.Transitions>
                     <Transitions>
-                        <DoubleTransition Property="Width" Duration="{x:Static theme:MotionTokens.DurationBase}" Easing="CubicEaseOut" />
+                        <DoubleTransition Property="Width" Duration="{x:Static foundation:MotionTokens.DurationBase}" Easing="CubicEaseOut" />
                     </Transitions>
                 </Grid.Transitions>
                 <!-- 模式列表 -->

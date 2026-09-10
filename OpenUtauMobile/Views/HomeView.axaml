@@ -7,6 +7,7 @@
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              mc:Ignorable="d"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              x:Class="OpenUtauMobile.Views.HomeView"
              x:DataType="vm:HomeViewModel">
     <UserControl.Styles>
@@ -41,7 +42,7 @@
                     <Border.Transitions>
                         <Transitions>
                             <DoubleTransition Property="Height"
-                                              Duration="{x:Static theme:MotionTokens.DurationLargeMove}"
+                                              Duration="{x:Static foundation:MotionTokens.DurationLargeMove}"
                                               Easing="CubicEaseOut" />
                         </Transitions>
                     </Border.Transitions>
@@ -49,7 +50,7 @@
                             x:Name="RecoveryBanner"
                             IsVisible="{Binding !RecoveryBannerDismissed}">
                         <Grid RowDefinitions="Auto,Auto"
-                              RowSpacing="{x:Static theme:LayoutTokens.SpaceS}"
+                              RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
                               Margin="20,12">
                             <TextBlock Grid.Row="0" TextWrapping="Wrap">
                                 <Run Text="{DynamicResource Home.Recovery.Message}" />
@@ -59,7 +60,7 @@
                             <StackPanel Grid.Row="1"
                                         Orientation="Horizontal"
                                         HorizontalAlignment="Right"
-                                        Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                 <Button Classes="RecoveryBannerSecondaryAction"
                                         Content="{DynamicResource Home.Recovery.Dismiss}"
                                         Command="{Binding DismissRecoveryCommand}" />
@@ -75,7 +76,7 @@
                         x:Name="SectionA"
                         Padding="10"
                         Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                        CornerRadius="{x:Static theme:ShapeTokens.CornerL}">
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerL}">
                     <ScrollViewer x:Name="ActionButtonsScrollViewer"
                                   HorizontalScrollBarVisibility="Hidden"
                                   VerticalScrollBarVisibility="Disabled">
@@ -85,28 +86,28 @@
                                     Spacing="10">
                             <Button Classes="HomeActionButton" Command="{Binding NewCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="Plus" />
                                     <TextBlock Text="{DynamicResource Home.Action.New}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding OpenCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="FolderOpen" />
                                     <TextBlock Text="{DynamicResource Home.Action.Open}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding SingersCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="MicrophoneStage" />
                                     <TextBlock Text="{DynamicResource Home.Action.Singers}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding OptionsCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="List" />
                                     <TextBlock Text="{DynamicResource Home.Action.Options}" />
                                 </StackPanel>
@@ -120,7 +121,7 @@
                         Grid.Row="2"
                         Padding="16,14,16,16"
                         Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                        CornerRadius="{x:Static theme:ShapeTokens.CornerL}">
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerL}">
                     <Grid RowDefinitions="Auto,*,Auto">
                         <!-- 标题 -->
                         <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,0">

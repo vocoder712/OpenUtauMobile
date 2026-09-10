@@ -5,6 +5,7 @@
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              mc:Ignorable="d"
              x:Class="OpenUtauMobile.Views.DependencyManagerView"
              x:DataType="vm:DependencyManagerViewModel">
@@ -60,7 +61,7 @@
                     <!-- Tab header -->
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal"
-                                    Spacing="{x:Static theme:LayoutTokens.SpaceXS}">
+                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                             <TextBlock Text="{DynamicResource DependencyManager.Available}" />
                             <Border Classes="DependencyCountBadge">
                                 <TextBlock Text="{Binding AvailablePackages.Count}" />
@@ -310,7 +311,7 @@
                 <TabItem>
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal"
-                                    Spacing="{x:Static theme:LayoutTokens.SpaceXS}">
+                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                             <TextBlock Text="{DynamicResource DependencyManager.InstalledTab}" />
                             <Border Classes="DependencyCountBadge">
                                 <TextBlock Text="{Binding InstalledPackages.Count}" />

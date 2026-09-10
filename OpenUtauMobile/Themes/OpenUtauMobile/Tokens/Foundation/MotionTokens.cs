@@ -1,8 +1,8 @@
 using System;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
-/// <summary>已使用的过渡时长。</summary>
+/// <summary>已使用的过渡时长</summary>
 public static class MotionTokens
 {
     public static TimeSpan DurationBase => TimeSpan.Parse("00:00:00.300");

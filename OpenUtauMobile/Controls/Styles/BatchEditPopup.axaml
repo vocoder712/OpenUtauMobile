@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
     <Style Selector="UserControl.BatchEditRoot">
         <Setter Property="MinWidth" Value="{x:Static localTokens:BatchEditTokens.PopupMinWidth}" />
     </Style>
@@ -10,14 +11,14 @@
         <Setter Property="Margin" Value="12,12,12,4" />
         <Setter Property="Padding" Value="12,10" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerM}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
 
     <Style Selector="Border.BatchEditItem">
         <Setter Property="Margin" Value="0,4" />
         <Setter Property="Padding" Value="12" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerM}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
 
     <Style Selector="Border.BatchEditItemIcon">
@@ -48,7 +49,7 @@
         <Setter Property="Margin" Value="0,4,0,8" />
         <Setter Property="Padding" Value="4" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerM}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
 
     <Style Selector="TextBlock.BatchEditPinnedHeader">
@@ -91,7 +92,7 @@
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
         <Setter Property="Margin" Value="8,0,0,0" />
-        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetM}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetM}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="BorderThickness" Value="0" />
@@ -109,7 +110,7 @@
         <Setter Property="CornerRadius" Value="28" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetS}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
     </Style>
 
     <Style Selector="TextBlock.BatchEditValidation">

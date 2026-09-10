@@ -1,10 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
     <!-- Info card style -->
     <Style Selector="Border.InfoCard">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerL}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
         <Setter Property="Padding" Value="20,12" />
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
@@ -25,7 +26,7 @@
     <!-- Action button -->
     <Style Selector="Button.ActionBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerM}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
         <Setter Property="Padding" Value="16,12" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -46,7 +47,7 @@
     <Style Selector="Button.DeleteBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.ErrorContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerM}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
         <Setter Property="Padding" Value="16,12" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />

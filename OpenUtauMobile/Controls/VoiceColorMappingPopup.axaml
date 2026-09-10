@@ -5,6 +5,7 @@
     xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     x:Class="OpenUtauMobile.Controls.VoiceColorMappingPopup"
     x:DataType="vm:VoiceColorMappingViewModel"
     Classes="PopupDialogRoot">
@@ -29,12 +30,12 @@
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <ScrollViewer MaxHeight="{x:Static localTokens:ImportTokens.ContentMaxHeight}" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="{x:Static theme:LayoutTokens.InsetM}" Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                <StackPanel Margin="{x:Static foundation:LayoutTokens.InsetM}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
                     <ItemsControl ItemsSource="{Binding Mappings}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:VoiceColorMappingRow">
-                                <StackPanel Margin="{x:Static theme:LayoutTokens.InsetS}" Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                                <StackPanel Margin="{x:Static foundation:LayoutTokens.InsetS}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
                                     <ComboBox
                                         ItemsSource="{Binding NewColors}"

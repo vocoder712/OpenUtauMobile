@@ -10,6 +10,7 @@
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              x:DataType="vm:EditorViewModel"
              Background="{DynamicResource DynamicResource Sem.Color.SurfaceContainerLow}">
 
@@ -28,7 +29,7 @@
             <Setter Property="Transitions">
                 <Transitions>
                     <DoubleTransition Property="Opacity"
-                                      Duration="{x:Static theme:MotionTokens.DurationBase}" />
+                                      Duration="{x:Static foundation:MotionTokens.DurationBase}" />
                 </Transitions>
             </Setter>
         </Style>
@@ -126,7 +127,7 @@
                             <Rectangle.Transitions>
                                 <Transitions>
                                     <DoubleTransition Property="Width"
-                                                      Duration="{x:Static theme:MotionTokens.DurationLargeMove}"
+                                                      Duration="{x:Static foundation:MotionTokens.DurationLargeMove}"
                                                       Easing="QuadraticEaseOut" />
                                 </Transitions>
                             </Rectangle.Transitions>
@@ -204,11 +205,11 @@
                         <Panel ClipToBounds="True" Margin="0">
                             <!-- 右箭头（收起时显示） -->
                             <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
-                                                             Margin="{x:Static theme:LayoutTokens.InsetXS}"
+                                                             Margin="{x:Static foundation:LayoutTokens.InsetXS}"
                                                              IsVisible="{Binding !IsTrackHeaderExpanded}" />
                             <!-- 左箭头（展开时显示） -->
                             <iconPacks:PackIconPhosphorIcons Kind="CaretLeft"
-                                                             Margin="{x:Static theme:LayoutTokens.InsetXS}"
+                                                             Margin="{x:Static foundation:LayoutTokens.InsetXS}"
                                                              IsVisible="{Binding IsTrackHeaderExpanded}" />
                         </Panel>
                     </Button>

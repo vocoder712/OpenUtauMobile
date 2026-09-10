@@ -1,8 +1,8 @@
 using Avalonia;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
-/// <summary>通用间距刻度与均匀内边距。</summary>
+/// <summary>通用间距刻度与均匀内边距</summary>
 public static class LayoutTokens
 {
     public static double SpaceXS => 4d;

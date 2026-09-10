@@ -6,6 +6,7 @@
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
     xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.LoadingPopup"
     x:DataType="vm:LoadingPopupViewModel"
@@ -23,7 +24,7 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <StackPanel Spacing="{x:Static theme:LayoutTokens.SpaceM}" Classes="DialogBody">
+            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}" Classes="DialogBody">
                 <TextBlock
                     Text="{Binding Message}"
                     FontSize="{x:Static theme:TypographyTokens.BodyMSize}"

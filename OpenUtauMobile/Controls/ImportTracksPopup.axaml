@@ -5,6 +5,7 @@
     xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     x:Class="OpenUtauMobile.Controls.ImportTracksPopup"
     x:DataType="vm:ImportTracksViewModel"
     Classes="PopupDialogRoot">
@@ -23,7 +24,7 @@
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <ScrollViewer MaxHeight="{x:Static localTokens:ImportTokens.ContentMaxHeight}" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="{x:Static theme:LayoutTokens.InsetM}" Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                <StackPanel Margin="{x:Static foundation:LayoutTokens.InsetM}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <TextBlock Text="{DynamicResource ImportTracks.AppendHint}" TextWrapping="Wrap" />
                     <Grid ColumnDefinitions="*,*">
                         <Button Content="{DynamicResource ImportTracks.SelectAll}" Command="{Binding SelectAllCommand}" />
@@ -36,7 +37,7 @@
                     <ItemsControl ItemsSource="{Binding Sources}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:ImportSourceViewModel">
-                                <StackPanel Spacing="{x:Static theme:LayoutTokens.SpaceS}" Margin="{x:Static theme:LayoutTokens.InsetS}">
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" Margin="{x:Static foundation:LayoutTokens.InsetS}">
                                     <TextBlock
                                         Text="{Binding Name}"
                                         FontWeight="SemiBold"
@@ -81,7 +82,7 @@
                     <CheckBox IsChecked="{Binding UseSourceTiming, Mode=TwoWay}">
                         <TextBlock Text="{DynamicResource ImportTracks.UseSourceTiming}" TextWrapping="Wrap" />
                     </CheckBox>
-                    <StackPanel IsVisible="{Binding UseSourceTiming}" Spacing="{x:Static theme:LayoutTokens.SpaceS}">
+                    <StackPanel IsVisible="{Binding UseSourceTiming}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                         <TextBlock Text="{DynamicResource ImportTracks.TimingSource}" />
                         <TextBlock Text="{Binding TimingSource.Name}" TextWrapping="Wrap" />
                         <TextBlock Text="{Binding TimingSummary}" TextWrapping="Wrap" />

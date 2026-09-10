@@ -5,6 +5,7 @@
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              x:Class="OpenUtauMobile.Controls.TrackHeader"
              x:DataType="vm:TrackHeaderViewModel">
     <UserControl.Styles>
@@ -76,7 +77,7 @@
                         <!-- 轨道名、音素器、渲染器 -->
                         <Grid Grid.Column="0" RowDefinitions="20, *, *" ColumnDefinitions="Auto, *"
                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                              ColumnSpacing="{x:Static theme:LayoutTokens.SpaceXS}">
+                              ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                             <!-- 轨道颜色、名称 -->
                             <Button Grid.Column="0" Grid.Row="0" Background="{Binding TrackColorBrush}"
                                     Command="{Binding ChangeColorCommand}"
@@ -133,7 +134,7 @@
                         </Grid>
                         <!-- 电平、声像 -->
                         <Grid Grid.Column="1" ColumnDefinitions="16, *"
-                              ColumnSpacing="{x:Static theme:LayoutTokens.SpaceS}"
+                              ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
                               RowDefinitions="*, *">
                             <!-- 电平旋钮 (Volume: -24 到 +12) -->
                             <Path Grid.Column="0" Grid.Row="0"

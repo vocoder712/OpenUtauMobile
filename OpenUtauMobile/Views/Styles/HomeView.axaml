@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="8">
             <Button Classes="HomeActionButton">
@@ -52,7 +53,7 @@
     <!-- MD2 banner for recovery prompt -->
     <Style Selector="Border.RecoveryBanner">
         <Setter Property="Padding" Value="14,10" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerL}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -91,8 +92,8 @@
     <Style Selector="Button.HomeActionButton">
         <Setter Property="Width" Value="{x:Static localTokens:HomeTokens.ActionSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:HomeTokens.ActionSize}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerXL}" />
-        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetS}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelMSize}" />

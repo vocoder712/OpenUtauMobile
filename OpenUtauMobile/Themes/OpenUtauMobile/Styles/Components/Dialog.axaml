@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
         xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
     <!-- 弹窗外观的唯一入口；业务视图不再绘制标题栏、关闭图标或底栏边框。 -->
     <Styles.Resources>
         <ControlTheme x:Key="{x:Type controls:DialogShell}" TargetType="controls:DialogShell">
@@ -15,7 +16,7 @@
                             ClipToBounds="True">
                         <Grid RowDefinitions="Auto,*,Auto">
                             <Border Padding="{x:Static theme:DialogTokens.HeaderPadding}">
-                                <Grid ColumnDefinitions="*,Auto" MinHeight="{x:Static theme:DialogTokens.ControlMinSize}" ColumnSpacing="{x:Static theme:LayoutTokens.SpaceS}">
+                                <Grid ColumnDefinitions="*,Auto" MinHeight="{x:Static theme:DialogTokens.ControlMinSize}" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <ContentPresenter Name="PART_HeaderPresenter" Content="{TemplateBinding Header}"
                                                       ContentTemplate="{TemplateBinding HeaderTemplate}"
                                                       VerticalAlignment="Center"
@@ -37,7 +38,7 @@
                                               Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            <Border Grid.Row="2" Padding="{x:Static theme:LayoutTokens.InsetM}"
+                            <Border Grid.Row="2" Padding="{x:Static foundation:LayoutTokens.InsetM}"
                                     IsVisible="{Binding Footer.IsVisible, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}">
                                 <ContentPresenter Content="{TemplateBinding Footer}" HorizontalContentAlignment="Stretch" />
                             </Border>
@@ -66,10 +67,10 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style Selector=":is(Control).DialogBody">
-        <Setter Property="Margin" Value="{x:Static theme:LayoutTokens.InsetM}" />
+        <Setter Property="Margin" Value="{x:Static foundation:LayoutTokens.InsetM}" />
     </Style>
     <Style Selector="Border.DialogBodyBorder">
-        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetM}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetM}" />
     </Style>
     <Style Selector="controls|DialogActionRows">
         <Setter Property="Orientation" Value="Vertical" />
@@ -90,7 +91,7 @@
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="MinHeight" Value="{x:Static theme:DialogTokens.ControlMinSize}" />
         <Setter Property="Padding" Value="{x:Static theme:DialogTokens.ActionPadding}" />
-        <Setter Property="Margin" Value="{x:Static theme:LayoutTokens.InsetXS}" />
+        <Setter Property="Margin" Value="{x:Static foundation:LayoutTokens.InsetXS}" />
         <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="CornerRadius" Value="{x:Static theme:DialogTokens.ActionCornerRadius}" />
@@ -122,7 +123,7 @@
     <Style Selector="Button.DialogClose, Button.DialogNavigation">
         <Setter Property="Width" Value="{x:Static theme:DialogTokens.ControlMinSize}" />
         <Setter Property="Height" Value="{x:Static theme:DialogTokens.ControlMinSize}" />
-        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetS}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="BorderThickness" Value="0" />
