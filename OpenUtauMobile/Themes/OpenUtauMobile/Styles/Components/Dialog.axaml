@@ -13,10 +13,16 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Border Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
+                    <Border Background="Transparent"
                             CornerRadius="{x:Static components:DialogTokens.CornerRadius}"
                             ClipToBounds="True">
                         <Grid RowDefinitions="Auto,*,Auto">
+                            <!-- 独立底色层透出宿主已模糊的背景，不影响前景控件透明度。 -->
+                            <Border Name="PART_SurfaceLayer" Grid.RowSpan="3"
+                                    Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
+                                    Opacity="{x:Static components:DialogTokens.SurfaceOpacity}"
+                                    CornerRadius="{x:Static components:DialogTokens.CornerRadius}"
+                                    IsHitTestVisible="False" />
                             <Border Padding="{x:Static components:DialogTokens.HeaderPadding}">
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <ContentPresenter Name="PART_HeaderPresenter" Content="{TemplateBinding Header}"

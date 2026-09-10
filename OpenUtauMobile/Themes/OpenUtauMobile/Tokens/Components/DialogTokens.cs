@@ -9,6 +9,7 @@ public static class DialogTokens
 {
     public static double ControlMinSize => InteractionTokens.TouchTarget;
     public static double ScrimOpacity => 0.32;
+    public static double SurfaceOpacity => 0.72;
     public static Thickness HeaderPadding => new(24, 8);
     public static Thickness BodyPadding => new(24, 8);
     public static Thickness FooterPadding => new(24, 16, 24, 24);
