@@ -1,33 +1,33 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <!-- Info card style -->
     <Style Selector="Border.InfoCard">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerL}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetCardMedium}" />
-        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetBottomMD}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerL}" />
+        <Setter Property="Padding" Value="20,12" />
+        <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
     <!-- Info row label -->
     <Style Selector="TextBlock.InfoLabel">
-        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.InfoLabelSize}" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="Opacity" Value="0.6" />
-        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetBottomXS}" />
+        <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
     <!-- Info row value -->
     <Style Selector="TextBlock.InfoValue">
-        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.InfoValueSize}" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <!-- Action button -->
     <Style Selector="Button.ActionBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerMedium}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetButtonComfortable}" />
-        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerM}" />
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
         <!-- 保留迁移前由全局同名按钮样式补充的属性。 -->
@@ -46,9 +46,9 @@
     <Style Selector="Button.DeleteBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.ErrorContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerMedium}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetButtonComfortable}" />
-        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerM}" />
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />

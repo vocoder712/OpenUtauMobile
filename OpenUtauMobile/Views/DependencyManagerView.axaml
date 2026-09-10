@@ -1,10 +1,10 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              mc:Ignorable="d"
              x:Class="OpenUtauMobile.Views.DependencyManagerView"
              x:DataType="vm:DependencyManagerViewModel">
@@ -60,7 +60,7 @@
                     <!-- Tab header -->
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal"
-                                    Spacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}">
+                                    Spacing="{x:Static theme:LayoutTokens.SpaceXS}">
                             <TextBlock Text="{DynamicResource DependencyManager.Available}" />
                             <Border Classes="DependencyCountBadge">
                                 <TextBlock Text="{Binding AvailablePackages.Count}" />
@@ -72,7 +72,7 @@
                         <StackPanel Classes="DependencyPageContent">
                             <!-- 顶栏 -->
                             <Grid ColumnDefinitions="*,Auto"
-                                  Margin="{x:Static theme:ThemeSemDependencyManagerTokens.ToolbarBottomSpacing}">
+                                  Margin="0,0,0,16">
                                 <!-- 搜索栏 -->
                                 <TextBox Grid.Column="0"
                                          Text="{Binding SearchText}"
@@ -310,7 +310,7 @@
                 <TabItem>
                     <TabItem.Header>
                         <StackPanel Orientation="Horizontal"
-                                    Spacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}">
+                                    Spacing="{x:Static theme:LayoutTokens.SpaceXS}">
                             <TextBlock Text="{DynamicResource DependencyManager.InstalledTab}" />
                             <Border Classes="DependencyCountBadge">
                                 <TextBlock Text="{Binding InstalledPackages.Count}" />

@@ -3,7 +3,7 @@
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:ustx="clr-namespace:OpenUtau.Core.Ustx;assembly=OpenUtau.Core"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              x:Class="OpenUtauMobile.Controls.ParameterPanelToolbar"
              x:DataType="vm:PianoRollViewModel">
 
@@ -19,7 +19,7 @@
             <Button HorizontalAlignment="Stretch"
                     Height="28"
                     Padding="2,0"
-                    CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerS}"
+                    CornerRadius="{x:Static theme:ShapeTokens.CornerS}"
                     Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
                     BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                     BorderThickness="1"
@@ -60,7 +60,7 @@
                     Width="32"
                     Height="24"
                     Padding="0"
-                    CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerS}"
+                    CornerRadius="{x:Static theme:ShapeTokens.CornerS}"
                     Background="Transparent"
                     ToolTip.Tip="{DynamicResource PhonemePanel.Param.Swap}">
                 <iconPacks:PackIconPhosphorIcons Kind="ArrowsDownUp" Width="14" Height="14" />
@@ -70,7 +70,7 @@
             <Button HorizontalAlignment="Stretch"
                     Height="28"
                     Padding="2,0"
-                    CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerS}"
+                    CornerRadius="{x:Static theme:ShapeTokens.CornerS}"
                     Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
                     BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                     BorderThickness="1"

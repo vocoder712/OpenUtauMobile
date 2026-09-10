@@ -385,3 +385,11 @@ Record meaningful technical decisions here. Use one entry per decision.
 - 兼容：保留原有选择器、Setter、布局值、颜色键、FluentTheme 和运行时代码；显式补齐 ActionBtn 原先的跨文件叠加效果，颜色选择弹窗局部保留原先借用的设置页样式。三个编辑模式切换控件显式共用局部样式。Runtime 子目录调整不改变命名空间，ThemeStaticTokens.cs 和 TrackPalette 数值不变。
 - 取舍：不以外观相似为依据增加全局抽象，不把设置页整体样式加载到颜色选择弹窗，不在本次调整令牌或模板。
 - 验证：共享项目和 Windows 宿主构建成功，均为零错误；37 条本地样式/资源引用有效，10 个运行时源文件与原版本内容一致，原组件抽象的 20 条样式完整保留。仅构建和静态核查，不创建或运行单元测试；设备视觉验收待人工进行。
+
+
+- Date: 2026-09-10
+- Decision: Remove the monolithic ThemeStaticTokens file and its 46 unconsumed definitions/dead alias chains. Keep 80 consumed properties in foundation, semantic, shared-component and owner-local files; inline one-off layout values in their owning styles. Typography uses one role entry point. Settings and ThemeColorPicker independently own their specialized styles and values.
+- Rationale: The owner explicitly rejected a complete design-spec commitment and control enlargement. Scope and meaning, not numeric equality, govern sharing. Preserve separate hit/visual sizes and content-opacity/state-layer roles; do not restore unused search-field geometry or introduce per-popup chrome contracts.
+- Behavior: Import dialogs use the generic Wide width policy (320 minimum, 560 maximum, 24/56 per-side margins around the 840 breakpoint). PopupDialogControl now owns initial sizing, host resize handling and detach cleanup. ImportDialogControl only adds its previous viewport-height-minus-48 cap. This intentionally replaces the import-only zero-minimum width rule; other preset formulas and existing narrow-viewport overflow tradeoffs remain unchanged.
+- Scope: Static token ownership, AXAML reference substitutions, documentation and popup width-policy sharing. Existing AXAML effective values, color resources, selectors, template structure and includes are unchanged. Core, Plugin and FluentTheme/ControlTheme implementations are untouched.
+- Verification: Source comparison resolved all 267 changed AXAML attributes to identical values, found zero legacy token references and zero unused new properties. Windows Debug build succeeded with 13 existing warnings and zero errors. No unit tests were created or run; device visual/resize acceptance remains pending.

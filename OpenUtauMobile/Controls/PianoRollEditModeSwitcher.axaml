@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:openUtauMobile="clr-namespace:OpenUtauMobile"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              x:Class="OpenUtauMobile.Controls.PianoRollEditModeSwitcher"
              HorizontalAlignment="Right">
     <UserControl.Styles>
@@ -11,8 +12,8 @@
 
     <Border x:Name="Capsule"
             Background="{DynamicResource Sem.Color.SurfaceContainer}"
-            CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerXL}"
-            Height="{x:Static theme:ThemeBaseLayoutTokens.SizeM}"
+            CornerRadius="{x:Static theme:ShapeTokens.CornerXL}"
+            Height="{x:Static localTokens:EditModeSwitcherTokens.ButtonSize}"
             ClipToBounds="True"
             HorizontalAlignment="Right">
         <Grid ColumnDefinitions="Auto,Auto"
@@ -26,7 +27,7 @@
                   ClipToBounds="True">
                 <Grid.Transitions>
                     <Transitions>
-                        <DoubleTransition Property="Width" Duration="{x:Static theme:ThemeBaseMotionTokens.DurationBase}" Easing="CubicEaseOut" />
+                        <DoubleTransition Property="Width" Duration="{x:Static theme:MotionTokens.DurationBase}" Easing="CubicEaseOut" />
                     </Transitions>
                 </Grid.Transitions>
                 <StackPanel Grid.Column="0"

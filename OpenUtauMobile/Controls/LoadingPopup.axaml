@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.LoadingPopup"
@@ -23,10 +23,10 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <StackPanel Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceMD}" Classes="DialogBody">
+            <StackPanel Spacing="{x:Static theme:LayoutTokens.SpaceM}" Classes="DialogBody">
                 <TextBlock
                     Text="{Binding Message}"
-                    FontSize="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}"
+                    FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
                     Foreground="{DynamicResource Sem.Color.OnSurface}"
                     TextWrapping="Wrap"
                     TextAlignment="Center" />
@@ -37,7 +37,7 @@
                 <TextBlock
                     Text="{Binding ProgressText}"
                     IsVisible="{Binding IsIndeterminate, Converter={x:Static BoolConverters.Not}}"
-                    FontSize="{x:Static theme:ThemeSemTypographyTokens.LabelMSize}"
+                    FontSize="{x:Static theme:TypographyTokens.LabelMSize}"
                     Foreground="{DynamicResource Sem.Color.Primary}"
                     HorizontalAlignment="Center" />
             </StackPanel>

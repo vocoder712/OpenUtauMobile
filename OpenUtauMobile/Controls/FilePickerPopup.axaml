@@ -6,7 +6,7 @@
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
     xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
     xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.FilePickerPopup"
@@ -158,7 +158,7 @@
                     IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}"
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled">
-                    <ItemsControl ItemsSource="{Binding AllItems}" Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}">
+                    <ItemsControl ItemsSource="{Binding AllItems}" Margin="{x:Static theme:LayoutTokens.InsetM}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Spacing="2" />

@@ -1,7 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="8">
             <Button Classes="FAB">
@@ -12,10 +12,10 @@
     </Design.PreviewWith>
     <!-- 共享悬浮操作按钮 -->
     <Style Selector="Button.FAB">
-        <Setter Property="Width" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXXL}" />
-        <Setter Property="Height" Value="{x:Static theme:ThemeBaseLayoutTokens.SpaceXXXL}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerXL}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
+        <Setter Property="Width" Value="56" />
+        <Setter Property="Height" Value="56" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetS}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />

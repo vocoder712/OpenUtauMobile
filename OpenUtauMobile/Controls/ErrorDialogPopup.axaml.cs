@@ -2,7 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Controls.Tokens;
 
 namespace OpenUtauMobile.Controls;
 
@@ -52,8 +52,8 @@ public partial class ErrorDialogPopup : PopupDialogControl
     private void UpdateResponsiveHeight(TopLevel topLevel)
     {
         MaxHeight = Math.Max(
-            topLevel.ClientSize.Height - ThemeSemErrorDialogTokens.ViewportVerticalInset,
-            ThemeSemErrorDialogTokens.ActionMinHeight);
+            topLevel.ClientSize.Height - ErrorDialogTokens.ViewportVerticalInset,
+            ErrorDialogTokens.MinViewportHeight);
     }
 
     private void OnDetailToggleClicked(object? sender, RoutedEventArgs e)

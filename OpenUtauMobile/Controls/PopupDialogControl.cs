@@ -16,7 +16,7 @@ public enum PopupDialogWidthPreset
 /// </summary>
 public abstract class PopupDialogControl : UserControl
 {
-    private bool _widthInitialized;
+    private TopLevel? _host;
 
     protected virtual PopupDialogWidthPreset WidthPreset => PopupDialogWidthPreset.Regular;
 
@@ -24,14 +24,37 @@ public abstract class PopupDialogControl : UserControl
     {
         base.OnAttachedToVisualTree(e);
 
-        if (_widthInitialized)
+        _host = TopLevel.GetTopLevel(this);
+        if (_host != null)
         {
-            return;
+            _host.SizeChanged += OnHostSizeChanged;
+            UpdateResponsiveSize(_host);
         }
+    }
 
-        TopLevel? topLevel = TopLevel.GetTopLevel(this);
-        double viewportWidth = topLevel?.ClientSize.Width ?? double.NaN;
-        if (double.IsNaN(viewportWidth) || viewportWidth <= 0)
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        if (_host != null)
+        {
+            _host.SizeChanged -= OnHostSizeChanged;
+            _host = null;
+        }
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void OnHostSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        if (_host != null)
+        {
+            UpdateResponsiveSize(_host);
+        }
+    }
+
+    /// <summary>统一各宽度预设的首次布局与窗口尺寸变化处理。</summary>
+    protected virtual void UpdateResponsiveSize(TopLevel host)
+    {
+        double viewportWidth = host.ClientSize.Width;
+        if (!double.IsFinite(viewportWidth) || viewportWidth <= 0)
         {
             return;
         }
@@ -49,6 +72,5 @@ public abstract class PopupDialogControl : UserControl
         double width = Math.Clamp(viewportWidth - horizontalMargin * 2d, minWidth, maxWidth);
         Width = width;
         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
-        _widthInitialized = true;
     }
 }

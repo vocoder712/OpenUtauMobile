@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     mc:Ignorable="d"
@@ -46,13 +46,13 @@
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <!-- 标题栏 -->
-            <StackPanel Spacing="{x:Static theme:ThemeSemOptionConfirmTokens.SectionSpacing}" Classes="DialogBody">
+            <StackPanel Spacing="16" Classes="DialogBody">
                 <!-- 内容 -->
-                <ScrollViewer MaxHeight="{x:Static theme:ThemeSemOptionConfirmTokens.MessageMaxHeight}" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer MaxHeight="160" VerticalScrollBarVisibility="Auto">
                     <TextBlock
                         Text="{Binding Content}"
                         TextWrapping="Wrap"
-                        FontSize="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}" />
+                        FontSize="{x:Static theme:TypographyTokens.BodyMSize}" />
                 </ScrollViewer>
                 <!-- 选项 -->
             </StackPanel>

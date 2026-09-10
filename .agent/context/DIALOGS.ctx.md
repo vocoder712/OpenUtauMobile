@@ -9,8 +9,8 @@ content slots, logical parenting and the explicitly grouped equal-width action-r
 layout algorithm; it contains no design values or per-dialog breakpoints.
 
 Do not add per-dialog chrome tokens, copy a title bar, draw another X, or
-override header/footer button geometry in a view. Reuse existing foundation
-tokens inside the shared component. Business-content layout and viewport
+override header/footer button geometry in a view. Use shared `DialogTokens`, semantic roles, foundation values or local literals
+inside the shared component; do not borrow page/navigation/card tokens. Business-content layout and viewport
 size constraints remain the responsibility of the view and popup base class.
 
 ## New dialog
@@ -156,3 +156,14 @@ Before `dotnet build`, set `$env:AVALONIA_TELEMETRY_OPTOUT='1'`.
 Review light/dark colors, long localized titles/actions, narrow widths,
 keyboard focus, disabled/busy actions, mode-specific footers and dynamic
 option commands in the running application before visual acceptance.
+
+## Responsive sizing (2026-09-10)
+
+`PopupDialogControl` owns initial sizing, TopLevel resize subscription and detach
+cleanup for all presets. Wide has one width policy: 320 minimum, 560 maximum,
+24 per-side viewport margin below 840, otherwise 56. Import dialogs inherit this
+same policy rather than calculating their own width. `ImportDialogControl` only
+adds its existing height cap (viewport height minus 48); import content scroll
+limits stay local. This intentionally changes the old import minimum-width rule.
+Preset minima are unchanged, including their existing narrow-viewport overflow
+tradeoff. No control hit targets are enlarged by token refactoring.

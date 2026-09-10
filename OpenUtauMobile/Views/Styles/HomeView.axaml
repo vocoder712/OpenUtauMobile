@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="8">
             <Button Classes="HomeActionButton">
@@ -14,9 +15,9 @@
     </Design.PreviewWith>
     <!-- Recent item row button -->
     <Style Selector="Button.RecentItem">
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Cursor" Value="Hand" />
@@ -30,10 +31,10 @@
 
     <!-- Delete button on each row -->
     <Style Selector="Button.HomeDeleteBtn">
-        <Setter Property="Width" Value="{x:Static theme:ThemeSemLayoutTokens.SizeDeleteButton}" />
-        <Setter Property="Height" Value="{x:Static theme:ThemeSemLayoutTokens.SizeDeleteButton}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetNone}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerDeleteButton}" />
+        <Setter Property="Width" Value="{x:Static localTokens:HomeTokens.DeleteButtonSize}" />
+        <Setter Property="Height" Value="{x:Static localTokens:HomeTokens.DeleteButtonSize}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="17" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -51,7 +52,7 @@
     <!-- MD2 banner for recovery prompt -->
     <Style Selector="Border.RecoveryBanner">
         <Setter Property="Padding" Value="14,10" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerL}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerL}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -88,13 +89,13 @@
     </Style>
     <!-- 首页操作按钮仅在首页加载。 -->
     <Style Selector="Button.HomeActionButton">
-        <Setter Property="Width" Value="{x:Static theme:ThemeSemLayoutTokens.SizeHomeAction}" />
-        <Setter Property="Height" Value="{x:Static theme:ThemeSemLayoutTokens.SizeHomeAction}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeBaseShapeTokens.CornerXL}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
+        <Setter Property="Width" Value="{x:Static localTokens:HomeTokens.ActionSize}" />
+        <Setter Property="Height" Value="{x:Static localTokens:HomeTokens.ActionSize}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:ShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetS}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
-        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.LabelMSize}" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelMSize}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />

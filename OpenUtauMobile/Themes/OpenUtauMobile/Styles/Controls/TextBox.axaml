@@ -1,6 +1,6 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <Design.PreviewWith>
         <Border Padding="128">
             <StackPanel Orientation="Vertical"
@@ -25,11 +25,11 @@
         <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness"
-                Value="{x:Static theme:ThemeSemComponentTokens.InputBorderThickness}" />
+                Value="{x:Static theme:InputTokens.BorderThickness}" />
         <Setter Property="CornerRadius"
-                Value="{x:Static theme:ThemeSemComponentTokens.InputCornerRadius}" />
+                Value="{x:Static theme:InputTokens.CornerRadius}" />
         <Setter Property="Padding"
-                Value="{x:Static theme:ThemeSemComponentTokens.InputPadding}" />
+                Value="{x:Static theme:InputTokens.Padding}" />
     </Style>
 
     <Style Selector="TextBox:pointerover">
@@ -133,7 +133,7 @@
         <Setter Property="SelectionForegroundBrush" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
-        <Setter Property="Opacity" Value="{x:Static theme:ThemeSemOpacityTokens.Disabled}" />
+        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Disabled}" />
     </Style>
 
     <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">

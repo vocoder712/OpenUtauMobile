@@ -1,6 +1,6 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical"
                     Spacing="8">
@@ -19,9 +19,9 @@
     <Style Selector="Border.card">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
-        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemComponentTokens.CardBorderThickness}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemComponentTokens.CardCornerRadius}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemComponentTokens.CardPadding}" />
+        <Setter Property="BorderThickness" Value="{x:Static theme:CardTokens.BorderThickness}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:CardTokens.CornerRadius}" />
+        <Setter Property="Padding" Value="{x:Static theme:CardTokens.Padding}" />
     </Style>
 
     <Style Selector="Border.card.elevated">

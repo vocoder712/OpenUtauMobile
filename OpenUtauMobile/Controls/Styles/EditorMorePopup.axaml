@@ -1,6 +1,5 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Style Selector="Button.ActionBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
@@ -14,7 +13,7 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <!-- 保留迁移前由全局同名按钮样式补充的属性。 -->
-        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="BorderThickness" Value="0" />
     </Style>
     <Style Selector="Button.ActionBtn:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />

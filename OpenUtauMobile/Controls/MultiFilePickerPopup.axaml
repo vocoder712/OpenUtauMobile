@@ -2,7 +2,6 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     x:Class="OpenUtauMobile.Controls.MultiFilePickerPopup"
     x:DataType="vm:MultiFilePickerViewModel"
@@ -35,7 +34,7 @@
             </StackPanel>
             <ListBox
                 ItemsSource="{Binding Entries}"
-                MaxHeight="{x:Static theme:ThemeSemImportTracksTokens.ListMaxHeight}"
+                MaxHeight="280"
                 IsEnabled="{Binding !IsLoading}"
                 Classes="DialogBody">
                 <ListBox.ItemTemplate>
@@ -46,12 +45,12 @@
                                 Content="{Binding Name}"
                                 Command="{Binding OpenCommand}"
                                 HorizontalAlignment="Stretch"
-                                MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
+                                MinHeight="48" />
                             <CheckBox
                                 IsVisible="{Binding IsFile}"
                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                 HorizontalAlignment="Stretch"
-                                MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}">
+                                MinHeight="48">
                                 <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
                             </CheckBox>
                         </Panel>

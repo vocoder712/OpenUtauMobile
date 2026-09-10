@@ -10,7 +10,8 @@
 - `Runtime/Generation/`：主题生成器、配色模型和轨道调色板。
 - `Runtime/Resources/`：资源桥接和资源查询。
 - `Runtime/Platform/`：系统强调色获取。
-- `Runtime/`：主协调器 `ThemeManagerV2`、运行时事件和 `ThemeStaticTokens`。本次只移动文件，保留原命名空间和实现。
+- `Runtime/`：主协调器 `ThemeManagerV2` 与运行时事件。
+- `Tokens/`：基础刻度、语义角色与共享组件静态规格；参见 [token 使用规则](Tokens/README.md)。页面及功能规格由 `Views/Tokens`、`Controls/Tokens` 或所有者局部样式持有。
 
 ## 局部样式
 
@@ -26,3 +27,7 @@
 - 不删除缺少静态调用证据的选择器，不调整现有尺寸、间距、圆角、令牌或 Fluent 模板。
 
 新增样式优先放在实际所有者附近；只有确认存在跨功能复用时才纳入全局组件。
+
+## 后续 token 整理（2026-09-10）
+
+已移除 `Runtime/ThemeStaticTokens.cs`。原始整理阶段的兼容说明保留为历史记录；当前 token 规则以 `Tokens/README.md` 为准。Settings 与 ThemeColorPicker 独立持有各自操作按钮和说明文字样式，不建立专用参数联动。

@@ -3,7 +3,7 @@
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              x:Class="OpenUtauMobile.Controls.TrackHeader"
              x:DataType="vm:TrackHeaderViewModel">
@@ -76,7 +76,7 @@
                         <!-- 轨道名、音素器、渲染器 -->
                         <Grid Grid.Column="0" RowDefinitions="20, *, *" ColumnDefinitions="Auto, *"
                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                              ColumnSpacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}">
+                              ColumnSpacing="{x:Static theme:LayoutTokens.SpaceXS}">
                             <!-- 轨道颜色、名称 -->
                             <Button Grid.Column="0" Grid.Row="0" Background="{Binding TrackColorBrush}"
                                     Command="{Binding ChangeColorCommand}"
@@ -96,8 +96,8 @@
                             </Button>
                             <!-- 音素器名 -->
                             <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="1" Kind="Translate"
-                                                             Width="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}"
-                                                             Height="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}" />
+                                                             Width="16"
+                                                             Height="16" />
                             <Button Grid.Row="1" Grid.Column="1"
                                     Classes="TrackHeaderCompactAction"
                                     Command="{Binding SelectPhonemizerCommand}"
@@ -114,8 +114,8 @@
                             </Button>
                             <!-- 渲染器名 -->
                             <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="2" Kind="Cpu"
-                                                             Width="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}"
-                                                             Height="{x:Static theme:ThemeBaseLayoutTokens.SpaceM}" />
+                                                             Width="16"
+                                                             Height="16" />
                             <Button Grid.Row="2" Grid.Column="1"
                                     Classes="TrackHeaderCompactAction"
                                     Command="{Binding SelectRendererCommand}"
@@ -133,7 +133,7 @@
                         </Grid>
                         <!-- 电平、声像 -->
                         <Grid Grid.Column="1" ColumnDefinitions="16, *"
-                              ColumnSpacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceS}"
+                              ColumnSpacing="{x:Static theme:LayoutTokens.SpaceS}"
                               RowDefinitions="*, *">
                             <!-- 电平旋钮 (Volume: -24 到 +12) -->
                             <Path Grid.Column="0" Grid.Row="0"

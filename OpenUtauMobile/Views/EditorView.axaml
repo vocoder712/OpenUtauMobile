@@ -9,7 +9,7 @@
              xmlns:c="clr-namespace:OpenUtauMobile.Controls"
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-             xmlns:runtime="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              x:DataType="vm:EditorViewModel"
              Background="{DynamicResource DynamicResource Sem.Color.SurfaceContainerLow}">
 
@@ -28,7 +28,7 @@
             <Setter Property="Transitions">
                 <Transitions>
                     <DoubleTransition Property="Opacity"
-                                      Duration="{x:Static runtime:ThemeBaseMotionTokens.DurationBase}" />
+                                      Duration="{x:Static theme:MotionTokens.DurationBase}" />
                 </Transitions>
             </Setter>
         </Style>
@@ -56,11 +56,11 @@
                             Spacing="2"
                             Margin="0,0,8,0">
                     <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToFileName}}"
-                               FontSize="{x:Static runtime:ThemeBaseTypographyTokens.BodyLSize}"
+                               FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
                                FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToDirectory}}"
-                               FontSize="{x:Static runtime:ThemeBaseTypographyTokens.LabelSSize}"
+                               FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
                                Opacity="0.50"
                                TextTrimming="CharacterEllipsis" />
                 </StackPanel>
@@ -126,7 +126,7 @@
                             <Rectangle.Transitions>
                                 <Transitions>
                                     <DoubleTransition Property="Width"
-                                                      Duration="{x:Static runtime:ThemeBaseMotionTokens.DurationLargeMove}"
+                                                      Duration="{x:Static theme:MotionTokens.DurationLargeMove}"
                                                       Easing="QuadraticEaseOut" />
                                 </Transitions>
                             </Rectangle.Transitions>
@@ -204,11 +204,11 @@
                         <Panel ClipToBounds="True" Margin="0">
                             <!-- 右箭头（收起时显示） -->
                             <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
-                                                             Margin="{x:Static runtime:ThemeSemLayoutTokens.InsetXS}"
+                                                             Margin="{x:Static theme:LayoutTokens.InsetXS}"
                                                              IsVisible="{Binding !IsTrackHeaderExpanded}" />
                             <!-- 左箭头（展开时显示） -->
                             <iconPacks:PackIconPhosphorIcons Kind="CaretLeft"
-                                                             Margin="{x:Static runtime:ThemeSemLayoutTokens.InsetXS}"
+                                                             Margin="{x:Static theme:LayoutTokens.InsetXS}"
                                                              IsVisible="{Binding IsTrackHeaderExpanded}" />
                         </Panel>
                     </Button>

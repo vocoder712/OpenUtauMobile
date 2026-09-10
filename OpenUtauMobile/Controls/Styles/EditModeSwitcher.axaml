@@ -1,6 +1,6 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens">
     <Style Selector="Button.EditModeBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
@@ -9,7 +9,7 @@
         <Setter Property="Padding" Value="2" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="Width" Value="{x:Static theme:ThemeBaseLayoutTokens.SizeM}" />
-        <Setter Property="Height" Value="{x:Static theme:ThemeBaseLayoutTokens.SizeM}" />
+        <Setter Property="Width" Value="{x:Static localTokens:EditModeSwitcherTokens.ButtonSize}" />
+        <Setter Property="Height" Value="{x:Static localTokens:EditModeSwitcherTokens.ButtonSize}" />
     </Style>
 </Styles>

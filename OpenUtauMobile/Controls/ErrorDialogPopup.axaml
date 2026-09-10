@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
     xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     mc:Ignorable="d"
@@ -41,7 +40,7 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <Grid RowDefinitions="Auto,Auto,*" Classes="DialogBody">
-            <ScrollViewer MaxHeight="{x:Static theme:ThemeSemErrorDialogTokens.MessageMaxHeight}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
                 <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
             </ScrollViewer>
             <Button
@@ -68,7 +67,7 @@
                 IsReadOnly="True"
                 AcceptsReturn="True"
                 Text="{Binding Detail}"
-                MaxHeight="{x:Static theme:ThemeSemErrorDialogTokens.DetailMaxHeight}"
+                MaxHeight="280"
                 Margin="0,6,0,0"
                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
                 ScrollViewer.VerticalScrollBarVisibility="Auto"

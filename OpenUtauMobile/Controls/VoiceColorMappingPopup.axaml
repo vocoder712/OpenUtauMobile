@@ -2,7 +2,8 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+    xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     x:Class="OpenUtauMobile.Controls.VoiceColorMappingPopup"
     x:DataType="vm:VoiceColorMappingViewModel"
@@ -27,19 +28,19 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <ScrollViewer MaxHeight="{x:Static theme:ThemeSemImportTracksTokens.ContentMaxHeight}" HorizontalScrollBarVisibility="Disabled">
-                <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetM}" Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+            <ScrollViewer MaxHeight="{x:Static localTokens:ImportTokens.ContentMaxHeight}" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="{x:Static theme:LayoutTokens.InsetM}" Spacing="{x:Static theme:LayoutTokens.SpaceS}">
                     <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
                     <ItemsControl ItemsSource="{Binding Mappings}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:VoiceColorMappingRow">
-                                <StackPanel Margin="{x:Static theme:ThemeSemLayoutTokens.InsetS}" Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                                <StackPanel Margin="{x:Static theme:LayoutTokens.InsetS}" Spacing="{x:Static theme:LayoutTokens.SpaceS}">
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
                                     <ComboBox
                                         ItemsSource="{Binding NewColors}"
                                         SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                                         HorizontalAlignment="Stretch"
-                                        MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
+                                        MinHeight="48" />
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

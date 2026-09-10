@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
         xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
     <!-- 弹窗外观的唯一入口；业务视图不再绘制标题栏、关闭图标或底栏边框。 -->
     <Styles.Resources>
         <ControlTheme x:Key="{x:Type controls:DialogShell}" TargetType="controls:DialogShell">
@@ -11,15 +11,15 @@
             <Setter Property="Template">
                 <ControlTemplate>
                     <Border Background="{DynamicResource Sem.Color.Surface}"
-                            CornerRadius="{x:Static theme:ThemeSemShapeTokens.CornerDialog}"
+                            CornerRadius="{x:Static theme:DialogTokens.CornerRadius}"
                             ClipToBounds="True">
                         <Grid RowDefinitions="Auto,*,Auto">
-                            <Border Padding="{x:Static theme:ThemeSemLayoutTokens.InsetCardMedium}">
-                                <Grid ColumnDefinitions="*,Auto" MinHeight="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" ColumnSpacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                            <Border Padding="{x:Static theme:DialogTokens.HeaderPadding}">
+                                <Grid ColumnDefinitions="*,Auto" MinHeight="{x:Static theme:DialogTokens.ControlMinSize}" ColumnSpacing="{x:Static theme:LayoutTokens.SpaceS}">
                                     <ContentPresenter Name="PART_HeaderPresenter" Content="{TemplateBinding Header}"
                                                       ContentTemplate="{TemplateBinding HeaderTemplate}"
                                                       VerticalAlignment="Center"
-                                                      TextElement.FontSize="{x:Static theme:ThemeSemTypographyTokens.TitlePageSize}"
+                                                      TextElement.FontSize="{x:Static theme:DialogTokens.TitleSize}"
                                                       TextElement.FontWeight="SemiBold"
                                                       TextElement.Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                     <Button Grid.Column="1" Classes="DialogClose"
@@ -28,8 +28,8 @@
                                             ToolTip.Tip="{DynamicResource Common.Close}"
                                             AutomationProperties.Name="{DynamicResource Common.Close}">
                                         <icons:PackIconPhosphorIcons Kind="X"
-                                            Width="{x:Static theme:ThemeBaseLayoutTokens.SpaceL}"
-                                            Height="{x:Static theme:ThemeBaseLayoutTokens.SpaceL}" />
+                                            Width="24"
+                                            Height="24" />
                                     </Button>
                                 </Grid>
                             </Border>
@@ -37,7 +37,7 @@
                                               Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            <Border Grid.Row="2" Padding="{x:Static theme:ThemeSemLayoutTokens.InsetM}"
+                            <Border Grid.Row="2" Padding="{x:Static theme:LayoutTokens.InsetM}"
                                     IsVisible="{Binding Footer.IsVisible, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}">
                                 <ContentPresenter Content="{TemplateBinding Footer}" HorizontalContentAlignment="Stretch" />
                             </Border>
@@ -54,22 +54,22 @@
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
     <Style Selector="TextBlock.PopupTitle">
-        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.TitlePageSize}" />
+        <Setter Property="FontSize" Value="{x:Static theme:DialogTokens.TitleSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style Selector="TextBlock.DialogSubtitle">
-        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style Selector=":is(Control).DialogBody">
-        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetM}" />
+        <Setter Property="Margin" Value="{x:Static theme:LayoutTokens.InsetM}" />
     </Style>
     <Style Selector="Border.DialogBodyBorder">
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetM}" />
+        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetM}" />
     </Style>
     <Style Selector="controls|DialogActionRows">
         <Setter Property="Orientation" Value="Vertical" />
@@ -88,13 +88,13 @@
     <Style Selector="Button.DialogAction, :is(controls|DialogActionRow) Button">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
-        <Setter Property="MinHeight" Value="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetButtonComfortable}" />
-        <Setter Property="Margin" Value="{x:Static theme:ThemeSemLayoutTokens.InsetXS}" />
-        <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.LabelLSize}" />
+        <Setter Property="MinHeight" Value="{x:Static theme:DialogTokens.ControlMinSize}" />
+        <Setter Property="Padding" Value="{x:Static theme:DialogTokens.ActionPadding}" />
+        <Setter Property="Margin" Value="{x:Static theme:LayoutTokens.InsetXS}" />
+        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerButton}" />
-        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:DialogTokens.ActionCornerRadius}" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -112,21 +112,21 @@
     <Style Selector="Button.DialogAction:pointerover /template/ ContentPresenter, :is(controls|DialogActionRow) Button:pointerover /template/ ContentPresenter">
         <Setter Property="Background" Value="{ReflectionBinding Background, RelativeSource={RelativeSource TemplatedParent}}" />
         <Setter Property="Foreground" Value="{ReflectionBinding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
-        <Setter Property="Opacity" Value="{x:Static theme:ThemeBaseOpacityTokens.LevelHigh}" />
+        <Setter Property="Opacity" Value="{x:Static theme:DialogTokens.ActionHoverOpacity}" />
     </Style>
     <Style Selector="Button.DialogAction:pressed /template/ ContentPresenter, :is(controls|DialogActionRow) Button:pressed /template/ ContentPresenter">
         <Setter Property="Background" Value="{ReflectionBinding Background, RelativeSource={RelativeSource TemplatedParent}}" />
         <Setter Property="Foreground" Value="{ReflectionBinding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
-        <Setter Property="Opacity" Value="{x:Static theme:ThemeBaseOpacityTokens.LevelMedium}" />
+        <Setter Property="Opacity" Value="{x:Static theme:DialogTokens.ActionPressedOpacity}" />
     </Style>
     <Style Selector="Button.DialogClose, Button.DialogNavigation">
-        <Setter Property="Width" Value="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
-        <Setter Property="Height" Value="{x:Static theme:ThemeSemLayoutTokens.SizeNavToggleMin}" />
-        <Setter Property="Padding" Value="{x:Static theme:ThemeSemLayoutTokens.InsetS}" />
+        <Setter Property="Width" Value="{x:Static theme:DialogTokens.ControlMinSize}" />
+        <Setter Property="Height" Value="{x:Static theme:DialogTokens.ControlMinSize}" />
+        <Setter Property="Padding" Value="{x:Static theme:LayoutTokens.InsetS}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-        <Setter Property="BorderThickness" Value="{x:Static theme:ThemeSemLayoutTokens.BorderNone}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:ThemeSemShapeTokens.CornerButton}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="{x:Static theme:DialogTokens.ActionCornerRadius}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
@@ -150,7 +150,7 @@
         <Setter Property="Padding" Value="20,8"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Cursor" Value="Hand"/>
-    <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}"/></Style>
+    <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}"/></Style>
 
 <Style Selector="Button.Primary:pointerover /template/ ContentPresenter">
         <Setter Property="Opacity" Value="0.85"/>
@@ -163,6 +163,6 @@
         <Setter Property="Padding" Value="20,8"/>
         <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Cursor" Value="Hand"/>
-    <Setter Property="FontSize" Value="{x:Static theme:ThemeSemTypographyTokens.BodyMSize}"/></Style>
+    <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}"/></Style>
 
 </Styles>

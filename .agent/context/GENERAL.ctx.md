@@ -1,4 +1,4 @@
-﻿# OpenUtau Mobile - General Project Context
+# OpenUtau Mobile - General Project Context
 
 ## Project Summary
 
@@ -10,8 +10,8 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 - Do not modify `OpenUtau.Plugin.Builtin` (upstream copy).
 - Front-end controls should subscribe to `DocManager` directly when possible to reduce coupling.
 - Keep UI aligned with Material Design 3 (MD3) and modern, touch-first interaction. Plan for keyboard/mouse and stylus compatibility.
-- Do not hardcode numeric values or enum values in new code.
-- Color tokens are generated dynamically; other tokens live in `ThemeStaticTokens.cs`.
+- Name behavior-significant constants and use typed enums. UI literals are allowed for one-off local layout, zero values and independent geometry; do not create tokens solely to eliminate numeric literals.
+- Dynamic colors remain in the existing semantic color resources. Static UI tokens live in `Themes/OpenUtauMobile/Tokens/{Foundation,Semantic,Components}` or near their feature owner in `Controls/Tokens` / `Views/Tokens`. Follow `Themes/OpenUtauMobile/Tokens/README.md`; do not recreate a global catch-all token file.
 - Use MVVM. UI is Avalonia 12.1 on .NET 10.
 - Use ReactiveUI and the Fody helper (deprecated); plan to migrate to a source-generator alternative.
 - Language rules follow .NET 10 preview.
