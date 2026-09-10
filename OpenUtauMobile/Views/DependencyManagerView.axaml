@@ -251,10 +251,8 @@
                                                                 </MultiBinding>
                                                             </Button.IsVisible>
                                                             <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                                                <Path Width="{x:Static theme:IconTokens.Small}" Height="{x:Static theme:IconTokens.Small}"
-                                                                      Stretch="Uniform"
-                                                                      Fill="{DynamicResource Sem.Color.OnPrimary}"
-                                                                      Data="{StaticResource icon-refresh}" />
+
+                                                                <!-- TODO: 加图标 -->
                                                                 <TextBlock Text="{DynamicResource Common.Update}"
                                                                            FontSize="{x:Static theme:TypographyTokens.BodyMSize}" FontWeight="Medium" />
                                                             </StackPanel>
@@ -343,11 +341,6 @@
                                         </MultiBinding>
                                     </Border.IsVisible>
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                        <Path Width="64" Height="64"
-                                              Stretch="Uniform"
-                                              Fill="{DynamicResource Sem.Color.OutlineVariant}"
-                                              Data="{StaticResource icon-package}"
-                                              Opacity="0.3" />
                                         <TextBlock Text="{DynamicResource DependencyManager.NoInstalled}"
                                                    Foreground="{DynamicResource Sem.Color.Outline}"
                                                    HorizontalAlignment="Center" />

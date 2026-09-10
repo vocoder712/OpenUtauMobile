@@ -9,6 +9,7 @@
     xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:tokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.FilePickerPopup"
     Name="Root"
@@ -25,11 +26,22 @@
         <conv:EnumEqualConverter x:Key="ModeEq" />
     </UserControl.Resources>
     <dialogs:DialogShell
-        Height="400"
+        MaxHeight="{x:Static tokens:PopupCommonTokens.MaxHeight}"
         CloseCommand="{Binding CloseCommand}"
         Header="{Binding Title}">
         <dialogs:DialogShell.Footer>
-            <StackPanel IsVisible="{Binding Mode, Converter={x:Static conv:EnumNotEqualConverter.Instance}, ConverterParameter=OpenFile}">
+            <StackPanel IsVisible="{Binding HasFooter}">
+                <StackPanel IsVisible="{Binding IsMultiSelect}"
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <TextBlock Text="{Binding SelectionSummary}" />
+                    <dialogs:DialogActionRow>
+                        <Button Content="{DynamicResource Common.Cancel}"
+                                Command="{Binding CloseCommand}" />
+                        <Button Content="{DynamicResource ImportTracks.Next}"
+                                Command="{Binding ConfirmCommand}"
+                                Classes="DialogPrimary" />
+                    </dialogs:DialogActionRow>
+                </StackPanel>
                 <Border IsVisible="{Binding Mode, Converter={StaticResource ModeEq}, ConverterParameter=OpenFolder}">
                     <Button
                         Content="{DynamicResource FilePicker.SelectFolder}"
@@ -37,7 +49,9 @@
                         Classes="DialogAction DialogPrimary" />
                 </Border>
                 <Border IsVisible="{Binding Mode, Converter={StaticResource ModeEq}, ConverterParameter=SaveFile}">
-                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto"
+                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                          RowSpacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                         <!-- 标签 -->
                         <TextBlock
                             Grid.Row="0"
@@ -53,7 +67,7 @@
                             <TextBox
                                 Grid.Column="0"
                                 Text="{Binding FileName}"
-                                Watermark="{DynamicResource FilePicker.FileNameHint}"
+                                PlaceholderText="{DynamicResource FilePicker.FileNameHint}"
                                 FontSize="13" />
                             <TextBlock
                                 Grid.Column="1"
@@ -96,13 +110,13 @@
                         Command="{Binding GoUpCommand}"
                         ToolTip.Tip="{DynamicResource FilePicker.GoUp}"
                         Content="{iconPacks:PhosphorIcons ArrowUp}">
-                        </Button>
+                    </Button>
                     <TextBox
                         Text="{Binding CurrentPath}"
                         FontSize="13"
                         BorderThickness="0"
                         Background="Transparent"
-                        Grid.Column="1"  Padding="0,1" />
+                        Grid.Column="1" Padding="0,1" />
                 </Grid>
             </Border>
             <!-- OpenFolder 模式：选择此文件夹 -->
@@ -155,20 +169,20 @@
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled">
                     <Border Padding="{x:Static foundation:LayoutTokens.InsetM}">
-                        <ItemsControl ItemsSource="{Binding AllItems}">
+                        <ItemsControl ItemsSource="{Binding Entries}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="vm:FilePickerEntry">
                                     <Button
                                         Classes="FileEntry"
                                         Command="{Binding DataContext.SelectItemCommand, ElementName=Root}"
-                                        CommandParameter="{Binding .}">
+                                        CommandParameter="{Binding Item}">
                                         <Grid
-                                            ColumnDefinitions="38,*,Auto"
+                                            ColumnDefinitions="38,*,Auto,Auto"
                                             Height="44"
                                             Margin="2,0">
                                             <!-- 图标列 -->
@@ -182,14 +196,14 @@
                                                     Height="{x:Static theme:IconTokens.Compact}"
                                                     Kind="Folder"
                                                     Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                                    IsVisible="{Binding ., Converter={StaticResource IsFile}, ConverterParameter=invert}" />
+                                                    IsVisible="{Binding Item, Converter={StaticResource IsFile}, ConverterParameter=invert}" />
                                                 <!-- 文件图标 -->
                                                 <iconPacks:PackIconPhosphorIcons
                                                     Width="{x:Static theme:IconTokens.Compact}"
                                                     Height="{x:Static theme:IconTokens.Compact}"
                                                     Kind="File"
                                                     Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                                    IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
+                                                    IsVisible="{Binding Item, Converter={StaticResource IsFile}}" />
                                             </Panel>
                                             <!-- 文件名 + 大小副标题 -->
                                             <StackPanel
@@ -201,11 +215,19 @@
                                                     FontSize="14"
                                                     TextTrimming="CharacterEllipsis" />
                                                 <TextBlock
-                                                    Text="{Binding ., Converter={StaticResource FileSize}}"
+                                                    Text="{Binding Item, Converter={StaticResource FileSize}}"
                                                     FontSize="11"
                                                     Opacity="0.45"
-                                                    IsVisible="{Binding ., Converter={StaticResource IsFile}}" />
+                                                    IsVisible="{Binding Item, Converter={StaticResource IsFile}}" />
                                             </StackPanel>
+                                            <!-- 多选时增加复选框，其余内容复用原文件行。 -->
+                                            <CheckBox
+                                                Grid.Column="3"
+                                                IsVisible="{Binding CanSelect}"
+                                                IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                AutomationProperties.Name="{Binding Name}"
+                                                VerticalAlignment="Center"
+                                                Margin="4,0,6,0" />
                                             <!-- 目录右箭头 -->
                                             <iconPacks:PackIconPhosphorIcons
                                                 Grid.Column="2"
@@ -215,7 +237,7 @@
                                                 Opacity="0.3"
                                                 VerticalAlignment="Center"
                                                 Margin="4,0,6,0"
-                                                IsVisible="{Binding ., Converter={StaticResource IsFile}, ConverterParameter=invert}" />
+                                                IsVisible="{Binding Item, Converter={StaticResource IsFile}, ConverterParameter=invert}" />
                                         </Grid>
                                     </Button>
                                 </DataTemplate>

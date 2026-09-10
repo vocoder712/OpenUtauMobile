@@ -23,7 +23,7 @@ public static class FilePicker
         {
             if (!CheckAndRequestStoragePermission()) return [];
             return await RunOnUiThreadAsync(() => PopupService.Show<string[]>(
-                new MultiFilePickerPopup(), new MultiFilePickerViewModel(title, filters))) ?? [];
+                new FilePickerPopup(), new MultiFilePickerViewModel(title, filters))) ?? [];
         }
         IStorageProvider? provider = StorageProviderFactory.GetStorageProvider();
         if (provider is not { CanOpen: true }) return [];
