@@ -7,6 +7,7 @@
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="OpenUtauMobile.Views.ClassicSingerSetupView"
              x:DataType="vm:ClassicSingerSetupViewModel">
@@ -34,7 +35,7 @@
                     <!-- 步骤指示器 -->
                     <TextBlock Grid.Column="2"
                                Text="{Binding StepText}"
-                               FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                               FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right" />
@@ -60,9 +61,9 @@
                     <!-- 标题 -->
                     <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                            <TextBlock Text="{DynamicResource SingerSetup.Step1.Title}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step1.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
                             <TextBlock Text="{DynamicResource SingerSetup.Step1.Desc}"
-                                       FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                        TextWrapping="Wrap" />
                         </StackPanel>
@@ -76,7 +77,7 @@
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <!-- 选项 -->
                                 <TextBlock Text="{DynamicResource SingerSetup.Step1.ArchiveEncoding}"
-                                           FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                 <ComboBox ItemsSource="{Binding Encodings}"
@@ -92,7 +93,7 @@
                                 </ComboBox>
                                 <!-- 预览 -->
                                 <TextBlock Text="{DynamicResource SingerSetup.Step1.Preview}"
-                                           FontSize="{x:Static theme:TypographyTokens.BodySSize}" Margin="0,12,0,0"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}" Margin="0,12,0,0"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                                 <ListBox ItemsSource="{Binding TextItems}"
@@ -104,7 +105,7 @@
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding}"
-                                                       FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                                                       FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                                        FontFamily="Courier New"
                                                        TextWrapping="Wrap" />
                                         </DataTemplate>
@@ -137,9 +138,9 @@
                     <!-- 标题 -->
                     <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                            <TextBlock Text="{DynamicResource SingerSetup.Step2.Title}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step2.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
                             <TextBlock Text="{DynamicResource SingerSetup.Step2.Desc}"
-                                       FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                        TextWrapping="Wrap" />
                         </StackPanel>
@@ -151,7 +152,7 @@
                                 Padding="{x:Static foundation:LayoutTokens.InsetM}" Margin="0">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Text="{DynamicResource SingerSetup.Step2.TextEncoding}"
-                                           FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                 <ComboBox ItemsSource="{Binding Encodings}"
@@ -167,7 +168,7 @@
                                 </ComboBox>
 
                                 <TextBlock Text="{DynamicResource SingerSetup.Step2.Preview}"
-                                           FontSize="{x:Static theme:TypographyTokens.BodySSize}" Margin="0,12,0,0"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}" Margin="0,12,0,0"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                                 <ListBox ItemsSource="{Binding TextItems}"
@@ -179,7 +180,7 @@
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding}"
-                                                       FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                                                       FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                                        FontFamily="Courier New"
                                                        TextWrapping="Wrap" />
                                         </DataTemplate>
@@ -217,19 +218,19 @@
                     <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                             <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerType}"
-                                       FontSize="{x:Static theme:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
                                        IsVisible="{Binding MissingInfo}" />
                             <TextBlock Text="{DynamicResource SingerSetup.Step3.ManualDesc}"
-                                       FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                        TextWrapping="Wrap"
                                        IsVisible="{Binding MissingInfo}" />
 
                             <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerInfo}"
-                                       FontSize="{x:Static theme:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
                                        IsVisible="{Binding !MissingInfo}" />
                             <TextBlock Text="{DynamicResource SingerSetup.Step3.AutoDesc}"
-                                       FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                        TextWrapping="Wrap"
                                        IsVisible="{Binding !MissingInfo}" />
@@ -261,16 +262,16 @@
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeHelp}"
                                                    FontWeight="SemiBold"
-                                                   FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                                   FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeUtau}"
-                                                   FontSize="{x:Static theme:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeEnunu}"
-                                                   FontSize="{x:Static theme:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeDiffSinger}"
-                                                   FontSize="{x:Static theme:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeNeutrino}"
-                                                   FontSize="{x:Static theme:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -305,9 +306,9 @@
                     <!-- 标题 -->
                     <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                            <TextBlock Text="{DynamicResource SingerSetup.Step4.Title}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step4.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
                             <TextBlock Text="{DynamicResource SingerSetup.Step4.Desc}"
-                                       FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                        TextWrapping="Wrap" />
                         </StackPanel>
@@ -325,9 +326,9 @@
                                         Padding="{x:Static foundation:LayoutTokens.InsetSM}">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step4.FileInfo}"
-                                                   FontWeight="SemiBold" FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                                   FontWeight="SemiBold" FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                                        <TextBlock FontSize="{x:Static theme:TypographyTokens.LabelSSize}" TextWrapping="Wrap">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap">
                                             <Run Text="{DynamicResource SingerSetup.Step4.File}" />
                                             <Run Text="{Binding ArchiveFilePath}"
                                                  Foreground="{DynamicResource Sem.Color.OnSurface}" />
@@ -342,15 +343,15 @@
                                         Padding="{x:Static foundation:LayoutTokens.InsetSM}">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step4.EncodingInfo}"
-                                                   FontWeight="SemiBold" FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                                   FontWeight="SemiBold" FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                                        <TextBlock FontSize="{x:Static theme:TypographyTokens.LabelSSize}">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}">
                                             <Run Text="{DynamicResource SingerSetup.Step4.ArchiveEncoding}" />
                                             <Run
                                                 Text="{Binding ArchiveEncoding, Converter={StaticResource EncodingNameConverter}, Mode=OneWay}"
                                                 Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                         </TextBlock>
-                                        <TextBlock FontSize="{x:Static theme:TypographyTokens.LabelSSize}">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}">
                                             <Run Text="{DynamicResource SingerSetup.Step4.TextEncoding}" />
                                             <Run
                                                 Text="{Binding TextEncoding, Converter={StaticResource EncodingNameConverter}, Mode=OneWay}"
@@ -366,9 +367,9 @@
                                         Padding="{x:Static foundation:LayoutTokens.InsetSM}">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step4.SingerType}"
-                                                   FontWeight="SemiBold" FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                                                   FontWeight="SemiBold" FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                                        <TextBlock FontSize="{x:Static theme:TypographyTokens.LabelSSize}">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}">
                                             <Run Text="{DynamicResource SingerSetup.Step4.Type}" />
                                             <Run Text="{Binding SingerType}"
                                                  Foreground="{DynamicResource Sem.Color.OnSurface}" />
@@ -416,7 +417,7 @@
                 <!-- 进度消息 -->
                 <TextBlock Text="{Binding InstallMessage}"
                            TextAlignment="Center"
-                           FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                            TextWrapping="Wrap"
                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
             </StackPanel>
@@ -446,7 +447,7 @@
                 <!-- 成功消息 -->
                 <TextBlock Text="{DynamicResource SingerSetup.Success.Desc}"
                            TextAlignment="Center"
-                           FontSize="{x:Static theme:TypographyTokens.BodySSize}"
+                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                            TextWrapping="Wrap"
                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
@@ -489,7 +490,7 @@
                         Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
                     <TextBlock Text="{Binding ErrorMessage}"
                                TextAlignment="Left"
-                               FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                               FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                TextWrapping="Wrap"
                                Foreground="{DynamicResource Sem.Color.Error}"
                                FontFamily="Courier New" />

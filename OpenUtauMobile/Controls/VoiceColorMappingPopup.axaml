@@ -6,6 +6,7 @@
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     x:Class="OpenUtauMobile.Controls.VoiceColorMappingPopup"
     x:DataType="vm:VoiceColorMappingViewModel"
     Classes="PopupDialogRoot">
@@ -43,7 +44,7 @@
                                                 ItemsSource="{Binding NewColors}"
                                                 SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                                                 HorizontalAlignment="Stretch"
-                                                MinHeight="{x:Static theme:InteractionTokens.TouchTarget}" />
+                                                MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}" />
                                         </StackPanel>
                                     </Border>
                                 </DataTemplate>

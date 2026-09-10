@@ -6,6 +6,7 @@
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:Class="OpenUtauMobile.Controls.TrackHeader"
              x:DataType="vm:TrackHeaderViewModel">
     <UserControl.Styles>
@@ -97,8 +98,8 @@
                             </Button>
                             <!-- 音素器名 -->
                             <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="1" Kind="Translate"
-                                                             Width="{x:Static theme:IconTokens.Small}"
-                                                             Height="{x:Static theme:IconTokens.Small}" />
+                                                             Width="{x:Static semantic:IconTokens.Small}"
+                                                             Height="{x:Static semantic:IconTokens.Small}" />
                             <Button Grid.Row="1" Grid.Column="1"
                                     Classes="TrackHeaderCompactAction"
                                     Command="{Binding SelectPhonemizerCommand}"
@@ -115,8 +116,8 @@
                             </Button>
                             <!-- 渲染器名 -->
                             <iconPacks:PackIconPhosphorIcons Grid.Column="0" Grid.Row="2" Kind="Cpu"
-                                                             Width="{x:Static theme:IconTokens.Small}"
-                                                             Height="{x:Static theme:IconTokens.Small}" />
+                                                             Width="{x:Static semantic:IconTokens.Small}"
+                                                             Height="{x:Static semantic:IconTokens.Small}" />
                             <Button Grid.Row="2" Grid.Column="1"
                                     Classes="TrackHeaderCompactAction"
                                     Command="{Binding SelectRendererCommand}"

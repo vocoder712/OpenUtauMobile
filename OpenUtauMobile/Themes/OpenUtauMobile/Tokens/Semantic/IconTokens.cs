@@ -1,4 +1,4 @@
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;
 
 /// <summary>图标视觉尺寸，与触控区域独立。</summary>
 public static class IconTokens

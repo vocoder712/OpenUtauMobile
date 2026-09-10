@@ -1,7 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
             <Button Classes="FAB">
@@ -13,8 +15,8 @@
     <!-- 共享悬浮操作按钮 -->
     <!-- TODO: 实现过于复杂且阴影有问题 -->
     <Style Selector="Button.FAB">
-        <Setter Property="Width" Value="{x:Static theme:FabTokens.Size}" />
-        <Setter Property="Height" Value="{x:Static theme:FabTokens.Size}" />
+        <Setter Property="Width" Value="{x:Static components:FabTokens.Size}" />
+        <Setter Property="Height" Value="{x:Static components:FabTokens.Size}" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXL}" />
         <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -23,7 +25,7 @@
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Effect">
-            <DropShadowEffect BlurRadius="{x:Static theme:FabTokens.RestBlur}" OffsetX="0" OffsetY="{x:Static theme:FabTokens.RestOffset}" Opacity="{x:Static theme:FabTokens.RestOpacity}"
+            <DropShadowEffect BlurRadius="{x:Static components:FabTokens.RestBlur}" OffsetX="0" OffsetY="{x:Static components:FabTokens.RestOffset}" Opacity="{x:Static components:FabTokens.RestOpacity}"
                               Color="{DynamicResource Sem.Value.Shadow}" />
         </Setter>
         <Setter Property="Template">
@@ -48,23 +50,23 @@
 
     <Style Selector="Button.FAB:pointerover">
         <Setter Property="Effect">
-            <DropShadowEffect BlurRadius="{x:Static theme:FabTokens.HoverBlur}" OffsetX="0" OffsetY="{x:Static theme:FabTokens.HoverOffset}" Opacity="{x:Static theme:FabTokens.HoverOpacity}"
+            <DropShadowEffect BlurRadius="{x:Static components:FabTokens.HoverBlur}" OffsetX="0" OffsetY="{x:Static components:FabTokens.HoverOffset}" Opacity="{x:Static components:FabTokens.HoverOpacity}"
                               Color="{DynamicResource Sem.Value.Shadow}" />
         </Setter>
     </Style>
 
     <Style Selector="Button.FAB:pointerover /template/ Border#StateLayer">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Hover}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Hover}" />
     </Style>
 
     <Style Selector="Button.FAB:pressed">
         <Setter Property="Effect">
-            <DropShadowEffect BlurRadius="{x:Static theme:FabTokens.PressedBlur}" OffsetX="0" OffsetY="{x:Static theme:FabTokens.PressedOffset}" Opacity="{x:Static theme:FabTokens.PressedOpacity}"
+            <DropShadowEffect BlurRadius="{x:Static components:FabTokens.PressedBlur}" OffsetX="0" OffsetY="{x:Static components:FabTokens.PressedOffset}" Opacity="{x:Static components:FabTokens.PressedOpacity}"
                               Color="{DynamicResource Sem.Value.Shadow}" />
         </Setter>
     </Style>
 
     <Style Selector="Button.FAB:pressed /template/ Border#StateLayer">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Pressed}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Pressed}" />
     </Style>
 </Styles>

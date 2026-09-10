@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Style Selector="Button.ActionBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
@@ -10,7 +11,7 @@
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyLSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <!-- 保留迁移前由全局同名按钮样式补充的属性。 -->

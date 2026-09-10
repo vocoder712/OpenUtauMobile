@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
             <Border Classes="TopBar">
@@ -29,8 +30,8 @@
     <Style Selector="Button.TopBarBtn">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="{x:Static theme:InteractionTokens.TouchTarget}" />
-        <Setter Property="Height" Value="{x:Static theme:InteractionTokens.TouchTarget}" />
+        <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+        <Setter Property="Height" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXXXL}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
@@ -53,7 +54,7 @@
 
     <Style Selector="TextBlock.TopBarTitle">
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.TitleMSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.TitleMSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />

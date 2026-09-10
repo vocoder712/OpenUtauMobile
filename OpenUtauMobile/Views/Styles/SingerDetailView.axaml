@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <!-- Info card style -->
     <Style Selector="Border.InfoCard">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
@@ -11,13 +12,13 @@
 
     <!-- Info row label -->
     <Style Selector="TextBlock.InfoLabel">
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodySSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodySSize}" />
         <Setter Property="Opacity" Value="0.6" />
     </Style>
 
     <!-- Info row value -->
     <Style Selector="TextBlock.InfoValue">
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyMSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
@@ -32,7 +33,7 @@
         <!-- 保留迁移前由全局同名按钮样式补充的属性。 -->
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyLSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>

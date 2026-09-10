@@ -1,4 +1,4 @@
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 /// <summary>共享悬浮操作按钮的尺寸和各交互状态阴影。</summary>
 public static class FabTokens

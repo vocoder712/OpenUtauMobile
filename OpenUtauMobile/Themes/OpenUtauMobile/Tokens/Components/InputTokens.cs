@@ -1,7 +1,7 @@
 using Avalonia;
 using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 /// <summary>文本框与下拉框共用的输入规格。</summary>
 public static class InputTokens

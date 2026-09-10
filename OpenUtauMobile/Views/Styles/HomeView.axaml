@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
             <Button Classes="HomeActionButton">
@@ -83,10 +84,10 @@
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
     <Style Selector="Button.RecoveryBannerPrimaryAction:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}" />
     </Style>
     <Style Selector="Button.RecoveryBannerPrimaryAction:pressed /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentPressed}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentPressed}" />
     </Style>
     <!-- 首页操作按钮仅在首页加载。 -->
     <Style Selector="Button.HomeActionButton">
@@ -96,7 +97,7 @@
         <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelMSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelMSize}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
@@ -118,10 +119,10 @@
     </Style>
 
     <Style Selector="Button.HomeActionButton:pointerover">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentHover}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}" />
     </Style>
 
     <Style Selector="Button.HomeActionButton:pressed">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.ContentPressed}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentPressed}" />
     </Style>
 </Styles>

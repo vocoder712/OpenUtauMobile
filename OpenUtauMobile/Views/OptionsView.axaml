@@ -6,6 +6,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              mc:Ignorable="d"
              x:Class="OpenUtauMobile.Views.OptionsView"
              x:DataType="vm:OptionsViewModel">
@@ -53,23 +55,23 @@
                             <!-- 鈺愨晲鈺?1. 璁剧疆 鈺愨晲鈺?-->
                             <Button Classes="OptionEntry"
                                     Command="{Binding OpenSettingsCommand}">
-                                <Border Padding="{x:Static theme:OptionEntryTokens.TrailingInset}">
-                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static theme:OptionEntryTokens.MinHeight}">
+                                <Border Padding="{x:Static components:OptionEntryTokens.TrailingInset}">
+                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
                                         <!-- Icon -->
                                         <Panel Grid.Column="0"
-                                               Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                               Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center">
-                                            <Border Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                            <Border Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     Background="{DynamicResource Sem.Color.PrimaryContainer}" />
                                             <iconPacks:PackIconPhosphorIcons Kind="GearSix" />
                                         </Panel>
                                         <!-- Title + Subtitle -->
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                            <TextBlock Text="{DynamicResource Options.Settings}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
+                                            <TextBlock Text="{DynamicResource Options.Settings}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Options.Settings.Desc}" FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                                            <TextBlock Text="{DynamicResource Options.Settings.Desc}" FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                                        Opacity="0.50" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <!-- Chevron -->
@@ -86,14 +88,14 @@
                             <!-- 鈺愨晲鈺?2. 渚濊禆椤圭鐞?鈺愨晲鈺?-->
                             <Button Classes="OptionEntry"
                                     Command="{Binding OpenDependencyManagerCommand}">
-                                <Border Padding="{x:Static theme:OptionEntryTokens.TrailingInset}">
-                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static theme:OptionEntryTokens.MinHeight}">
+                                <Border Padding="{x:Static components:OptionEntryTokens.TrailingInset}">
+                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
                                         <!-- Icon -->
                                         <Panel Grid.Column="0"
-                                               Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                               Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center">
-                                            <Border Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                            <Border Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     Background="{DynamicResource Sem.Color.PrimaryContainer}" />
                                             <iconPacks:PackIconPhosphorIcons Kind="PuzzlePiece" />
@@ -101,9 +103,9 @@
                                         <!-- Title + Subtitle -->
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                                                     ClipToBounds="True">
-                                            <TextBlock Text="{DynamicResource Options.DependencyManager}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
+                                            <TextBlock Text="{DynamicResource Options.DependencyManager}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Options.DependencyManager.Desc}" FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                                            <TextBlock Text="{DynamicResource Options.DependencyManager.Desc}" FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                                        Opacity="0.50" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <!-- Chevron -->
@@ -119,21 +121,21 @@
 
                             <!-- 鈺愨晲鈺?3. 甯姪涓庢暀绋?鈺愨晲鈺?-->
                             <Button Classes="OptionEntry" Command="{Binding OpenHelpCommand}">
-                                <Border Padding="{x:Static theme:OptionEntryTokens.TrailingInset}">
-                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static theme:OptionEntryTokens.MinHeight}">
+                                <Border Padding="{x:Static components:OptionEntryTokens.TrailingInset}">
+                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
                                         <Panel Grid.Column="0"
-                                               Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                               Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center">
-                                            <Border Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                            <Border Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     Background="{DynamicResource Sem.Color.PrimaryContainer}" />
                                             <iconPacks:PackIconPhosphorIcons Kind="Book" />
                                         </Panel>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                            <TextBlock Text="{DynamicResource Options.Help}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
+                                            <TextBlock Text="{DynamicResource Options.Help}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Options.Help.Desc}" FontSize="{x:Static theme:TypographyTokens.LabelSSize}" Opacity="0.50"
+                                            <TextBlock Text="{DynamicResource Options.Help.Desc}" FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" Opacity="0.50"
                                                        TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
@@ -148,21 +150,21 @@
 
                             <!-- 鈺愨晲鈺?4. 瀵煎嚭鏃ュ織 鈺愨晲鈺?-->
                             <Button Classes="OptionEntry" Command="{Binding ExportLogCommand}">
-                                <Border Padding="{x:Static theme:OptionEntryTokens.TrailingInset}">
-                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static theme:OptionEntryTokens.MinHeight}">
+                                <Border Padding="{x:Static components:OptionEntryTokens.TrailingInset}">
+                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
                                         <Panel Grid.Column="0"
-                                               Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                               Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center">
-                                            <Border Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                            <Border Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     Background="{DynamicResource Sem.Color.PrimaryContainer}" />
                                             <iconPacks:PackIconPhosphorIcons Kind="Bug" />
                                         </Panel>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                            <TextBlock Text="{DynamicResource Options.ExportLog}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
+                                            <TextBlock Text="{DynamicResource Options.ExportLog}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Options.ExportLog.Desc}" FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                                            <TextBlock Text="{DynamicResource Options.ExportLog.Desc}" FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                                        Opacity="0.50" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <!-- Export icon instead of chevron -->
@@ -178,21 +180,21 @@
 
                             <!-- 鈺愨晲鈺?5. 鍏充簬 鈺愨晲鈺?-->
                             <Button Classes="OptionEntry" Command="{Binding OpenAboutCommand}">
-                                <Border Padding="{x:Static theme:OptionEntryTokens.TrailingInset}">
-                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static theme:OptionEntryTokens.MinHeight}">
+                                <Border Padding="{x:Static components:OptionEntryTokens.TrailingInset}">
+                                    <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
                                         <Panel Grid.Column="0"
-                                               Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                               Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center">
-                                            <Border Width="{x:Static theme:OptionEntryTokens.IconContainerSize}" Height="{x:Static theme:OptionEntryTokens.IconContainerSize}"
+                                            <Border Width="{x:Static components:OptionEntryTokens.IconContainerSize}" Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     Background="{DynamicResource Sem.Color.PrimaryContainer}" />
                                             <iconPacks:PackIconPhosphorIcons Kind="Info" />
                                         </Panel>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                            <TextBlock Text="{DynamicResource Options.About}" FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
+                                            <TextBlock Text="{DynamicResource Options.About}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
                                                        FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Options.About.Desc}" FontSize="{x:Static theme:TypographyTokens.LabelSSize}" Opacity="0.50"
+                                            <TextBlock Text="{DynamicResource Options.About.Desc}" FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" Opacity="0.50"
                                                        TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <iconPacks:PackIconPhosphorIcons Kind="CaretRight"

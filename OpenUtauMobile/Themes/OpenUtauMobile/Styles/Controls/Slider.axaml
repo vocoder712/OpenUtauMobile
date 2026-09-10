@@ -1,7 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Design.PreviewWith>
         <Border Padding="128">
             <StackPanel Orientation="Vertical"
@@ -63,7 +64,7 @@
     </Style>
 
     <Style Selector="Slider:horizontal:disabled">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Disabled}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Disabled}" />
     </Style>
 
     <!-- 加上 :horizontal 伪类，提高优先级以覆盖默认主题的模板 --><!--

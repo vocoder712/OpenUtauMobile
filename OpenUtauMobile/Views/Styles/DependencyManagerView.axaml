@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Style Selector="Border.DependencyCard">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
@@ -37,7 +38,7 @@
 
     <!-- 徽章文字 -->
     <Style Selector="Border.DependencyCountBadge TextBlock">
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelSSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelSSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
         <Setter Property="HorizontalAlignment" Value="Center" />

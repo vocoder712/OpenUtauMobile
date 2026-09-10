@@ -7,6 +7,7 @@
     xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.LoadingPopup"
     x:DataType="vm:LoadingPopupViewModel"
@@ -28,7 +29,7 @@
                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
                     <TextBlock
                         Text="{Binding Message}"
-                        FontSize="{x:Static theme:TypographyTokens.BodyMSize}"
+                        FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                         Foreground="{DynamicResource Sem.Color.OnSurface}"
                         TextWrapping="Wrap"
                         TextAlignment="Center" />
@@ -39,7 +40,7 @@
                     <TextBlock
                         Text="{Binding ProgressText}"
                         IsVisible="{Binding IsIndeterminate, Converter={x:Static BoolConverters.Not}}"
-                        FontSize="{x:Static theme:TypographyTokens.LabelMSize}"
+                        FontSize="{x:Static semantic:TypographyTokens.LabelMSize}"
                         Foreground="{DynamicResource Sem.Color.Primary}"
                         HorizontalAlignment="Center" />
                 </StackPanel>

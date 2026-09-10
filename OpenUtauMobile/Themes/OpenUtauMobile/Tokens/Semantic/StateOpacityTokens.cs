@@ -1,4 +1,4 @@
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;
 
 /// <summary>禁用透明度与状态层透明度。</summary>
 public static class StateOpacityTokens

@@ -6,10 +6,9 @@
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
     xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
     xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
-    xmlns:tokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.FilePickerPopup"
     Name="Root"
@@ -26,7 +25,6 @@
         <conv:EnumEqualConverter x:Key="ModeEq" />
     </UserControl.Resources>
     <dialogs:DialogShell
-        MaxHeight="{x:Static tokens:PopupCommonTokens.MaxHeight}"
         CloseCommand="{Binding CloseCommand}"
         Header="{Binding Title}">
         <dialogs:DialogShell.Footer>
@@ -102,21 +100,18 @@
         <DockPanel>
             <!-- ── Header ── -->
             <Border Classes="DialogBodyBorder" DockPanel.Dock="Top">
-                <Grid
-                    ColumnDefinitions="Auto,*">
-                    <Button
-                        Grid.Column="0"
-                        Classes="DialogNavigation"
-                        Command="{Binding GoUpCommand}"
-                        ToolTip.Tip="{DynamicResource FilePicker.GoUp}"
-                        Content="{iconPacks:PhosphorIcons ArrowUp}">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Grid.Column="0"
+                            Classes="DialogNavigation"
+                            Command="{Binding GoUpCommand}"
+                            ToolTip.Tip="{DynamicResource FilePicker.GoUp}"
+                            Content="{iconPacks:PhosphorIcons ArrowUp}">
                     </Button>
-                    <TextBox
-                        Text="{Binding CurrentPath}"
-                        FontSize="13"
-                        BorderThickness="0"
-                        Background="Transparent"
-                        Grid.Column="1" Padding="0,1" />
+                    <TextBox Text="{Binding CurrentPath}"
+                             FontSize="13"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             Grid.Column="1" Padding="0,1" />
                 </Grid>
             </Border>
             <!-- OpenFolder 模式：选择此文件夹 -->
@@ -192,15 +187,15 @@
                                                 VerticalAlignment="Center">
                                                 <!-- 文件夹图标（目录） -->
                                                 <iconPacks:PackIconPhosphorIcons
-                                                    Width="{x:Static theme:IconTokens.Compact}"
-                                                    Height="{x:Static theme:IconTokens.Compact}"
+                                                    Width="{x:Static semantic:IconTokens.Compact}"
+                                                    Height="{x:Static semantic:IconTokens.Compact}"
                                                     Kind="Folder"
                                                     Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                                     IsVisible="{Binding Item, Converter={StaticResource IsFile}, ConverterParameter=invert}" />
                                                 <!-- 文件图标 -->
                                                 <iconPacks:PackIconPhosphorIcons
-                                                    Width="{x:Static theme:IconTokens.Compact}"
-                                                    Height="{x:Static theme:IconTokens.Compact}"
+                                                    Width="{x:Static semantic:IconTokens.Compact}"
+                                                    Height="{x:Static semantic:IconTokens.Compact}"
                                                     Kind="File"
                                                     Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                                     IsVisible="{Binding Item, Converter={StaticResource IsFile}}" />

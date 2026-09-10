@@ -1,13 +1,14 @@
 using Avalonia;
 using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 /// <summary>共享弹窗外框与操作区规格。</summary>
 public static class DialogTokens
 {
     public static double ControlMinSize => InteractionTokens.TouchTarget;
-    public static Thickness HeaderPadding => new(20, 12);
+    public static Thickness HeaderPadding => new(16, 8);
     public static double TitleSize => TypographyTokens.TitleLSize;
     public static CornerRadius CornerRadius => ShapeTokens.CornerXL;
     public static CornerRadius ActionCornerRadius => ShapeTokens.CornerS;

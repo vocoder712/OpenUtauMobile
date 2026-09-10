@@ -1,7 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Design.PreviewWith>
         <Border Padding="128">
             <StackPanel Orientation="Vertical"
@@ -26,11 +28,11 @@
         <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness"
-                Value="{x:Static theme:InputTokens.BorderThickness}" />
+                Value="{x:Static components:InputTokens.BorderThickness}" />
         <Setter Property="CornerRadius"
-                Value="{x:Static theme:InputTokens.CornerRadius}" />
+                Value="{x:Static components:InputTokens.CornerRadius}" />
         <Setter Property="Padding"
-                Value="{x:Static theme:InputTokens.Padding}" />
+                Value="{x:Static components:InputTokens.Padding}" />
     </Style>
 
     <Style Selector="TextBox:pointerover">
@@ -134,7 +136,7 @@
         <Setter Property="SelectionForegroundBrush" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="PlaceholderForeground" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Disabled}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Disabled}" />
     </Style>
 
     <Style Selector="TextBox:disabled /template/ Border#PART_BorderElement">

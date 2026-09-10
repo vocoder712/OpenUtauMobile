@@ -8,6 +8,7 @@
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
     xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.SetupWizardPopup"
     x:DataType="vm:SetupWizardViewModel"
@@ -216,8 +217,8 @@
                                             <Path
                                                 Grid.Column="1"
                                                 Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-                                                Width="{x:Static theme:IconTokens.Compact}"
-                                                Height="{x:Static theme:IconTokens.Compact}"
+                                                Width="{x:Static semantic:IconTokens.Compact}"
+                                                Height="{x:Static semantic:IconTokens.Compact}"
                                                 Stretch="Uniform"
                                                 Fill="{DynamicResource Sem.Color.Primary}"
                                                 VerticalAlignment="Center" />
@@ -277,8 +278,8 @@
                                                 <Path
                                                     Grid.Column="1"
                                                     Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
-                                                    Width="{x:Static theme:IconTokens.Compact}"
-                                                    Height="{x:Static theme:IconTokens.Compact}"
+                                                    Width="{x:Static semantic:IconTokens.Compact}"
+                                                    Height="{x:Static semantic:IconTokens.Compact}"
                                                     Stretch="Uniform"
                                                     Fill="{DynamicResource Sem.Color.Primary}"
                                                     VerticalAlignment="Top"

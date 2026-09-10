@@ -1,7 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Design.PreviewWith>
         <Border Padding="{x:Static foundation:LayoutTokens.InsetL}">
             <StackPanel>
@@ -13,14 +15,14 @@
     </Design.PreviewWith>
 
     <Style Selector="TabItem">
-        <Setter Property="MinHeight" Value="{x:Static theme:TabItemTokens.ContainerHeight}" />
-        <Setter Property="Padding" Value="{x:Static theme:TabItemTokens.HeaderInset}" />
+        <Setter Property="MinHeight" Value="{x:Static components:TabItemTokens.ContainerHeight}" />
+        <Setter Property="Padding" Value="{x:Static components:TabItemTokens.HeaderInset}" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="FontSize" Value="{x:Static theme:TabItemTokens.LabelSize}" />
-        <Setter Property="FontWeight" Value="{x:Static theme:TabItemTokens.LabelWeight}" />
+        <Setter Property="FontSize" Value="{x:Static components:TabItemTokens.LabelSize}" />
+        <Setter Property="FontWeight" Value="{x:Static components:TabItemTokens.LabelWeight}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Cursor" Value="Hand" />
@@ -40,9 +42,9 @@
                             IsHitTestVisible="False"
                             Opacity="0" />
                     <Border x:Name="PART_SelectedIndicator"
-                            Height="{x:Static theme:TabItemTokens.ActiveIndicatorHeight}"
+                            Height="{x:Static components:TabItemTokens.ActiveIndicatorHeight}"
                             Background="{DynamicResource Sem.Color.Primary}"
-                            CornerRadius="{x:Static theme:TabItemTokens.ActiveIndicatorCorner}"
+                            CornerRadius="{x:Static components:TabItemTokens.ActiveIndicatorCorner}"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Bottom"
                             IsVisible="False" />
@@ -56,15 +58,15 @@
     </Style>
 
     <Style Selector="TabItem:pointerover /template/ Border#PART_StateLayer">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Hover}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Hover}" />
     </Style>
 
     <Style Selector="TabItem:focus /template/ Border#PART_StateLayer">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Focus}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Focus}" />
     </Style>
 
     <Style Selector="TabItem:pressed /template/ Border#PART_StateLayer">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Pressed}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Pressed}" />
     </Style>
 
     <Style Selector="TabItem:selected /template/ Border#PART_SelectedIndicator">
@@ -72,6 +74,6 @@
     </Style>
 
     <Style Selector="TabItem:disabled">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Disabled}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Disabled}" />
     </Style>
 </Styles>

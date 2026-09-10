@@ -1,7 +1,8 @@
 using Avalonia;
 using Avalonia.Media;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 /// <summary>共享页签规格。</summary>
 public static class TabItemTokens

@@ -12,6 +12,7 @@
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
              Background="{DynamicResource DynamicResource Sem.Color.SurfaceContainerLow}">
 
@@ -58,11 +59,11 @@
                             Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                             Margin="0,0,8,0">
                     <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToFileName}}"
-                               FontSize="{x:Static theme:TypographyTokens.BodyLSize}"
+                               FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
                                FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis" />
                     <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToDirectory}}"
-                               FontSize="{x:Static theme:TypographyTokens.LabelSSize}"
+                               FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                Opacity="0.50"
                                TextTrimming="CharacterEllipsis" />
                 </StackPanel>

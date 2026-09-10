@@ -1,6 +1,6 @@
 using Avalonia;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 /// <summary>选项页和关于页的共享导航项规格。</summary>
 public static class OptionEntryTokens

@@ -8,6 +8,7 @@
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
     xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     mc:Ignorable="d"
     x:Class="OpenUtauMobile.Controls.ErrorDialogPopup"
     d:DataContext="{d:DesignInstance Type=vm:ErrorDialogViewModel, IsDesignTimeCreatable=False}"
@@ -30,8 +31,8 @@
                         Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                         <iconPacks:PackIconPhosphorIcons
                             Kind="Copy"
-                            Width="{x:Static theme:IconTokens.Compact}"
-                            Height="{x:Static theme:IconTokens.Compact}" />
+                            Width="{x:Static semantic:IconTokens.Compact}"
+                            Height="{x:Static semantic:IconTokens.Compact}" />
                         <TextBlock Text="{DynamicResource Common.Copy}" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>

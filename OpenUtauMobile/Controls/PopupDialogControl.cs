@@ -59,6 +59,7 @@ public abstract class PopupDialogControl : UserControl
             return;
         }
 
+        MaxHeight = Tokens.PopupCommonTokens.MaxHeight;
         double horizontalMargin = viewportWidth >= 840 ? 56d : 24d;
         double maxWidth = WidthPreset switch
         {

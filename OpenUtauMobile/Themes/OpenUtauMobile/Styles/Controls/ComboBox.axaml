@@ -1,7 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens">
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Design.PreviewWith>
         <Border Padding="128">
             <StackPanel Orientation="Vertical"
@@ -16,12 +18,12 @@
     </Design.PreviewWith>
     <Style Selector="ComboBox">
         <Setter Property="MinHeight" Value="40" />
-        <Setter Property="Padding" Value="{x:Static theme:InputTokens.Padding}" />
+        <Setter Property="Padding" Value="{x:Static components:InputTokens.Padding}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
-        <Setter Property="BorderThickness" Value="{x:Static theme:InputTokens.BorderThickness}" />
-        <Setter Property="CornerRadius" Value="{x:Static theme:InputTokens.CornerRadius}" />
+        <Setter Property="BorderThickness" Value="{x:Static components:InputTokens.BorderThickness}" />
+        <Setter Property="CornerRadius" Value="{x:Static components:InputTokens.CornerRadius}" />
     </Style>
 
     <Style Selector="ComboBox:pointerover">
@@ -34,7 +36,7 @@
     </Style>
 
     <Style Selector="ComboBox:disabled">
-        <Setter Property="Opacity" Value="{x:Static theme:StateOpacityTokens.Disabled}" />
+        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Disabled}" />
     </Style>
 
     <Style Selector="ComboBox /template/ ContentPresenter#PART_ContentPresenter">

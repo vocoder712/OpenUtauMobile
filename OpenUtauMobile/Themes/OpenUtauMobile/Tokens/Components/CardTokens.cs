@@ -1,7 +1,7 @@
 using Avalonia;
 using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 /// <summary>共享卡片规格。</summary>
 public static class CardTokens

@@ -2,7 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Style Selector="UserControl.BatchEditRoot">
         <Setter Property="MinWidth" Value="{x:Static localTokens:BatchEditTokens.PopupMinWidth}" />
     </Style>
@@ -31,7 +32,7 @@
     </Style>
 
     <Style Selector="TextBlock.BatchEditItemTitle">
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodyLSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -39,7 +40,7 @@
     </Style>
 
     <Style Selector="TextBlock.BatchEditParameterLabel">
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodySSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodySSize}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
     </Style>
 
@@ -52,7 +53,7 @@
 
     <Style Selector="TextBlock.BatchEditPinnedHeader">
         <Setter Property="Margin" Value="8,4,8,0" />
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.LabelLSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
     </Style>
@@ -110,7 +111,7 @@
     </Style>
 
     <Style Selector="TextBlock.BatchEditValidation">
-        <Setter Property="FontSize" Value="{x:Static theme:TypographyTokens.BodySSize}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodySSize}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>

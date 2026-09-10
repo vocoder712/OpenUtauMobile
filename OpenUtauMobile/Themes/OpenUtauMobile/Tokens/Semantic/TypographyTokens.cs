@@ -1,4 +1,4 @@
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;
 
 /// <summary>文字角色字号；同值角色仍独立演进。</summary>
 public static class TypographyTokens
