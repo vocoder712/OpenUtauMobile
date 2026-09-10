@@ -1,6 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
+        xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
         xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
@@ -12,7 +13,7 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="Template">
                 <ControlTemplate>
-                    <Border Background="{DynamicResource Sem.Color.Surface}"
+                    <Border Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
                             CornerRadius="{x:Static components:DialogTokens.CornerRadius}"
                             ClipToBounds="True">
                         <Grid RowDefinitions="Auto,*,Auto">
@@ -39,7 +40,7 @@
                                               Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            <Border Grid.Row="2" Padding="{x:Static foundation:LayoutTokens.InsetM}"
+                            <Border Grid.Row="2" Padding="{x:Static components:DialogTokens.FooterPadding}"
                                     IsVisible="{Binding Footer.IsVisible, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}">
                                 <ContentPresenter Content="{TemplateBinding Footer}" HorizontalContentAlignment="Stretch" />
                             </Border>
@@ -52,6 +53,10 @@
             </Style>
         </ControlTheme>
     </Styles.Resources>
+    <!-- 覆盖宿主默认的 0.56；使用不透明语义色，避免遮罩透明度重复相乘。 -->
+    <Style Selector="dialogHost|DialogHost[IsOpen=True] /template/ Rectangle#PART_ContentCover">
+        <Setter Property="Opacity" Value="{x:Static components:DialogTokens.ScrimOpacity}" />
+    </Style>
     <Style Selector="UserControl.PopupDialogRoot">
         <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
@@ -68,7 +73,7 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style Selector="Border.DialogBodyBorder">
-        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
+        <Setter Property="Padding" Value="{x:Static components:DialogTokens.BodyPadding}" />
     </Style>
     <Style Selector="controls|DialogActionRows">
         <Setter Property="Orientation" Value="Vertical" />

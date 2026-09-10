@@ -8,7 +8,10 @@ namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 public static class DialogTokens
 {
     public static double ControlMinSize => InteractionTokens.TouchTarget;
-    public static Thickness HeaderPadding => new(16, 8);
+    public static double ScrimOpacity => 0.32;
+    public static Thickness HeaderPadding => new(24, 8);
+    public static Thickness BodyPadding => new(24, 8);
+    public static Thickness FooterPadding => new(24, 16, 24, 24);
     public static double TitleSize => TypographyTokens.TitleLSize;
     public static CornerRadius CornerRadius => ShapeTokens.CornerXL;
     public static CornerRadius ActionCornerRadius => ShapeTokens.CornerS;

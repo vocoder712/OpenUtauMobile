@@ -153,7 +153,11 @@ OptionConfirm, PhonemeEdit, PhonemizerPicker, ProjectInfoEdit, RendererPicker,
 SetupWizard, SingerPicker, TrackColorPicker, TrackRename, VoiceColorMapping,
 and ThemeColorPickerDialog: all 22 AXAML dialogs use DialogShell.
 
-MainView's DialogHost remains the transparent modal host. Context menus,
+MainView's DialogHost retains background blur and uses an opaque semantic Shadow
+brush with a shared 0.32 open-state cover opacity (overriding the host's 0.56).
+DialogShell uses SurfaceContainerHigh; shared header/body horizontal insets are
+24dp and footer padding is 24,16,24,24. The popup wrapper stays transparent.
+Context menus,
 ComboBox dropdowns, toast and performance overlays are not modal dialogs
 and intentionally keep their separate component styles.
 
