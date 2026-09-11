@@ -1,9 +1,12 @@
 # Repository invariants
 
 ## Git safety
-- Start each task with `git status --short`. If there are pending changes, stop and notify the user before editing unless they explicitly permit continuing.
-- Do not overwrite, stash, discard, or clean uncommitted changes without explicit instruction.
-- Use Git for diffs and restoration; do not create manual backups, rollback copies, directories, or scripts.
+- Start each task by inspecting `git status --short`.
+- Preserve all pre-existing uncommitted changes.
+- If pending changes overlap files required by the task, or their ownership is
+  unclear, stop and notify the user before editing.
+- Unrelated pending changes do not block the task; do not modify, stash,
+  discard, or clean them.
 
 ## Boundaries and style
 - Avoid unnecessary changes to upstream-derived `OpenUtau.Core`; keep application orchestration in the Mobile layer.
@@ -12,7 +15,9 @@
 
 ## Verification
 - Before `dotnet build`, set `$env:AVALONIA_TELEMETRY_OPTOUT='1';` (or the equivalent environment variable in another shell).
-- Do not create or run unit tests after implementing new features.
+- Do not add new unit tests unless explicitly requested or the task requires them.
+- Run existing relevant tests when available and appropriate.
+- Do not introduce a new test suite solely for verification.
 
 ## Context
 - Do not preload repository documentation or historical notes. Read source, docs, and repository-local skills only when relevant to the current task.
