@@ -7,6 +7,7 @@
   unclear, stop and notify the user before editing.
 - Unrelated pending changes do not block the task; do not modify, stash,
   discard, or clean them.
+- Do not maintain any rollback files or scripts. Instead, ask the user to make a backup commit before high risk or unclear changes. Use git to manage rollbacks.
 
 ## Boundaries and style
 - Avoid unnecessary changes to upstream-derived `OpenUtau.Core`; keep application orchestration in the Mobile layer.
