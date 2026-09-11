@@ -10,14 +10,15 @@
                 BorderThickness="{TemplateBinding BorderThickness}"
                 CornerRadius="{TemplateBinding CornerRadius}"
                 Padding="{TemplateBinding Padding}">
-          <ItemsPresenter Name="PART_ItemsPresenter"
-                          ItemsPanel="{TemplateBinding ItemsPanel}" />
+          <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
+          </ScrollViewer>
         </Border>
       </ControlTemplate>
     </Setter>
     <Setter Property="ItemsPanel">
       <ItemsPanelTemplate>
-        <WrapPanel />
+        <UniformGrid Rows="1" />
       </ItemsPanelTemplate>
     </Setter>
   </ControlTheme>

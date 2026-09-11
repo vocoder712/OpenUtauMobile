@@ -2,12 +2,13 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     x:CompileBindings="False">
 
-  <Thickness x:Key="TabControlTopPlacementItemMargin">0 0 0 2</Thickness>
-
   <ControlTheme x:Key="{x:Type TabControl}" TargetType="TabControl">
     <Setter Property="Margin" Value="0" />
-    <Setter Property="Padding" Value="{DynamicResource TabItemMargin}" />
+    <Setter Property="Padding" Value="0" />
     <Setter Property="Background" Value="{DynamicResource TabControlBackground}" />
+    <Setter Property="ItemsPanel">
+      <ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate>
+    </Setter>
     <Setter Property="Template">
       <ControlTemplate>
         <Border BorderBrush="{TemplateBinding BorderBrush}"
@@ -17,9 +18,11 @@
                 HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                 VerticalAlignment="{TemplateBinding VerticalAlignment}">
           <DockPanel>
-            <ItemsPresenter Name="PART_ItemsPresenter"
-                            ItemsPanel="{TemplateBinding ItemsPanel}"
-                            DockPanel.Dock="{TemplateBinding TabStripPlacement}" />
+            <ScrollViewer Name="PART_HeaderScroller" DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+                          Background="{DynamicResource Sem.Color.Surface}"
+                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+              <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </ScrollViewer>
             <Panel ClipToBounds="True">
               <ContentPresenter Name="PART_SelectedContentHost2"
                                 Margin="{TemplateBinding Padding}"
@@ -36,14 +39,18 @@
       </ControlTemplate>
     </Setter>
 
-    <Style Selector="^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
-      <Setter Property="Orientation" Value="Vertical" />
+    <!-- 侧向页签保持单列并沿纵向滚动。 -->
+    <Style Selector="^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter, ^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter">
+      <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
-    <Style Selector="^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel">
-      <Setter Property="Orientation" Value="Vertical" />
+    <Style Selector="^[TabStripPlacement=Left], ^[TabStripPlacement=Right]">
+      <Setter Property="ItemsPanel">
+        <ItemsPanelTemplate><UniformGrid Columns="1" /></ItemsPanelTemplate>
+      </Setter>
     </Style>
-    <Style Selector="^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter">
-      <Setter Property="Margin" Value="{DynamicResource TabControlTopPlacementItemMargin}" />
+    <Style Selector="^[TabStripPlacement=Left] /template/ ScrollViewer#PART_HeaderScroller, ^[TabStripPlacement=Right] /template/ ScrollViewer#PART_HeaderScroller">
+      <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+      <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
   </ControlTheme>
 </ResourceDictionary>

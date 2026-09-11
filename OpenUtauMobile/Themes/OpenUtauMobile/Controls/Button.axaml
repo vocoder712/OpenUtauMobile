@@ -37,6 +37,21 @@
         </Panel>
       </ControlTemplate>
     </Setter>
+    <!-- 标准 tonal 角色复用基础状态机，默认按钮与编辑器紧凑按钮保持原样。 -->
+    <Style Selector="^.tonal">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+      <!-- 使用有限的全圆角半径，避免极大浮点数在渲染时溢出。 -->
+      <Setter Property="CornerRadius" Value="999" />
+      <Setter Property="Padding" Value="24,10" />
+      <Setter Property="MinHeight" Value="40" />
+      <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
+      <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    <Style Selector="^.tonal /template/ ContentPresenter#PART_ContentPresenter TextBlock">
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="TextAlignment" Value="Center" />
+    </Style>
     <Style Selector="^.accent">
       <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
       <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />

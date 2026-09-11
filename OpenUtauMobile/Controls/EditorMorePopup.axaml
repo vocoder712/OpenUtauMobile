@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,9 +13,6 @@
     x:Class="OpenUtauMobile.Controls.EditorMorePopup"
     x:DataType="vm:EditorMoreViewModel"
     Classes="PopupDialogRoot DialogHeightExpanded">
-    <UserControl.Styles>
-        <StyleInclude Source="/Controls/Styles/EditorMorePopup.axaml" />
-    </UserControl.Styles>
 
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource EditorMore.Title}">
         <DockPanel>
@@ -27,7 +25,9 @@
                         <Border Padding="0,16,0,0">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button
-                                    Classes="ActionBtn"
+                                    Classes="tonal"
+                                    HorizontalAlignment="Stretch"
+                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                     Content="{DynamicResource EditorMore.SaveAs}"
                                     Command="{Binding ConfirmCommand}">
                                     <Button.CommandParameter>
@@ -42,7 +42,9 @@
                         <Border Padding="0,16,0,0">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button
-                                    Classes="ActionBtn"
+                                    Classes="tonal"
+                                    HorizontalAlignment="Stretch"
+                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                     Content="{DynamicResource EditorMore.ImportAudio}"
                                     Command="{Binding ConfirmCommand}">
                                     <Button.CommandParameter>
@@ -50,7 +52,9 @@
                                     </Button.CommandParameter>
                                 </Button>
                                 <Button
-                                    Classes="ActionBtn"
+                                    Classes="tonal"
+                                    HorizontalAlignment="Stretch"
+                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                     Content="{DynamicResource EditorMore.ImportTrack}"
                                     Command="{Binding ConfirmCommand}">
                                     <Button.CommandParameter>
@@ -65,7 +69,9 @@
                         <Border Padding="0,16,0,0">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button
-                                    Classes="ActionBtn"
+                                    Classes="tonal"
+                                    HorizontalAlignment="Stretch"
+                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                     Content="{DynamicResource EditorMore.ExportAudio}"
                                     Command="{Binding ConfirmCommand}">
                                     <Button.CommandParameter>
