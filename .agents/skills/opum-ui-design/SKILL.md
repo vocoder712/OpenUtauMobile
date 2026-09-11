@@ -26,4 +26,4 @@ description: Make repository-specific UI implementation and review decisions in 
 - New surface or reuse search: select one canonical entry, not the entire catalog.
 - Completion/review request: applicable checklist sections plus the changed source.
 
-References label **contract**, **current pattern**, **example**, and **feature exception**. Recheck current source when documentation disagrees; dated migration inventories and old `.agent/context` status lists are not future design rules.
+References label **contract**, **current pattern**, **example**, and **feature exception**. Recheck current source when documentation disagrees; historical migration inventories are not future design rules.

@@ -58,8 +58,13 @@ Width selection remains the independent C# `PopupDialogWidthPreset`:
 Compact/Regular/Wide maxima are 360/420/560, all defined in DialogTokens.
 Do not use height profile names to infer or change width.
 
-For layout details and per-dialog configuration see
-[`DIALOGS.ctx.md`](../../../../.agent/context/DIALOGS.ctx.md).
+For composition and layout see [DialogShell](../../../Controls/DialogShell.cs),
+[PopupDialogControl](../../../Controls/PopupDialogControl.cs) and the shared
+[Dialog styles](../Styles/Components/Dialog.axaml). Source examples:
+[TrackRenamePopup](../../../Controls/TrackRenamePopup.axaml) for a short form,
+[ImportTracksPopup](../../../Controls/ImportTracksPopup.axaml) for scrolling content,
+and [OptionConfirmPopup](../../../Controls/OptionConfirmPopup.axaml) for explicit
+dynamic action rows.
 
 ## Rules
 
@@ -84,15 +89,13 @@ For layout details and per-dialog configuration see
   Do not introduce a shared AccentBtn/Placeholder token contract between them.
 - Global tokens and theme includes must not depend on feature tokens/styles.
   Static definitions use `x:Static`; dynamic color keys and resource lookup are
-  unchanged. The independent control-theme migration is documented in
+  unchanged. The independent control theme is documented in
   `../README.md`; shared Button/Input/Slider/TabItem metrics are consumed there.
-- Token-only moves preserve effective values. The subsequent metrics cleanup
-  explicitly allows grid alignment: use 8dp baseline spacing and 4dp details,
-  without rounding typography, motion, strokes or drawing geometry to that grid.
-  The Home delete action now has a 48dp target (formerly 34dp); other compact
-  editor targets retain their separate sizing contracts.
+- Use 8dp baseline spacing and 4dp details without rounding typography, motion,
+  strokes or drawing geometry to that grid. Compact editor targets retain
+  their separate sizing contracts.
 
-## Layout ownership and metrics follow-up (2026-09-10)
+## Layout ownership
 
 - Sibling gaps belong to `Spacing`, `ColumnSpacing`, `RowSpacing`, or wrapping
   panel `ItemSpacing`/`LineSpacing`. Container insets belong to `Padding`.
@@ -103,39 +106,6 @@ For layout details and per-dialog configuration see
   content even at maximum scroll offset; a successful build does not catch this.
 - Dialog body insets are `Border.DialogBodyBorder`; DialogActionRow and
   DialogActionRows own their gaps. Never restore per-action margins.
-- LayoutTokens adds the consumed 12dp intermediate step and 24dp large step,
-  with matching uniform insets. ShapeTokens includes a size-independent full
-  corner for circular/pill visuals. Composite one-off padding remains local.
-- IconTokens describes 16/20/24dp visuals; InteractionTokens independently
-  describes a 48dp minimum touch target. Typography adds Title L/M/S roles;
-  Dialog and TabItem retain their component entry points referencing those roles.
-- MotionTokens owns 150/167/200/250/300/375/500ms durations. Toast transition
-  delays reference the same tokens as their transitions. Phoneme selection's
-  130ms interpolation and 16ms frame interval stay feature-owned.
-- ContentHover/ContentPressed are shared direct-content feedback, not state
-  layers. Dialog action content opacity remains its independent component
-  contract. Settings and ThemeColorPicker still own their specialized styles;
-  only generic foundation/semantic defaults are shared.
-- FabTokens owns size and state-specific elevation. OptionEntryTokens owns
-  shared navigation-row metrics. Toast and editor overlay elevation remain
-  beside their owners rather than being equated with FAB shadows.
-- See `.agent/context/UI_METRICS_REVIEW.md` for scope, retained exceptions,
-  verification and the device acceptance checklist.
-
-## Review map for the 2026-09-10 migration
-
-1. Remove the 46 unconsumed old definitions, including their dead alias chains.
-2. Move feature dimensions beside their consumers. Put single-use layout values
-   back into the owning AXAML/style; OptionConfirm needs no token class.
-3. Replace the catch-all file with Foundation, Semantic and Components files.
-   Card, Input, Slider, TabItem and Dialog have separate existing contracts.
-4. Decouple Home, Settings, DependencyManager, BatchEdit and editor-local values.
-   Preserve valid one-off literals in Settings and other page bodies.
-5. Compare every changed AXAML attribute after resolving both generations of
-   tokens. Keep selectors, template structure, color keys and style includes.
-6. Historical migration: import widths joined the generic Wide preset. Subsequent
-   sizing fixes removed the special import height cap and hard minimum widths.
-   Current behavior is described in the dialog sizing section above.
 
 ## Verification
 

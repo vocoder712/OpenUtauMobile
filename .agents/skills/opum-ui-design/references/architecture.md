@@ -90,9 +90,11 @@ against actual layout behavior after framework changes, rather than spreading wo
 
 ## Modal decisions (contract)
 
-Read [Dialog contract](../../../../.agent/context/DIALOGS.ctx.md) only for modal work;
-verify details against `Controls/DialogShell.cs`, `Controls/PopupDialogControl.cs` and
-`T/Styles/Components/Dialog.axaml` (application paths have `OpenUtauMobile/` prefix).
+For modal work, verify the contracts below against
+[DialogShell](../../../../OpenUtauMobile/Controls/DialogShell.cs),
+[PopupDialogControl](../../../../OpenUtauMobile/Controls/PopupDialogControl.cs) and
+[Dialog styles](../../../../OpenUtauMobile/Themes/OpenUtauMobile/Styles/Components/Dialog.axaml).
+Select a matching modal example from [canonical patterns](canonical-patterns.md).
 
 - Use PopupDialogControl with root `PopupDialogRoot`, one DialogShell and business content.
   Shared styles own header, close action, body inset and footer roles; the view owns commands.
