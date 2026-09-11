@@ -1771,4 +1771,7 @@
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>На дорожке нет нот или тембров для сопоставления.</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>Сопоставление тембров</value></data>
   <data name="DependencyManager.Sort" xml:space="preserve"><value>Сортировка</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Лупа</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Масштаб</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Для редактирования высоты тона и кривых параметров. При значении меньше 1× видна более широкая область; 1× — исходный масштаб.</value></data>
 </root>

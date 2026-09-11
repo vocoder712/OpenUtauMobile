@@ -1816,4 +1816,7 @@
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>This track has no notes or voice colors to map.</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>Remap voice colors</value></data>
   <data name="DependencyManager.Sort" xml:space="preserve"><value>Sort</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Magnifier</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Magnification</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Applies to pitch and parameter curve editing. Values below 1× show a wider area; 1× is the original scale.</value></data>
 </root>

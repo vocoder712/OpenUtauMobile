@@ -1816,4 +1816,7 @@
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>该轨道没有可映射的音符或音色。</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色映射</value></data>
   <data name="DependencyManager.Sort" xml:space="preserve"><value>排序</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>放大镜</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>放大倍率</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>用于音高与参数曲线编辑。低于 1× 时显示更大范围；1× 为原比例。</value></data>
 </root>

@@ -628,12 +628,16 @@
                 Grid.Column="0" Grid.ColumnSpan="2"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Width="200" Height="200"
                 LensSize="200,200"
-                MagnificationFactor="2.0"
+                CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                ShadowColor="{DynamicResource Sem.Value.Shadow}"
+                IsHitTestVisible="False"
+                Focusable="False"
                 IsVisible="False"
                 ZIndex="200"
-                Margin="10" />
+                Margin="12" />
         </Grid>
     </DockPanel>
 </UserControl>

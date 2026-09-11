@@ -520,6 +520,35 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- 放大镜设置独立于音高笔画布拖拽开关 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <TextBlock Classes="SettingItemTitle"
+                                                   Text="{DynamicResource Settings.Edit.Magnifier}" />
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                            <TextBlock Text="{DynamicResource Settings.Edit.MagnifierFactor}"
+                                                       TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding MagnifierMagnificationFactor, StringFormat='{}{0:0.00#}×'}"
+                                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                       VerticalAlignment="Center" />
+                                        </Grid>
+                                        <Slider Minimum="0.75" Maximum="2.0"
+                                                Value="{Binding MagnifierSliderValue, Mode=TwoWay}"
+                                                TickFrequency="0.25" SmallChange="0.25" LargeChange="0.25"
+                                                IsSnapToTickEnabled="True"
+                                                AutomationProperties.Name="{DynamicResource Settings.Edit.MagnifierFactor}" />
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Text="0.75×" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                            <TextBlock Grid.Column="1" Text="2.00×" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource Settings.Edit.MagnifierFactor.Desc}"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                   FontSize="{x:Static semantic:TypographyTokens.BodySSize}" />
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- 回放刷新率 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">

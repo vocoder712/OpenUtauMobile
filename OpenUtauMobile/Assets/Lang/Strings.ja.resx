@@ -1809,4 +1809,7 @@
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>割り当てる音符または音色がありません。</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色を再割り当て</value></data>
   <data name="DependencyManager.Sort" xml:space="preserve"><value>並べ替え</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>拡大鏡</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>表示倍率</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>ピッチとパラメーターカーブの編集に適用します。1× 未満では広い範囲を表示し、1× は元の倍率です。</value></data>
 </root>

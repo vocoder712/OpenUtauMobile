@@ -6,6 +6,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
+using OpenUtau.Core.Util;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.ViewModels;
 using ReactiveUI;
 
@@ -116,6 +118,8 @@ public partial class EditorView : UserControl
     {
         if (!PitchMagnifier.IsVisible)
         {
+            PitchMagnifier.MagnificationFactor = MagnifierSettings.Normalize(
+                Preferences.Default.MagnifierMagnificationFactor);
             // 使用 PART_PianoRollGrid 作为 source，以包含完整的钢琴卷帘区域：
             // 包括标尺行（Row 0, Col 1）、背景网格、琴键等。
             // 手势点虽然来自 NotesCanvas，但通过 MapPointFromNotesCanvasToPianoRoll 正确映射。
