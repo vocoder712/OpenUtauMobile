@@ -32,7 +32,7 @@
                                                       TextElement.FontSize="{x:Static components:DialogTokens.TitleSize}"
                                                       TextElement.FontWeight="SemiBold"
                                                       TextElement.Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                                    <Button Grid.Column="1" Classes="DialogClose"
+                                    <Button Grid.Column="1" Classes="icon DialogClose"
                                             Command="{TemplateBinding CloseCommand}"
                                             IsVisible="{Binding CloseCommand, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static ObjectConverters.IsNotNull}}"
                                             ToolTip.Tip="{DynamicResource Common.Close}"
@@ -119,11 +119,11 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
     </Style>
-    <Style Selector="Button.DialogAction, :is(controls|DialogActionRow) Button">
+    <Style Selector="Button.DialogAction, Button.DialogPrimary, Button.DialogDestructive, :is(controls|DialogActionRow) Button">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.ControlMinSize}" />
-        <Setter Property="Padding" Value="{x:Static components:DialogTokens.ActionPadding}" />
+        <Setter Property="Padding" Value="{x:Static components:ButtonTokens.TextActionPadding}" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="Medium" />
@@ -135,10 +135,12 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Button.DialogPrimary">
+        <Setter Property="Padding" Value="{x:Static components:ButtonTokens.ActionPadding}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
     </Style>
     <Style Selector="Button.DialogDestructive">
+        <Setter Property="Padding" Value="{x:Static components:ButtonTokens.ActionPadding}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Error}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
     </Style>
@@ -146,7 +148,7 @@
     <Style Selector="Button.DialogClose, Button.DialogNavigation">
         <Setter Property="Width" Value="{x:Static components:DialogTokens.ControlMinSize}" />
         <Setter Property="Height" Value="{x:Static components:DialogTokens.ControlMinSize}" />
-        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
+        <Setter Property="Padding" Value="12" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="BorderThickness" Value="0" />
@@ -156,7 +158,7 @@
     </Style>
 
     <Style
-        Selector="Button.DialogAction /template/ ContentPresenter TextBlock, :is(controls|DialogActionRow) Button /template/ ContentPresenter TextBlock">
+        Selector="Button.DialogAction :is(TextBlock), :is(controls|DialogActionRow) Button :is(TextBlock)">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="TextAlignment" Value="Center" />
     </Style>

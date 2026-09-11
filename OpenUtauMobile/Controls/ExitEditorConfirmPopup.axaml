@@ -13,20 +13,24 @@
     Classes="PopupDialogRoot">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Editor.BackConfirm.Title}">
         <dialogs:DialogShell.Footer>
-            <dialogs:DialogActions>
-                <Button
-                    Classes="DialogAction"
-                    Content="{DynamicResource Common.Cancel}"
-                    Command="{Binding CancelCommand}" />
-                <Button
-                    Classes="DialogAction"
-                    Content="{DynamicResource Editor.BackConfirm.ExitWithoutSave}"
-                    Command="{Binding ExitWithoutSaveCommand}" />
-                <Button
-                    Classes="DialogAction DialogPrimary"
-                    Content="{DynamicResource Editor.BackConfirm.SaveAndExit}"
-                    Command="{Binding SaveAndExitCommand}" />
-            </dialogs:DialogActions>
+            <dialogs:DialogActionRows>
+                <dialogs:DialogActionRow>
+                    <Button
+                        Classes="DialogAction"
+                        Content="{DynamicResource Common.Cancel}"
+                        Command="{Binding CancelCommand}" />
+                    <Button
+                        Classes="DialogAction"
+                        Content="{DynamicResource Editor.BackConfirm.ExitWithoutSave}"
+                        Command="{Binding ExitWithoutSaveCommand}" />
+                </dialogs:DialogActionRow>
+                <dialogs:DialogActionRow>
+                    <Button
+                        Classes="DialogAction DialogPrimary"
+                        Content="{DynamicResource Editor.BackConfirm.SaveAndExit}"
+                        Command="{Binding SaveAndExitCommand}" />
+                </dialogs:DialogActionRow>
+            </dialogs:DialogActionRows>
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <Border Classes="DialogBodyBorder">

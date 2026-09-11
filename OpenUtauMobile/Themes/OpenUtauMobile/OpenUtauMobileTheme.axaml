@@ -20,6 +20,7 @@
     <StyleInclude Source="/Themes/OpenUtauMobile/Controls/ControlThemes.axaml" />
 
     <!-- 已有跨功能复用的 OPUM 组件；页面及业务控件样式由各自所有者加载。 -->
+    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Components/Button.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Components/TopBar.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Components/OptionEntry.axaml" />
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Components/FAB.axaml" />
