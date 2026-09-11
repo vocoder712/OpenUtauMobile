@@ -57,6 +57,13 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     // ── 内部状态 ────────────────────────────────────────────────────────
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
+    private readonly string _initialProjectPath;
+    private bool _loadStarted;
+    private bool _projectLoaded;
+    private bool _disposed;
+
+    [Reactive]
+    public bool IsLoadingProject { get; private set; } = true;
 
     #region 响应式命令
 
@@ -249,6 +256,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
     public EditorViewModel(MainViewModel navigator, string path = "") : base(navigator)
     {
+        _initialProjectPath = path;
         DocManager.Inst.AddSubscriber(this); // 订阅事件
         // 命令初始化
         BackCommand = ReactiveCommand.CreateFromTask(OnBackAsync);
@@ -421,8 +429,6 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             SyncPlaybackStateFromAuthority();
             UpdateTrackAutoPaging(); // 更新自动翻页状态
         };
-        PlaybackTimer.Start(); // 启动定时器
-        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0)); // 初始回放位置
 
         // 自动保存定时器
         if (Preferences.Default.AutoSaveEnabled)
@@ -432,7 +438,6 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                 Interval = TimeSpan.FromSeconds(Math.Max(Preferences.Default.AutoSaveInterval, 30))
             };
             _autoSaveTimer.Tick += (_, _) => AutoSaveProject();
-            _autoSaveTimer.Start();
         }
 
         // TrackHeight 变更时，MaxTrackOffset 依赖它，置脏并重新校验。目前设计下轨道高度不变，但预留了修改接口，保持逻辑完整性。
@@ -462,8 +467,13 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             .Where(expanded => expanded) // 仅展开时触发
             .Subscribe(_ => RebuildTrackContextActions())
             .DisposeWith(_disposables);
-        // 异步加载项目
-        _ = LoadProjectAsync(path);
+    }
+
+    public override void OnNavigatedTo()
+    {
+        if (_loadStarted || _disposed) return;
+        _loadStarted = true;
+        _ = LoadProjectAsync(_initialProjectPath);
     }
 
     private static void AutoSaveProject()
@@ -495,21 +505,41 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// <param name="path"></param>
     private async Task LoadProjectAsync(string path)
     {
-        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(50, L.S("Editor.LoadingProject")));
-        await Task.Run(() =>
+        ProgressValue = 50;
+        ProgressMessage = L.S("Editor.LoadingProject");
+        try
         {
-            if (!string.IsNullOrEmpty(path))
+            // 后台只读取，回到 UI 线程并确认页面仍有效后才提交工程。
+            UProject? project = await Task.Run(() => string.IsNullOrEmpty(path)
+                ? Ustx.Create()
+                : Formats.ReadProject([path]));
+            if (_disposed || Navigator.CurrentViewModel != this) return;
+            if (project == null)
+                throw new InvalidDataException($"Project reader returned no project: {path}");
+
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+            DocManager.Inst.Recovered = false;
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+            _projectLoaded = true;
+            PlaybackTimer.Start();
+            _autoSaveTimer?.Start();
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to open project {Path}", path);
+            if (!_disposed && Navigator.CurrentViewModel == this)
             {
-                string[] files = [path];
-                Formats.LoadProject(files);
+                // 失败直接退回，不对尚未打开的工程触发保存确认。
+                Navigator.NavigateBack(this);
+                ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
             }
-            else // 空白项目
-            {
-                DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Ustx.Create())); // 新建空项目
-            }
-        });
-        DocManager.Inst.Recovered = false;
-        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(100, L.S("Editor.ProjectLoaded")));
+        }
+        finally
+        {
+            IsLoadingProject = false;
+            ProgressValue = 0;
+            ProgressMessage = string.Empty;
+        }
     }
 
     #region 命令处理
@@ -2091,6 +2121,8 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// <returns>已保存或用户确认退出时返回 true。</returns>
     public async Task<bool> ConfirmExitAsync()
     {
+        // 同步格式读取器会继续运行；离开后丢弃结果，返回操作不等待读取。
+        if (!_projectLoaded) return true;
         if (DocManager.Inst.ChangesSaved)
         {
             return true;
@@ -2118,6 +2150,11 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
     public void Dispose()
     {
+        if (_disposed) return;
+        _disposed = true;
+        IsLoadingProject = false;
+        ProgressValue = 0;
+        ProgressMessage = string.Empty;
         PlaybackManager.Inst.StopPlayback(); // 停止回放
         PlaybackTimer.Stop(); // 停止定时器
         _autoSaveTimer?.Stop(); // 停止自动保存定时器
