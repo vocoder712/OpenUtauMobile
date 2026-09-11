@@ -12,7 +12,6 @@
     x:Class="OpenUtauMobile.Controls.BatchEditPopup"
     x:DataType="vm:BatchEditViewModel"
     Classes="PopupDialogRoot BatchEditRoot"
-    MinHeight="{x:Static localTokens:BatchEditTokens.PopupMinHeight}"
     MaxHeight="{x:Static localTokens:BatchEditTokens.PopupMaxHeight}"
     d:DesignWidth="560"
     d:DesignHeight="620">

@@ -175,7 +175,10 @@ option commands in the running application before visual acceptance.
 ## Responsive sizing (2026-09-10)
 
 `PopupDialogControl` owns width presets, TopLevel resize subscription and detach
-cleanup, but never writes MaxHeight. Width maxima are 360/420/560 for
+cleanup. It coerces effective MaxHeight against the actual DialogHost height
+minus DialogMargin.Top/Bottom, preserving the underlying local/style/bound value.
+Both host and TopLevel resize events refresh this constraint; detach clears it.
+Width maxima are 360/420/560 for
 Compact/Regular/Wide, with 24 per-side viewport allowance below 840 and 56 above.
 Widths may shrink below the former 280/320 minima to preserve narrow-window insets.
 
@@ -183,12 +186,34 @@ DialogHost owns the common 24dp viewport inset via DialogMargin. MainView's cust
 popup template must bind its outer Border.Padding to TemplateBinding Padding:
 DialogHost 0.12.3 forwards DialogMargin to the popup's Padding, not Margin.
 This reduces the available measure space and leaves header/footer outside body
-scrolling. Do not also subtract 48 from each popup's MaxHeight.
+scrolling. The common base also constrains effective MaxHeight so explicit Height
+cannot overflow a small viewport. Do not add per-dialog viewport subtraction.
 
-The shared PopupDialogRoot style supplies a default MaxHeight of 640dp; a popup's
-explicit MaxHeight or binding takes precedence and remains intact after resizing.
+The shared :is(controls|PopupDialogControl).PopupDialogRoot style supplies a default
+MaxHeight of 640dp. A plain UserControl type selector does not match these derived
+controls. Explicit MaxHeight or bindings replace the default; the viewport may
+temporarily lower the effective value, which recovers when the viewport grows.
 ImportDialogControl has been removed. ImportTracksPopup and VoiceColorMappingPopup
 use PopupDialogControl with Wide, like FilePickerPopup. Single/multi-file selection
 and error dialogs use the same host height constraint; no per-mode height override
-or duplicate error-dialog resize subscription remains. Local content scroll limits
-are unchanged. Glass layers and touch targets are unaffected.
+or duplicate error-dialog resize subscription remains. The import-only 360dp body
+scroll cap and ImportTokens have been removed. Glass layers and touch targets are
+unaffected.
+
+### Per-dialog height configuration
+
+Set dimensions on the root UserControl with Classes="PopupDialogRoot", not on
+DialogShell, its body ScrollViewer or the shared host. Values cover the entire
+dialog (header, body and footer); viewport margins are outside it.
+
+- Content-driven, default cap: omit Height and MaxHeight (640dp default maximum).
+- Content-driven, custom cap: MaxHeight="520"; omit Height.
+- Fixed requested size: Height="480" MaxHeight="480".
+- Fixed requested size above the default cap: Height="720" MaxHeight="720".
+- Bindings to Height/MaxHeight and component tokens are supported in the same place.
+
+In a short viewport, even a fixed requested height shrinks to preserve 24dp at
+each edge, then recovers when space returns. Do not set an oversized MinHeight.
+Keep the shell body in its finite star row, with ScrollViewer handling overflow;
+do not introduce per-view viewport math, vertical StackPanels around the entire
+shell, or nonzero ScrollViewer.Padding.

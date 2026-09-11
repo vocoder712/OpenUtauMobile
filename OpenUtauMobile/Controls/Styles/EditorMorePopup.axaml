@@ -1,8 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
     <Style Selector="Button.ActionBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />

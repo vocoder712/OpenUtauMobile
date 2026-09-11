@@ -1,6 +1,9 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.VisualTree;
+using DialogHostAvalonia;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 namespace OpenUtauMobile.Controls;
 
@@ -12,11 +15,20 @@ public enum PopupDialogWidthPreset
 }
 
 /// <summary>
-/// 所有弹窗控件的基类，提供自动适应屏幕宽度的功能。
+/// 统一弹窗宽度预设与视口限高，保留各弹窗声明的尺寸值。
 /// </summary>
 public abstract class PopupDialogControl : UserControl
 {
     private TopLevel? _host;
+    private DialogHost? _dialogHost;
+    private double _availableHeight = double.PositiveInfinity;
+
+    static PopupDialogControl()
+    {
+        // 强制值仅限制当前布局，保留样式、本地值或绑定中的原始上限。
+        MaxHeightProperty.OverrideMetadata<PopupDialogControl>(new StyledPropertyMetadata<double>(
+            coerce: (control, value) => Math.Min(value, ((PopupDialogControl)control)._availableHeight)));
+    }
 
     protected virtual PopupDialogWidthPreset WidthPreset => PopupDialogWidthPreset.Regular;
 
@@ -25,6 +37,11 @@ public abstract class PopupDialogControl : UserControl
         base.OnAttachedToVisualTree(e);
 
         _host = TopLevel.GetTopLevel(this);
+        _dialogHost = this.FindAncestorOfType<DialogHost>();
+        if (_dialogHost != null)
+        {
+            _dialogHost.SizeChanged += OnHostSizeChanged;
+        }
         if (_host != null)
         {
             _host.SizeChanged += OnHostSizeChanged;
@@ -34,12 +51,19 @@ public abstract class PopupDialogControl : UserControl
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        if (_dialogHost != null)
+        {
+            _dialogHost.SizeChanged -= OnHostSizeChanged;
+            _dialogHost = null;
+        }
         if (_host != null)
         {
             _host.SizeChanged -= OnHostSizeChanged;
             _host = null;
         }
         base.OnDetachedFromVisualTree(e);
+        _availableHeight = double.PositiveInfinity;
+        CoerceValue(MaxHeightProperty);
     }
 
     private void OnHostSizeChanged(object? sender, SizeChangedEventArgs e)
@@ -50,9 +74,16 @@ public abstract class PopupDialogControl : UserControl
         }
     }
 
-    /// <summary>统一各宽度预设的首次布局与窗口尺寸变化处理。</summary>
+    /// <summary>更新响应式宽度与有效限高，不覆盖原始高度配置。</summary>
     protected virtual void UpdateResponsiveSize(TopLevel host)
     {
+        double viewportHeight = _dialogHost?.Bounds.Height ?? host.ClientSize.Height;
+        Thickness inset = _dialogHost?.DialogMargin ?? DialogTokens.ViewportMargin;
+        _availableHeight = double.IsFinite(viewportHeight)
+            ? Math.Max(0d, viewportHeight - inset.Top - inset.Bottom)
+            : double.PositiveInfinity;
+        CoerceValue(MaxHeightProperty);
+
         double viewportWidth = host.ClientSize.Width;
         if (!double.IsFinite(viewportWidth) || viewportWidth <= 0)
         {

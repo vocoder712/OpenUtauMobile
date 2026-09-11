@@ -2,7 +2,6 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
@@ -24,7 +23,7 @@
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <ScrollViewer MaxHeight="{x:Static localTokens:ImportTokens.ContentMaxHeight}" HorizontalScrollBarVisibility="Disabled">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                 <Border Padding="{x:Static foundation:LayoutTokens.InsetM}">
                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                         <TextBlock Text="{DynamicResource ImportTracks.AppendHint}" TextWrapping="Wrap" />

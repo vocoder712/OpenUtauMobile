@@ -6,7 +6,6 @@ namespace OpenUtauMobile.Controls.Tokens;
 public static class BatchEditTokens
 {
     public static double PopupMinWidth => 280d;
-    public static double PopupMinHeight => 420d;
     public static double PopupMaxHeight => 680d;
     public static double ItemIconSize => 40d;
     public static double ParameterMinWidth => 96d;
