@@ -1001,7 +1001,11 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             backends.Add(new AudioBackendOption("AudioTrack", "AudioTrack"));
             backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
         }
-        // iOS/Browser 目前只支持 Dummy
+        else if (OperatingSystem.IsIOS())
+        {
+            backends.Add(new AudioBackendOption("AVAudioEngine", "AVAudioEngine"));
+        }
+        // Browser 目前只支持 Dummy
 
         backends.Add(new AudioBackendOption("Dummy", L.S("Settings.Audio.Dummy")));
         return backends;

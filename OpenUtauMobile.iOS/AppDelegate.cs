@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Foundation;
@@ -6,7 +7,11 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.iOS;
 using ReactiveUI.Avalonia;
+using Microsoft.ML.OnnxRuntime;
+using OpenUtau.Audio;
 using OpenUtau.Core;
+using OpenUtauMobile.Helpers;
+using OpenUtauMobile.iOS.Audio;
 using OpenUtauMobile.Services;
 using Serilog;
 using UIKit;
@@ -25,14 +30,30 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance); // 注册编码提供程序以支持更多编码格式
+        InitPathManager();
         InitLogging();
-        // TODO: iOS尚未实现音频输出
+        ProbeOnnxRuntime();
+        ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalUrlLauncher = new IosExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return base.CustomizeAppBuilder(builder)
             .UseReactiveUI(_ =>
             {
             });
+    }
+
+    private static void InitPathManager()
+    {
+        string dataPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        string cachePath = Path.Combine(dataPath, "Cache");
+        Directory.CreateDirectory(dataPath);
+        Directory.CreateDirectory(cachePath);
+        Directory.CreateDirectory(Path.Combine(dataPath, "Logs"));
+        PathManager.Inst.Configure(
+            rootPath: dataPath,
+            dataPath: dataPath,
+            cachePath: cachePath,
+            homePathIsAscii: true);
     }
 
     private static void InitLogging()
@@ -54,6 +75,34 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
             args.SetObserved();
         };
         Log.Information("==========开始记录日志==========");
+    }
+
+    private static void ProbeOnnxRuntime()
+    {
+        try
+        {
+            OrtEnv environment = OrtEnv.Instance();
+            using SessionOptions options = new SessionOptions();
+            Log.Information("ONNX Runtime 原生环境加载成功: {Environment}", environment.GetType().FullName);
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "ONNX Runtime 原生环境加载失败");
+            throw;
+        }
+    }
+
+    private static void InitAudioOutput()
+    {
+        try
+        {
+            PlaybackManager.Inst.AudioOutput = new IosAudioOutput();
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "AVAudioEngine 初始化失败，回退到 Dummy 音频后端");
+            PlaybackManager.Inst.AudioOutput = new DummyAudioOutput();
+        }
     }
 
     private static (bool success, Color color, string source) TryGetPlatformAccentFallback()
