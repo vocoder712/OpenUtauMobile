@@ -22,13 +22,6 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
-    <Style Selector="Button.RecentItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-    <Style Selector="Button.RecentItem:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
     </Style>
 
     <!-- Delete button on each row -->
@@ -42,14 +35,9 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <!-- <Style Selector="Button.DeleteBtn:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource state-danger-hover}"/>
-        </Style>
-        <Style Selector="Button.DeleteBtn:pressed /template/ ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource state-danger-pressed}"/>
-        </Style> -->
+    <!--
+         -->
 
     <!-- MD2 banner for recovery prompt -->
     <Style Selector="Border.RecoveryBanner">
@@ -68,12 +56,6 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
-    <Style Selector="Button.RecoveryBannerSecondaryAction:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
-    </Style>
-    <Style Selector="Button.RecoveryBannerSecondaryAction:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
 
     <Style Selector="Button.RecoveryBannerPrimaryAction">
         <Setter Property="Padding" Value="12,8" />
@@ -83,12 +65,7 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
     </Style>
-    <Style Selector="Button.RecoveryBannerPrimaryAction:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}" />
-    </Style>
-    <Style Selector="Button.RecoveryBannerPrimaryAction:pressed /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentPressed}" />
-    </Style>
+
     <!-- 首页操作按钮仅在首页加载。 -->
     <Style Selector="Button.HomeActionButton">
         <Setter Property="Width" Value="{x:Static localTokens:HomeTokens.ActionSize}" />
@@ -100,7 +77,6 @@
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelMSize}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
 
     <Style Selector="Button.HomeActionButton StackPanel">
@@ -118,11 +94,4 @@
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
-    <Style Selector="Button.HomeActionButton:pointerover">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}" />
-    </Style>
-
-    <Style Selector="Button.HomeActionButton:pressed">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentPressed}" />
-    </Style>
 </Styles>

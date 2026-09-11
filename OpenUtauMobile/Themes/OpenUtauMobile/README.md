@@ -1,33 +1,88 @@
-# 主题样式归属
+# OPUM independent control theme
 
-`OpenUtauMobileTheme.axaml` 只加载全局资源、Avalonia 内置控件覆盖和已有跨功能复用的 OPUM 组件样式。`App.axaml` 中的 `FluentTheme` 继续提供基础主题。
+`OpenUtauMobileTheme.axaml` is the only base-theme entry point. It owns complete
+`ControlTheme` templates, not overrides on an installed Fluent theme. Neither
+`Avalonia.Themes.Fluent` nor the unused `Semi.Avalonia` package is referenced.
+DialogHost and IconPacks compatibility styles remain separate integrations.
 
-## 目录职责
+## Source and coverage
 
-- `Resources/Color/`：原有颜色资源字典。保留明暗主题字典、资源键和加载关系；`TonalPaletteSlots.axaml` 仍是未加载的占位字典。
-- `Styles/Controls/`：Button、TextBox、ComboBox、Slider、TabItem、ToggleSwitch、ProgressBar 的全局样式覆盖，不转换为完整 ControlTheme。
-- `Styles/Components/`：Card、TopBar、FAB、Dialog、DawKnob、Icon，以及选项页和关于页共用的 OptionEntry。
-- `Runtime/Generation/`：主题生成器、配色模型和轨道调色板。
-- `Runtime/Resources/`：资源桥接和资源查询。
-- `Runtime/Platform/`：系统强调色获取。
-- `Runtime/`：主协调器 `ThemeManagerV2` 与运行时事件。
-- `Tokens/`：基础刻度、语义角色与共享组件静态规格；参见 [token 使用规则](Tokens/README.md)。页面及功能规格由 `Views/Tokens`、`Controls/Tokens` 或所有者局部样式持有。
+The starting point is the entire XAML theme from [Avalonia 12.1.0](https://github.com/AvaloniaUI/Avalonia/tree/12.1.0/src/Avalonia.Themes.Fluent),
+including all 79 control dictionaries, their resource graph, invariant strings,
+and the optional compact-density dictionary. `UPSTREAM.json` records the exact
+commit, original file hashes, resource keys, named parts and selectors. The MIT
+license is retained in `licenses/Avalonia.Themes.Fluent.MIT.txt` at repository root.
+Upstream explanatory comments are retained in the adapted source.
 
-## 局部样式
+**Fallback means local source**, not another loaded theme: uncommon controls keep
+their upstream templates in this same directory. They can be edited here and do
+not require the Fluent assembly. Default density is used; the imported
+`DensityStyles/Compact.axaml` is not automatically loaded.
 
-- 页面样式位于 `Views/Styles/`，由对应页面的 `UserControl.Styles` 加载，包括 HomeActionButton。
-- 业务控件和弹窗样式位于 `Controls/Styles/`，由对应控件加载。运行时生成的按钮仍在所属控件的样式作用域内。
-- `Controls/Styles/EditModeSwitcher.axaml` 由钢琴卷帘、轨道、音素面板三个模式切换控件显式加载；这是编辑器内部复用，不提升为全局组件。
-- `Styles/Components/Dialog.axaml` 统一持有 DialogShell、DialogActionRow、共享操作按钮及旧操作类的兼容样式。业务弹窗只持有业务内容样式。
+| Family | Owned implementation / preserved contracts |
+| --- | --- |
+| Button, RepeatButton, ToggleButton, HyperlinkButton | Shared Button template; checked, indeterminate, visited and accent roles |
+| DropDownButton, SplitButton / ToggleSplitButton | Shared button states; arrow, primary/secondary buttons and flyout tags retained |
+| TextBox, AutoCompleteBox, NumericUpDown / ButtonSpinner | TextPresenter, IME/preedit, selection, caret, clear/reveal buttons, editable/read-only/error states, inner content, desktop/mobile context flyouts |
+| CheckBox, RadioButton, ToggleSwitch | Checked/unchecked/mixed/disabled states, glyphs, switch drag/knob transitions and on/off content |
+| ComboBox / ComboBoxItem | Editable input, placeholder, popup, light dismiss, item presenter, selection and validation |
+| ListBox, TreeView, menus, tabs | Item/container themes, virtualization, expand/collapse, selection, access keys and all tab placements |
+| Slider, ScrollBar, ScrollViewer | Both orientations, reversed tracks, ticks, drag/step buttons, inertia and auto-hide |
+| ProgressBar | Determinate and indeterminate templates/animations, both orientations and progress text |
+| Other controls | Calendar/date/time pickers, flyouts/tooltips, validation adorners, notifications, split views, managed file chooser, window decorations, Avalonia 12 pages/command bars/table views and refresh controls remain fully sourced locally |
 
-## 本次兼容处理
+## Where to edit
 
-- SettingsView 的 AccentBtn、PlaceholderText 原先也影响 ThemeColorPickerDialog；弹窗局部保留其使用的原始定义，不再依赖设置页的全局加载。
-- SingerDetailView 和 EditorMorePopup 的 ActionBtn 曾通过全局样式叠加。各自局部样式保留迁移前叠加得到的属性和悬停效果，避免目录调整引入外观变化。
-- 不删除缺少静态调用证据的选择器，不调整现有尺寸、间距、圆角、令牌或 Fluent 模板。
+- `Controls/*.axaml`: complete control templates, private helper themes and nested
+  state styles. `Controls/ControlThemes.axaml` imports every control dictionary.
+- `Accents/BaseResources.axaml`: shared brushes, converters and baseline metrics.
+- `Accents/ControlResources.axaml`: per-control brush definitions. These are edited
+  **in place** to use semantic colors. `COLOR_ROLES.json` indexes these mappings.
+- `Runtime/Generation/ThemeGenerator.cs`: generated semantic colors and state
+  composites. `Sem.Color.*` is a brush; `Sem.Value.*` is its typed Color counterpart.
+- `Runtime/Resources/SemanticThemeResources.cs`: complete startup/designer palettes
+  for Default, Light and Dark. Default is essential for brushes instantiated from
+  upstream Default dictionaries before the first variant-change event.
+- `Runtime/Resources/ThemeResourceBridge.cs`: mutable per-variant palettes. Seed
+  changes update existing controls and preserve mixed Light/Dark ThemeVariantScope
+  trees. Legacy aliases are retained only for older consumers.
+- `Tokens/`: shared metrics; see [ownership rules](Tokens/README.md).
+- `Styles/Components/`: application components and button roles/layout, not base
+  control templates. Page/feature styles stay with their existing owners.
 
-新增样式优先放在实际所有者附近；只有确认存在跨功能复用时才纳入全局组件。
+## Button contract
 
-## 后续 token 整理（2026-09-10）
+Normal/hover/pressed/keyboard-focus/disabled states share one implementation.
+The state layer uses the button's **own Foreground** at 8% / 12%, rather than
+replacing semantic backgrounds with a system accent. Content keeps its original
+contrast. Keyboard focus has a separate 2dp outline; disabled content fades once
+to 38%, suppresses interaction layers, and uses an arrow cursor. Enabled action
+controls use a hand; text input retains an I-beam. Specialized scrollbar/splitter
+cursors remain owned by their own templates.
 
-已移除 `Runtime/ThemeStaticTokens.cs`。原始整理阶段的兼容说明保留为历史记录；当前 token 规则以 `Tokens/README.md` 为准。Settings 与 ThemeColorPicker 独立持有各自操作按钮和说明文字样式，不建立专用参数联动。
+`Primary`, `Secondary`, `accent`, `DialogPrimary`, `DialogDestructive`, FAB,
+navigation, card and icon-button classes retain their public names. Existing
+commands, parameters, bindings and explicit compact editor sizes are retained.
+The singer-card and track-color buttons now use ordinary content rather than
+replacing Button.Template. Reusable states must not be reintroduced as page-level
+`/template/ ContentPresenter` patches or local cursor assignments.
+
+Normal button padding is 16,10; content determines its height. This intentionally
+does not impose a new minimum on compact editor controls. Dialog actions retain
+their 48dp minimum. Shape/layout differences between component roles are deliberate.
+
+## Verification and maintenance
+
+Build with `AVALONIA_TELEMETRY_OPTOUT=1`; no unit tests are created or run.
+The migration was checked using an isolated Avalonia headless runtime diagnostic:
+all 122 keyed themes resolve, common templates measure, 70 button role/state/variant
+combinations are inspected, and Light/Dark rendering and live seed changes are
+reviewed. Runtime diagnostic details are in [VERIFICATION.md](VERIFICATION.md).
+
+When updating Avalonia, compare the pinned source contract in `UPSTREAM.json`
+against the new upstream templates, especially required parts, bindings,
+pseudoclasses and private helper themes. Do not replace this directory with a
+short list of global setters. Retain upstream functionality while changing the
+template/resource owner directly. Preserve zero ScrollViewer.Padding; use content
+Borders for scrollable insets. Device touch/IME/screen-reader and real populated
+page acceptance remain manual checks rather than claims made by build success.

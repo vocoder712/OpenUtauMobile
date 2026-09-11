@@ -23,50 +23,10 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Effect">
             <DropShadowEffect BlurRadius="{x:Static components:FabTokens.RestBlur}" OffsetX="0" OffsetY="{x:Static components:FabTokens.RestOffset}" Opacity="{x:Static components:FabTokens.RestOpacity}"
                               Color="{DynamicResource Sem.Value.Shadow}" />
         </Setter>
-        <Setter Property="Template">
-            <ControlTemplate TargetType="Button">
-                <Border Background="{TemplateBinding Background}"
-                        CornerRadius="{TemplateBinding CornerRadius}">
-                    <Grid>
-                        <Border x:Name="StateLayer"
-                                Background="{TemplateBinding Foreground}"
-                                CornerRadius="{TemplateBinding CornerRadius}"
-                                Opacity="0" />
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                          Content="{TemplateBinding Content}"
-                                          ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          Margin="{TemplateBinding Padding}" />
-                    </Grid>
-                </Border>
-            </ControlTemplate>
-        </Setter>
     </Style>
 
-    <Style Selector="Button.FAB:pointerover">
-        <Setter Property="Effect">
-            <DropShadowEffect BlurRadius="{x:Static components:FabTokens.HoverBlur}" OffsetX="0" OffsetY="{x:Static components:FabTokens.HoverOffset}" Opacity="{x:Static components:FabTokens.HoverOpacity}"
-                              Color="{DynamicResource Sem.Value.Shadow}" />
-        </Setter>
-    </Style>
-
-    <Style Selector="Button.FAB:pointerover /template/ Border#StateLayer">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Hover}" />
-    </Style>
-
-    <Style Selector="Button.FAB:pressed">
-        <Setter Property="Effect">
-            <DropShadowEffect BlurRadius="{x:Static components:FabTokens.PressedBlur}" OffsetX="0" OffsetY="{x:Static components:FabTokens.PressedOffset}" Opacity="{x:Static components:FabTokens.PressedOpacity}"
-                              Color="{DynamicResource Sem.Value.Shadow}" />
-        </Setter>
-    </Style>
-
-    <Style Selector="Button.FAB:pressed /template/ Border#StateLayer">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Pressed}" />
-    </Style>
 </Styles>

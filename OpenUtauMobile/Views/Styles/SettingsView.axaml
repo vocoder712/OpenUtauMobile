@@ -12,14 +12,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="MinHeight" Value="56" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="CornerRadius" Value="0" />
-    </Style>
-    <Style Selector="Button.NavItem:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-    <Style Selector="Button.NavItem:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
     </Style>
 
     <!-- Expand/collapse toggle button -->
@@ -31,14 +24,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="CornerRadius" Value="0" />
-    </Style>
-    <Style Selector="Button.NavToggle:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-    <Style Selector="Button.NavToggle:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
     </Style>
 
     <!-- Category heading in content area -->
@@ -77,15 +63,7 @@
         <Setter Property="Padding" Value="16,8" />
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
-    <Style Selector="Button.AccentBtn:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}" />
-    </Style>
-    <Style Selector="Button.AccentBtn:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentPressed}" />
-    </Style>
+
 </Styles>

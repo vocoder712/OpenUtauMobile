@@ -17,14 +17,6 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
 
-    <Style Selector="Button.OptionEntry:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-
-    <Style Selector="Button.OptionEntry:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
-    </Style>
 </Styles>

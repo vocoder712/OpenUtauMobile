@@ -7,9 +7,6 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <Style Selector="Button.SingerCard:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="Transparent" />
-    </Style>
+
 </Styles>

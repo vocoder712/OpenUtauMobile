@@ -78,13 +78,14 @@ For layout details and per-dialog configuration see
   sizes, viewport margins, font sizes and list limits to one spacing number.
 - Typography has one public role entry point (`TypographyTokens`), not mirrored
   Base/Sem aliases. Do not classify arbitrary literal font sizes by value alone.
-- `StateOpacityTokens.Hover/Focus/Pressed` describe state layers; Dialog action
-  content opacity is a separate component contract with its existing values.
+- `StateOpacityTokens.Hover/Focus/Pressed` describe shared state layers. Dialog
+  actions now use the same Button ControlTheme instead of fading their content.
 - Settings and ThemeColorPicker independently own their specialized styling.
   Do not introduce a shared AccentBtn/Placeholder token contract between them.
 - Global tokens and theme includes must not depend on feature tokens/styles.
   Static definitions use `x:Static`; dynamic color keys and resource lookup are
-  unchanged. FluentTheme and ControlTheme rewrites are not part of this work.
+  unchanged. The independent control-theme migration is documented in
+  `../README.md`; shared Button/Input/Slider/TabItem metrics are consumed there.
 - Token-only moves preserve effective values. The subsequent metrics cleanup
   explicitly allows grid alignment: use 8dp baseline spacing and 4dp details,
   without rounding typography, motion, strokes or drawing geometry to that grid.

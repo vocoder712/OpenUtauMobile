@@ -19,17 +19,7 @@
         <Setter Property="Padding" Value="16,8" />
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
-    <Style Selector="Button.AccentBtn:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}" />
-    </Style>
-
-    <Style Selector="Button.AccentBtn:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentPressed}" />
-    </Style>
 </Styles>

@@ -9,7 +9,7 @@
     <Application.DataTemplates>
         <local:ViewLocator />
     </Application.DataTemplates>
-    
+
     <Application.Resources>
         <FontFamily x:Key="ContentControlThemeFontFamily">
             $Default
@@ -17,8 +17,6 @@
     </Application.Resources>
 
     <Application.Styles>
-        <!-- Development fallback only; custom Style layer should override and eventually replace this. -->
-        <FluentTheme />
         <!-- DialogHost.Avalonia 弹窗所需的样式 -->
         <dialogHostAvalonia:DialogHostStyles />
         <!-- 新的 Theme 主题系统 -->

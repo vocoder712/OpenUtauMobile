@@ -44,8 +44,7 @@
                                   IsChecked="{Binding IsFavorite, Mode=TwoWay}"
                                   Background="Transparent"
                                   BorderThickness="0"
-                                  Padding="{x:Static foundation:LayoutTokens.InsetSM}"
-                                  Cursor="Hand">
+                                  Padding="{x:Static foundation:LayoutTokens.InsetSM}">
                         <Panel>
                             <Path Width="{x:Static semantic:IconTokens.Compact}" Height="{x:Static semantic:IconTokens.Compact}"
                                   Stretch="Uniform"

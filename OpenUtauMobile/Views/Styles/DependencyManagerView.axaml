@@ -55,15 +55,6 @@
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
-
-    <Style Selector="Button.DependencyIconButton:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-
-    <Style Selector="Button.DependencyIconButton:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
     </Style>
 
     <Style Selector="Ellipse.CircularProgressTrack">
@@ -81,6 +72,5 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="8,4" />
         <Setter Property="CornerRadius" Value="2" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
 </Styles>

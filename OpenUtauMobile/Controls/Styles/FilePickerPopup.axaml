@@ -7,14 +7,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-    <Style Selector="Button.IconBtn:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-    <Style Selector="Button.IconBtn:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
     </Style>
 
     <!-- 鏂囦欢鍒楄〃鏉＄洰鎸夐挳 -->
@@ -25,12 +18,6 @@
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <Style Selector="Button.FileEntry:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-    <Style Selector="Button.FileEntry:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
-    </Style>
+
 </Styles>

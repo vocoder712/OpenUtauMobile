@@ -8,6 +8,10 @@ colors, geometry and interaction states. `Controls/DialogShell.cs` supplies
 content slots, logical parenting and the explicitly grouped equal-width action-row
 layout algorithm; it contains no design values or per-dialog breakpoints.
 
+Button interaction rendering now belongs to the shared base theme in
+`Themes/OpenUtauMobile/Controls/Button.axaml`. Dialog styles own role colors and
+metrics only; do not reintroduce presenter background or content-opacity patches.
+
 Do not add per-dialog chrome tokens, copy a title bar, draw another X, or
 override header/footer button geometry in a view. Use shared `DialogTokens`, semantic roles, foundation values or local literals
 inside the shared component; do not borrow page/navigation/card tokens. Business-content layout and viewport

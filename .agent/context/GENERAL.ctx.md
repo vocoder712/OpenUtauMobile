@@ -24,6 +24,14 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 
 ## UI/UX Status
 
+- Base controls are now owned by the independent theme at
+  `Themes/OpenUtauMobile/Controls`, forked from all Avalonia Fluent 12.1.0 XAML
+  templates. Fluent and Semi packages are removed. Uncommon controls use local
+  upstream-derived templates as source-level fallback. Edit the owning
+  ControlTheme/resources, not global `/template/` state overrides. Buttons,
+  including dialog/FAB/card roles, share state layers, focus and cursor policy.
+  See the theme README and UPSTREAM.json for coverage and source provenance.
+
 - Avalonia 12.1.0 scrolling pitfall: do not set nonzero `ScrollViewer.Padding`.
   Put scrollable content inside a `Border` and set that Border's `Padding` so
   insets participate in the scroll extent. Fixed viewport insets instead belong
@@ -89,4 +97,3 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
 
 - TODOs are scattered across the codebase; resolve incrementally.
 - Memory usage and frame rate are primary priorities.
-

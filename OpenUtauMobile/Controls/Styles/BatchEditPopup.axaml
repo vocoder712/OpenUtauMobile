@@ -68,7 +68,6 @@
         <Setter Property="CornerRadius" Value="{x:Static localTokens:BatchEditTokens.PinButtonCornerRadius}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
 
     <Style Selector="Border.BatchEditPinIconVisual">
@@ -84,8 +83,6 @@
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
     </Style>
 
-
-
     <Style Selector="Button.BatchEditRunIconButton">
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
@@ -96,7 +93,6 @@
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
 
     <!-- 执行 -->

@@ -5,14 +5,11 @@
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Padding" Value="4,8"/>
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}"/>
-        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="Opacity" Value="0.7"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
-    <Style Selector="Button.DetailToggle:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="1"/>
-    </Style>
+
     <Style Selector="TextBox.ErrorDetail">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}"/>
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}"/>

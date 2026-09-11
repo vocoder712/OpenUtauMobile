@@ -30,6 +30,4 @@ public static class DialogTokens
     public static CornerRadius CornerRadius => ShapeTokens.CornerXL;
     public static CornerRadius ActionCornerRadius => ShapeTokens.CornerS;
     public static Thickness ActionPadding => new(16, 12);
-    public static double ActionHoverOpacity => 0.87;
-    public static double ActionPressedOpacity => 0.56;
 }

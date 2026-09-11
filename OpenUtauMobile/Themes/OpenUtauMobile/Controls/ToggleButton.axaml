@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:CompileBindings="False">
+  <ControlTheme x:Key="{x:Type ToggleButton}" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type Button}}">
+    <Style Selector="^:checked">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+    </Style>
+    <Style Selector="^:indeterminate">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

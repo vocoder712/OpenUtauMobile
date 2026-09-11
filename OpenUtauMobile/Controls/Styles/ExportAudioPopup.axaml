@@ -18,42 +18,14 @@
         <Setter Property="Padding" Value="16,8" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
-        <Setter Property="Cursor" Value="Hand" />
-    </Style>
-    <Style Selector="Button.ExportPathBtn:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}" />
     </Style>
 
     <Style Selector="RadioButton.ExportModeCard">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="12,12" />
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        Padding="{TemplateBinding Padding}">
-                    <ContentPresenter Content="{TemplateBinding Content}"
-                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                </Border>
-            </ControlTemplate>
-        </Setter>
-    </Style>
-    <Style Selector="RadioButton.ExportModeCard:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
-    </Style>
-    <Style Selector="RadioButton.ExportModeCard:checked">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Theme" Value="{StaticResource OpumChoiceCard}" />
     </Style>
 </Styles>

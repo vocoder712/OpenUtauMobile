@@ -194,6 +194,7 @@
 
             <!-- 左上角彩色等腰直角三角形色标（可点击） -->
             <Button Name="ColorBarButton"
+                    Width="20" Height="20" CornerRadius="0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Padding="0"
@@ -202,15 +203,11 @@
                     ZIndex="10"
                     ToolTip.Tip="{DynamicResource TrackHeader.Mute}"
                     Command="{Binding MuteCommand}">
-                <Button.Template>
-                    <ControlTemplate>
-                        <Polygon Name="ColorTriangle"
+                <Polygon Name="ColorTriangle"
                                  Fill="{Binding TrackColorBrush}"
                                  Points="0,0 20,0 0,20"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top" />
-                    </ControlTemplate>
-                </Button.Template>
             </Button>
         </Panel>
 

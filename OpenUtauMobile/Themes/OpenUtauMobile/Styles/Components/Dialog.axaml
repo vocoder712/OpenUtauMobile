@@ -24,7 +24,8 @@
                                     CornerRadius="{x:Static components:DialogTokens.CornerRadius}"
                                     IsHitTestVisible="False" />
                             <Border Grid.Row="0" Padding="{x:Static components:DialogTokens.HeaderPadding}">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <ContentPresenter Name="PART_HeaderPresenter" Content="{TemplateBinding Header}"
                                                       ContentTemplate="{TemplateBinding HeaderTemplate}"
                                                       VerticalAlignment="Center"
@@ -37,18 +38,20 @@
                                             ToolTip.Tip="{DynamicResource Common.Close}"
                                             AutomationProperties.Name="{DynamicResource Common.Close}">
                                         <icons:PackIconPhosphorIcons Kind="X"
-                                            Width="{x:Static semantic:IconTokens.Standard}"
-                                            Height="{x:Static semantic:IconTokens.Standard}" />
+                                                                     Width="{x:Static semantic:IconTokens.Standard}"
+                                                                     Height="{x:Static semantic:IconTokens.Standard}" />
                                     </Button>
                                 </Grid>
                             </Border>
                             <ContentPresenter Name="PART_ContentPresenter" Grid.Row="1"
-                                              Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
                                               HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
                             <Border Grid.Row="2" Padding="{x:Static components:DialogTokens.FooterPadding}"
                                     IsVisible="{Binding Footer.IsVisible, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=False}">
-                                <ContentPresenter Content="{TemplateBinding Footer}" HorizontalContentAlignment="Stretch" />
+                                <ContentPresenter Content="{TemplateBinding Footer}"
+                                                  HorizontalContentAlignment="Stretch" />
                             </Border>
                         </Grid>
                     </Border>
@@ -130,7 +133,6 @@
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
     <Style Selector="Button.DialogPrimary">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
@@ -140,16 +142,7 @@
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Error}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
     </Style>
-    <Style Selector="Button.DialogAction:pointerover /template/ ContentPresenter, :is(controls|DialogActionRow) Button:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{ReflectionBinding Background, RelativeSource={RelativeSource TemplatedParent}}" />
-        <Setter Property="Foreground" Value="{ReflectionBinding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
-        <Setter Property="Opacity" Value="{x:Static components:DialogTokens.ActionHoverOpacity}" />
-    </Style>
-    <Style Selector="Button.DialogAction:pressed /template/ ContentPresenter, :is(controls|DialogActionRow) Button:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{ReflectionBinding Background, RelativeSource={RelativeSource TemplatedParent}}" />
-        <Setter Property="Foreground" Value="{ReflectionBinding Foreground, RelativeSource={RelativeSource TemplatedParent}}" />
-        <Setter Property="Opacity" Value="{x:Static components:DialogTokens.ActionPressedOpacity}" />
-    </Style>
+
     <Style Selector="Button.DialogClose, Button.DialogNavigation">
         <Setter Property="Width" Value="{x:Static components:DialogTokens.ControlMinSize}" />
         <Setter Property="Height" Value="{x:Static components:DialogTokens.ControlMinSize}" />
@@ -160,40 +153,31 @@
         <Setter Property="CornerRadius" Value="{x:Static components:DialogTokens.ActionCornerRadius}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Cursor" Value="Hand" />
     </Style>
-    <Style Selector="Button.DialogClose:pointerover /template/ ContentPresenter, Button.DialogNavigation:pointerover /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-    </Style>
-    <Style Selector="Button.DialogClose:pressed /template/ ContentPresenter, Button.DialogNavigation:pressed /template/ ContentPresenter">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
-    </Style>
-    <Style Selector="Button.DialogAction /template/ ContentPresenter TextBlock, :is(controls|DialogActionRow) Button /template/ ContentPresenter TextBlock">
+
+    <Style
+        Selector="Button.DialogAction /template/ ContentPresenter TextBlock, :is(controls|DialogActionRow) Button /template/ ContentPresenter TextBlock">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="TextAlignment" Value="Center" />
     </Style>
     <!-- 旧页面兼容样式；新弹窗只使用 DialogActions 和语义操作类。 -->
-<Style Selector="Button.Primary">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="20,8"/>
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}"/>
-        <Setter Property="Cursor" Value="Hand"/>
-    <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}"/></Style>
-
-<Style Selector="Button.Primary:pointerover /template/ ContentPresenter">
-        <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.ContentHover}"/>
+    <Style Selector="Button.Primary">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="20,8" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
     </Style>
 
-<Style Selector="Button.Secondary">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="Padding" Value="20,8"/>
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}"/>
-        <Setter Property="Cursor" Value="Hand"/>
-    <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}"/></Style>
+    <Style Selector="Button.Secondary">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="20,8" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
+    </Style>
 
 </Styles>

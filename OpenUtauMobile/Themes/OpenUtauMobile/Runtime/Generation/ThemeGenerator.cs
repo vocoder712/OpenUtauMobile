@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Avalonia.Media;
 using Avalonia.Styling;
 using MaterialColorUtilities.Palettes;
@@ -97,7 +97,28 @@ public static class ThemeGenerator
             ["Sem.Color.SuccessContainer"] = ToColor(corePalette.Secondary[variant == ThemeVariant.Dark ? 30u : 90u]),
         };
 
+        // 状态色混合保持前景对比度，不使用旧版 PrimaryHover 的容器色跳变。
+        foreach ((string background, string foreground) in new[]
+        {
+            ("Primary", "OnPrimary"),
+            ("SecondaryContainer", "OnSecondaryContainer"),
+        })
+        {
+            Color surface = semantic["Sem.Color." + background];
+            Color ink = semantic["Sem.Color." + foreground];
+            semantic["Sem.Color." + background + "StateHover"] = Blend(surface, ink, Tokens.Semantic.StateOpacityTokens.Hover);
+            semantic["Sem.Color." + background + "StatePressed"] = Blend(surface, ink, Tokens.Semantic.StateOpacityTokens.Pressed);
+        }
+
         return new ThemeScheme(new ThemePalette(seed, variant, corePalette), semantic);
+    }
+
+    private static Color Blend(Color background, Color foreground, double opacity)
+    {
+        return Color.FromRgb(
+            (byte)System.Math.Round(background.R * (1 - opacity) + foreground.R * opacity),
+            (byte)System.Math.Round(background.G * (1 - opacity) + foreground.G * opacity),
+            (byte)System.Math.Round(background.B * (1 - opacity) + foreground.B * opacity));
     }
 
     private static uint ToArgb(Color color)

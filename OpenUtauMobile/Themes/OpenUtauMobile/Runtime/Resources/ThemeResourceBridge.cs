@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Styling;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 
@@ -50,11 +51,32 @@ public sealed class ThemeResourceBridge
         _attachedHost = host;
     }
 
-    public void ApplySemanticBrushes(IReadOnlyDictionary<string, Color> semanticColors)
+    public void ApplySemanticBrushes(IReadOnlyDictionary<string, Color> semanticColors, ThemeVariant variant)
     {
+        if (!_runtimeDictionary.ThemeDictionaries.ContainsKey(variant))
+        {
+            _runtimeDictionary.ThemeDictionaries[variant] = new ResourceDictionary();
+        }
+        ResourceDictionary palette = (ResourceDictionary)_runtimeDictionary.ThemeDictionaries[variant];
         foreach (KeyValuePair<string, Color> pair in semanticColors)
         {
-            UpsertRuntimeBrush(pair.Key, pair.Value);
+            if (palette.TryGetValue(pair.Key, out object? value) && value is SolidColorBrush brush)
+            {
+                brush.Color = pair.Value;
+            }
+            else
+            {
+                palette[pair.Key] = new SolidColorBrush(pair.Value);
+            }
+            palette[pair.Key.Replace("Sem.Color.", "Sem.Value.")] = pair.Value;
+        }
+
+        if (semanticColors.TryGetValue("Sem.Color.Primary", out Color primary))
+        {
+            foreach (string suffix in new[] { "", "Dark1", "Dark2", "Dark3", "Light1", "Light2", "Light3" })
+            {
+                palette["SystemAccentColor" + suffix] = primary;
+            }
         }
     }
 
@@ -63,6 +85,16 @@ public sealed class ThemeResourceBridge
         foreach (string key in semanticKeys)
         {
             _runtimeDictionary.Remove(key);
+            _runtimeDictionary.Remove(key.Replace("Sem.Color.", "Sem.Value."));
+            foreach (ThemeVariant variant in new[] { ThemeVariant.Default, ThemeVariant.Light, ThemeVariant.Dark })
+            {
+                if (_runtimeDictionary.ThemeDictionaries.ContainsKey(variant))
+                {
+                    ResourceDictionary palette = (ResourceDictionary)_runtimeDictionary.ThemeDictionaries[variant];
+                    palette.Remove(key);
+                    palette.Remove(key.Replace("Sem.Color.", "Sem.Value."));
+                }
+            }
         }
     }
 

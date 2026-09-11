@@ -29,20 +29,12 @@
                     <DataTemplate x:DataType="ustx:USinger">
                         <!-- 卡片按钮 -->
                         <Button Classes="SingerCard"
+                                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
                                 Margin="0,0,0,10"
                                 Command="{Binding $parent[c:SingerList].SelectSingerCommand}"
                                 CommandParameter="{Binding}">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{DynamicResource Sem.Color.SurfaceContainer}"
-                                            CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
-                                            ClipToBounds="True">
-                                        <Panel>
-                                            <Border x:Name="PressBg"
-                                                    Background="{DynamicResource Sem.Color.PrimaryContainer}"
-                                                    Opacity="0"
-                                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}" />
-                                            <Grid ColumnDefinitions="6,16,60,*" MinHeight="76">
+                            <Grid ColumnDefinitions="6,16,60,*" MinHeight="76">
 
                                                 <!-- Col 0: 彩签 -->
                                                 <Border Grid.Column="0"
@@ -102,10 +94,6 @@
                                                     </StackPanel>
                                                 </Border>
                                             </Grid>
-                                        </Panel>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

@@ -1,24 +1,23 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:runtime="using:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
 
     <!-- 全局颜色资源；运行时生成的颜色仍由主题协调器注入。 -->
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude
-                    Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Resources/Color/SemanticColor.axaml" />
+                <runtime:SemanticThemeResources />
+                <ResourceInclude Source="/Themes/OpenUtauMobile/Resources/Color/SemanticColor.axaml" />
+                <MergeResourceInclude Source="/Themes/OpenUtauMobile/Accents/BaseColorsPalette.axaml" />
+                <MergeResourceInclude Source="/Themes/OpenUtauMobile/Accents/BaseResources.axaml" />
+                <MergeResourceInclude Source="/Themes/OpenUtauMobile/Accents/ControlResources.axaml" />
+                <MergeResourceInclude Source="/Themes/OpenUtauMobile/Strings/InvariantResources.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
 
-    <!-- Avalonia 内置控件的全局覆盖；FluentTheme 继续提供基础主题。 -->
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/Button.axaml" />
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/TextBox.axaml" />
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ComboBox.axaml" />
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/TabItem.axaml" />
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/Slider.axaml" />
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ProgressBar.axaml" />
-    <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Controls/ToggleSwitch.axaml" />
+    <!-- 完整本地控件主题；复杂控件保留上游行为作为源码级后备。 -->
+    <StyleInclude Source="/Themes/OpenUtauMobile/Controls/ControlThemes.axaml" />
 
     <!-- 已有跨功能复用的 OPUM 组件；页面及业务控件样式由各自所有者加载。 -->
     <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Components/TopBar.axaml" />
