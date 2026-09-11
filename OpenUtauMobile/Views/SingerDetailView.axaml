@@ -129,14 +129,14 @@
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                             <!-- Open Web -->
                             <Button Grid.Column="0"
-                                    Classes="ActionBtn"
+                                    Classes="tonal" HorizontalAlignment="Stretch"
 
                                     Command="{Binding OpenWebCommand}"
                                     IsVisible="{Binding HasWeb}">
                                 <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <Path Width="{x:Static semantic:IconTokens.Compact}" Height="{x:Static semantic:IconTokens.Compact}"
                                           Stretch="Uniform"
-                                          Fill="{DynamicResource Sem.Color.SurfaceContainerHigh}"
+                                          Fill="{Binding $parent[Button].Foreground}"
                                           Data="{StaticResource IconWeb}" />
                                     <TextBlock Text="{DynamicResource SingerDetail.OpenWeb}"
                                                VerticalAlignment="Center"
@@ -218,15 +218,14 @@
                                            FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                            Opacity="0.7"
                                            TextWrapping="Wrap" />
-                                <Button Classes="DeleteBtn"
+                                <Button Classes="destructive" HorizontalAlignment="Stretch"
                                         Command="{Binding DeleteCommand}">
                                     <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <Path Width="{x:Static semantic:IconTokens.Small}" Height="{x:Static semantic:IconTokens.Small}"
                                               Stretch="Uniform"
-                                              Fill="{DynamicResource Sem.Color.Error}"
+                                              Fill="{Binding $parent[Button].Foreground}"
                                               Data="{StaticResource IconDelete}" />
-                                        <TextBlock Text="{DynamicResource Common.Uninstall}"
-                                                   FontWeight="SemiBold" />
+                                        <TextBlock Text="{DynamicResource Common.Uninstall}" />
                                     </StackPanel>
                                 </Button>
                             </StackPanel>

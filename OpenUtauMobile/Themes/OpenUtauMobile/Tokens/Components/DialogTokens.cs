@@ -28,6 +28,6 @@ public static class DialogTokens
     public static Thickness FooterPadding => new(24, 16, 24, 24);
     public static double TitleSize => TypographyTokens.TitleLSize;
     public static CornerRadius CornerRadius => ShapeTokens.CornerXL;
-    public static CornerRadius ActionCornerRadius => ShapeTokens.CornerS;
-    public static Thickness ActionPadding => new(16, 12);
+    public static CornerRadius ActionCornerRadius => ButtonTokens.ActionCornerRadius;
+    public static Thickness ActionPadding => ButtonTokens.ActionPadding;
 }

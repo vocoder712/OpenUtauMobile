@@ -394,7 +394,7 @@
                                                                VerticalAlignment="Center" />
                                                 </Border>
                                                 <Button Grid.Column="1"
-                                                        Classes="AccentBtn"
+                                                        Classes="filled"
                                                         Content="{DynamicResource Settings.Edit.SoundFontPath.Change}"
                                                         Command="{Binding ChangeSoundFontPathCommand}"
                                                         VerticalAlignment="Center" />
@@ -802,7 +802,7 @@
                                                            Text="{DynamicResource Settings.Render.OutputDevice.Desc}"
                                                            FontSize="12" />
                                             </StackPanel>
-                                            <Button Classes="AccentBtn"
+                                            <Button Classes="filled"
                                                     Content="{DynamicResource Common.Refresh}"
                                                     Command="{Binding RefreshAudioDevicesCommand}"
                                                     IsEnabled="{Binding !IsRefreshingDevices}"
@@ -869,7 +869,7 @@
                                                            VerticalAlignment="Center" />
                                             </Border>
                                             <Button Grid.Column="1"
-                                                    Classes="AccentBtn"
+                                                    Classes="filled"
                                                     Content="{DynamicResource Settings.File.AdditionalSingerPath.Change}"
                                                     Command="{Binding ChangeAdditionalSingerPathCommand}"
                                                     VerticalAlignment="Center" />
@@ -886,7 +886,7 @@
                                             <TextBlock Classes="PlaceholderText"
                                                        Text="{DynamicResource Settings.File.RenderCache.Desc}" />
                                         </StackPanel>
-                                        <Button Classes="AccentBtn"
+                                        <Button Classes="filled"
                                                 Content="{DynamicResource Settings.File.RenderCache.Clear}"
                                                 Command="{Binding ClearRenderCacheCommand}"
                                                 HorizontalAlignment="Left" />
@@ -965,10 +965,10 @@
                                                 <Button Grid.Column="2"
                                                         Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
                                                         Command="{Binding ApplyThemeSeedHexCommand}"
-                                                        Classes="AccentBtn" />
+                                                        Classes="filled" />
                                                 <Button Grid.Column="3"
                                                         Content="{DynamicResource Settings.Appearance.ThemeColor.OpenPicker}"
-                                                        Command="{Binding OpenThemeColorPickerCommand}" />
+                                                        Command="{Binding OpenThemeColorPickerCommand}" Classes="tonal" />
                                             </Grid>
 
                                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">

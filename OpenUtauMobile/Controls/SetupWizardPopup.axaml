@@ -138,7 +138,7 @@
                                             Content="{Binding StoragePermission.ButtonText}"
                                             Command="{Binding StoragePermission.GrantCommand}"
                                             IsVisible="{Binding !StoragePermission.IsGranted}"
-                                            Classes="Primary"  Padding="16,8" />
+                                            Classes="Primary" />
                                         <Border
                                             Grid.Column="1"
                                             CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
@@ -303,7 +303,7 @@
                                                         Grid.Column="1"
                                                         Content="{DynamicResource SetupWizard.Step2.SelectFolder}"
                                                         Command="{Binding ChangeFolderCommand}"
-                                                        FontSize="12"  Padding="12,8" />
+                                                        Classes="tonal" />
                                                 </Grid>
                                             </Border>
                                         </StackPanel>

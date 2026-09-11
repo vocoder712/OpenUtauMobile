@@ -18,4 +18,8 @@
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
     </Style>
+    <!-- 操作按钮内的图标跟随按钮角色，避免在 filled 底色上继续使用主色。 -->
+    <Style Selector=":is(Button) :is(inconPacks|PackIconControlBase)">
+        <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}" />
+    </Style>
 </Styles>

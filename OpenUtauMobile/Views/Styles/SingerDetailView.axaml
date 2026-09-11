@@ -23,29 +23,7 @@
     </Style>
 
     <!-- Action button -->
-    <Style Selector="Button.ActionBtn">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-        <Setter Property="Padding" Value="16,12" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <!-- 保留迁移前由全局同名按钮样式补充的属性。 -->
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyLSize}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-    </Style>
 
     <!-- Delete button -->
-    <Style Selector="Button.DeleteBtn">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.ErrorContainer}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-        <Setter Property="Padding" Value="16,12" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-    </Style>
 
 </Styles>

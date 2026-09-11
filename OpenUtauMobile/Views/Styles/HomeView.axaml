@@ -48,23 +48,7 @@
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
-    <Style Selector="Button.RecoveryBannerSecondaryAction">
-        <Setter Property="Padding" Value="12,8" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-    </Style>
 
-    <Style Selector="Button.RecoveryBannerPrimaryAction">
-        <Setter Property="Padding" Value="12,8" />
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-    </Style>
 
     <!-- 首页操作按钮仅在首页加载。 -->
     <Style Selector="Button.HomeActionButton">

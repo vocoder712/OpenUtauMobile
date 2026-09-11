@@ -216,9 +216,7 @@
                                                     <Grid Grid.Row="3">
                                                         <!-- 安装 -->
                                                         <Button Command="{Binding InstallCommand}"
-                                                                Classes="btn-primary"
-                                                                Height="40"
-                                                                CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                                                Classes="filled" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                                                 HorizontalAlignment="Stretch">
                                                             <Button.IsVisible>
                                                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -231,7 +229,6 @@
                                                             <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                                                 <iconPacks:PackIconPhosphorIcons Width="{x:Static semantic:IconTokens.Small}"
                                                                         Height="{x:Static semantic:IconTokens.Small}"
-                                                                        Foreground="{DynamicResource Sem.Color.OnPrimary}"
                                                                         Kind="DownloadSimple" />
                                                                 <TextBlock Text="{DynamicResource Common.Install}"
                                                                            FontSize="{x:Static semantic:TypographyTokens.BodyMSize}" FontWeight="Medium" />
@@ -239,9 +236,7 @@
                                                         </Button>
                                                         <!-- 更新 -->
                                                         <Button Command="{Binding InstallCommand}"
-                                                                Classes="btn-primary"
-                                                                Height="40"
-                                                                CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                                                Classes="tonal" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                                                 HorizontalAlignment="Stretch">
                                                             <Button.IsVisible>
                                                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -260,9 +255,7 @@
                                                         </Button>
                                                         <!-- 已安装 -->
                                                         <Button IsEnabled="False"
-                                                                Classes="btn-primary"
-                                                                Height="40"
-                                                                CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                                                Classes="tonal" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                                                 HorizontalAlignment="Stretch">
                                                             <Button.IsVisible>
                                                                 <MultiBinding Converter="{x:Static BoolConverters.And}">
@@ -275,7 +268,6 @@
                                                             </Button.IsVisible>
                                                             <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                                                 <iconPacks:PackIconPhosphorIcons Width="{x:Static semantic:IconTokens.Small}" Height="{x:Static semantic:IconTokens.Small}"
-                                                                        Foreground="{DynamicResource Sem.Color.Success}"
                                                                         Kind="Check" />
                                                                 <TextBlock Text="{DynamicResource Common.Installed}"
                                                                            FontSize="{x:Static semantic:TypographyTokens.BodyMSize}" FontWeight="Medium" />
@@ -404,17 +396,12 @@
 
                                                     <!-- Row 2: Uninstall button -->
                                                     <Button Grid.Row="2"
-                                                            Classes="btn-primary"
+                                                            Classes="destructive" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                                             Command="{Binding UninstallCommand}"
                                                             IsEnabled="{Binding !IsUninstalling}"
-                                                            Background="{DynamicResource Sem.Color.ErrorContainer}"
-                                                            Foreground="{DynamicResource Sem.Color.OnErrorContainer}"
-                                                            Height="40"
-                                                            CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                             HorizontalAlignment="Stretch">
                                                         <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                                             <iconPacks:PackIconPhosphorIcons Width="{x:Static semantic:IconTokens.Small}" Height="{x:Static semantic:IconTokens.Small}"
-                                                                    Foreground="{DynamicResource Sem.Color.OnPrimary}"
                                                                     Kind="TrashSimple" />
                                                             <TextBlock
                                                                 Text="{DynamicResource DependencyManager.Uninstalling}"

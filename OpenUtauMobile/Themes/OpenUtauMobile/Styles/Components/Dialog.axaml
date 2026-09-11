@@ -129,8 +129,8 @@
         <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="CornerRadius" Value="{x:Static components:DialogTokens.ActionCornerRadius}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
@@ -160,24 +160,4 @@
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="TextAlignment" Value="Center" />
     </Style>
-    <!-- 旧页面兼容样式；新弹窗只使用 DialogActions 和语义操作类。 -->
-    <Style Selector="Button.Primary">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="20,8" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
-    </Style>
-
-    <Style Selector="Button.Secondary">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="20,8" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
-        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
-    </Style>
-
 </Styles>

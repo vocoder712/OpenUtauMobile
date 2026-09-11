@@ -47,7 +47,7 @@
                             Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                             TextWrapping="Wrap" />
                         <Button
-                            Classes="ExportPathBtn"
+                            Classes="tonal"
                             Content="{DynamicResource ExportAudioPopup.SelectPath}"
                             Command="{Binding PickPathCommand}" />
                     </StackPanel>

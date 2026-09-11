@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:CompileBindings="False"
                     xmlns:components="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+                    xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
                     xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
   <!-- 所有按钮复用同一个模板和状态机；外部样式只设置角色与布局。 -->
   <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
@@ -19,6 +20,7 @@
     <Setter Property="FocusAdorner" Value="{x:Null}" />
     <Setter Property="Template">
       <ControlTemplate>
+        <Border Background="Transparent">
         <Panel Name="PART_Root">
           <Border Name="PART_Chrome" Background="{TemplateBinding Background}"
                   BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
@@ -35,22 +37,64 @@
                   Margin="{x:Static components:ButtonTokens.FocusInset}" CornerRadius="{TemplateBinding CornerRadius}"
                   IsHitTestVisible="False" IsVisible="False" />
         </Panel>
+        </Border>
       </ControlTemplate>
     </Setter>
-    <!-- 标准 tonal 角色复用基础状态机，默认按钮与编辑器紧凑按钮保持原样。 -->
+    <!-- 常规操作统一规格；编辑器工具与内容卡片不强制套用操作按钮尺寸。 -->
+    <Style Selector="^.tonal, ^.filled, ^.outlined, ^.text, ^.destructive, ^.Primary, ^.Secondary, ^.DialogAction, ^.DialogPrimary, ^.DialogDestructive">
+      <Setter Property="CornerRadius" Value="{x:Static components:ButtonTokens.ActionCornerRadius}" />
+      <Setter Property="Padding" Value="{x:Static components:ButtonTokens.ActionPadding}" />
+      <Setter Property="MinHeight" Value="{x:Static components:ButtonTokens.ActionMinHeight}" />
+      <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
     <Style Selector="^.tonal">
       <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
       <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
-      <!-- 使用有限的全圆角半径，避免极大浮点数在渲染时溢出。 -->
-      <Setter Property="CornerRadius" Value="999" />
-      <Setter Property="Padding" Value="24,10" />
-      <Setter Property="MinHeight" Value="40" />
-      <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
-      <Setter Property="FontWeight" Value="Medium" />
     </Style>
-    <Style Selector="^.tonal /template/ ContentPresenter#PART_ContentPresenter TextBlock">
+    <Style Selector="^.filled, ^.Primary">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+    </Style>
+    <Style Selector="^.outlined, ^.Secondary">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="^.text">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+    <!-- 危险操作沿用 filled 的结构，只替换成配对的错误色。 -->
+    <Style Selector="^.destructive">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.Error}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
+    </Style>
+    <Style Selector="^.tonal /template/ ContentPresenter#PART_ContentPresenter TextBlock, ^.filled /template/ ContentPresenter#PART_ContentPresenter TextBlock, ^.outlined /template/ ContentPresenter#PART_ContentPresenter TextBlock, ^.text /template/ ContentPresenter#PART_ContentPresenter TextBlock, ^.destructive /template/ ContentPresenter#PART_ContentPresenter TextBlock, ^.Primary /template/ ContentPresenter#PART_ContentPresenter TextBlock, ^.Secondary /template/ ContentPresenter#PART_ContentPresenter TextBlock">
       <Setter Property="TextWrapping" Value="Wrap" />
       <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+    <!-- 动效仅作用于内部视觉根节点；外层透明命中区域始终保持原大小。 -->
+    <Style Selector="^ /template/ Panel#PART_Root">
+      <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+      <Setter Property="RenderTransform" Value="scale(1)" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="{x:Static foundation:MotionTokens.DurationShort}" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="^ /template/ Border#PART_StateLayer">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{x:Static foundation:MotionTokens.DurationShort}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Panel#PART_Root">
+      <Setter Property="RenderTransform" Value="scale(0.98)" />
     </Style>
     <Style Selector="^.accent">
       <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />

@@ -121,8 +121,7 @@
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button Classes="Primary"
                                         Content="{DynamicResource Common.Next}"
-                                        Command="{Binding NextCommand}"
-                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"  Padding="16,8" />
+                                        Command="{Binding NextCommand}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -196,13 +195,11 @@
                             <Button Grid.Column="0"
                                     Classes="Secondary"
                                     Content="{DynamicResource Common.Previous}"
-                                    Command="{Binding BackCommand}"
-                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"  Padding="16,8" />
+                                    Command="{Binding BackCommand}" />
                             <Button Grid.Column="2"
                                     Classes="Primary"
                                     Content="{DynamicResource Common.Next}"
-                                    Command="{Binding NextCommand}"
-                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"  Padding="16,8" />
+                                    Command="{Binding NextCommand}" />
                         </Grid>
                     </Border>
                 </Grid>
@@ -284,13 +281,11 @@
                             <Button Grid.Column="0"
                                     Classes="Secondary"
                                     Content="{DynamicResource Common.Previous}"
-                                    Command="{Binding BackCommand}"
-                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"  Padding="16,8" />
+                                    Command="{Binding BackCommand}" />
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button Classes="Primary"
                                         Content="{DynamicResource Common.Next}"
-                                        Command="{Binding NextCommand}"
-                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"  Padding="16,8" />
+                                        Command="{Binding NextCommand}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -386,13 +381,11 @@
                             <Button Grid.Column="0"
                                     Classes="Secondary"
                                     Content="{DynamicResource Common.Previous}"
-                                    Command="{Binding BackCommand}"
-                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"  Padding="16,8" />
+                                    Command="{Binding BackCommand}" />
                             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button Classes="Primary"
                                         Content="{DynamicResource SingerSetup.ConfirmInstall}"
-                                        Command="{Binding ConfirmInstallCommand}"
-                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"  Padding="16,8" />
+                                        Command="{Binding ConfirmInstallCommand}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -455,9 +448,8 @@
                 <Button Classes="Secondary"
                         Content="{DynamicResource Common.Back}"
                         Command="{Binding ExitCommand}"
-                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
                         HorizontalAlignment="Stretch"
-                        Margin="0,16,0,0"  Padding="16,12" />
+                        Margin="0,16,0,0" />
             </StackPanel>
         </Panel>
 
@@ -500,9 +492,8 @@
                 <Button Classes="Secondary"
                         Content="{DynamicResource Common.Back}"
                         Command="{Binding ExitCommand}"
-                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
                         HorizontalAlignment="Stretch"
-                        Margin="0,16,0,0"  Padding="16,12" />
+                        Margin="0,16,0,0" />
             </StackPanel>
         </Panel>
     </Panel>

@@ -91,7 +91,7 @@
                             Watermark="#RRGGBB" />
                         <Button
                             Grid.Column="1"
-                            Classes="AccentBtn"
+                            Classes="filled"
                             Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
                             Command="{Binding ApplyHexCommand}" />
                     </Grid>

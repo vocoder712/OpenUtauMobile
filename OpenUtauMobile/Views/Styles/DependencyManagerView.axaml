@@ -63,14 +63,4 @@
         <Setter Property="Fill" Value="Transparent" />
     </Style>
 
-    <Style Selector="Button.btn-primary">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="8,4" />
-        <Setter Property="CornerRadius" Value="2" />
-    </Style>
 </Styles>

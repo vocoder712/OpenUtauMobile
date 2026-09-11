@@ -56,14 +56,5 @@
     </Style>
 
     <!-- Accent action button (e.g. "Change path") -->
-    <Style Selector="Button.AccentBtn">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerS}" />
-        <Setter Property="Padding" Value="16,8" />
-        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="BorderThickness" Value="0" />
-    </Style>
 
 </Styles>

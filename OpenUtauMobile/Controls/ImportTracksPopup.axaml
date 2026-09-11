@@ -28,8 +28,8 @@
                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                         <TextBlock Text="{DynamicResource ImportTracks.AppendHint}" TextWrapping="Wrap" />
                         <Grid ColumnDefinitions="*,*">
-                            <Button Content="{DynamicResource ImportTracks.SelectAll}" Command="{Binding SelectAllCommand}" />
-                            <Button
+                            <Button Classes="text" Content="{DynamicResource ImportTracks.SelectAll}" Command="{Binding SelectAllCommand}" />
+                            <Button Classes="text"
                                 Grid.Column="1"
                                 Content="{DynamicResource ImportTracks.SelectNone}"
                                 Command="{Binding SelectNoneCommand}"
@@ -50,7 +50,7 @@
                                                 IsVisible="{Binding HasError}"
                                                 TextWrapping="Wrap"
                                                 Foreground="{DynamicResource Sem.Color.Error}" />
-                                            <Button
+                                            <Button Classes="text"
                                                 Content="{DynamicResource ImportTracks.RemoveFile}"
                                                 Command="{Binding $parent[UserControl].((vm:ImportTracksViewModel)DataContext).RemoveSourceCommand}"
                                                 CommandParameter="{Binding}" />

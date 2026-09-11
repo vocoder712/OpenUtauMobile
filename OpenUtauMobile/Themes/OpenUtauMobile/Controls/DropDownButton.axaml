@@ -5,6 +5,7 @@
  <ControlTheme x:Key="{x:Type DropDownButton}" TargetType="DropDownButton" BasedOn="{StaticResource {x:Type Button}}">
     <Setter Property="Template">
       <ControlTemplate>
+        <Border Background="Transparent">
         <Panel Name="PART_Root">
           <Border Name="RootBorder" Background="{TemplateBinding Background}"
                   BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
@@ -23,6 +24,7 @@
                   Margin="{x:Static components:ButtonTokens.FocusInset}" CornerRadius="{TemplateBinding CornerRadius}"
                   IsHitTestVisible="False" IsVisible="False" />
         </Panel>
+        </Border>
       </ControlTemplate>
     </Setter>
     <Style Selector="^:flyout-open:not(:disabled) /template/ Border#PART_StateLayer">
