@@ -33,7 +33,7 @@
 
   <!-- Tab strip (bar) styling -->
   <SolidColorBrush x:Key="TabbedPageTabStripBackground" Color="Transparent" />
-  <CornerRadius x:Key="TabbedPageTabStripCornerRadius">0</CornerRadius>
+  <StaticResource x:Key="TabbedPageTabStripCornerRadius" ResourceKey="TabBarCornerRadius" />
   <Thickness x:Key="TabbedPageTabStripBorderThickness">0</Thickness>
   <SolidColorBrush x:Key="TabbedPageTabStripBorderBrush" Color="Transparent" />
   <Thickness x:Key="TabbedPageTabStripMargin">0</Thickness>
@@ -49,7 +49,7 @@
     <Setter Property="Template">
       <ControlTemplate>
         <DockPanel>
-          <Border Name="PART_TabStrip"
+          <Border Name="PART_TabStrip" ClipToBounds="True"
                   Background="{TemplateBinding Background}"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   BorderBrush="{TemplateBinding BorderBrush}"

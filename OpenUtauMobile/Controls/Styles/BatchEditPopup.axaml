@@ -26,7 +26,7 @@
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ItemIconSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ItemIconSize}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
+        <Setter Property="CornerRadius" Value="999" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
@@ -56,54 +56,6 @@
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
-    </Style>
-
-    <Style Selector="Button.BatchEditPinIconButton">
-        <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.PinIconButtonSize}" />
-        <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.PinIconButtonSize}" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="{x:Static localTokens:BatchEditTokens.PinButtonCornerRadius}" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-
-    <Style Selector="Border.BatchEditPinIconVisual">
-        <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.PinIconVisualSize}" />
-        <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.PinIconVisualSize}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="CornerRadius" Value="{x:Static localTokens:BatchEditTokens.PinButtonCornerRadius}" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <Style Selector="Button.BatchEditPinIconButton.pinned">
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
-    </Style>
-
-    <Style Selector="Button.BatchEditRunIconButton">
-        <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
-        <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ActionIconButtonSize}" />
-        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetM}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-
-    <!-- 执行 -->
-    <Style Selector="Border.BatchEditRunIconVisual">
-        <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ActionIconVisualSize}" />
-        <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ActionIconVisualSize}" />
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
     </Style>
 
     <Style Selector="TextBlock.BatchEditValidation">

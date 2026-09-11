@@ -3,9 +3,10 @@
                     x:CompileBindings="False">
 
   <ControlTheme x:Key="{x:Type TabStrip}" TargetType="TabStrip">
+    <Setter Property="CornerRadius" Value="{DynamicResource TabBarCornerRadius}" />
     <Setter Property="Template">
       <ControlTemplate>
-        <Border Background="{TemplateBinding Background}"
+        <Border Name="PART_TabStrip" ClipToBounds="True" Background="{TemplateBinding Background}"
                 BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}"
                 CornerRadius="{TemplateBinding CornerRadius}"

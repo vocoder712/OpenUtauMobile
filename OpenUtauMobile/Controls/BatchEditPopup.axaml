@@ -1,5 +1,6 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -22,7 +23,7 @@
         <!-- Action 项目模板 -->
         <DataTemplate x:Key="BatchEditItemTemplate" x:DataType="vm:BatchEditItemViewModel">
             <Border Classes="BatchEditItem">
-                <Grid ColumnDefinitions="Auto,*,Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <Border
                         Grid.Row="0"
                         Grid.RowSpan="2"
@@ -30,6 +31,7 @@
                         Classes="BatchEditItemIcon">
                         <iconPacks:PackIconPhosphorIcons
                             Kind="{Binding Icon}"
+                            Width="{x:Static semantic:IconTokens.Standard}" Height="{x:Static semantic:IconTokens.Standard}"
                             Foreground="{DynamicResource Sem.Color.OnPrimaryContainer}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center" />
@@ -50,40 +52,24 @@
                             MinWidth="{x:Static localTokens:BatchEditTokens.ParameterMinWidth}"
                             HorizontalAlignment="Stretch" />
                     </StackPanel>
-                    <Button
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
-                        Grid.Column="2"
-                        Classes="BatchEditPinIconButton"
-                        Classes.pinned="{Binding IsPinned}"
-                        Command="{Binding TogglePinCommand}"
-                        ToolTip.Tip="{Binding PinLabel}">
-                        <Border Classes="BatchEditPinIconVisual">
-                            <iconPacks:PackIconPhosphorIcons
-                                Kind="{Binding PinIcon}"
-                                Width="{x:Static localTokens:BatchEditTokens.PinIconSize}"
-                                Height="{x:Static localTokens:BatchEditTokens.PinIconSize}" />
-                        </Border>
-                    </Button>
-                    <Button
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
-                        Grid.Column="3"
-                        Classes="BatchEditRunIconButton"
-                        Command="{Binding ExecuteCommand}"
-                        ToolTip.Tip="{Binding ExecuteLabel}">
-                        <Border Classes="BatchEditRunIconVisual">
-                            <iconPacks:PackIconPhosphorIcons
-                                Kind="Play"
-                                Width="{x:Static localTokens:BatchEditTokens.ActionIconSize}"
-                                Height="{x:Static localTokens:BatchEditTokens.ActionIconSize}"
-                                Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
-                        </Border>
-                    </Button>
+                    <!-- 操作独立成行，给窄窗口的标题和参数保留完整宽度。 -->
+                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal"
+                                HorizontalAlignment="Right" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <Button Classes="icon" Classes.tonal="{Binding IsPinned}"
+                                Command="{Binding TogglePinCommand}"
+                                ToolTip.Tip="{Binding PinLabel}" AutomationProperties.Name="{Binding PinLabel}">
+                            <iconPacks:PackIconPhosphorIcons Kind="{Binding PinIcon}"
+                                Width="{x:Static semantic:IconTokens.Standard}" Height="{x:Static semantic:IconTokens.Standard}" />
+                        </Button>
+                        <Button Classes="icon tonal" Command="{Binding ExecuteCommand}"
+                                ToolTip.Tip="{Binding ExecuteLabel}" AutomationProperties.Name="{Binding ExecuteLabel}">
+                            <iconPacks:PackIconPhosphorIcons Kind="Play"
+                                Width="{x:Static semantic:IconTokens.Standard}" Height="{x:Static semantic:IconTokens.Standard}" />
+                        </Button>
+                    </StackPanel>
                     <StackPanel
-                        Grid.Row="2"
+                        Grid.Row="3"
                         Grid.Column="1"
-                        Grid.ColumnSpan="3"
                         >
                         <TextBlock
                             Text="{Binding ValidationMessage}"

@@ -1808,4 +1808,5 @@
   <data name="VoiceMapping.Apply" xml:space="preserve"><value>適用</value></data>
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>割り当てる音符または音色がありません。</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色を再割り当て</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>並べ替え</value></data>
 </root>

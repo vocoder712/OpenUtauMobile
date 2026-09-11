@@ -6,5 +6,4 @@ public static class DependencyManagerTokens
     public static double ContentMaxWidth => 1248d;
     public static double BadgeMinWidth => 16d;
     public static double BadgeHeight => 16d;
-    public static double IconButtonSize => 48d;
 }

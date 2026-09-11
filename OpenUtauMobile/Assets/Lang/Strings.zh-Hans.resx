@@ -1815,4 +1815,5 @@
   <data name="VoiceMapping.Apply" xml:space="preserve"><value>应用映射</value></data>
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>该轨道没有可映射的音符或音色。</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色映射</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>排序</value></data>
 </root>

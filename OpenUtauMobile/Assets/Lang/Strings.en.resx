@@ -1815,4 +1815,5 @@
   <data name="VoiceMapping.Apply" xml:space="preserve"><value>Apply mapping</value></data>
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>This track has no notes or voice colors to map.</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>Remap voice colors</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>Sort</value></data>
 </root>

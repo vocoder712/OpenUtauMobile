@@ -76,6 +76,25 @@
       <Setter Property="TextWrapping" Value="Wrap" />
       <Setter Property="TextAlignment" Value="Center" />
     </Style>
+    <!-- 图标按钮共用 48 命中区、40 底色和 24 图标，复用全部基础交互。 -->
+    <Style Selector="^.icon">
+      <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="Height" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="MinWidth" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="Padding" Value="12" />
+      <Setter Property="CornerRadius" Value="{x:Static components:ButtonTokens.ActionCornerRadius}" />
+    </Style>
+    <Style Selector="^.icon:not(.tonal):not(.filled):not(.outlined):not(.destructive)">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+    </Style>
+    <Style Selector="^.icon /template/ Border#PART_Chrome, ^.icon /template/ Border#PART_StateLayer">
+      <Setter Property="Margin" Value="4" />
+    </Style>
+    <Style Selector="^.icon /template/ Border#PART_FocusRing">
+      <Setter Property="Margin" Value="1" />
+    </Style>
     <!-- 动效仅作用于内部视觉根节点；外层透明命中区域始终保持原大小。 -->
     <Style Selector="^ /template/ Panel#PART_Root">
       <Setter Property="RenderTransformOrigin" Value="50%,50%" />

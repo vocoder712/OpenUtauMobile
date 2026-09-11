@@ -97,8 +97,12 @@
                                     <!-- 排序 -->
                                     <!-- TODO: Implement sort dropdown -->
                                     <Button Grid.Column="1"
-                                            Classes="DependencyIconButton"
-                                            Content="{iconPacks:PhosphorIcons FunnelSimple}">
+                                            Classes="icon outlined"
+                                            ToolTip.Tip="{DynamicResource DependencyManager.Sort}"
+                                            AutomationProperties.Name="{DynamicResource DependencyManager.Sort}">
+                                        <iconPacks:PackIconPhosphorIcons Kind="SortAscending"
+                                            Width="{x:Static semantic:IconTokens.Standard}"
+                                            Height="{x:Static semantic:IconTokens.Standard}" />
                                     </Button>
 
                                 </Grid>

@@ -45,17 +45,6 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <!-- 例如排序按钮 -->
-    <Style Selector="Button.DependencyIconButton">
-        <Setter Property="Width" Value="{x:Static localTokens:DependencyManagerTokens.IconButtonSize}" />
-        <Setter Property="Height" Value="{x:Static localTokens:DependencyManagerTokens.IconButtonSize}" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
-        <Setter Property="BorderThickness" Value="1" />
-    </Style>
 
     <Style Selector="Ellipse.CircularProgressTrack">
         <Setter Property="Stroke" Value="{DynamicResource Sem.Color.OutlineVariant}" />

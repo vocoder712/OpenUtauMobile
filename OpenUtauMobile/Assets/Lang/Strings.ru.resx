@@ -1770,4 +1770,5 @@
   <data name="VoiceMapping.Apply" xml:space="preserve"><value>Применить</value></data>
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>На дорожке нет нот или тембров для сопоставления.</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>Сопоставление тембров</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>Сортировка</value></data>
 </root>
