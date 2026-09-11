@@ -52,6 +52,11 @@
 
 ## Evidence and stopping point
 
+For headless probes, use [UI probes](ui-probes.md). Verify data-path isolation before
+constructing ViewModels. Reopen screenshots and confirm the complete target is visible.
+Report compilation, offscreen rendering, binding/persistence and actual input checks
+separately; assigning a Value property is not evidence of pointer or keyboard routing.
+
 Follow current AGENTS.md for Git/build/test rules; this checklist introduces no test suite.
 Use source review and `git diff --check`; if code/theme changed, build the affected target
 with repository-prescribed telemetry setting. Exercise only relevant visual/state cases in

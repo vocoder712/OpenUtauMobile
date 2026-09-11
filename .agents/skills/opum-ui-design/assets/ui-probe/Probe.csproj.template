@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>__FRAMEWORK__</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="__PROJECT__" />
+        <PackageReference Include="Avalonia.Headless" Version="__AVALONIA__" />
+        <PackageReference Include="Avalonia.Skia" Version="__AVALONIA__" />
+    </ItemGroup>
+</Project>

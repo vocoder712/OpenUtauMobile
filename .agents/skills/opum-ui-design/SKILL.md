@@ -25,5 +25,6 @@ description: Make repository-specific UI implementation and review decisions in 
 - Ownership, colors, tokens, base controls: architecture reference; follow its README links only for the affected layer.
 - New surface or reuse search: select one canonical entry, not the entire catalog.
 - Completion/review request: applicable checklist sections plus the changed source.
+- Offscreen UI, layout, theme, binding or preference verification: read [UI probes](references/ui-probes.md). Reuse a matching probe or generate the tested host/template; keep business assertions scenario-local. This is optional, not a new test-suite requirement.
 
 References label **contract**, **current pattern**, **example**, and **feature exception**. Recheck current source when documentation disagrees; historical migration inventories are not future design rules.
