@@ -10,9 +10,7 @@
     x:Class="OpenUtauMobile.Controls.TrackColorPickerPopup"
     d:DataContext="{d:DesignInstance Type=vm:TrackColorPickerPopupViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:TrackColorPickerPopupViewModel"
-    Classes="PopupDialogRoot"
-    MinHeight="320"
-    MaxHeight="620">
+    Classes="PopupDialogRoot DialogHeightList">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.TrackColor.Title}">
         <DockPanel>
             <Border Classes="DialogBodyBorder">

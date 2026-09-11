@@ -10,8 +10,7 @@
     x:Class="OpenUtauMobile.Controls.PhonemeEditPopup"
     d:DataContext="{d:DesignInstance Type=vm:PhonemeEditViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:PhonemeEditViewModel"
-    Classes="PopupDialogRoot"
-    MinHeight="180">
+    Classes="PopupDialogRoot DialogHeightCompact">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource PhonemeEdit.Title}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActions>

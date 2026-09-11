@@ -38,6 +38,12 @@ OpenUtau Mobile is a cross-platform mobile singing voice synthesis editor based 
   of dialog chrome and action design; do not add per-dialog chrome tokens or
   duplicate title/close/footer markup.
 
+- Repeated dialog height policies use one root class: DialogHeightCompact,
+  DialogHeightRegular, DialogHeightList or DialogHeightExpanded. Values and width
+  preset metrics are owned by Components/DialogTokens.cs; mappings live in
+  Styles/Components/Dialog.axaml. Do not repeat root MinHeight/MaxHeight literals
+  for a shared use case. The token README begins with the owner map and examples.
+
 - Singer installation UI is rough and needs improvement.
 - The product is still in the basic feature stage and not feature-complete.
 

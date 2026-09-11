@@ -2,6 +2,8 @@
 
 ## Overview
 
+Developer UI reference: [token ownership and dialog sizing](OpenUtauMobile/Themes/OpenUtauMobile/Tokens/README.md).
+
 To solve the performance issues, outdated UI design, and cross-platform limitations of the first-generation implementation, the project is being rebuilt from scratch.
 
 The new version is based on:

@@ -10,6 +10,17 @@ public static class DialogTokens
     public static double ControlMinSize => InteractionTokens.TouchTarget;
     public static Thickness ViewportMargin => new(24);
     public static double DefaultMaxHeight => 640d;
+    public static double CompactMinHeight => 180d;
+    public static double CompactMaxHeight => 320d;
+    public static double RegularMinHeight => 280d;
+    public static double ListMinHeight => 280d;
+    public static double ListMaxHeight => 600d;
+    public static double ExpandedMinHeight => 400d;
+    public static double CompactMaxWidth => 360d;
+    public static double RegularMaxWidth => 420d;
+    public static double WideMaxWidth => 560d;
+    public static double ExpandedViewportBreakpoint => 840d;
+    public static double ExpandedHorizontalInset => 56d;
     public static double ScrimOpacity => 0.32;
     public static double SurfaceOpacity => 0.72;
     public static Thickness HeaderPadding => new(24, 8);

@@ -10,9 +10,7 @@
     x:Class="OpenUtauMobile.Controls.PhonemizerPickerPopup"
     d:DataContext="{d:DesignInstance Type=vm:PhonemizerPickerViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:PhonemizerPickerViewModel"
-    Classes="PopupDialogRoot"
-    MinHeight="300"
-    MaxHeight="600">
+    Classes="PopupDialogRoot DialogHeightList">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.Phonemizer.Title}">
         <DockPanel>
             <!-- 标题栏 -->

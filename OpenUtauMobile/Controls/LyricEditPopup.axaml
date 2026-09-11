@@ -10,8 +10,7 @@
     x:Class="OpenUtauMobile.Controls.LyricEditPopup"
     d:DataContext="{d:DesignInstance Type=vm:LyricEditViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:LyricEditViewModel"
-    Classes="PopupDialogRoot"
-    MinHeight="180">
+    Classes="PopupDialogRoot DialogHeightCompact">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource LyricEdit.Title}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActions>

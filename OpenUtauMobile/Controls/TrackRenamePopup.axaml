@@ -11,9 +11,7 @@
     x:Class="OpenUtauMobile.Controls.TrackRenamePopup"
     d:DataContext="{d:DesignInstance Type=vm:TrackRenamePopupViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:TrackRenamePopupViewModel"
-    Classes="PopupDialogRoot"
-    MinHeight="200"
-    MaxHeight="320">
+    Classes="PopupDialogRoot DialogHeightCompact">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.TrackRename.Title}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActions>

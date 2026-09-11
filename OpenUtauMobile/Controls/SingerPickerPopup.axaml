@@ -11,9 +11,7 @@
     x:Class="OpenUtauMobile.Controls.SingerPickerPopup"
     d:DataContext="{d:DesignInstance Type=vm:SingerPickerViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:SingerPickerViewModel"
-    Classes="PopupDialogRoot"
-    MinHeight="240"
-    MaxHeight="600">
+    Classes="PopupDialogRoot DialogHeightList">
     <c:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.Singer.Title}">
         <DockPanel>
             <!-- 标题栏 -->

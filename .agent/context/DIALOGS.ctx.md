@@ -202,6 +202,18 @@ unaffected.
 
 ### Per-dialog height configuration
 
+Prefer one semantic height class instead of repeating root size literals:
+`PopupDialogRoot DialogHeightCompact` (180..320), `DialogHeightRegular`
+(280..640), `DialogHeightList` (280..600), or `DialogHeightExpanded` (400..640).
+Keep PopupDialogRoot on every dialog. Without a height profile the range is
+0..640 and remains content-driven. Select at most one profile; width presets
+are independent. All values live in Components/DialogTokens.cs; global styles
+apply them. See the token README's owner map before introducing another value.
+
+The base coerces MinHeight to the effective MaxHeight, preventing a preferred
+minimum such as 400 from violating viewport margins. Underlying minimum values
+are retained and restored on enlargement. PhonemeEdit now uses the shared base.
+
 Set dimensions on the root UserControl with Classes="PopupDialogRoot", not on
 DialogShell, its body ScrollViewer or the shared host. Values cover the entire
 dialog (header, body and footer); viewport margins are outside it.
@@ -212,8 +224,12 @@ dialog (header, body and footer); viewport margins are outside it.
 - Fixed requested size above the default cap: Height="720" MaxHeight="720".
 - Bindings to Height/MaxHeight and component tokens are supported in the same place.
 
+The literal examples above illustrate Avalonia property behavior, not recommended
+new shared metrics. For repeated sizes choose a profile; for a genuine fixed-size
+exception reference a named owner token for Height and MaxHeight.
+
 In a short viewport, even a fixed requested height shrinks to preserve 24dp at
-each edge, then recovers when space returns. Do not set an oversized MinHeight.
+each edge, then recovers when space returns.
 Keep the shell body in its finite star row, with ScrollViewer handling overflow;
 do not introduce per-view viewport math, vertical StackPanels around the entire
 shell, or nonzero ScrollViewer.Padding.

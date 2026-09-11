@@ -18,12 +18,12 @@
                             ClipToBounds="True">
                         <Grid RowDefinitions="Auto,*,Auto">
                             <!-- 独立底色层透出宿主已模糊的背景，不影响前景控件透明度。 -->
-                            <Border Name="PART_SurfaceLayer" Grid.RowSpan="3"
+                            <Border Grid.Row="0" Name="PART_SurfaceLayer" Grid.RowSpan="3"
                                     Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"
                                     Opacity="{x:Static components:DialogTokens.SurfaceOpacity}"
                                     CornerRadius="{x:Static components:DialogTokens.CornerRadius}"
                                     IsHitTestVisible="False" />
-                            <Border Padding="{x:Static components:DialogTokens.HeaderPadding}">
+                            <Border Grid.Row="0" Padding="{x:Static components:DialogTokens.HeaderPadding}">
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <ContentPresenter Name="PART_HeaderPresenter" Content="{TemplateBinding Header}"
                                                       ContentTemplate="{TemplateBinding HeaderTemplate}"
@@ -69,6 +69,21 @@
     <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.DefaultMaxHeight}" />
+    </Style>
+    <!-- 高度预设只负责根节点尺寸；各弹窗按用途选择其中一个。 -->
+    <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightCompact">
+        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.CompactMinHeight}" />
+        <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.CompactMaxHeight}" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightRegular">
+        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.RegularMinHeight}" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightList">
+        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.ListMinHeight}" />
+        <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.ListMaxHeight}" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightExpanded">
+        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.ExpandedMinHeight}" />
     </Style>
     <Style Selector="TextBlock.PopupTitle">
         <Setter Property="FontSize" Value="{x:Static components:DialogTokens.TitleSize}" />

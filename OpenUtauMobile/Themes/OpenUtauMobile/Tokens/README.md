@@ -1,5 +1,66 @@
 # Static UI token ownership
 
+## Start here: where should a value go?
+
+Paths below are relative to `OpenUtauMobile/`.
+
+| Value / intent | Owner | Examples |
+| --- | --- | --- |
+| App-wide spacing, corners, animation durations | `Themes/OpenUtauMobile/Tokens/Foundation/` | `LayoutTokens`, `ShapeTokens`, `MotionTokens` |
+| Meaningful text/icon/touch/state roles | `Themes/OpenUtauMobile/Tokens/Semantic/` | `TypographyTokens`, `IconTokens`, `InteractionTokens`, `StateOpacityTokens` |
+| Shared component dimensions and behavior | `Themes/OpenUtauMobile/Tokens/Components/` | `DialogTokens`, `InputTokens`, `CardTokens`, `FabTokens`, `OptionEntryTokens`, `SliderTokens`, `TabItemTokens` |
+| Control-feature internals | `Controls/Tokens/` | `BatchEditTokens` parameter widths, `PhonemeCanvasTokens`, `EditModeSwitcherTokens`, `ToastTokens` |
+| Page-feature internals | `Views/Tokens/` | `EditorTokens`, `HomeTokens`, `DependencyManagerTokens` |
+| Theme-dependent color | `Themes/OpenUtauMobile/Runtime/Generation/ThemeGenerator.cs` | `Sem.Color.SurfaceContainerHigh`; use `DynamicResource`, not a static color constant |
+| One-off local geometry / zero / design-preview size | Owning AXAML or local style | A drawing's radius or `d:DesignHeight`; no token solely to hide a literal |
+
+Before adding a token, search for its **role**, not merely its number. Reuse an
+existing component contract; shared styles apply its values to views. Do not put
+dialog frame sizes in BatchEdit/Editor tokens, or move feature-only values into a
+global catch-all file. Equal values with different meanings need not be coupled.
+
+## Dialog sizing: choose a profile instead of repeating dimensions
+
+Numbers live in [`Components/DialogTokens.cs`](Components/DialogTokens.cs), styles
+in [`../Styles/Components/Dialog.axaml`](../Styles/Components/Dialog.axaml), and
+viewport coercion in `Controls/PopupDialogControl.cs`. These are complementary
+owners, not three places to independently configure the same size.
+
+| Root class (choose at most one height profile) | Min / max height, DIP | Use |
+| --- | --- | --- |
+| `PopupDialogRoot` only | 0 / 640 | Content-driven dialogs without reserved minimum space |
+| `DialogHeightCompact` | 180 / 320 | Short text-entry forms |
+| `DialogHeightRegular` | 280 / 640 | Regular editing forms |
+| `DialogHeightList` | 280 / 600 | Scrollable selection lists |
+| `DialogHeightExpanded` | 400 / 640 | Multi-action/workspace dialogs |
+
+```xml
+<UserControl ... Classes="PopupDialogRoot DialogHeightExpanded">
+    <dialogs:DialogShell ... />
+</UserControl>
+```
+
+For example, EditorMore and BatchEdit use Expanded; LyricEdit, PhonemeEdit and
+TrackRename use Compact; BulkLyricEdit uses Regular; Singer, Renderer, Phonemizer
+and TrackColor pickers use List. Unprofiled dialogs retain content-driven sizing.
+These are application choices, not MD3-prescribed heights. Changing one token
+updates every consumer of the corresponding profile.
+
+All dimensions cover the complete dialog, including header and footer. Fixed
+height is a deliberate exception: set root `Height` and `MaxHeight` from the
+same semantic token, and avoid a conflicting minimum profile. A genuinely unique
+feature size belongs beside that feature; a reusable dialog size belongs here.
+Local/bound `MinHeight`/`MaxHeight` values override profile defaults. Effective
+minimum and maximum shrink to preserve the host's 24dp viewport margins and
+recover their original values when the window grows.
+
+Width selection remains the independent C# `PopupDialogWidthPreset`:
+Compact/Regular/Wide maxima are 360/420/560, all defined in DialogTokens.
+Do not use height profile names to infer or change width.
+
+For layout details and per-dialog configuration see
+[`DIALOGS.ctx.md`](../../../../.agent/context/DIALOGS.ctx.md).
+
 ## Rules
 
 - There is no commitment to a complete design-token specification. Keep only
@@ -71,10 +132,9 @@
    Preserve valid one-off literals in Settings and other page bodies.
 5. Compare every changed AXAML attribute after resolving both generations of
    tokens. Keep selectors, template structure, color keys and style includes.
-6. Merge import width behavior with the generic Wide preset. All popup widths
-   now recalculate through the base class on host resize; import retains only
-   its independent height cap. The old import width minimum of zero is replaced
-   by Wide's existing 320 minimum. This is the explicitly approved behavior change.
+6. Historical migration: import widths joined the generic Wide preset. Subsequent
+   sizing fixes removed the special import height cap and hard minimum widths.
+   Current behavior is described in the dialog sizing section above.
 
 ## Verification
 

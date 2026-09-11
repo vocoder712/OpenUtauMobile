@@ -10,9 +10,7 @@
     x:Class="OpenUtauMobile.Controls.RendererPickerPopup"
     d:DataContext="{d:DesignInstance Type=vm:RendererPickerViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:RendererPickerViewModel"
-    Classes="PopupDialogRoot"
-    MinHeight="220"
-    MaxHeight="520">
+    Classes="PopupDialogRoot DialogHeightList">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.Renderer.Title}">
         <DockPanel>
             <ItemsControl
