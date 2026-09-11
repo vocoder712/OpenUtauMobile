@@ -1,4 +1,5 @@
 using Avalonia.Interactivity;
+using IconPacks.Avalonia.PhosphorIcons;
 
 namespace OpenUtauMobile.Controls;
 
@@ -17,8 +18,8 @@ public partial class ErrorDialogPopup : PopupDialogControl
     {
         _detailExpanded = !_detailExpanded;
         DetailPanel.IsVisible = _detailExpanded;
-        DetailChevron.Data = _detailExpanded
-            ? (Avalonia.Media.Geometry?)Resources["IconChevronUp"]
-            : (Avalonia.Media.Geometry?)Resources["IconChevronDown"];
+        DetailChevron.Kind = _detailExpanded
+            ? PackIconPhosphorIconsKind.CaretUp
+            : PackIconPhosphorIconsKind.CaretDown;
     }
 }
