@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -68,7 +68,7 @@ namespace OpenUtau.Core {
                 var stopWatch = Stopwatch.StartNew();
                 Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
                 stopWatch.Stop();
-                Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+                Log.Information("Search all legacy plugins: {Elapsed}", stopWatch.Elapsed);
             } catch (Exception e) {
                 Log.Error(e, "Failed to search legacy plugins.");
                 Plugins = new Plugin[0];
@@ -94,7 +94,7 @@ namespace OpenUtau.Core {
                 Assembly assembly;
                 try {
                     if (!LibraryLoader.IsManagedAssembly(file)) {
-                        Log.Information($"Skipping {file}");
+                        Log.Debug("Skipping {File}", file);
                         continue;
                     }
                     assembly = Assembly.LoadFile(file);
@@ -114,7 +114,7 @@ namespace OpenUtau.Core {
                         }
                     }
                 } catch (Exception e) {
-                    Log.Warning(e, $"Failed to load {file}.");
+                    Log.Warning(e, "Failed to load {File}.", file);
                     continue;
                 }
             }
@@ -125,7 +125,7 @@ namespace OpenUtau.Core {
             }
             PhonemizerFactory.BuildList();
             stopWatch.Stop();
-            Log.Information($"Search all plugins: {stopWatch.Elapsed}");
+            Log.Information("Search all plugins: {Elapsed}", stopWatch.Elapsed);
         }
         private void SearchPluginInternal(string path, List<string> result) {
             if (Directory.EnumerateFiles(path, "plugin.txt", SearchOption.TopDirectoryOnly).Any()) {
@@ -173,9 +173,9 @@ namespace OpenUtau.Core {
                     ? "Untitled"
                     : Path.GetFileNameWithoutExtension(Project.FilePath);
                 string backup = Path.Join(dir, filename + "-backup.ustx");
-                Log.Information($"Saving backup {backup}.");
+                Log.Information("Saving backup {Backup}.", backup);
                 Format.Ustx.AutoSave(backup, Project);
-                Log.Information($"Saved backup {backup}.");
+                Log.Information("Saved backup {Backup}.", backup);
             } catch (Exception e) {
                 Log.Error(e, "Save backup failed.");
             }
@@ -186,7 +186,7 @@ namespace OpenUtau.Core {
                 return;
             }
             if (undoQueue.LastOrDefault() == autosavedPoint) {
-                Log.Information("Autosave skipped.");
+                Log.Debug("Autosave skipped.");
                 return;
             }
             try {
@@ -202,9 +202,9 @@ namespace OpenUtau.Core {
                     : Path.GetFileNameWithoutExtension(Project.FilePath);
 
                 string backup = Path.Join(dir, filename + "-autosave.ustx");
-                Log.Information($"Autosave {backup}.");
+                Log.Information("Autosave {Backup}.", backup);
                 Format.Ustx.AutoSave(backup, Project);
-                Log.Information($"Autosaved {backup}.");
+                Log.Information("Autosaved {Backup}.", backup);
                 autosavedPoint = undoQueue.LastOrDefault();
             } catch (Exception e) {
                 Log.Error(e, "Autosave failed.");
@@ -214,7 +214,7 @@ namespace OpenUtau.Core {
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
                 if (!synchronousMainThreadDispatch && !(cmd is ProgressBarNotification)) {
-                    Log.Warning($"{cmd} not on main thread");
+                    Log.Warning("{Command} not on main thread", cmd);
                 }
                 if (synchronousMainThreadDispatch) {
                     DispatchToMainThreadAndWait(() => ExecuteCmd(cmd));
@@ -271,12 +271,12 @@ namespace OpenUtau.Core {
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
-                    Log.Information($"Publish notification {cmd}");
+                    Log.Debug("Publish notification {Command}", cmd);
                 }
                 return;
             }
             if (undoGroup == null) {
-                Log.Error($"No active UndoGroup {cmd}");
+                Log.Error("No active UndoGroup {Command}", cmd);
                 return;
             }
             undoGroup.Commands.Add(cmd);
@@ -284,7 +284,7 @@ namespace OpenUtau.Core {
                 cmd.Execute();
             }
             if (!cmd.Silent) {
-                //Log.Information($"ExecuteCmd {cmd}");
+                Log.Debug("Execute command {Command}", cmd);
             }
             Publish(cmd);
             if (!undoGroup.DeferValidate) {
@@ -323,7 +323,7 @@ namespace OpenUtau.Core {
                 EndUndoGroup();
             }
             undoGroup = new UCommandGroup(nameKey, deferValidate);
-            Log.Information("undoGroup started");
+            Log.Debug("Undo group started");
         }
 
         public void EndUndoGroup() {
@@ -348,7 +348,7 @@ namespace OpenUtau.Core {
             undoGroup.Merge();
             ScheduleRealCurveRefresh(undoGroup.Commands);
             undoGroup = null;
-            Log.Information("undoGroup ended");
+            Log.Debug("Undo group ended");
             ExecuteCmd(new PreRenderNotification());
         }
 

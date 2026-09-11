@@ -1,0 +1,23 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <Style Selector="Border.ExportPathPreview">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
+        <Setter Property="Padding" Value="12,8" />
+    </Style>
+
+
+    <Style Selector="RadioButton.ExportModeCard">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,12" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Theme" Value="{StaticResource OpumChoiceCard}" />
+    </Style>
+</Styles>

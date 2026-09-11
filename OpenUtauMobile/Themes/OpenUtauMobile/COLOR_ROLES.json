@@ -1,0 +1,842 @@
+{
+  "ComboBoxItemForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxItemForegroundPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxItemForegroundPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxItemForegroundDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "ComboBoxItemForegroundSelected": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "ComboBoxItemForegroundSelectedPressed": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "ComboBoxItemForegroundSelectedPointerOver": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "ComboBoxItemForegroundSelectedDisabled": {
+    "role": "OnSecondaryContainer",
+    "opacity": 0.38
+  },
+  "ComboBoxItemBackground": {
+    "role": "SurfaceContainer",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBackgroundPressed": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBackgroundPointerOver": {
+    "role": "SurfaceContainerHigh",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBackgroundDisabled": {
+    "role": "SurfaceContainer",
+    "opacity": 0.38
+  },
+  "ComboBoxItemBackgroundSelected": {
+    "role": "SecondaryContainer",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBackgroundSelectedPressed": {
+    "role": "SecondaryContainerStatePressed",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBackgroundSelectedPointerOver": {
+    "role": "SecondaryContainerStateHover",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBackgroundSelectedDisabled": {
+    "role": "SecondaryContainer",
+    "opacity": 0.38
+  },
+  "ComboBoxItemBorderBrushPressed": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBorderBrushPointerOver": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBorderBrushDisabled": {
+    "role": "OutlineVariant",
+    "opacity": 0.38
+  },
+  "ComboBoxItemBorderBrushSelected": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBorderBrushSelectedPressed": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBorderBrushSelectedPointerOver": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "ComboBoxItemBorderBrushSelectedDisabled": {
+    "role": "OutlineVariant",
+    "opacity": 0.38
+  },
+  "ComboBoxBackground": {
+    "role": "Surface",
+    "opacity": 1.0
+  },
+  "ComboBoxBackgroundPointerOver": {
+    "role": "SurfaceContainerLow",
+    "opacity": 1.0
+  },
+  "ComboBoxBackgroundPressed": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "ComboBoxBackgroundDisabled": {
+    "role": "SurfaceContainerLow",
+    "opacity": 0.38
+  },
+  "ComboBoxBackgroundUnfocused": {
+    "role": "Surface",
+    "opacity": 1.0
+  },
+  "ComboBoxBackgroundBorderBrushFocused": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "ComboBoxBackgroundBorderBrushUnfocused": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxForegroundDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.38
+  },
+  "ComboBoxForegroundFocused": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxForegroundFocusedPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxPlaceHolderForeground": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxPlaceHolderForegroundFocusedPressed": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxBorderBrush": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxBorderBrushPointerOver": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "ComboBoxBorderBrushPressed": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "ComboBoxBorderBrushDisabled": {
+    "role": "OutlineVariant",
+    "opacity": 0.38
+  },
+  "ComboBoxDropDownGlyphForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxDropDownGlyphForegroundDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.38
+  },
+  "ComboBoxDropDownGlyphForegroundFocused": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxDropDownGlyphForegroundFocusedPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ComboBoxDropDownBackground": {
+    "role": "Surface",
+    "opacity": 1.0
+  },
+  "ComboBoxDropDownBorderBrush": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "TextControlForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TextControlForegroundPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TextControlForegroundDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.38
+  },
+  "TextControlBackground": {
+    "role": "Surface",
+    "opacity": 1.0
+  },
+  "TextControlBackgroundPointerOver": {
+    "role": "SurfaceContainerLow",
+    "opacity": 1.0
+  },
+  "TextControlBackgroundDisabled": {
+    "role": "SurfaceContainerLow",
+    "opacity": 0.38
+  },
+  "TextControlBorderBrushFocused": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "TextControlBorderBrushDisabled": {
+    "role": "OutlineVariant",
+    "opacity": 0.38
+  },
+  "TextControlPlaceholderForeground": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "TextControlPlaceholderForegroundPointerOver": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "TextControlPlaceholderForegroundDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.38
+  },
+  "TextControlSelectionHighlightColor": {
+    "role": "PrimaryContainer",
+    "opacity": 1.0
+  },
+  "TextControlButtonBackground": {
+    "role": "Surface",
+    "opacity": 1.0
+  },
+  "TextControlButtonBackgroundPointerOver": {
+    "role": "SurfaceContainerLow",
+    "opacity": 1.0
+  },
+  "TextControlButtonBackgroundPressed": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "TextControlButtonBorderBrush": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "TextControlButtonBorderBrushPointerOver": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "TextControlButtonBorderBrushPressed": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "TextControlButtonForegroundPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TextControlButtonForegroundPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TextControlBackgroundFocused": {
+    "role": "Surface",
+    "opacity": 1.0
+  },
+  "TextControlBorderBrush": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "TextControlBorderBrushPointerOver": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "TextControlButtonForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TextControlForegroundFocused": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TextControlPlaceholderForegroundFocused": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundUnchecked": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundUncheckedPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundUncheckedPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundUncheckedDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "CheckBoxForegroundChecked": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundCheckedPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundCheckedPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundCheckedDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "CheckBoxForegroundIndeterminate": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundIndeterminatePointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundIndeterminatePressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxForegroundIndeterminateDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckBackgroundStrokeUnchecked": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeUncheckedPointerOver": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeUncheckedPressed": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeUncheckedDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckBackgroundStrokeCheckedPointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeCheckedPressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeCheckedDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckBackgroundStrokeIndeterminate": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeIndeterminatePointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeIndeterminatePressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundStrokeIndeterminateDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckBackgroundFillUnchecked": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.0
+  },
+  "CheckBoxCheckBackgroundFillUncheckedPointerOver": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.08
+  },
+  "CheckBoxCheckBackgroundFillUncheckedPressed": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.12
+  },
+  "CheckBoxCheckBackgroundFillUncheckedDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.0
+  },
+  "CheckBoxCheckBackgroundFillChecked": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundFillCheckedPointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundFillCheckedPressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundFillCheckedDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckBackgroundFillIndeterminate": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundFillIndeterminatePointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundFillIndeterminatePressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckBackgroundFillIndeterminateDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckGlyphForegroundUnchecked": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundUncheckedPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundUncheckedPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundUncheckedDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckGlyphForegroundChecked": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundCheckedPointerOver": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundCheckedPressed": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundCheckedDisabled": {
+    "role": "OnPrimary",
+    "opacity": 0.38
+  },
+  "CheckBoxCheckGlyphForegroundIndeterminate": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundIndeterminatePointerOver": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundIndeterminatePressed": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "CheckBoxCheckGlyphForegroundIndeterminateDisabled": {
+    "role": "OnPrimary",
+    "opacity": 0.38
+  },
+  "RadioButtonForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "RadioButtonForegroundPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "RadioButtonForegroundPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "RadioButtonForegroundDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "RadioButtonOuterEllipseStroke": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "RadioButtonOuterEllipseStrokePointerOver": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "RadioButtonOuterEllipseStrokePressed": {
+    "role": "OnSurfaceVariant",
+    "opacity": 1.0
+  },
+  "RadioButtonOuterEllipseStrokeDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.38
+  },
+  "RadioButtonOuterEllipseFill": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.0
+  },
+  "RadioButtonOuterEllipseFillPointerOver": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.08
+  },
+  "RadioButtonOuterEllipseFillPressed": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.12
+  },
+  "RadioButtonOuterEllipseFillDisabled": {
+    "role": "OnSurfaceVariant",
+    "opacity": 0.0
+  },
+  "RadioButtonOuterEllipseCheckedStroke": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "RadioButtonOuterEllipseCheckedStrokePointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "RadioButtonOuterEllipseCheckedStrokePressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "RadioButtonOuterEllipseCheckedStrokeDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "RadioButtonOuterEllipseCheckedFill": {
+    "role": "Primary",
+    "opacity": 0.0
+  },
+  "RadioButtonOuterEllipseCheckedFillPointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 0.0
+  },
+  "RadioButtonOuterEllipseCheckedFillPressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 0.0
+  },
+  "RadioButtonOuterEllipseCheckedFillDisabled": {
+    "role": "Primary",
+    "opacity": 0.0
+  },
+  "RadioButtonCheckGlyphFill": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "RadioButtonCheckGlyphFillPointerOver": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "RadioButtonCheckGlyphFillPressed": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "RadioButtonCheckGlyphFillDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "SliderThumbBackground": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "SliderThumbBackgroundPointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "SliderThumbBackgroundPressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "SliderThumbBackgroundDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "SliderTrackFill": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "SliderTrackFillPointerOver": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "SliderTrackFillPressed": {
+    "role": "OutlineVariant",
+    "opacity": 1.0
+  },
+  "SliderTrackFillDisabled": {
+    "role": "OutlineVariant",
+    "opacity": 0.38
+  },
+  "SliderTrackValueFill": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "SliderTrackValueFillPointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "SliderTrackValueFillPressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "SliderTrackValueFillDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "ToggleSwitchContentForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "ToggleSwitchHeaderForegroundDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "ToggleSwitchFillOff": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "ToggleSwitchFillOffPointerOver": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "ToggleSwitchFillOffPressed": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "ToggleSwitchStrokeOff": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "ToggleSwitchStrokeOffPointerOver": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "ToggleSwitchStrokeOffPressed": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "ToggleSwitchStrokeOffDisabled": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 0.38
+  },
+  "ToggleSwitchFillOn": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "ToggleSwitchFillOnPointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "ToggleSwitchFillOnPressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "ToggleSwitchFillOnDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "ToggleSwitchStrokeOn": {
+    "role": "Primary",
+    "opacity": 1.0
+  },
+  "ToggleSwitchStrokeOnPointerOver": {
+    "role": "PrimaryStateHover",
+    "opacity": 1.0
+  },
+  "ToggleSwitchStrokeOnPressed": {
+    "role": "PrimaryStatePressed",
+    "opacity": 1.0
+  },
+  "ToggleSwitchStrokeOnDisabled": {
+    "role": "Primary",
+    "opacity": 0.38
+  },
+  "ToggleSwitchKnobFillOff": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "ToggleSwitchKnobFillOffPointerOver": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "ToggleSwitchKnobFillOffPressed": {
+    "role": "Outline",
+    "opacity": 1.0
+  },
+  "ToggleSwitchKnobFillOffDisabled": {
+    "role": "Outline",
+    "opacity": 0.38
+  },
+  "ToggleSwitchKnobFillOn": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "ToggleSwitchKnobFillOnPointerOver": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "ToggleSwitchKnobFillOnPressed": {
+    "role": "OnPrimary",
+    "opacity": 1.0
+  },
+  "ToggleSwitchKnobFillOnDisabled": {
+    "role": "OnPrimary",
+    "opacity": 0.38
+  },
+  "TabItemHeaderBackgroundUnselected": {
+    "role": "SurfaceContainer",
+    "opacity": 1.0
+  },
+  "TabItemHeaderBackgroundUnselectedPointerOver": {
+    "role": "SurfaceContainerHigh",
+    "opacity": 1.0
+  },
+  "TabItemHeaderBackgroundUnselectedPressed": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "TabItemHeaderBackgroundSelected": {
+    "role": "SecondaryContainer",
+    "opacity": 1.0
+  },
+  "TabItemHeaderBackgroundSelectedPointerOver": {
+    "role": "SecondaryContainerStateHover",
+    "opacity": 1.0
+  },
+  "TabItemHeaderBackgroundSelectedPressed": {
+    "role": "SecondaryContainerStatePressed",
+    "opacity": 1.0
+  },
+  "TabItemHeaderBackgroundDisabled": {
+    "role": "SurfaceContainer",
+    "opacity": 0.38
+  },
+  "TabItemHeaderForegroundUnselected": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TabItemHeaderForegroundUnselectedPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TabItemHeaderForegroundUnselectedPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TabItemHeaderForegroundSelected": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "TabItemHeaderForegroundSelectedPointerOver": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "TabItemHeaderForegroundSelectedPressed": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "TabItemHeaderForegroundDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "TreeViewItemBackground": {
+    "role": "SurfaceContainer",
+    "opacity": 1.0
+  },
+  "TreeViewItemBackgroundPointerOver": {
+    "role": "SurfaceContainerHigh",
+    "opacity": 1.0
+  },
+  "TreeViewItemBackgroundPressed": {
+    "role": "SurfaceContainerHighest",
+    "opacity": 1.0
+  },
+  "TreeViewItemBackgroundDisabled": {
+    "role": "SurfaceContainer",
+    "opacity": 0.38
+  },
+  "TreeViewItemBackgroundSelected": {
+    "role": "SecondaryContainer",
+    "opacity": 1.0
+  },
+  "TreeViewItemBackgroundSelectedPointerOver": {
+    "role": "SecondaryContainerStateHover",
+    "opacity": 1.0
+  },
+  "TreeViewItemBackgroundSelectedPressed": {
+    "role": "SecondaryContainerStatePressed",
+    "opacity": 1.0
+  },
+  "TreeViewItemBackgroundSelectedDisabled": {
+    "role": "SecondaryContainer",
+    "opacity": 0.38
+  },
+  "TreeViewItemForeground": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TreeViewItemForegroundPointerOver": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TreeViewItemForegroundPressed": {
+    "role": "OnSurface",
+    "opacity": 1.0
+  },
+  "TreeViewItemForegroundDisabled": {
+    "role": "OnSurface",
+    "opacity": 0.38
+  },
+  "TreeViewItemForegroundSelected": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "TreeViewItemForegroundSelectedPointerOver": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "TreeViewItemForegroundSelectedPressed": {
+    "role": "OnSecondaryContainer",
+    "opacity": 1.0
+  },
+  "TreeViewItemForegroundSelectedDisabled": {
+    "role": "OnSecondaryContainer",
+    "opacity": 0.38
+  }
+}

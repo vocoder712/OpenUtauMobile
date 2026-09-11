@@ -1,0 +1,57 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+    x:Class="OpenUtauMobile.Controls.VoiceColorMappingPopup"
+    x:DataType="vm:VoiceColorMappingViewModel"
+    Classes="PopupDialogRoot">
+    <dialogs:DialogShell CloseCommand="{Binding CancelCommand}">
+        <dialogs:DialogShell.Header>
+            <StackPanel>
+                <TextBlock Text="{Binding Title}" Classes="PopupTitle" />
+                <TextBlock Text="{Binding TrackName}" Classes="DialogSubtitle" />
+            </StackPanel>
+        </dialogs:DialogShell.Header>
+        <dialogs:DialogShell.Footer>
+            <dialogs:DialogActions>
+                <Button
+                    Content="{DynamicResource VoiceMapping.Skip}"
+                    Command="{Binding CancelCommand}"
+                    Classes="DialogAction" />
+                <Button
+                    Content="{DynamicResource VoiceMapping.Apply}"
+                    Command="{Binding ApplyCommand}"
+                    Classes="DialogAction DialogPrimary" />
+            </dialogs:DialogActions>
+        </dialogs:DialogShell.Footer>
+        <DockPanel>
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <Border Padding="{x:Static foundation:LayoutTokens.InsetM}">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding Mappings}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:VoiceColorMappingRow">
+                                    <Border Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                                            <ComboBox
+                                                ItemsSource="{Binding NewColors}"
+                                                SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                                                HorizontalAlignment="Stretch"
+                                                MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}" />
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+        </DockPanel>
+    </dialogs:DialogShell>
+</UserControl>

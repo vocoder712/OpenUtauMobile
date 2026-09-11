@@ -1,10 +1,13 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="OpenUtauMobile.Views.SettingsView"
              x:Name="Root"
@@ -16,14 +19,14 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
-        <StyleInclude Source="/Themes/OpenUtauMobile/Styles/Views/SettingsView.axaml" />
+        <StyleInclude Source="/Views/Styles/SettingsView.axaml" />
     </UserControl.Styles>
 
     <Panel Background="{DynamicResource Sem.Color.Surface}">
         <DockPanel>
 
             <Border DockPanel.Dock="Top" Classes="TopBar">
-                <Grid ColumnDefinitions="Auto,*">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <Button Grid.Column="0"
                             Classes="TopBarBtn"
                             Command="{Binding BackCommand}"
@@ -42,7 +45,7 @@
                     <Border.Transitions>
                         <Transitions>
                             <DoubleTransition Property="Width"
-                                              Duration="0:0:0.2"
+                                              Duration="{x:Static foundation:MotionTokens.DurationMedium}"
                                               Easing="CubicEaseInOut" />
                         </Transitions>
                     </Border.Transitions>
@@ -55,15 +58,15 @@
                         <Button DockPanel.Dock="Bottom"
                                 Classes="NavToggle"
                                 Command="{Binding ToggleNavCommand}">
-                            <Grid ColumnDefinitions="64,*" MinHeight="48">
+                            <Grid ColumnDefinitions="64,*" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}">
                                 <Panel Grid.Column="0" Width="64">
-                                    <iconPacks:PackIconPhosphorIcons Width="18" Height="18"
+                                    <iconPacks:PackIconPhosphorIcons Width="{x:Static semantic:IconTokens.Compact}" Height="{x:Static semantic:IconTokens.Compact}"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                           Kind="CaretLeft"
                                           IsVisible="{Binding IsNavExpanded}" />
-                                    <iconPacks:PackIconPhosphorIcons Width="18" Height="18"
+                                    <iconPacks:PackIconPhosphorIcons Width="{x:Static semantic:IconTokens.Compact}" Height="{x:Static semantic:IconTokens.Compact}"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
@@ -101,42 +104,42 @@
                                     <Grid ColumnDefinitions="64,*" MinHeight="56">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
-                                                    CornerRadius="10"
+                                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     HorizontalAlignment="Center"
                                                     Background="{DynamicResource Sem.Color.Primary}"
                                                     Opacity="0.18"
                                                     IsVisible="{Binding SelectedCategory,
                                                         Converter={StaticResource EnumEqual},
                                                         ConverterParameter=EditAndBehaviour}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.Primary}"
                                                   Kind="NotePencil"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumEqual},
-                                                      ConverterParameter=EditAndBehaviour}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                                      ConverterParameter=EditAndBehaviour}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                                   Kind="NotePencil"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumNotEqual},
-                                                      ConverterParameter=EditAndBehaviour}" />
+                                                      ConverterParameter=EditAndBehaviour}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
                                         </Panel>
-                                        <StackPanel Grid.Column="1"
-                                                    VerticalAlignment="Center"
-                                                    Spacing="2"
-                                                    Margin="0,0,12,0"
-                                                    IsVisible="{Binding IsNavExpanded}">
-                                            <TextBlock Text="{DynamicResource Settings.Nav.EditAndBehaviour}"
-                                                       FontSize="14" FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Settings.Nav.EditAndBehaviour.Sub}"
-                                                       FontSize="11" Opacity="0.50"
-                                                       TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
+                                        <Border Padding="0,0,12,0" Grid.Column="1" IsVisible="{Binding IsNavExpanded}">
+                                            <StackPanel
+                                                        VerticalAlignment="Center"
+                                                        Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Nav.EditAndBehaviour}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{DynamicResource Settings.Nav.EditAndBehaviour.Sub}"
+                                                           FontSize="11" Opacity="0.50"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Border>
                                     </Grid>
                                 </Panel>
                             </Button>
@@ -161,42 +164,42 @@
                                     <Grid ColumnDefinitions="64,*" MinHeight="56">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
-                                                    CornerRadius="10"
+                                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     HorizontalAlignment="Center"
                                                     Background="{DynamicResource Sem.Color.Primary}"
                                                     Opacity="0.18"
                                                     IsVisible="{Binding SelectedCategory,
                                                         Converter={StaticResource EnumEqual},
                                                         ConverterParameter=RenderAndPerformance}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.Primary}"
                                                   Kind="Cpu"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumEqual},
-                                                      ConverterParameter=RenderAndPerformance}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                                      ConverterParameter=RenderAndPerformance}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                                   Kind="Cpu"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumNotEqual},
-                                                      ConverterParameter=RenderAndPerformance}" />
+                                                      ConverterParameter=RenderAndPerformance}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
                                         </Panel>
-                                        <StackPanel Grid.Column="1"
-                                                    VerticalAlignment="Center"
-                                                    Spacing="2"
-                                                    Margin="0,0,12,0"
-                                                    IsVisible="{Binding IsNavExpanded}">
-                                            <TextBlock Text="{DynamicResource Settings.Nav.RenderAndPerformance}"
-                                                       FontSize="14" FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Settings.Nav.RenderAndPerformance.Sub}"
-                                                       FontSize="11" Opacity="0.50"
-                                                       TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
+                                        <Border Padding="0,0,12,0" Grid.Column="1" IsVisible="{Binding IsNavExpanded}">
+                                            <StackPanel
+                                                        VerticalAlignment="Center"
+                                                        Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Nav.RenderAndPerformance}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{DynamicResource Settings.Nav.RenderAndPerformance.Sub}"
+                                                           FontSize="11" Opacity="0.50"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Border>
                                     </Grid>
                                 </Panel>
                             </Button>
@@ -221,42 +224,42 @@
                                     <Grid ColumnDefinitions="64,*" MinHeight="56">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
-                                                    CornerRadius="10"
+                                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     HorizontalAlignment="Center"
                                                     Background="{DynamicResource Sem.Color.Primary}"
                                                     Opacity="0.18"
                                                     IsVisible="{Binding SelectedCategory,
                                                         Converter={StaticResource EnumEqual},
                                                         ConverterParameter=FileAndStorage}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.Primary}"
                                                   Kind="HardDrives"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumEqual},
-                                                      ConverterParameter=FileAndStorage}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                                      ConverterParameter=FileAndStorage}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                                   Kind="HardDrives"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumNotEqual},
-                                                      ConverterParameter=FileAndStorage}" />
+                                                      ConverterParameter=FileAndStorage}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
                                         </Panel>
-                                        <StackPanel Grid.Column="1"
-                                                    VerticalAlignment="Center"
-                                                    Spacing="2"
-                                                    Margin="0,0,12,0"
-                                                    IsVisible="{Binding IsNavExpanded}">
-                                            <TextBlock Text="{DynamicResource Settings.Nav.FileAndStorage}"
-                                                       FontSize="14" FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Settings.Nav.FileAndStorage.Sub}"
-                                                       FontSize="11" Opacity="0.50"
-                                                       TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
+                                        <Border Padding="0,0,12,0" Grid.Column="1" IsVisible="{Binding IsNavExpanded}">
+                                            <StackPanel
+                                                        VerticalAlignment="Center"
+                                                        Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Nav.FileAndStorage}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{DynamicResource Settings.Nav.FileAndStorage.Sub}"
+                                                           FontSize="11" Opacity="0.50"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Border>
                                     </Grid>
                                 </Panel>
                             </Button>
@@ -281,42 +284,42 @@
                                     <Grid ColumnDefinitions="64,*" MinHeight="56">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
-                                                    CornerRadius="10"
+                                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
                                                     HorizontalAlignment="Center"
                                                     Background="{DynamicResource Sem.Color.Primary}"
                                                     Opacity="0.18"
                                                     IsVisible="{Binding SelectedCategory,
                                                         Converter={StaticResource EnumEqual},
                                                         ConverterParameter=AppearanceAndLanguage}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.Primary}"
                                                   Kind="Palette"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumEqual},
-                                                      ConverterParameter=AppearanceAndLanguage}" />
-                                            <iconPacks:PackIconPhosphorIcons Width="22" Height="22"
+                                                      ConverterParameter=AppearanceAndLanguage}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
+                                            <iconPacks:PackIconPhosphorIcons
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                                   Kind="Palette"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumNotEqual},
-                                                      ConverterParameter=AppearanceAndLanguage}" />
+                                                      ConverterParameter=AppearanceAndLanguage}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
                                         </Panel>
-                                        <StackPanel Grid.Column="1"
-                                                    VerticalAlignment="Center"
-                                                    Spacing="2"
-                                                    Margin="0,0,12,0"
-                                                    IsVisible="{Binding IsNavExpanded}">
-                                            <TextBlock Text="{DynamicResource Settings.Nav.AppearanceAndLanguage}"
-                                                       FontSize="14" FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{DynamicResource Settings.Nav.AppearanceAndLanguage.Sub}"
-                                                       FontSize="11" Opacity="0.50"
-                                                       TextTrimming="CharacterEllipsis" />
-                                        </StackPanel>
+                                        <Border Padding="0,0,12,0" Grid.Column="1" IsVisible="{Binding IsNavExpanded}">
+                                            <StackPanel
+                                                        VerticalAlignment="Center"
+                                                        Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Nav.AppearanceAndLanguage}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{DynamicResource Settings.Nav.AppearanceAndLanguage.Sub}"
+                                                           FontSize="11" Opacity="0.50"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Border>
                                     </Grid>
                                 </Panel>
                             </Button>
@@ -334,709 +337,736 @@
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled"
                               BringIntoViewOnFocusChange="False">
-                    <Panel Margin="24,20,24,24">
+                    <Border Padding="24,20,24,24">
+                        <Panel>
 
-                        <!-- ══════════════════════════════════════════
-                             编辑与行为
-                             ══════════════════════════════════════════ -->
-                        <StackPanel
-                            IsVisible="{Binding SelectedCategory,
-                            Converter={StaticResource EnumEqual},
-                            ConverterParameter=EditAndBehaviour}">
-                            <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Edit.CategoryTitle}" />
+                            <!-- ══════════════════════════════════════════
+                                 编辑与行为
+                                 ══════════════════════════════════════════ -->
+                            <StackPanel
+                                IsVisible="{Binding SelectedCategory,
+                                Converter={StaticResource EnumEqual},
+                                ConverterParameter=EditAndBehaviour}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Edit.CategoryTitle}" />
 
-                            <!-- 钢琴键行为 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Edit.PianoKeyBehavior}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Edit.PianoKeyBehavior.Desc}" />
-                                    </StackPanel>
-                                    <ComboBox HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding AvailablePianoKeyBehaviors}"
-                                              SelectedItem="{Binding SelectedPianoKeyBehavior, Mode=TwoWay}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:PianoKeyBehaviorOption">
-                                                <TextBlock Text="{Binding DisplayName}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                <!-- 钢琴键行为 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.PianoKeyBehavior}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.PianoKeyBehavior.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailablePianoKeyBehaviors}"
+                                                  SelectedItem="{Binding SelectedPianoKeyBehavior, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:PianoKeyBehaviorOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
 
-                                    <Border Height="1"
-                                            Margin="-20,0,-20,0"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                            IsVisible="{Binding SelectedPianoKeyBehavior.Value,
-                                                Converter={StaticResource EnumEqual},
-                                                ConverterParameter=SoundFont}" />
-
-                                    <StackPanel Spacing="8"
+                                        <Border Height="1"
+                                                Margin="-20,0,-20,0"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                                 IsVisible="{Binding SelectedPianoKeyBehavior.Value,
                                                     Converter={StaticResource EnumEqual},
-                                                    ConverterParameter=SoundFont}">
+                                                    ConverterParameter=SoundFont}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                                                    IsVisible="{Binding SelectedPianoKeyBehavior.Value,
+                                                        Converter={StaticResource EnumEqual},
+                                                        ConverterParameter=SoundFont}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.SoundFontPath}" />
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                                <Border Grid.Column="0"
+                                                        Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
+                                                        VerticalAlignment="Center" Padding="12,8">
+                                                    <TextBlock Text="{Binding SoundFontPath}"
+                                                               TextTrimming="CharacterEllipsis"
+                                                               Opacity="0.65"
+                                                               FontSize="13"
+                                                               VerticalAlignment="Center" />
+                                                </Border>
+                                                <Button Grid.Column="1"
+                                                        Classes="filled"
+                                                        Content="{DynamicResource Settings.Edit.SoundFontPath.Change}"
+                                                        Command="{Binding ChangeSoundFontPathCommand}"
+                                                        VerticalAlignment="Center" />
+                                            </Grid>
+                                            <TextBlock FontSize="12"
+                                                       Opacity="0.65"
+                                                       Foreground="{DynamicResource Sem.Color.Primary}"
+                                                       IsVisible="{Binding IsSoundFontLoaded}"
+                                                       Text="{DynamicResource Settings.Edit.SoundFontPath.Loaded}" />
+                                            <TextBlock FontSize="12"
+                                                       Opacity="0.65"
+                                                       Foreground="{DynamicResource Sem.Color.Error}"
+                                                       IsVisible="{Binding !IsSoundFontLoaded}"
+                                                       Text="{DynamicResource Settings.Edit.SoundFontPath.NotLoaded}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 走带自动翻页行为 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.AutoScrollBehavior}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.AutoScrollBehavior.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableAutoScrollBehaviors}"
+                                                  SelectedItem="{Binding SelectedAutoScrollBehavior, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:AutoScrollBehaviorOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Stop Button Behavior -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.StopButtonBehavior}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.StopButtonBehavior.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableStopButtonBehaviors}"
+                                                  SelectedItem="{Binding SelectedStopButtonBehavior, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:StopButtonBehaviorOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 音高线编辑模式画布拖拽 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                            <StackPanel Grid.Column="0" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Classes="SettingItemTitle"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenCanvasDrag}" />
+                                                <TextBlock Classes="PlaceholderText"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenCanvasDrag.Desc}"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <ToggleSwitch Grid.Column="1"
+                                                          IsChecked="{Binding PitchPenCanvasDragEnabled, Mode=TwoWay}"
+                                                          OffContent=""
+                                                          OnContent=""
+                                                          VerticalAlignment="Center" />
+                                        </Grid>
+
+                                        <Border Height="1"
+                                                Margin="-20,0,-20,0"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" IsEnabled="{Binding PitchPenCanvasDragEnabled}">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                                <StackPanel Grid.Column="0" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                    <TextBlock Classes="SettingItemTitle"
+                                                               Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension}" />
+                                                    <TextBlock Classes="PlaceholderText"
+                                                               Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension.Desc}"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding PitchPenNoteHitTickExtension}"
+                                                           VerticalAlignment="Center"
+                                                           Opacity="0.65" />
+                                            </Grid>
+                                            <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMinimum}"
+                                                    Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMaximum}"
+                                                    Value="{Binding PitchPenNoteHitTickExtension, Mode=TwoWay}"
+                                                    TickFrequency="1"
+                                                    IsSnapToTickEnabled="True" />
+
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" Margin="0,8,0,0">
+                                                <StackPanel Grid.Column="0" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                    <TextBlock Classes="SettingItemTitle"
+                                                               Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension}" />
+                                                    <TextBlock Classes="PlaceholderText"
+                                                               Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension.Desc}"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding PitchPenNoteHitToneExtension}"
+                                                           VerticalAlignment="Center"
+                                                           Opacity="0.65" />
+                                            </Grid>
+                                            <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMinimum}"
+                                                    Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMaximum}"
+                                                    Value="{Binding PitchPenNoteHitToneExtension, Mode=TwoWay}"
+                                                    TickFrequency="1"
+                                                    IsSnapToTickEnabled="True" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 放大镜设置独立于音高笔画布拖拽开关 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Edit.SoundFontPath}" />
+                                                   Text="{DynamicResource Settings.Edit.Magnifier}" />
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                            <TextBlock Text="{DynamicResource Settings.Edit.MagnifierFactor}"
+                                                       TextWrapping="Wrap" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding MagnifierMagnificationFactor, StringFormat='{}{0:0.00#}×'}"
+                                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                       VerticalAlignment="Center" />
+                                        </Grid>
+                                        <Slider Minimum="0.75" Maximum="2.0"
+                                                Value="{Binding MagnifierSliderValue, Mode=TwoWay}"
+                                                TickFrequency="0.25" SmallChange="0.25" LargeChange="0.25"
+                                                IsSnapToTickEnabled="True"
+                                                AutomationProperties.Name="{DynamicResource Settings.Edit.MagnifierFactor}" />
                                         <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Text="0.75×" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                            <TextBlock Grid.Column="1" Text="2.00×" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </Grid>
+                                        <TextBlock Text="{DynamicResource Settings.Edit.MagnifierFactor.Desc}"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                   FontSize="{x:Static semantic:TypographyTokens.BodySSize}" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 回放刷新率 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Text="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
+                                                       Classes="SettingItemTitle" />
+                                            <TextBlock Text="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
+                                                       Classes="PlaceholderText" />
+                                        </StackPanel>
+                                        <Slider Minimum="1" Maximum="60"
+                                                Value="{Binding PlaybackRefreshRate, Mode=TwoWay}"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.PlaybackRefreshRate.Desc}"
+                                                   FontSize="12" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 立绘显示 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.ShowPortrait}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.ShowPortrait.Desc}" />
+                                        </StackPanel>
+                                        <ToggleSwitch IsChecked="{Binding ShowPortraitEnabled, Mode=TwoWay}"
+                                                      OffContent=""
+                                                      OnContent="" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 撤销步数上限 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Text="{DynamicResource Settings.Edit.UndoLimit}"
+                                                       Classes="SettingItemTitle" />
+                                            <TextBlock Text="{Binding UndoLimit, StringFormat='{}{0} steps'}"
+                                                       Classes="PlaceholderText" />
+                                        </StackPanel>
+                                        <Slider Minimum="10" Maximum="100"
+                                                Value="{Binding UndoLimit, Mode=TwoWay}"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.UndoLimit.Desc}"
+                                                   FontSize="12" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 自动保存 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
+                                                       Classes="SettingItemTitle" />
+                                            <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{Binding AutoSaveInterval}"
+                                                           Classes="PlaceholderText" />
+                                                <TextBlock Text="s"
+                                                           Classes="PlaceholderText" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                            <TextBlock Text="{DynamicResource Settings.Edit.AutoSave.Enabled}"
+                                                       Classes="PlaceholderText" />
+                                            <ToggleSwitch IsChecked="{Binding AutoSaveEnabled}"
+                                                          OffContent=""
+                                                          OnContent="" />
+                                        </StackPanel>
+                                        <Slider Minimum="30" Maximum="600"
+                                                Value="{Binding AutoSaveInterval, Mode=TwoWay}"
+                                                TickFrequency="10"
+                                                IsSnapToTickEnabled="True"
+                                                IsEnabled="{Binding AutoSaveEnabled}" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.AutoSave.Desc}"
+                                                   FontSize="12" />
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+
+                            <!-- ══════════════════════════════════════════
+                                 渲染与性能
+                                 ══════════════════════════════════════════ -->
+                            <StackPanel
+                                IsVisible="{Binding SelectedCategory,
+                                Converter={StaticResource EnumEqual},
+                                ConverterParameter=RenderAndPerformance}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Render.CategoryTitle}" />
+
+                                <!-- 全局性能监视器 -->
+                                <Border Classes="SettingCard">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Render.PerformanceMonitor}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.PerformanceMonitor.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      IsChecked="{Binding PerformanceMonitorEnabled, Mode=TwoWay}"
+                                                      OffContent=""
+                                                      OnContent=""
+                                                      VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+
+                                <!-- DiffSinger 推理参数 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <TextBlock Classes="SettingItemTitle"
+                                                   Text="{DynamicResource Settings.Render.DiffSingerParams}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Render.AcousticSteps}"
+                                                           Classes="SettingItemTitle" />
+                                                <TextBlock Text="{Binding DiffSingerSteps, StringFormat='{}{0} steps'}"
+                                                           Classes="PlaceholderText" />
+                                            </StackPanel>
+                                            <Slider Minimum="1" Maximum="100"
+                                                    Value="{Binding DiffSingerSteps, Mode=TwoWay}"
+                                                    TickFrequency="1"
+                                                    IsSnapToTickEnabled="True" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.AcousticSteps.Desc}"
+                                                       FontSize="12" />
+                                        </StackPanel>
+
+                                        <Border Height="1"
+                                                Margin="-20,0,-20,0"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Render.VarianceSteps}"
+                                                           Classes="SettingItemTitle" />
+                                                <TextBlock Text="{Binding DiffSingerStepsVariance, StringFormat='{}{0} steps'}"
+                                                           Classes="PlaceholderText" />
+                                            </StackPanel>
+                                            <Slider Minimum="1" Maximum="100"
+                                                    Value="{Binding DiffSingerStepsVariance, Mode=TwoWay}"
+                                                    TickFrequency="1"
+                                                    IsSnapToTickEnabled="True" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.VarianceSteps.Desc}"
+                                                       FontSize="12" />
+                                        </StackPanel>
+
+                                        <Border Height="1"
+                                                Margin="-20,0,-20,0"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Render.PitchSteps}"
+                                                           Classes="SettingItemTitle" />
+                                                <TextBlock Text="{Binding DiffSingerStepsPitch, StringFormat='{}{0} steps'}"
+                                                           Classes="PlaceholderText" />
+                                            </StackPanel>
+                                            <Slider Minimum="1" Maximum="100"
+                                                    Value="{Binding DiffSingerStepsPitch, Mode=TwoWay}"
+                                                    TickFrequency="1"
+                                                    IsSnapToTickEnabled="True" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.PitchSteps.Desc}"
+                                                       FontSize="12" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 机器学习运行器后端 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Render.OnnxRunner}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.OnnxRunner.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableOnnxRunners}"
+                                                  SelectedItem="{Binding SelectedOnnxRunner, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:OnnxRunnerOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <TextBlock FontSize="12"
+                                                   Foreground="{DynamicResource Sem.Color.Error}"
+                                                   IsVisible="{Binding SelectedOnnxRunner.Value,
+                                                       Converter={StaticResource EnumEqual},
+                                                       ConverterParameter=NNAPI}"
+                                                   Text="{DynamicResource Settings.Render.OnnxRunner.NnapiWarning}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 预渲染设置 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Render.PreRender}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.PreRender.Desc}" />
+                                        </StackPanel>
+                                        <ToggleSwitch IsChecked="{Binding PreRenderEnabled, Mode=TwoWay}"
+                                                      OffContent=""
+                                                      OnContent="" />
+
+                                        <Border Height="1"
+                                                Margin="-20,0,-20,0"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                IsVisible="{Binding PreRenderEnabled}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                                                    IsVisible="{Binding PreRenderEnabled}">
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Render.ThreadCount}"
+                                                           Classes="SettingItemTitle" />
+                                                <TextBlock Text="{Binding NumRenderThreads, StringFormat='{}{0} threads'}"
+                                                           Classes="PlaceholderText" />
+                                            </StackPanel>
+                                            <Slider Minimum="1" Maximum="16"
+                                                    Value="{Binding NumRenderThreads, Mode=TwoWay}"
+                                                    TickFrequency="1"
+                                                    IsSnapToTickEnabled="True" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.ThreadCount.Desc}"
+                                                       FontSize="12" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 音频输出设置 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <TextBlock Classes="SettingItemTitle"
+                                                   Text="{DynamicResource Settings.Render.AudioOutput}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Render.AudioBackend}"
+                                                           Classes="SettingItemTitle" />
+                                                <TextBlock Classes="PlaceholderText"
+                                                           Text="{DynamicResource Settings.Render.AudioBackend.Desc}"/>
+                                            </StackPanel>
+                                            <ComboBox HorizontalAlignment="Stretch"
+                                                      ItemsSource="{Binding AvailableAudioBackends}"
+                                                      SelectedItem="{Binding SelectedAudioBackend, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:AudioBackendOption">
+                                                        <TextBlock Text="{Binding DisplayName}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </StackPanel>
+
+                                        <Border Height="1"
+                                                Margin="-20,0,-20,0"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Render.OutputDevice}"
+                                                           Classes="SettingItemTitle" />
+                                                <TextBlock Classes="PlaceholderText"
+                                                           Text="{DynamicResource Settings.Render.OutputDevice.Desc}"
+                                                           FontSize="12" />
+                                            </StackPanel>
+                                            <Button Classes="filled"
+                                                    Content="{DynamicResource Common.Refresh}"
+                                                    Command="{Binding RefreshAudioDevicesCommand}"
+                                                    IsEnabled="{Binding !IsRefreshingDevices}"
+                                                    HorizontalAlignment="Left" />
+                                            <ComboBox HorizontalAlignment="Stretch"
+                                                      ItemsSource="{Binding AvailableAudioDevices}"
+                                                      SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:AudioDeviceOption">
+                                                        <TextBlock Text="{Binding DisplayName}"
+                                                                   TextTrimming="CharacterEllipsis" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </StackPanel>
+
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Render.AudioBackend.RestartRequired}"
+                                                   FontSize="12"
+                                                   Foreground="{DynamicResource Sem.Color.Error}" />
+                                    </StackPanel>
+                                </Border>
+
+                            </StackPanel>
+
+                            <!-- ══════════════════════════════════════════
+                                 文件与存储
+                                 ══════════════════════════════════════════ -->
+                            <StackPanel
+                                IsVisible="{Binding SelectedCategory,
+                                Converter={StaticResource EnumEqual},
+                                ConverterParameter=FileAndStorage}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.File.CategoryTitle}" />
+
+                                <!-- 额外歌手路径 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.File.AdditionalSingerPath}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.File.AdditionalSingerPath.Desc}" />
+                                        </StackPanel>
+                                        <ToggleSwitch IsChecked="{Binding AdditionalSingerPathEnabled, Mode=TwoWay}"
+                                                      OffContent=""
+                                                      OnContent="" />
+
+                                        <Border Height="1"
+                                                Margin="-20,0,-20,0"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                IsVisible="{Binding AdditionalSingerPathEnabled}" />
+
+                                        <Grid ColumnDefinitions="*,Auto"
+                                              IsVisible="{Binding AdditionalSingerPathEnabled}" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                             <Border Grid.Column="0"
                                                     Background="{DynamicResource Sem.Color.SurfaceContainer}"
-                                                    CornerRadius="8"
-                                                    Padding="10,6"
-                                                    VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SoundFontPath}"
+                                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
+                                                    VerticalAlignment="Center" Padding="12,8">
+                                                <TextBlock Text="{Binding AdditionalSingerPath}"
                                                            TextTrimming="CharacterEllipsis"
                                                            Opacity="0.65"
                                                            FontSize="13"
                                                            VerticalAlignment="Center" />
                                             </Border>
                                             <Button Grid.Column="1"
-                                                    Classes="AccentBtn"
-                                                    Content="{DynamicResource Settings.Edit.SoundFontPath.Change}"
-                                                    Command="{Binding ChangeSoundFontPathCommand}"
-                                                    Margin="12,0,0,0"
+                                                    Classes="filled"
+                                                    Content="{DynamicResource Settings.File.AdditionalSingerPath.Change}"
+                                                    Command="{Binding ChangeAdditionalSingerPathCommand}"
                                                     VerticalAlignment="Center" />
                                         </Grid>
-                                        <TextBlock FontSize="12"
-                                                   Opacity="0.65"
-                                                   Foreground="{DynamicResource Sem.Color.Primary}"
-                                                   IsVisible="{Binding IsSoundFontLoaded}"
-                                                   Text="{DynamicResource Settings.Edit.SoundFontPath.Loaded}" />
-                                        <TextBlock FontSize="12"
-                                                   Opacity="0.65"
-                                                   Foreground="{DynamicResource Sem.Color.Error}"
-                                                   IsVisible="{Binding !IsSoundFontLoaded}"
-                                                   Text="{DynamicResource Settings.Edit.SoundFontPath.NotLoaded}" />
                                     </StackPanel>
-                                </StackPanel>
-                            </Border>
+                                </Border>
 
-                            <!-- 走带自动翻页行为 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Edit.AutoScrollBehavior}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Edit.AutoScrollBehavior.Desc}" />
-                                    </StackPanel>
-                                    <ComboBox HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding AvailableAutoScrollBehaviors}"
-                                              SelectedItem="{Binding SelectedAutoScrollBehavior, Mode=TwoWay}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:AutoScrollBehaviorOption">
-                                                <TextBlock Text="{Binding DisplayName}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Stop Button Behavior -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Edit.StopButtonBehavior}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Edit.StopButtonBehavior.Desc}" />
-                                    </StackPanel>
-                                    <ComboBox HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding AvailableStopButtonBehaviors}"
-                                              SelectedItem="{Binding SelectedStopButtonBehavior, Mode=TwoWay}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:StopButtonBehaviorOption">
-                                                <TextBlock Text="{Binding DisplayName}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 音高线编辑模式画布拖拽 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                                        <StackPanel Grid.Column="0" Spacing="2">
+                                <!-- 渲染缓存 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                             <TextBlock Classes="SettingItemTitle"
-                                                       Text="{DynamicResource Settings.Edit.PitchPenCanvasDrag}" />
+                                                       Text="{DynamicResource Settings.File.RenderCache}" />
                                             <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Edit.PitchPenCanvasDrag.Desc}"
-                                                       TextWrapping="Wrap" />
+                                                       Text="{DynamicResource Settings.File.RenderCache.Desc}" />
                                         </StackPanel>
-                                        <ToggleSwitch Grid.Column="1"
-                                                      IsChecked="{Binding PitchPenCanvasDragEnabled, Mode=TwoWay}"
-                                                      OffContent=""
-                                                      OnContent=""
-                                                      VerticalAlignment="Center" />
-                                    </Grid>
-
-                                    <Border Height="1"
-                                            Margin="-20,0,-20,0"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-
-                                    <StackPanel Spacing="8" IsEnabled="{Binding PitchPenCanvasDragEnabled}">
-                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                                            <StackPanel Grid.Column="0" Spacing="2">
-                                                <TextBlock Classes="SettingItemTitle"
-                                                           Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension}" />
-                                                <TextBlock Classes="PlaceholderText"
-                                                           Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension.Desc}"
-                                                           TextWrapping="Wrap" />
-                                            </StackPanel>
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding PitchPenNoteHitTickExtension}"
-                                                       VerticalAlignment="Center"
-                                                       Opacity="0.65" />
-                                        </Grid>
-                                        <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMinimum}"
-                                                Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMaximum}"
-                                                Value="{Binding PitchPenNoteHitTickExtension, Mode=TwoWay}"
-                                                TickFrequency="1"
-                                                IsSnapToTickEnabled="True" />
-
-                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="0,8,0,0">
-                                            <StackPanel Grid.Column="0" Spacing="2">
-                                                <TextBlock Classes="SettingItemTitle"
-                                                           Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension}" />
-                                                <TextBlock Classes="PlaceholderText"
-                                                           Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension.Desc}"
-                                                           TextWrapping="Wrap" />
-                                            </StackPanel>
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding PitchPenNoteHitToneExtension}"
-                                                       VerticalAlignment="Center"
-                                                       Opacity="0.65" />
-                                        </Grid>
-                                        <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMinimum}"
-                                                Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMaximum}"
-                                                Value="{Binding PitchPenNoteHitToneExtension, Mode=TwoWay}"
-                                                TickFrequency="1"
-                                                IsSnapToTickEnabled="True" />
+                                        <Button Classes="filled"
+                                                Content="{DynamicResource Settings.File.RenderCache.Clear}"
+                                                Command="{Binding ClearRenderCacheCommand}"
+                                                HorizontalAlignment="Left" />
                                     </StackPanel>
-                                </StackPanel>
-                            </Border>
+                                </Border>
+                            </StackPanel>
 
-                            <!-- 回放刷新率 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="8">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Text="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
-                                                   Classes="SettingItemTitle" />
-                                        <TextBlock Text="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
-                                                   Classes="PlaceholderText" />
-                                    </StackPanel>
-                                    <Slider Minimum="1" Maximum="60"
-                                            Value="{Binding PlaybackRefreshRate, Mode=TwoWay}"
-                                            TickFrequency="1"
-                                            IsSnapToTickEnabled="True" />
-                                    <TextBlock Classes="PlaceholderText"
-                                               Text="{DynamicResource Settings.Edit.PlaybackRefreshRate.Desc}"
-                                               FontSize="12" />
-                                </StackPanel>
-                            </Border>
+                            <!-- ══════════════════════════════════════════
+                                 外观与语言
+                                 ══════════════════════════════════════════ -->
+                            <StackPanel
+                                IsVisible="{Binding SelectedCategory,
+                                Converter={StaticResource EnumEqual},
+                                ConverterParameter=AppearanceAndLanguage}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <TextBlock Classes="CategoryTitle"
+                                           Text="{DynamicResource Settings.Appearance.CategoryTitle}" />
 
-                            <!-- 立绘显示 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Edit.ShowPortrait}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Edit.ShowPortrait.Desc}" />
-                                    </StackPanel>
-                                    <ToggleSwitch IsChecked="{Binding ShowPortraitEnabled, Mode=TwoWay}"
-                                                  OffContent=""
-                                                  OnContent="" />
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 撤销步数上限 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="8">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Text="{DynamicResource Settings.Edit.UndoLimit}"
-                                                   Classes="SettingItemTitle" />
-                                        <TextBlock Text="{Binding UndoLimit, StringFormat='{}{0} steps'}"
-                                                   Classes="PlaceholderText" />
-                                    </StackPanel>
-                                    <Slider Minimum="10" Maximum="100"
-                                            Value="{Binding UndoLimit, Mode=TwoWay}"
-                                            TickFrequency="1"
-                                            IsSnapToTickEnabled="True" />
-                                    <TextBlock Classes="PlaceholderText"
-                                               Text="{DynamicResource Settings.Edit.UndoLimit.Desc}"
-                                               FontSize="12" />
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 自动保存 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="8">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
-                                                   Classes="SettingItemTitle" />
-                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <TextBlock Text="{Binding AutoSaveInterval}"
-                                                       Classes="PlaceholderText" />
-                                            <TextBlock Text="s"
-                                                       Classes="PlaceholderText" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" Spacing="12">
-                                        <TextBlock Text="{DynamicResource Settings.Edit.AutoSave.Enabled}"
-                                                   Classes="PlaceholderText" />          
-                                        <ToggleSwitch IsChecked="{Binding AutoSaveEnabled}"
-                                                      OffContent=""
-                                                      OnContent="" />
-                                    </StackPanel>
-                                    <Slider Minimum="30" Maximum="600"
-                                            Value="{Binding AutoSaveInterval, Mode=TwoWay}"
-                                            TickFrequency="10"
-                                            IsSnapToTickEnabled="True"
-                                            IsEnabled="{Binding AutoSaveEnabled}" />
-                                    <TextBlock Classes="PlaceholderText"
-                                               Text="{DynamicResource Settings.Edit.AutoSave.Desc}"
-                                               FontSize="12" />
-                                </StackPanel>
-                            </Border>
-
-                        </StackPanel>
-
-                        <!-- ══════════════════════════════════════════
-                             渲染与性能
-                             ══════════════════════════════════════════ -->
-                        <StackPanel
-                            IsVisible="{Binding SelectedCategory,
-                            Converter={StaticResource EnumEqual},
-                            ConverterParameter=RenderAndPerformance}">
-                            <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Render.CategoryTitle}" />
-                            
-                            <!-- 全局性能监视器 -->
-                            <Border Classes="SettingCard">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Render.PerformanceMonitor}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Render.PerformanceMonitor.Desc}"
-                                                   TextWrapping="Wrap" />
-                                    </StackPanel>
-                                    <ToggleSwitch Grid.Column="1"
-                                                  IsChecked="{Binding PerformanceMonitorEnabled, Mode=TwoWay}"
-                                                  OffContent=""
-                                                  OnContent=""
-                                                  VerticalAlignment="Center" />
-                                </Grid>
-                            </Border>
-
-                            <!-- DiffSinger 推理参数 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="16">
-                                    <TextBlock Classes="SettingItemTitle"
-                                               Text="{DynamicResource Settings.Render.DiffSingerParams}" />
-
-                                    <StackPanel Spacing="8">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{DynamicResource Settings.Render.AcousticSteps}"
-                                                       Classes="SettingItemTitle" />
-                                            <TextBlock Text="{Binding DiffSingerSteps, StringFormat='{}{0} steps'}"
-                                                       Classes="PlaceholderText" />
-                                        </StackPanel>
-                                        <Slider Minimum="1" Maximum="100"
-                                                Value="{Binding DiffSingerSteps, Mode=TwoWay}"
-                                                TickFrequency="1"
-                                                IsSnapToTickEnabled="True" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Render.AcousticSteps.Desc}"
-                                                   FontSize="12" />
-                                    </StackPanel>
-
-                                    <Border Height="1"
-                                            Margin="-20,0,-20,0"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-
-                                    <StackPanel Spacing="8">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{DynamicResource Settings.Render.VarianceSteps}"
-                                                       Classes="SettingItemTitle" />
-                                            <TextBlock Text="{Binding DiffSingerStepsVariance, StringFormat='{}{0} steps'}"
-                                                       Classes="PlaceholderText" />
-                                        </StackPanel>
-                                        <Slider Minimum="1" Maximum="100"
-                                                Value="{Binding DiffSingerStepsVariance, Mode=TwoWay}"
-                                                TickFrequency="1"
-                                                IsSnapToTickEnabled="True" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Render.VarianceSteps.Desc}"
-                                                   FontSize="12" />
-                                    </StackPanel>
-
-                                    <Border Height="1"
-                                            Margin="-20,0,-20,0"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-
-                                    <StackPanel Spacing="8">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{DynamicResource Settings.Render.PitchSteps}"
-                                                       Classes="SettingItemTitle" />
-                                            <TextBlock Text="{Binding DiffSingerStepsPitch, StringFormat='{}{0} steps'}"
-                                                       Classes="PlaceholderText" />
-                                        </StackPanel>
-                                        <Slider Minimum="1" Maximum="100"
-                                                Value="{Binding DiffSingerStepsPitch, Mode=TwoWay}"
-                                                TickFrequency="1"
-                                                IsSnapToTickEnabled="True" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Render.PitchSteps.Desc}"
-                                                   FontSize="12" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 机器学习运行器后端 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Render.OnnxRunner}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Render.OnnxRunner.Desc}" />
-                                    </StackPanel>
-                                    <ComboBox HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding AvailableOnnxRunners}"
-                                              SelectedItem="{Binding SelectedOnnxRunner, Mode=TwoWay}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:OnnxRunnerOption">
-                                                <TextBlock Text="{Binding DisplayName}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                    <TextBlock FontSize="12"
-                                               Foreground="{DynamicResource Sem.Color.Error}"
-                                               IsVisible="{Binding SelectedOnnxRunner.Value,
-                                                   Converter={StaticResource EnumEqual},
-                                                   ConverterParameter=NNAPI}"
-                                               Text="{DynamicResource Settings.Render.OnnxRunner.NnapiWarning}"
-                                               TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 预渲染设置 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Render.PreRender}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Render.PreRender.Desc}" />
-                                    </StackPanel>
-                                    <ToggleSwitch IsChecked="{Binding PreRenderEnabled, Mode=TwoWay}"
-                                                  OffContent=""
-                                                  OnContent="" />
-
-                                    <Border Height="1"
-                                            Margin="-20,0,-20,0"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                            IsVisible="{Binding PreRenderEnabled}" />
-
-                                    <StackPanel Spacing="8"
-                                                IsVisible="{Binding PreRenderEnabled}">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{DynamicResource Settings.Render.ThreadCount}"
-                                                       Classes="SettingItemTitle" />
-                                            <TextBlock Text="{Binding NumRenderThreads, StringFormat='{}{0} threads'}"
-                                                       Classes="PlaceholderText" />
-                                        </StackPanel>
-                                        <Slider Minimum="1" Maximum="16"
-                                                Value="{Binding NumRenderThreads, Mode=TwoWay}"
-                                                TickFrequency="1"
-                                                IsSnapToTickEnabled="True" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Render.ThreadCount.Desc}"
-                                                   FontSize="12" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 音频输出设置 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="16">
-                                    <TextBlock Classes="SettingItemTitle"
-                                               Text="{DynamicResource Settings.Render.AudioOutput}" />
-
-                                    <StackPanel Spacing="12">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{DynamicResource Settings.Render.AudioBackend}"
-                                                       Classes="SettingItemTitle" />
+                                <!-- 主题选择 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Appearance.Theme}" />
                                             <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Render.AudioBackend.Desc}"/>
+                                                       Text="{DynamicResource Settings.Appearance.Theme.Desc}" />
                                         </StackPanel>
                                         <ComboBox HorizontalAlignment="Stretch"
-                                                  ItemsSource="{Binding AvailableAudioBackends}"
-                                                  SelectedItem="{Binding SelectedAudioBackend, Mode=TwoWay}">
+                                                  ItemsSource="{Binding AvailableThemes}"
+                                                  SelectedItem="{Binding SelectedThemeOption, Mode=TwoWay}">
                                             <ComboBox.ItemTemplate>
-                                                <DataTemplate x:DataType="vm:AudioBackendOption">
+                                                <DataTemplate x:DataType="vm:ThemeOption">
                                                     <TextBlock Text="{Binding DisplayName}" />
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
                                     </StackPanel>
+                                </Border>
 
-                                    <Border Height="1"
-                                            Margin="-20,0,-20,0"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-
-                                    <StackPanel Spacing="8">
-                                        <StackPanel Spacing="2">
-                                            <TextBlock Text="{DynamicResource Settings.Render.OutputDevice}"
-                                                       Classes="SettingItemTitle" />
+                                <!-- 主题色选择 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Appearance.ThemeColor}" />
                                             <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Render.OutputDevice.Desc}"
-                                                       FontSize="12" />
+                                                       Text="{DynamicResource Settings.Appearance.ThemeColor.Desc}" />
                                         </StackPanel>
-                                        <Button Classes="AccentBtn"
-                                                Content="{DynamicResource Common.Refresh}"
-                                                Command="{Binding RefreshAudioDevicesCommand}"
-                                                IsEnabled="{Binding !IsRefreshingDevices}"
-                                                HorizontalAlignment="Left" />
                                         <ComboBox HorizontalAlignment="Stretch"
-                                                  ItemsSource="{Binding AvailableAudioDevices}"
-                                                  SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}">
+                                                  ItemsSource="{Binding AvailableThemeColorModes}"
+                                                  SelectedItem="{Binding SelectedThemeColorMode, Mode=TwoWay}">
                                             <ComboBox.ItemTemplate>
-                                                <DataTemplate x:DataType="vm:AudioDeviceOption">
-                                                    <TextBlock Text="{Binding DisplayName}"
-                                                               TextTrimming="CharacterEllipsis" />
+                                                <DataTemplate x:DataType="vm:ThemeColorModeOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+
+                                        <Border Height="1"
+                                                Opacity="0.08"
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                IsVisible="{Binding IsCustomThemeColorMode}" />
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}" IsVisible="{Binding IsCustomThemeColorMode}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                <Border Grid.Column="0"
+                                                        Width="48"
+                                                        Height="28"
+                                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
+                                                        Background="{Binding ThemeSeedPreviewBrush}"
+                                                        BorderBrush="{DynamicResource Sem.Color.Outline}"
+                                                        BorderThickness="1" />
+                                                <TextBox Grid.Column="1"
+                                                         Text="{Binding ThemeSeedHexInput, Mode=TwoWay}"
+                                                         Watermark="#RRGGBB"
+                                                         VerticalAlignment="Center" />
+                                                <Button Grid.Column="2"
+                                                        Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
+                                                        Command="{Binding ApplyThemeSeedHexCommand}"
+                                                        Classes="filled" />
+                                                <Button Grid.Column="3"
+                                                        Content="{DynamicResource Settings.Appearance.ThemeColor.OpenPicker}"
+                                                        Command="{Binding OpenThemeColorPickerCommand}" Classes="tonal" />
+                                            </Grid>
+
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                <TextBlock Classes="SettingItemTitle"
+                                                           Text="{DynamicResource Settings.Appearance.ThemeColor.Presets}" />
+                                                <ItemsControl ItemsSource="{Binding PresetSeedColors}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel Orientation="Horizontal" ItemWidth="42"
+                                                                       ItemHeight="42"  ItemSpacing="{x:Static foundation:LayoutTokens.SpaceS}"  LineSpacing="{x:Static foundation:LayoutTokens.SpaceS}" />
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ThemeSeedPresetOption">
+                                                            <Button Width="36"
+                                                                    Height="36"
+
+                                                                    BorderThickness="1"
+                                                                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                                                    Background="{Binding Hex}"
+                                                                    ToolTip.Tip="{Binding DisplayName}"
+                                                                    Command="{Binding ApplyCommand}" />
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{Binding ThemeColorHint}"
+                                                       IsVisible="{Binding HasThemeColorHint}" />
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                                                        IsVisible="{Binding HasThemeColorSystemSource}">
+                                                <TextBlock Classes="PlaceholderText"
+                                                           Text="{DynamicResource Settings.Appearance.ThemeColor.Source}" />
+                                                <TextBlock Classes="PlaceholderText"
+                                                           Text="{Binding ThemeColorSystemSource}" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 语言选择 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Appearance.Language}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Appearance.Language.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableLanguages}"
+                                                  SelectedItem="{Binding SelectedLanguageOption, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:LanguageOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
                                     </StackPanel>
+                                </Border>
 
-                                    <TextBlock Classes="PlaceholderText"
-                                               Text="{DynamicResource Settings.Render.AudioBackend.RestartRequired}"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource Sem.Color.Error}" />
-                                </StackPanel>
-                            </Border>
+                            </StackPanel>
 
-                        </StackPanel>
-
-                        <!-- ══════════════════════════════════════════
-                             文件与存储
-                             ══════════════════════════════════════════ -->
-                        <StackPanel
-                            IsVisible="{Binding SelectedCategory,
-                            Converter={StaticResource EnumEqual},
-                            ConverterParameter=FileAndStorage}">
-                            <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.File.CategoryTitle}" />
-
-                            <!-- 额外歌手路径 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.File.AdditionalSingerPath}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.File.AdditionalSingerPath.Desc}" />
-                                    </StackPanel>
-                                    <ToggleSwitch IsChecked="{Binding AdditionalSingerPathEnabled, Mode=TwoWay}"
-                                                  OffContent=""
-                                                  OnContent="" />
-
-                                    <Border Height="1"
-                                            Margin="-20,0,-20,0"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                            IsVisible="{Binding AdditionalSingerPathEnabled}" />
-
-                                    <Grid ColumnDefinitions="*,Auto"
-                                          IsVisible="{Binding AdditionalSingerPathEnabled}">
-                                        <Border Grid.Column="0"
-                                                Background="{DynamicResource Sem.Color.SurfaceContainer}"
-                                                CornerRadius="8"
-                                                Padding="10,6"
-                                                VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding AdditionalSingerPath}"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       Opacity="0.65"
-                                                       FontSize="13"
-                                                       VerticalAlignment="Center" />
-                                        </Border>
-                                        <Button Grid.Column="1"
-                                                Classes="AccentBtn"
-                                                Content="{DynamicResource Settings.File.AdditionalSingerPath.Change}"
-                                                Command="{Binding ChangeAdditionalSingerPathCommand}"
-                                                Margin="12,0,0,0"
-                                                VerticalAlignment="Center" />
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 渲染缓存 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="10">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.File.RenderCache}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.File.RenderCache.Desc}" />
-                                    </StackPanel>
-                                    <Button Classes="AccentBtn"
-                                            Content="{DynamicResource Settings.File.RenderCache.Clear}"
-                                            Command="{Binding ClearRenderCacheCommand}"
-                                            HorizontalAlignment="Left" />
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-
-                        <!-- ══════════════════════════════════════════
-                             外观与语言
-                             ══════════════════════════════════════════ -->
-                        <StackPanel
-                            IsVisible="{Binding SelectedCategory,
-                            Converter={StaticResource EnumEqual},
-                            ConverterParameter=AppearanceAndLanguage}">
-                            <TextBlock Classes="CategoryTitle"
-                                       Text="{DynamicResource Settings.Appearance.CategoryTitle}" />
-
-                            <!-- 主题选择 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Appearance.Theme}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Appearance.Theme.Desc}" />
-                                    </StackPanel>
-                                    <ComboBox HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding AvailableThemes}"
-                                              SelectedItem="{Binding SelectedThemeOption, Mode=TwoWay}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:ThemeOption">
-                                                <TextBlock Text="{Binding DisplayName}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 主题色选择 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Appearance.ThemeColor}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Appearance.ThemeColor.Desc}" />
-                                    </StackPanel>
-                                    <ComboBox HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding AvailableThemeColorModes}"
-                                              SelectedItem="{Binding SelectedThemeColorMode, Mode=TwoWay}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:ThemeColorModeOption">
-                                                <TextBlock Text="{Binding DisplayName}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-
-                                    <Border Height="1"
-                                            Opacity="0.08"
-                                            Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                            IsVisible="{Binding IsCustomThemeColorMode}" />
-
-                                    <StackPanel Spacing="10" IsVisible="{Binding IsCustomThemeColorMode}">
-                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="8">
-                                            <Border Grid.Column="0"
-                                                    Width="48"
-                                                    Height="28"
-                                                    CornerRadius="8"
-                                                    Background="{Binding ThemeSeedPreviewBrush}"
-                                                    BorderBrush="{DynamicResource Sem.Color.Outline}"
-                                                    BorderThickness="1" />
-                                            <TextBox Grid.Column="1"
-                                                     Text="{Binding ThemeSeedHexInput, Mode=TwoWay}"
-                                                     Watermark="#RRGGBB"
-                                                     VerticalAlignment="Center" />
-                                            <Button Grid.Column="2"
-                                                    Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
-                                                    Command="{Binding ApplyThemeSeedHexCommand}"
-                                                    Classes="AccentBtn" />
-                                            <Button Grid.Column="3"
-                                                    Content="{DynamicResource Settings.Appearance.ThemeColor.OpenPicker}"
-                                                    Command="{Binding OpenThemeColorPickerCommand}" />
-                                        </Grid>
-
-                                        <StackPanel Spacing="6">
-                                            <TextBlock Classes="SettingItemTitle"
-                                                       Text="{DynamicResource Settings.Appearance.ThemeColor.Presets}" />
-                                            <ItemsControl ItemsSource="{Binding PresetSeedColors}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel Orientation="Horizontal" ItemWidth="42"
-                                                                   ItemHeight="42" />
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate x:DataType="vm:ThemeSeedPresetOption">
-                                                        <Button Width="36"
-                                                                Height="36"
-                                                                Margin="0,0,6,6"
-                                                                BorderThickness="1"
-                                                                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
-                                                                Background="{Binding Hex}"
-                                                                ToolTip.Tip="{Binding DisplayName}"
-                                                                Command="{Binding ApplyCommand}" />
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <StackPanel Spacing="4">
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{Binding ThemeColorHint}"
-                                                   IsVisible="{Binding HasThemeColorHint}" />
-                                        <StackPanel Orientation="Horizontal"
-                                                    Spacing="6"
-                                                    IsVisible="{Binding HasThemeColorSystemSource}">
-                                            <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.Appearance.ThemeColor.Source}" />
-                                            <TextBlock Classes="PlaceholderText"
-                                                       Text="{Binding ThemeColorSystemSource}" />
-                                        </StackPanel>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 语言选择 -->
-                            <Border Classes="SettingCard">
-                                <StackPanel Spacing="12">
-                                    <StackPanel Spacing="2">
-                                        <TextBlock Classes="SettingItemTitle"
-                                                   Text="{DynamicResource Settings.Appearance.Language}" />
-                                        <TextBlock Classes="PlaceholderText"
-                                                   Text="{DynamicResource Settings.Appearance.Language.Desc}" />
-                                    </StackPanel>
-                                    <ComboBox HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding AvailableLanguages}"
-                                              SelectedItem="{Binding SelectedLanguageOption, Mode=TwoWay}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:LanguageOption">
-                                                <TextBlock Text="{Binding DisplayName}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </StackPanel>
-                            </Border>
-
-                        </StackPanel>
-
-                    </Panel>
+                        </Panel>
+                    </Border>
                 </ScrollViewer>
 
             </Grid>

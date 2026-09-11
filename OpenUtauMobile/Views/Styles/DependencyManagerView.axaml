@@ -1,0 +1,55 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <Style Selector="Border.DependencyCard">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetM}" />
+
+    </Style>
+
+    <Style Selector="StackPanel.DependencyPageContent">
+        <Setter Property="Spacing" Value="{x:Static foundation:LayoutTokens.SpaceM}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style Selector="TabControl.DependencyTabs">
+        <Setter Property="MaxWidth" Value="{x:Static localTokens:DependencyManagerTokens.ContentMaxWidth}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+    </Style>
+
+    <!-- 徽章 -->
+    <Style Selector="Border.DependencyCountBadge">
+        <Setter Property="MinWidth" Value="{x:Static localTokens:DependencyManagerTokens.BadgeMinWidth}" />
+        <Setter Property="Height" Value="{x:Static localTokens:DependencyManagerTokens.BadgeHeight}" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- 徽章文字 -->
+    <Style Selector="Border.DependencyCountBadge TextBlock">
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelSSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+
+    <Style Selector="Ellipse.CircularProgressTrack">
+        <Setter Property="Stroke" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="StrokeThickness" Value="3" />
+        <Setter Property="Fill" Value="Transparent" />
+    </Style>
+
+</Styles>

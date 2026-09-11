@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,7 +90,7 @@ namespace OpenUtau.Api {
             var notes = request.notes;
             var phonemizers = request.phonemizers;
 
-            if (request.singer == null || phonemizers == null || phonemizers.Length == 0) {
+            if (request.singer == null || !request.singer.Found || phonemizers == null || phonemizers.Length == 0) {
                 return new PhonemizerResponse() {
                     noteIndexes = request.noteIndexes,
                     part = request.part,
@@ -103,7 +103,7 @@ namespace OpenUtau.Api {
                 try {
                     p.SetSinger(request.singer);
                 } catch (Exception e) {
-                    Log.Error(e, $"phonemizer failed to set singer.");
+                    Log.Error(e, "Phonemizer {Phonemizer} failed to set singer {Singer}", p.GetType().FullName, request.singer.Id);
                     p.SetUpException = e;
                 }
                 p.SetTiming(request.timeAxis);
@@ -111,7 +111,7 @@ namespace OpenUtau.Api {
                     try {
                         p.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
                     } catch (Exception e) {
-                        Log.Error(e, $"phonemizer failed to setup.");
+                        Log.Error(e, "Phonemizer {Phonemizer} failed to set up part {Part}", p.GetType().FullName, request.part.DisplayName);
                         p.SetUpException = e;
                     }
                 }
@@ -161,7 +161,7 @@ namespace OpenUtau.Api {
                         nextIsNeighbour ? next : null,
                         (prevIsNeighbour ? prevs : null) ?? new Phonemizer.Note[0]);
                 } catch (Exception e) {
-                    Log.Error(e, $"phonemizer error {notes[i][0].lyric}");
+                    Log.Error(e, "Phonemizer {Phonemizer} failed for lyric {Lyric} in part {Part}", phonemizer.GetType().FullName, notes[i][0].lyric, request.part.DisplayName);
                     phonemizerResult = new Phonemizer.Result() {
                         phonemes = new Phonemizer.Phoneme[] {
                             new Phonemizer.Phoneme {
@@ -188,7 +188,7 @@ namespace OpenUtau.Api {
                 try {
                     p.CleanUp();
                 } catch (Exception e) {
-                    Log.Error(e, $"phonemizer failed to cleanup.");
+                    Log.Error(e, "Phonemizer {Phonemizer} failed to clean up", p.GetType().FullName);
                 }
             }
 

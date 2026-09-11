@@ -1042,9 +1042,6 @@
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>Экспортировать как аудио</value>
   </data>
-  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
-    <value>TODO: Импорт трека</value>
-  </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: Экспорт аудио</value>
   </data>
@@ -1738,4 +1735,43 @@
   <data name="BulkLyricEdit.Apply" xml:space="preserve">
     <value>Применить</value>
   </data>
+  <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>Выбрано файлов: {0}</value></data>
+  <data name="ImportTracks.Next" xml:space="preserve"><value>Далее</value></data>
+  <data name="ImportTracks.ImportCount" xml:space="preserve"><value>Импортировать дорожки: {0}</value></data>
+  <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>Дорожек: {0}</value></data>
+  <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>Вокальных частей: {0} · Аудиочастей: {1}</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>Певец не назначен или не установлен: {0}</value></data>
+  <data name="ImportTracks.Unassigned" xml:space="preserve"><value>Не назначен</value></data>
+  <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>Аудиофайл отсутствует: {0}</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>Тембры источника отличаются от установленного певца. Проверьте параметры после импорта.</value></data>
+  <data name="ImportTracks.AppendHint" xml:space="preserve"><value>Добавить новые дорожки на исходных позициях, не заменяя существующие.</value></data>
+  <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>Приоритет у существующих определений параметров, затем у первого выбранного файла. Недостающие определения будут добавлены.</value></data>
+  <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>Использовать темп и размеры источника (выкл.: сохранить текущие)</value></data>
+  <data name="ImportTracks.TimingSource" xml:space="preserve"><value>Источник темпа и размеров</value></data>
+  <data name="ImportTracks.TimingSummary" xml:space="preserve"><value>Начало: {0} BPM · {1}/{2}; маркеров темпа: {3}, размера: {4}</value></data>
+  <data name="ImportTracks.TempoMarker" xml:space="preserve"><value>Позиция {0} тиков: {1} BPM</value></data>
+  <data name="ImportTracks.SignatureMarker" xml:space="preserve"><value>Такт {0}: {1}/{2}</value></data>
+  <data name="ImportTracks.ReplaceTimingWarning" xml:space="preserve"><value>Темп и размеры будут заменены во всём проекте, включая существующие дорожки.</value></data>
+  <data name="ImportTracks.MarkerDetails" xml:space="preserve"><value>Все маркеры</value></data>
+  <data name="ImportTracks.SelectAll" xml:space="preserve"><value>Выбрать всё</value></data>
+  <data name="ImportTracks.SelectNone" xml:space="preserve"><value>Снять выделение</value></data>
+  <data name="ImportTracks.RemoveFile" xml:space="preserve"><value>Исключить файл</value></data>
+  <data name="ImportTracks.Reading" xml:space="preserve"><value>Чтение файлов дорожек…</value></data>
+  <data name="ImportTracks.Importing" xml:space="preserve"><value>Импорт дорожек…</value></data>
+  <data name="ImportTracks.Success" xml:space="preserve"><value>Импортировано дорожек: {0}</value></data>
+  <data name="ImportTracks.ProjectChanged" xml:space="preserve"><value>Текущий проект изменился. Начните импорт заново.</value></data>
+  <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>Как и в настольной версии, импорт очищает историю отмены/повтора и сбрасывает позицию воспроизведения. Темп и размеры берутся из первого импортируемого проекта.</value></data>
+  <data name="VoiceMapping.Title" xml:space="preserve"><value>Сопоставление тембров</value></data>
+  <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>Сопоставление импортированных вокальных режимов</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>Сопоставьте исходные тембры с текущим певцом. Пропуск сохраняет импортированные дорожки.</value></data>
+  <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>Сопоставьте кривые вокальных режимов с тембрами DiffSinger. По умолчанию преобразование пропускается; существующие кривые сохраняются.</value></data>
+  <data name="VoiceMapping.Default" xml:space="preserve"><value>По умолчанию</value></data>
+  <data name="VoiceMapping.Skip" xml:space="preserve"><value>Пропустить</value></data>
+  <data name="VoiceMapping.Apply" xml:space="preserve"><value>Применить</value></data>
+  <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>На дорожке нет нот или тембров для сопоставления.</value></data>
+  <data name="VoiceMapping.Undo" xml:space="preserve"><value>Сопоставление тембров</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>Сортировка</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Лупа</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Масштаб</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Для редактирования высоты тона и кривых параметров. При значении меньше 1× видна более широкая область; 1× — исходный масштаб.</value></data>
 </root>

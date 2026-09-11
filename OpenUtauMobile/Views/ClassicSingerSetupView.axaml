@@ -3,9 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="OpenUtauMobile.Views.ClassicSingerSetupView"
              x:DataType="vm:ClassicSingerSetupViewModel">
@@ -21,7 +23,7 @@
                    HorizontalAlignment="Stretch">
             <!-- 顶栏 -->
             <Border DockPanel.Dock="Top" Classes="TopBar">
-                <Grid ColumnDefinitions="Auto, *, Auto">
+                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <Button Grid.Column="0"
                             Classes="TopBarBtn"
                             Command="{Binding BackCommand}"
@@ -33,7 +35,7 @@
                     <!-- 步骤指示器 -->
                     <TextBlock Grid.Column="2"
                                Text="{Binding StepText}"
-                               FontSize="12"
+                               FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Right" />
@@ -46,7 +48,7 @@
                       VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch">
                 <Carousel.PageTransition>
-                    <PageSlide Duration="{x:Static theme:ThemeBaseMotionTokens.DurationMedium1}" />
+                    <PageSlide Duration="{x:Static foundation:MotionTokens.DurationMedium1}" />
                 </Carousel.PageTransition>
 
                 <!-- Step 0: 压缩包编码 -->
@@ -57,23 +59,25 @@
                       RowDefinitions="Auto,*,Auto">
 
                     <!-- 标题 -->
-                    <StackPanel Grid.Row="0" Margin="16" Spacing="8">
-                        <TextBlock Text="{DynamicResource SingerSetup.Step1.Title}" FontSize="16" FontWeight="SemiBold" />
-                        <TextBlock Text="{DynamicResource SingerSetup.Step1.Desc}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
+                    <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step1.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step1.Desc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
 
                     <!-- 编码选择 -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <Border
                             Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                            Padding="16" Margin="0">
-                            <StackPanel Spacing="12">
+                            Padding="{x:Static foundation:LayoutTokens.InsetM}" Margin="0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <!-- 选项 -->
                                 <TextBlock Text="{DynamicResource SingerSetup.Step1.ArchiveEncoding}"
-                                           FontSize="13"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                 <ComboBox ItemsSource="{Binding Encodings}"
@@ -89,19 +93,19 @@
                                 </ComboBox>
                                 <!-- 预览 -->
                                 <TextBlock Text="{DynamicResource SingerSetup.Step1.Preview}"
-                                           FontSize="12" Margin="0,12,0,0"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}" Margin="0,12,0,0"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                                 <ListBox ItemsSource="{Binding TextItems}"
                                          Background="{DynamicResource Sem.Color.Surface}"
-                                         CornerRadius="4"
+                                         CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
                                          BorderThickness="1"
                                          BorderBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                         Padding="8">
+                                         Padding="{x:Static foundation:LayoutTokens.InsetS}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding}"
-                                                       FontSize="11"
+                                                       FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                                        FontFamily="Courier New"
                                                        TextWrapping="Wrap" />
                                         </DataTemplate>
@@ -112,14 +116,12 @@
                     </ScrollViewer>
 
                     <!-- 底部按钮 -->
-                    <Border Grid.Row="2" Padding="16">
+                    <Border Grid.Row="2" Padding="{x:Static foundation:LayoutTokens.InsetM}">
                         <Grid ColumnDefinitions="*,Auto">
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button Classes="Primary"
                                         Content="{DynamicResource Common.Next}"
-                                        Command="{Binding NextCommand}"
-                                        Padding="16,8"
-                                        CornerRadius="8" />
+                                        Command="{Binding NextCommand}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -133,21 +135,23 @@
                       RowDefinitions="Auto,*,Auto">
 
                     <!-- 标题 -->
-                    <StackPanel Grid.Row="0" Margin="16" Spacing="8">
-                        <TextBlock Text="{DynamicResource SingerSetup.Step2.Title}" FontSize="16" FontWeight="SemiBold" />
-                        <TextBlock Text="{DynamicResource SingerSetup.Step2.Desc}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
+                    <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step2.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step2.Desc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
 
                     <!-- 编码选择 -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                                Padding="16" Margin="0">
-                            <StackPanel Spacing="12">
+                                Padding="{x:Static foundation:LayoutTokens.InsetM}" Margin="0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Text="{DynamicResource SingerSetup.Step2.TextEncoding}"
-                                           FontSize="13"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                 <ComboBox ItemsSource="{Binding Encodings}"
@@ -163,19 +167,19 @@
                                 </ComboBox>
 
                                 <TextBlock Text="{DynamicResource SingerSetup.Step2.Preview}"
-                                           FontSize="12" Margin="0,12,0,0"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}" Margin="0,12,0,0"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                                 <ListBox ItemsSource="{Binding TextItems}"
                                          Background="{DynamicResource Sem.Color.Surface}"
-                                         CornerRadius="4"
+                                         CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
                                          BorderThickness="1"
                                          BorderBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                         Padding="8">
+                                         Padding="{x:Static foundation:LayoutTokens.InsetS}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding}"
-                                                       FontSize="11"
+                                                       FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                                        FontFamily="Courier New"
                                                        TextWrapping="Wrap" />
                                         </DataTemplate>
@@ -186,20 +190,16 @@
                     </ScrollViewer>
 
                     <!-- 底部按钮 -->
-                    <Border Grid.Row="2" Padding="16">
+                    <Border Grid.Row="2" Padding="{x:Static foundation:LayoutTokens.InsetM}">
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <Button Grid.Column="0"
                                     Classes="Secondary"
                                     Content="{DynamicResource Common.Previous}"
-                                    Command="{Binding BackCommand}"
-                                    Padding="16,8"
-                                    CornerRadius="8" />
+                                    Command="{Binding BackCommand}" />
                             <Button Grid.Column="2"
                                     Classes="Primary"
                                     Content="{DynamicResource Common.Next}"
-                                    Command="{Binding NextCommand}"
-                                    Padding="16,8"
-                                    CornerRadius="8" />
+                                    Command="{Binding NextCommand}" />
                         </Grid>
                     </Border>
                 </Grid>
@@ -212,31 +212,33 @@
                       RowDefinitions="Auto,*,Auto">
 
                     <!-- 标题 -->
-                    <StackPanel Grid.Row="0" Margin="16" Spacing="8">
-                        <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerType}"
-                                   FontSize="16" FontWeight="SemiBold"
-                                   IsVisible="{Binding MissingInfo}" />
-                        <TextBlock Text="{DynamicResource SingerSetup.Step3.ManualDesc}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                   TextWrapping="Wrap"
-                                   IsVisible="{Binding MissingInfo}" />
+                    <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerType}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
+                                       IsVisible="{Binding MissingInfo}" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.ManualDesc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap"
+                                       IsVisible="{Binding MissingInfo}" />
 
-                        <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerInfo}"
-                                   FontSize="16" FontWeight="SemiBold"
-                                   IsVisible="{Binding !MissingInfo}" />
-                        <TextBlock Text="{DynamicResource SingerSetup.Step3.AutoDesc}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                   TextWrapping="Wrap"
-                                   IsVisible="{Binding !MissingInfo}" />
-                    </StackPanel>
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerInfo}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
+                                       IsVisible="{Binding !MissingInfo}" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.AutoDesc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap"
+                                       IsVisible="{Binding !MissingInfo}" />
+                        </StackPanel>
+                    </Border>
 
                     <!-- 内容 -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                                Padding="16" Margin="0">
-                            <StackPanel Spacing="16">
+                                Padding="{x:Static foundation:LayoutTokens.InsetM}" Margin="0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
                                 <Grid ColumnDefinitions="120,*">
                                     <TextBlock Grid.Column="0"
                                                Text="{DynamicResource SingerSetup.Step3.SingerType}"
@@ -252,21 +254,21 @@
 
                                 <Border BorderThickness="1"
                                         BorderBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                        CornerRadius="4"
-                                        Padding="12">
-                                    <StackPanel Spacing="8">
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
+                                        Padding="{x:Static foundation:LayoutTokens.InsetSM}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeHelp}"
                                                    FontWeight="SemiBold"
-                                                   FontSize="12"
+                                                   FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeUtau}"
-                                                   FontSize="11" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeEnunu}"
-                                                   FontSize="11" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeDiffSinger}"
-                                                   FontSize="11" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                         <TextBlock Text="{DynamicResource SingerSetup.Step3.TypeNeutrino}"
-                                                   FontSize="11" TextWrapping="Wrap" />
+                                                   FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap" />
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -274,20 +276,16 @@
                     </ScrollViewer>
 
                     <!-- 底部按钮 -->
-                    <Border Grid.Row="2" Padding="16">
+                    <Border Grid.Row="2" Padding="{x:Static foundation:LayoutTokens.InsetM}">
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <Button Grid.Column="0"
                                     Classes="Secondary"
                                     Content="{DynamicResource Common.Previous}"
-                                    Command="{Binding BackCommand}"
-                                    Padding="16,8"
-                                    CornerRadius="8" />
-                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
+                                    Command="{Binding BackCommand}" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button Classes="Primary"
                                         Content="{DynamicResource Common.Next}"
-                                        Command="{Binding NextCommand}"
-                                        Padding="16,8"
-                                        CornerRadius="8" />
+                                        Command="{Binding NextCommand}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -301,29 +299,31 @@
                       RowDefinitions="Auto,*,Auto">
 
                     <!-- 标题 -->
-                    <StackPanel Grid.Row="0" Margin="16" Spacing="8">
-                        <TextBlock Text="{DynamicResource SingerSetup.Step4.Title}" FontSize="16" FontWeight="SemiBold" />
-                        <TextBlock Text="{DynamicResource SingerSetup.Step4.Desc}"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
+                    <Border Padding="{x:Static foundation:LayoutTokens.InsetM}" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step4.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step4.Desc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
 
                     <!-- 安装摘要信息 -->
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                                Padding="16" Margin="0">
-                            <StackPanel Spacing="16">
+                                Padding="{x:Static foundation:LayoutTokens.InsetM}" Margin="0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
                                 <!-- 文件信息 -->
                                 <Border BorderThickness="1"
                                         BorderBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                        CornerRadius="4"
-                                        Padding="12">
-                                    <StackPanel Spacing="8">
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
+                                        Padding="{x:Static foundation:LayoutTokens.InsetSM}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step4.FileInfo}"
-                                                   FontWeight="SemiBold" FontSize="13"
+                                                   FontWeight="SemiBold" FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                                        <TextBlock FontSize="11" TextWrapping="Wrap">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" TextWrapping="Wrap">
                                             <Run Text="{DynamicResource SingerSetup.Step4.File}" />
                                             <Run Text="{Binding ArchiveFilePath}"
                                                  Foreground="{DynamicResource Sem.Color.OnSurface}" />
@@ -334,19 +334,19 @@
                                 <!-- 编码信息 -->
                                 <Border BorderThickness="1"
                                         BorderBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                        CornerRadius="4"
-                                        Padding="12">
-                                    <StackPanel Spacing="8">
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
+                                        Padding="{x:Static foundation:LayoutTokens.InsetSM}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step4.EncodingInfo}"
-                                                   FontWeight="SemiBold" FontSize="13"
+                                                   FontWeight="SemiBold" FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                                        <TextBlock FontSize="11">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}">
                                             <Run Text="{DynamicResource SingerSetup.Step4.ArchiveEncoding}" />
                                             <Run
                                                 Text="{Binding ArchiveEncoding, Converter={StaticResource EncodingNameConverter}, Mode=OneWay}"
                                                 Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                         </TextBlock>
-                                        <TextBlock FontSize="11">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}">
                                             <Run Text="{DynamicResource SingerSetup.Step4.TextEncoding}" />
                                             <Run
                                                 Text="{Binding TextEncoding, Converter={StaticResource EncodingNameConverter}, Mode=OneWay}"
@@ -358,13 +358,13 @@
                                 <!-- 歌手类型 -->
                                 <Border BorderThickness="1"
                                         BorderBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                        CornerRadius="4"
-                                        Padding="12">
-                                    <StackPanel Spacing="8">
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
+                                        Padding="{x:Static foundation:LayoutTokens.InsetSM}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Text="{DynamicResource SingerSetup.Step4.SingerType}"
-                                                   FontWeight="SemiBold" FontSize="13"
+                                                   FontWeight="SemiBold" FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                                    Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                                        <TextBlock FontSize="11">
+                                        <TextBlock FontSize="{x:Static semantic:TypographyTokens.LabelSSize}">
                                             <Run Text="{DynamicResource SingerSetup.Step4.Type}" />
                                             <Run Text="{Binding SingerType}"
                                                  Foreground="{DynamicResource Sem.Color.OnSurface}" />
@@ -376,20 +376,16 @@
                     </ScrollViewer>
 
                     <!-- 底部按钮 -->
-                    <Border Grid.Row="2" Padding="16">
+                    <Border Grid.Row="2" Padding="{x:Static foundation:LayoutTokens.InsetM}">
                         <Grid ColumnDefinitions="Auto,*,Auto">
                             <Button Grid.Column="0"
                                     Classes="Secondary"
                                     Content="{DynamicResource Common.Previous}"
-                                    Command="{Binding BackCommand}"
-                                    Padding="16,8"
-                                    CornerRadius="8" />
-                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
+                                    Command="{Binding BackCommand}" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button Classes="Primary"
                                         Content="{DynamicResource SingerSetup.ConfirmInstall}"
-                                        Command="{Binding ConfirmInstallCommand}"
-                                        Padding="16,8"
-                                        CornerRadius="8" />
+                                        Command="{Binding ConfirmInstallCommand}" />
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -402,7 +398,7 @@
                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        Spacing="24"
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceL}"
                         Width="300">
                 <!-- 进度条 -->
                 <ProgressBar Value="{Binding InstallProgress}"
@@ -414,7 +410,7 @@
                 <!-- 进度消息 -->
                 <TextBlock Text="{Binding InstallMessage}"
                            TextAlignment="Center"
-                           FontSize="14"
+                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                            TextWrapping="Wrap"
                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
             </StackPanel>
@@ -425,7 +421,7 @@
                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        Spacing="16"
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceM}"
                         Width="300">
                 <!-- 成功图标 -->
                 <TextBlock Text="✓"
@@ -444,7 +440,7 @@
                 <!-- 成功消息 -->
                 <TextBlock Text="{DynamicResource SingerSetup.Success.Desc}"
                            TextAlignment="Center"
-                           FontSize="12"
+                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                            TextWrapping="Wrap"
                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
@@ -452,8 +448,6 @@
                 <Button Classes="Secondary"
                         Content="{DynamicResource Common.Back}"
                         Command="{Binding ExitCommand}"
-                        Padding="16,12"
-                        CornerRadius="8"
                         HorizontalAlignment="Stretch"
                         Margin="0,16,0,0" />
             </StackPanel>
@@ -464,7 +458,7 @@
                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <StackPanel VerticalAlignment="Center"
                         HorizontalAlignment="Center"
-                        Spacing="16"
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceM}"
                         Width="350">
                 <!-- 错误图标 -->
                 <TextBlock Text="✕"
@@ -483,12 +477,12 @@
                 <!-- 错误消息 -->
                 <Border BorderThickness="1"
                         BorderBrush="{DynamicResource Sem.Color.Error}"
-                        CornerRadius="4"
-                        Padding="12"
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
+                        Padding="{x:Static foundation:LayoutTokens.InsetSM}"
                         Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
                     <TextBlock Text="{Binding ErrorMessage}"
                                TextAlignment="Left"
-                               FontSize="11"
+                               FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
                                TextWrapping="Wrap"
                                Foreground="{DynamicResource Sem.Color.Error}"
                                FontFamily="Courier New" />
@@ -498,8 +492,6 @@
                 <Button Classes="Secondary"
                         Content="{DynamicResource Common.Back}"
                         Command="{Binding ExitCommand}"
-                        Padding="16,12"
-                        CornerRadius="8"
                         HorizontalAlignment="Stretch"
                         Margin="0,16,0,0" />
             </StackPanel>

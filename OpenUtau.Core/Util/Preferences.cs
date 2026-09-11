@@ -400,6 +400,9 @@ errors.txt
             /// </summary>
             public bool PerformanceMonitorEnabled = false;
 
+            /// <summary>放大镜实际采样倍率；保存连续值，不保存界面档位索引。</summary>
+            public double MagnifierMagnificationFactor = 1.0;
+
             public const int PitchPenNoteHitTickExtensionMinimum = 0;
             public const int PitchPenNoteHitTickExtensionMaximum = 960;
             public const int PitchPenNoteHitTickExtensionDefault = 240;

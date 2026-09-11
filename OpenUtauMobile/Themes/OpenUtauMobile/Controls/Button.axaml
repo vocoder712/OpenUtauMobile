@@ -1,0 +1,141 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:CompileBindings="False"
+                    xmlns:components="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+                    xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+  <!-- 所有按钮复用同一个模板和状态机；外部样式只设置角色与布局。 -->
+  <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
+    <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="{x:Static components:ButtonTokens.CornerRadius}" />
+    <Setter Property="Padding" Value="{x:Static components:ButtonTokens.Padding}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="ClipToBounds" Value="False" />
+    <Setter Property="FocusAdorner" Value="{x:Null}" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="Transparent">
+        <Panel Name="PART_Root">
+          <Border Name="PART_Chrome" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{TemplateBinding CornerRadius}" />
+          <Border Name="PART_StateLayer" Background="{TemplateBinding Foreground}"
+                  CornerRadius="{TemplateBinding CornerRadius}" IsHitTestVisible="False" Opacity="0" />
+          <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}"
+                            Padding="{TemplateBinding Padding}" Margin="{TemplateBinding BorderThickness}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
+          <Border Name="PART_FocusRing" BorderBrush="{DynamicResource Sem.Color.Primary}"
+                  BorderThickness="{x:Static components:ButtonTokens.FocusThickness}"
+                  Margin="{x:Static components:ButtonTokens.FocusInset}" CornerRadius="{TemplateBinding CornerRadius}"
+                  IsHitTestVisible="False" IsVisible="False" />
+        </Panel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+    <!-- 常规操作统一规格；编辑器工具与内容卡片不强制套用操作按钮尺寸。 -->
+    <Style Selector="^.tonal, ^.filled, ^.outlined, ^.text, ^.destructive, ^.Primary, ^.Secondary, ^.DialogAction, ^.DialogPrimary, ^.DialogDestructive">
+      <Setter Property="CornerRadius" Value="{x:Static components:ButtonTokens.ActionCornerRadius}" />
+      <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
+      <Setter Property="FontWeight" Value="Medium" />
+      <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="^.tonal, ^.filled, ^.outlined, ^.text, ^.destructive, ^.Primary, ^.Secondary">
+      <Setter Property="Padding" Value="{x:Static components:ButtonTokens.ActionPadding}" />
+      <Setter Property="MinHeight" Value="{x:Static components:ButtonTokens.ActionMinHeight}" />
+    </Style>
+    <Style Selector="^.tonal">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+    </Style>
+    <Style Selector="^.filled, ^.Primary">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+    </Style>
+    <Style Selector="^.outlined, ^.Secondary">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="^.text">
+      <Setter Property="Padding" Value="{x:Static components:ButtonTokens.TextActionPadding}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+    <!-- 危险操作沿用 filled 的结构，只替换成配对的错误色。 -->
+    <Style Selector="^.destructive">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.Error}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnError}" />
+    </Style>
+    <!-- 图标按钮共用 48 命中区、40 底色和 24 图标，复用全部基础交互。 -->
+    <Style Selector="^.icon">
+      <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="Height" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="MinWidth" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+      <Setter Property="Padding" Value="12" />
+      <Setter Property="CornerRadius" Value="{x:Static components:ButtonTokens.ActionCornerRadius}" />
+    </Style>
+    <Style Selector="^.icon:not(.tonal):not(.filled):not(.outlined):not(.destructive)">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+    </Style>
+    <Style Selector="^.icon /template/ Border#PART_Chrome, ^.icon /template/ Border#PART_StateLayer">
+      <Setter Property="Margin" Value="4" />
+    </Style>
+    <Style Selector="^.icon /template/ Border#PART_FocusRing">
+      <Setter Property="Margin" Value="1" />
+    </Style>
+    <!-- 动效仅作用于内部视觉根节点；外层透明命中区域始终保持原大小。 -->
+    <Style Selector="^ /template/ Panel#PART_Root">
+      <Setter Property="RenderTransformOrigin" Value="50%,50%" />
+      <Setter Property="RenderTransform" Value="scale(1)" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="{x:Static foundation:MotionTokens.DurationShort}" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="^ /template/ Border#PART_StateLayer">
+      <Setter Property="Transitions">
+        <Transitions>
+          <DoubleTransition Property="Opacity" Duration="{x:Static foundation:MotionTokens.DurationShort}" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Panel#PART_Root">
+      <Setter Property="RenderTransform" Value="scale(0.98)" />
+    </Style>
+    <Style Selector="^.accent">
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimary}" />
+    </Style>
+    <Style Selector="^:pointerover:not(:disabled) /template/ Border#PART_StateLayer">
+      <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Hover}" />
+    </Style>
+    <Style Selector="^:focus-visible:not(:disabled) /template/ Border#PART_StateLayer">
+      <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Focus}" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#PART_StateLayer">
+      <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Pressed}" />
+    </Style>
+    <Style Selector="^:focus-visible:not(:disabled) /template/ Border#PART_FocusRing">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="^:disabled">
+      <Setter Property="Cursor" Value="Arrow" />
+    </Style>
+    <Style Selector="^:disabled /template/ Panel#PART_Root">
+      <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Disabled}" />
+      <Setter Property="Cursor" Value="Arrow" />
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

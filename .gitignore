@@ -456,3 +456,5 @@ analysis/
 
 ## codex
 .codex/
+# Local tests
+/tests/

@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
 using DynamicData.Binding;
+using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
@@ -67,7 +68,7 @@ public class HomeViewModel : NavigateViewModelBase
         OpenCommand = ReactiveCommand.Create(Open);
         SingersCommand = ReactiveCommand.Create(Singers);
         OptionsCommand = ReactiveCommand.Create(Options);
-        OpenRecentCommand = ReactiveCommand.Create<string>(OpenRecent);
+        OpenRecentCommand = ReactiveCommand.CreateFromTask<string>(OpenRecent);
         RemoveRecentCommand = ReactiveCommand.Create<string>(RemoveRecent);
         OpenRecoveryCommand = ReactiveCommand.Create(OpenRecovery);
         DismissRecoveryCommand = ReactiveCommand.Create(DismissRecovery);
@@ -78,9 +79,18 @@ public class HomeViewModel : NavigateViewModelBase
         _ = Initialize();
     }
 
-    private void OpenRecent(string path)
+    private async Task OpenRecent(string path)
     {
         if (string.IsNullOrEmpty(path)) return;
+        // 存储访问放到后台；等待期间仍可从主页导航到其他页面。
+        bool exists = await Task.Run(() => File.Exists(path));
+        if (Navigator.CurrentViewModel != this) return;
+        if (!exists)
+        {
+            ErrorDialogService.Show(new ErrorDialogViewModel(
+                new ErrorMessageNotification(new FileNotFoundException(null, path))));
+            return;
+        }
         Navigator.Navigate(new EditorViewModel(Navigator, path));
     }
 

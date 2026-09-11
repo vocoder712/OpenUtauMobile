@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -395,6 +395,14 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public int PitchPenNoteHitToneExtension { get; set; }
 
+    /// <summary>保留偏好中的连续倍率，独立于滑块显示的最近档位。</summary>
+    [Reactive]
+    public double MagnifierMagnificationFactor { get; private set; }
+
+    /// <summary>仅供用户操作的离散档位，初始化时不回写连续偏好。</summary>
+    [Reactive]
+    public double MagnifierSliderValue { get; set; }
+
     /// <summary>自动保存间隔秒数（0=禁用，30-600）。</summary>
     [Reactive]
     public int AutoSaveInterval { get; set; }
@@ -634,6 +642,24 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         ShowPortraitEnabled = Preferences.Default.ShowPortrait;
         UndoLimit = Math.Clamp(Preferences.Default.UndoLimit, 10, 100);
         PitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
+        MagnifierMagnificationFactor = MagnifierSettings.Normalize(Preferences.Default.MagnifierMagnificationFactor);
+        MagnifierSliderValue = MagnifierSettings.Snap(MagnifierMagnificationFactor);
+        this.WhenAnyValue(x => x.MagnifierSliderValue)
+            .Skip(1)
+            .Subscribe(value =>
+            {
+                double snapped = MagnifierSettings.Snap(value);
+                if (snapped != value)
+                {
+                    MagnifierSliderValue = snapped;
+                    return;
+                }
+
+                MagnifierMagnificationFactor = snapped;
+                Preferences.Default.MagnifierMagnificationFactor = snapped;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
         PitchPenNoteHitTickExtension = Math.Clamp(
             Preferences.Default.PitchPenNoteHitTickExtension,
             Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum,

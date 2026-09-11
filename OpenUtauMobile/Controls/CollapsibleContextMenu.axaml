@@ -1,13 +1,17 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              x:Class="OpenUtauMobile.Controls.CollapsibleContextMenu"
              HorizontalAlignment="Right">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/CollapsibleContextMenu.axaml" />
+    </UserControl.Styles>
+
     <!-- 上下文菜单，胶囊 -->
     <Border x:Name="Capsule"
             Background="{DynamicResource Sem.Color.SurfaceContainer}"
-            CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerXXXXXL}"
-            Padding="{x:Static theme:ThemeSemLayoutTokens.InsetS}">
+            CornerRadius="{x:Static foundation:ShapeTokens.CornerXXXXXL}"
+            Padding="{x:Static foundation:LayoutTokens.InsetS}">
         <Grid RowDefinitions="Auto,Auto"
               HorizontalAlignment="Center">
             <Border x:Name="ContentHost"
@@ -15,13 +19,13 @@
                     Background="Transparent">
                 <Border.Transitions>
                     <Transitions>
-                        <DoubleTransition Property="Height" Duration="0:0:0.2" Easing="CubicEaseOut" />
+                        <DoubleTransition Property="Height" Duration="{x:Static foundation:MotionTokens.DurationMedium}" Easing="CubicEaseOut" />
                     </Transitions>
                 </Border.Transitions>
                 <Panel x:Name="ContentPanel">
                     <StackPanel Orientation="Vertical"
                                 ClipToBounds="True"
-                                Spacing="{x:Static theme:ThemeBaseLayoutTokens.SpaceXS}"
+                                Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                                 x:Name="ActionsList">
                     </StackPanel>
                 </Panel>

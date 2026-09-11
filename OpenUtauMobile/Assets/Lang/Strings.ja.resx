@@ -1116,9 +1116,6 @@
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>オーディオとしてエクスポート</value>
   </data>
-  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
-    <value>TODO: トラックをインポート</value>
-  </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: オーディオをエクスポート</value>
   </data>
@@ -1776,4 +1773,43 @@
   <data name="BulkLyricEdit.Apply" xml:space="preserve">
     <value>適用</value>
   </data>
+  <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>{0} 個のファイルを選択</value></data>
+  <data name="ImportTracks.Next" xml:space="preserve"><value>次へ</value></data>
+  <data name="ImportTracks.ImportCount" xml:space="preserve"><value>{0} トラックをインポート</value></data>
+  <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>{0} トラック</value></data>
+  <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>歌声パート {0} · 音声パート {1}</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>歌手が未指定または未インストール：{0}</value></data>
+  <data name="ImportTracks.Unassigned" xml:space="preserve"><value>未指定</value></data>
+  <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>音声ファイルが見つかりません：{0}</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>音色設定が現在の歌手と異なります。インポート後に確認してください。</value></data>
+  <data name="ImportTracks.AppendHint" xml:space="preserve"><value>既存のトラックを置き換えず、元の位置を保って新しいトラックとして追加します。</value></data>
+  <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>同名の表現は現在のプロジェクト、次に先の選択ファイルを優先します。不足する定義を追加します。</value></data>
+  <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>元のテンポと拍子を使用（オフ：現在の設定を保持）</value></data>
+  <data name="ImportTracks.TimingSource" xml:space="preserve"><value>テンポと拍子の参照元</value></data>
+  <data name="ImportTracks.TimingSummary" xml:space="preserve"><value>初期 {0} BPM · {1}/{2}、テンポ {3} 個・拍子 {4} 個のマーカー</value></data>
+  <data name="ImportTracks.TempoMarker" xml:space="preserve"><value>位置 {0} tick：{1} BPM</value></data>
+  <data name="ImportTracks.SignatureMarker" xml:space="preserve"><value>第 {0} 小節：{1}/{2}</value></data>
+  <data name="ImportTracks.ReplaceTimingWarning" xml:space="preserve"><value>既存トラックを含むプロジェクト全体のテンポと拍子を置き換えます。</value></data>
+  <data name="ImportTracks.MarkerDetails" xml:space="preserve"><value>すべてのマーカー</value></data>
+  <data name="ImportTracks.SelectAll" xml:space="preserve"><value>すべて選択</value></data>
+  <data name="ImportTracks.SelectNone" xml:space="preserve"><value>選択を解除</value></data>
+  <data name="ImportTracks.RemoveFile" xml:space="preserve"><value>このファイルを除外</value></data>
+  <data name="ImportTracks.Reading" xml:space="preserve"><value>トラックファイルを読み込み中…</value></data>
+  <data name="ImportTracks.Importing" xml:space="preserve"><value>トラックをインポート中…</value></data>
+  <data name="ImportTracks.Success" xml:space="preserve"><value>{0} トラックをインポートしました</value></data>
+  <data name="ImportTracks.ProjectChanged" xml:space="preserve"><value>現在のプロジェクトが変更されました。もう一度インポートしてください。</value></data>
+  <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>デスクトップ版と同様に、インポートすると元に戻す・やり直しの履歴と再生位置がリセットされます。テンポと拍子は最初のインポート元を使用します。</value></data>
+  <data name="VoiceMapping.Title" xml:space="preserve"><value>音色マッピング</value></data>
+  <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>インポートした歌唱スタイルのマッピング</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>元の音色を現在の歌手に割り当てます。スキップしてもインポート済みのトラックは残ります。</value></data>
+  <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>歌唱スタイルのカーブを DiffSinger の音色に割り当てます。デフォルトは変換しません。既存のカーブは保持します。</value></data>
+  <data name="VoiceMapping.Default" xml:space="preserve"><value>デフォルト</value></data>
+  <data name="VoiceMapping.Skip" xml:space="preserve"><value>スキップ</value></data>
+  <data name="VoiceMapping.Apply" xml:space="preserve"><value>適用</value></data>
+  <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>割り当てる音符または音色がありません。</value></data>
+  <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色を再割り当て</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>並べ替え</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>拡大鏡</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>表示倍率</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>ピッチとパラメーターカーブの編集に適用します。1× 未満では広い範囲を表示し、1× は元の倍率です。</value></data>
 </root>
