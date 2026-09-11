@@ -21,7 +21,7 @@
             <dialogHostAvalonia:DialogHost.PopupTemplate>
                 <ControlTemplate>
                     <!-- 这里的 Border 就是弹窗的“背景容器”，透明背景 -->
-                    <Border Background="Transparent">
+                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
                         <ContentPresenter Content="{TemplateBinding Content}" />
                     </Border>
                 </ControlTemplate>

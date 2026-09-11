@@ -59,7 +59,6 @@ public abstract class PopupDialogControl : UserControl
             return;
         }
 
-        MaxHeight = Tokens.PopupCommonTokens.MaxHeight;
         double horizontalMargin = viewportWidth >= 840 ? 56d : 24d;
         double maxWidth = WidthPreset switch
         {
@@ -68,9 +67,8 @@ public abstract class PopupDialogControl : UserControl
             PopupDialogWidthPreset.Wide => 560d,
             _ => 420d,
         };
-        double minWidth = WidthPreset == PopupDialogWidthPreset.Wide ? 320d : 280d;
-
-        double width = Math.Clamp(viewportWidth - horizontalMargin * 2d, minWidth, maxWidth);
+        // 窄窗口优先保留视口留白，不用最小宽度反向撑破宿主约束。
+        double width = Math.Clamp(viewportWidth - horizontalMargin * 2d, 0d, maxWidth);
         Width = width;
         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
     }

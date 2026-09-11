@@ -15,7 +15,7 @@ size constraints remain the responsibility of the view and popup base class.
 
 ## New dialog
 
-Keep the existing `PopupDialogControl` / `ImportDialogControl` base class and
+Use the shared `PopupDialogControl` base class and
 ViewModel lifecycle. Put one `DialogShell` inside the AXAML UserControl:
 
 ```xml
@@ -174,11 +174,21 @@ option commands in the running application before visual acceptance.
 
 ## Responsive sizing (2026-09-10)
 
-`PopupDialogControl` owns initial sizing, TopLevel resize subscription and detach
-cleanup for all presets. Wide has one width policy: 320 minimum, 560 maximum,
-24 per-side viewport margin below 840, otherwise 56. Import dialogs inherit this
-same policy rather than calculating their own width. `ImportDialogControl` only
-adds its existing height cap (viewport height minus 48); import content scroll
-limits stay local. This intentionally changes the old import minimum-width rule.
-Preset minima are unchanged, including their existing narrow-viewport overflow
-tradeoff. No control hit targets are enlarged by token refactoring.
+`PopupDialogControl` owns width presets, TopLevel resize subscription and detach
+cleanup, but never writes MaxHeight. Width maxima are 360/420/560 for
+Compact/Regular/Wide, with 24 per-side viewport allowance below 840 and 56 above.
+Widths may shrink below the former 280/320 minima to preserve narrow-window insets.
+
+DialogHost owns the common 24dp viewport inset via DialogMargin. MainView's custom
+popup template must bind its outer Border.Padding to TemplateBinding Padding:
+DialogHost 0.12.3 forwards DialogMargin to the popup's Padding, not Margin.
+This reduces the available measure space and leaves header/footer outside body
+scrolling. Do not also subtract 48 from each popup's MaxHeight.
+
+The shared PopupDialogRoot style supplies a default MaxHeight of 640dp; a popup's
+explicit MaxHeight or binding takes precedence and remains intact after resizing.
+ImportDialogControl has been removed. ImportTracksPopup and VoiceColorMappingPopup
+use PopupDialogControl with Wide, like FilePickerPopup. Single/multi-file selection
+and error dialogs use the same host height constraint; no per-mode height override
+or duplicate error-dialog resize subscription remains. Local content scroll limits
+are unchanged. Glass layers and touch targets are unaffected.

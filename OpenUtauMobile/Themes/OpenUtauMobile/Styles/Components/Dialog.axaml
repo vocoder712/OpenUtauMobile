@@ -59,12 +59,16 @@
             </Style>
         </ControlTheme>
     </Styles.Resources>
+    <Style Selector="dialogHost|DialogHost">
+        <Setter Property="DialogMargin" Value="{x:Static components:DialogTokens.ViewportMargin}" />
+    </Style>
     <!-- 覆盖宿主默认的 0.56；使用不透明语义色，避免遮罩透明度重复相乘。 -->
     <Style Selector="dialogHost|DialogHost[IsOpen=True] /template/ Rectangle#PART_ContentCover">
         <Setter Property="Opacity" Value="{x:Static components:DialogTokens.ScrimOpacity}" />
     </Style>
     <Style Selector="UserControl.PopupDialogRoot">
         <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.DefaultMaxHeight}" />
     </Style>
     <Style Selector="TextBlock.PopupTitle">
         <Setter Property="FontSize" Value="{x:Static components:DialogTokens.TitleSize}" />
