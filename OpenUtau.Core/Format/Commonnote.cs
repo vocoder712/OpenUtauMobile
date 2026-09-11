@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection.Emit;
-using TextCopy;
 using Serilog;
 
 //Commonnote format definition: https://github.com/ExpressiveLabs/commonnote
@@ -75,17 +74,5 @@ namespace OpenUtau.Core.Format {
             return data.notes.Select(n => LoadNote(n, resolution, project)).ToList();
         }
 
-        public static void CopyToClipboard(List<UNote> uNotes, UProject project) {
-            var text = Dumps(uNotes, project);
-            ClipboardService.SetText(text);
-        }
-
-        public static List<UNote>? LoadFromClipboard(UProject project) {
-            var text = ClipboardService.GetText();
-            if (String.IsNullOrEmpty(text)) {
-                return null;
-            }
-            return Loads(text, project);
-        }
     }
 }

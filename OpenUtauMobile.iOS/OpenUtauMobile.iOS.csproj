@@ -10,7 +10,6 @@
     <PropertyGroup>
         <!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
         <MtouchLink>None</MtouchLink>
-        <IsMacEnabled>false</IsMacEnabled>
     </PropertyGroup>
 
     <ItemGroup>
