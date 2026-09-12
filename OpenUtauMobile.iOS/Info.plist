@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDisplayName</key>
 	<string>OpenUtauMobile</string>
-	<key>CFBundleIdentifier</key>
-	<string>companyName.OpenUtauMobile</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>

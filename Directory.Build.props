@@ -10,7 +10,7 @@
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
         <!-- 包名 -->
         <BaseApplicationId>pers.vocoder712.openutaumobile.canary</BaseApplicationId>
-        <!-- Android 包名 -->
+        <!-- 全平台应用标识：Android package name / Apple bundle identifier -->
         <ApplicationId>$(BaseApplicationId)</ApplicationId>
         <!-- CI 的 BuildNumber 已包含 20000 偏移；本地 Android 使用有效的最小整数版本号 -->
         <ApplicationVersion Condition="'$(ApplicationVersion)' == '' and '$(BuildNumber)' == '0'">1</ApplicationVersion>
