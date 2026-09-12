@@ -1822,7 +1822,7 @@
   <data name="Mixer.Mid" xml:space="preserve"><value>中域</value></data>
   <data name="Mixer.Mute" xml:space="preserve"><value>ミュート</value></data>
   <data name="Mixer.Order" xml:space="preserve"><value>固定順序：EQ → 圧縮 → リバーブ</value></data>
-  <data name="Mixer.Preview" xml:space="preserve"><value>レイアウトプレビュー · 調整は音声に反映されません</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>音声設定はプレビューです。名前と色はプロジェクトに反映されます</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>比率</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>リバーブ</value></data>
   <data name="Mixer.Size" xml:space="preserve"><value>ルームサイズ</value></data>
@@ -1830,4 +1830,5 @@
   <data name="Mixer.Threshold" xml:space="preserve"><value>しきい値</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>ミキサー</value></data>
   <data name="Mixer.Wet" xml:space="preserve"><value>リバーブ量</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>スライダーをダブルタップすると初期値に戻ります</value></data>
 </root>

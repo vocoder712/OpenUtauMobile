@@ -1829,7 +1829,7 @@
   <data name="Mixer.Mid" xml:space="preserve"><value>Mid</value></data>
   <data name="Mixer.Mute" xml:space="preserve"><value>Mute</value></data>
   <data name="Mixer.Order" xml:space="preserve"><value>Fixed order: EQ → Compressor → Reverb</value></data>
-  <data name="Mixer.Preview" xml:space="preserve"><value>Layout preview · Adjustments do not affect audio</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>Audio controls are previews; names and colors update the project</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>Ratio</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>Reverb</value></data>
   <data name="Mixer.Size" xml:space="preserve"><value>Room size</value></data>
@@ -1837,4 +1837,5 @@
   <data name="Mixer.Threshold" xml:space="preserve"><value>Threshold</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>Mixer</value></data>
   <data name="Mixer.Wet" xml:space="preserve"><value>Reverb amount</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>Double-click a slider to restore its default</value></data>
 </root>

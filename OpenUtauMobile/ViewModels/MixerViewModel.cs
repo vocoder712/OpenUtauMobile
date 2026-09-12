@@ -1,4 +1,6 @@
+using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using Avalonia.Media;
 using OpenUtau.Core.Ustx;
@@ -39,10 +41,22 @@ public class MixerViewModel : ViewModelBase
 public class MixerChannelViewModel : ViewModelBase
 {
     public UTrack Track { get; }
+    public UMixFx ResetDefaults { get; } = new();
     [Reactive] public string Name { get; set; } = string.Empty;
     [Reactive] public IBrush Color { get; set; } = Brushes.Transparent;
     [Reactive] public double Volume { get; set; }
-    [Reactive] public double Pan { get; set; }
+    private double _pan;
+    public double Pan
+    {
+        get => _pan;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _pan, value);
+            this.RaisePropertyChanged(nameof(PanText));
+        }
+    }
+    public string PanText => Math.Abs(Pan) < 0.5 ? "C"
+        : (Pan < 0 ? "L" : "R") + Math.Abs(Pan).ToString("0", CultureInfo.InvariantCulture);
     [Reactive] public bool Mute { get; set; }
     [Reactive] public bool Solo { get; set; }
     [Reactive] public bool FxEnabled { get; set; }

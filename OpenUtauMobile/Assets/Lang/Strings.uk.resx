@@ -1784,7 +1784,7 @@
   <data name="Mixer.Mid" xml:space="preserve"><value>Середні частоти</value></data>
   <data name="Mixer.Mute" xml:space="preserve"><value>Приглушити</value></data>
   <data name="Mixer.Order" xml:space="preserve"><value>Порядок: EQ → Компресор → Реверберація</value></data>
-  <data name="Mixer.Preview" xml:space="preserve"><value>Попередній перегляд · Зміни не впливають на звук</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>Звук — попередній перегляд; назви й кольори змінюються в проєкті</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>Ступінь стиснення</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>Реверберація</value></data>
   <data name="Mixer.Size" xml:space="preserve"><value>Розмір приміщення</value></data>
@@ -1792,4 +1792,5 @@
   <data name="Mixer.Threshold" xml:space="preserve"><value>Поріг</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>Мікшер</value></data>
   <data name="Mixer.Wet" xml:space="preserve"><value>Рівень реверберації</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>Подвійне натискання відновлює типове значення</value></data>
 </root>

@@ -1829,7 +1829,7 @@
   <data name="Mixer.Mid" xml:space="preserve"><value>中频</value></data>
   <data name="Mixer.Mute" xml:space="preserve"><value>静音</value></data>
   <data name="Mixer.Order" xml:space="preserve"><value>固定顺序：EQ → 压缩 → 混响</value></data>
-  <data name="Mixer.Preview" xml:space="preserve"><value>布局预览 · 调整仅用于预览，不改变声音</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>混音参数仅预览；名称和颜色同步工程</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>压缩比</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>混响</value></data>
   <data name="Mixer.Size" xml:space="preserve"><value>空间大小</value></data>
@@ -1837,4 +1837,5 @@
   <data name="Mixer.Threshold" xml:space="preserve"><value>阈值</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>混音</value></data>
   <data name="Mixer.Wet" xml:space="preserve"><value>混响量</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>双击滑块恢复默认值</value></data>
 </root>

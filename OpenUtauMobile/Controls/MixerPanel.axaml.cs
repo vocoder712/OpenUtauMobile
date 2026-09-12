@@ -1,9 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using OpenUtau.Core;
 using OpenUtauMobile.ViewModels;
+using OpenUtauMobile.Services;
+using Serilog;
 
 namespace OpenUtauMobile.Controls;
 
@@ -11,6 +14,7 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
 {
     public event Action? CloseRequested;
     public MixerViewModel ViewModel { get; } = new();
+    private bool _editingIdentity;
 
     public MixerPanel()
     {
@@ -59,13 +63,56 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         Grid.SetColumn(DetailBorder, ViewModel.IsWide ? 1 : 0);
     }
 
-    private void OnChannelClick(object? sender, RoutedEventArgs e)
+    private void OnFxClick(object? sender, RoutedEventArgs e)
     {
         if (sender is Button { DataContext: MixerChannelViewModel channel })
         {
             ViewModel.SelectedChannel = channel;
             ViewModel.IsDetailOpen = true;
             UpdateLayoutMode();
+        }
+    }
+
+    private async void OnRenameClick(object? sender, RoutedEventArgs e) => await EditIdentityAsync(sender, false);
+
+    private async void OnColorClick(object? sender, RoutedEventArgs e) => await EditIdentityAsync(sender, true);
+
+    private async Task EditIdentityAsync(object? sender, bool editColor)
+    {
+        if (_editingIdentity || sender is not Button { DataContext: MixerChannelViewModel channel }) return;
+        _editingIdentity = true;
+        try
+        {
+            var project = DocManager.Inst.Project;
+            var track = channel.Track;
+            string? value = editColor
+                ? await TrackHeaderService.Inst.PickTrackColorAsync(track.TrackColor)
+                : await TrackHeaderService.Inst.PickTrackNameAsync(track.TrackName);
+            if (string.IsNullOrWhiteSpace(value)) return;
+            value = value.Trim();
+            // 弹窗关闭前可能已切换工程或删除轨道，不向失效对象提交命令。
+            if (DocManager.Inst.Project != project || !project.tracks.Contains(track) ||
+                value == (editColor ? track.TrackColor : track.TrackName)) return;
+            DocManager.Inst.StartUndoGroup(editColor ? "改变轨道颜色" : "重命名轨道");
+            try
+            {
+                DocManager.Inst.ExecuteCmd(editColor
+                    ? new ChangeTrackColorCommand(project, track, value)
+                    : new RenameTrackCommand(project, track, value));
+            }
+            finally
+            {
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to edit mixer track identity.");
+            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+        }
+        finally
+        {
+            _editingIdentity = false;
         }
     }
 
