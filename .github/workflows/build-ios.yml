@@ -26,12 +26,13 @@ permissions:
 jobs:
   ios:
     name: iOS arm64 NativeAOT unsigned IPA
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 90
     env:
       AVALONIA_TELEMETRY_OPTOUT: "1"
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
 
     steps:
       - name: Checkout
@@ -64,7 +65,19 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Xcode and iPhoneOS SDK"
-          xcode-select -p
+          if [ ! -d "$DEVELOPER_DIR" ]; then
+            echo "::error::Required Xcode developer directory is missing: $DEVELOPER_DIR"
+            ls -1d /Applications/Xcode_*.app 2>/dev/null | sed -n '1,20p' || true
+            exit 1
+          fi
+
+          XCODE_VERSION="$(xcodebuild -version | awk '/^Xcode / { print $2 }')"
+          if [[ "$XCODE_VERSION" != "26.6" && "$XCODE_VERSION" != 26.6.* ]]; then
+            echo "::error::Expected Xcode 26.6, selected $XCODE_VERSION from $DEVELOPER_DIR"
+            exit 1
+          fi
+
+          echo "Developer directory: $DEVELOPER_DIR"
           xcodebuild -version
           echo "iPhoneOS SDK: $(xcrun --sdk iphoneos --show-sdk-version)"
           echo "iPhoneOS SDK path: $(xcrun --sdk iphoneos --show-sdk-path)"
@@ -79,20 +92,65 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Restore iOS arm64 NativeAOT
+      - name: Validate NativeAOT Entry Properties
         shell: bash
         run: |
           set -euo pipefail
 
-          dotnet restore \
+          APP_PUBLISH_AOT="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -r ios-arm64 \
+            -nologo \
+            -getProperty:PublishAot \
+            -p:_IsPublishing=true \
             -p:Configuration=Release \
-            -p:PublishAot=true \
-            -p:MtouchLink=Full \
-            -p:EnableCodeSigning=false \
-            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-nativeaot-logs/restore.binlog" \
-            --verbosity minimal
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:EnableIosNativeAot=true)"
+          APP_USE_NATIVE_AOT="$(dotnet msbuild \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -nologo \
+            -getProperty:_UseNativeAot \
+            -p:_IsPublishing=true \
+            -p:Configuration=Release \
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:EnableIosNativeAot=true)"
+          APP_USE_MONO="$(dotnet msbuild \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -nologo \
+            -getProperty:UseMonoRuntime \
+            -p:_IsPublishing=true \
+            -p:Configuration=Release \
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:EnableIosNativeAot=true)"
+          echo "PublishAot=$APP_PUBLISH_AOT _UseNativeAot=$APP_USE_NATIVE_AOT UseMonoRuntime=$APP_USE_MONO"
+          if [ "$APP_PUBLISH_AOT" != "true" ] \
+            || [ "$APP_USE_NATIVE_AOT" != "true" ] \
+            || [ "$APP_USE_MONO" != "false" ]; then
+            echo "::error::iOS entry project did not select the NativeAOT runtime"
+            exit 1
+          fi
+
+          for DEPENDENCY_PROJECT in \
+            OpenUtauMobile/OpenUtauMobile.csproj \
+            OpenUtau.Core/OpenUtau.Core.csproj \
+            OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj \
+            OpenUtauMobile.Plugin.Renderers/OpenUtauMobile.Plugin.Renderers.csproj; do
+            DEPENDENCY_PUBLISH_AOT="$(dotnet msbuild \
+              "$DEPENDENCY_PROJECT" \
+              -nologo \
+              -getProperty:PublishAot \
+              -p:_IsPublishing=true \
+              -p:Configuration=Release \
+              -p:RuntimeIdentifier=ios-arm64 \
+              -p:EnableIosNativeAot=true)"
+            if [ -n "$DEPENDENCY_PUBLISH_AOT" ]; then
+              echo "::error::PublishAot leaked into $DEPENDENCY_PROJECT: $DEPENDENCY_PUBLISH_AOT"
+              exit 1
+            fi
+          done
+          echo "Dependency PublishAot: <empty> (4 projects)"
 
       - name: Publish iOS arm64 NativeAOT Unsigned IPA
         shell: bash
@@ -106,7 +164,7 @@ jobs:
 
           dotnet publish \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            --no-restore \
+            --force \
             -c Release \
             -f net10.0-ios \
             -r ios-arm64 \
@@ -116,8 +174,7 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:PublishAot=true \
-            -p:MtouchLink=Full \
+            -p:EnableIosNativeAot=true \
             -p:BuildIpa=true \
             -p:EnableCodeSigning=false \
             -p:IpaPackagePath="$IPA_PATH" \
@@ -201,6 +258,28 @@ jobs:
         if: failure()
         shell: bash
         run: |
+          echo "::group::NativeAOT restore state"
+          NUGET_ROOT="$(dotnet nuget locals global-packages --list 2>/dev/null \
+            | sed 's/^global-packages: //' || true)"
+          if [ -n "$NUGET_ROOT" ] && [ -d "$NUGET_ROOT" ]; then
+            echo "NuGet global packages: $NUGET_ROOT"
+            find "$NUGET_ROOT" -maxdepth 1 -type d \
+              -iname 'microsoft.netcore.app.runtime.nativeaot*' \
+              -print 2>/dev/null | sort | sed -n '1,20p'
+          else
+            echo "NuGet global packages directory is unavailable."
+          fi
+
+          ASSETS_FILE="OpenUtauMobile.iOS/obj/project.assets.json"
+          if [ -f "$ASSETS_FILE" ]; then
+            echo "NativeAOT entries in $ASSETS_FILE:"
+            grep -o 'Microsoft.NETCore.App.Runtime.NativeAOT[^"/]\+' "$ASSETS_FILE" \
+              | sort -u | sed -n '1,20p' || true
+          else
+            echo "No project.assets.json was generated."
+          fi
+          echo "::endgroup::"
+
           echo "::group::NativeAOT diagnostic files"
           FOUND=0
           while IFS= read -r FILE; do
@@ -223,6 +302,7 @@ jobs:
           name: OpenUtauMobile-ios-arm64-nativeaot-diagnostics
           path: |
             artifacts/ios-nativeaot-logs
+            OpenUtauMobile.iOS/obj/project.assets.json
             OpenUtauMobile.iOS/obj/**/nativeaot-*.txt
             OpenUtauMobile.iOS/obj/**/*ilc*.txt
           if-no-files-found: warn

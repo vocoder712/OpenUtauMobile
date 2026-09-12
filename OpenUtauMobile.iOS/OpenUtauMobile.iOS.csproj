@@ -8,8 +8,8 @@
 
     <!-- iOS 配置 -->
     <PropertyGroup>
-        <!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
-        <MtouchLink>None</MtouchLink>
+        <!-- 常规构建禁用 IL 链接器；NativeAOT 使用工作流指定的全量链接。 -->
+        <MtouchLink Condition="'$(PublishAot)' != 'true'">None</MtouchLink>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
+        <!-- NativeAOT 只应用于 iOS 可执行入口，不能传播到普通 net10.0 类库。 -->
+        <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"
+                          GlobalPropertiesToRemove="EnableIosNativeAot;PublishAot;MtouchLink"/>
     </ItemGroup>
 </Project>
