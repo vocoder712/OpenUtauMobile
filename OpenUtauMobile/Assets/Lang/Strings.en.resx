@@ -1119,9 +1119,6 @@
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>Export as Audio</value>
   </data>
-  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
-    <value>TODO: ImportTrack</value>
-  </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: ExportAudio</value>
   </data>
@@ -1783,4 +1780,43 @@
   <data name="BulkLyricEdit.Apply" xml:space="preserve">
     <value>Apply</value>
   </data>
+  <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>{0} files selected</value></data>
+  <data name="ImportTracks.Next" xml:space="preserve"><value>Next</value></data>
+  <data name="ImportTracks.ImportCount" xml:space="preserve"><value>Import {0} tracks</value></data>
+  <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>{0} tracks</value></data>
+  <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>{0} vocal parts · {1} audio parts</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>Singer missing or unassigned: {0}</value></data>
+  <data name="ImportTracks.Unassigned" xml:space="preserve"><value>Unassigned</value></data>
+  <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>Missing audio: {0}</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>Source voice colors differ from the installed singer. Review voice-color parameters after import.</value></data>
+  <data name="ImportTracks.AppendHint" xml:space="preserve"><value>Append as new tracks at their original positions without replacing existing tracks.</value></data>
+  <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>Existing expression definitions take precedence; otherwise the first selected file wins. Missing definitions will be imported.</value></data>
+  <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>Use source tempo and time signatures (off: keep current settings)</value></data>
+  <data name="ImportTracks.TimingSource" xml:space="preserve"><value>Tempo and time signature source</value></data>
+  <data name="ImportTracks.TimingSummary" xml:space="preserve"><value>Initial {0} BPM · {1}/{2}; {3} tempo markers, {4} time signature markers</value></data>
+  <data name="ImportTracks.TempoMarker" xml:space="preserve"><value>Position {0} ticks: {1} BPM</value></data>
+  <data name="ImportTracks.SignatureMarker" xml:space="preserve"><value>Bar {0}: {1}/{2}</value></data>
+  <data name="ImportTracks.ReplaceTimingWarning" xml:space="preserve"><value>This replaces tempo and time signatures for the entire project, including existing tracks.</value></data>
+  <data name="ImportTracks.MarkerDetails" xml:space="preserve"><value>All markers</value></data>
+  <data name="ImportTracks.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="ImportTracks.SelectNone" xml:space="preserve"><value>Deselect all</value></data>
+  <data name="ImportTracks.RemoveFile" xml:space="preserve"><value>Remove this file</value></data>
+  <data name="ImportTracks.Reading" xml:space="preserve"><value>Reading track files…</value></data>
+  <data name="ImportTracks.Importing" xml:space="preserve"><value>Importing tracks…</value></data>
+  <data name="ImportTracks.Success" xml:space="preserve"><value>Imported {0} tracks</value></data>
+  <data name="ImportTracks.ProjectChanged" xml:space="preserve"><value>The current project changed. Start the import again.</value></data>
+  <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>Like the desktop app, importing tracks clears undo/redo history and resets the playhead. Tempo and time signatures come from the first imported project.</value></data>
+  <data name="VoiceMapping.Title" xml:space="preserve"><value>Voice color mapping</value></data>
+  <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>Imported vocal mode mapping</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>Map original voice colors to the current singer. Skipping leaves imported tracks in place.</value></data>
+  <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>Map imported vocal mode curves to DiffSinger voice colors. Default skips conversion; existing target curves are kept.</value></data>
+  <data name="VoiceMapping.Default" xml:space="preserve"><value>Default</value></data>
+  <data name="VoiceMapping.Skip" xml:space="preserve"><value>Skip</value></data>
+  <data name="VoiceMapping.Apply" xml:space="preserve"><value>Apply mapping</value></data>
+  <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>This track has no notes or voice colors to map.</value></data>
+  <data name="VoiceMapping.Undo" xml:space="preserve"><value>Remap voice colors</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>Sort</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Magnifier</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Magnification</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Applies to pitch and parameter curve editing. Values below 1× show a wider area; 1× is the original scale.</value></data>
 </root>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Reactive;
@@ -123,10 +123,7 @@ internal sealed partial class Program
 
     private static void InitLogging()
     {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .WriteTo.Debug()
-            .CreateLogger();
+        OpenUtauMobile.Services.AppLogging.Initialize();
         Log.Information("==========Start logging==========");
     }
 

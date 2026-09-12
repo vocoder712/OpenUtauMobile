@@ -1,12 +1,11 @@
 using System;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Threading;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
 
-public partial class PhonemeEditPopup : UserControl
+public partial class PhonemeEditPopup : PopupDialogControl
 {
     public PhonemeEditPopup()
     {

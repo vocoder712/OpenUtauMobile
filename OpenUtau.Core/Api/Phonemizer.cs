@@ -294,13 +294,21 @@ namespace OpenUtau.Api {
             return null;
         }
 
-        public string GetParentVoiceColor() {
-            if (project != null && track != null) {
-                if (track.TryGetExpDescriptor(project, Core.Format.Ustx.CLR, out var trackCLR)) {
-                    return track.VoiceColorExp.options[(int)trackCLR.CustomDefaultValue];
-                }
+        public string GetParentVoiceColor()
+        {
+            if (project == null || track == null ||
+                !track.TryGetExpDescriptor(project, Core.Format.Ustx.CLR, out UExpressionDescriptor descriptor) ||
+                descriptor.type != UExpressionType.Options || descriptor.options == null)
+            {
+                return string.Empty;
             }
-            return string.Empty;
+            // 使用实际解析到的描述符，缺失音色和无效默认索引均按默认音色处理。
+            float value = descriptor.CustomDefaultValue;
+            if (!float.IsFinite(value) || value < 0 || value >= descriptor.options.Length)
+            {
+                return string.Empty;
+            }
+            return descriptor.options[(int)value] ?? string.Empty;
         }
 
         /// <summary>

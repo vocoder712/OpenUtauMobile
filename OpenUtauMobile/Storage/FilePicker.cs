@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
@@ -14,6 +16,31 @@ namespace OpenUtauMobile.Storage;
 /// </summary>
 public static class FilePicker
 {
+    /// <summary>选择多个工程文件；内置选择器的勾选可跨目录保留。</summary>
+    public static async Task<string[]> PickMultipleFilesAsync(string title, string[] filters)
+    {
+        if (UseInternalPicker)
+        {
+            if (!CheckAndRequestStoragePermission()) return [];
+            return await RunOnUiThreadAsync(() => PopupService.Show<string[]>(
+                new FilePickerPopup(), new MultiFilePickerViewModel(title, filters))) ?? [];
+        }
+        IStorageProvider? provider = StorageProviderFactory.GetStorageProvider();
+        if (provider is not { CanOpen: true }) return [];
+        IReadOnlyList<IStorageFile> files = await provider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = title,
+            AllowMultiple = true,
+            FileTypeFilter = [new FilePickerFileType(title) { Patterns = filters }],
+        });
+        // 后端需要真实路径，避免把非本地文件静默丢出批次。
+        return
+        [
+            .. files.Select(file => file.TryGetLocalPath() ??
+                                    throw new IOException($"No local path: {file.Name}"))
+        ];
+    }
+
     private static readonly bool UseInternalPicker = OperatingSystem.IsAndroid()
 #if DEBUG
                                                      || OperatingSystem.IsWindows()

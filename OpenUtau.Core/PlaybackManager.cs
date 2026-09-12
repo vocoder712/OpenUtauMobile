@@ -362,7 +362,7 @@ namespace OpenUtau.Core {
                 var playSound = Wave.OpenFile(file);
                 AudioOutput.Init(playSound.ToSampleProvider());
             } catch (Exception ex) {
-                Log.Error(ex, $"Failed to load sample {file}.");
+                Log.Error(ex, "Failed to load sample {File}.", file);
                 return;
             }
             AudioOutput.Play();
@@ -440,7 +440,7 @@ namespace OpenUtau.Core {
             this.startMs = startMs;
             metronomeEngine.StartPlayback(DocManager.Inst.Project.timeAxis, StartTick);
             var start = TimeSpan.FromMilliseconds(startMs);
-            Log.Information($"StartPlayback at {start}");
+            Log.Information("Start playback at {Position}", start);
             masterMix = masterAdapter;
             AudioOutput.Stop();
             AudioOutput.Init(masterMix);
@@ -597,7 +597,7 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
-            Log.Information("SchedulePreRender");
+            Log.Debug("Schedule pre-render");
             var engine = new RenderEngine(
                 DocManager.Inst.Project,
                 focusPart: preRenderFocusPart,

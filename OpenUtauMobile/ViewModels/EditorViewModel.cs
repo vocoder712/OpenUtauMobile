@@ -57,6 +57,13 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     // ── 内部状态 ────────────────────────────────────────────────────────
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
+    private readonly string _initialProjectPath;
+    private bool _loadStarted;
+    private bool _projectLoaded;
+    private bool _disposed;
+
+    [Reactive]
+    public bool IsLoadingProject { get; private set; } = true;
 
     #region 响应式命令
 
@@ -249,6 +256,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
     public EditorViewModel(MainViewModel navigator, string path = "") : base(navigator)
     {
+        _initialProjectPath = path;
         DocManager.Inst.AddSubscriber(this); // 订阅事件
         // 命令初始化
         BackCommand = ReactiveCommand.CreateFromTask(OnBackAsync);
@@ -421,8 +429,6 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             SyncPlaybackStateFromAuthority();
             UpdateTrackAutoPaging(); // 更新自动翻页状态
         };
-        PlaybackTimer.Start(); // 启动定时器
-        DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0)); // 初始回放位置
 
         // 自动保存定时器
         if (Preferences.Default.AutoSaveEnabled)
@@ -432,7 +438,6 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                 Interval = TimeSpan.FromSeconds(Math.Max(Preferences.Default.AutoSaveInterval, 30))
             };
             _autoSaveTimer.Tick += (_, _) => AutoSaveProject();
-            _autoSaveTimer.Start();
         }
 
         // TrackHeight 变更时，MaxTrackOffset 依赖它，置脏并重新校验。目前设计下轨道高度不变，但预留了修改接口，保持逻辑完整性。
@@ -462,8 +467,13 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             .Where(expanded => expanded) // 仅展开时触发
             .Subscribe(_ => RebuildTrackContextActions())
             .DisposeWith(_disposables);
-        // 异步加载项目
-        _ = LoadProjectAsync(path);
+    }
+
+    public override void OnNavigatedTo()
+    {
+        if (_loadStarted || _disposed) return;
+        _loadStarted = true;
+        _ = LoadProjectAsync(_initialProjectPath);
     }
 
     private static void AutoSaveProject()
@@ -495,21 +505,41 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// <param name="path"></param>
     private async Task LoadProjectAsync(string path)
     {
-        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(50, L.S("Editor.LoadingProject")));
-        await Task.Run(() =>
+        ProgressValue = 50;
+        ProgressMessage = L.S("Editor.LoadingProject");
+        try
         {
-            if (!string.IsNullOrEmpty(path))
+            // 后台只读取，回到 UI 线程并确认页面仍有效后才提交工程。
+            UProject? project = await Task.Run(() => string.IsNullOrEmpty(path)
+                ? Ustx.Create()
+                : Formats.ReadProject([path]));
+            if (_disposed || Navigator.CurrentViewModel != this) return;
+            if (project == null)
+                throw new InvalidDataException($"Project reader returned no project: {path}");
+
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+            DocManager.Inst.Recovered = false;
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+            _projectLoaded = true;
+            PlaybackTimer.Start();
+            _autoSaveTimer?.Start();
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to open project {Path}", path);
+            if (!_disposed && Navigator.CurrentViewModel == this)
             {
-                string[] files = [path];
-                Formats.LoadProject(files);
+                // 失败直接退回，不对尚未打开的工程触发保存确认。
+                Navigator.NavigateBack(this);
+                ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
             }
-            else // 空白项目
-            {
-                DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Ustx.Create())); // 新建空项目
-            }
-        });
-        DocManager.Inst.Recovered = false;
-        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(100, L.S("Editor.ProjectLoaded")));
+        }
+        finally
+        {
+            IsLoadingProject = false;
+            ProgressValue = 0;
+            ProgressMessage = string.Empty;
+        }
     }
 
     #region 命令处理
@@ -547,6 +577,25 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                 {
                     ProgressValue = progressNotif.Progress;
                     ProgressMessage = progressNotif.Info;
+                });
+                break;
+            case VoiceColorRemappingNotification remapping:
+                UProject mappingProject = DocManager.Inst.Project;
+                UTrack? mappingTrack = remapping.TrackNo >= 0 && remapping.TrackNo < mappingProject.tracks.Count
+                    ? mappingProject.tracks[remapping.TrackNo] : null;
+                // 歌手选择仍处于原命令组中；下一轮 UI 调度再打开映射弹窗。
+                Dispatcher.UIThread.Post(async () =>
+                {
+                    try
+                    {
+                        await VoiceColorMappingService.ValidateAsync(mappingProject, mappingTrack,
+                            mappingTrack == null || remapping.Validate);
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error(exception, "Failed to remap voice colors");
+                        ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+                    }
                 });
                 break;
             case LoadProjectNotification loadProjectNotification:
@@ -676,12 +725,8 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             case EditorMoreAction.ImportAudio:
                 _ = ImportAudio();
                 break;
-            case EditorMoreAction.ImportMidi: // TODO: 合并到导入轨道
-                _ = ImportMidi();
-                break;
             case EditorMoreAction.ImportTrack:
-                // TODO: Handle ImportTrack action
-                ToastService.Enqueue(L.S("EditorMore.Toast.ImportTrack"));
+                await ImportTracksAsync();
                 break;
             case EditorMoreAction.ExportAudio:
                 _ = ShowExportAudioPopupAsync();
@@ -715,38 +760,55 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         DocManager.Inst.EndUndoGroup();
     }
 
-    private static async Task ImportMidi()
+    private bool importingTracks;
+
+    private async Task ImportTracksAsync()
     {
-        string file = await FilePicker.PickSingleFileAsync(L.S("FilePicker.ImportMIDI"), ["*.mid", "*.midi"]);
-        if (file == string.Empty)
+        if (importingTracks) return;
+        importingTracks = true;
+        try
         {
-            return;
-        }
-
-        UProject project = DocManager.Inst.Project;
-        List<UVoicePart> parts = MidiWriter.Load(file, project);
-        DocManager.Inst.StartUndoGroup("导入MIDI", true);
-        foreach (UVoicePart part in parts)
-        {
-            UTrack track = new(project)
+            UProject project = DocManager.Inst.Project;
+            string[] files = await FilePicker.PickMultipleFilesAsync(L.S("EditorMore.ImportTrack"), TrackImportService.FilePatterns);
+            if (files.Length == 0) return;
+            IReadOnlyList<TrackImportSource> sources = [];
+            await LoadingPopupService.RunAsync(L.S("ImportTracks.Reading"), async _ =>
             {
-                TrackNo = project.tracks.Count,
-                TrackColor = TrackPalette.TrackColors[new Random().Next(TrackPalette.TrackColors.Count)].Name
-            };
-            part.trackNo = track.TrackNo;
-            if (part.name != "New Part") // 这个逻辑，ennn……
+                sources = await Task.Run(() => TrackImportService.ReadFiles(files));
+            });
+            ImportTracksViewModel viewModel = new(project, sources);
+            bool confirmed = await PopupService.Show<bool>(new ImportTracksPopup(), viewModel);
+            if (!confirmed) return;
+            if (!ReferenceEquals(project, DocManager.Inst.Project))
             {
-                track.TrackName = part.name;
+                throw new InvalidOperationException(L.S("ImportTracks.ProjectChanged"));
             }
-
-            part.AfterLoad(project, track);
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
-            DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
+            PlaybackManager.Inst.StopPlayback();
+            UProject[] loadedProjects = viewModel.GetSelectedProjects();
+            int firstTrackIndex = project.tracks.Count;
+            int importedTrackCount = loadedProjects.Sum(source => source.tracks.Count);
+            await LoadingPopupService.RunAsync(L.S("ImportTracks.Importing"), _ =>
+            {
+                // 当前工程的修改与命令通知保持在 UI 线程。
+                Formats.ImportTracks(project, loadedProjects, viewModel.UseSourceTiming);
+                return Task.CompletedTask;
+            });
+            // 加载弹窗完全关闭后，按桌面顺序检查所有轨道的音色与导入人声模式。
+            await VoiceColorMappingService.ValidateAsync(project);
+            TrackOffset = firstTrackIndex * TrackHeight;
+            ApplyViewportLimits();
+            ToastService.Enqueue(string.Format(L.S("ImportTracks.Success"), importedTrackCount));
         }
-
-        DocManager.Inst.EndUndoGroup();
-        // TODO
-        ToastService.Enqueue(L.S("Editor.SyncTempoTodo"));
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to import tracks");
+            await PopupService.Show<object>(new ErrorDialogPopup(),
+                new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+        }
+        finally
+        {
+            importingTracks = false;
+        }
     }
 
     /// <summary>
@@ -2059,6 +2121,8 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// <returns>已保存或用户确认退出时返回 true。</returns>
     public async Task<bool> ConfirmExitAsync()
     {
+        // 同步格式读取器会继续运行；离开后丢弃结果，返回操作不等待读取。
+        if (!_projectLoaded) return true;
         if (DocManager.Inst.ChangesSaved)
         {
             return true;
@@ -2086,6 +2150,11 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
     public void Dispose()
     {
+        if (_disposed) return;
+        _disposed = true;
+        IsLoadingProject = false;
+        ProgressValue = 0;
+        ProgressMessage = string.Empty;
         PlaybackManager.Inst.StopPlayback(); // 停止回放
         PlaybackTimer.Stop(); // 停止定时器
         _autoSaveTimer?.Stop(); // 停止自动保存定时器

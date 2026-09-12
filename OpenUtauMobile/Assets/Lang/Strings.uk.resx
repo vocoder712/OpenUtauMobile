@@ -1042,9 +1042,6 @@
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>Експортувати як аудіо</value>
   </data>
-  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
-    <value>TODO: Імпорт треку</value>
-  </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: Експорт аудіо</value>
   </data>
@@ -1738,4 +1735,43 @@
   <data name="BulkLyricEdit.Apply" xml:space="preserve">
     <value>Застосувати</value>
   </data>
+  <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>Вибрано файлів: {0}</value></data>
+  <data name="ImportTracks.Next" xml:space="preserve"><value>Далі</value></data>
+  <data name="ImportTracks.ImportCount" xml:space="preserve"><value>Імпортувати доріжки: {0}</value></data>
+  <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>Доріжок: {0}</value></data>
+  <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>Вокальних частин: {0} · Аудіочастин: {1}</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>Співака не призначено або не встановлено: {0}</value></data>
+  <data name="ImportTracks.Unassigned" xml:space="preserve"><value>Не призначено</value></data>
+  <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>Аудіофайл відсутній: {0}</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>Тембри джерела відрізняються від установленого співака. Перевірте параметри після імпорту.</value></data>
+  <data name="ImportTracks.AppendHint" xml:space="preserve"><value>Додати нові доріжки на початкових позиціях, не замінюючи наявні.</value></data>
+  <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>Пріоритет мають наявні визначення параметрів, потім перший вибраний файл. Відсутні визначення буде додано.</value></data>
+  <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>Використати темп і розміри джерела (вимк.: зберегти поточні)</value></data>
+  <data name="ImportTracks.TimingSource" xml:space="preserve"><value>Джерело темпу й розмірів</value></data>
+  <data name="ImportTracks.TimingSummary" xml:space="preserve"><value>Початок: {0} BPM · {1}/{2}; маркерів темпу: {3}, розміру: {4}</value></data>
+  <data name="ImportTracks.TempoMarker" xml:space="preserve"><value>Позиція {0} тіків: {1} BPM</value></data>
+  <data name="ImportTracks.SignatureMarker" xml:space="preserve"><value>Такт {0}: {1}/{2}</value></data>
+  <data name="ImportTracks.ReplaceTimingWarning" xml:space="preserve"><value>Темп і розміри буде замінено в усьому проєкті, включно з наявними доріжками.</value></data>
+  <data name="ImportTracks.MarkerDetails" xml:space="preserve"><value>Усі маркери</value></data>
+  <data name="ImportTracks.SelectAll" xml:space="preserve"><value>Вибрати все</value></data>
+  <data name="ImportTracks.SelectNone" xml:space="preserve"><value>Зняти виділення</value></data>
+  <data name="ImportTracks.RemoveFile" xml:space="preserve"><value>Вилучити файл зі списку</value></data>
+  <data name="ImportTracks.Reading" xml:space="preserve"><value>Читання файлів доріжок…</value></data>
+  <data name="ImportTracks.Importing" xml:space="preserve"><value>Імпорт доріжок…</value></data>
+  <data name="ImportTracks.Success" xml:space="preserve"><value>Імпортовано доріжок: {0}</value></data>
+  <data name="ImportTracks.ProjectChanged" xml:space="preserve"><value>Поточний проєкт змінився. Почніть імпорт знову.</value></data>
+  <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>Як і в настільній версії, імпорт очищає історію скасування/повторення та скидає позицію відтворення. Темп і розміри беруться з першого імпортованого проєкту.</value></data>
+  <data name="VoiceMapping.Title" xml:space="preserve"><value>Зіставлення тембрів</value></data>
+  <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>Зіставлення імпортованих вокальних режимів</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>Зіставте початкові тембри з поточним співаком. Пропуск зберігає імпортовані доріжки.</value></data>
+  <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>Зіставте криві вокальних режимів із тембрами DiffSinger. За замовчуванням перетворення пропускається; наявні криві зберігаються.</value></data>
+  <data name="VoiceMapping.Default" xml:space="preserve"><value>За замовчуванням</value></data>
+  <data name="VoiceMapping.Skip" xml:space="preserve"><value>Пропустити</value></data>
+  <data name="VoiceMapping.Apply" xml:space="preserve"><value>Застосувати</value></data>
+  <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>На доріжці немає нот або тембрів для зіставлення.</value></data>
+  <data name="VoiceMapping.Undo" xml:space="preserve"><value>Зіставлення тембрів</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>Сортування</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Лупа</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Масштаб</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Для редагування висоти тону та кривих параметрів. Значення менше 1× показує ширшу область; 1× — початковий масштаб.</value></data>
 </root>

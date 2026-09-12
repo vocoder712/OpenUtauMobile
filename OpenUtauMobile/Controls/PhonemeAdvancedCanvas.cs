@@ -9,6 +9,7 @@ using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Controls.Tokens;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.ViewModels;
 
@@ -71,7 +72,6 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private double _animStartProgress;
     private double _animTargetProgress;
     private DateTime _animStartTime;
-    private const double AnimDurationMs = 130.0;
 
     // 重置目标动效状态
     private DispatcherTimer? _resetTargetAnimTimer;
@@ -119,7 +119,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
         if (_animTimer == null)
         {
-            _animTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+            _animTimer = new DispatcherTimer { Interval = PhonemeCanvasTokens.FrameInterval };
             _animTimer.Tick += OnAnimTimerTick;
         }
         _animTimer.Start();
@@ -128,7 +128,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private void OnAnimTimerTick(object? sender, EventArgs e)
     {
         double elapsed = (DateTime.UtcNow - _animStartTime).TotalMilliseconds;
-        double t = Math.Clamp(elapsed / AnimDurationMs, 0.0, 1.0);
+        double t = Math.Clamp(elapsed / PhonemeCanvasTokens.SelectionAnimationDuration.TotalMilliseconds, 0.0, 1.0);
         // CubicEaseOut
         double eased = 1.0 - Math.Pow(1.0 - t, 3);
         _animProgress = _animStartProgress + (_animTargetProgress - _animStartProgress) * eased;
@@ -156,7 +156,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         {
             _resetTargetAnimTimer = new DispatcherTimer
             {
-                Interval = ThemeBaseMotionTokens.FrameInterval
+                Interval = PhonemeCanvasTokens.FrameInterval
             };
             _resetTargetAnimTimer.Tick += OnResetTargetAnimTimerTick;
         }
@@ -166,7 +166,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private void OnResetTargetAnimTimerTick(object? sender, EventArgs e)
     {
         double elapsed = (DateTime.UtcNow - _resetTargetAnimStartTime).TotalMilliseconds;
-        double duration = ThemeBaseMotionTokens.DurationShort2.TotalMilliseconds;
+        double duration = PhonemeCanvasTokens.ResetAnimationDuration.TotalMilliseconds;
         double t = Math.Clamp(elapsed / duration, 0.0, 1.0);
         double eased = 1.0 - Math.Pow(1.0 - t, 3);
         _resetTargetAnimProgress = _resetTargetAnimStartProgress
@@ -385,12 +385,12 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     {
         double progress = _resetTargetAnimProgress;
         double targetSize = Interpolate(
-            ThemeSemPhonemePanelTokens.ResetTargetSize,
-            ThemeSemPhonemePanelTokens.ResetTargetActiveSize,
+            PhonemeCanvasTokens.ResetTargetSize,
+            PhonemeCanvasTokens.ResetTargetActiveSize,
             progress);
         double iconSize = Interpolate(
-            ThemeSemPhonemePanelTokens.ResetTargetIconSize,
-            ThemeSemPhonemePanelTokens.ResetTargetIconActiveSize,
+            PhonemeCanvasTokens.ResetTargetIconSize,
+            PhonemeCanvasTokens.ResetTargetIconActiveSize,
             progress);
         Point center = GetResetTargetCenter();
 
@@ -444,8 +444,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
     private Point GetResetTargetCenter()
     {
-        double halfHitSize = ThemeSemPhonemePanelTokens.ResetTargetHitSize * 0.5;
-        double targetInset = ThemeSemPhonemePanelTokens.ResetTargetOuterInset;
+        double halfHitSize = PhonemeCanvasTokens.ResetTargetHitSize * 0.5;
+        double targetInset = PhonemeCanvasTokens.ResetTargetOuterInset;
         return new Point(
             targetInset + halfHitSize,
             targetInset + halfHitSize);
@@ -453,7 +453,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
     private bool IsInsideResetTarget(Point point)
     {
-        double hitSize = ThemeSemPhonemePanelTokens.ResetTargetHitSize;
+        double hitSize = PhonemeCanvasTokens.ResetTargetHitSize;
         Point center = GetResetTargetCenter();
         Rect hitRect = new(
             center.X - hitSize * 0.5,

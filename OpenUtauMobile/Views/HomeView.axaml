@@ -1,14 +1,19 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              mc:Ignorable="d"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:Class="OpenUtauMobile.Views.HomeView"
              x:DataType="vm:HomeViewModel">
+    <UserControl.Styles>
+        <StyleInclude Source="/Views/Styles/HomeView.axaml" />
+    </UserControl.Styles>
 
     <UserControl.Resources>
         <conv:PathToFileNameConverter x:Key="PathToFileName" />
@@ -21,14 +26,14 @@
         <DockPanel x:Name="Root">
             <Border Classes="TopBar" DockPanel.Dock="Top">
                 <TextBlock Classes="TopBarTitle" Text="{DynamicResource Home.Title}" FontWeight="Bold"
-                           FontSize="{x:Static theme:ThemeSemTypographyTokens.HeadlineMSize}" />
+                           FontSize="{x:Static semantic:TypographyTokens.HeadlineMSize}" />
             </Border>
 
             <!-- 主布局 -->
             <Grid x:Name="MainLayoutGrid"
                   RowDefinitions="Auto, Auto, *, Auto"
-                  RowSpacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSection}"
-                  ColumnSpacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSection}">
+                  RowSpacing="{x:Static foundation:LayoutTokens.SpaceL}"
+                  ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceL}">
                 <!-- 恢复提示（MD2 Banner） -->
                 <Border x:Name="RecoveryHost"
                         ClipToBounds="True"
@@ -38,7 +43,7 @@
                     <Border.Transitions>
                         <Transitions>
                             <DoubleTransition Property="Height"
-                                              Duration="{x:Static theme:ThemeBaseMotionTokens.DurationLargeMove}"
+                                              Duration="{x:Static foundation:MotionTokens.DurationLargeMove}"
                                               Easing="CubicEaseOut" />
                         </Transitions>
                     </Border.Transitions>
@@ -46,8 +51,8 @@
                             x:Name="RecoveryBanner"
                             IsVisible="{Binding !RecoveryBannerDismissed}">
                         <Grid RowDefinitions="Auto,Auto"
-                              RowSpacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}"
-                              Margin="{x:Static theme:ThemeSemLayoutTokens.InsetCardMedium}">
+                              RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                              Margin="20,12">
                             <TextBlock Grid.Row="0" TextWrapping="Wrap">
                                 <Run Text="{DynamicResource Home.Recovery.Message}" />
                                 <Run Text=" " />
@@ -56,11 +61,11 @@
                             <StackPanel Grid.Row="1"
                                         Orientation="Horizontal"
                                         HorizontalAlignment="Right"
-                                        Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
-                                <Button Classes="RecoveryBannerSecondaryAction"
+                                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <Button Classes="text"
                                         Content="{DynamicResource Home.Recovery.Dismiss}"
                                         Command="{Binding DismissRecoveryCommand}" />
-                                <Button Classes="RecoveryBannerPrimaryAction"
+                                <Button Classes="filled"
                                         Content="{DynamicResource Home.Recovery.OpenAction}"
                                         Command="{Binding OpenRecoveryCommand}" />
                             </StackPanel>
@@ -72,38 +77,38 @@
                         x:Name="SectionA"
                         Padding="10"
                         Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                        CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerL}">
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerL}">
                     <ScrollViewer x:Name="ActionButtonsScrollViewer"
                                   HorizontalScrollBarVisibility="Hidden"
                                   VerticalScrollBarVisibility="Disabled">
-                        <StackPanel x:Name="ActionButtonsPanel" Orientation="Horizontal" 
+                        <StackPanel x:Name="ActionButtonsPanel" Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    Spacing="10">
+                                    Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                             <Button Classes="HomeActionButton" Command="{Binding NewCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="Plus" />
                                     <TextBlock Text="{DynamicResource Home.Action.New}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding OpenCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="FolderOpen" />
                                     <TextBlock Text="{DynamicResource Home.Action.Open}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding SingersCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="MicrophoneStage" />
                                     <TextBlock Text="{DynamicResource Home.Action.Singers}" />
                                 </StackPanel>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding OptionsCommand}">
                                 <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static theme:ThemeSemLayoutTokens.SpaceSM}">
+                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <iconPacks:PackIconPhosphorIcons Kind="List" />
                                     <TextBlock Text="{DynamicResource Home.Action.Options}" />
                                 </StackPanel>
@@ -115,14 +120,13 @@
                 <!-- 最近打开 -->
                 <Border x:Name="SectionB"
                         Grid.Row="2"
-                        Padding="16,14,16,16"
                         Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                        CornerRadius="{x:Static theme:ThemeBaseShapeTokens.CornerL}">
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerL}" Padding="16,16,16,16">
                     <Grid RowDefinitions="Auto,*,Auto">
                         <!-- 标题 -->
                         <Grid ColumnDefinitions="*,Auto" Margin="4,0,4,0">
                             <TextBlock Text="{DynamicResource Home.Recent.Title}"
-                                       FontSize="{x:Static theme:ThemeSemTypographyTokens.HeadlineSSize}"
+                                       FontSize="{x:Static semantic:TypographyTokens.HeadlineSSize}"
                                        FontWeight="SemiBold"
                                        VerticalAlignment="Center" />
                         </Grid>
@@ -130,13 +134,13 @@
                         <Border Grid.Row="1"
                                 Margin="0,10,0,10"
                                 Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                                CornerRadius="14"
+                                CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
                                 ClipToBounds="True">
 
                             <!-- Empty state (shown when list is empty) -->
                             <Panel>
                                 <TextBlock Text="{DynamicResource Home.Recent.Empty}"
-                                           FontSize="13"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                            Opacity="0.45"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
@@ -147,62 +151,63 @@
                                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                                               HorizontalScrollBarVisibility="Disabled"
                                               IsVisible="{Binding RecentProjects.Count, Converter={StaticResource CountNonZero}}">
-                                    <ItemsControl ItemsSource="{Binding RecentProjects}"
-                                                  Padding="6,4">
+                                    <ItemsControl ItemsSource="{Binding RecentProjects}" Padding="8,4">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="x:String">
-                                                <Grid ColumnDefinitions="*,Auto" Margin="0,2">
+                                                <Border Padding="0,0,4,0">
+                                                    <Grid ColumnDefinitions="*,Auto" Margin="0,2">
 
-                                                    <!-- Clickable area -->
-                                                    <Button Grid.Column="0"
-                                                            Classes="RecentItem"
-                                                            Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).OpenRecentCommand}"
-                                                            CommandParameter="{Binding .}">
-                                                        <Grid ColumnDefinitions="44,*" MinHeight="56">
-                                                            <!-- 图标 -->
-                                                            <Border Width="36" Height="36"
-                                                                    CornerRadius="10"
-                                                                    Background="{DynamicResource Sem.Color.PrimaryContainer}"
-                                                                    HorizontalAlignment="Center"
-                                                                    VerticalAlignment="Center">
-                                                                <iconPacks:PackIconPhosphorIcons Kind="File"
+                                                        <!-- Clickable area -->
+                                                        <Button Grid.Column="0"
+                                                                Classes="RecentItem"
+                                                                Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).OpenRecentCommand}"
+                                                                CommandParameter="{Binding .}">
+                                                            <Grid ColumnDefinitions="44,*" MinHeight="56">
+                                                                <!-- 图标 -->
+                                                                <Border Width="36" Height="36"
+                                                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                                                        Background="{DynamicResource Sem.Color.PrimaryContainer}"
                                                                         HorizontalAlignment="Center"
-                                                                        VerticalAlignment="Center"
-                                                                        Foreground="{DynamicResource Sem.Color.Primary}">
-                                                                </iconPacks:PackIconPhosphorIcons>
-                                                            </Border>
+                                                                        VerticalAlignment="Center">
+                                                                    <iconPacks:PackIconPhosphorIcons Kind="File"
+                                                                            HorizontalAlignment="Center"
+                                                                            VerticalAlignment="Center"
+                                                                            Foreground="{DynamicResource Sem.Color.Primary}">
+                                                                    </iconPacks:PackIconPhosphorIcons>
+                                                                </Border>
 
-                                                            <!-- Name + directory -->
-                                                            <StackPanel Grid.Column="1"
-                                                                        VerticalAlignment="Center"
-                                                                        Spacing="2"
-                                                                        Margin="0,0,8,0">
-                                                                <TextBlock
-                                                                    Text="{Binding Converter={StaticResource PathToFileName}}"
-                                                                    FontSize="15"
-                                                                    FontWeight="SemiBold"
-                                                                    TextTrimming="CharacterEllipsis" />
-                                                                <TextBlock
-                                                                    Text="{Binding Converter={StaticResource PathToDirectory}}"
-                                                                    FontSize="11"
-                                                                    Opacity="0.50"
-                                                                    TextTrimming="CharacterEllipsis" />
-                                                            </StackPanel>
-                                                        </Grid>
-                                                    </Button>
+                                                                <!-- Name + directory -->
+                                                                <Border Padding="0,0,8,0" Grid.Column="1">
+                                                                    <StackPanel
+                                                                                VerticalAlignment="Center"
+                                                                                Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                                        <TextBlock
+                                                                            Text="{Binding Converter={StaticResource PathToFileName}}"
+                                                                            FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                                                            FontWeight="SemiBold"
+                                                                            TextTrimming="CharacterEllipsis" />
+                                                                        <TextBlock
+                                                                            Text="{Binding Converter={StaticResource PathToDirectory}}"
+                                                                            FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                                                            Opacity="0.50"
+                                                                            TextTrimming="CharacterEllipsis" />
+                                                                    </StackPanel>
+                                                                </Border>
+                                                            </Grid>
+                                                        </Button>
 
-                                                    <!-- 删除按钮 -->
-                                                    <Button Grid.Column="1"
-                                                            Classes="HomeDeleteBtn"
-                                                            Margin="0,0,4,0"
-                                                            Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).RemoveRecentCommand}"
-                                                            CommandParameter="{Binding}"
-                                                            ToolTip.Tip="{DynamicResource Home.Recent.Remove}"
-                                                            Content="{iconPacks:PhosphorIcons X}"
-                                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}">
-                                                    </Button>
+                                                        <!-- 删除按钮 -->
+                                                        <Button Grid.Column="1"
+                                                                Classes="HomeDeleteBtn"
+                                                                Command="{Binding $parent[UserControl].((vm:HomeViewModel)DataContext).RemoveRecentCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                ToolTip.Tip="{DynamicResource Home.Recent.Remove}"
+                                                                Content="{iconPacks:PhosphorIcons X}"
+                                                                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}">
+                                                        </Button>
 
-                                                </Grid>
+                                                    </Grid>
+                                                </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -215,7 +220,7 @@
                 <StackPanel x:Name="FooterBrand"
                             Orientation="Vertical"
                             Grid.Row="3"
-                            Margin="{x:Static theme:ThemeSemLayoutTokens.InsetFooter}"
+                            Margin="16,24"
                             HorizontalAlignment="Center">
                     <Svg Path="avares://OpenUtauMobile/Assets/logotype.svg"
                          Css="{DynamicResource SvgCss}"

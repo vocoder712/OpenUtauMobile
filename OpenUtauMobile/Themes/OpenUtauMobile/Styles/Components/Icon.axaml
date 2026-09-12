@@ -1,0 +1,25 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:inconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <StackPanel>
+            <Button Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                <inconPacks:PackIconPhosphorIcons Kind="FolderOpen">
+                    <!-- Add Controls for Previewer Here -->
+                </inconPacks:PackIconPhosphorIcons>
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="inconPacks|PackIconPhosphorIcons">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    </Style>
+    <!-- 操作按钮内的图标跟随按钮角色，避免在 filled 底色上继续使用主色。 -->
+    <Style Selector=":is(Button) :is(inconPacks|PackIconControlBase)">
+        <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}" />
+    </Style>
+</Styles>

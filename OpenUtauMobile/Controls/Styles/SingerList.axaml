@@ -1,0 +1,12 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Singer card button -->
+    <Style Selector="Button.SingerCard">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
+</Styles>

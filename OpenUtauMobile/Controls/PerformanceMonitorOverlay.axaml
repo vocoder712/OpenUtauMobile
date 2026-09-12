@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              x:Class="OpenUtauMobile.Controls.PerformanceMonitorOverlay"
              x:DataType="vm:PerformanceMonitorViewModel"
@@ -8,11 +9,10 @@
              HorizontalAlignment="Right"
              VerticalAlignment="Top">
     <Border Margin="12"
-            Padding="10,8"
-            CornerRadius="8"
+            CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
             Opacity="0.92"
-            Background="{DynamicResource Sem.Color.InverseSurface}">
-        <StackPanel Spacing="2">
+            Background="{DynamicResource Sem.Color.InverseSurface}" Padding="12,8">
+        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
             <TextBlock Text="{Binding AppMemoryText}"
                        FontSize="11"
                        Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />

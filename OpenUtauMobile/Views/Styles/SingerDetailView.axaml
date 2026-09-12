@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <!-- Info card style -->
+    <Style Selector="Border.InfoCard">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerL}" />
+        <Setter Property="Padding" Value="20,12" />
+    </Style>
+
+    <!-- Info row label -->
+    <Style Selector="TextBlock.InfoLabel">
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodySSize}" />
+        <Setter Property="Opacity" Value="0.6" />
+    </Style>
+
+    <!-- Info row value -->
+    <Style Selector="TextBlock.InfoValue">
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- Action button -->
+
+    <!-- Delete button -->
+
+</Styles>

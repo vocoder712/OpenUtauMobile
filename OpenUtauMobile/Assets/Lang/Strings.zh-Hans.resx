@@ -1119,9 +1119,6 @@
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>导出为音频</value>
   </data>
-  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
-    <value>TODO: 导入轨道功能</value>
-  </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: 导出音频功能</value>
   </data>
@@ -1783,4 +1780,43 @@
   <data name="BulkLyricEdit.Apply" xml:space="preserve">
     <value>应用</value>
   </data>
+  <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>已选择 {0} 个文件</value></data>
+  <data name="ImportTracks.Next" xml:space="preserve"><value>下一步</value></data>
+  <data name="ImportTracks.ImportCount" xml:space="preserve"><value>导入 {0} 条轨道</value></data>
+  <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>{0} 条轨道</value></data>
+  <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>{0} 个演唱片段 · {1} 个音频片段</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>歌手未安装或未指定：{0}</value></data>
+  <data name="ImportTracks.Unassigned" xml:space="preserve"><value>未指定</value></data>
+  <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>音频文件缺失：{0}</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>来源音色映射与当前歌手不一致，导入后请检查音色参数。</value></data>
+  <data name="ImportTracks.AppendHint" xml:space="preserve"><value>追加为新轨道，保留原时间位置，不覆盖现有轨道。</value></data>
+  <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>同名表达式沿用当前工程或先导入文件的定义；缺失的定义将一并导入。</value></data>
+  <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>使用来源工程的曲速与拍号（关闭则保留当前设置）</value></data>
+  <data name="ImportTracks.TimingSource" xml:space="preserve"><value>曲速与拍号来源</value></data>
+  <data name="ImportTracks.TimingSummary" xml:space="preserve"><value>初始 {0} BPM · {1}/{2}，共 {3} 个曲速标记、{4} 个拍号标记</value></data>
+  <data name="ImportTracks.TempoMarker" xml:space="preserve"><value>位置 {0} tick：{1} BPM</value></data>
+  <data name="ImportTracks.SignatureMarker" xml:space="preserve"><value>第 {0} 小节：{1}/{2}</value></data>
+  <data name="ImportTracks.ReplaceTimingWarning" xml:space="preserve"><value>将替换整个工程的曲速与拍号，也会影响现有轨道。</value></data>
+  <data name="ImportTracks.MarkerDetails" xml:space="preserve"><value>查看全部标记</value></data>
+  <data name="ImportTracks.SelectAll" xml:space="preserve"><value>全选</value></data>
+  <data name="ImportTracks.SelectNone" xml:space="preserve"><value>取消全选</value></data>
+  <data name="ImportTracks.RemoveFile" xml:space="preserve"><value>移除此文件</value></data>
+  <data name="ImportTracks.Reading" xml:space="preserve"><value>正在读取轨道文件…</value></data>
+  <data name="ImportTracks.Importing" xml:space="preserve"><value>正在导入轨道…</value></data>
+  <data name="ImportTracks.Success" xml:space="preserve"><value>已导入 {0} 条轨道</value></data>
+  <data name="ImportTracks.ProjectChanged" xml:space="preserve"><value>当前工程已切换，请重新开始导入。</value></data>
+  <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>与桌面端一致：导入会清空撤销/重做历史并重置播放位置。曲速与拍号取自首个导入工程。</value></data>
+  <data name="VoiceMapping.Title" xml:space="preserve"><value>音色映射</value></data>
+  <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>导入人声模式映射</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>将原音色映射到当前歌手的音色。跳过仅取消本次映射，已导入的轨道将保留。</value></data>
+  <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>将导入的人声模式曲线映射到 DiffSinger 音色。选择默认表示不转换该模式；已有目标曲线保持不变。</value></data>
+  <data name="VoiceMapping.Default" xml:space="preserve"><value>默认</value></data>
+  <data name="VoiceMapping.Skip" xml:space="preserve"><value>跳过</value></data>
+  <data name="VoiceMapping.Apply" xml:space="preserve"><value>应用映射</value></data>
+  <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>该轨道没有可映射的音符或音色。</value></data>
+  <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色映射</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>排序</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>放大镜</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>放大倍率</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>用于音高与参数曲线编辑。低于 1× 时显示更大范围；1× 为原比例。</value></data>
 </root>
