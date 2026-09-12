@@ -79,21 +79,6 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Restore iOS arm64 NativeAOT
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          dotnet restore \
-            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -r ios-arm64 \
-            -p:Configuration=Release \
-            -p:PublishAot=true \
-            -p:MtouchLink=Full \
-            -p:EnableCodeSigning=false \
-            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-nativeaot-logs/restore.binlog" \
-            --verbosity minimal
-
       - name: Publish iOS arm64 NativeAOT Unsigned IPA
         shell: bash
         run: |
@@ -106,7 +91,7 @@ jobs:
 
           dotnet publish \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            --no-restore \
+            --force \
             -c Release \
             -f net10.0-ios \
             -r ios-arm64 \
@@ -201,6 +186,28 @@ jobs:
         if: failure()
         shell: bash
         run: |
+          echo "::group::NativeAOT restore state"
+          NUGET_ROOT="$(dotnet nuget locals global-packages --list 2>/dev/null \
+            | sed 's/^global-packages: //' || true)"
+          if [ -n "$NUGET_ROOT" ] && [ -d "$NUGET_ROOT" ]; then
+            echo "NuGet global packages: $NUGET_ROOT"
+            find "$NUGET_ROOT" -maxdepth 1 -type d \
+              -iname 'microsoft.netcore.app.runtime.nativeaot*' \
+              -print 2>/dev/null | sort | sed -n '1,20p'
+          else
+            echo "NuGet global packages directory is unavailable."
+          fi
+
+          ASSETS_FILE="OpenUtauMobile.iOS/obj/project.assets.json"
+          if [ -f "$ASSETS_FILE" ]; then
+            echo "NativeAOT entries in $ASSETS_FILE:"
+            grep -o 'Microsoft.NETCore.App.Runtime.NativeAOT[^"/]\+' "$ASSETS_FILE" \
+              | sort -u | sed -n '1,20p' || true
+          else
+            echo "No project.assets.json was generated."
+          fi
+          echo "::endgroup::"
+
           echo "::group::NativeAOT diagnostic files"
           FOUND=0
           while IFS= read -r FILE; do
@@ -223,6 +230,7 @@ jobs:
           name: OpenUtauMobile-ios-arm64-nativeaot-diagnostics
           path: |
             artifacts/ios-nativeaot-logs
+            OpenUtauMobile.iOS/obj/project.assets.json
             OpenUtauMobile.iOS/obj/**/nativeaot-*.txt
             OpenUtauMobile.iOS/obj/**/*ilc*.txt
           if-no-files-found: warn
