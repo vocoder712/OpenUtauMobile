@@ -43,3 +43,14 @@ jobs:
             -c Release \
             -f net10.0-android36.0 \
             -p:RuntimeIdentifier=android-arm64
+
+  ios-build:
+    name: PR build test for iOS arm64 NativeAOT
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-ios.yml
+    with:
+      version: 0.0.0-pr.${{ github.event.pull_request.number }}
+      build_number: ${{ github.run_number }}
+      source_sha: ${{ github.sha }}
+      action_run_id: ${{ github.run_id }}
