@@ -26,12 +26,13 @@ permissions:
 jobs:
   ios:
     name: iOS arm64 NativeAOT unsigned IPA
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 90
     env:
       AVALONIA_TELEMETRY_OPTOUT: "1"
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
 
     steps:
       - name: Checkout
@@ -64,7 +65,19 @@ jobs:
           echo "::endgroup::"
 
           echo "::group::Xcode and iPhoneOS SDK"
-          xcode-select -p
+          if [ ! -d "$DEVELOPER_DIR" ]; then
+            echo "::error::Required Xcode developer directory is missing: $DEVELOPER_DIR"
+            ls -1d /Applications/Xcode_*.app 2>/dev/null | sed -n '1,20p' || true
+            exit 1
+          fi
+
+          XCODE_VERSION="$(xcodebuild -version | awk '/^Xcode / { print $2 }')"
+          if [[ "$XCODE_VERSION" != "26.6" && "$XCODE_VERSION" != 26.6.* ]]; then
+            echo "::error::Expected Xcode 26.6, selected $XCODE_VERSION from $DEVELOPER_DIR"
+            exit 1
+          fi
+
+          echo "Developer directory: $DEVELOPER_DIR"
           xcodebuild -version
           echo "iPhoneOS SDK: $(xcrun --sdk iphoneos --show-sdk-version)"
           echo "iPhoneOS SDK path: $(xcrun --sdk iphoneos --show-sdk-path)"
