@@ -92,8 +92,7 @@ jobs:
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
             -p:RuntimeIdentifier=ios-arm64 \
-            -p:PublishAot=true \
-            -p:MtouchLink=Full)"
+            -p:EnableIosNativeAot=true)"
           APP_USE_NATIVE_AOT="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
@@ -102,8 +101,7 @@ jobs:
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
             -p:RuntimeIdentifier=ios-arm64 \
-            -p:PublishAot=true \
-            -p:MtouchLink=Full)"
+            -p:EnableIosNativeAot=true)"
           APP_USE_MONO="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
@@ -112,9 +110,7 @@ jobs:
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
             -p:RuntimeIdentifier=ios-arm64 \
-            -p:PublishAot=true \
-            -p:MtouchLink=Full)"
-
+            -p:EnableIosNativeAot=true)"
           echo "PublishAot=$APP_PUBLISH_AOT _UseNativeAot=$APP_USE_NATIVE_AOT UseMonoRuntime=$APP_USE_MONO"
           if [ "$APP_PUBLISH_AOT" != "true" ] \
             || [ "$APP_USE_NATIVE_AOT" != "true" ] \
@@ -122,6 +118,26 @@ jobs:
             echo "::error::iOS entry project did not select the NativeAOT runtime"
             exit 1
           fi
+
+          for DEPENDENCY_PROJECT in \
+            OpenUtauMobile/OpenUtauMobile.csproj \
+            OpenUtau.Core/OpenUtau.Core.csproj \
+            OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj \
+            OpenUtauMobile.Plugin.Renderers/OpenUtauMobile.Plugin.Renderers.csproj; do
+            DEPENDENCY_PUBLISH_AOT="$(dotnet msbuild \
+              "$DEPENDENCY_PROJECT" \
+              -nologo \
+              -getProperty:PublishAot \
+              -p:_IsPublishing=true \
+              -p:Configuration=Release \
+              -p:RuntimeIdentifier=ios-arm64 \
+              -p:EnableIosNativeAot=true)"
+            if [ -n "$DEPENDENCY_PUBLISH_AOT" ]; then
+              echo "::error::PublishAot leaked into $DEPENDENCY_PROJECT: $DEPENDENCY_PUBLISH_AOT"
+              exit 1
+            fi
+          done
+          echo "Dependency PublishAot: <empty> (4 projects)"
 
       - name: Publish iOS arm64 NativeAOT Unsigned IPA
         shell: bash
@@ -145,8 +161,7 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:PublishAot=true \
-            -p:MtouchLink=Full \
+            -p:EnableIosNativeAot=true \
             -p:BuildIpa=true \
             -p:EnableCodeSigning=false \
             -p:IpaPackagePath="$IPA_PATH" \

@@ -21,6 +21,6 @@
     <ItemGroup>
         <!-- NativeAOT 只应用于 iOS 可执行入口，不能传播到普通 net10.0 类库。 -->
         <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"
-                          GlobalPropertiesToRemove="PublishAot;MtouchLink"/>
+                          GlobalPropertiesToRemove="EnableIosNativeAot;PublishAot;MtouchLink"/>
     </ItemGroup>
 </Project>
