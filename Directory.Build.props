@@ -23,6 +23,10 @@
         <SourceCommit Condition="'$(SourceCommit)' == ''">Unknown</SourceCommit>
         <ActionRunId Condition="'$(ActionRunId)' == ''">Unknown</ActionRunId>
     </PropertyGroup>
+    <!-- 必须在 iOS workload props 导入前选择 NativeAOT，且不能把 PublishAot 传播给普通类库。 -->
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'OpenUtauMobile.iOS' and '$(EnableIosNativeAot)' == 'true'">
+        <PublishAot>true</PublishAot>
+    </PropertyGroup>
     <!-- 启用预览语言特性 -->
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
