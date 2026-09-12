@@ -8,6 +8,7 @@
 - Unrelated pending changes do not block the task; do not modify, stash,
   discard, or clean them.
 - Do not maintain any rollback files or scripts. Instead, ask the user to make a backup commit before high risk or unclear changes. Use git to manage rollbacks.
+- Place plans documents in `/plans` where git can ignore them. Do not place plans in the source tree or in the `docs` directory.
 
 ## Boundaries and style
 - Avoid unnecessary changes to upstream-derived `OpenUtau.Core`; keep application orchestration in the Mobile layer.
