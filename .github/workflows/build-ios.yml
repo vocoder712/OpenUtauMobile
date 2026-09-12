@@ -79,6 +79,50 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
+      - name: Validate NativeAOT Entry Properties
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APP_PUBLISH_AOT="$(dotnet msbuild \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -nologo \
+            -getProperty:PublishAot \
+            -p:_IsPublishing=true \
+            -p:Configuration=Release \
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:PublishAot=true \
+            -p:MtouchLink=Full)"
+          APP_USE_NATIVE_AOT="$(dotnet msbuild \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -nologo \
+            -getProperty:_UseNativeAot \
+            -p:_IsPublishing=true \
+            -p:Configuration=Release \
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:PublishAot=true \
+            -p:MtouchLink=Full)"
+          APP_USE_MONO="$(dotnet msbuild \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -nologo \
+            -getProperty:UseMonoRuntime \
+            -p:_IsPublishing=true \
+            -p:Configuration=Release \
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:PublishAot=true \
+            -p:MtouchLink=Full)"
+
+          echo "PublishAot=$APP_PUBLISH_AOT _UseNativeAot=$APP_USE_NATIVE_AOT UseMonoRuntime=$APP_USE_MONO"
+          if [ "$APP_PUBLISH_AOT" != "true" ] \
+            || [ "$APP_USE_NATIVE_AOT" != "true" ] \
+            || [ "$APP_USE_MONO" != "false" ]; then
+            echo "::error::iOS entry project did not select the NativeAOT runtime"
+            exit 1
+          fi
+
       - name: Publish iOS arm64 NativeAOT Unsigned IPA
         shell: bash
         run: |

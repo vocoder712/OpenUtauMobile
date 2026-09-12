@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" TreatAsLocalProperty="PublishAot;MtouchLink">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net10.0-ios</TargetFramework>
@@ -8,8 +8,8 @@
 
     <!-- iOS 配置 -->
     <PropertyGroup>
-        <!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
-        <MtouchLink>None</MtouchLink>
+        <!-- 常规构建禁用 IL 链接器；NativeAOT 使用工作流指定的全量链接。 -->
+        <MtouchLink Condition="'$(PublishAot)' != 'true'">None</MtouchLink>
     </PropertyGroup>
 
     <ItemGroup>
