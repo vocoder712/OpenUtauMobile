@@ -3,7 +3,7 @@ name: Build and Release
 run-name: >-
   ${{ github.event_name == 'workflow_dispatch'
       && format('Build {0} · workflow run #{1}', inputs.version, github.run_number)
-      || format('Android Canary · workflow run #{0} · {1}', github.run_number, github.ref_name) }}
+      || format('Canary · workflow run #{0} · {1}', github.run_number, github.ref_name) }}
 
 on:
   push:
@@ -144,6 +144,19 @@ jobs:
       arch: arm64
       rid: android-arm64
     secrets: inherit
+
+  ios-canary:
+    name: iOS ARM64 NativeAOT Canary
+    if: github.event_name == 'push'
+    needs: prepare
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-ios.yml
+    with:
+      version: ${{ needs.prepare.outputs.version }}
+      build_number: ${{ fromJSON(needs.prepare.outputs.build_number) }}
+      source_sha: ${{ github.sha }}
+      action_run_id: ${{ github.run_id }}
 
   all-platforms:
     name: Full platform build

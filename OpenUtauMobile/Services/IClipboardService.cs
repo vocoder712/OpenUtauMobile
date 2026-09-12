@@ -8,6 +8,12 @@ namespace OpenUtauMobile.Services;
 public interface IClipboardService
 {
     /// <summary>
+    /// 读取系统剪贴板中的纯文本
+    /// </summary>
+    /// <returns>剪贴板文本；没有文本或读取失败时为 null</returns>
+    Task<string?> GetTextAsync();
+
+    /// <summary>
     /// 将纯文本写入系统剪贴板
     /// </summary>
     /// <param name="text">待写入的文本</param>

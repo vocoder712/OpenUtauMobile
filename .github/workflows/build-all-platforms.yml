@@ -362,3 +362,16 @@ jobs:
           path: artifacts/OpenUtauMobile-build${{ inputs.build_number }}-macos-${{ matrix.arch }}.tar.gz
           if-no-files-found: error
           compression-level: 0
+
+
+  # ============================================================
+  # iOS
+  # ============================================================
+  ios:
+    name: iOS arm64 NativeAOT unsigned IPA
+    uses: ./.github/workflows/build-ios.yml
+    with:
+      version: ${{ inputs.version }}
+      build_number: ${{ inputs.build_number }}
+      source_sha: ${{ inputs.source_sha }}
+      action_run_id: ${{ inputs.action_run_id }}
