@@ -1819,4 +1819,22 @@
   <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>放大镜</value></data>
   <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>放大倍率</value></data>
   <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>用于音高与参数曲线编辑。低于 1× 时显示更大范围；1× 为原比例。</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>关闭混音面板</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>压缩</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>效果器</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>暂无轨道</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>高频</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>低频</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>电平显示待接入</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>中频</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>静音</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>固定顺序：EQ → 压缩 → 混响</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>布局预览 · 调整仅用于预览，不改变声音</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>压缩比</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>混响</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>空间大小</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>独奏</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>阈值</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>混音</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>混响量</value></data>
 </root>

@@ -4,10 +4,12 @@ using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 using ReactiveUI;
 
@@ -27,6 +29,42 @@ public partial class EditorView : UserControl
     private double _landscapeHandleAxisRatio = 0.5;
     private bool _isLandscape;
     private bool _responsiveLayoutInitialized;
+    private MixerPanel? _mixerPanel;
+
+    public bool IsMixerOpen => _mixerPanel != null && DetailAreaHost.Children.Contains(_mixerPanel);
+
+    private void OnOpenMixerClick(object? sender, RoutedEventArgs e) => OpenMixer();
+
+    public void OpenMixer()
+    {
+        if (IsMixerOpen || DataContext is not EditorViewModel vm) return;
+        _mixerPanel ??= CreateMixerPanel();
+        OnMagnifierClose();
+        vm.PianoRollViewModel.SetPresentationSuspended(true);
+        // 移除整个控件树，参数面板、模式按钮和上下文菜单一同停止绘制与命中。
+        DetailAreaHost.Children.Remove(PianoRollAreaGrid);
+        DetailAreaHost.Children.Add(_mixerPanel);
+    }
+
+    private MixerPanel CreateMixerPanel()
+    {
+        MixerPanel panel = new();
+        panel.CloseRequested += CloseMixer;
+        return panel;
+    }
+
+    public void CloseMixer()
+    {
+        if (!IsMixerOpen) return;
+        DetailAreaHost.Children.Remove(_mixerPanel!);
+        DetailAreaHost.Children.Add(PianoRollAreaGrid);
+        if (DataContext is EditorViewModel vm)
+        {
+            vm.PianoRollViewModel.SetPresentationSuspended(false);
+            if (vm.IsPlaying || vm.IsWaitingRender)
+                vm.PianoRollViewModel.SyncPlaybackState(vm.PlayPosTick, vm.IsPlaying, vm.IsWaitingRender);
+        }
+    }
 
     // ── 轨道头列宽动画 ──
     private IDisposable? _viewModelSubscription;
@@ -64,6 +102,9 @@ public partial class EditorView : UserControl
 
     private void BindViewModel(EditorViewModel vm)
     {
+        // 卸载期间仍保留绑定源，重新挂载时不会丢失编辑状态。
+        PianoRollAreaGrid.DataContext = vm;
+        if (IsMixerOpen) vm.PianoRollViewModel.SetPresentationSuspended(true);
         _viewModelSubscription?.Dispose();
         CompositeDisposable disp = new();
         _viewModelSubscription = disp;
@@ -116,6 +157,7 @@ public partial class EditorView : UserControl
 
     private void OpenMagnifier(Point targetPoint)
     {
+        if (IsMixerOpen) return;
         if (!PitchMagnifier.IsVisible)
         {
             PitchMagnifier.MagnificationFactor = MagnifierSettings.Normalize(
@@ -232,10 +274,10 @@ public partial class EditorView : UserControl
         Grid.SetRowSpan(TrackAreaGrid, 1);
         Grid.SetColumnSpan(TrackAreaGrid, 2);
 
-        Grid.SetRow(PianoRollAreaGrid, 1);
-        Grid.SetColumn(PianoRollAreaGrid, 0);
-        Grid.SetRowSpan(PianoRollAreaGrid, 1);
-        Grid.SetColumnSpan(PianoRollAreaGrid, 2);
+        Grid.SetRow(DetailAreaHost, 1);
+        Grid.SetColumn(DetailAreaHost, 0);
+        Grid.SetRowSpan(DetailAreaHost, 1);
+        Grid.SetColumnSpan(DetailAreaHost, 2);
 
         if (_portraitTrackExtent <= 0)
         {
@@ -256,10 +298,10 @@ public partial class EditorView : UserControl
         Grid.SetRowSpan(TrackAreaGrid, 2);
         Grid.SetColumnSpan(TrackAreaGrid, 1);
 
-        Grid.SetRow(PianoRollAreaGrid, 0);
-        Grid.SetColumn(PianoRollAreaGrid, 1);
-        Grid.SetRowSpan(PianoRollAreaGrid, 2);
-        Grid.SetColumnSpan(PianoRollAreaGrid, 1);
+        Grid.SetRow(DetailAreaHost, 0);
+        Grid.SetColumn(DetailAreaHost, 1);
+        Grid.SetRowSpan(DetailAreaHost, 2);
+        Grid.SetColumnSpan(DetailAreaHost, 1);
 
         if (_landscapeTrackExtent <= 0)
         {

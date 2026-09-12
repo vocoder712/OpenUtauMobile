@@ -556,6 +556,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     public void SyncPlaybackState(int tick, bool isPlaying, bool isWaitingRender)
     {
+        if (IsPresentationSuspended) return;
         PlayPosTick = tick;
         IsPlaying = isPlaying;
         IsWaitingRender = isWaitingRender;
@@ -566,6 +567,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     }
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘
+
+    public bool IsPresentationSuspended { get; private set; }
+
+    public void SetPresentationSuspended(bool suspended)
+    {
+        if (IsPresentationSuspended == suspended) return;
+        IsPresentationSuspended = suspended;
+        if (suspended)
+        {
+            StopPreviewTone();
+            _panMotion.Cancel();
+            IsPlaying = false;
+            IsWaitingRender = false;
+            RequestMagnifierClose?.Invoke();
+        }
+        else
+        {
+            ValidateSelectedNotes();
+            ValidateSelectedAnchors();
+            RequestInvalidateVisual?.Invoke();
+        }
+    }
 
     /// <summary>
     /// 请求打开歌词编辑弹窗。

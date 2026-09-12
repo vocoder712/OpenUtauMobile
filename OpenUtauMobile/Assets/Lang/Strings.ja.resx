@@ -1812,4 +1812,22 @@
   <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>拡大鏡</value></data>
   <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>表示倍率</value></data>
   <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>ピッチとパラメーターカーブの編集に適用します。1× 未満では広い範囲を表示し、1× は元の倍率です。</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>ミキサーを閉じる</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>圧縮</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>エフェクト</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>トラックなし</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>高域</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>低域</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>メーター未接続</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>中域</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>ミュート</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>固定順序：EQ → 圧縮 → リバーブ</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>レイアウトプレビュー · 調整は音声に反映されません</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>比率</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>リバーブ</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>ルームサイズ</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>ソロ</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>しきい値</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>ミキサー</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>リバーブ量</value></data>
 </root>

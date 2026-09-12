@@ -1774,4 +1774,22 @@
   <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Лупа</value></data>
   <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Масштаб</value></data>
   <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Для редактирования высоты тона и кривых параметров. При значении меньше 1× видна более широкая область; 1× — исходный масштаб.</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>Закрыть микшер</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>Компрессор</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>Эффекты</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>Нет дорожек</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>Высокие частоты</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>Низкие частоты</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>Индикатор недоступен</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>Средние частоты</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>Заглушить</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>Порядок: EQ → Компрессор → Реверберация</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>Предпросмотр · Изменения не влияют на звук</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>Степень сжатия</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>Реверберация</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>Размер помещения</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>Соло</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>Порог</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>Микшер</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>Уровень реверберации</value></data>
 </root>

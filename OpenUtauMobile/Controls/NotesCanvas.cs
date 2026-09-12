@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
@@ -123,11 +123,10 @@ public class NotesCanvas : Control, ICmdSubscriber
     protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
-        if (DataContext is not PianoRollViewModel vm) return;
-
         if (ViewModel != null) ViewModel.RequestInvalidateVisual -= InvalidateVisual;
-        ViewModel = vm;
-        ViewModel.RequestInvalidateVisual += InvalidateVisual;
+        ViewModel = DataContext as PianoRollViewModel;
+        if (ViewModel != null && TopLevel.GetTopLevel(this) != null)
+            ViewModel.RequestInvalidateVisual += InvalidateVisual;
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -148,12 +147,19 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        ViewModel = DataContext as PianoRollViewModel;
+        if (ViewModel != null)
+        {
+            ViewModel.RequestInvalidateVisual -= InvalidateVisual;
+            ViewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
+        if (ViewModel != null) ViewModel.RequestInvalidateVisual -= InvalidateVisual;
     }
 
     #endregion

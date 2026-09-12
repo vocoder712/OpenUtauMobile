@@ -89,6 +89,9 @@
                             Classes="TopBarBtn"
                             Content="{iconPacks:PhosphorIcons FloppyDisk}">
                     </Button>
+                    <Button x:Name="OpenMixerButton" Classes="TopBarBtn" Click="OnOpenMixerClick"
+                            ToolTip.Tip="{DynamicResource Mixer.Title}"
+                            Content="{iconPacks:PhosphorIcons SlidersHorizontal}" />
                     <Button Command="{Binding ShowMorePopupCommand}"
                             ToolTip.Tip="{DynamicResource Editor.More}"
                             Classes="TopBarBtn"
@@ -325,7 +328,8 @@
                 </Panel>
             </Grid>
 
-            <!-- 钢琴卷帘 -->
+            <!-- 同层编辑区：钢琴卷帘与混音面板互斥挂载。 -->
+            <Panel x:Name="DetailAreaHost" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True">
             <Grid x:Name="PianoRollAreaGrid"
                   Grid.Row="1"
                   Grid.Column="0"
@@ -544,6 +548,8 @@
                     </Border>
                 </Grid>
             </Grid>
+
+            </Panel>
 
             <!-- 分割线与拖拽手柄叠加层（仅手柄可命中） -->
             <Canvas x:Name="SplitOverlay"

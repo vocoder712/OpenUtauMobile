@@ -1819,4 +1819,22 @@
   <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Magnifier</value></data>
   <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Magnification</value></data>
   <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Applies to pitch and parameter curve editing. Values below 1× show a wider area; 1× is the original scale.</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>Close mixer</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>Compressor</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>Effects</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>No tracks</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>High</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>Low</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>Meter unavailable</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>Mid</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>Mute</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>Fixed order: EQ → Compressor → Reverb</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>Layout preview · Adjustments do not affect audio</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>Ratio</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>Reverb</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>Room size</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>Solo</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>Threshold</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>Mixer</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>Reverb amount</value></data>
 </root>
