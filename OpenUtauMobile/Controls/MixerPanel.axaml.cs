@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Services;
 using Serilog;
@@ -50,7 +51,7 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         base.OnSizeChanged(e);
         // 按混音面板实际可用宽度响应，横屏手机不强制挤出详情列。
         ViewModel.IsWide = e.NewSize.Width >= 760;
-        ViewModel.ChannelHeight = Math.Max(280, e.NewSize.Height - 108);
+        ViewModel.ChannelHeight = Math.Max(480, e.NewSize.Height - 68); // 最小高度 480，留出标题栏和底部按钮栏的空间。
         UpdateLayoutMode();
     }
 
@@ -58,6 +59,7 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
     {
         bool detail = ViewModel.IsDetailOpen && ViewModel.SelectedChannel != null;
         ChannelsScroll.IsVisible = ViewModel.IsWide || !detail;
+        OverviewScroll.IsVisible = ViewModel.IsWide || !detail;
         DetailBorder.IsVisible = detail;
         BodyGrid.ColumnDefinitions[1].Width = new GridLength(ViewModel.IsWide && detail ? 320 : 0);
         Grid.SetColumn(DetailBorder, ViewModel.IsWide ? 1 : 0);
@@ -73,18 +75,25 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         }
     }
 
+    private void OnFxToggleClick(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { DataContext: MixerChannelViewModel channel })
+            channel.FxEnabled = !channel.FxEnabled;
+    }
+
     private async void OnRenameClick(object? sender, RoutedEventArgs e) => await EditIdentityAsync(sender, false);
 
     private async void OnColorClick(object? sender, RoutedEventArgs e) => await EditIdentityAsync(sender, true);
 
     private async Task EditIdentityAsync(object? sender, bool editColor)
     {
-        if (_editingIdentity || sender is not Button { DataContext: MixerChannelViewModel channel }) return;
+        if (_editingIdentity || sender is not Button { DataContext: MixerChannelViewModel channel } || channel.Track == null) return;
         _editingIdentity = true;
         try
         {
-            var project = DocManager.Inst.Project;
-            var track = channel.Track;
+            // 获取当前项目和轨道
+            UProject project = DocManager.Inst.Project;
+            UTrack track = channel.Track;
             string? value = editColor
                 ? await TrackHeaderService.Inst.PickTrackColorAsync(track.TrackColor)
                 : await TrackHeaderService.Inst.PickTrackNameAsync(track.TrackName);

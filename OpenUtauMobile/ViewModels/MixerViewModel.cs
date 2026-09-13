@@ -14,6 +14,8 @@ namespace OpenUtauMobile.ViewModels;
 public class MixerViewModel : ViewModelBase
 {
     public ObservableCollection<MixerChannelViewModel> Channels { get; } = [];
+    public MixerChannelViewModel Master { get; } = new(null);
+    public ObservableCollection<MixerChannelViewModel> FxChannels { get; } = [];
     [Reactive] public MixerChannelViewModel? SelectedChannel { get; set; }
     [Reactive] public bool IsDetailOpen { get; set; }
     [Reactive] public bool IsWide { get; set; }
@@ -23,16 +25,20 @@ public class MixerViewModel : ViewModelBase
     public void Refresh(UProject project)
     {
         UTrack? selected = SelectedChannel?.Track;
-        var previous = Channels.ToDictionary(channel => channel.Track);
+        bool masterSelected = SelectedChannel == Master;
+        var previous = Channels.ToDictionary(channel => channel.Track!);
         Channels.Clear();
+        FxChannels.Clear();
+        FxChannels.Add(Master);
         foreach (UTrack track in project.tracks)
         {
             MixerChannelViewModel channel = previous.TryGetValue(track, out var existing)
                 ? existing : new MixerChannelViewModel(track);
             channel.RefreshIdentity();
             Channels.Add(channel);
+            FxChannels.Add(channel);
         }
-        SelectedChannel = Channels.FirstOrDefault(channel => channel.Track == selected) ?? Channels.FirstOrDefault();
+        SelectedChannel = masterSelected ? Master : Channels.FirstOrDefault(channel => channel.Track == selected) ?? Channels.FirstOrDefault();
         if (SelectedChannel == null) IsDetailOpen = false;
         this.RaisePropertyChanged(nameof(IsEmpty));
     }
@@ -40,7 +46,8 @@ public class MixerViewModel : ViewModelBase
 
 public class MixerChannelViewModel : ViewModelBase
 {
-    public UTrack Track { get; }
+    public UTrack? Track { get; }
+    public bool IsMaster => Track == null;
     public UMixFx ResetDefaults { get; } = new();
     [Reactive] public string Name { get; set; } = string.Empty;
     [Reactive] public IBrush Color { get; set; } = Brushes.Transparent;
@@ -68,15 +75,15 @@ public class MixerChannelViewModel : ViewModelBase
     [Reactive] public double ReverbWet { get; set; }
     [Reactive] public double ReverbSize { get; set; }
 
-    public MixerChannelViewModel(UTrack track)
+    public MixerChannelViewModel(UTrack? track)
     {
         Track = track;
         RefreshIdentity();
-        Volume = track.Volume;
-        Pan = track.Pan;
-        Mute = track.Mute;
-        Solo = track.Solo;
-        UMixFx fx = track.MixFx ?? new UMixFx();
+        Volume = track?.Volume ?? 0;
+        Pan = track?.Pan ?? 0;
+        Mute = track?.Mute ?? false;
+        Solo = track?.Solo ?? false;
+        UMixFx fx = track?.MixFx ?? new UMixFx();
         FxEnabled = fx.Enabled;
         LowDb = fx.EqLowDb;
         MidDb = fx.EqMidDb;
@@ -89,6 +96,11 @@ public class MixerChannelViewModel : ViewModelBase
 
     public void RefreshIdentity()
     {
+        if (Track == null)
+        {
+            Name = "Master";
+            return;
+        }
         Name = Track.TrackName;
         Color = TrackPalette.GetTrackColor(Track.TrackColor).AccentColor;
     }

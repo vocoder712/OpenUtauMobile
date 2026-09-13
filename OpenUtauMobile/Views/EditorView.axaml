@@ -339,7 +339,7 @@
                 <!-- 上下文为PianoRollViewModel，放大镜的Source -->
                 <Grid Grid.Row="0" ClipToBounds="True"
                       x:Name="PART_PianoRollGrid"
-                      DataContext="{Binding PianoRollViewModel}">
+                      x:DataType="vm:PianoRollViewModel">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition
                             Width="{Binding Source={x:Static local:ViewConstants.PianoKeysWidth}, Converter={StaticResource DoubleToGridLengthConverter}}" />

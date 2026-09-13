@@ -1793,4 +1793,8 @@
   <data name="Mixer.Title" xml:space="preserve"><value>Микшер</value></data>
   <data name="Mixer.Wet" xml:space="preserve"><value>Уровень реверберации</value></data>
   <data name="Mixer.ResetHint" xml:space="preserve"><value>Двойное нажатие восстанавливает значение по умолчанию</value></data>
+  <data name="Mixer.ToggleFx" xml:space="preserve"><value>Включить эффекты / обход (подсвечено — включены)</value></data>
+  <data name="Mixer.FxOn" xml:space="preserve"><value>Включены</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>Обход</value></data>
+  <data name="Mixer.MeterHint" xml:space="preserve"><value>Индикатор не подключён; нажмите верхние лампы клиппинга для сброса (Enter / Space)</value></data>
 </root>

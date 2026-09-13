@@ -102,8 +102,8 @@ public partial class EditorView : UserControl
 
     private void BindViewModel(EditorViewModel vm)
     {
-        // 卸载期间仍保留绑定源，重新挂载时不会丢失编辑状态。
-        PianoRollAreaGrid.DataContext = vm;
+        // 直接绑定独立编辑区的上下文，避免继承传播期间重入赋值令子绑定失效；卸载时也保留绑定源。
+        PART_PianoRollGrid.DataContext = vm.PianoRollViewModel;
         if (IsMixerOpen) vm.PianoRollViewModel.SetPresentationSuspended(true);
         _viewModelSubscription?.Dispose();
         CompositeDisposable disp = new();

@@ -1838,4 +1838,8 @@
   <data name="Mixer.Title" xml:space="preserve"><value>混音</value></data>
   <data name="Mixer.Wet" xml:space="preserve"><value>混响量</value></data>
   <data name="Mixer.ResetHint" xml:space="preserve"><value>双击滑块恢复默认值</value></data>
+  <data name="Mixer.ToggleFx" xml:space="preserve"><value>启用效果器 / 旁路（亮起时启用）</value></data>
+  <data name="Mixer.FxOn" xml:space="preserve"><value>已启用</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>已旁路</value></data>
+  <data name="Mixer.MeterHint" xml:space="preserve"><value>电平尚未接入；点击顶部削波灯复位（键盘 Enter / 空格）</value></data>
 </root>
