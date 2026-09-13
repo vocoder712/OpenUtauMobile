@@ -11,7 +11,8 @@
 - Place plans documents in `/plans` where git can ignore them. Do not place plans in the source tree or in the `docs` directory.
 
 ## Boundaries and style
-- Avoid unnecessary changes to upstream-derived `OpenUtau.Core`; keep application orchestration in the Mobile layer.
+- Forbid modifications to `OpenUtau.Core/Ustx`, which could break compatibility with universal USTX files.
+- Avoid unnecessary changes to upstream-derived `OpenUtau.Core`; keep application orchestration in the Mobile layer. Always ask for permission before modifying upstream-derived code.
 - Do not hand-edit upstream-copy `OpenUtau.Plugin.Builtin` for feature work. For upstream synchronization, follow `docs/UPSTREAM_SYNC.md`, including its compatibility-review requirements.
 - Follow `.editorconfig`. Write new code comments in Simplified Chinese; preserve upstream comments.
 
