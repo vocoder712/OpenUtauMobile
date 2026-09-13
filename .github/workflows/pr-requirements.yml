@@ -138,7 +138,7 @@ jobs:
           done
           echo "Dependency PublishAot: <empty> (4 projects)"
 
-      - name: Publish iOS Intel Simulator NativeAOT App
+      - name: Build iOS Intel Simulator NativeAOT App
         shell: bash
         run: |
           set -euo pipefail
@@ -146,12 +146,15 @@ jobs:
           LOG_DIR="${GITHUB_WORKSPACE}/artifacts/iossimulator-x64-logs"
           mkdir -p "$LOG_DIR"
 
-          dotnet publish \
+          # iOS SDK 的 Publish 目标只接受真机 RID；模拟器直接执行 Build，
+          # 并设置 _IsPublishing 以启用 NativeAOT 所需的 SDK 路径。
+          dotnet build \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --force \
             -c Release \
             -f net10.0-ios \
             -r iossimulator-x64 \
+            -p:_IsPublishing=true \
             -p:Version="0.0.0-pr.${{ github.event.pull_request.number }}" \
             -p:BuildNumber=${{ github.run_number }} \
             -p:BuildTimestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
@@ -161,7 +164,7 @@ jobs:
             -p:EnableIosNativeAot=true \
             -p:EnableCodeSigning=false \
             -p:BuildIpa=false \
-            -bl:"$LOG_DIR/publish.binlog" \
+            -bl:"$LOG_DIR/build.binlog" \
             --verbosity minimal
 
       - name: Validate and Package Simulator App
