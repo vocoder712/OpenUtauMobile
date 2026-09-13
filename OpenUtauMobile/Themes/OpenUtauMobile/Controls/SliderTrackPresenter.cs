@@ -119,8 +119,12 @@ public class SliderTrackPresenter : Control
             if (double.IsFinite(steps))
                 for (int i = 0; i <= visibleCount && i * stride <= steps; i++) Dot(slider.Minimum + i * stride * slider.TickFrequency);
         }
-        if (showStops) Dot(slider.Minimum);
-        Dot(slider.Maximum);
+        // 连续参数不显示端点圆点，避免声像等双向参数出现单侧视觉强调。
+        if (showStops)
+        {
+            Dot(slider.Minimum);
+            Dot(slider.Maximum);
+        }
         return;
 
         void Dot(double value)
