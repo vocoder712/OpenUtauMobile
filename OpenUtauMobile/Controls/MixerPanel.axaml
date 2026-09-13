@@ -28,7 +28,7 @@
                     <TextBlock Grid.Row="1" Text="Master" IsVisible="{Binding IsMaster}" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="4,24,4,12" />
                     <!-- FX按钮 -->
                     <StackPanel Grid.Row="2" IsVisible="{Binding !IsMaster}" Spacing="2" Margin="0,0,0,4">
-                        <Grid ColumnDefinitions="60,48" ColumnSpacing="2" HorizontalAlignment="Center">
+                        <Grid ColumnDefinitions="56,32" ColumnSpacing="2" HorizontalAlignment="Center">
                             <Button x:Name="ChannelFxEnabledButton" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
                                     HorizontalAlignment="Stretch" CornerRadius="16,4,4,16" Click="OnFxToggleClick"
                                     ToolTip.Tip="{DynamicResource Mixer.ToggleFx}">
@@ -36,7 +36,7 @@
                             </Button>
                             <Button x:Name="ChannelFxButton" Grid.Column="1" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
                                     HorizontalAlignment="Stretch" CornerRadius="4,16,16,4" Click="OnFxClick"
-                                    Content="{icons:PhosphorIcons CaretDown}" ToolTip.Tip="{DynamicResource Mixer.Effects}" />
+                                    Content="{icons:PhosphorIcons CaretRight}" ToolTip.Tip="{DynamicResource Mixer.Effects}" />
                         </Grid>
                     </StackPanel>
                     <!-- Pan旋钮 -->
@@ -52,16 +52,15 @@
                     </StackPanel>
                     <!-- 音量推子和电平 -->
                     <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="12,4">
-                        <c:MixerSlider Classes="MixerReset" x:Name="VolumeFader" IsVisible="{Binding !IsMaster}" Orientation="Vertical" Minimum="-24" Maximum="12"
+                        <c:MixerSlider Grid.Column="0" Classes="MixerReset" x:Name="VolumeFader" IsVisible="{Binding !IsMaster}" Orientation="Vertical" Minimum="-24" Maximum="12"
                                 Value="{Binding Volume, Mode=TwoWay}" VerticalAlignment="Stretch"
                                 ToolTip.Tip="{DynamicResource Mixer.ResetHint}" />
                         <!-- 电平表 -->
-                        <c:MixerLevelMeter Classes.master="{Binding IsMaster}" Width="40" Margin="4,0"
+                        <c:MixerLevelMeter Grid.Column="1" Classes.master="{Binding IsMaster}" Width="40" Margin="4,0"
                                            LeftDb="{Binding LeftDb}" RightDb="{Binding RightDb}"
                                            TrackBrush="{DynamicResource Sem.Color.OutlineVariant}"
                                            LabelBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                           ClipBrush="#E65B55"
-                                           ToolTip.Tip="{DynamicResource Mixer.MeterHint}" />
+                                           ClipBrush="#E65B55" />
                     </Grid>
                     <TextBlock Grid.Row="5" IsVisible="{Binding !IsMaster}" Text="{Binding Volume, StringFormat='{}{0:0.0} dB'}" FontSize="12" HorizontalAlignment="Center" Margin="0,2,0,6" />
                     <!-- Mute和Solo按钮 -->

@@ -1841,5 +1841,4 @@
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Enable effects / bypass (lit when enabled)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Enabled</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>Bypassed</value></data>
-  <data name="Mixer.MeterHint" xml:space="preserve"><value>Meter not connected; click the top clip lights to reset (Enter / Space)</value></data>
 </root>

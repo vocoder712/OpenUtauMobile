@@ -1834,5 +1834,4 @@
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>エフェクト有効 / バイパス（点灯時は有効）</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>有効</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>バイパス</value></data>
-  <data name="Mixer.MeterHint" xml:space="preserve"><value>メーター未接続。上部のクリップ表示をクリックしてリセット（Enter / Space）</value></data>
 </root>

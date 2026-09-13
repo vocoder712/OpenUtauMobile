@@ -1796,5 +1796,4 @@
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Увімкнути ефекти / обхід (підсвічено — увімкнені)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Увімкнені</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>Обхід</value></data>
-  <data name="Mixer.MeterHint" xml:space="preserve"><value>Індикатор не підключено; натисніть верхні лампи кліпінгу для скидання (Enter / Space)</value></data>
 </root>
