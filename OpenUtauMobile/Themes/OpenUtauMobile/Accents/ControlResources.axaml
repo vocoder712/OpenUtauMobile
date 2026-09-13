@@ -455,24 +455,24 @@
 
       <!-- Resources for Slider.xaml -->
       <x:Double x:Key="SliderOutsideTickBarThemeHeight">4</x:Double>
-      <x:Double x:Key="SliderTrackThemeHeight">2</x:Double>
+      <x:Double x:Key="SliderTrackThemeHeight">16</x:Double>
       <Thickness x:Key="SliderBorderThemeThickness">0</Thickness>
       <StaticResource x:Key="SliderContainerBackground" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="SliderContainerBackgroundPointerOver" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="SliderContainerBackgroundPressed" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="SliderContainerBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
       <SolidColorBrush x:Key="SliderThumbBackground" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{DynamicResource Sem.Value.PrimaryStateHover}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{DynamicResource Sem.Value.PrimaryStatePressed}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderThumbBackgroundDisabled" Color="{DynamicResource Sem.Value.Primary}" Opacity="0.38" />
-      <SolidColorBrush x:Key="SliderTrackFill" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackFillPressed" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackFillDisabled" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="0.38" />
+      <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderThumbBackgroundDisabled" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="0.38" />
+      <SolidColorBrush x:Key="SliderTrackFill" Color="{DynamicResource Sem.Value.SecondaryContainer}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="{DynamicResource Sem.Value.SecondaryContainer}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackFillPressed" Color="{DynamicResource Sem.Value.SecondaryContainer}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackFillDisabled" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="0.12" />
       <SolidColorBrush x:Key="SliderTrackValueFill" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{DynamicResource Sem.Value.PrimaryStateHover}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{DynamicResource Sem.Value.PrimaryStatePressed}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackValueFillDisabled" Color="{DynamicResource Sem.Value.Primary}" Opacity="0.38" />
+      <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackValueFillDisabled" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="0.38" />
       <StaticResource x:Key="SliderTickBarFill" ResourceKey="SystemControlForegroundBaseMediumLowBrush" />
       <StaticResource x:Key="SliderTickBarFillDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
       <StaticResource x:Key="SliderInlineTickBarFill" ResourceKey="SystemControlBackgroundAltHighBrush" />
@@ -1227,24 +1227,24 @@
 
       <!-- Resources for Slider.xaml -->
       <x:Double x:Key="SliderOutsideTickBarThemeHeight">4</x:Double>
-      <x:Double x:Key="SliderTrackThemeHeight">2</x:Double>
+      <x:Double x:Key="SliderTrackThemeHeight">16</x:Double>
       <Thickness x:Key="SliderBorderThemeThickness">0</Thickness>
       <StaticResource x:Key="SliderContainerBackground" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="SliderContainerBackgroundPointerOver" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="SliderContainerBackgroundPressed" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="SliderContainerBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
       <SolidColorBrush x:Key="SliderThumbBackground" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{DynamicResource Sem.Value.PrimaryStateHover}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{DynamicResource Sem.Value.PrimaryStatePressed}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderThumbBackgroundDisabled" Color="{DynamicResource Sem.Value.Primary}" Opacity="0.38" />
-      <SolidColorBrush x:Key="SliderTrackFill" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackFillPressed" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackFillDisabled" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="0.38" />
+      <SolidColorBrush x:Key="SliderThumbBackgroundPointerOver" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderThumbBackgroundPressed" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderThumbBackgroundDisabled" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="0.38" />
+      <SolidColorBrush x:Key="SliderTrackFill" Color="{DynamicResource Sem.Value.SecondaryContainer}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="{DynamicResource Sem.Value.SecondaryContainer}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackFillPressed" Color="{DynamicResource Sem.Value.SecondaryContainer}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackFillDisabled" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="0.12" />
       <SolidColorBrush x:Key="SliderTrackValueFill" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{DynamicResource Sem.Value.PrimaryStateHover}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{DynamicResource Sem.Value.PrimaryStatePressed}" Opacity="1" />
-      <SolidColorBrush x:Key="SliderTrackValueFillDisabled" Color="{DynamicResource Sem.Value.Primary}" Opacity="0.38" />
+      <SolidColorBrush x:Key="SliderTrackValueFillPointerOver" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackValueFillPressed" Color="{DynamicResource Sem.Value.Primary}" Opacity="1" />
+      <SolidColorBrush x:Key="SliderTrackValueFillDisabled" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="0.38" />
       <StaticResource x:Key="SliderTickBarFill" ResourceKey="SystemControlForegroundBaseMediumLowBrush" />
       <StaticResource x:Key="SliderTickBarFillDisabled" ResourceKey="SystemControlDisabledBaseMediumLowBrush" />
       <StaticResource x:Key="SliderInlineTickBarFill" ResourceKey="SystemControlBackgroundAltHighBrush" />
