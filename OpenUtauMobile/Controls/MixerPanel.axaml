@@ -27,7 +27,7 @@
                     </Button>
                     <TextBlock Grid.Row="1" Text="Master" IsVisible="{Binding IsMaster}" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="4,24,4,12" />
                     <!-- FX按钮 -->
-                    <StackPanel Grid.Row="2" Spacing="2" Margin="0,0,0,4">
+                    <StackPanel Grid.Row="2" IsVisible="{Binding !IsMaster}" Spacing="2" Margin="0,0,0,4">
                         <Grid ColumnDefinitions="60,48" ColumnSpacing="2" HorizontalAlignment="Center">
                             <Button x:Name="ChannelFxEnabledButton" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
                                     HorizontalAlignment="Stretch" CornerRadius="16,4,4,16" Click="OnFxToggleClick"
@@ -40,7 +40,7 @@
                         </Grid>
                     </StackPanel>
                     <!-- Pan旋钮 -->
-                    <StackPanel Grid.Row="3" Margin="8,0" Spacing="0">
+                    <StackPanel Grid.Row="3" IsVisible="{Binding !IsMaster}" Margin="8,0" Spacing="0">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
                             <TextBlock Classes="MixerHint" Text="{DynamicResource TrackHeader.Pan}" />
                             <TextBlock Text="{Binding PanText}" FontSize="11" FontWeight="SemiBold" />
@@ -52,29 +52,36 @@
                     </StackPanel>
                     <!-- 音量推子和电平 -->
                     <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="12,4">
-                        <c:MixerSlider Classes="MixerReset" x:Name="VolumeFader" Orientation="Vertical" Minimum="-24" Maximum="12"
+                        <c:MixerSlider Classes="MixerReset" x:Name="VolumeFader" IsVisible="{Binding !IsMaster}" Orientation="Vertical" Minimum="-24" Maximum="12"
                                 Value="{Binding Volume, Mode=TwoWay}" VerticalAlignment="Stretch"
                                 ToolTip.Tip="{DynamicResource Mixer.ResetHint}" />
                         <!-- 电平表 -->
-                        <c:MixerLevelMeter Grid.Column="1" Width="40" Margin="4,0"
+                        <c:MixerLevelMeter Classes.master="{Binding IsMaster}" Width="40" Margin="4,0"
                                            LeftDb="{Binding LeftDb}" RightDb="{Binding RightDb}"
                                            TrackBrush="{DynamicResource Sem.Color.OutlineVariant}"
                                            LabelBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                            ClipBrush="#E65B55"
                                            ToolTip.Tip="{DynamicResource Mixer.MeterHint}" />
                     </Grid>
-                    <TextBlock Grid.Row="5" Text="{Binding Volume, StringFormat='{}{0:0.0} dB'}" FontSize="12" HorizontalAlignment="Center" Margin="0,2,0,6" />
+                    <TextBlock Grid.Row="5" IsVisible="{Binding !IsMaster}" Text="{Binding Volume, StringFormat='{}{0:0.0} dB'}" FontSize="12" HorizontalAlignment="Center" Margin="0,2,0,6" />
                     <!-- Mute和Solo按钮 -->
                     <Grid IsVisible="{Binding !IsMaster}" Grid.Row="6" ColumnDefinitions="48,48" ColumnSpacing="4" HorizontalAlignment="Center" Margin="0,0,0,8">
                         <ToggleButton Classes="MixerAction MixerState" Content="M" IsChecked="{Binding Mute, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.Mute}" />
                         <ToggleButton Grid.Column="1" Classes="MixerAction MixerState" Content="S" IsChecked="{Binding Solo, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.Solo}" />
                     </Grid>
-                    <ToggleButton Grid.Row="6" IsVisible="{Binding IsMaster}" Classes="MixerAction MixerState" HorizontalAlignment="Center" Margin="0,0,0,8" Content="M" IsChecked="{Binding Mute, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.Mute}" />
                 </Grid>
             </Border>
         </DataTemplate>
     </UserControl.Resources>
     <UserControl.Styles>
+        <Style Selector="c|MixerLevelMeter">
+            <Setter Property="Grid.Column" Value="1" />
+        </Style>
+        <Style Selector="c|MixerLevelMeter.master">
+            <Setter Property="Grid.Column" Value="0" />
+            <Setter Property="Grid.ColumnSpan" Value="2" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
         <Style Selector="Button.MixerAction, ToggleButton.MixerAction">
             <Setter Property="MinHeight" Value="32" />
             <Setter Property="Padding" Value="8,4" />

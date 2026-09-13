@@ -91,8 +91,6 @@ namespace OpenUtau.Core.Ustx {
         public string TrackName { get; set; } = "New Track";
         public string TrackColor { get; set; } = "Blue";
         [YamlIgnore] public bool Muted { set; get; }
-        // 与桌面判定一致：独奏优先，其次静音，最后检查其它轨道的独奏状态。
-        public bool GetMuted(UProject project) => !Solo && (Mute || project.SoloTrackExist);
         public bool Mute { get; set; }
         public bool Solo { get; set; }
         // Per-track post-processing FX.  null = no FX configured (bypass).
@@ -252,7 +250,9 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
             TrackNo = project.tracks.IndexOf(this);
-            Muted = GetMuted(project);
+            if (!Solo && Mute) {
+                Muted = true;
+            }
         }
     }
 }

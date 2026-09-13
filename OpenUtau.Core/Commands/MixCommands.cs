@@ -5,24 +5,24 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core
 {
-    /// <summary>轨道与总线共用的混音命令；Track 为空时目标为 Master。</summary>
+    /// <summary>轨道混音命令；不向工程添加总线参数。</summary>
     public abstract class MixCommand : UCommand
     {
         public UProject Project { get; }
-        public UTrack? Track { get; }
+        public UTrack Track { get; }
         public override bool Silent => true; // 避免刷日志
         public virtual bool HasChanges => true;
         public override ValidateOptions ValidateOptions => new() { SkipTiming = true, SkipPhonemizer = true, SkipPhoneme = true };
 
-        protected MixCommand(UProject project, UTrack? track)
+        protected MixCommand(UProject project, UTrack track)
         {
             Project = project;
-            Track = track;
+            Track = track ?? throw new ArgumentNullException(nameof(track));
         }
 
         protected void UpdateMuteStates()
         {
-            foreach (UTrack track in Project.tracks) track.Muted = track.GetMuted(Project);
+            foreach (UTrack track in Project.tracks) track.Muted = !track.Solo && (track.Mute || Project.SoloTrackExist);
         }
 
         protected bool SameTarget(UCommand command) => command.GetType() == GetType()
@@ -36,7 +36,7 @@ namespace OpenUtau.Core
         private readonly T after;
         public override bool HasChanges => !EqualityComparer<T>.Default.Equals(before, after);
 
-        protected MixValueCommand(UProject project, UTrack? track, T before, T after) : base(project, track)
+        protected MixValueCommand(UProject project, UTrack track, T before, T after) : base(project, track)
         {
             this.before = before;
             this.after = after;
@@ -52,17 +52,16 @@ namespace OpenUtau.Core
 
     public sealed class ChangeMixVolumeCommand : MixValueCommand<double>
     {
-        public ChangeMixVolumeCommand(UProject project, UTrack? track, double value)
-            : this(project, track, track?.Volume ?? project.MasterVolume, value) { }
-        private ChangeMixVolumeCommand(UProject project, UTrack? track, double before, double after)
+        public ChangeMixVolumeCommand(UProject project, UTrack track, double value)
+            : this(project, track, track.Volume, value) { }
+        private ChangeMixVolumeCommand(UProject project, UTrack track, double before, double after)
             : base(project, track, before, after)
         {
             if (!double.IsFinite(after)) throw new ArgumentOutOfRangeException(nameof(after));
         }
         protected override void SetValue(double value)
         {
-            if (Track != null) Track.Volume = value;
-            else Project.MasterVolume = value;
+            Track.Volume = value;
         }
         protected override MixValueCommand<double> WithValues(double before, double after) => new ChangeMixVolumeCommand(Project, Track, before, after);
         public override string ToString() => "调整混音音量";
@@ -70,17 +69,16 @@ namespace OpenUtau.Core
 
     public sealed class ChangeMixPanCommand : MixValueCommand<double>
     {
-        public ChangeMixPanCommand(UProject project, UTrack? track, double value)
-            : this(project, track, track?.Pan ?? project.MasterPan, value) { }
-        private ChangeMixPanCommand(UProject project, UTrack? track, double before, double after)
+        public ChangeMixPanCommand(UProject project, UTrack track, double value)
+            : this(project, track, track.Pan, value) { }
+        private ChangeMixPanCommand(UProject project, UTrack track, double before, double after)
             : base(project, track, before, after)
         {
             if (!double.IsFinite(after)) throw new ArgumentOutOfRangeException(nameof(after));
         }
         protected override void SetValue(double value)
         {
-            if (Track != null) Track.Pan = value;
-            else Project.MasterPan = value;
+            Track.Pan = value;
         }
         protected override MixValueCommand<double> WithValues(double before, double after) => new ChangeMixPanCommand(Project, Track, before, after);
         public override string ToString() => "调整混音声像";
@@ -88,14 +86,13 @@ namespace OpenUtau.Core
 
     public sealed class ChangeMixMuteCommand : MixValueCommand<bool>
     {
-        public ChangeMixMuteCommand(UProject project, UTrack? track, bool value)
-            : this(project, track, track?.Mute ?? project.MasterMute, value) { }
-        private ChangeMixMuteCommand(UProject project, UTrack? track, bool before, bool after)
+        public ChangeMixMuteCommand(UProject project, UTrack track, bool value)
+            : this(project, track, track.Mute, value) { }
+        private ChangeMixMuteCommand(UProject project, UTrack track, bool before, bool after)
             : base(project, track, before, after) { }
         protected override void SetValue(bool value)
         {
-            if (Track != null) Track.Mute = value;
-            else Project.MasterMute = value;
+            Track.Mute = value;
             UpdateMuteStates();
         }
         protected override MixValueCommand<bool> WithValues(bool before, bool after) => new ChangeMixMuteCommand(Project, Track, before, after);
@@ -122,17 +119,16 @@ namespace OpenUtau.Core
     {
         private readonly UMixFx? before;
         private readonly UMixFx? after;
-        public ChangeMixFxCommand(UProject project, UTrack? track, UMixFx? value)
-            : this(project, track, track == null ? project.MasterFx : track.MixFx, value) { }
-        private ChangeMixFxCommand(UProject project, UTrack? track, UMixFx? before, UMixFx? after) : base(project, track)
+        public ChangeMixFxCommand(UProject project, UTrack track, UMixFx? value)
+            : this(project, track, track.MixFx, value) { }
+        private ChangeMixFxCommand(UProject project, UTrack track, UMixFx? before, UMixFx? after) : base(project, track)
         {
             this.before = before?.Clone();
             this.after = after?.Clone();
         }
         private void SetValue(UMixFx? value)
         {
-            if (Track != null) Track.MixFx = value?.Clone();
-            else Project.MasterFx = value?.Clone();
+            Track.MixFx = value?.Clone();
         }
         public override void Execute() => SetValue(after);
         public override void Unexecute() => SetValue(before);

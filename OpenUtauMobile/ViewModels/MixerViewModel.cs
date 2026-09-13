@@ -29,8 +29,6 @@ public class MixerViewModel : ViewModelBase
     private bool _active;
     private bool _ownsEdit;
 
-    public MixerViewModel() => Master.PropertyChanged += OnChannelChanged;
-
     public void Activate() => _active = true;
     public void Deactivate() { EndEdit(); _active = false; }
 
@@ -51,7 +49,7 @@ public class MixerViewModel : ViewModelBase
     private void OnChannelChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (_refreshing || !_active || _project != DocManager.Inst.Project || sender is not MixerChannelViewModel channel) return;
-        if (channel.Track != null && !_project.tracks.Contains(channel.Track)) return;
+        if (channel.Track == null || !_project.tracks.Contains(channel.Track)) return;
         MixCommand? command = e.PropertyName switch
         {
             nameof(channel.Volume) when double.IsFinite(channel.Volume) => new ChangeMixVolumeCommand(_project, channel.Track, channel.Volume),
@@ -77,9 +75,9 @@ public class MixerViewModel : ViewModelBase
 
     private ChangeMixFxCommand ChangeFx(MixerChannelViewModel channel, Action<UMixFx> change)
     {
-        UMixFx fx = (channel.Track == null ? _project!.MasterFx : channel.Track.MixFx)?.Clone() ?? new UMixFx();
+        UMixFx fx = channel.Track!.MixFx?.Clone() ?? new UMixFx();
         change(fx);
-        return new ChangeMixFxCommand(_project!, channel.Track, fx);
+        return new ChangeMixFxCommand(_project!, channel.Track!, fx);
     }
 
     public void RefreshParameters()
@@ -99,12 +97,10 @@ public class MixerViewModel : ViewModelBase
         if (_project != project) EndEdit();
         _project = project;
         UTrack? selected = SelectedChannel?.Track;
-        bool masterSelected = SelectedChannel == Master;
         var previous = Channels.ToDictionary(channel => channel.Track!);
         foreach (MixerChannelViewModel channel in Channels) channel.PropertyChanged -= OnChannelChanged;
         Channels.Clear();
         FxChannels.Clear();
-        FxChannels.Add(Master);
         foreach (UTrack track in project.tracks)
         {
             MixerChannelViewModel channel = previous.TryGetValue(track, out var existing)
@@ -114,7 +110,7 @@ public class MixerViewModel : ViewModelBase
             Channels.Add(channel);
             FxChannels.Add(channel);
         }
-        SelectedChannel = masterSelected ? Master : Channels.FirstOrDefault(channel => channel.Track == selected) ?? Channels.FirstOrDefault();
+        SelectedChannel = Channels.FirstOrDefault(channel => channel.Track == selected) ?? Channels.FirstOrDefault();
         if (SelectedChannel == null) IsDetailOpen = false;
         this.RaisePropertyChanged(nameof(IsEmpty));
         RefreshParameters();
@@ -175,11 +171,11 @@ public class MixerChannelViewModel : ViewModelBase
 
     public void RefreshParameters(UProject project)
     {
-        Volume = Track?.Volume ?? project.MasterVolume;
-        Pan = Track?.Pan ?? project.MasterPan;
-        Mute = Track?.Mute ?? project.MasterMute;
+        Volume = Track?.Volume ?? 0;
+        Pan = Track?.Pan ?? 0;
+        Mute = Track?.Mute ?? false;
         Solo = Track?.Solo ?? false;
-        UMixFx fx = (Track == null ? project.MasterFx : Track.MixFx) ?? new UMixFx();
+        UMixFx fx = Track?.MixFx ?? new UMixFx();
         FxEnabled = fx.Enabled;
         LowDb = fx.EqLowDb; MidDb = fx.EqMidDb; HighDb = fx.EqHighDb;
         ThresholdDb = fx.CompThresholdDb; Ratio = fx.CompRatio;

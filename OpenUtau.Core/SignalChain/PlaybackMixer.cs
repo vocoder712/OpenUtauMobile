@@ -38,11 +38,12 @@ namespace OpenUtau.Core.SignalChain {
         }
 
         private MixerChannelSource.Settings TrackSettings(UTrack track) => new MixerChannelSource.Settings(
-            track.Volume, track.Pan, track.GetMuted(Project),
+            track.Volume, track.Pan, !track.Solo && (track.Mute || Project.SoloTrackExist),
             applyFx ? track.MixFx : null);
 
-        private MixerChannelSource.Settings MasterSettings() => new MixerChannelSource.Settings(
-            Project.MasterVolume, Project.MasterPan, Project.MasterMute, applyFx ? Project.MasterFx : null);
+        // 总线只用于汇总和电平监测，不保存或应用额外混音参数。
+        private static MixerChannelSource.Settings MasterSettings() => new MixerChannelSource.Settings(
+            0, 0, false, null);
     }
 
     internal sealed class MixerChannelSource : ISignalSource {
