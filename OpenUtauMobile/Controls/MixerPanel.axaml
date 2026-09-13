@@ -12,7 +12,7 @@
             <Border Width="140" Height="{Binding $parent[UserControl].((vm:MixerViewModel)DataContext).ChannelHeight}"
                     CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainer}"
                     BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="1" ClipToBounds="True">
-                <Grid RowDefinitions="4,56,Auto,Auto,*,Auto,Auto">
+                <Grid RowDefinitions="4,56,Auto,Auto,*,Auto,Auto" RowSpacing="4">
                     <!-- 通道颜色条 -->
                     <Button x:Name="ChannelColorButton" Grid.Row="0" Grid.RowSpan="2" Click="OnColorClick" IsVisible="{Binding !IsMaster}"
                             HorizontalAlignment="Stretch"
@@ -26,8 +26,21 @@
                         <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" ToolTip.Tip="{Binding Name}" />
                     </Button>
                     <TextBlock Grid.Row="1" Text="Master" IsVisible="{Binding IsMaster}" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="4,24,4,12" />
+                    <!-- FX按钮 -->
+                    <StackPanel Grid.Row="2" Spacing="2" Margin="0,0,0,4">
+                        <Grid ColumnDefinitions="60,48" ColumnSpacing="2" HorizontalAlignment="Center">
+                            <Button x:Name="ChannelFxEnabledButton" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
+                                    HorizontalAlignment="Stretch" CornerRadius="16,4,4,16" Click="OnFxToggleClick"
+                                    ToolTip.Tip="{DynamicResource Mixer.ToggleFx}">
+                                <StackPanel Orientation="Horizontal" Spacing="4"><icons:PackIconPhosphorIcons Kind="Power" Width="16" Height="16" /><TextBlock Text="FX" /></StackPanel>
+                            </Button>
+                            <Button x:Name="ChannelFxButton" Grid.Column="1" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
+                                    HorizontalAlignment="Stretch" CornerRadius="4,16,16,4" Click="OnFxClick"
+                                    Content="{icons:PhosphorIcons CaretDown}" ToolTip.Tip="{DynamicResource Mixer.Effects}" />
+                        </Grid>
+                    </StackPanel>
                     <!-- Pan旋钮 -->
-                    <StackPanel Grid.Row="2" Margin="8,0" Spacing="0">
+                    <StackPanel Grid.Row="3" Margin="8,0" Spacing="0">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
                             <TextBlock Classes="MixerHint" Text="{DynamicResource TrackHeader.Pan}" />
                             <TextBlock Text="{Binding PanText}" FontSize="11" FontWeight="SemiBold" />
@@ -36,21 +49,6 @@
                             <Border Width="1" Height="20" Background="{DynamicResource Sem.Color.Outline}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
                             <c:MixerSlider Classes="MixerReset MixerPan" Minimum="-100" Maximum="100" Value="{Binding Pan, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.ResetHint}" />
                         </Grid>
-                    </StackPanel>
-                    <!-- FX按钮 -->
-                    <StackPanel Grid.Row="3" Spacing="2" Margin="0,0,0,4">
-                        <Grid ColumnDefinitions="64,48" ColumnSpacing="2" HorizontalAlignment="Center">
-                            <Button x:Name="ChannelFxEnabledButton" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
-                                    Height="48" HorizontalAlignment="Stretch" CornerRadius="24,4,4,24" Click="OnFxToggleClick"
-                                    ToolTip.Tip="{DynamicResource Mixer.ToggleFx}">
-                                <StackPanel Orientation="Horizontal" Spacing="4"><icons:PackIconPhosphorIcons Kind="Power" Width="16" Height="16" /><TextBlock Text="FX" /></StackPanel>
-                            </Button>
-                            <Button x:Name="ChannelFxButton" Grid.Column="1" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
-                                    Height="48" HorizontalAlignment="Stretch" CornerRadius="4,24,24,4" Click="OnFxClick"
-                                    Content="{icons:PhosphorIcons CaretDown}" ToolTip.Tip="{DynamicResource Mixer.Effects}" />
-                        </Grid>
-                        <TextBlock Classes="MixerHint" HorizontalAlignment="Center" IsVisible="{Binding FxEnabled}" Text="{DynamicResource Mixer.FxOn}" />
-                        <TextBlock Classes="MixerHint" HorizontalAlignment="Center" IsVisible="{Binding !FxEnabled}" Text="{DynamicResource Mixer.FxBypassed}" />
                     </StackPanel>
                     <!-- 音量推子和电平 -->
                     <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="12,4">
@@ -93,6 +91,8 @@
             <Setter Property="Height" Value="48" />
         </Style>
         <Style Selector="Button.MixerSplit">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="MinHeight" Value="32" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
         </Style>
