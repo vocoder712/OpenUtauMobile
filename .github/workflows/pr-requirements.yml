@@ -45,12 +45,193 @@ jobs:
             -p:RuntimeIdentifier=android-arm64
 
   ios-build:
-    name: PR build test for iOS arm64 NativeAOT
-    permissions:
-      contents: read
-    uses: ./.github/workflows/build-ios.yml
-    with:
-      version: 0.0.0-pr.${{ github.event.pull_request.number }}
-      build_number: ${{ fromJSON(github.run_number) }}
-      source_sha: ${{ github.sha }}
-      action_run_id: ${{ github.run_id }}
+    name: PR build test for iOS Intel Simulator NativeAOT
+    runs-on: macos-26
+    timeout-minutes: 90
+    env:
+      AVALONIA_TELEMETRY_OPTOUT: "1"
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_NOLOGO: "1"
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Validate iOS Toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ ! -d "$DEVELOPER_DIR" ]; then
+            echo "::error::Required Xcode developer directory is missing: $DEVELOPER_DIR"
+            ls -1d /Applications/Xcode_*.app 2>/dev/null | sed -n '1,20p' || true
+            exit 1
+          fi
+
+          XCODE_VERSION="$(xcodebuild -version | awk '/^Xcode / { print $2 }')"
+          if [[ "$XCODE_VERSION" != "26.6" && "$XCODE_VERSION" != 26.6.* ]]; then
+            echo "::error::Expected Xcode 26.6, selected $XCODE_VERSION from $DEVELOPER_DIR"
+            exit 1
+          fi
+
+          dotnet --version
+          xcodebuild -version
+          echo "iPhoneSimulator SDK: $(xcrun --sdk iphonesimulator --show-sdk-version)"
+
+      - name: Restore iOS Workload
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          dotnet workload restore \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            --verbosity minimal
+
+      - name: Validate NativeAOT Project Isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          APP_PROPERTIES="$(dotnet msbuild \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -nologo \
+            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime \
+            -p:_IsPublishing=true \
+            -p:Configuration=Release \
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=iossimulator-x64 \
+            -p:EnableIosNativeAot=true)"
+          echo "$APP_PROPERTIES"
+
+          if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"_UseNativeAot": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "false"'; then
+            echo "::error::iOS simulator entry project did not select the NativeAOT runtime"
+            exit 1
+          fi
+
+          for DEPENDENCY_PROJECT in \
+            OpenUtauMobile/OpenUtauMobile.csproj \
+            OpenUtau.Core/OpenUtau.Core.csproj \
+            OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj \
+            OpenUtauMobile.Plugin.Renderers/OpenUtauMobile.Plugin.Renderers.csproj; do
+            DEPENDENCY_PUBLISH_AOT="$(dotnet msbuild \
+              "$DEPENDENCY_PROJECT" \
+              -nologo \
+              -getProperty:PublishAot \
+              -p:_IsPublishing=true \
+              -p:Configuration=Release \
+              -p:RuntimeIdentifier=iossimulator-x64 \
+              -p:EnableIosNativeAot=true)"
+            if [ -n "$DEPENDENCY_PUBLISH_AOT" ]; then
+              echo "::error::PublishAot leaked into $DEPENDENCY_PROJECT: $DEPENDENCY_PUBLISH_AOT"
+              exit 1
+            fi
+          done
+          echo "Dependency PublishAot: <empty> (4 projects)"
+
+      - name: Publish iOS Intel Simulator NativeAOT App
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          LOG_DIR="${GITHUB_WORKSPACE}/artifacts/iossimulator-x64-logs"
+          mkdir -p "$LOG_DIR"
+
+          dotnet publish \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            --force \
+            -c Release \
+            -f net10.0-ios \
+            -r iossimulator-x64 \
+            -p:Version="0.0.0-pr.${{ github.event.pull_request.number }}" \
+            -p:BuildNumber=${{ github.run_number }} \
+            -p:BuildTimestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            -p:BuildMachine="${RUNNER_OS} / $(uname -srm)" \
+            -p:SourceCommit=${{ github.sha }} \
+            -p:ActionRunId=${{ github.run_id }} \
+            -p:EnableIosNativeAot=true \
+            -p:EnableCodeSigning=false \
+            -p:BuildIpa=false \
+            -bl:"$LOG_DIR/publish.binlog" \
+            --verbosity minimal
+
+      - name: Validate and Package Simulator App
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          OUTPUT_DIR="OpenUtauMobile.iOS/bin/Release/net10.0-ios/iossimulator-x64"
+          APP_DIR="$OUTPUT_DIR/OpenUtauMobile.iOS.app"
+          PACKAGE_DIR="${GITHUB_WORKSPACE}/artifacts/iossimulator-x64"
+          STAGE_DIR="${RUNNER_TEMP}/OpenUtauMobile-iossimulator-x64-nativeaot"
+          ZIP_PATH="$PACKAGE_DIR/OpenUtauMobile-pr${{ github.event.pull_request.number }}-iossimulator-x64-nativeaot.zip"
+
+          if [ ! -d "$APP_DIR" ]; then
+            echo "::error::Simulator app bundle was not generated at $APP_DIR"
+            find "$OUTPUT_DIR" -maxdepth 2 -print 2>/dev/null | sed -n '1,40p' || true
+            exit 1
+          fi
+
+          INFO_PLIST="$APP_DIR/Info.plist"
+          EXECUTABLE="$(plutil -extract CFBundleExecutable raw "$INFO_PLIST")"
+          BUNDLE_ID="$(plutil -extract CFBundleIdentifier raw "$INFO_PLIST")"
+          PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
+          ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
+
+          if [ "$PLATFORM" != "iPhoneSimulator" ]; then
+            echo "::error::App targets $PLATFORM instead of iPhoneSimulator"
+            exit 1
+          fi
+          if [ "$ARCHS" != "x86_64" ]; then
+            echo "::error::App executable architectures are $ARCHS instead of x86_64"
+            exit 1
+          fi
+
+          MANAGED_FILE_COUNT="$(find "$APP_DIR" -maxdepth 1 -type f \( -name '*.dll' -o -name '*.aotdata.*' \) | wc -l | tr -d ' ')"
+          if [ "$MANAGED_FILE_COUNT" != "0" ]; then
+            echo "::error::NativeAOT app bundle contains $MANAGED_FILE_COUNT managed or Mono AOT files"
+            exit 1
+          fi
+
+          mkdir -p "$PACKAGE_DIR" "$STAGE_DIR"
+          ditto "$APP_DIR" "$STAGE_DIR/OpenUtauMobile.iOS.app"
+          if [ -d "$APP_DIR.dSYM" ]; then
+            ditto "$APP_DIR.dSYM" "$STAGE_DIR/OpenUtauMobile.iOS.app.dSYM"
+          fi
+          ditto -c -k --sequesterRsrc --keepParent "$STAGE_DIR" "$ZIP_PATH"
+
+          echo "Bundle ID: $BUNDLE_ID"
+          echo "Platform: $PLATFORM"
+          echo "Architectures: $ARCHS"
+          echo "NativeAOT top-level managed files: $MANAGED_FILE_COUNT"
+          ls -lh "$ZIP_PATH"
+
+      - name: Upload NativeAOT Failure Diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-iossimulator-x64-nativeaot-diagnostics
+          path: |
+            artifacts/iossimulator-x64-logs
+            OpenUtauMobile.iOS/obj/project.assets.json
+            OpenUtauMobile.iOS/obj/**/nativeaot-*.txt
+            OpenUtauMobile.iOS/obj/**/*ilc*.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload iOS Intel Simulator NativeAOT App
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-iossimulator-x64-nativeaot
+          path: artifacts/iossimulator-x64/*.zip
+          if-no-files-found: error
+          retention-days: 7
