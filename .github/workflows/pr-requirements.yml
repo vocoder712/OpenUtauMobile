@@ -162,7 +162,8 @@ jobs:
             -p:SourceCommit=${{ github.sha }} \
             -p:ActionRunId=${{ github.run_id }} \
             -p:EnableIosNativeAot=true \
-            -p:EnableCodeSigning=false \
+            -p:EnableCodeSigning=true \
+            -p:CodesignKey=- \
             -p:BuildIpa=false \
             -bl:"$LOG_DIR/build.binlog" \
             --verbosity minimal
@@ -199,6 +200,17 @@ jobs:
             exit 1
           fi
 
+          SIGNATURE_INFO="$(codesign -dvv "$APP_DIR" 2>&1)"
+          if ! codesign --verify --deep --strict --verbose=2 "$APP_DIR"; then
+            echo "::error::Simulator app bundle failed code-sign verification"
+            exit 1
+          fi
+          if ! echo "$SIGNATURE_INFO" | grep -q '^Signature=adhoc$'; then
+            echo "::error::Simulator app bundle does not use an ad-hoc signature"
+            echo "$SIGNATURE_INFO" | grep -E '^(Identifier|Signature|TeamIdentifier)=' || true
+            exit 1
+          fi
+
           MANAGED_FILE_COUNT="$(find "$APP_DIR" -maxdepth 1 -type f \( -name '*.dll' -o -name '*.aotdata.*' \) | wc -l | tr -d ' ')"
           if [ "$MANAGED_FILE_COUNT" != "0" ]; then
             echo "::error::NativeAOT app bundle contains $MANAGED_FILE_COUNT managed or Mono AOT files"
@@ -215,6 +227,7 @@ jobs:
           echo "Bundle ID: $BUNDLE_ID"
           echo "Platform: $PLATFORM"
           echo "Architectures: $ARCHS"
+          echo "Code signature: ad-hoc, verified"
           echo "NativeAOT top-level managed files: $MANAGED_FILE_COUNT"
           ls -lh "$ZIP_PATH"
 
