@@ -1857,4 +1857,25 @@
   <data name="Mixer.CompGraphHint" xml:space="preserve"><value>左点左右调阈值，右点上下调压缩比。含补偿增益的静态曲线，非实时电平。</value></data>
   <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · 时间 s → / 湿声峰值 dB ↑</value></data>
   <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>左右声道单位脉冲衰减预览（4 秒），不含干声，非实时电平；长尾可能超出窗口。</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>效果器预设</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>应用</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>应用效果器预设</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>整链用户预设</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>应用默认整链</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>预设名称</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>保存（同名覆盖）</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>请输入预设名称</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>已保存预设：{0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>关闭</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>人声空气感</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>温暖</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>减少浑浊</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>电话音色</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>轻柔</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>流行人声</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>强压缩（10:1）</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>小房间</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>人声板式风格</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>大厅</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>氛围</value></data>
 </root>

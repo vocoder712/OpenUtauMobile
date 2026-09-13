@@ -1850,4 +1850,25 @@
   <data name="Mixer.CompGraphHint" xml:space="preserve"><value>左の点を左右に動かしてスレッショルド、右を上下に動かして比率を調整。ゲイン補正込みの静特性。</value></data>
   <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · 時間 s → / ウェットピーク dB ↑</value></data>
   <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>左右のインパルス減衰プレビュー（4 秒、ウェットのみ）。実時間表示ではなく、長い残響は範囲外に続きます。</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>エフェクトプリセット</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>適用</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>エフェクトプリセットを適用</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>エフェクトチェーンのプリセット</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>標準チェーンを適用</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>プリセット名</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>保存（同名は上書き）</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>プリセット名を入力してください</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>プリセット保存：{0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>ボーカルの空気感</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>ウォーム</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>濁りを軽減</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>電話</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>穏やか</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>ポップボーカル</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>強い圧縮（10:1）</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>小部屋</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>ボーカルプレート風</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>ホール</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>アンビエント</value></data>
 </root>

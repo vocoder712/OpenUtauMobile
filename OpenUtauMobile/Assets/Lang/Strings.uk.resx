@@ -1812,4 +1812,25 @@
   <data name="Mixer.CompGraphHint" xml:space="preserve"><value>Ліва точка — поріг, права — ступінь стиснення. Статична крива з компенсацією.</value></data>
   <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Час с → / Пік ефекту дБ ↑</value></data>
   <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Спад імпульсу L/R за 4 с, лише ефект. Не поточний сигнал; хвіст може бути довшим за вікно.</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>Пресет ефекту</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>Застосувати</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>Застосувати пресет ефекту</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>Пресети ланцюга ефектів</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>Застосувати стандартний ланцюг</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>Назва пресета</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>Зберегти (замінити однойменний)</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>Введіть назву пресета</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>Пресет збережено: {0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>Вимкнено</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>Повітряний вокал</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>Теплий</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>Зменшити гул</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>Телефон</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>М’який</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>Поп-вокал</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>Сильне стиснення (10:1)</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>Мала кімната</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>Вокальна пластина (стиль)</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>Зала</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>Атмосферний</value></data>
 </root>

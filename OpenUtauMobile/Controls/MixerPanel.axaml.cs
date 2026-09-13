@@ -189,5 +189,15 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         UpdateLayoutMode();
     }
 
+    private void OnApplyEffectPreset(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string effect }) ViewModel.ApplyEffectPreset(effect);
+    }
+
+    private void OnDefaultPreset(object? sender, RoutedEventArgs e) => ViewModel.ApplyDefaultPreset();
+    private void OnApplyUserPreset(object? sender, RoutedEventArgs e) => ViewModel.ApplyUserPreset();
+    private void OnSaveUserPreset(object? sender, RoutedEventArgs e) => ViewModel.SaveUserPreset();
+    private void OnDeleteUserPreset(object? sender, RoutedEventArgs e) => ViewModel.DeleteUserPreset();
+
     private void OnCloseClick(object? sender, RoutedEventArgs e) => CloseRequested?.Invoke();
 }

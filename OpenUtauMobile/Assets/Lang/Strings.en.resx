@@ -1857,4 +1857,25 @@
   <data name="Mixer.CompGraphHint" xml:space="preserve"><value>Move left handle horizontally for threshold, right vertically for ratio. Static curve includes makeup gain.</value></data>
   <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Time s → / Wet peak dB ↑</value></data>
   <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Left/right impulse decay preview (4 s), wet only. Not live audio; long tails may extend beyond the window.</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>Effect preset</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>Apply</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>Apply effect preset</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>Effect chain presets</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>Apply default chain</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>Preset name</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>Save (replace same name)</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>Enter a preset name</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>Preset saved: {0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>Off</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>Vocal air</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>Warm</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>De-mud</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>Telephone</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>Gentle</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>Pop vocal</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>Heavy compression (10:1)</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>Small room</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>Vocal plate style</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>Hall</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>Ambient</value></data>
 </root>
