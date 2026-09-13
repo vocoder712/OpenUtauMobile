@@ -2130,15 +2130,13 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public void OnTwoFingerTap()
     {
         InterruptPanMotionIfRunning();
-        DocManager.Inst.Undo();
-        ToastService.Enqueue(L.S("PianoRoll.Undone"));
+        UndoRedoService.Undo();
     }
 
     public void OnThreeFingerTap()
     {
         InterruptPanMotionIfRunning();
-        DocManager.Inst.Redo();
-        ToastService.Enqueue(L.S("PianoRoll.Redone"));
+        UndoRedoService.Redo();
     }
 
     private void InterruptPanMotionIfRunning()

@@ -58,10 +58,14 @@ public class MixerViewModel : ViewModelBase
             nameof(channel.Solo) when channel.Track != null => new ChangeMixSoloCommand(_project, channel.Track, channel.Solo),
             nameof(channel.FxEnabled) => ChangeFx(channel, fx => fx.Enabled = channel.FxEnabled),
             nameof(channel.LowDb) when double.IsFinite(channel.LowDb) => ChangeFx(channel, fx => fx.EqLowDb = channel.LowDb),
+            nameof(channel.MidFrequency) when double.IsFinite(channel.MidFrequency) => ChangeFx(channel, fx => fx.EqMidFreq = Math.Clamp(channel.MidFrequency, 20, 20000)),
             nameof(channel.MidDb) when double.IsFinite(channel.MidDb) => ChangeFx(channel, fx => fx.EqMidDb = channel.MidDb),
             nameof(channel.HighDb) when double.IsFinite(channel.HighDb) => ChangeFx(channel, fx => fx.EqHighDb = channel.HighDb),
             nameof(channel.ThresholdDb) when double.IsFinite(channel.ThresholdDb) => ChangeFx(channel, fx => fx.CompThresholdDb = channel.ThresholdDb),
             nameof(channel.Ratio) when double.IsFinite(channel.Ratio) => ChangeFx(channel, fx => fx.CompRatio = channel.Ratio),
+            nameof(channel.MakeupDb) when double.IsFinite(channel.MakeupDb) => ChangeFx(channel, fx => fx.CompMakeupDb = channel.MakeupDb),
+            nameof(channel.ReverbDamp) when double.IsFinite(channel.ReverbDamp) => ChangeFx(channel, fx => fx.ReverbDamp = channel.ReverbDamp),
+            nameof(channel.PreDelayMs) when double.IsFinite(channel.PreDelayMs) => ChangeFx(channel, fx => fx.ReverbPreDelayMs = channel.PreDelayMs),
             nameof(channel.ReverbWet) when double.IsFinite(channel.ReverbWet) => ChangeFx(channel, fx => fx.ReverbWet = channel.ReverbWet),
             nameof(channel.ReverbSize) when double.IsFinite(channel.ReverbSize) => ChangeFx(channel, fx => fx.ReverbSize = channel.ReverbSize),
             _ => null
@@ -143,10 +147,14 @@ public class MixerChannelViewModel : ViewModelBase
     [Reactive] public bool Solo { get; set; }
     [Reactive] public bool FxEnabled { get; set; }
     [Reactive] public double LowDb { get; set; }
+    [Reactive] public double MidFrequency { get; set; }
     [Reactive] public double MidDb { get; set; }
     [Reactive] public double HighDb { get; set; }
     [Reactive] public double ThresholdDb { get; set; }
     [Reactive] public double Ratio { get; set; }
+    [Reactive] public double MakeupDb { get; set; }
+    [Reactive] public double ReverbDamp { get; set; }
+    [Reactive] public double PreDelayMs { get; set; }
     [Reactive] public double ReverbWet { get; set; }
     [Reactive] public double ReverbSize { get; set; }
 
@@ -160,11 +168,15 @@ public class MixerChannelViewModel : ViewModelBase
         Solo = track?.Solo ?? false;
         UMixFx fx = track?.MixFx ?? new UMixFx();
         FxEnabled = fx.Enabled;
+        MidFrequency = fx.EqMidFreq;
         LowDb = fx.EqLowDb;
         MidDb = fx.EqMidDb;
         HighDb = fx.EqHighDb;
         ThresholdDb = fx.CompThresholdDb;
         Ratio = fx.CompRatio;
+        MakeupDb = fx.CompMakeupDb;
+        ReverbDamp = fx.ReverbDamp;
+        PreDelayMs = fx.ReverbPreDelayMs;
         ReverbWet = fx.ReverbWet;
         ReverbSize = fx.ReverbSize;
     }
@@ -177,8 +189,12 @@ public class MixerChannelViewModel : ViewModelBase
         Solo = Track?.Solo ?? false;
         UMixFx fx = Track?.MixFx ?? new UMixFx();
         FxEnabled = fx.Enabled;
+        MidFrequency = fx.EqMidFreq;
         LowDb = fx.EqLowDb; MidDb = fx.EqMidDb; HighDb = fx.EqHighDb;
         ThresholdDb = fx.CompThresholdDb; Ratio = fx.CompRatio;
+        MakeupDb = fx.CompMakeupDb;
+        ReverbDamp = fx.ReverbDamp;
+        PreDelayMs = fx.ReverbPreDelayMs;
         ReverbWet = fx.ReverbWet; ReverbSize = fx.ReverbSize;
     }
 

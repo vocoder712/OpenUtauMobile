@@ -722,6 +722,12 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
         switch (action)
         {
+            case EditorMoreAction.Undo:
+                Undo();
+                break;
+            case EditorMoreAction.Redo:
+                Redo();
+                break;
             case EditorMoreAction.ImportAudio:
                 _ = ImportAudio();
                 break;
@@ -1582,8 +1588,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// </summary>
     private void Undo()
     {
-        DocManager.Inst.Undo();
-        ToastService.Enqueue(L.S("Editor.Undone"));
+        UndoRedoService.Undo();
     }
 
     /// <summary>
@@ -1591,8 +1596,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// </summary>
     private void Redo()
     {
-        DocManager.Inst.Redo();
-        ToastService.Enqueue(L.S("Editor.Redone"));
+        UndoRedoService.Redo();
     }
 
     /// <summary>

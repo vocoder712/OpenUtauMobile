@@ -1832,13 +1832,29 @@
   <data name="Mixer.Preview" xml:space="preserve"><value>Audio controls are previews; names and colors update the project</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>Ratio</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>Reverb</value></data>
-  <data name="Mixer.Size" xml:space="preserve"><value>Room size</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>Decay length</value></data>
   <data name="Mixer.Solo" xml:space="preserve"><value>Solo</value></data>
   <data name="Mixer.Threshold" xml:space="preserve"><value>Threshold</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>Mixer</value></data>
-  <data name="Mixer.Wet" xml:space="preserve"><value>Reverb amount</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>Reverb amount (preset multiplier)</value></data>
   <data name="Mixer.ResetHint" xml:space="preserve"><value>Double-click a slider to restore its default</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Enable effects / bypass (lit when enabled)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Enabled</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>Bypassed</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>Edit</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>Nothing to undo</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>Nothing to redo</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>Undid: {0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>Redid: {0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>Mid-band center (Hz)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>Makeup gain (dB)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>High-frequency damping</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>Pre-delay (ms)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>Three-band EQ · Frequency Hz → / Gain dB ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>Drag handles for gain; move the middle handle horizontally for frequency.</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>Digital compressor · Input dB → / Output dB ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>Move left handle horizontally for threshold, right vertically for ratio. Static curve includes makeup gain.</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Time s → / Wet peak dB ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Left/right impulse decay preview (4 s), wet only. Not live audio; long tails may extend beyond the window.</value></data>
 </root>

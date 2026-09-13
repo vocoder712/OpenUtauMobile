@@ -1825,13 +1825,29 @@
   <data name="Mixer.Preview" xml:space="preserve"><value>音声設定はプレビューです。名前と色はプロジェクトに反映されます</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>比率</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>リバーブ</value></data>
-  <data name="Mixer.Size" xml:space="preserve"><value>ルームサイズ</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>減衰の長さ</value></data>
   <data name="Mixer.Solo" xml:space="preserve"><value>ソロ</value></data>
   <data name="Mixer.Threshold" xml:space="preserve"><value>しきい値</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>ミキサー</value></data>
-  <data name="Mixer.Wet" xml:space="preserve"><value>リバーブ量</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>残響量（プリセット倍率）</value></data>
   <data name="Mixer.ResetHint" xml:space="preserve"><value>スライダーをダブルタップすると初期値に戻ります</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>エフェクト有効 / バイパス（点灯時は有効）</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>有効</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>バイパス</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>編集</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>元に戻す操作はありません</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>やり直す操作はありません</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>元に戻しました：{0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>やり直しました：{0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>編集操作</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>中域中心周波数 (Hz)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>メイクアップゲイン (dB)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>高域減衰</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>プリディレイ (ms)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>3 バンド EQ · 周波数 Hz → / ゲイン dB ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>点を上下に動かしてゲイン、中央の点を左右に動かして周波数を調整。</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>デジタルコンプレッサー · 入力 dB → / 出力 dB ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>左の点を左右に動かしてスレッショルド、右を上下に動かして比率を調整。ゲイン補正込みの静特性。</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · 時間 s → / ウェットピーク dB ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>左右のインパルス減衰プレビュー（4 秒、ウェットのみ）。実時間表示ではなく、長い残響は範囲外に続きます。</value></data>
 </root>

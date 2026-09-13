@@ -1787,13 +1787,29 @@
   <data name="Mixer.Preview" xml:space="preserve"><value>Звук — предпросмотр; имена и цвета меняются в проекте</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>Степень сжатия</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>Реверберация</value></data>
-  <data name="Mixer.Size" xml:space="preserve"><value>Размер помещения</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>Длительность затухания</value></data>
   <data name="Mixer.Solo" xml:space="preserve"><value>Соло</value></data>
   <data name="Mixer.Threshold" xml:space="preserve"><value>Порог</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>Микшер</value></data>
-  <data name="Mixer.Wet" xml:space="preserve"><value>Уровень реверберации</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>Уровень эффекта (множитель пресета)</value></data>
   <data name="Mixer.ResetHint" xml:space="preserve"><value>Двойное нажатие восстанавливает значение по умолчанию</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Включить эффекты / обход (подсвечено — включены)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Включены</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>Обход</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>Правка</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>Нечего отменять</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>Нечего повторять</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>Отменено: {0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>Повторено: {0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>Редактирование</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>Центр средней полосы (Гц)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>Выходное усиление (дБ)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>Затухание высоких частот</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>Предзадержка (мс)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>3-полосный EQ · Частота Гц → / Усиление дБ ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>Перетаскивайте точки по вертикали; среднюю — также по частоте.</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>Цифровой компрессор · Вход дБ → / Выход дБ ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>Левая точка — порог, правая — степень сжатия. Статическая кривая с выходным усилением.</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Время с → / Пик эффекта дБ ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Спад импульса L/R за 4 с, только эффект. Не живой сигнал; хвост может быть длиннее окна.</value></data>
 </root>

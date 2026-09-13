@@ -68,22 +68,11 @@
                                TextTrimming="CharacterEllipsis" />
                 </StackPanel>
 
-                <!-- 撤销 重做 保存 更多 -->
+                <!-- 保存 混音 更多 -->
                 <StackPanel Grid.Column="2"
                             IsEnabled="{Binding !IsLoadingProject}"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
-                    <Button Command="{Binding UndoCommand}"
-                            ToolTip.Tip="{DynamicResource Editor.Undo}"
-                            Classes="TopBarBtn"
-                            Margin="0" Padding="0"
-                            Content="{iconPacks:PhosphorIcons ArrowCounterClockwise}">
-                    </Button>
-                    <Button Command="{Binding RedoCommand}"
-                            ToolTip.Tip="{DynamicResource Editor.Redo}"
-                            Classes="TopBarBtn"
-                            Content="{iconPacks:PhosphorIcons ArrowClockwise}">
-                    </Button>
                     <Button Command="{Binding SaveCommand}"
                             ToolTip.Tip="{DynamicResource Editor.Save}"
                             Classes="TopBarBtn"

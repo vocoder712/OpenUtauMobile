@@ -1787,13 +1787,29 @@
   <data name="Mixer.Preview" xml:space="preserve"><value>Звук — попередній перегляд; назви й кольори змінюються в проєкті</value></data>
   <data name="Mixer.Ratio" xml:space="preserve"><value>Ступінь стиснення</value></data>
   <data name="Mixer.Reverb" xml:space="preserve"><value>Реверберація</value></data>
-  <data name="Mixer.Size" xml:space="preserve"><value>Розмір приміщення</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>Тривалість затухання</value></data>
   <data name="Mixer.Solo" xml:space="preserve"><value>Соло</value></data>
   <data name="Mixer.Threshold" xml:space="preserve"><value>Поріг</value></data>
   <data name="Mixer.Title" xml:space="preserve"><value>Мікшер</value></data>
-  <data name="Mixer.Wet" xml:space="preserve"><value>Рівень реверберації</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>Рівень ефекту (множник пресета)</value></data>
   <data name="Mixer.ResetHint" xml:space="preserve"><value>Подвійне натискання відновлює типове значення</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Увімкнути ефекти / обхід (підсвічено — увімкнені)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Увімкнені</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>Обхід</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>Редагування</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>Немає дій для скасування</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>Немає дій для повторення</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>Скасовано: {0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>Повторено: {0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>Редагування</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>Центр середньої смуги (Гц)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>Компенсація підсилення (дБ)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>Затухання високих частот</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>Передзатримка (мс)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>3-смуговий EQ · Частота Гц → / Підсилення дБ ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>Рухайте точки вертикально; середню — також за частотою.</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>Цифровий компресор · Вхід дБ → / Вихід дБ ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>Ліва точка — поріг, права — ступінь стиснення. Статична крива з компенсацією.</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Час с → / Пік ефекту дБ ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Спад імпульсу L/R за 4 с, лише ефект. Не поточний сигнал; хвіст може бути довшим за вікно.</value></data>
 </root>
