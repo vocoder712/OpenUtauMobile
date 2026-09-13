@@ -74,7 +74,7 @@ namespace OpenUtau.Core.Render {
         }
 
         // for playback or export -- explicit MixFx control (export dialog passes false to keep dry stems)
-        public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait, bool applyMixFx) {
+        public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait, bool applyMixFx, PlaybackMeters meters = null) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -117,6 +117,8 @@ namespace OpenUtau.Core.Render {
                 ISignalSource trackOut = applyMixFx
                     ? MixFxSource.WrapWith(fader, track.MixFx)
                     : (ISignalSource)fader;
+                // 电平采样必须位于轨道效果器之后、总线累加之前。
+                if (meters != null) trackOut = new MeteredSource(trackOut, meters, meters.Tracks[track]);
                 trackOutputs.Add(trackOut);
             }
             var task = Task.Run(() => {

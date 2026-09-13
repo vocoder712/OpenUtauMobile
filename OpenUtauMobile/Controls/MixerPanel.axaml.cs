@@ -1,9 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using OpenUtau.Core;
+using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Services;
@@ -16,11 +19,15 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
     public event Action? CloseRequested;
     public MixerViewModel ViewModel { get; } = new();
     private bool _editingIdentity;
+    private readonly DispatcherTimer _meterTimer = new() { Interval = TimeSpan.FromMilliseconds(34) };
+    private PlaybackMeters? _meters;
+    private double _lastMeterFrame;
 
     public MixerPanel()
     {
         InitializeComponent();
         DataContext = ViewModel;
+        _meterTimer.Tick += OnMeterFrame;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -29,12 +36,56 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         ViewModel.Refresh(DocManager.Inst.Project);
         UpdateLayoutMode();
         DocManager.Inst.AddSubscriber(this);
+        _meterTimer.Start();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _meterTimer.Stop();
+        ReleaseMeters();
         DocManager.Inst.RemoveSubscriber(this);
         base.OnDetachedFromVisualTree(e);
+    }
+
+    private void ReleaseMeters()
+    {
+        if (_meters != null) _meters.Enabled = false;
+        _meters = null;
+    }
+
+    private void OnMeterFrame(object? sender, EventArgs e)
+    {
+        double now = Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
+        if (now - _lastMeterFrame < 1.0 / 30) return;
+        _lastMeterFrame = now;
+        PlaybackMeters? current = IsEffectivelyVisible ? PlaybackManager.Inst.Meters : null;
+        if (current?.Project != DocManager.Inst.Project) current = null;
+        if (!ReferenceEquals(current, _meters))
+        {
+            ReleaseMeters();
+            _meters = current;
+            if (_meters != null)
+            {
+                // 重开面板或恢复播放时丢弃旧邮箱，避免显示暂停前积存的峰值。
+                _meters.Master.Consume();
+                foreach (StereoPeakMeter meter in _meters.Tracks.Values) meter.Consume();
+                _meters.Enabled = true;
+            }
+        }
+        SetMeter(ViewModel.Master, _meters?.Master);
+        foreach (MixerChannelViewModel channel in ViewModel.Channels)
+        {
+            StereoPeakMeter? meter = null;
+            if (channel.Track != null) _meters?.Tracks.TryGetValue(channel.Track, out meter);
+            SetMeter(channel, meter);
+        }
+    }
+
+    private static void SetMeter(MixerChannelViewModel channel, StereoPeakMeter? meter)
+    {
+        // 无新样本（暂停、停止、等待渲染）即静音，回落和峰值保持由电平控件处理。
+        (channel.LeftDb, channel.RightDb) = meter?.Consume()
+            ?? (double.NegativeInfinity, double.NegativeInfinity);
     }
 
     public void OnNext(UCommand cmd, bool isUndo)

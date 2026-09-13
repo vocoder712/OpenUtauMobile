@@ -57,6 +57,7 @@
                                 ToolTip.Tip="{DynamicResource Mixer.ResetHint}" />
                         <!-- 电平表 -->
                         <c:MixerLevelMeter Grid.Column="1" Width="40" Margin="4,0"
+                                           LeftDb="{Binding LeftDb}" RightDb="{Binding RightDb}"
                                            TrackBrush="{DynamicResource Sem.Color.OutlineVariant}"
                                            LabelBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                            ClipBrush="#E65B55"

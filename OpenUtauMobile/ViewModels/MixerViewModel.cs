@@ -10,7 +10,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtauMobile.ViewModels;
 
-/// <summary>混音布局原型的会话状态，尚不向工程或音频线程提交参数。</summary>
+/// <summary>混音面板状态；电平来自实际播放，混音参数仍为尚未提交的原型值。</summary>
 public class MixerViewModel : ViewModelBase
 {
     public ObservableCollection<MixerChannelViewModel> Channels { get; } = [];
@@ -52,6 +52,8 @@ public class MixerChannelViewModel : ViewModelBase
     [Reactive] public string Name { get; set; } = string.Empty;
     [Reactive] public IBrush Color { get; set; } = Brushes.Transparent;
     [Reactive] public double Volume { get; set; }
+    [Reactive] public double LeftDb { get; set; } = double.NegativeInfinity;
+    [Reactive] public double RightDb { get; set; } = double.NegativeInfinity;
     private double _pan;
     public double Pan
     {

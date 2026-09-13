@@ -9,7 +9,7 @@ using Avalonia.Threading;
 
 namespace OpenUtauMobile.Controls;
 
-/// <summary>连续双声道电平、峰值保持和手动复位削波灯；输入暂由原型宿主提供。</summary>
+/// <summary>连续双声道电平、峰值保持和手动复位削波灯；输入为采样峰值 dBFS。</summary>
 public class MixerLevelMeter : Control
 {
     public static readonly StyledProperty<double> LeftDbProperty =

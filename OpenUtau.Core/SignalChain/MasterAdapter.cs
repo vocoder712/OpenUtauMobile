@@ -18,7 +18,9 @@ namespace OpenUtau.Core.SignalChain {
         public WaveFormat WaveFormat => waveFormat;
         public int Waited { get; private set; }
         public bool IsWaiting { get; private set; }
-        public MasterAdapter(ISignalSource source, double endMs = double.PositiveInfinity) {
+        public PlaybackMeters Meters { get; }
+        public MasterAdapter(ISignalSource source, double endMs = double.PositiveInfinity, PlaybackMeters meters = null) {
+            Meters = meters;
             waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);
             this.source = source;
             endPosition = double.IsPositiveInfinity(endMs)
@@ -69,6 +71,8 @@ namespace OpenUtau.Core.SignalChain {
                         buffer[offset + i] *= gain;
                     }
                 }
+                // 总线取实际返回的输出，包含节拍器与播放边缘淡入淡出。
+                if (Meters != null && Meters.Enabled) Meters.Master.Push(buffer, offset, n);
                 IsWaiting = false;
                 return n;
             }

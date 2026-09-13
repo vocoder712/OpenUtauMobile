@@ -258,6 +258,7 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         MasterAdapter editingMix;
+        public PlaybackMeters Meters => PlayingMaster && OutputActive ? masterMix?.Meters : null;
         
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
@@ -461,9 +462,10 @@ namespace OpenUtau.Core {
                     }, CancellationToken.None, TaskCreationOptions.None, DocManager.Inst.MainScheduler);
 
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
-                    var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false);
+                    var meters = new PlaybackMeters(project);
+                    var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false, applyMixFx: true, meters: meters);
                     playbackMix = new PlaybackMix(result.Item1, metronomeEngine);
-                    var playbackAdapter = new MasterAdapter(playbackMix);
+                    var playbackAdapter = new MasterAdapter(playbackMix, meters: meters);
                     playbackAdapter.SetPosition((int)(project.timeAxis.TickPosToMsPos(tick) * 44100 / 1000) * 2);
                     faders = result.Item2;
                     StartPlayback(project.timeAxis.TickPosToMsPos(tick), playbackAdapter);
