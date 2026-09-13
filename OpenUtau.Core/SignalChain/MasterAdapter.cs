@@ -19,6 +19,7 @@ namespace OpenUtau.Core.SignalChain {
         public int Waited { get; private set; }
         public bool IsWaiting { get; private set; }
         public PlaybackMeters Meters { get; }
+        public PlaybackMixer Mixer { get; set; }
         public MasterAdapter(ISignalSource source, double endMs = double.PositiveInfinity, PlaybackMeters meters = null) {
             Meters = meters;
             waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(SampleRate, Channels);

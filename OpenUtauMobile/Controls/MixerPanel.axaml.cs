@@ -34,6 +34,7 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
     {
         base.OnAttachedToVisualTree(e);
         ViewModel.Refresh(DocManager.Inst.Project);
+        ViewModel.Activate();
         UpdateLayoutMode();
         DocManager.Inst.AddSubscriber(this);
         _meterTimer.Start();
@@ -41,6 +42,7 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        ViewModel.Deactivate();
         _meterTimer.Stop();
         ReleaseMeters();
         DocManager.Inst.RemoveSubscriber(this);
@@ -90,6 +92,11 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
+        if (cmd is MixCommand or VolumeChangeNotification or PanChangeNotification)
+        {
+            ViewModel.RefreshParameters();
+            return;
+        }
         if (cmd is TrackCommand or LoadProjectNotification)
         {
             ViewModel.Refresh(DocManager.Inst.Project);

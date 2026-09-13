@@ -278,6 +278,7 @@ namespace OpenUtau.Core {
 
     public class PreRenderNotification : UNotification {
         public readonly int focusTick;
+        public override bool Silent => true; // 避免刷日志
 
         public PreRenderNotification(UPart part = null, int focusTick = -1) {
             this.part = part;
@@ -288,6 +289,7 @@ namespace OpenUtau.Core {
     }
 
     public class PartRenderedNotification : UNotification {
+        public override bool Silent => true; // 避免刷日志
         public PartRenderedNotification(UVoicePart part) {
             this.part = part;
         }
@@ -329,5 +331,9 @@ namespace OpenUtau.Core {
 
         }
         public override string ToString() => "Note preset changed.";
+    }
+    public class WaveformReadyNotification : UNotification {
+        public override bool Silent => true; // 避免刷日志
+        public override string ToString() => "Waveform rendered and ready";
     }
 }

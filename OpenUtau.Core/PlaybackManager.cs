@@ -259,6 +259,10 @@ namespace OpenUtau.Core {
         MasterAdapter masterMix;
         MasterAdapter editingMix;
         public PlaybackMeters Meters => PlayingMaster && OutputActive ? masterMix?.Meters : null;
+        public void RefreshMixer(UProject project) {
+            var mixer = masterMix?.Mixer;
+            if (mixer?.Project == project) mixer.Refresh();
+        }
         
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
@@ -443,6 +447,8 @@ namespace OpenUtau.Core {
             var start = TimeSpan.FromMilliseconds(startMs);
             Log.Information("Start playback at {Position}", start);
             masterMix = masterAdapter;
+            // 渲染准备期间发生的参数修改也要进入首次播放。
+            masterMix.Mixer?.Refresh();
             AudioOutput.Stop();
             AudioOutput.Init(masterMix);
             AudioOutput.Play();
@@ -463,9 +469,10 @@ namespace OpenUtau.Core {
 
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
                     var meters = new PlaybackMeters(project);
-                    var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false, applyMixFx: true, meters: meters);
+                    var mixer = new PlaybackMixer(project);
+                    var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false, applyMixFx: true, meters: meters, mixer: mixer, applyMaster: false);
                     playbackMix = new PlaybackMix(result.Item1, metronomeEngine);
-                    var playbackAdapter = new MasterAdapter(playbackMix, meters: meters);
+                    var playbackAdapter = new MasterAdapter(mixer.WrapMaster(playbackMix), meters: meters) { Mixer = mixer };
                     playbackAdapter.SetPosition((int)(project.timeAxis.TickPosToMsPos(tick) * 44100 / 1000) * 2);
                     faders = result.Item2;
                     StartPlayback(project.timeAxis.TickPosToMsPos(tick), playbackAdapter);
@@ -615,12 +622,16 @@ namespace OpenUtau.Core {
                 StopPlayback();
                 int tick = _cmd!.playPosTick;
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, false, _cmd.pause));
+            } else if (cmd is MixCommand mixCommand) {
+                RefreshMixer(mixCommand.Project);
             } else if (cmd is VolumeChangeNotification) {
+                if (masterMix?.Mixer != null) { RefreshMixer(DocManager.Inst.Project); return; }
                 var _cmd = cmd as VolumeChangeNotification;
                 if (faders != null && faders.Count > _cmd.TrackNo) {
                     faders[_cmd.TrackNo].Scale = DecibelToVolume(_cmd.Volume);
                 }
             } else if (cmd is PanChangeNotification) {
+                if (masterMix?.Mixer != null) { RefreshMixer(DocManager.Inst.Project); return; }
                 var _cmd = cmd as PanChangeNotification;
                 if (faders != null && faders.Count > _cmd!.TrackNo) {
                     faders[_cmd.TrackNo].Pan = (float)_cmd.Pan;
@@ -642,6 +653,8 @@ namespace OpenUtau.Core {
                 preRenderFocusPart = null;
                 preRenderFocusTick = -1;
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
+            } else if (cmd is TrackCommand) {
+                RefreshMixer(DocManager.Inst.Project);
             } else if (cmd is LoadPartNotification loadPart) {
                 preRenderFocusPart = loadPart.part as UVoicePart;
                 preRenderFocusTick = loadPart.tick;
@@ -666,8 +679,5 @@ namespace OpenUtau.Core {
         }
 
         #endregion
-    }
-    public class WaveformReadyNotification : UNotification {
-        public override string ToString() => "Waveform rendered and ready";
     }
 }
