@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Platform;
 
 /// <summary>
 /// 跨平台剪贴板写入服务

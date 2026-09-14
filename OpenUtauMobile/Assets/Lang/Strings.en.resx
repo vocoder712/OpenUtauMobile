@@ -1819,4 +1819,77 @@
   <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Magnifier</value></data>
   <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Magnification</value></data>
   <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Applies to pitch and parameter curve editing. Values below 1× show a wider area; 1× is the original scale.</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>Close mixer</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>Compressor</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>Effects</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>No tracks</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>High</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>Low</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>Meter unavailable</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>Mid</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>Mute</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>Fixed order: EQ → Compressor → Reverb</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>Audio controls are previews; names and colors update the project</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>Ratio</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>Reverb</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>Decay length</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>Solo</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>Threshold</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>Mixer</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>Reverb amount (preset multiplier)</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>Double-click a slider to restore its default</value></data>
+  <data name="Mixer.ToggleFx" xml:space="preserve"><value>Enable effects / bypass (lit when enabled)</value></data>
+  <data name="Mixer.FxOn" xml:space="preserve"><value>Enabled</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>Edit</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>Nothing to undo</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>Nothing to redo</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>Undid: {0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>Redid: {0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>Mid-band center (Hz)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>Makeup gain (dB)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>High-frequency damping</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>Pre-delay (ms)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>Three-band EQ · Frequency Hz → / Gain dB ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>Drag handles for gain; move the middle handle horizontally for frequency.</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>Digital compressor · Input dB → / Output dB ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>Move left handle horizontally for threshold, right vertically for ratio. Static curve includes makeup gain.</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Time s → / Wet peak dB ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Left/right impulse decay preview (4 s), wet only. Not live audio; long tails may extend beyond the window.</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>Effect preset</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>Apply</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>Apply effect preset</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>Effect chain presets</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>Apply default chain</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>Preset name</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>Save (replace same name)</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>Enter a preset name</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>Preset saved: {0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>Off</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>Vocal air</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>Warm</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>De-mud</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>Telephone</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>Gentle</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>Pop vocal</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>Heavy compression (10:1)</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>Small room</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>Vocal plate style</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>Hall</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>Ambient</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>Select to apply</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>Update</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>Add</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>Load preset</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>Default</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>New effect chain preset</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>Save this track’s EQ, compression and reverb as a user preset.</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>Name already exists. Use Update to replace it.</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>Frequency (Hz)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>Gain (dB)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>Input (dB)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>Output (dB)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>Time (s)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>Wet peak (dB)</value></data>
+  <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>Audio queue latency</value></data>
 </root>

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Platform;
 
 /// <summary>
 /// 打开外部网页链接

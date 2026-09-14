@@ -1,3 +1,4 @@
+using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Tracks;
 
 /// <summary>移植桌面的导入后映射流程，复用已有音素表达式命令。</summary>
 public static class VoiceColorMappingService

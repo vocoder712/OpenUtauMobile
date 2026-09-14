@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             x:Class="OpenUtauMobile.Controls.MixerPresetPopup"
+             x:DataType="vm:OptionConfirmPopupViewModel"
+             Classes="PopupDialogRoot">
+    <c:DialogShell Header="{Binding Title}" CloseCommand="{Binding CancelCommand}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Border Classes="DialogBodyBorder">
+                <ItemsControl ItemsSource="{Binding OptionRows}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:OptionConfirmRow">
+                            <ItemsControl ItemsSource="{Binding Options}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:OptionConfirmOption">
+                                        <Button Classes="DialogAction" HorizontalAlignment="Stretch"
+                                                Content="{Binding Label}"
+                                                Command="{Binding $parent[UserControl].((vm:OptionConfirmPopupViewModel)DataContext).SelectOptionCommand}"
+                                                CommandParameter="{Binding}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </ScrollViewer>
+    </c:DialogShell>
+</UserControl>

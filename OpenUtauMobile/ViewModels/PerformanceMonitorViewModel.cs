@@ -21,6 +21,7 @@ public sealed class PerformanceMonitorViewModel : ReactiveObject, IDisposable
     private string _systemMemoryText = string.Empty;
     private string _cpuText = string.Empty;
     private string _frameRateText = string.Empty;
+    private string _audioLatencyText = string.Empty;
 
     public bool IsEnabled
     {
@@ -56,6 +57,12 @@ public sealed class PerformanceMonitorViewModel : ReactiveObject, IDisposable
     {
         get => _frameRateText;
         private set => this.RaiseAndSetIfChanged(ref _frameRateText, value);
+    }
+
+    public string AudioLatencyText
+    {
+        get => _audioLatencyText;
+        private set => this.RaiseAndSetIfChanged(ref _audioLatencyText, value);
     }
 
     public void Activate()
@@ -104,6 +111,8 @@ public sealed class PerformanceMonitorViewModel : ReactiveObject, IDisposable
         CpuText = $"{L.S("PerformanceMonitor.Cpu")}: " +
                   $"{FormatPercent(snapshot.AppCpuUsagePercent)} {L.S("PerformanceMonitor.AppShort")} / " +
                   $"{FormatPercent(snapshot.SystemCpuUsagePercent)} {L.S("PerformanceMonitor.SystemShort")}";
+        AudioLatencyText = $"{L.S("PerformanceMonitor.AudioLatency")}: " +
+            (snapshot.AudioOutputLatencyMilliseconds is double latency ? $"{latency:F1} ms" : MissingValue);
         FrameRateText = $"{L.S("PerformanceMonitor.Fps")}: {FormatFrameRate(snapshot)}";
     }
 

@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using OpenUtau.Core;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
@@ -73,6 +74,11 @@ public partial class TrackHeader : UserControl, IDisposable
 
     private void OnKnobAdjustStarted(object? sender, DawKnob.DawKnobAdjustEventArgs e)
     {
+        if (!DocManager.Inst.HasOpenUndoGroup)
+        {
+            DocManager.Inst.StartUndoGroup("调整混音参数");
+            _ownsMixEdit = true;
+        }
         ShowHud();
         UpdateHud(e);
     }
@@ -85,13 +91,24 @@ public partial class TrackHeader : UserControl, IDisposable
 
     private void OnKnobAdjustCompleted(object? sender, DawKnob.DawKnobAdjustEventArgs e)
     {
+        EndMixEdit();
         UpdateHud(e);
         BeginHideHud();
     }
 
     private void OnKnobAdjustCancelled(object? sender, DawKnob.DawKnobAdjustEventArgs e)
     {
+        EndMixEdit();
         ForceHideHud();
+    }
+
+    private bool _ownsMixEdit;
+
+    private void EndMixEdit()
+    {
+        if (!_ownsMixEdit) return;
+        _ownsMixEdit = false;
+        if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup();
     }
 
     private void ShowHud()
@@ -208,12 +225,14 @@ public partial class TrackHeader : UserControl, IDisposable
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        EndMixEdit();
         base.OnDetachedFromVisualTree(e);
         ForceHideHud();
     }
 
     public void Dispose()
     {
+        EndMixEdit();
         _hideHudTimer.Stop();
         _hideHudTimer.Tick -= OnHideHudTimerTick;
         UnsubscribeKnobEvents(VolumeKnob);

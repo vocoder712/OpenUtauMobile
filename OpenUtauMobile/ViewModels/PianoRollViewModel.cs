@@ -1,3 +1,4 @@
+using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -556,6 +557,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     public void SyncPlaybackState(int tick, bool isPlaying, bool isWaitingRender)
     {
+        if (IsPresentationSuspended) return;
         PlayPosTick = tick;
         IsPlaying = isPlaying;
         IsWaitingRender = isWaitingRender;
@@ -566,6 +568,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     }
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘
+
+    public bool IsPresentationSuspended { get; private set; }
+
+    public void SetPresentationSuspended(bool suspended)
+    {
+        if (IsPresentationSuspended == suspended) return;
+        IsPresentationSuspended = suspended;
+        if (suspended)
+        {
+            StopPreviewTone();
+            _panMotion.Cancel();
+            IsPlaying = false;
+            IsWaitingRender = false;
+            RequestMagnifierClose?.Invoke();
+        }
+        else
+        {
+            ValidateSelectedNotes();
+            ValidateSelectedAnchors();
+            RequestInvalidateVisual?.Invoke();
+        }
+    }
 
     /// <summary>
     /// 请求打开歌词编辑弹窗。
@@ -2107,15 +2131,13 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public void OnTwoFingerTap()
     {
         InterruptPanMotionIfRunning();
-        DocManager.Inst.Undo();
-        ToastService.Enqueue(L.S("PianoRoll.Undone"));
+        UndoRedoService.Undo();
     }
 
     public void OnThreeFingerTap()
     {
         InterruptPanMotionIfRunning();
-        DocManager.Inst.Redo();
-        ToastService.Enqueue(L.S("PianoRoll.Redone"));
+        UndoRedoService.Redo();
     }
 
     private void InterruptPanMotionIfRunning()

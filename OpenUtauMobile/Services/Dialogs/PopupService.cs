@@ -6,7 +6,7 @@ using DialogHostAvalonia;
 using OpenUtauMobile.ViewModels;
 using Serilog;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Dialogs;
 
 /// <summary>
 /// 封装的弹窗服务

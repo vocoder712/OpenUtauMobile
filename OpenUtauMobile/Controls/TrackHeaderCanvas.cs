@@ -150,6 +150,14 @@ public class TrackHeaderCanvas : Panel, ICmdSubscriber
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
+        if (cmd is MixCommand mixer)
+        {
+            if (mixer is ChangeMixMuteCommand or ChangeMixSoloCommand)
+                foreach (TrackHeader header in _trackHeaders.Values) header.ViewModel.RefreshMix();
+            else if (mixer is ChangeMixVolumeCommand or ChangeMixPanCommand && mixer.Track != null && _trackHeaders.TryGetValue(mixer.Track, out TrackHeader? header))
+                header.ViewModel.RefreshMix();
+            return;
+        }
         switch (cmd)
         {
             case LoadProjectNotification:

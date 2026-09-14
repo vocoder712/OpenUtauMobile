@@ -74,7 +74,8 @@ namespace OpenUtau.Core.Render {
         }
 
         // for playback or export -- explicit MixFx control (export dialog passes false to keep dry stems)
-        public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait, bool applyMixFx) {
+        public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait, bool applyMixFx, PlaybackMeters meters = null, PlaybackMixer mixer = null, bool applyMaster = true) {
+            mixer ??= new PlaybackMixer(project, applyMixFx);
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -84,11 +85,9 @@ namespace OpenUtau.Core.Render {
             double startMs = project.timeAxis.TickPosToMsPos(startTick);
             double endMs = endTick == -1 ? double.PositiveInfinity : project.timeAxis.TickPosToMsPos(endTick);
             var faders = new List<Fader>();
-            // Each track is wrapped with its own UMixFx (no global FX bus).
-            // Tracks with MixFx == null or Enabled = false pass through unchanged
-            // (zero-overhead bypass).  All tracks sum into a single mix.
+            // 保留可实时更新的轨道节点，效果器旁路时直接使用干声。
             var trackOutputs = new List<ISignalSource>();
-            var requests = PrepareRequests()
+            var requests = PrepareRequests(includeMuted: !wait)
                 .Where(request => request.sources.Length > 0 && request.sources.Max(s => s.EndMs) > startMs && (double.IsPositiveInfinity(endMs) || request.sources.Min(s => s.offsetMs) < endMs))
                 .ToArray();
             for (int i = 0; i < project.tracks.Count; ++i) {
@@ -108,15 +107,11 @@ namespace OpenUtau.Core.Render {
                     .Where(part => part.Samples != null)
                     .Select(part => part.TrimSamples(project)));
                 var trackMix = new WaveMix(trackSources);
-                var fader = new Fader(trackMix);
-                fader.Scale = PlaybackManager.DecibelToVolume(track.Muted ? -24 : track.Volume);
-                fader.Pan = (float)track.Pan;
-                fader.SetScaleToTarget();
-                faders.Add(fader);
-
-                ISignalSource trackOut = applyMixFx
-                    ? MixFxSource.WrapWith(fader, track.MixFx)
-                    : (ISignalSource)fader;
+                var channel = mixer.WrapTrack(trackMix, track);
+                faders.Add(channel.Fader);
+                ISignalSource trackOut = channel;
+                // 电平采样必须位于轨道效果器之后、总线累加之前。
+                if (meters != null) trackOut = new MeteredSource(trackOut, meters, meters.Tracks[track]);
                 trackOutputs.Add(trackOut);
             }
             var task = Task.Run(() => {
@@ -145,10 +140,9 @@ namespace OpenUtau.Core.Render {
             if (wait) {
                 task.Wait();
             }
-            // Build the final mix.  All tracks (FX-wrapped or dry) sum into
-            // a single WaveMix.  Bypass-as-pointer-identity in WrapWith keeps
-            // disabled tracks zero-cost.
+            // 整曲导出使用相同总线；播放则在加入节拍器后再挂载总线。
             var resultMix = new WaveMix(trackOutputs);
+            if (applyMaster) resultMix = new WaveMix(new[] { mixer.WrapMaster(resultMix) });
             return Tuple.Create(resultMix, faders);
         }
 
@@ -216,13 +210,13 @@ namespace OpenUtau.Core.Render {
             });
         }
 
-        private RenderPartRequest[] PrepareRequests() {
+        private RenderPartRequest[] PrepareRequests(bool includeMuted = false) {
             RenderPartRequest[] requests;
             SingerManager.Inst.ReleaseSingersNotInUse(project);
             lock (project) {
                 requests = project.parts
                     .Where(part => part is UVoicePart && (trackNo == -1 || part.trackNo == trackNo))
-                    .Where(part => !Preferences.Default.SkipRenderingMutedTracks || !project.tracks[part.trackNo].Muted)
+                    .Where(part => includeMuted || !Preferences.Default.SkipRenderingMutedTracks || !project.tracks[part.trackNo].Muted)
                     .Select(part => part as UVoicePart)
                     .Select(part => part.GetRenderRequest())
                     .Where(request => request != null)

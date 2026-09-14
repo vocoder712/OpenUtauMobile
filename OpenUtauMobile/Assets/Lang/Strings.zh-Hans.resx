@@ -1819,4 +1819,77 @@
   <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>放大镜</value></data>
   <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>放大倍率</value></data>
   <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>用于音高与参数曲线编辑。低于 1× 时显示更大范围；1× 为原比例。</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>关闭混音面板</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>压缩</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>效果器</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>暂无轨道</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>高频</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>低频</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>电平显示待接入</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>中频</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>静音</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>固定顺序：EQ → 压缩 → 混响</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>混音参数仅预览；名称和颜色同步工程</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>压缩比</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>混响</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>衰减长度</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>独奏</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>阈值</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>混音</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>混响量（预设倍率）</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>双击滑块恢复默认值</value></data>
+  <data name="Mixer.ToggleFx" xml:space="preserve"><value>启用效果器 / 旁路（亮起时启用）</value></data>
+  <data name="Mixer.FxOn" xml:space="preserve"><value>已启用</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>编辑</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>没有可撤销的操作</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>没有可重做的操作</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>已撤销：{0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>已重做：{0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>编辑操作</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>中频中心频率 (Hz)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>补偿增益 (dB)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>高频阻尼</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>预延迟 (ms)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>三段 EQ · 频率 Hz → / 增益 dB ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>拖动圆点调整增益；中频点可左右移动调整中心频率。</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>数字压缩 · 输入 dB → / 输出 dB ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>左点左右调阈值，右点上下调压缩比。含补偿增益的静态曲线，非实时电平。</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · 时间 s → / 湿声峰值 dB ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>左右声道单位脉冲衰减预览（4 秒），不含干声，非实时电平；长尾可能超出窗口。</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>效果器预设</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>应用</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>应用效果器预设</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>整链用户预设</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>应用默认整链</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>预设名称</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>保存（同名覆盖）</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>请输入预设名称</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>已保存预设：{0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>关闭</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>人声空气感</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>温暖</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>减少浑浊</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>电话音色</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>轻柔</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>流行人声</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>限幅器</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>小房间</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>人声板式风格</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>大厅</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>氛围</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>选择即应用</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>更新</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>新增</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>加载预设</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>默认</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>新增效果器预设</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>将当前轨道的 EQ、压缩和混响设置保存为用户预设。</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>名称已存在，请使用其他名称；覆盖请用“更新”。</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>频率 (Hz)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>增益 (dB)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>输入 (dB)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>输出 (dB)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>时间 (s)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>湿声峰值 (dB)</value></data>
+  <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>音频排队延迟</value></data>
 </root>

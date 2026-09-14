@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Tracks;
 
 /// <summary>一次读取的来源工程及其诊断；不持有当前编辑工程。</summary>
 public sealed class TrackImportSource

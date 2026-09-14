@@ -576,47 +576,47 @@
     "opacity": 1.0
   },
   "SliderThumbBackgroundPointerOver": {
-    "role": "PrimaryStateHover",
+    "role": "Primary",
     "opacity": 1.0
   },
   "SliderThumbBackgroundPressed": {
-    "role": "PrimaryStatePressed",
+    "role": "Primary",
     "opacity": 1.0
   },
   "SliderThumbBackgroundDisabled": {
-    "role": "Primary",
+    "role": "OnSurface",
     "opacity": 0.38
   },
   "SliderTrackFill": {
-    "role": "OutlineVariant",
+    "role": "SecondaryContainer",
     "opacity": 1.0
   },
   "SliderTrackFillPointerOver": {
-    "role": "OutlineVariant",
+    "role": "SecondaryContainer",
     "opacity": 1.0
   },
   "SliderTrackFillPressed": {
-    "role": "OutlineVariant",
+    "role": "SecondaryContainer",
     "opacity": 1.0
   },
   "SliderTrackFillDisabled": {
-    "role": "OutlineVariant",
-    "opacity": 0.38
+    "role": "OnSurface",
+    "opacity": 0.12
   },
   "SliderTrackValueFill": {
     "role": "Primary",
     "opacity": 1.0
   },
   "SliderTrackValueFillPointerOver": {
-    "role": "PrimaryStateHover",
+    "role": "Primary",
     "opacity": 1.0
   },
   "SliderTrackValueFillPressed": {
-    "role": "PrimaryStatePressed",
+    "role": "Primary",
     "opacity": 1.0
   },
   "SliderTrackValueFillDisabled": {
-    "role": "Primary",
+    "role": "OnSurface",
     "opacity": 0.38
   },
   "ToggleSwitchContentForeground": {

@@ -1,7 +1,7 @@
+using OpenUtauMobile.Services.Platform;
 using System;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
-using OpenUtauMobile.Services;
 
 namespace OpenUtauMobile.Browser;
 

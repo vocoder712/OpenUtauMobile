@@ -20,6 +20,24 @@
             <!-- Tab 区域 -->
             <Border Classes="DialogBodyBorder">
                 <TabControl>
+                    <TabItem Header="{DynamicResource EditorMore.EditTab}">
+                        <Border Padding="0,16,0,0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource Editor.Undo}" IsEnabled="{Binding CanUndo}"
+                                        Command="{Binding ConfirmCommand}">
+                                    <Button.CommandParameter><vm:EditorMoreAction>Undo</vm:EditorMoreAction></Button.CommandParameter>
+                                </Button>
+                                <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource Editor.Redo}" IsEnabled="{Binding CanRedo}"
+                                        Command="{Binding ConfirmCommand}">
+                                    <Button.CommandParameter><vm:EditorMoreAction>Redo</vm:EditorMoreAction></Button.CommandParameter>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </TabItem>
                     <!-- 导出 -->
                     <TabItem Header="{DynamicResource EditorMore.FileTab}">
                         <Border Padding="0,16,0,0">

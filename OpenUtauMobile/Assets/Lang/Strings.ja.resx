@@ -1812,4 +1812,77 @@
   <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>拡大鏡</value></data>
   <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>表示倍率</value></data>
   <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>ピッチとパラメーターカーブの編集に適用します。1× 未満では広い範囲を表示し、1× は元の倍率です。</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>ミキサーを閉じる</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>圧縮</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>エフェクト</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>トラックなし</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>高域</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>低域</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>メーター未接続</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>中域</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>ミュート</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>固定順序：EQ → 圧縮 → リバーブ</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>音声設定はプレビューです。名前と色はプロジェクトに反映されます</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>比率</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>リバーブ</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>減衰の長さ</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>ソロ</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>しきい値</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>ミキサー</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>残響量（プリセット倍率）</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>スライダーをダブルタップすると初期値に戻ります</value></data>
+  <data name="Mixer.ToggleFx" xml:space="preserve"><value>エフェクト有効 / バイパス（点灯時は有効）</value></data>
+  <data name="Mixer.FxOn" xml:space="preserve"><value>有効</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>編集</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>元に戻す操作はありません</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>やり直す操作はありません</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>元に戻しました：{0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>やり直しました：{0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>編集操作</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>中域中心周波数 (Hz)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>メイクアップゲイン (dB)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>高域減衰</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>プリディレイ (ms)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>3 バンド EQ · 周波数 Hz → / ゲイン dB ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>点を上下に動かしてゲイン、中央の点を左右に動かして周波数を調整。</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>デジタルコンプレッサー · 入力 dB → / 出力 dB ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>左の点を左右に動かしてスレッショルド、右を上下に動かして比率を調整。ゲイン補正込みの静特性。</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · 時間 s → / ウェットピーク dB ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>左右のインパルス減衰プレビュー（4 秒、ウェットのみ）。実時間表示ではなく、長い残響は範囲外に続きます。</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>エフェクトプリセット</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>適用</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>エフェクトプリセットを適用</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>エフェクトチェーンのプリセット</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>標準チェーンを適用</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>プリセット名</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>保存（同名は上書き）</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>プリセット名を入力してください</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>プリセット保存：{0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>ボーカルの空気感</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>ウォーム</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>濁りを軽減</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>電話</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>穏やか</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>ポップボーカル</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>強い圧縮（10:1）</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>小部屋</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>ボーカルプレート風</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>ホール</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>アンビエント</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>選択して適用</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>更新</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>追加</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>プリセットを読み込む</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>標準</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>エフェクトプリセットを追加</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>このトラックの EQ、コンプレッサー、リバーブを保存します。</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>同名があります。上書きには「更新」を使用してください。</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>周波数 (Hz)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>ゲイン (dB)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>入力 (dB)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>出力 (dB)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>時間 (s)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>ウェットピーク (dB)</value></data>
+  <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>音声キュー遅延</value></data>
 </root>

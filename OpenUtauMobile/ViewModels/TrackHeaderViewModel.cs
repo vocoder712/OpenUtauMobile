@@ -1,4 +1,5 @@
-﻿using System;
+using OpenUtauMobile.Services.Tracks;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,6 @@ using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using OpenUtauMobile.Services;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -70,8 +70,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             {
                 if (_isRefreshing)
                     return;
-                _track.Volume = volume;
-                DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(_track.TrackNo, volume));
+                if (double.IsFinite(volume)) CommitMixParameter(new ChangeMixVolumeCommand(DocManager.Inst.Project, _track, volume));
             }).DisposeWith(_disposable);
 
         // 订阅 Pan 属性变化
@@ -81,8 +80,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             {
                 if (_isRefreshing)
                     return;
-                _track.Pan = pan;
-                DocManager.Inst.ExecuteCmd(new PanChangeNotification(_track.TrackNo, pan));
+                if (double.IsFinite(pan)) CommitMixParameter(new ChangeMixPanCommand(DocManager.Inst.Project, _track, pan));
             }).DisposeWith(_disposable);
         // 静音切换
         MuteCommand = ReactiveCommand.Create(ToggleMute).DisposeWith(_disposable);
@@ -221,25 +219,26 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private void ToggleMute()
     {
-        _track.Mute = !_track.Mute;
-        JudgeMuted();
+        CommitMixParameter(new ChangeMixMuteCommand(DocManager.Inst.Project, _track, !_track.Mute));
     }
 
     private void ToggleSolo()
     {
-        _track.Solo = !_track.Solo;
-        JudgeMuted();
+        CommitMixParameter(new ChangeMixSoloCommand(DocManager.Inst.Project, _track, !_track.Solo));
     }
 
     /// <summary>
     /// 计算后端模型静音状态，同步数据
     /// </summary>
-    private void JudgeMuted()
+    private void CommitMixParameter(MixCommand command)
     {
-        // TODO: 暂不考虑solo
-        _track.Muted = _track is { Mute: true, Solo: false };
-        DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(_track.TrackNo, _track.Muted ? -24 : _track.Volume));
-        Refresh();
+        UProject project = DocManager.Inst.Project;
+        if (!project.tracks.Contains(_track) || !command.HasChanges) return;
+        bool ownGroup = !DocManager.Inst.HasOpenUndoGroup;
+        if (ownGroup) DocManager.Inst.StartUndoGroup("调整混音参数");
+        try { DocManager.Inst.ExecuteCmd(command); }
+        finally { if (ownGroup) DocManager.Inst.EndUndoGroup(); }
+        RefreshMix();
     }
 
     private bool TryChangePhonemizer(string phonemizerName)
@@ -359,10 +358,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         try
         {
             TrackName = _track.TrackName;
-            Muted = _track.Muted;
-            Volume = _track.Volume;
-            Pan = _track.Pan;
-            TrackColorBrush = _track.Muted ? Brushes.Gray : TrackPalette.GetTrackColor(_track.TrackColor).AccentColor;
+            RefreshMixFields();
 
             SingerName = _track.Singer?.Name ?? string.Empty; // 为什么 Core 项目里面乱写null啊啊啊啊！！！~~~
             PhonemizerTag = _track.Phonemizer?.Tag ?? string.Empty;
@@ -379,5 +375,21 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     {
         _disposable.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>混音连续更新只刷新轻量字段，避免反复解码歌手头像。</summary>
+    public void RefreshMix()
+    {
+        _isRefreshing = true;
+        try { RefreshMixFields(); }
+        finally { _isRefreshing = false; }
+    }
+
+    private void RefreshMixFields()
+    {
+        Muted = _track.Muted;
+        Volume = _track.Volume;
+        Pan = _track.Pan;
+        TrackColorBrush = _track.Muted ? Brushes.Gray : TrackPalette.GetTrackColor(_track.TrackColor).AccentColor;
     }
 }

@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input.Platform;
 using Avalonia.Threading;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Platform;
 
 /// <summary>
 /// 基于 Avalonia 顶层窗口的跨平台剪贴板实现
