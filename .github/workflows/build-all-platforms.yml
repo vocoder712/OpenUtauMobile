@@ -368,7 +368,7 @@ jobs:
   # iOS
   # ============================================================
   ios:
-    name: iOS arm64 NativeAOT unsigned IPA
+    name: iOS arm64 Mono AOT LLVM unsigned IPA
     uses: ./.github/workflows/build-ios.yml
     with:
       version: ${{ inputs.version }}

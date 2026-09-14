@@ -1,4 +1,4 @@
-name: Reusable iOS NativeAOT Build
+name: Reusable iOS Mono AOT LLVM Build
 
 on:
   workflow_call:
@@ -25,7 +25,7 @@ permissions:
 
 jobs:
   ios:
-    name: iOS arm64 NativeAOT unsigned IPA
+    name: iOS arm64 Mono AOT LLVM unsigned IPA
     runs-on: macos-26
     timeout-minutes: 90
     env:
@@ -52,7 +52,7 @@ jobs:
 
           echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
           echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
-          mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-nativeaot-logs"
+          mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-mono-llvm-logs"
 
       - name: Show iOS Toolchain Summary
         shell: bash
@@ -92,73 +92,41 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Validate NativeAOT Entry Properties
+      - name: Validate Mono AOT LLVM Properties
         shell: bash
         run: |
           set -euo pipefail
 
-          APP_PUBLISH_AOT="$(dotnet msbuild \
+          APP_PROPERTIES="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
-            -getProperty:PublishAot \
+            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,MtouchLink \
             -p:_IsPublishing=true \
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64 \
-            -p:EnableIosNativeAot=true)"
-          APP_USE_NATIVE_AOT="$(dotnet msbuild \
-            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -nologo \
-            -getProperty:_UseNativeAot \
-            -p:_IsPublishing=true \
-            -p:Configuration=Release \
-            -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64 \
-            -p:EnableIosNativeAot=true)"
-          APP_USE_MONO="$(dotnet msbuild \
-            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -nologo \
-            -getProperty:UseMonoRuntime \
-            -p:_IsPublishing=true \
-            -p:Configuration=Release \
-            -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64 \
-            -p:EnableIosNativeAot=true)"
-          echo "PublishAot=$APP_PUBLISH_AOT _UseNativeAot=$APP_USE_NATIVE_AOT UseMonoRuntime=$APP_USE_MONO"
-          if [ "$APP_PUBLISH_AOT" != "true" ] \
-            || [ "$APP_USE_NATIVE_AOT" != "true" ] \
-            || [ "$APP_USE_MONO" != "false" ]; then
-            echo "::error::iOS entry project did not select the NativeAOT runtime"
+            -p:RuntimeIdentifier=ios-arm64)"
+          echo "$APP_PROPERTIES"
+
+          if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"'; then
+            echo "::error::iOS entry project did not select Mono AOT with LLVM"
             exit 1
           fi
 
-          for DEPENDENCY_PROJECT in \
-            OpenUtauMobile/OpenUtauMobile.csproj \
-            OpenUtau.Core/OpenUtau.Core.csproj \
-            OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj \
-            OpenUtauMobile.Plugin.Renderers/OpenUtauMobile.Plugin.Renderers.csproj; do
-            DEPENDENCY_PUBLISH_AOT="$(dotnet msbuild \
-              "$DEPENDENCY_PROJECT" \
-              -nologo \
-              -getProperty:PublishAot \
-              -p:_IsPublishing=true \
-              -p:Configuration=Release \
-              -p:RuntimeIdentifier=ios-arm64 \
-              -p:EnableIosNativeAot=true)"
-            if [ -n "$DEPENDENCY_PUBLISH_AOT" ]; then
-              echo "::error::PublishAot leaked into $DEPENDENCY_PROJECT: $DEPENDENCY_PUBLISH_AOT"
-              exit 1
-            fi
-          done
-          echo "Dependency PublishAot: <empty> (4 projects)"
+          if echo "$APP_PROPERTIES" | grep -q '"_UseNativeAot": "true"'; then
+            echo "::error::iOS entry project unexpectedly selected NativeAOT"
+            exit 1
+          fi
 
-      - name: Publish iOS arm64 NativeAOT Unsigned IPA
+      - name: Publish iOS arm64 Mono AOT LLVM Unsigned IPA
         shell: bash
         run: |
           set -euo pipefail
 
           IPA_DIR="${GITHUB_WORKSPACE}/artifacts/ios-arm64"
-          IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-nativeaot-unsigned.ipa"
+          IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa"
 
           mkdir -p "$IPA_DIR"
 
@@ -174,22 +142,24 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:EnableIosNativeAot=true \
+            -p:PublishAot=false \
+            -p:MtouchUseLlvm=true \
+            -p:UseInterpreter=false \
             -p:BuildIpa=true \
             -p:EnableCodeSigning=false \
             -p:IpaPackagePath="$IPA_PATH" \
-            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-nativeaot-logs/publish.binlog" \
+            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-mono-llvm-logs/publish.binlog" \
             --verbosity minimal
 
           ls -lh "$IPA_PATH"
 
-      - name: Validate iOS arm64 NativeAOT Unsigned IPA
+      - name: Validate iOS arm64 Mono AOT LLVM Unsigned IPA
         shell: bash
         run: |
           set -euo pipefail
 
-          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-nativeaot-unsigned.ipa"
-          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-nativeaot-verify"
+          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa"
+          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-mono-llvm-verify"
 
           unzip -tq "$IPA_PATH"
           mkdir -p "$VERIFY_DIR"
@@ -205,6 +175,8 @@ jobs:
           INFO_PLIST="$APP_DIR/Info.plist"
           EXECUTABLE="$(plutil -extract CFBundleExecutable raw "$INFO_PLIST")"
           BUNDLE_ID="$(plutil -extract CFBundleIdentifier raw "$INFO_PLIST")"
+          DISPLAY_VERSION="$(plutil -extract CFBundleShortVersionString raw "$INFO_PLIST")"
+          BUILD_VERSION="$(plutil -extract CFBundleVersion raw "$INFO_PLIST")"
           PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
           ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
           EXPECTED_BUNDLE_ID="$(dotnet msbuild \
@@ -220,6 +192,16 @@ jobs:
             exit 1
           fi
 
+          if [ "$DISPLAY_VERSION" != "${{ inputs.version }}" ]; then
+            echo "::error::CFBundleShortVersionString is $DISPLAY_VERSION, expected ${{ inputs.version }}"
+            exit 1
+          fi
+
+          if [ "$BUILD_VERSION" != "${{ inputs.build_number }}" ]; then
+            echo "::error::CFBundleVersion is $BUILD_VERSION, expected ${{ inputs.build_number }}"
+            exit 1
+          fi
+
           if [ "$PLATFORM" != "iPhoneOS" ]; then
             echo "::error::IPA targets $PLATFORM instead of iPhoneOS"
             exit 1
@@ -230,12 +212,7 @@ jobs:
             exit 1
           fi
 
-          MANAGED_FILE_COUNT="$(find "$APP_DIR" -maxdepth 1 -type f \( -name '*.dll' -o -name '*.aotdata.*' \) | wc -l | tr -d ' ')"
-          if [ "$MANAGED_FILE_COUNT" != "0" ]; then
-            echo "::error::NativeAOT app bundle unexpectedly contains $MANAGED_FILE_COUNT managed or Mono AOT files"
-            find "$APP_DIR" -maxdepth 1 -type f \( -name '*.dll' -o -name '*.aotdata.*' \) -print | head -20
-            exit 1
-          fi
+          MANAGED_FILE_COUNT="$(find "$APP_DIR" -type f \( -name '*.dll' -o -name '*.aotdata.*' \) | wc -l | tr -d ' ')"
 
           if [ -e "$APP_DIR/_CodeSignature" ] || [ -e "$APP_DIR/embedded.mobileprovision" ]; then
             echo "::error::App bundle unexpectedly contains signing assets"
@@ -248,70 +225,39 @@ jobs:
           fi
 
           echo "Bundle ID: $BUNDLE_ID"
+          echo "Version: $DISPLAY_VERSION ($BUILD_VERSION)"
           echo "Platform: $PLATFORM"
           echo "Architectures: $ARCHS"
-          echo "Top-level managed/Mono AOT files: $MANAGED_FILE_COUNT"
+          echo "Managed/Mono AOT files: $MANAGED_FILE_COUNT"
           tr '\n' ' ' < "$VERIFY_DIR/codesign.txt"
           echo
 
-      - name: Show NativeAOT Failure Summary
+      - name: Show iOS Failure Summary
         if: failure()
         shell: bash
         run: |
-          echo "::group::NativeAOT restore state"
-          NUGET_ROOT="$(dotnet nuget locals global-packages --list 2>/dev/null \
-            | sed 's/^global-packages: //' || true)"
-          if [ -n "$NUGET_ROOT" ] && [ -d "$NUGET_ROOT" ]; then
-            echo "NuGet global packages: $NUGET_ROOT"
-            find "$NUGET_ROOT" -maxdepth 1 -type d \
-              -iname 'microsoft.netcore.app.runtime.nativeaot*' \
-              -print 2>/dev/null | sort | sed -n '1,20p'
-          else
-            echo "NuGet global packages directory is unavailable."
-          fi
-
-          ASSETS_FILE="OpenUtauMobile.iOS/obj/project.assets.json"
-          if [ -f "$ASSETS_FILE" ]; then
-            echo "NativeAOT entries in $ASSETS_FILE:"
-            grep -o 'Microsoft.NETCore.App.Runtime.NativeAOT[^"/]\+' "$ASSETS_FILE" \
-              | sort -u | sed -n '1,20p' || true
-          else
-            echo "No project.assets.json was generated."
-          fi
+          echo "::group::iOS output summary"
+          find OpenUtauMobile.iOS/bin OpenUtauMobile.iOS/obj \
+            -maxdepth 5 -type f \
+            \( -name '*.app' -o -name '*.ipa' -o -name '*.aotdata.*' -o -name '*.dylib' \) \
+            -print 2>/dev/null | sort | sed -n '1,80p' || true
           echo "::endgroup::"
 
-          echo "::group::NativeAOT diagnostic files"
-          FOUND=0
-          while IFS= read -r FILE; do
-            FOUND=1
-            echo "===== $FILE ====="
-            sed -n '1,120p' "$FILE"
-          done < <(find OpenUtauMobile.iOS/obj -type f \
-            \( -name 'nativeaot-*.txt' -o -name '*ilc*.txt' \) \
-            -print 2>/dev/null | sort | head -10)
-
-          if [ "$FOUND" = "0" ]; then
-            echo "No NativeAOT text diagnostics were generated; inspect the uploaded MSBuild binlogs."
-          fi
-          echo "::endgroup::"
-
-      - name: Upload NativeAOT Failure Diagnostics
+      - name: Upload iOS Failure Diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-ios-arm64-nativeaot-diagnostics
+          name: OpenUtauMobile-ios-arm64-mono-llvm-diagnostics
           path: |
-            artifacts/ios-nativeaot-logs
+            artifacts/ios-mono-llvm-logs
             OpenUtauMobile.iOS/obj/project.assets.json
-            OpenUtauMobile.iOS/obj/**/nativeaot-*.txt
-            OpenUtauMobile.iOS/obj/**/*ilc*.txt
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload iOS arm64 NativeAOT Unsigned IPA
+      - name: Upload iOS arm64 Mono AOT LLVM Unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-ios-arm64-nativeaot-unsigned
-          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-nativeaot-unsigned.ipa
+          name: OpenUtauMobile-ios-arm64-mono-llvm-unsigned
+          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa
           if-no-files-found: error
           compression-level: 0
