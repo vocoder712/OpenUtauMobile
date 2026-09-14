@@ -100,7 +100,7 @@ jobs:
           APP_PROPERTIES="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
-            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,TrimMode,EnableAssemblyILStripping \
+            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,TrimMode,EnableAssemblyILStripping,_IsDedupEnabled \
             -p:_IsPublishing=true \
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
@@ -112,7 +112,8 @@ jobs:
             || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"TrimMode": "copy"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"'; then
+            || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"_IsDedupEnabled": "false"'; then
             echo "::error::iOS entry project did not select Mono AOT with LLVM"
             exit 1
           fi
@@ -150,6 +151,7 @@ jobs:
             -p:UseInterpreter=false \
             -p:TrimMode=copy \
             -p:EnableAssemblyILStripping=false \
+            -p:_IsDedupEnabled=false \
             -p:BuildIpa=true \
             -p:EnableCodeSigning=false \
             -p:IpaPackagePath="$IPA_PATH" \
@@ -167,8 +169,8 @@ jobs:
             if kill -0 "$PUBLISH_PID" 2>/dev/null; then
               ELAPSED_MINUTES=$(((SECONDS - PUBLISH_STARTED_AT) / 60))
               echo "::notice::iOS device publish is still running after ${ELAPSED_MINUTES} minutes"
-              ps -axo pid,etime,%cpu,%mem,comm \
-                | awk '$5 ~ /(^|\/)(dotnet|mono-aot-cross|illink|clang|ld)$/ { print }' \
+              ps -ww -axo pid,etime,%cpu,%mem,command \
+                | awk '$5 ~ /(^|\/)(dotnet|mono-aot-cross|illink|clang|ld|opt)$/ { print substr($0, 1, 360) }' \
                 | sed -n '1,12p' || true
             fi
           done
