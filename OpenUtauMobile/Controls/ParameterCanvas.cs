@@ -252,6 +252,11 @@ public class ParameterCanvas : Control, ICmdSubscriber
             double partStartX = (Part.position - TickOffset) * TickWidth;
             double partEndX = (Part.End - TickOffset) * TickWidth;
 
+            if (curve != null)
+            {
+                RenderRealCurve(context, curve, usableHeight, isPrimary);
+            }
+
             // 仅正在编辑的参数绘制默认值参考基线
             if (isPrimary)
             {
@@ -405,6 +410,70 @@ public class ParameterCanvas : Control, ICmdSubscriber
                     textLayout.Draw(context, new Point(0, 0));
                 }
             }
+        }
+    }
+
+    private void RenderRealCurve(DrawingContext context, UCurve curve, double usableHeight, bool isPrimary)
+    {
+        if (Part == null || curve.realXs.Count < 2 || curve.realXs.Count != curve.realYs.Count)
+        {
+            return;
+        }
+
+        // 实参使用分片内的时间坐标，数值按桌面端约定的 0–1000 映射。
+        double leftTick = TickOffset - Part.position;
+        double rightTick = leftTick + Bounds.Width / TickWidth;
+        int startIndex = curve.realXs.BinarySearch((int)Math.Floor(leftTick));
+        startIndex = Math.Max(0, (startIndex < 0 ? ~startIndex : startIndex) - 1);
+        int endIndex = curve.realXs.BinarySearch((int)Math.Ceiling(rightTick));
+        endIndex = Math.Min(curve.realXs.Count, (endIndex < 0 ? ~endIndex : endIndex) + 1);
+
+        Color color = ThemeResources.GetColor(isPrimary ? "Sem.Color.Primary" : "Sem.Color.Secondary");
+        LinearGradientBrush brush = new()
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops = new GradientStops
+            {
+                new GradientStop(Color.FromArgb(128, color.R, color.G, color.B), 0),
+                new GradientStop(Color.FromArgb(0, color.R, color.G, color.B), 1),
+            },
+        };
+        double bottom = TopMargin + usableHeight;
+        int offset = startIndex;
+        while (offset < endIndex)
+        {
+            // 负值标记不同语句之间的断点，填充不能跨过这些空隙。
+            while (offset < endIndex && curve.realYs[offset] < 0)
+            {
+                offset++;
+            }
+            int start = offset;
+            while (offset < endIndex && curve.realYs[offset] >= 0)
+            {
+                offset++;
+            }
+            if (offset - start < 2)
+            {
+                continue;
+            }
+
+            StreamGeometry geometry = new();
+            using (StreamGeometryContext path = geometry.Open())
+            {
+                double firstX = (Part.position + curve.realXs[start] - TickOffset) * TickWidth;
+                path.BeginFigure(new Point(firstX, bottom), true);
+                for (int i = start; i < offset; i++)
+                {
+                    double x = (Part.position + curve.realXs[i] - TickOffset) * TickWidth;
+                    double y = TopMargin + usableHeight * (1 - curve.realYs[i] / 1000.0);
+                    path.LineTo(new Point(x, y));
+                }
+                double lastX = (Part.position + curve.realXs[offset - 1] - TickOffset) * TickWidth;
+                path.LineTo(new Point(lastX, bottom));
+                path.EndFigure(true);
+            }
+            context.DrawGeometry(brush, null, geometry);
         }
     }
 
@@ -703,6 +772,8 @@ public class ParameterCanvas : Control, ICmdSubscriber
     {
         switch (cmd)
         {
+            case RealCurvesUpdatedNotification updated when updated.part == Part:
+            case RealCurveCoverageNotification coverage when coverage.part == Part:
             case NoteCommand:
             case PartCommand:
             case SetCurveCommand:
