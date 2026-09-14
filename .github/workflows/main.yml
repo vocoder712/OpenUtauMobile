@@ -146,7 +146,7 @@ jobs:
     secrets: inherit
 
   ios-canary:
-    name: iOS ARM64 Mono AOT LLVM Canary
+    name: iOS ARM64 Mono AOT Canary
     if: github.event_name == 'push'
     needs: prepare
     permissions:

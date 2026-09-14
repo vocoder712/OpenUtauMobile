@@ -45,7 +45,7 @@ jobs:
             -p:RuntimeIdentifier=android-arm64
 
   ios-build:
-    name: PR build test for iOS Intel Simulator Mono AOT LLVM
+    name: PR build test for iOS Intel Simulator Mono AOT
     runs-on: macos-26
     timeout-minutes: 90
     env:
@@ -95,7 +95,7 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Validate Mono AOT LLVM Properties
+      - name: Validate Mono AOT Properties
         shell: bash
         run: |
           set -euo pipefail
@@ -112,12 +112,12 @@ jobs:
 
           if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"TrimMode": "copy"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"_IsDedupEnabled": "false"'; then
-            echo "::error::iOS simulator entry project did not select Mono AOT with LLVM"
+            echo "::error::iOS simulator entry project did not select Mono AOT without LLVM"
             exit 1
           fi
 
@@ -126,7 +126,7 @@ jobs:
             exit 1
           fi
 
-      - name: Build iOS Intel Simulator Mono AOT LLVM App
+      - name: Build iOS Intel Simulator Mono AOT App
         shell: bash
         run: |
           set -euo pipefail
@@ -148,7 +148,7 @@ jobs:
             -p:SourceCommit=${{ github.sha }} \
             -p:ActionRunId=${{ github.run_id }} \
             -p:PublishAot=false \
-            -p:MtouchUseLlvm=true \
+            -p:MtouchUseLlvm=false \
             -p:UseInterpreter=false \
             -p:TrimMode=copy \
             -p:EnableAssemblyILStripping=false \
@@ -167,8 +167,8 @@ jobs:
           OUTPUT_DIR="OpenUtauMobile.iOS/bin/Release/net10.0-ios/iossimulator-x64"
           APP_DIR="$OUTPUT_DIR/OpenUtauMobile.iOS.app"
           PACKAGE_DIR="${GITHUB_WORKSPACE}/artifacts/iossimulator-x64"
-          STAGE_DIR="${RUNNER_TEMP}/OpenUtauMobile-iossimulator-x64-mono-llvm"
-          ZIP_PATH="$PACKAGE_DIR/OpenUtauMobile-pr${{ github.event.pull_request.number }}-iossimulator-x64-mono-llvm.zip"
+          STAGE_DIR="${RUNNER_TEMP}/OpenUtauMobile-iossimulator-x64-mono-aot"
+          ZIP_PATH="$PACKAGE_DIR/OpenUtauMobile-pr${{ github.event.pull_request.number }}-iossimulator-x64-mono-aot.zip"
 
           if [ ! -d "$APP_DIR" ]; then
             echo "::error::Simulator app bundle was not generated at $APP_DIR"
@@ -236,17 +236,17 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-iossimulator-x64-mono-llvm-diagnostics
+          name: OpenUtauMobile-iossimulator-x64-mono-aot-diagnostics
           path: |
             artifacts/iossimulator-x64-logs
             OpenUtauMobile.iOS/obj/project.assets.json
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload iOS Intel Simulator Mono AOT LLVM App
+      - name: Upload iOS Intel Simulator Mono AOT App
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-iossimulator-x64-mono-llvm
+          name: OpenUtauMobile-iossimulator-x64-mono-aot
           path: artifacts/iossimulator-x64/*.zip
           if-no-files-found: error
           retention-days: 7
