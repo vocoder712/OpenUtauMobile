@@ -129,6 +129,7 @@ jobs:
           set -euo pipefail
 
           LOG_DIR="${GITHUB_WORKSPACE}/artifacts/iossimulator-x64-logs"
+          BUILD_NUMBER=$((${{ github.run_number }} + 20000))
           mkdir -p "$LOG_DIR"
 
           dotnet build \
@@ -138,7 +139,7 @@ jobs:
             -f net10.0-ios \
             -r iossimulator-x64 \
             -p:Version="0.0.0-pr.${{ github.event.pull_request.number }}" \
-            -p:BuildNumber=${{ github.run_number }} \
+            -p:BuildNumber="$BUILD_NUMBER" \
             -p:BuildTimestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
             -p:BuildMachine="${RUNNER_OS} / $(uname -srm)" \
             -p:SourceCommit=${{ github.sha }} \
@@ -172,8 +173,21 @@ jobs:
           INFO_PLIST="$APP_DIR/Info.plist"
           EXECUTABLE="$(plutil -extract CFBundleExecutable raw "$INFO_PLIST")"
           BUNDLE_ID="$(plutil -extract CFBundleIdentifier raw "$INFO_PLIST")"
+          DISPLAY_VERSION="$(plutil -extract CFBundleShortVersionString raw "$INFO_PLIST")"
+          BUILD_VERSION="$(plutil -extract CFBundleVersion raw "$INFO_PLIST")"
           PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
           ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
+          EXPECTED_DISPLAY_VERSION="0.0.0-pr.${{ github.event.pull_request.number }}"
+          EXPECTED_BUILD_VERSION=$((${{ github.run_number }} + 20000))
+
+          if [ "$DISPLAY_VERSION" != "$EXPECTED_DISPLAY_VERSION" ]; then
+            echo "::error::CFBundleShortVersionString is $DISPLAY_VERSION, expected $EXPECTED_DISPLAY_VERSION"
+            exit 1
+          fi
+          if [ "$BUILD_VERSION" != "$EXPECTED_BUILD_VERSION" ]; then
+            echo "::error::CFBundleVersion is $BUILD_VERSION, expected $EXPECTED_BUILD_VERSION"
+            exit 1
+          fi
 
           if [ "$PLATFORM" != "iPhoneSimulator" ]; then
             echo "::error::App targets $PLATFORM instead of iPhoneSimulator"
@@ -205,6 +219,7 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent "$STAGE_DIR" "$ZIP_PATH"
 
           echo "Bundle ID: $BUNDLE_ID"
+          echo "Version: $DISPLAY_VERSION ($BUILD_VERSION)"
           echo "Platform: $PLATFORM"
           echo "Architectures: $ARCHS"
           echo "Code signature: ad-hoc, verified"

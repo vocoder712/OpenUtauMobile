@@ -13,6 +13,7 @@
         <MtouchUseLlvm>true</MtouchUseLlvm>
         <UseInterpreter>false</UseInterpreter>
         <MtouchLink>None</MtouchLink>
+        <AppIcon>AppIcon</AppIcon>
     </PropertyGroup>
 
     <ItemGroup>

@@ -175,6 +175,8 @@ jobs:
           INFO_PLIST="$APP_DIR/Info.plist"
           EXECUTABLE="$(plutil -extract CFBundleExecutable raw "$INFO_PLIST")"
           BUNDLE_ID="$(plutil -extract CFBundleIdentifier raw "$INFO_PLIST")"
+          DISPLAY_VERSION="$(plutil -extract CFBundleShortVersionString raw "$INFO_PLIST")"
+          BUILD_VERSION="$(plutil -extract CFBundleVersion raw "$INFO_PLIST")"
           PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
           ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
           EXPECTED_BUNDLE_ID="$(dotnet msbuild \
@@ -187,6 +189,16 @@ jobs:
 
           if [ "$BUNDLE_ID" != "$EXPECTED_BUNDLE_ID" ]; then
             echo "::error::Bundle ID is $BUNDLE_ID, expected $EXPECTED_BUNDLE_ID"
+            exit 1
+          fi
+
+          if [ "$DISPLAY_VERSION" != "${{ inputs.version }}" ]; then
+            echo "::error::CFBundleShortVersionString is $DISPLAY_VERSION, expected ${{ inputs.version }}"
+            exit 1
+          fi
+
+          if [ "$BUILD_VERSION" != "${{ inputs.build_number }}" ]; then
+            echo "::error::CFBundleVersion is $BUILD_VERSION, expected ${{ inputs.build_number }}"
             exit 1
           fi
 
@@ -213,6 +225,7 @@ jobs:
           fi
 
           echo "Bundle ID: $BUNDLE_ID"
+          echo "Version: $DISPLAY_VERSION ($BUILD_VERSION)"
           echo "Platform: $PLATFORM"
           echo "Architectures: $ARCHS"
           echo "Managed/Mono AOT files: $MANAGED_FILE_COUNT"
