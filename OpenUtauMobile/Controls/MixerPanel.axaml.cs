@@ -1,5 +1,8 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
+using OpenUtau.Core.SignalChain.Effects;
+using OpenUtauMobile.Helpers;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -189,14 +192,50 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         UpdateLayoutMode();
     }
 
-    private void OnApplyEffectPreset(object? sender, RoutedEventArgs e)
+    private bool _presetDialogOpen;
+
+    private async void OnLoadEffectPreset(object? sender, RoutedEventArgs e)
     {
-        if (sender is Button { Tag: string effect }) ViewModel.ApplyEffectPreset(effect);
+        if (_presetDialogOpen || sender is not Button { Tag: string effect } || ViewModel.SelectedChannel?.Track == null) return;
+        string[] names = effect switch
+        {
+            "Eq" => FxPresets.EqPresetNames,
+            "Comp" => FxPresets.CompPresetNames,
+            "Reverb" => FxPresets.ReverbPresetNames,
+            _ => []
+        };
+        if (names.Length == 0) return;
+        UProject project = DocManager.Inst.Project;
+        UTrack track = ViewModel.SelectedChannel.Track;
+        _presetDialogOpen = true;
+        try
+        {
+            OptionConfirmPopupViewModel picker = new(L.S("Mixer.LoadPreset"), string.Empty,
+                names.Select(key => new[] { new OptionConfirmOption(L.S("Mixer.Preset." + key), key) }));
+            string? key = await PopupService.Show<string>(new MixerPresetPopup(), picker);
+            if (key != null && DocManager.Inst.Project == project && project.tracks.Contains(track) && ViewModel.SelectedChannel?.Track == track)
+                ViewModel.ApplyEffectPreset(effect, key);
+        }
+        finally { _presetDialogOpen = false; }
     }
 
-    private void OnDefaultPreset(object? sender, RoutedEventArgs e) => ViewModel.ApplyDefaultPreset();
-    private void OnApplyUserPreset(object? sender, RoutedEventArgs e) => ViewModel.ApplyUserPreset();
-    private void OnSaveUserPreset(object? sender, RoutedEventArgs e) => ViewModel.SaveUserPreset();
+    private async void OnAddUserPreset(object? sender, RoutedEventArgs e)
+    {
+        if (_presetDialogOpen || ViewModel.SelectedChannel?.Track == null) return;
+        UProject project = DocManager.Inst.Project;
+        UTrack track = ViewModel.SelectedChannel.Track;
+        _presetDialogOpen = true;
+        try
+        {
+            string? name = await TextInputPopupService.ShowAsync(L.S("Mixer.NewPresetTitle"), L.S("Mixer.NewPresetHint"),
+                L.S("Mixer.PresetName"), validate: ViewModel.ValidatePresetName);
+            if (name != null && DocManager.Inst.Project == project && project.tracks.Contains(track) && ViewModel.SelectedChannel?.Track == track)
+                ViewModel.AddUserPreset(name);
+        }
+        finally { _presetDialogOpen = false; }
+    }
+
+    private void OnUpdateUserPreset(object? sender, RoutedEventArgs e) => ViewModel.UpdateUserPreset();
     private void OnDeleteUserPreset(object? sender, RoutedEventArgs e) => ViewModel.DeleteUserPreset();
 
     private void OnCloseClick(object? sender, RoutedEventArgs e) => CloseRequested?.Invoke();

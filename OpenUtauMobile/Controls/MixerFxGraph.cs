@@ -18,6 +18,10 @@ public enum MixerFxGraphKind { Equalizer, Compressor, Reverb }
 /// <summary>轨道效果器曲线；拖动与下方滑杆共用参数和撤销组。</summary>
 public sealed class MixerFxGraph : Control
 {
+    public static readonly StyledProperty<string> XAxisTitleProperty = AvaloniaProperty.Register<MixerFxGraph, string>(nameof(XAxisTitle), string.Empty);
+    public static readonly StyledProperty<string> YAxisTitleProperty = AvaloniaProperty.Register<MixerFxGraph, string>(nameof(YAxisTitle), string.Empty);
+    public string XAxisTitle { get => GetValue(XAxisTitleProperty); set => SetValue(XAxisTitleProperty, value); }
+    public string YAxisTitle { get => GetValue(YAxisTitleProperty); set => SetValue(YAxisTitleProperty, value); }
     public static readonly StyledProperty<IBrush?> CurveBrushProperty = AvaloniaProperty.Register<MixerFxGraph, IBrush?>(nameof(CurveBrush));
     public static readonly StyledProperty<IBrush?> SecondaryBrushProperty = AvaloniaProperty.Register<MixerFxGraph, IBrush?>(nameof(SecondaryBrush));
     public static readonly StyledProperty<IBrush?> GridBrushProperty = AvaloniaProperty.Register<MixerFxGraph, IBrush?>(nameof(GridBrush));
@@ -37,9 +41,9 @@ public sealed class MixerFxGraph : Control
     private Point _start;
     private double _startGain;
     private IPointer? _pointer;
-    private Rect Plot => new(34, 12, Math.Max(1, Bounds.Width - 48), Math.Max(1, Bounds.Height - 42));
+    private Rect Plot => new(58, 14, Math.Max(1, Bounds.Width - 72), Math.Max(1, Bounds.Height - 62));
 
-    static MixerFxGraph() => AffectsRender<MixerFxGraph>(CurveBrushProperty, SecondaryBrushProperty, GridBrushProperty, LabelBrushProperty);
+    static MixerFxGraph() => AffectsRender<MixerFxGraph>(CurveBrushProperty, SecondaryBrushProperty, GridBrushProperty, LabelBrushProperty, XAxisTitleProperty, YAxisTitleProperty);
 
     public MixerFxGraph()
     {
@@ -109,7 +113,7 @@ public sealed class MixerFxGraph : Control
     }
 
     private double X(double value) => Plot.Left + value * Plot.Width;
-    private double Y(double db) => Plot.Bottom - (Kind == MixerFxGraphKind.Equalizer ? (db + 24) / 48
+    private double Y(double db) => Plot.Bottom - (Kind == MixerFxGraphKind.Equalizer ? (db + 24) / 36
         : Kind == MixerFxGraphKind.Compressor ? (db + 60) / (CompressorTop + 60) : (db + 90) / 90) * Plot.Height;
     private double FrequencyX(double hz) => X(Math.Log10(Math.Clamp(hz, 20, 20000) / 20) / 3);
     private double InputX(double db) => X((db + 60) / 72);
@@ -121,12 +125,12 @@ public sealed class MixerFxGraph : Control
         base.Render(context);
         if (_channel == null) return;
         Pen grid = new(GridBrush, 1);
-        double[] levels = Kind == MixerFxGraphKind.Equalizer ? [-24, -12, 0, 12, 24]
+        double[] levels = Kind == MixerFxGraphKind.Equalizer ? [-24, -12, 0, 12]
             : Kind == MixerFxGraphKind.Compressor ? [-60, -36, -12, CompressorTop] : [-90, -60, -30, 0];
         foreach (double db in levels)
         {
             context.DrawLine(grid, new Point(Plot.Left, Y(db)), new Point(Plot.Right, Y(db)));
-            Label(context, db.ToString("0", CultureInfo.InvariantCulture), new Point(1, Y(db) - 7));
+            Label(context, db.ToString("0", CultureInfo.InvariantCulture), new Point(29, Y(db) - 7));
         }
         double[] ticks = Kind == MixerFxGraphKind.Equalizer ? [20, 200, 2000, 20000]
             : Kind == MixerFxGraphKind.Compressor ? [-60, -36, -12, 12] : [0, 1, 2, 3, 4];
@@ -137,6 +141,11 @@ public sealed class MixerFxGraph : Control
             string label = Kind == MixerFxGraphKind.Equalizer && tick >= 1000 ? $"{tick / 1000:0}k" : tick.ToString("0", CultureInfo.InvariantCulture);
             Label(context, label, new Point(Math.Clamp(x - 10, Plot.Left - 6, Bounds.Width - 32), Plot.Bottom + 6));
         }
+        FormattedText xTitle = AxisText(XAxisTitle);
+        FormattedText yTitle = AxisText(YAxisTitle);
+        context.DrawText(xTitle, new Point(Plot.Left + (Plot.Width - xTitle.Width) / 2, Bounds.Height - 18));
+        using (context.PushTransform(Matrix.CreateRotation(-Math.PI / 2) * Matrix.CreateTranslation(7, Plot.Top + (Plot.Height + yTitle.Width) / 2)))
+            context.DrawText(yTitle, default);
         using (context.PushClip(Plot))
         {
             if (Kind == MixerFxGraphKind.Equalizer)
@@ -165,6 +174,8 @@ public sealed class MixerFxGraph : Control
     private void Label(DrawingContext context, string text, Point position) => context.DrawText(
         new FormattedText(text, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, Typeface.Default, 10, LabelBrush), position);
 
+    private FormattedText AxisText(string text) => new(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, Typeface.Default, 11, LabelBrush);
+
     private static void Curve(DrawingContext context, Func<double, Point> sample, IBrush? brush)
     {
         StreamGeometry geometry = new();
@@ -184,8 +195,10 @@ public sealed class MixerFxGraph : Control
             return [new Point(InputX(_channel.ThresholdDb), Y(MixerFxResponse.Compressor(_channel.ThresholdDb, _channel.ThresholdDb, _channel.Ratio, Makeup))),
                 new Point(InputX(6), Y(MixerFxResponse.Compressor(6, _channel.ThresholdDb, _channel.Ratio, Makeup)))];
         Func<double, double> response = MixerFxResponse.Equalizer(_channel.LowDb, _channel.MidFrequency, _channel.MidDb, _channel.HighDb);
-        return [new Point(FrequencyX(200), Y(response(200))), new Point(FrequencyX(_channel.MidFrequency), Y(response(_channel.MidFrequency))),
-            new Point(FrequencyX(8000), Y(response(8000)))];
+        // 超出显示范围的锚点留在边界，仍可拖回范围内。
+        return [new Point(FrequencyX(200), Math.Clamp(Y(response(200)), Plot.Top, Plot.Bottom)),
+            new Point(FrequencyX(_channel.MidFrequency), Math.Clamp(Y(response(_channel.MidFrequency)), Plot.Top, Plot.Bottom)),
+            new Point(FrequencyX(8000), Math.Clamp(Y(response(8000)), Plot.Top, Plot.Bottom))];
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
@@ -218,7 +231,7 @@ public sealed class MixerFxGraph : Control
         Point position = e.GetPosition(this);
         if (Kind == MixerFxGraphKind.Equalizer)
         {
-            double gain = Math.Clamp(_startGain + (_start.Y - position.Y) * 48 / Plot.Height, -12, 12);
+            double gain = Math.Clamp(_startGain + (_start.Y - position.Y) * 36 / Plot.Height, -12, 12);
             if (_handle == 0) _channel.LowDb = gain;
             else if (_handle == 2) _channel.HighDb = gain;
             else

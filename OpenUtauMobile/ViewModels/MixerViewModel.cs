@@ -29,7 +29,14 @@ public partial class MixerViewModel : ViewModelBase
     private bool _active;
     private bool _ownsEdit;
 
-    public MixerViewModel() => LoadUserPresets();
+    public MixerViewModel()
+    {
+        LoadUserPresets();
+        PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(SelectedChannel)) SelectDefaultPreset();
+        };
+    }
 
     public void Activate() => _active = true;
     public void Deactivate() { EndEdit(); _active = false; }
@@ -149,9 +156,6 @@ public class MixerChannelViewModel : ViewModelBase
     [Reactive] public bool Solo { get; set; }
     [Reactive] public bool FxEnabled { get; set; }
     [Reactive] public int FxRevision { get; set; }
-    [Reactive] public int EqPresetIndex { get; set; }
-    [Reactive] public int CompPresetIndex { get; set; }
-    [Reactive] public int ReverbPresetIndex { get; set; }
     [Reactive] public double LowDb { get; set; }
     [Reactive] public double MidFrequency { get; set; }
     [Reactive] public double MidDb { get; set; }
@@ -173,9 +177,6 @@ public class MixerChannelViewModel : ViewModelBase
         Mute = track?.Mute ?? false;
         Solo = track?.Solo ?? false;
         UMixFx fx = track?.MixFx ?? new UMixFx();
-        EqPresetIndex = Array.IndexOf(OpenUtau.Core.SignalChain.Effects.FxPresets.EqPresetNames, fx.EqPreset);
-        CompPresetIndex = Array.IndexOf(OpenUtau.Core.SignalChain.Effects.FxPresets.CompPresetNames, fx.CompPreset);
-        ReverbPresetIndex = Array.IndexOf(OpenUtau.Core.SignalChain.Effects.FxPresets.ReverbPresetNames, fx.ReverbPreset);
         FxEnabled = fx.Enabled;
         MidFrequency = fx.EqMidFreq;
         LowDb = fx.EqLowDb;
@@ -197,9 +198,6 @@ public class MixerChannelViewModel : ViewModelBase
         Mute = Track?.Mute ?? false;
         Solo = Track?.Solo ?? false;
         UMixFx fx = Track?.MixFx ?? new UMixFx();
-        EqPresetIndex = Array.IndexOf(OpenUtau.Core.SignalChain.Effects.FxPresets.EqPresetNames, fx.EqPreset);
-        CompPresetIndex = Array.IndexOf(OpenUtau.Core.SignalChain.Effects.FxPresets.CompPresetNames, fx.CompPreset);
-        ReverbPresetIndex = Array.IndexOf(OpenUtau.Core.SignalChain.Effects.FxPresets.ReverbPresetNames, fx.ReverbPreset);
         FxEnabled = fx.Enabled;
         MidFrequency = fx.EqMidFreq;
         LowDb = fx.EqLowDb; MidDb = fx.EqMidDb; HighDb = fx.EqHighDb;

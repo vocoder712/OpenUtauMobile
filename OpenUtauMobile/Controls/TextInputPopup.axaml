@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             x:Class="OpenUtauMobile.Controls.TextInputPopup"
+             x:DataType="vm:TextInputPopupViewModel"
+             Classes="PopupDialogRoot DialogHeightCompact">
+    <c:DialogShell Header="{Binding Title}" CloseCommand="{Binding CancelCommand}">
+        <c:DialogShell.Footer>
+            <c:DialogActionRow>
+                <Button Classes="DialogAction" Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                <Button Classes="DialogAction DialogPrimary" Content="{DynamicResource Common.Confirm}" Command="{Binding ConfirmCommand}" />
+            </c:DialogActionRow>
+        </c:DialogShell.Footer>
+        <Border Classes="DialogBodyBorder">
+            <StackPanel Spacing="12">
+                <TextBlock Text="{Binding Hint}" IsVisible="{Binding HasHint}" TextWrapping="Wrap" />
+                <TextBox x:Name="Input" Text="{Binding Text, Mode=TwoWay}" PlaceholderText="{Binding Watermark}">
+                    <TextBox.KeyBindings><KeyBinding Gesture="Enter" Command="{Binding ConfirmCommand}" /></TextBox.KeyBindings>
+                </TextBox>
+                <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+    </c:DialogShell>
+</UserControl>

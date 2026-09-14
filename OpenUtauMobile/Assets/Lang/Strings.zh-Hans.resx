@@ -1840,7 +1840,6 @@
   <data name="Mixer.ResetHint" xml:space="preserve"><value>双击滑块恢复默认值</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>启用效果器 / 旁路（亮起时启用）</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>已启用</value></data>
-  <data name="Mixer.FxBypassed" xml:space="preserve"><value>已旁路</value></data>
   <data name="EditorMore.EditTab" xml:space="preserve"><value>编辑</value></data>
   <data name="History.NoUndo" xml:space="preserve"><value>没有可撤销的操作</value></data>
   <data name="History.NoRedo" xml:space="preserve"><value>没有可重做的操作</value></data>
@@ -1873,9 +1872,23 @@
   <data name="Mixer.Preset.telephone" xml:space="preserve"><value>电话音色</value></data>
   <data name="Mixer.Preset.gentle" xml:space="preserve"><value>轻柔</value></data>
   <data name="Mixer.Preset.pop" xml:space="preserve"><value>流行人声</value></data>
-  <data name="Mixer.Preset.limit" xml:space="preserve"><value>强压缩（10:1）</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>限幅器</value></data>
   <data name="Mixer.Preset.small_room" xml:space="preserve"><value>小房间</value></data>
   <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>人声板式风格</value></data>
   <data name="Mixer.Preset.hall" xml:space="preserve"><value>大厅</value></data>
   <data name="Mixer.Preset.ambient" xml:space="preserve"><value>氛围</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>选择即应用</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>更新</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>新增</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>加载预设</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>默认</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>新增效果器预设</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>将当前轨道的 EQ、压缩和混响设置保存为用户预设。</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>名称已存在，请使用其他名称；覆盖请用“更新”。</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>频率 (Hz)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>增益 (dB)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>输入 (dB)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>输出 (dB)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>时间 (s)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>湿声峰值 (dB)</value></data>
 </root>

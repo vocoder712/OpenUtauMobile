@@ -1833,7 +1833,6 @@
   <data name="Mixer.ResetHint" xml:space="preserve"><value>スライダーをダブルタップすると初期値に戻ります</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>エフェクト有効 / バイパス（点灯時は有効）</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>有効</value></data>
-  <data name="Mixer.FxBypassed" xml:space="preserve"><value>バイパス</value></data>
   <data name="EditorMore.EditTab" xml:space="preserve"><value>編集</value></data>
   <data name="History.NoUndo" xml:space="preserve"><value>元に戻す操作はありません</value></data>
   <data name="History.NoRedo" xml:space="preserve"><value>やり直す操作はありません</value></data>
@@ -1871,4 +1870,18 @@
   <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>ボーカルプレート風</value></data>
   <data name="Mixer.Preset.hall" xml:space="preserve"><value>ホール</value></data>
   <data name="Mixer.Preset.ambient" xml:space="preserve"><value>アンビエント</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>選択して適用</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>更新</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>追加</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>プリセットを読み込む</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>標準</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>エフェクトプリセットを追加</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>このトラックの EQ、コンプレッサー、リバーブを保存します。</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>同名があります。上書きには「更新」を使用してください。</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>周波数 (Hz)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>ゲイン (dB)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>入力 (dB)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>出力 (dB)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>時間 (s)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>ウェットピーク (dB)</value></data>
 </root>

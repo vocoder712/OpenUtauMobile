@@ -1795,7 +1795,6 @@
   <data name="Mixer.ResetHint" xml:space="preserve"><value>Подвійне натискання відновлює типове значення</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Увімкнути ефекти / обхід (підсвічено — увімкнені)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Увімкнені</value></data>
-  <data name="Mixer.FxBypassed" xml:space="preserve"><value>Обхід</value></data>
   <data name="EditorMore.EditTab" xml:space="preserve"><value>Редагування</value></data>
   <data name="History.NoUndo" xml:space="preserve"><value>Немає дій для скасування</value></data>
   <data name="History.NoRedo" xml:space="preserve"><value>Немає дій для повторення</value></data>
@@ -1833,4 +1832,18 @@
   <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>Вокальна пластина (стиль)</value></data>
   <data name="Mixer.Preset.hall" xml:space="preserve"><value>Зала</value></data>
   <data name="Mixer.Preset.ambient" xml:space="preserve"><value>Атмосферний</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>Виберіть для застосування</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>Оновити</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>Додати</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>Завантажити пресет</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>Типовий</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>Новий пресет ефектів</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>Зберегти EQ, компресію та реверберацію цієї доріжки.</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>Назва вже існує. Для заміни натисніть «Оновити».</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>Частота (Гц)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>Підсилення (дБ)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>Вхід (дБ)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>Вихід (дБ)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>Час (с)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>Пік ефекту (дБ)</value></data>
 </root>
