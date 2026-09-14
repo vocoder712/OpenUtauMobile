@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NAudio.Wave;
 
 namespace OpenUtau.Core.SignalChain {
@@ -14,6 +15,57 @@ namespace OpenUtau.Core.SignalChain {
         private readonly int endPosition;
         private int position;
         private int startPosition;
+
+        private struct PositionSpan
+        {
+            public long OutputStartFrame;
+            public int SourceStart, FrameCount;
+            public bool Waiting;
+        }
+        private readonly PositionSpan[] timeline = new PositionSpan[2048];
+        private int timelineVersion;
+        private long spanCount, outputFrames, lastAudiblePosition;
+        private bool lastAudibleWaiting;
+
+        // 音频线程只发布时间段；界面读取一致快照，不把尚未播放的等待静音提前扣除。
+        private void RecordPosition(int sourceStart, int samples, bool waiting)
+        {
+            if (samples <= 0) return;
+            Interlocked.Increment(ref timelineVersion);
+            timeline[spanCount % timeline.Length] = new PositionSpan
+            {
+                OutputStartFrame = outputFrames,
+                SourceStart = sourceStart,
+                FrameCount = samples / Channels,
+                Waiting = waiting,
+            };
+            outputFrames += samples / Channels;
+            spanCount++;
+            Interlocked.Increment(ref timelineVersion);
+        }
+
+        public long GetProjectPosition(long playedFrames, out bool waiting)
+        {
+            int version = Volatile.Read(ref timelineVersion);
+            waiting = lastAudibleWaiting;
+            if ((version & 1) != 0) return lastAudiblePosition;
+            long total = spanCount;
+            long position = startPosition;
+            bool isWaiting = false;
+            for (long i = total - 1; i >= Math.Max(0, total - timeline.Length); i--)
+            {
+                PositionSpan span = timeline[i % timeline.Length];
+                if (playedFrames < span.OutputStartFrame) continue;
+                position = span.SourceStart + (span.Waiting ? 0 : Math.Clamp(playedFrames - span.OutputStartFrame, 0, span.FrameCount) * Channels);
+                isWaiting = span.Waiting;
+                break;
+            }
+            Thread.MemoryBarrier();
+            if (version != Volatile.Read(ref timelineVersion)) return lastAudiblePosition;
+            lastAudiblePosition = position;
+            waiting = lastAudibleWaiting = isWaiting;
+            return position;
+        }
 
         public WaveFormat WaveFormat => waveFormat;
         public int Waited { get; private set; }
@@ -40,6 +92,7 @@ namespace OpenUtau.Core.SignalChain {
                 buffer[i] = 0;
             }
             if (!source.IsReady(position, count)) {
+                RecordPosition(position, count, true);
                 Waited += count;
                 IsWaiting = true;
                 return count;
@@ -73,7 +126,8 @@ namespace OpenUtau.Core.SignalChain {
                     }
                 }
                 // 总线取实际返回的输出，包含节拍器与播放边缘淡入淡出。
-                if (Meters != null && Meters.Enabled) Meters.Master.Push(buffer, offset, n);
+                if (Meters != null && Meters.Enabled) Meters.Master.Push(buffer, offset, n, readPosition);
+                RecordPosition(readPosition, n, false);
                 IsWaiting = false;
                 return n;
             }
@@ -83,6 +137,9 @@ namespace OpenUtau.Core.SignalChain {
             this.position = position;
             startPosition = position;
             Waited = 0;
+            spanCount = outputFrames = 0;
+            lastAudiblePosition = position;
+            lastAudibleWaiting = false;
         }
     }
 }

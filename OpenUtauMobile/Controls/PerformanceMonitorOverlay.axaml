@@ -28,6 +28,9 @@
             <TextBlock Text="{Binding FrameRateText}"
                        FontSize="11"
                        Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+            <TextBlock Text="{Binding AudioLatencyText}"
+                       FontSize="11"
+                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
         </StackPanel>
     </Border>
 </UserControl>

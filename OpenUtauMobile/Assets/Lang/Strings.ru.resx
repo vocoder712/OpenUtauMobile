@@ -1846,4 +1846,5 @@
   <data name="Mixer.Axis.Output" xml:space="preserve"><value>Выход (дБ)</value></data>
   <data name="Mixer.Axis.Time" xml:space="preserve"><value>Время (с)</value></data>
   <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>Пик эффекта (дБ)</value></data>
+  <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>Задержка очереди аудио</value></data>
 </root>

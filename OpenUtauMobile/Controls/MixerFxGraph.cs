@@ -16,7 +16,7 @@ namespace OpenUtauMobile.Controls;
 public enum MixerFxGraphKind { Equalizer, Compressor, Reverb }
 
 /// <summary>轨道效果器曲线；拖动与下方滑杆共用参数和撤销组。</summary>
-public sealed class MixerFxGraph : Control
+public sealed partial class MixerFxGraph : Control
 {
     public static readonly StyledProperty<string> XAxisTitleProperty = AvaloniaProperty.Register<MixerFxGraph, string>(nameof(XAxisTitle), string.Empty);
     public static readonly StyledProperty<string> YAxisTitleProperty = AvaloniaProperty.Register<MixerFxGraph, string>(nameof(YAxisTitle), string.Empty);
@@ -41,7 +41,7 @@ public sealed class MixerFxGraph : Control
     private Point _start;
     private double _startGain;
     private IPointer? _pointer;
-    private Rect Plot => new(58, 14, Math.Max(1, Bounds.Width - 72), Math.Max(1, Bounds.Height - 62));
+    private Rect Plot => new(58, 14, Math.Max(1, Bounds.Width - (Kind == MixerFxGraphKind.Equalizer ? 106 : 72)), Math.Max(1, Bounds.Height - 62));
 
     static MixerFxGraph() => AffectsRender<MixerFxGraph>(CurveBrushProperty, SecondaryBrushProperty, GridBrushProperty, LabelBrushProperty, XAxisTitleProperty, YAxisTitleProperty);
 
@@ -50,6 +50,7 @@ public sealed class MixerFxGraph : Control
         ClipToBounds = true;
         DataContextChanged += (_, _) => Subscribe();
         _previewTimer.Tick += UpdateReverb;
+        _audioTimer.Tick += UpdateAudio;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -57,11 +58,14 @@ public sealed class MixerFxGraph : Control
         base.OnAttachedToVisualTree(e);
         _attached = true;
         Subscribe();
+        if (Kind != MixerFxGraphKind.Reverb) _audioTimer.Start();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         _attached = false;
+        _audioTimer.Stop();
+        ReleaseAudio();
         EndDrag();
         _previewTimer.Stop();
         _version++;
@@ -72,6 +76,7 @@ public sealed class MixerFxGraph : Control
 
     private void Subscribe()
     {
+        ReleaseAudio();
         EndDrag();
         if (_channel != null) _channel.PropertyChanged -= OnParameterChanged;
         _channel = _attached ? DataContext as MixerChannelViewModel : null;
@@ -146,15 +151,23 @@ public sealed class MixerFxGraph : Control
         context.DrawText(xTitle, new Point(Plot.Left + (Plot.Width - xTitle.Width) / 2, Bounds.Height - 18));
         using (context.PushTransform(Matrix.CreateRotation(-Math.PI / 2) * Matrix.CreateTranslation(7, Plot.Top + (Plot.Height + yTitle.Width) / 2)))
             context.DrawText(yTitle, default);
+        if (Kind == MixerFxGraphKind.Equalizer)
+        {
+            Label(context, "dBFS", new Point(Plot.Right + 2, Bounds.Height - 18));
+            foreach (double db in new double[] { 0, -30, -60, -90 })
+                Label(context, db.ToString("0", CultureInfo.InvariantCulture), new Point(Plot.Right + 5, SpectrumY(db) - 7));
+        }
         using (context.PushClip(Plot))
         {
             if (Kind == MixerFxGraphKind.Equalizer)
             {
+                DrawSpectrum(context);
                 Func<double, double> response = MixerFxResponse.Equalizer(_channel.LowDb, _channel.MidFrequency, _channel.MidDb, _channel.HighDb);
                 Curve(context, t => new Point(X(t), Y(response(20 * Math.Pow(1000, t)))), CurveBrush);
             }
             else if (Kind == MixerFxGraphKind.Compressor)
             {
+                DrawCompressorLevel(context);
                 context.DrawLine(grid, new Point(InputX(-60), Y(-60)), new Point(InputX(12), Y(12)));
                 Curve(context, t => new Point(X(t), Y(MixerFxResponse.Compressor(-60 + 72 * t, _channel.ThresholdDb, _channel.Ratio, Makeup))), CurveBrush);
             }

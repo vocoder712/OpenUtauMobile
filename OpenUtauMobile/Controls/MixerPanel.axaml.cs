@@ -77,19 +77,20 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
                 _meters.Enabled = true;
             }
         }
-        SetMeter(ViewModel.Master, _meters?.Master);
+        long audiblePosition = PlaybackManager.Inst.AudibleSamplePosition;
+        SetMeter(ViewModel.Master, _meters?.Master, audiblePosition);
         foreach (MixerChannelViewModel channel in ViewModel.Channels)
         {
             StereoPeakMeter? meter = null;
             if (channel.Track != null) _meters?.Tracks.TryGetValue(channel.Track, out meter);
-            SetMeter(channel, meter);
+            SetMeter(channel, meter, audiblePosition);
         }
     }
 
-    private static void SetMeter(MixerChannelViewModel channel, StereoPeakMeter? meter)
+    private static void SetMeter(MixerChannelViewModel channel, StereoPeakMeter? meter, long audiblePosition)
     {
         // 无新样本（暂停、停止、等待渲染）即静音，回落和峰值保持由电平控件处理。
-        (channel.LeftDb, channel.RightDb) = meter?.Consume()
+        (channel.LeftDb, channel.RightDb) = meter?.Consume(audiblePosition)
             ?? (double.NegativeInfinity, double.NegativeInfinity);
     }
 

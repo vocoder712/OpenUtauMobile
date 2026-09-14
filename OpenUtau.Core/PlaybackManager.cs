@@ -258,6 +258,14 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         MasterAdapter editingMix;
+        // 与播放指针使用同一输出时钟，单位为工程内的交错立体声样本位置。
+        public long AudibleSamplePosition => GetAudiblePosition(out _);
+        private long GetAudiblePosition(out bool waiting)
+        {
+            waiting = false;
+            return masterMix?.GetProjectPosition(AudioOutput.GetPosition() / sizeof(float), out waiting) ?? 0;
+        }
+        public PlaybackMixer LiveMixer => PlayingMaster && OutputActive ? masterMix?.Mixer : null;
         public PlaybackMeters Meters => PlayingMaster && OutputActive ? masterMix?.Meters : null;
         public void RefreshMixer(UProject project) {
             var mixer = masterMix?.Mixer;
@@ -494,8 +502,8 @@ namespace OpenUtau.Core {
         public void UpdatePlayPos() {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && PlayingMaster && masterMix != null) {
 
-                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Waited / 2) * 1000.0 / 44100;
-                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs + ms);
+                double ms = GetAudiblePosition(out bool waiting) * 1000.0 / (44100 * 2);
+                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(ms);
                 if (playbackRangeEndTick > 0 && tick >= playbackRangeEndTick) {
                     HandlePlaybackBoundary(hasPlaybackRange: true);
                     return;
@@ -507,7 +515,7 @@ namespace OpenUtau.Core {
                     HandlePlaybackBoundary(hasPlaybackRange: false);
                     return;
                 }
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, masterMix.IsWaiting));
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, waiting));
             } else if (AudioOutput != null &&
                 AudioOutput.PlaybackState == PlaybackState.Stopped &&
                 PlayingMaster &&

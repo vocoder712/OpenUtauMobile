@@ -19,33 +19,58 @@ namespace OpenUtau.Core.SignalChain {
     }
 
     public sealed class StereoPeakMeter {
-        private float left;
-        private float right;
+        private struct PeakFrame
+        {
+            public long EndPosition;
+            public float Left, Right;
+        }
+        private readonly PeakFrame[] frames = new PeakFrame[512];
+        private int read, write, count, gate;
 
-        public void Push(float[] buffer, int offset, int count) {
-            float l = 0, r = 0;
-            for (int i = 0; i < count; i++) {
-                float value = Math.Abs(buffer[offset + i]);
-                if (float.IsNaN(value)) continue;
-                if ((i & 1) == 0) l = Math.Max(l, value);
-                else r = Math.Max(r, value);
+        public void Push(float[] buffer, int offset, int sampleCount, long position = 0)
+        {
+            if (Interlocked.CompareExchange(ref gate, 1, 0) != 0) return;
+            try
+            {
+                // 以约 6 ms 的片段保留峰值，界面仅消费播放头已经经过的片段。
+                for (int start = 0; start < sampleCount; start += 512)
+                {
+                    int end = Math.Min(sampleCount, start + 512);
+                    float left = 0, right = 0;
+                    for (int i = start; i < end; i++)
+                    {
+                        float value = Math.Abs(buffer[offset + i]);
+                        if (!float.IsFinite(value)) continue;
+                        if ((i & 1) == 0) left = Math.Max(left, value);
+                        else right = Math.Max(right, value);
+                    }
+                    frames[write] = new PeakFrame { EndPosition = position + end, Left = left, Right = right };
+                    write = (write + 1) % frames.Length;
+                    if (count == frames.Length) read = (read + 1) % frames.Length;
+                    else count++;
+                }
             }
-            Accumulate(ref left, l);
-            Accumulate(ref right, r);
+            finally { Volatile.Write(ref gate, 0); }
         }
 
-        private static void Accumulate(ref float target, float value) {
-            float previous = Volatile.Read(ref target);
-            while (value > previous) {
-                float observed = Interlocked.CompareExchange(ref target, value, previous);
-                if (observed == previous) return;
-                previous = observed;
+        /// <summary>取走已播放片段的峰值；保留尚在输出缓冲区内的数据。</summary>
+        public (double LeftDb, double RightDb) Consume(long audiblePosition = long.MaxValue)
+        {
+            if (Interlocked.CompareExchange(ref gate, 1, 0) != 0)
+                return (double.NegativeInfinity, double.NegativeInfinity);
+            try
+            {
+                float left = 0, right = 0;
+                while (count > 0 && frames[read].EndPosition <= audiblePosition)
+                {
+                    left = Math.Max(left, frames[read].Left);
+                    right = Math.Max(right, frames[read].Right);
+                    read = (read + 1) % frames.Length;
+                    count--;
+                }
+                return (ToDb(left), ToDb(right));
             }
-        }
-
-        /// <summary>取走刷新间隔内的最大值，无样本时返回静音；不阻塞音频线程。</summary>
-        public (double LeftDb, double RightDb) Consume() {
-            return (ToDb(Interlocked.Exchange(ref left, 0)), ToDb(Interlocked.Exchange(ref right, 0)));
+            finally { Volatile.Write(ref gate, 0); }
         }
 
         private static double ToDb(float value) => value > 0 ? 20 * Math.Log10(value) : double.NegativeInfinity;
@@ -71,7 +96,7 @@ namespace OpenUtau.Core.SignalChain {
             if (scratch.Length < count) scratch = new float[count];
             Array.Clear(scratch, 0, count);
             int end = source.Mix(position, scratch, 0, count);
-            meter.Push(scratch, 0, count);
+            meter.Push(scratch, 0, count, position);
             for (int i = 0; i < count; i++) buffer[index + i] += scratch[i];
             return end;
         }

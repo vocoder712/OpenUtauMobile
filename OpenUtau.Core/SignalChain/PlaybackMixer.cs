@@ -26,6 +26,15 @@ namespace OpenUtau.Core.SignalChain {
             return master;
         }
 
+        /// <summary>只读播放观测；传入 null 停止采样，不改变效果器状态。</summary>
+        public void SetSampleObserver(UTrack track, MixFxSampleObserver observer)
+        {
+            if (track != null && tracks.TryGetValue(track, out MixerChannelSource channel))
+            {
+                channel.SetSampleObserver(observer);
+            }
+        }
+
         public void Refresh() {
             lock (Project) {
                 foreach (var pair in tracks) {
@@ -75,6 +84,9 @@ namespace OpenUtau.Core.SignalChain {
             Fader.SetScaleToTarget();
             output.SetScaleToTarget();
         }
+
+        public void SetSampleObserver(MixFxSampleObserver observer) =>
+            Volatile.Write(ref effects.SampleObserver, observer);
 
         public void Update(Settings settings) => Interlocked.Exchange(ref pending, settings);
         public bool IsReady(int position, int count) => output.IsReady(position, count);

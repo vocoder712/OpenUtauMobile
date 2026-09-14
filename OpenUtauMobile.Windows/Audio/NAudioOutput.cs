@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using NAudio.Wave;
 using OpenUtau.Audio;
 using OpenUtau.Core.Util;
+using OpenUtauMobile.Services.Performance;
 
 namespace OpenUtauMobile.Windows.Audio;
 
-public class NAudioOutput : IAudioOutput
+public class NAudioOutput : IAudioOutput, IAudioLatencySource
 {
     private const int Channels = 2;
 
     private readonly object lockObj = new object();
     private WaveOutEvent? waveOutEvent;
     private int deviceNumber;
+    private CountingSampleProvider? countedSource;
 
     public NAudioOutput()
     {
@@ -39,6 +41,19 @@ public class NAudioOutput : IAudioOutput
 
     public int DeviceNumber => deviceNumber;
 
+    public double? OutputLatencyMilliseconds
+    {
+        get
+        {
+            lock (lockObj)
+            {
+                if (waveOutEvent?.PlaybackState != PlaybackState.Playing || countedSource == null) return null;
+                long played = waveOutEvent.GetPosition() / waveOutEvent.OutputWaveFormat.BlockAlign;
+                return Math.Max(0, countedSource.Frames - played) * 1000.0 / countedSource.WaveFormat.SampleRate;
+            }
+        }
+    }
+
     public long GetPosition()
     {
         lock (lockObj)
@@ -61,8 +76,12 @@ public class NAudioOutput : IAudioOutput
             waveOutEvent = new WaveOutEvent
             {
                 DeviceNumber = deviceNumber,
+                // 三个 20 ms 缓冲块，降低默认长缓冲带来的交互延迟。
+                DesiredLatency = 60,
+                NumberOfBuffers = 3,
             };
-            waveOutEvent.Init(sampleProvider);
+            countedSource = new CountingSampleProvider(sampleProvider);
+            waveOutEvent.Init(countedSource);
         }
     }
 
@@ -97,6 +116,7 @@ public class NAudioOutput : IAudioOutput
                 waveOutEvent.Stop();
                 waveOutEvent.Dispose();
                 waveOutEvent = null;
+                countedSource = null;
             }
         }
     }

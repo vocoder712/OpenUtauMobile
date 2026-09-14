@@ -109,7 +109,17 @@ public sealed class PerformanceMonitorService
             processCpuUsage,
             platformMetrics.SystemCpuUsagePercent,
             frameRateProvider?.FramesPerSecond,
-            frameRateProvider?.AverageFrameTimeMilliseconds);
+            frameRateProvider?.AverageFrameTimeMilliseconds,
+            CaptureAudioLatency());
+    }
+
+    private static double? CaptureAudioLatency()
+    {
+        try
+        {
+            return (OpenUtau.Core.PlaybackManager.Inst.AudioOutput as IAudioLatencySource)?.OutputLatencyMilliseconds;
+        }
+        catch { return null; }
     }
 
     private static long? CaptureProcessMemoryBytes()

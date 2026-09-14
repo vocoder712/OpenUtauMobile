@@ -1884,4 +1884,5 @@
   <data name="Mixer.Axis.Output" xml:space="preserve"><value>出力 (dB)</value></data>
   <data name="Mixer.Axis.Time" xml:space="preserve"><value>時間 (s)</value></data>
   <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>ウェットピーク (dB)</value></data>
+  <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>音声キュー遅延</value></data>
 </root>

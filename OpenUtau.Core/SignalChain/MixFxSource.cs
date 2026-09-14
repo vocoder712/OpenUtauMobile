@@ -3,6 +3,9 @@ using OpenUtau.Core.SignalChain.Effects;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.SignalChain {
+    /// <summary>同步读取 EQ 输出、压缩器输入；接收方不得阻塞或保留样本视图。</summary>
+    public delegate void MixFxSampleObserver(int position, ReadOnlySpan<float> samples);
+
     /// <summary>
     /// ISignalSource wrapper that applies the user-configured post-FX chain
     /// (3-band EQ -> compressor -> reverb).  When all effects bypass, the
@@ -22,6 +25,7 @@ namespace OpenUtau.Core.SignalChain {
         private readonly SimpleCompressor comp;
         private readonly Freeverb reverb;
         private bool enabled = true;
+        internal MixFxSampleObserver SampleObserver;
 
         // Scratch buffer.  The signal chain in MasterAdapter passes in a
         // zeroed buffer and we mix into it; we need a private writeable copy
@@ -52,6 +56,7 @@ namespace OpenUtau.Core.SignalChain {
             // when its parameters are at unity so individually-disabled stages
             // cost effectively nothing.
             eq.Process(scratch, 0, count);
+            System.Threading.Volatile.Read(ref SampleObserver)?.Invoke(position, scratch.AsSpan(0, count));
             comp.Process(scratch, 0, count);
             reverb.Process(scratch, 0, count);
 
