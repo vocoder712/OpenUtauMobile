@@ -45,7 +45,7 @@ jobs:
             -p:RuntimeIdentifier=android-arm64
 
   ios-build:
-    name: PR build test for iOS Intel Simulator NativeAOT
+    name: PR build test for iOS Intel Simulator Mono AOT LLVM
     runs-on: macos-26
     timeout-minutes: 90
     env:
@@ -95,7 +95,7 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Validate NativeAOT Project Isolation
+      - name: Validate Mono AOT LLVM Properties
         shell: bash
         run: |
           set -euo pipefail
@@ -103,42 +103,27 @@ jobs:
           APP_PROPERTIES="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
-            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime \
+            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,MtouchLink \
             -p:_IsPublishing=true \
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=iossimulator-x64 \
-            -p:EnableIosNativeAot=true)"
+            -p:RuntimeIdentifier=iossimulator-x64)"
           echo "$APP_PROPERTIES"
 
-          if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"_UseNativeAot": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "false"'; then
-            echo "::error::iOS simulator entry project did not select the NativeAOT runtime"
+          if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"'; then
+            echo "::error::iOS simulator entry project did not select Mono AOT with LLVM"
             exit 1
           fi
 
-          for DEPENDENCY_PROJECT in \
-            OpenUtauMobile/OpenUtauMobile.csproj \
-            OpenUtau.Core/OpenUtau.Core.csproj \
-            OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj \
-            OpenUtauMobile.Plugin.Renderers/OpenUtauMobile.Plugin.Renderers.csproj; do
-            DEPENDENCY_PUBLISH_AOT="$(dotnet msbuild \
-              "$DEPENDENCY_PROJECT" \
-              -nologo \
-              -getProperty:PublishAot \
-              -p:_IsPublishing=true \
-              -p:Configuration=Release \
-              -p:RuntimeIdentifier=iossimulator-x64 \
-              -p:EnableIosNativeAot=true)"
-            if [ -n "$DEPENDENCY_PUBLISH_AOT" ]; then
-              echo "::error::PublishAot leaked into $DEPENDENCY_PROJECT: $DEPENDENCY_PUBLISH_AOT"
-              exit 1
-            fi
-          done
-          echo "Dependency PublishAot: <empty> (4 projects)"
+          if echo "$APP_PROPERTIES" | grep -q '"_UseNativeAot": "true"'; then
+            echo "::error::iOS simulator entry project unexpectedly selected NativeAOT"
+            exit 1
+          fi
 
-      - name: Build iOS Intel Simulator NativeAOT App
+      - name: Build iOS Intel Simulator Mono AOT LLVM App
         shell: bash
         run: |
           set -euo pipefail
@@ -146,22 +131,21 @@ jobs:
           LOG_DIR="${GITHUB_WORKSPACE}/artifacts/iossimulator-x64-logs"
           mkdir -p "$LOG_DIR"
 
-          # iOS SDK 的 Publish 目标只接受真机 RID；模拟器直接执行 Build，
-          # 并设置 _IsPublishing 以启用 NativeAOT 所需的 SDK 路径。
           dotnet build \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --force \
             -c Release \
             -f net10.0-ios \
             -r iossimulator-x64 \
-            -p:_IsPublishing=true \
             -p:Version="0.0.0-pr.${{ github.event.pull_request.number }}" \
             -p:BuildNumber=${{ github.run_number }} \
             -p:BuildTimestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
             -p:BuildMachine="${RUNNER_OS} / $(uname -srm)" \
             -p:SourceCommit=${{ github.sha }} \
             -p:ActionRunId=${{ github.run_id }} \
-            -p:EnableIosNativeAot=true \
+            -p:PublishAot=false \
+            -p:MtouchUseLlvm=true \
+            -p:UseInterpreter=false \
             -p:EnableCodeSigning=true \
             -p:CodesignKey=- \
             -p:BuildIpa=false \
@@ -176,8 +160,8 @@ jobs:
           OUTPUT_DIR="OpenUtauMobile.iOS/bin/Release/net10.0-ios/iossimulator-x64"
           APP_DIR="$OUTPUT_DIR/OpenUtauMobile.iOS.app"
           PACKAGE_DIR="${GITHUB_WORKSPACE}/artifacts/iossimulator-x64"
-          STAGE_DIR="${RUNNER_TEMP}/OpenUtauMobile-iossimulator-x64-nativeaot"
-          ZIP_PATH="$PACKAGE_DIR/OpenUtauMobile-pr${{ github.event.pull_request.number }}-iossimulator-x64-nativeaot.zip"
+          STAGE_DIR="${RUNNER_TEMP}/OpenUtauMobile-iossimulator-x64-mono-llvm"
+          ZIP_PATH="$PACKAGE_DIR/OpenUtauMobile-pr${{ github.event.pull_request.number }}-iossimulator-x64-mono-llvm.zip"
 
           if [ ! -d "$APP_DIR" ]; then
             echo "::error::Simulator app bundle was not generated at $APP_DIR"
@@ -211,11 +195,7 @@ jobs:
             exit 1
           fi
 
-          MANAGED_FILE_COUNT="$(find "$APP_DIR" -maxdepth 1 -type f \( -name '*.dll' -o -name '*.aotdata.*' \) | wc -l | tr -d ' ')"
-          if [ "$MANAGED_FILE_COUNT" != "0" ]; then
-            echo "::error::NativeAOT app bundle contains $MANAGED_FILE_COUNT managed or Mono AOT files"
-            exit 1
-          fi
+          MANAGED_FILE_COUNT="$(find "$APP_DIR" -type f \( -name '*.dll' -o -name '*.aotdata.*' \) | wc -l | tr -d ' ')"
 
           mkdir -p "$PACKAGE_DIR" "$STAGE_DIR"
           ditto "$APP_DIR" "$STAGE_DIR/OpenUtauMobile.iOS.app"
@@ -228,26 +208,24 @@ jobs:
           echo "Platform: $PLATFORM"
           echo "Architectures: $ARCHS"
           echo "Code signature: ad-hoc, verified"
-          echo "NativeAOT top-level managed files: $MANAGED_FILE_COUNT"
+          echo "Managed/Mono AOT files: $MANAGED_FILE_COUNT"
           ls -lh "$ZIP_PATH"
 
-      - name: Upload NativeAOT Failure Diagnostics
+      - name: Upload iOS Failure Diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-iossimulator-x64-nativeaot-diagnostics
+          name: OpenUtauMobile-iossimulator-x64-mono-llvm-diagnostics
           path: |
             artifacts/iossimulator-x64-logs
             OpenUtauMobile.iOS/obj/project.assets.json
-            OpenUtauMobile.iOS/obj/**/nativeaot-*.txt
-            OpenUtauMobile.iOS/obj/**/*ilc*.txt
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload iOS Intel Simulator NativeAOT App
+      - name: Upload iOS Intel Simulator Mono AOT LLVM App
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-iossimulator-x64-nativeaot
+          name: OpenUtauMobile-iossimulator-x64-mono-llvm
           path: artifacts/iossimulator-x64/*.zip
           if-no-files-found: error
           retention-days: 7
