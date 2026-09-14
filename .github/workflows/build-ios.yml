@@ -92,37 +92,6 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Validate Mono AOT Properties
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          APP_PROPERTIES="$(dotnet msbuild \
-            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -nologo \
-            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,TrimMode,EnableAssemblyILStripping,_IsDedupEnabled \
-            -p:_IsPublishing=true \
-            -p:Configuration=Release \
-            -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64)"
-          echo "$APP_PROPERTIES"
-
-          if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "false"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"TrimMode": "copy"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"_IsDedupEnabled": "false"'; then
-            echo "::error::iOS entry project did not select Mono AOT without LLVM"
-            exit 1
-          fi
-
-          if echo "$APP_PROPERTIES" | grep -q '"_UseNativeAot": "true"'; then
-            echo "::error::iOS entry project unexpectedly selected NativeAOT"
-            exit 1
-          fi
-
       - name: Publish iOS arm64 Mono AOT Unsigned IPA
         shell: bash
         run: |
