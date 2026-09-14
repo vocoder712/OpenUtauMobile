@@ -14,6 +14,8 @@
         <UseInterpreter>false</UseInterpreter>
         <TrimMode>copy</TrimMode>
         <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
+        <!-- 避免将全部泛型实例聚合到过大的 aot-instances.dll；各程序集仍使用 Mono AOT + LLVM。 -->
+        <_IsDedupEnabled>false</_IsDedupEnabled>
         <AppIcon>AppIcon</AppIcon>
     </PropertyGroup>
 
