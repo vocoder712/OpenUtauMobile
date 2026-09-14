@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Dialogs;
 
 /// <summary>
 /// 显示通用选项确认弹窗。

@@ -1,4 +1,4 @@
-﻿namespace OpenUtauMobile.Services;
+﻿namespace OpenUtauMobile.Services.Dialogs;
 
 public interface IPopupContext
 {

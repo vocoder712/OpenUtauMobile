@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using System.Threading;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Helpers.Audio;
 
 /// <summary>固定容量的播放样本邮箱；音频线程争用时跳过，频谱计算只在界面线程执行。</summary>
 internal sealed class MixerAudioAnalysis

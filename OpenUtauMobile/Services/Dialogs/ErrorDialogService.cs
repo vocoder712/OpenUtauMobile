@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Dialogs;
 
 /// <summary>
 /// 全局错误弹窗服务，任意线程均可调用 <see cref="Show"/>。

@@ -1,7 +1,7 @@
+using OpenUtauMobile.Services.Platform;
 using System;
 using System.Threading.Tasks;
 using Foundation;
-using OpenUtauMobile.Services;
 using UIKit;
 
 namespace OpenUtauMobile.iOS;

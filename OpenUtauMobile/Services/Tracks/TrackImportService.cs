@@ -5,7 +5,7 @@ using System.Linq;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Tracks;
 
 /// <summary>读取来源工程供导入确认界面展示；导入行为直接复用 Core。</summary>
 public static class TrackImportService

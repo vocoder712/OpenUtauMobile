@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using OpenUtauMobile.Services.Dialogs;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Tracks;
 
 public class TrackHeaderService : ITrackHeaderService
 {

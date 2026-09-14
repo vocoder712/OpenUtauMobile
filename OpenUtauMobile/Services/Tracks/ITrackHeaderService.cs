@@ -2,7 +2,7 @@
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Tracks;
 
 public interface ITrackHeaderService
 {

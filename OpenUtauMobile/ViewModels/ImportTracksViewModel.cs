@@ -1,3 +1,4 @@
+using OpenUtauMobile.Services.Tracks;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,7 +7,6 @@ using System.Linq;
 using System.Reactive;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
-using OpenUtauMobile.Services;
 using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;

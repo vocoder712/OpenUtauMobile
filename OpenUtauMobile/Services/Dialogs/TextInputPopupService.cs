@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Dialogs;
 
 public static class TextInputPopupService
 {

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Dialogs;
 
 /// <summary>
 /// 全局 Toast 服务，任意线程均可调用 <see cref="Enqueue"/>。

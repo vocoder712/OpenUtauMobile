@@ -5,7 +5,7 @@ using Avalonia.Threading;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Services;
+namespace OpenUtauMobile.Services.Dialogs;
 
 /// <summary>
 /// 在通用加载弹窗中运行后台操作

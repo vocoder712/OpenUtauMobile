@@ -1,7 +1,7 @@
 using System.Threading;
 using NAudio.Wave;
 
-namespace OpenUtauMobile.Services.Performance;
+namespace OpenUtauMobile.Helpers.Audio;
 
 /// <summary>统计已交给输出后端的帧数，不修改音频样本。</summary>
 public sealed class CountingSampleProvider(ISampleProvider source) : ISampleProvider

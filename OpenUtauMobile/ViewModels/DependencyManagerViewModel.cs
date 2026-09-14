@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenUtauMobile.Services.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -8,7 +9,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
-using OpenUtauMobile.Services;
 using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
