@@ -32,6 +32,7 @@ jobs:
       AVALONIA_TELEMETRY_OPTOUT: "1"
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
+      MONO_LOG_LEVEL: debug
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
 
     steps:
@@ -90,6 +91,38 @@ jobs:
 
           dotnet workload restore \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            --verbosity minimal
+
+      - name: Build iOS arm64 Simulator Control
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          LOG_DIR="${GITHUB_WORKSPACE}/artifacts/ios-mono-aot-logs/iossimulator-arm64"
+          mkdir -p "$LOG_DIR"
+
+          dotnet build \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            --force \
+            -c Release \
+            -f net10.0-ios \
+            -r iossimulator-arm64 \
+            -p:Version="${{ inputs.version }}" \
+            -p:BuildNumber=${{ inputs.build_number }} \
+            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
+            -p:BuildMachine="$BUILD_MACHINE" \
+            -p:SourceCommit=${{ inputs.source_sha }} \
+            -p:ActionRunId=${{ inputs.action_run_id }} \
+            -p:PublishAot=false \
+            -p:MtouchUseLlvm=false \
+            -p:UseInterpreter=false \
+            -p:TrimMode=copy \
+            -p:EnableAssemblyILStripping=false \
+            -p:_IsDedupEnabled=false \
+            -p:EnableCodeSigning=true \
+            -p:CodesignKey=- \
+            -p:BuildIpa=false \
+            -bl:"$LOG_DIR/build.binlog" \
             --verbosity minimal
 
       - name: Publish iOS arm64 Mono AOT Unsigned IPA
