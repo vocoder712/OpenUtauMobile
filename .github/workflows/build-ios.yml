@@ -1,4 +1,4 @@
-name: Reusable iOS Mono AOT Experiment
+name: Reusable iOS ARM64 Mono AOT Build
 
 on:
   workflow_call:
@@ -25,24 +25,13 @@ permissions:
 
 jobs:
   ios:
-    name: iOS AOT / ${{ matrix.variant }}
+    name: iOS ARM64 Mono AOT unsigned IPA
     runs-on: macos-26
     timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - variant: current-control
-            configuration: Release
-            mtouch_link: ""
-          - variant: release-net10-link-none
-            configuration: Release
-            mtouch_link: None
     env:
       AVALONIA_TELEMETRY_OPTOUT: "1"
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
-      MONO_LOG_LEVEL: debug
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
 
     steps:
@@ -56,35 +45,16 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Show Experiment Configuration
+      - name: Collect Build Metadata
         shell: bash
         run: |
           set -euo pipefail
 
-          MTOUCH_LINK="${{ matrix.mtouch_link }}"
-          if [[ -z "$MTOUCH_LINK" ]]; then
-            MTOUCH_LINK="not set"
-          fi
+          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
+          mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-arm64-logs"
 
-          echo "=== iOS Mono AOT Experiment ==="
-          echo "Variant: ${{ matrix.variant }}"
-          echo "Configuration: ${{ matrix.configuration }}"
-          echo "RID: ios-arm64"
-          echo "Shared iOS TFM: disabled"
-          echo "MtouchLink: $MTOUCH_LINK"
-          echo "Explicit AOT properties: yes"
-
-      - name: Initialize Experiment Diagnostics
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          DIAGNOSTICS_DIR="${GITHUB_WORKSPACE}/artifacts/ios-aot-experiment-${{ matrix.variant }}"
-          mkdir -p "$DIAGNOSTICS_DIR"
-          echo "not-run" > "$DIAGNOSTICS_DIR/result.txt"
-          echo "not-resolved" > "$DIAGNOSTICS_DIR/mtouch-link.txt"
-
-      - name: Show iOS Toolchain Summary
+      - name: Validate iOS Toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -100,11 +70,13 @@ jobs:
             ls -1d /Applications/Xcode_*.app 2>/dev/null | sed -n '1,20p' || true
             exit 1
           fi
+
           XCODE_VERSION="$(xcodebuild -version | awk '/^Xcode / { print $2 }')"
           if [[ "$XCODE_VERSION" != "26.6" && "$XCODE_VERSION" != 26.6.* ]]; then
             echo "::error::Expected Xcode 26.6, selected $XCODE_VERSION from $DEVELOPER_DIR"
             exit 1
           fi
+
           echo "Developer directory: $DEVELOPER_DIR"
           xcodebuild -version
           echo "iPhoneOS SDK: $(xcrun --sdk iphoneos --show-sdk-version)"
@@ -120,186 +92,181 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Show Resolved MSBuild Properties
-        id: properties
+      - name: Validate Mono AOT Properties
         shell: bash
         run: |
           set -euo pipefail
 
-          PROPERTIES=(
-            Configuration TargetFramework RuntimeIdentifier PublishAot
-            _UseNativeAot UseMonoRuntime MtouchUseLlvm UseInterpreter
-            MtouchInterpreter TrimMode MtouchLink EnableAssemblyILStripping
-            _IsDedupEnabled
-          )
-          PROPERTY_LIST="$(IFS=,; echo "${PROPERTIES[*]}")"
-          DIAGNOSTICS_DIR="${GITHUB_WORKSPACE}/artifacts/ios-aot-experiment-${{ matrix.variant }}"
-          PROPERTIES_FILE="$DIAGNOSTICS_DIR/resolved-properties.json"
-          mkdir -p "$DIAGNOSTICS_DIR"
-          EXTRA_PROPERTIES=(
-            -p:PublishAot=false
-            -p:MtouchUseLlvm=false
-            -p:UseInterpreter=false
-            -p:TrimMode=copy
-            -p:EnableAssemblyILStripping=false
-            -p:_IsDedupEnabled=false
-          )
-          if [[ -n "${{ matrix.mtouch_link }}" ]]; then
-            EXTRA_PROPERTIES+=("-p:MtouchLink=${{ matrix.mtouch_link }}")
-          fi
-
-          dotnet msbuild \
+          APP_PROPERTIES="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
-            -getProperty:"$PROPERTY_LIST" \
-            -p:Configuration=${{ matrix.configuration }} \
+            -getProperty:Configuration,TargetFramework,RuntimeIdentifier,PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,MtouchInterpreter,TrimMode,MtouchLink,EnableAssemblyILStripping,_IsDedupEnabled,EnableCodeSigning \
+            -p:_IsPublishing=true \
+            -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
             -p:RuntimeIdentifier=ios-arm64 \
+            -p:PublishAot=false \
+            -p:UseMonoRuntime=true \
+            -p:MtouchUseLlvm=false \
+            -p:UseInterpreter=false \
+            -p:TrimMode=copy \
+            -p:MtouchLink=None \
+            -p:EnableAssemblyILStripping=false \
+            -p:_IsDedupEnabled=false \
             -p:EnableCodeSigning=false \
-            -p:BuildIpa=false \
-            "${EXTRA_PROPERTIES[@]}" \
-            | tee "$PROPERTIES_FILE"
+            -p:BuildIpa=true)"
+          echo "$APP_PROPERTIES"
 
-          RESOLVED_MTOUCH_LINK="$(python3 - "$PROPERTIES_FILE" <<'PY'
-          import json
-          import sys
+          REQUIRED_PROPERTIES=(
+            '"Configuration": "Release"'
+            '"TargetFramework": "net10.0-ios"'
+            '"RuntimeIdentifier": "ios-arm64"'
+            '"PublishAot": "false"'
+            '"UseMonoRuntime": "true"'
+            '"MtouchUseLlvm": "false"'
+            '"UseInterpreter": "false"'
+            '"TrimMode": "copy"'
+            '"MtouchLink": "None"'
+            '"EnableAssemblyILStripping": "false"'
+            '"_IsDedupEnabled": "false"'
+            '"EnableCodeSigning": "false"'
+          )
 
-          with open(sys.argv[1], encoding="utf-8") as stream:
-              properties = json.load(stream)["Properties"]
-          print(properties.get("MtouchLink", ""))
-          PY
-          )"
-          if [[ -z "$RESOLVED_MTOUCH_LINK" ]]; then
-            RESOLVED_MTOUCH_LINK="(empty)"
+          for PROPERTY in "${REQUIRED_PROPERTIES[@]}"; do
+            if ! grep -Fq "$PROPERTY" <<< "$APP_PROPERTIES"; then
+              echo "::error::Resolved iOS build properties are missing $PROPERTY"
+              exit 1
+            fi
+          done
+
+          if grep -Fq '"_UseNativeAot": "true"' <<< "$APP_PROPERTIES"; then
+            echo "::error::iOS entry project unexpectedly selected NativeAOT"
+            exit 1
           fi
-          echo "$RESOLVED_MTOUCH_LINK" > "$DIAGNOSTICS_DIR/mtouch-link.txt"
-          echo "mtouch_link=$RESOLVED_MTOUCH_LINK" >> "$GITHUB_OUTPUT"
 
-      - name: Publish iOS Mono AOT Experiment
-        id: publish
+      - name: Publish iOS ARM64 Mono AOT Unsigned IPA
         shell: bash
         run: |
-          set +e
+          set -euo pipefail
 
-          DIAGNOSTICS_DIR="${GITHUB_WORKSPACE}/artifacts/ios-aot-experiment-${{ matrix.variant }}"
-          mkdir -p "$DIAGNOSTICS_DIR"
-          EXTRA_PROPERTIES=(
-            -p:PublishAot=false
-            -p:MtouchUseLlvm=false
-            -p:UseInterpreter=false
-            -p:TrimMode=copy
-            -p:EnableAssemblyILStripping=false
-            -p:_IsDedupEnabled=false
-          )
-          if [[ -n "${{ matrix.mtouch_link }}" ]]; then
-            EXTRA_PROPERTIES+=("-p:MtouchLink=${{ matrix.mtouch_link }}")
-          fi
+          IPA_DIR="${GITHUB_WORKSPACE}/artifacts/ios-arm64"
+          IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
+          mkdir -p "$IPA_DIR"
 
           dotnet publish \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            --force \
+            -c Release \
             -f net10.0-ios \
             -r ios-arm64 \
-            -c ${{ matrix.configuration }} \
             -p:Version="${{ inputs.version }}" \
             -p:BuildNumber=${{ inputs.build_number }} \
-            -p:BuildTimestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
-            -p:BuildMachine="${RUNNER_OS} / $(uname -srm)" \
+            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
+            -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
+            -p:PublishAot=false \
+            -p:UseMonoRuntime=true \
+            -p:MtouchUseLlvm=false \
+            -p:UseInterpreter=false \
+            -p:TrimMode=copy \
+            -p:MtouchLink=None \
+            -p:EnableAssemblyILStripping=false \
+            -p:_IsDedupEnabled=false \
             -p:EnableCodeSigning=false \
-            -p:BuildIpa=false \
-            "${EXTRA_PROPERTIES[@]}" \
-            -bl:"$DIAGNOSTICS_DIR/build.binlog" \
+            -p:BuildIpa=true \
+            -p:IpaPackagePath="$IPA_PATH" \
+            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-arm64-logs/build.binlog" \
             --verbosity minimal
-          PUBLISH_EXIT_CODE=$?
-          if [[ "$PUBLISH_EXIT_CODE" -eq 0 ]]; then
-            RESULT=success
-          else
-            RESULT=failure
-          fi
-          echo "result=$RESULT" >> "$GITHUB_OUTPUT"
-          echo "$RESULT" > "$DIAGNOSTICS_DIR/result.txt"
-          exit "$PUBLISH_EXIT_CODE"
 
-      - name: Upload Experiment Diagnostics
-        if: always()
+          ls -lh "$IPA_PATH"
+
+      - name: Validate iOS ARM64 Mono AOT Unsigned IPA
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
+          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-arm64-verify"
+
+          unzip -tq "$IPA_PATH"
+          mkdir -p "$VERIFY_DIR"
+          unzip -q "$IPA_PATH" -d "$VERIFY_DIR"
+
+          APP_COUNT="$(find "$VERIFY_DIR/Payload" -maxdepth 1 -type d -name '*.app' | wc -l | tr -d ' ')"
+          if [ "$APP_COUNT" != "1" ]; then
+            echo "::error::IPA must contain exactly one app bundle, found $APP_COUNT"
+            exit 1
+          fi
+
+          APP_DIR="$(find "$VERIFY_DIR/Payload" -maxdepth 1 -type d -name '*.app' -print -quit)"
+          INFO_PLIST="$APP_DIR/Info.plist"
+          EXECUTABLE="$(plutil -extract CFBundleExecutable raw "$INFO_PLIST")"
+          BUNDLE_ID="$(plutil -extract CFBundleIdentifier raw "$INFO_PLIST")"
+          DISPLAY_VERSION="$(plutil -extract CFBundleShortVersionString raw "$INFO_PLIST")"
+          BUILD_VERSION="$(plutil -extract CFBundleVersion raw "$INFO_PLIST")"
+          PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
+          ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
+          EXPECTED_BUNDLE_ID="$(dotnet msbuild \
+            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            -nologo \
+            -getProperty:ApplicationId \
+            -p:Configuration=Release \
+            -p:TargetFramework=net10.0-ios \
+            -p:RuntimeIdentifier=ios-arm64)"
+
+          if [ "$BUNDLE_ID" != "$EXPECTED_BUNDLE_ID" ]; then
+            echo "::error::Bundle ID is $BUNDLE_ID, expected $EXPECTED_BUNDLE_ID"
+            exit 1
+          fi
+          if [ "$DISPLAY_VERSION" != "${{ inputs.version }}" ]; then
+            echo "::error::CFBundleShortVersionString is $DISPLAY_VERSION, expected ${{ inputs.version }}"
+            exit 1
+          fi
+          if [ "$BUILD_VERSION" != "${{ inputs.build_number }}" ]; then
+            echo "::error::CFBundleVersion is $BUILD_VERSION, expected ${{ inputs.build_number }}"
+            exit 1
+          fi
+          if [ "$PLATFORM" != "iPhoneOS" ]; then
+            echo "::error::IPA targets $PLATFORM instead of iPhoneOS"
+            exit 1
+          fi
+          if [ "$ARCHS" != "arm64" ]; then
+            echo "::error::App executable architectures are $ARCHS instead of arm64"
+            exit 1
+          fi
+          if [ -e "$APP_DIR/_CodeSignature" ] || [ -e "$APP_DIR/embedded.mobileprovision" ]; then
+            echo "::error::App bundle unexpectedly contains signing assets"
+            exit 1
+          fi
+          if codesign --verify --deep --strict "$APP_DIR" 2>"$VERIFY_DIR/codesign.txt"; then
+            echo "::error::App bundle unexpectedly passed code-sign verification"
+            exit 1
+          fi
+
+          echo "Bundle ID: $BUNDLE_ID"
+          echo "Version: $DISPLAY_VERSION ($BUILD_VERSION)"
+          echo "Platform: $PLATFORM"
+          echo "Architectures: $ARCHS"
+          echo "Code signature: unsigned, verified"
+
+      - name: Upload iOS Failure Diagnostics
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-aot-experiment-${{ matrix.variant }}
-          if-no-files-found: warn
+          name: OpenUtauMobile-ios-arm64-mono-aot-diagnostics
           path: |
-            artifacts/ios-aot-experiment-${{ matrix.variant }}/build.binlog
-            artifacts/ios-aot-experiment-${{ matrix.variant }}/result.txt
-            artifacts/ios-aot-experiment-${{ matrix.variant }}/resolved-properties.json
-            artifacts/ios-aot-experiment-${{ matrix.variant }}/mtouch-link.txt
-            **/obj/**/project.assets.json
-            **/obj/**/mobile/**
-            **/obj/**/*.aotdata.*
-            **/bin/**/*.aotdata.*
+            artifacts/ios-arm64-logs
+            OpenUtauMobile.iOS/obj/project.assets.json
+            OpenUtauMobile.iOS/obj/**/mobile/**
+            OpenUtauMobile.iOS/obj/**/*.aotdata.*
+          if-no-files-found: warn
+          retention-days: 7
 
-      - name: Write Experiment Summary
-        if: always()
-        shell: bash
-        env:
-          PUBLISH_RESULT: ${{ steps.publish.outputs.result }}
-          RESOLVED_MTOUCH_LINK: ${{ steps.properties.outputs.mtouch_link }}
-        run: |
-          RESULT="${PUBLISH_RESULT:-not-run}"
-          MTOUCH_LINK="${RESOLVED_MTOUCH_LINK:-not-resolved}"
-          {
-            echo "## iOS Mono AOT Experiment"
-            echo
-            echo "| Variant | Config | Shared iOS TFM | MtouchLink (resolved) | Result |"
-            echo "| --- | --- | --- | --- | --- |"
-            echo "| ${{ matrix.variant }} | ${{ matrix.configuration }} | No | $MTOUCH_LINK | $RESULT |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-  summary:
-    name: iOS AOT experiment summary
-    if: always()
-    needs: ios
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Experiment Results
-        continue-on-error: true
-        uses: actions/download-artifact@v4
+      - name: Upload iOS ARM64 Mono AOT Unsigned IPA
+        uses: actions/upload-artifact@v4
         with:
-          pattern: ios-aot-experiment-*
-          path: experiment-results
-
-      - name: Write Combined Experiment Summary
-        if: always()
-        shell: bash
-        run: |
-          result_for() {
-            local variant="$1"
-            local result_file
-            result_file="$(find "experiment-results/ios-aot-experiment-$variant" \
-              -type f -name result.txt -print -quit 2>/dev/null || true)"
-            if [[ -n "$result_file" ]]; then
-              tr -d '\r\n' < "$result_file"
-            else
-              echo -n "not-run"
-            fi
-          }
-
-          mtouch_link_for() {
-            local variant="$1"
-            local value_file
-            value_file="$(find "experiment-results/ios-aot-experiment-$variant" \
-              -type f -name mtouch-link.txt -print -quit 2>/dev/null || true)"
-            if [[ -n "$value_file" ]]; then
-              tr -d '\r\n' < "$value_file"
-            else
-              echo -n "not-resolved"
-            fi
-          }
-
-          {
-            echo "## iOS Mono AOT Experiment Results"
-            echo
-            echo "| Variant | Config | Shared iOS TFM | MtouchLink (resolved) | Result |"
-            echo "| --- | --- | --- | --- | --- |"
-            echo "| current-control | Release | No | $(mtouch_link_for current-control) | $(result_for current-control) |"
-            echo "| release-net10-link-none | Release | No | $(mtouch_link_for release-net10-link-none) | $(result_for release-net10-link-none) |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          name: OpenUtauMobile-ios-arm64-mono-aot-unsigned
+          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa
+          if-no-files-found: error
+          compression-level: 0
