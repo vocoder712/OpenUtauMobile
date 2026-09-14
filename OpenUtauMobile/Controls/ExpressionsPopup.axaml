@@ -1,0 +1,116 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             x:Class="OpenUtauMobile.Controls.ExpressionsPopup"
+             x:DataType="vm:ExpressionsPopupViewModel"
+             Classes="PopupDialogRoot DialogHeightExpanded">
+    <dialogs:DialogShell Header="{Binding Title}" CloseCommand="{Binding CancelCommand}">
+        <dialogs:DialogShell.Footer>
+            <dialogs:DialogActionRow>
+                <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                <Button Content="{DynamicResource Expressions.Apply}" Command="{Binding ApplyCommand}" Classes="DialogPrimary" />
+            </dialogs:DialogActionRow>
+        </dialogs:DialogShell.Footer>
+        <ScrollViewer x:Name="BodyScroll" HorizontalScrollBarVisibility="Disabled">
+            <Grid RowDefinitions="Auto,Auto,Auto,Auto">
+                <Border Classes="DialogBodyBorder" IsVisible="{Binding IsSwitchVisible}">
+                    <Grid ColumnDefinitions="*,*">
+                        <ToggleButton IsChecked="{Binding !IsTrackOverride, Mode=OneWay}"
+                                      Command="{Binding ProjectCommand}" HorizontalAlignment="Stretch">
+                            <TextBlock Text="{DynamicResource Expressions.Project}" TextWrapping="Wrap" TextAlignment="Center" />
+                        </ToggleButton>
+                        <ToggleButton Grid.Column="1" IsChecked="{Binding IsTrackOverride, Mode=OneWay}"
+                                      Command="{Binding TrackCommand}" HorizontalAlignment="Stretch">
+                            <TextBlock Text="{DynamicResource Expressions.Track}" TextWrapping="Wrap" TextAlignment="Center" />
+                        </ToggleButton>
+                    </Grid>
+                </Border>
+                <Grid Grid.Row="3" ColumnDefinitions="2*,3*">
+                    <ListBox x:Name="ExpressionList" ItemsSource="{Binding Expressions}"
+                             MaxHeight="280" VerticalAlignment="Top"
+                             SelectedItem="{Binding Expression, Mode=TwoWay}"
+                             SelectedItems="{Binding SelectedExpressions}" SelectionMode="Multiple">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ExpressionBuilder">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding Abbr}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Border Grid.Column="1" Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                        <StackPanel IsEnabled="{Binding IsSelected}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource Expressions.Name}" TextWrapping="Wrap" />
+                            <TextBox Text="{Binding Expression.Name, Mode=TwoWay}" IsEnabled="{Binding Expression.IsCustom}" />
+                            <TextBlock Text="{DynamicResource Expressions.Abbr}" TextWrapping="Wrap" />
+                            <TextBox Text="{Binding Expression.Abbr, Mode=TwoWay}" IsEnabled="{Binding Expression.IsCustom}" />
+                            <TextBlock Text="{DynamicResource Expressions.Type}" TextWrapping="Wrap" />
+                            <ComboBox SelectedIndex="{Binding Expression.ExpressionType, Mode=TwoWay}"
+                                      IsEnabled="{Binding Expression.IsCustom}" HorizontalAlignment="Stretch">
+                                <ComboBoxItem Content="{DynamicResource Expressions.Numerical}" />
+                                <ComboBoxItem Content="{DynamicResource Expressions.Options}" />
+                                <ComboBoxItem Content="{DynamicResource Expressions.Curve}" />
+                            </ComboBox>
+                            <CheckBox IsVisible="{Binding Expression.IsOptions}" IsEnabled="{Binding Expression.IsCustom}"
+                                      IsChecked="{Binding Expression.IsFlag, Mode=TwoWay}">
+                                <TextBlock Text="{DynamicResource Expressions.IsFlag}" TextWrapping="Wrap" />
+                            </CheckBox>
+                            <StackPanel IsVisible="{Binding Expression.IsNumerical}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <TextBlock Text="{DynamicResource Expressions.Flag}" TextWrapping="Wrap" />
+                                <TextBox Text="{Binding Expression.Flag, Mode=TwoWay}" IsEnabled="{Binding Expression.IsCustom}" />
+                            </StackPanel>
+                            <StackPanel IsVisible="{Binding !Expression.IsOptions}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <TextBlock Text="{DynamicResource Expressions.Min}" TextWrapping="Wrap" />
+                                <NumericUpDown Value="{Binding Expression.Min, Mode=TwoWay}" IsEnabled="{Binding Expression.IsCustom}" />
+                                <TextBlock Text="{DynamicResource Expressions.Max}" TextWrapping="Wrap" />
+                                <NumericUpDown Value="{Binding Expression.Max, Mode=TwoWay}" IsEnabled="{Binding Expression.IsCustom}" />
+                                <TextBlock Text="{DynamicResource Expressions.Default}" IsVisible="{Binding Expression.IsCurve}" TextWrapping="Wrap" />
+                                <TextBlock Text="{DynamicResource Expressions.SystemDefault}" IsVisible="{Binding Expression.IsNumerical}" TextWrapping="Wrap" />
+                                <NumericUpDown Value="{Binding Expression.DefaultValue, Mode=TwoWay}" />
+                            </StackPanel>
+                            <StackPanel IsVisible="{Binding Expression.IsNumerical}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <TextBlock Text="{Binding CustomDefaultLabel}" TextWrapping="Wrap" />
+                                <NumericUpDown Value="{Binding Expression.CustomDefaultValue, Mode=TwoWay}" />
+                                <CheckBox IsChecked="{Binding Expression.SkipOutputIfDefault, Mode=TwoWay}">
+                                    <TextBlock Text="{DynamicResource Expressions.SkipOutput}" TextWrapping="Wrap" />
+                                </CheckBox>
+                            </StackPanel>
+                            <StackPanel IsVisible="{Binding Expression.IsOptions}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <TextBlock Text="{DynamicResource Expressions.OptionValues}" TextWrapping="Wrap" />
+                                <TextBox Text="{Binding Expression.OptionValues, Mode=TwoWay}" />
+                                <TextBlock Text="{DynamicResource Expressions.CommaHint}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+                <Border Grid.Row="1" Classes="DialogBodyBorder">
+                    <dialogs:DialogActionRow>
+                        <Button Content="{DynamicResource Expressions.Add}" Click="AddClicked" Classes="DialogAction">
+                            <Button.ContextMenu>
+                                <ContextMenu ItemsSource="{Binding AddOptions}">
+                                    <ContextMenu.ItemContainerTheme>
+                                        <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" x:DataType="vm:ExpressionBuilder">
+                                            <Setter Property="Header" Value="{Binding AddMenuLabel}" />
+                                            <Setter Property="Command" Value="{Binding $parent[UserControl].((vm:ExpressionsPopupViewModel)DataContext).AddOverrideCommand}" />
+                                            <Setter Property="CommandParameter" Value="{Binding}" />
+                                        </ControlTheme>
+                                    </ContextMenu.ItemContainerTheme>
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                        <Button Content="{DynamicResource Expressions.Remove}" Command="{Binding RemoveCommand}"
+                                IsEnabled="{Binding Expression.IsRemovable}" Classes="DialogAction" />
+                        <Button Content="{DynamicResource Expressions.Suggestions}" Command="{Binding SuggestionsCommand}"
+                                IsEnabled="{Binding !IsTrackOverride}" Classes="DialogAction" />
+                    </dialogs:DialogActionRow>
+                </Border>
+                <Border Grid.Row="2" Classes="DialogBodyBorder" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </dialogs:DialogShell>
+</UserControl>

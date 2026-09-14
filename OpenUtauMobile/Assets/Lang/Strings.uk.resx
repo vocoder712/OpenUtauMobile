@@ -1847,4 +1847,36 @@
   <data name="Mixer.Axis.Time" xml:space="preserve"><value>Час (с)</value></data>
   <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>Пік ефекту (дБ)</value></data>
   <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>Затримка черги аудіо</value></data>
+  <data name="Expressions.Title" xml:space="preserve"><value>Експресії</value></data>
+  <data name="Expressions.Project" xml:space="preserve"><value>Експресії проєкту</value></data>
+  <data name="Expressions.Track" xml:space="preserve"><value>Експресії доріжки (перевизначення)</value></data>
+  <data name="Expressions.Name" xml:space="preserve"><value>Назва</value></data>
+  <data name="Expressions.Abbr" xml:space="preserve"><value>Скорочення</value></data>
+  <data name="Expressions.Type" xml:space="preserve"><value>Тип</value></data>
+  <data name="Expressions.Numerical" xml:space="preserve"><value>Числовий</value></data>
+  <data name="Expressions.Options" xml:space="preserve"><value>Варіанти</value></data>
+  <data name="Expressions.Curve" xml:space="preserve"><value>Крива</value></data>
+  <data name="Expressions.IsFlag" xml:space="preserve"><value>Прапорець ресемплера</value></data>
+  <data name="Expressions.Flag" xml:space="preserve"><value>Прапорець ресемплера</value></data>
+  <data name="Expressions.Min" xml:space="preserve"><value>Мінімум</value></data>
+  <data name="Expressions.Max" xml:space="preserve"><value>Максимум</value></data>
+  <data name="Expressions.Default" xml:space="preserve"><value>Типове значення</value></data>
+  <data name="Expressions.SystemDefault" xml:space="preserve"><value>Системне типове значення</value></data>
+  <data name="Expressions.ProjectDefault" xml:space="preserve"><value>Типове значення проєкту</value></data>
+  <data name="Expressions.TrackDefault" xml:space="preserve"><value>Типове значення доріжки</value></data>
+  <data name="Expressions.SkipOutput" xml:space="preserve"><value>Не виводити прапорець для системного типового значення</value></data>
+  <data name="Expressions.OptionValues" xml:space="preserve"><value>Варіанти значень</value></data>
+  <data name="Expressions.CommaHint" xml:space="preserve"><value>Розділяйте значення комами</value></data>
+  <data name="Expressions.Apply" xml:space="preserve"><value>Застосувати</value></data>
+  <data name="Expressions.Error.Name" xml:space="preserve"><value>Вкажіть назву</value></data>
+  <data name="Expressions.Error.Abbr" xml:space="preserve"><value>Вкажіть скорочення</value></data>
+  <data name="Expressions.Error.AbbrLength" xml:space="preserve"><value>Скорочення має містити від 1 до 4 символів</value></data>
+  <data name="Expressions.Error.Range" xml:space="preserve"><value>Мінімум має бути меншим за максимум</value></data>
+  <data name="Expressions.Error.Default" xml:space="preserve"><value>Типове значення має бути в межах діапазону</value></data>
+  <data name="Expressions.Error.CustomDefault" xml:space="preserve"><value>Типове значення проєкту або доріжки має бути в межах діапазону</value></data>
+  <data name="Expressions.Error.DuplicateAbbr" xml:space="preserve"><value>Скорочення мають бути унікальними</value></data>
+  <data name="Expressions.Error.DuplicateFlag" xml:space="preserve"><value>Прапорці мають бути унікальними</value></data>
+  <data name="Expressions.Add" xml:space="preserve"><value>Додати</value></data>
+  <data name="Expressions.Remove" xml:space="preserve"><value>Видалити</value></data>
+  <data name="Expressions.Suggestions" xml:space="preserve"><value>Рекомендації</value></data>
 </root>

@@ -53,17 +53,23 @@
                 </Grid>
             </Button>
 
-            <!-- 交换按钮 -->
-            <Button Command="{Binding SwapExpressionsCommand}"
-                    HorizontalAlignment="Center"
-                    Width="32"
-                    Height="24"
-                    Padding="0"
-                    CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
-                    Background="Transparent"
-                    ToolTip.Tip="{DynamicResource PhonemePanel.Param.Swap}">
-                <iconPacks:PackIconPhosphorIcons Kind="ArrowsDownUp" Width="14" Height="14" />
-            </Button>
+            <!-- 交换和设置入口共用一行，保持参数面板原有高度。 -->
+            <Grid ColumnDefinitions="*,*">
+                <Button Command="{Binding SwapExpressionsCommand}"
+                        HorizontalAlignment="Stretch"
+                        Height="24"
+                        Padding="0"
+                        CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
+                        Background="Transparent"
+                        ToolTip.Tip="{DynamicResource PhonemePanel.Param.Swap}">
+                    <iconPacks:PackIconPhosphorIcons Kind="ArrowsDownUp" Width="14" Height="14" />
+                </Button>
+                <Button Grid.Column="1" Click="OpenExpressionsClicked" HorizontalAlignment="Stretch" Height="24" Padding="0"
+                        Background="Transparent" ToolTip.Tip="{DynamicResource Expressions.Title}"
+                        AutomationProperties.Name="{DynamicResource Expressions.Title}">
+                    <iconPacks:PackIconPhosphorIcons Kind="GearSix" Width="14" Height="14" />
+                </Button>
+            </Grid>
 
             <!-- 背景参数选择按钮 -->
             <Button HorizontalAlignment="Stretch"

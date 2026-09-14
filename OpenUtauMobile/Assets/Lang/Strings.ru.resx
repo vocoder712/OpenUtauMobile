@@ -1847,4 +1847,36 @@
   <data name="Mixer.Axis.Time" xml:space="preserve"><value>Время (с)</value></data>
   <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>Пик эффекта (дБ)</value></data>
   <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>Задержка очереди аудио</value></data>
+  <data name="Expressions.Title" xml:space="preserve"><value>Параметры флагов</value></data>
+  <data name="Expressions.Project" xml:space="preserve"><value>Project Expressions</value></data>
+  <data name="Expressions.Track" xml:space="preserve"><value>Track Expressions (override)</value></data>
+  <data name="Expressions.Name" xml:space="preserve"><value>Название</value></data>
+  <data name="Expressions.Abbr" xml:space="preserve"><value>Сокращение</value></data>
+  <data name="Expressions.Type" xml:space="preserve"><value>Тип</value></data>
+  <data name="Expressions.Numerical" xml:space="preserve"><value>Числовой</value></data>
+  <data name="Expressions.Options" xml:space="preserve"><value>Параметры</value></data>
+  <data name="Expressions.Curve" xml:space="preserve"><value>Кривая</value></data>
+  <data name="Expressions.IsFlag" xml:space="preserve"><value>Является флагом ресамплера</value></data>
+  <data name="Expressions.Flag" xml:space="preserve"><value>Флаг ресамплера</value></data>
+  <data name="Expressions.Min" xml:space="preserve"><value>Мин.</value></data>
+  <data name="Expressions.Max" xml:space="preserve"><value>Макс.</value></data>
+  <data name="Expressions.Default" xml:space="preserve"><value>По умолчанию</value></data>
+  <data name="Expressions.SystemDefault" xml:space="preserve"><value>System Default</value></data>
+  <data name="Expressions.ProjectDefault" xml:space="preserve"><value>Project Default</value></data>
+  <data name="Expressions.TrackDefault" xml:space="preserve"><value>Track Default</value></data>
+  <data name="Expressions.SkipOutput" xml:space="preserve"><value>Skip flag output when the value is system default</value></data>
+  <data name="Expressions.OptionValues" xml:space="preserve"><value>Значение параметра</value></data>
+  <data name="Expressions.CommaHint" xml:space="preserve"><value>Разделять значения через запятую (,)</value></data>
+  <data name="Expressions.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Expressions.Error.Name" xml:space="preserve"><value>Необходимо указать название</value></data>
+  <data name="Expressions.Error.Abbr" xml:space="preserve"><value>Аббревиатура должна быть указана</value></data>
+  <data name="Expressions.Error.AbbrLength" xml:space="preserve"><value>Аббревиатура должна содержать от 1 до 4 символов</value></data>
+  <data name="Expressions.Error.Range" xml:space="preserve"><value>Минимальное значение должно быть меньше максимального</value></data>
+  <data name="Expressions.Error.Default" xml:space="preserve"><value>Значение по умолчанию должно находиться между минимальным и максимальным значением</value></data>
+  <data name="Expressions.Error.CustomDefault" xml:space="preserve"><value>Project/Track default value must be between min and max</value></data>
+  <data name="Expressions.Error.DuplicateAbbr" xml:space="preserve"><value>Аббревиатуры должны быть уникальными</value></data>
+  <data name="Expressions.Error.DuplicateFlag" xml:space="preserve"><value>Флаги должны быть уникальными</value></data>
+  <data name="Expressions.Add" xml:space="preserve"><value>Добавить</value></data>
+  <data name="Expressions.Remove" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Expressions.Suggestions" xml:space="preserve"><value>Рекомендации</value></data>
 </root>
