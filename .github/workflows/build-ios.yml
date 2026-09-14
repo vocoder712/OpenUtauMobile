@@ -1,4 +1,4 @@
-name: Reusable iOS Mono AOT LLVM Build
+name: Reusable iOS Mono AOT Build
 
 on:
   workflow_call:
@@ -25,7 +25,7 @@ permissions:
 
 jobs:
   ios:
-    name: iOS arm64 Mono AOT LLVM unsigned IPA
+    name: iOS arm64 Mono AOT unsigned IPA
     runs-on: macos-26
     timeout-minutes: 90
     env:
@@ -52,7 +52,7 @@ jobs:
 
           echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
           echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
-          mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-mono-llvm-logs"
+          mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-mono-aot-logs"
 
       - name: Show iOS Toolchain Summary
         shell: bash
@@ -92,7 +92,7 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Validate Mono AOT LLVM Properties
+      - name: Validate Mono AOT Properties
         shell: bash
         run: |
           set -euo pipefail
@@ -109,12 +109,12 @@ jobs:
 
           if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"TrimMode": "copy"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"_IsDedupEnabled": "false"'; then
-            echo "::error::iOS entry project did not select Mono AOT with LLVM"
+            echo "::error::iOS entry project did not select Mono AOT without LLVM"
             exit 1
           fi
 
@@ -123,13 +123,13 @@ jobs:
             exit 1
           fi
 
-      - name: Publish iOS arm64 Mono AOT LLVM Unsigned IPA
+      - name: Publish iOS arm64 Mono AOT Unsigned IPA
         shell: bash
         run: |
           set -euo pipefail
 
           IPA_DIR="${GITHUB_WORKSPACE}/artifacts/ios-arm64"
-          IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa"
+          IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
 
           mkdir -p "$IPA_DIR"
           PUBLISH_STARTED_AT=$SECONDS
@@ -147,7 +147,7 @@ jobs:
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
             -p:PublishAot=false \
-            -p:MtouchUseLlvm=true \
+            -p:MtouchUseLlvm=false \
             -p:UseInterpreter=false \
             -p:TrimMode=copy \
             -p:EnableAssemblyILStripping=false \
@@ -155,7 +155,7 @@ jobs:
             -p:BuildIpa=true \
             -p:EnableCodeSigning=false \
             -p:IpaPackagePath="$IPA_PATH" \
-            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-mono-llvm-logs/publish.binlog" \
+            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-mono-aot-logs/publish.binlog" \
             --verbosity minimal &
           PUBLISH_PID=$!
 
@@ -179,13 +179,13 @@ jobs:
 
           ls -lh "$IPA_PATH"
 
-      - name: Validate iOS arm64 Mono AOT LLVM Unsigned IPA
+      - name: Validate iOS arm64 Mono AOT Unsigned IPA
         shell: bash
         run: |
           set -euo pipefail
 
-          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa"
-          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-mono-llvm-verify"
+          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
+          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-mono-aot-verify"
 
           unzip -tq "$IPA_PATH"
           mkdir -p "$VERIFY_DIR"
@@ -273,17 +273,17 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-ios-arm64-mono-llvm-diagnostics
+          name: OpenUtauMobile-ios-arm64-mono-aot-diagnostics
           path: |
-            artifacts/ios-mono-llvm-logs
+            artifacts/ios-mono-aot-logs
             OpenUtauMobile.iOS/obj/project.assets.json
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload iOS arm64 Mono AOT LLVM Unsigned IPA
+      - name: Upload iOS arm64 Mono AOT Unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-ios-arm64-mono-llvm-unsigned
-          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa
+          name: OpenUtauMobile-ios-arm64-mono-aot-unsigned
+          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa
           if-no-files-found: error
           compression-level: 0
