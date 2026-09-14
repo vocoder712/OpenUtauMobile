@@ -1879,4 +1879,6 @@
   <data name="Expressions.Add" xml:space="preserve"><value>Додати</value></data>
   <data name="Expressions.Remove" xml:space="preserve"><value>Видалити</value></data>
   <data name="Expressions.Suggestions" xml:space="preserve"><value>Рекомендації</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>Проєкт</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>Доріжка</value></data>
 </root>

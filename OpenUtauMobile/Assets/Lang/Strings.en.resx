@@ -1924,4 +1924,6 @@
   <data name="Expressions.Add" xml:space="preserve"><value>Add</value></data>
   <data name="Expressions.Remove" xml:space="preserve"><value>Remove</value></data>
   <data name="Expressions.Suggestions" xml:space="preserve"><value>Suggestions</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>Project</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>Track</value></data>
 </root>

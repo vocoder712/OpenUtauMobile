@@ -31,6 +31,7 @@ public class ExpressionBuilder : ReactiveObject
             this.RaiseAndSetIfChanged(ref abbr, value);
             this.RaisePropertyChanged(nameof(IsCustom));
             this.RaisePropertyChanged(nameof(IsRemovable));
+            this.RaisePropertyChanged(nameof(DisplayAbbr));
         }
     }
     public int ExpressionType
@@ -49,6 +50,7 @@ public class ExpressionBuilder : ReactiveObject
     public bool IsNumerical => ExpressionType == (int)UExpressionType.Numerical;
     public bool IsOptions => ExpressionType == (int)UExpressionType.Options;
     public bool IsCurve => ExpressionType == (int)UExpressionType.Curve;
+    public string DisplayAbbr => Abbr.ToUpperInvariant();
     public string AddMenuLabel => string.IsNullOrEmpty(Abbr) ? Name : $"{Name}: {Abbr}";
 
     public ExpressionBuilder(bool isTrackOverride = false)

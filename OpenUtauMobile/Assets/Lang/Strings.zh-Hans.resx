@@ -1924,4 +1924,6 @@
   <data name="Expressions.Add" xml:space="preserve"><value>添加</value></data>
   <data name="Expressions.Remove" xml:space="preserve"><value>删除</value></data>
   <data name="Expressions.Suggestions" xml:space="preserve"><value>获取建议</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>工程</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>轨道</value></data>
 </root>

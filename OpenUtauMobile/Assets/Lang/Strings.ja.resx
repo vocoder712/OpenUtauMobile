@@ -1917,4 +1917,6 @@
   <data name="Expressions.Add" xml:space="preserve"><value>追加</value></data>
   <data name="Expressions.Remove" xml:space="preserve"><value>削除</value></data>
   <data name="Expressions.Suggestions" xml:space="preserve"><value>提案を取得</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>プロジェクト</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>トラック</value></data>
 </root>

@@ -25,9 +25,7 @@ public class ExpressionsPopupViewModel : PopupViewModelBase
     public ObservableCollection<ExpressionBuilder> AddOptions { get; } = new();
     public bool IsSwitchVisible => track != null;
     public bool IsSelected => Expression != null;
-    public string Title => IsTrackOverride
-        ? $"{L.S("Expressions.Track")}: {track?.TrackName}"
-        : L.S("Expressions.Title");
+    public string Title => L.S("Expressions.Title");
     public string CustomDefaultLabel => L.S(IsTrackOverride ? "Expressions.TrackDefault" : "Expressions.ProjectDefault");
 
     public bool IsTrackOverride
@@ -39,7 +37,6 @@ public class ExpressionsPopupViewModel : PopupViewModelBase
             this.RaiseAndSetIfChanged(ref isTrackOverride, value);
             SelectedExpressions.Clear();
             this.RaisePropertyChanged(nameof(Expressions));
-            this.RaisePropertyChanged(nameof(Title));
             this.RaisePropertyChanged(nameof(CustomDefaultLabel));
             Expression = Expressions.FirstOrDefault();
             Error = string.Empty;
