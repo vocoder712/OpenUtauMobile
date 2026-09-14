@@ -1,4 +1,4 @@
-name: Reusable iOS Mono AOT LLVM Build
+name: Reusable iOS ARM64 Mono AOT Build
 
 on:
   workflow_call:
@@ -25,7 +25,7 @@ permissions:
 
 jobs:
   ios:
-    name: iOS arm64 Mono AOT LLVM unsigned IPA
+    name: iOS ARM64 Mono AOT unsigned IPA
     runs-on: macos-26
     timeout-minutes: 90
     env:
@@ -52,9 +52,9 @@ jobs:
 
           echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
           echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
-          mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-mono-llvm-logs"
+          mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-arm64-logs"
 
-      - name: Show iOS Toolchain Summary
+      - name: Validate iOS Toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -92,7 +92,7 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Validate Mono AOT LLVM Properties
+      - name: Validate Mono AOT Properties
         shell: bash
         run: |
           set -euo pipefail
@@ -100,39 +100,58 @@ jobs:
           APP_PROPERTIES="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
-            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,TrimMode,EnableAssemblyILStripping,_IsDedupEnabled \
+            -getProperty:Configuration,TargetFramework,RuntimeIdentifier,PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,MtouchInterpreter,TrimMode,MtouchLink,EnableAssemblyILStripping,_IsDedupEnabled,EnableCodeSigning \
             -p:_IsPublishing=true \
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64)"
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:PublishAot=false \
+            -p:UseMonoRuntime=true \
+            -p:MtouchUseLlvm=false \
+            -p:UseInterpreter=false \
+            -p:TrimMode=copy \
+            -p:MtouchLink=None \
+            -p:EnableAssemblyILStripping=false \
+            -p:_IsDedupEnabled=false \
+            -p:EnableCodeSigning=false \
+            -p:BuildIpa=true)"
           echo "$APP_PROPERTIES"
 
-          if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"TrimMode": "copy"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"_IsDedupEnabled": "false"'; then
-            echo "::error::iOS entry project did not select Mono AOT with LLVM"
-            exit 1
-          fi
+          REQUIRED_PROPERTIES=(
+            '"Configuration": "Release"'
+            '"TargetFramework": "net10.0-ios"'
+            '"RuntimeIdentifier": "ios-arm64"'
+            '"PublishAot": "false"'
+            '"UseMonoRuntime": "true"'
+            '"MtouchUseLlvm": "false"'
+            '"UseInterpreter": "false"'
+            '"TrimMode": "copy"'
+            '"MtouchLink": "None"'
+            '"EnableAssemblyILStripping": "false"'
+            '"_IsDedupEnabled": "false"'
+            '"EnableCodeSigning": "false"'
+          )
 
-          if echo "$APP_PROPERTIES" | grep -q '"_UseNativeAot": "true"'; then
+          for PROPERTY in "${REQUIRED_PROPERTIES[@]}"; do
+            if ! grep -Fq "$PROPERTY" <<< "$APP_PROPERTIES"; then
+              echo "::error::Resolved iOS build properties are missing $PROPERTY"
+              exit 1
+            fi
+          done
+
+          if grep -Fq '"_UseNativeAot": "true"' <<< "$APP_PROPERTIES"; then
             echo "::error::iOS entry project unexpectedly selected NativeAOT"
             exit 1
           fi
 
-      - name: Publish iOS arm64 Mono AOT LLVM Unsigned IPA
+      - name: Publish iOS ARM64 Mono AOT Unsigned IPA
         shell: bash
         run: |
           set -euo pipefail
 
           IPA_DIR="${GITHUB_WORKSPACE}/artifacts/ios-arm64"
-          IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa"
-
+          IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
           mkdir -p "$IPA_DIR"
-          PUBLISH_STARTED_AT=$SECONDS
 
           dotnet publish \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
@@ -147,45 +166,28 @@ jobs:
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
             -p:PublishAot=false \
-            -p:MtouchUseLlvm=true \
+            -p:UseMonoRuntime=true \
+            -p:MtouchUseLlvm=false \
             -p:UseInterpreter=false \
             -p:TrimMode=copy \
+            -p:MtouchLink=None \
             -p:EnableAssemblyILStripping=false \
             -p:_IsDedupEnabled=false \
-            -p:BuildIpa=true \
             -p:EnableCodeSigning=false \
+            -p:BuildIpa=true \
             -p:IpaPackagePath="$IPA_PATH" \
-            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-mono-llvm-logs/publish.binlog" \
-            --verbosity minimal &
-          PUBLISH_PID=$!
-
-          while kill -0 "$PUBLISH_PID" 2>/dev/null; do
-            for _ in {1..30}; do
-              if ! kill -0 "$PUBLISH_PID" 2>/dev/null; then
-                break
-              fi
-              sleep 10
-            done
-            if kill -0 "$PUBLISH_PID" 2>/dev/null; then
-              ELAPSED_MINUTES=$(((SECONDS - PUBLISH_STARTED_AT) / 60))
-              echo "::notice::iOS device publish is still running after ${ELAPSED_MINUTES} minutes"
-              ps -ww -axo pid,etime,%cpu,%mem,command \
-                | awk '$5 ~ /(^|\/)(dotnet|mono-aot-cross|illink|clang|ld|opt)$/ { print substr($0, 1, 360) }' \
-                | sed -n '1,12p' || true
-            fi
-          done
-          wait "$PUBLISH_PID"
-          echo "iOS device publish completed in $((SECONDS - PUBLISH_STARTED_AT)) seconds"
+            -bl:"${GITHUB_WORKSPACE}/artifacts/ios-arm64-logs/build.binlog" \
+            --verbosity minimal
 
           ls -lh "$IPA_PATH"
 
-      - name: Validate iOS arm64 Mono AOT LLVM Unsigned IPA
+      - name: Validate iOS ARM64 Mono AOT Unsigned IPA
         shell: bash
         run: |
           set -euo pipefail
 
-          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa"
-          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-mono-llvm-verify"
+          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
+          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-arm64-verify"
 
           unzip -tq "$IPA_PATH"
           mkdir -p "$VERIFY_DIR"
@@ -217,34 +219,26 @@ jobs:
             echo "::error::Bundle ID is $BUNDLE_ID, expected $EXPECTED_BUNDLE_ID"
             exit 1
           fi
-
           if [ "$DISPLAY_VERSION" != "${{ inputs.version }}" ]; then
             echo "::error::CFBundleShortVersionString is $DISPLAY_VERSION, expected ${{ inputs.version }}"
             exit 1
           fi
-
           if [ "$BUILD_VERSION" != "${{ inputs.build_number }}" ]; then
             echo "::error::CFBundleVersion is $BUILD_VERSION, expected ${{ inputs.build_number }}"
             exit 1
           fi
-
           if [ "$PLATFORM" != "iPhoneOS" ]; then
             echo "::error::IPA targets $PLATFORM instead of iPhoneOS"
             exit 1
           fi
-
           if [ "$ARCHS" != "arm64" ]; then
             echo "::error::App executable architectures are $ARCHS instead of arm64"
             exit 1
           fi
-
-          MANAGED_FILE_COUNT="$(find "$APP_DIR" -type f \( -name '*.dll' -o -name '*.aotdata.*' \) | wc -l | tr -d ' ')"
-
           if [ -e "$APP_DIR/_CodeSignature" ] || [ -e "$APP_DIR/embedded.mobileprovision" ]; then
             echo "::error::App bundle unexpectedly contains signing assets"
             exit 1
           fi
-
           if codesign --verify --deep --strict "$APP_DIR" 2>"$VERIFY_DIR/codesign.txt"; then
             echo "::error::App bundle unexpectedly passed code-sign verification"
             exit 1
@@ -254,36 +248,25 @@ jobs:
           echo "Version: $DISPLAY_VERSION ($BUILD_VERSION)"
           echo "Platform: $PLATFORM"
           echo "Architectures: $ARCHS"
-          echo "Managed/Mono AOT files: $MANAGED_FILE_COUNT"
-          tr '\n' ' ' < "$VERIFY_DIR/codesign.txt"
-          echo
-
-      - name: Show iOS Failure Summary
-        if: failure()
-        shell: bash
-        run: |
-          echo "::group::iOS output summary"
-          find OpenUtauMobile.iOS/bin OpenUtauMobile.iOS/obj \
-            -maxdepth 5 -type f \
-            \( -name '*.app' -o -name '*.ipa' -o -name '*.aotdata.*' -o -name '*.dylib' \) \
-            -print 2>/dev/null | sort | sed -n '1,80p' || true
-          echo "::endgroup::"
+          echo "Code signature: unsigned, verified"
 
       - name: Upload iOS Failure Diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-ios-arm64-mono-llvm-diagnostics
+          name: OpenUtauMobile-ios-arm64-mono-aot-diagnostics
           path: |
-            artifacts/ios-mono-llvm-logs
+            artifacts/ios-arm64-logs
             OpenUtauMobile.iOS/obj/project.assets.json
+            OpenUtauMobile.iOS/obj/**/mobile/**
+            OpenUtauMobile.iOS/obj/**/*.aotdata.*
           if-no-files-found: warn
           retention-days: 7
 
-      - name: Upload iOS arm64 Mono AOT LLVM Unsigned IPA
+      - name: Upload iOS ARM64 Mono AOT Unsigned IPA
         uses: actions/upload-artifact@v4
         with:
-          name: OpenUtauMobile-ios-arm64-mono-llvm-unsigned
-          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa
+          name: OpenUtauMobile-ios-arm64-mono-aot-unsigned
+          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa
           if-no-files-found: error
           compression-level: 0

@@ -8,13 +8,13 @@
 
     <!-- iOS 配置 -->
     <PropertyGroup>
-        <!-- 统一使用 Mono AOT 的 LLVM 后端，并保留反射所需的托管元数据。 -->
+        <!-- 统一使用不带 LLVM 的 Mono AOT，并保留反射所需的托管元数据。 -->
         <PublishAot>false</PublishAot>
-        <MtouchUseLlvm>true</MtouchUseLlvm>
+        <MtouchUseLlvm>false</MtouchUseLlvm>
         <UseInterpreter>false</UseInterpreter>
-        <TrimMode>copy</TrimMode>
+        <TrimMode>partial</TrimMode>
         <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
-        <!-- 避免将全部泛型实例聚合到过大的 aot-instances.dll；各程序集仍使用 Mono AOT + LLVM。 -->
+        <!-- 避免将全部泛型实例聚合到过大的 aot-instances.dll。 -->
         <_IsDedupEnabled>false</_IsDedupEnabled>
         <AppIcon>AppIcon</AppIcon>
     </PropertyGroup>
