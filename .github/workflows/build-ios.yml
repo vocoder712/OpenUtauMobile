@@ -34,23 +34,9 @@ jobs:
         include:
           - variant: current-control
             configuration: Release
-            shared_ios_tfm: false
-            sdk_defaults: false
             mtouch_link: ""
-          - variant: fork-debug-ios-tfm
-            configuration: Debug
-            shared_ios_tfm: true
-            sdk_defaults: true
-            mtouch_link: None
-          - variant: fork-release-ios-tfm
+          - variant: release-net10-link-none
             configuration: Release
-            shared_ios_tfm: true
-            sdk_defaults: true
-            mtouch_link: None
-          - variant: fork-debug-net10
-            configuration: Debug
-            shared_ios_tfm: false
-            sdk_defaults: true
             mtouch_link: None
     env:
       AVALONIA_TELEMETRY_OPTOUT: "1"
@@ -75,28 +61,28 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "${{ matrix.shared_ios_tfm }}" == "true" ]]; then
-            SHARED_IOS_TFM=enabled
-          else
-            SHARED_IOS_TFM=disabled
-          fi
-          if [[ "${{ matrix.sdk_defaults }}" == "true" ]]; then
-            EXPLICIT_AOT_PROPERTIES=no
-          else
-            EXPLICIT_AOT_PROPERTIES=yes
-          fi
           MTOUCH_LINK="${{ matrix.mtouch_link }}"
           if [[ -z "$MTOUCH_LINK" ]]; then
-            MTOUCH_LINK="SDK default"
+            MTOUCH_LINK="not set"
           fi
 
           echo "=== iOS Mono AOT Experiment ==="
           echo "Variant: ${{ matrix.variant }}"
           echo "Configuration: ${{ matrix.configuration }}"
           echo "RID: ios-arm64"
-          echo "Shared iOS TFM: $SHARED_IOS_TFM"
+          echo "Shared iOS TFM: disabled"
           echo "MtouchLink: $MTOUCH_LINK"
-          echo "Explicit AOT properties: $EXPLICIT_AOT_PROPERTIES"
+          echo "Explicit AOT properties: yes"
+
+      - name: Initialize Experiment Diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          DIAGNOSTICS_DIR="${GITHUB_WORKSPACE}/artifacts/ios-aot-experiment-${{ matrix.variant }}"
+          mkdir -p "$DIAGNOSTICS_DIR"
+          echo "not-run" > "$DIAGNOSTICS_DIR/result.txt"
+          echo "not-resolved" > "$DIAGNOSTICS_DIR/mtouch-link.txt"
 
       - name: Show iOS Toolchain Summary
         shell: bash
@@ -125,38 +111,6 @@ jobs:
           echo "iPhoneOS SDK path: $(xcrun --sdk iphoneos --show-sdk-path)"
           echo "::endgroup::"
 
-      - name: Add Temporary iOS Target Frameworks
-        if: matrix.shared_ios_tfm
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          PROJECTS=(
-            OpenUtauMobile/OpenUtauMobile.csproj
-            OpenUtau.Core/OpenUtau.Core.csproj
-            OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj
-            OpenUtauMobile.Plugin.Renderers/OpenUtauMobile.Plugin.Renderers.csproj
-          )
-          for PROJECT in "${PROJECTS[@]}"; do
-            python3 - "$PROJECT" <<'PY'
-          import pathlib
-          import sys
-
-          path = pathlib.Path(sys.argv[1])
-          source = path.read_text()
-          old = "<TargetFramework>net10.0</TargetFramework>"
-          new = ("<TargetFrameworks>net10.0</TargetFrameworks>\n"
-                 "        <TargetFrameworks Condition=\"$([MSBuild]::IsOSPlatform('osx'))\">"
-                 "net10.0;net10.0-ios</TargetFrameworks>")
-          if source.count(old) != 1:
-              raise SystemExit(f"Expected exactly one net10.0 TargetFramework in {path}")
-          path.write_text(source.replace(old, new))
-          PY
-          done
-
-          git diff --check
-          git diff -- "${PROJECTS[@]}"
-
       - name: Restore iOS Workload
         shell: bash
         run: |
@@ -167,6 +121,7 @@ jobs:
             --verbosity minimal
 
       - name: Show Resolved MSBuild Properties
+        id: properties
         shell: bash
         run: |
           set -euo pipefail
@@ -178,17 +133,17 @@ jobs:
             _IsDedupEnabled
           )
           PROPERTY_LIST="$(IFS=,; echo "${PROPERTIES[*]}")"
-          EXTRA_PROPERTIES=()
-          if [[ "${{ matrix.sdk_defaults }}" == "false" ]]; then
-            EXTRA_PROPERTIES+=(
-              -p:PublishAot=false
-              -p:MtouchUseLlvm=false
-              -p:UseInterpreter=false
-              -p:TrimMode=copy
-              -p:EnableAssemblyILStripping=false
-              -p:_IsDedupEnabled=false
-            )
-          fi
+          DIAGNOSTICS_DIR="${GITHUB_WORKSPACE}/artifacts/ios-aot-experiment-${{ matrix.variant }}"
+          PROPERTIES_FILE="$DIAGNOSTICS_DIR/resolved-properties.json"
+          mkdir -p "$DIAGNOSTICS_DIR"
+          EXTRA_PROPERTIES=(
+            -p:PublishAot=false
+            -p:MtouchUseLlvm=false
+            -p:UseInterpreter=false
+            -p:TrimMode=copy
+            -p:EnableAssemblyILStripping=false
+            -p:_IsDedupEnabled=false
+          )
           if [[ -n "${{ matrix.mtouch_link }}" ]]; then
             EXTRA_PROPERTIES+=("-p:MtouchLink=${{ matrix.mtouch_link }}")
           fi
@@ -202,7 +157,23 @@ jobs:
             -p:RuntimeIdentifier=ios-arm64 \
             -p:EnableCodeSigning=false \
             -p:BuildIpa=false \
-            "${EXTRA_PROPERTIES[@]}"
+            "${EXTRA_PROPERTIES[@]}" \
+            | tee "$PROPERTIES_FILE"
+
+          RESOLVED_MTOUCH_LINK="$(python3 - "$PROPERTIES_FILE" <<'PY'
+          import json
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              properties = json.load(stream)["Properties"]
+          print(properties.get("MtouchLink", ""))
+          PY
+          )"
+          if [[ -z "$RESOLVED_MTOUCH_LINK" ]]; then
+            RESOLVED_MTOUCH_LINK="(empty)"
+          fi
+          echo "$RESOLVED_MTOUCH_LINK" > "$DIAGNOSTICS_DIR/mtouch-link.txt"
+          echo "mtouch_link=$RESOLVED_MTOUCH_LINK" >> "$GITHUB_OUTPUT"
 
       - name: Publish iOS Mono AOT Experiment
         id: publish
@@ -212,17 +183,14 @@ jobs:
 
           DIAGNOSTICS_DIR="${GITHUB_WORKSPACE}/artifacts/ios-aot-experiment-${{ matrix.variant }}"
           mkdir -p "$DIAGNOSTICS_DIR"
-          EXTRA_PROPERTIES=()
-          if [[ "${{ matrix.sdk_defaults }}" == "false" ]]; then
-            EXTRA_PROPERTIES+=(
-              -p:PublishAot=false
-              -p:MtouchUseLlvm=false
-              -p:UseInterpreter=false
-              -p:TrimMode=copy
-              -p:EnableAssemblyILStripping=false
-              -p:_IsDedupEnabled=false
-            )
-          fi
+          EXTRA_PROPERTIES=(
+            -p:PublishAot=false
+            -p:MtouchUseLlvm=false
+            -p:UseInterpreter=false
+            -p:TrimMode=copy
+            -p:EnableAssemblyILStripping=false
+            -p:_IsDedupEnabled=false
+          )
           if [[ -n "${{ matrix.mtouch_link }}" ]]; then
             EXTRA_PROPERTIES+=("-p:MtouchLink=${{ matrix.mtouch_link }}")
           fi
@@ -262,6 +230,8 @@ jobs:
           path: |
             artifacts/ios-aot-experiment-${{ matrix.variant }}/build.binlog
             artifacts/ios-aot-experiment-${{ matrix.variant }}/result.txt
+            artifacts/ios-aot-experiment-${{ matrix.variant }}/resolved-properties.json
+            artifacts/ios-aot-experiment-${{ matrix.variant }}/mtouch-link.txt
             **/obj/**/project.assets.json
             **/obj/**/mobile/**
             **/obj/**/*.aotdata.*
@@ -272,24 +242,16 @@ jobs:
         shell: bash
         env:
           PUBLISH_RESULT: ${{ steps.publish.outputs.result }}
+          RESOLVED_MTOUCH_LINK: ${{ steps.properties.outputs.mtouch_link }}
         run: |
           RESULT="${PUBLISH_RESULT:-not-run}"
-          if [[ "${{ matrix.shared_ios_tfm }}" == "true" ]]; then
-            SHARED_IOS_TFM=Yes
-          else
-            SHARED_IOS_TFM=No
-          fi
-          if [[ "${{ matrix.sdk_defaults }}" == "true" ]]; then
-            SDK_DEFAULTS=Yes
-          else
-            SDK_DEFAULTS=No
-          fi
+          MTOUCH_LINK="${RESOLVED_MTOUCH_LINK:-not-resolved}"
           {
             echo "## iOS Mono AOT Experiment"
             echo
-            echo "| Variant | Config | Shared iOS TFM | SDK defaults | Result |"
+            echo "| Variant | Config | Shared iOS TFM | MtouchLink (resolved) | Result |"
             echo "| --- | --- | --- | --- | --- |"
-            echo "| ${{ matrix.variant }} | ${{ matrix.configuration }} | $SHARED_IOS_TFM | $SDK_DEFAULTS | $RESULT |"
+            echo "| ${{ matrix.variant }} | ${{ matrix.configuration }} | No | $MTOUCH_LINK | $RESULT |"
           } >> "$GITHUB_STEP_SUMMARY"
 
   summary:
@@ -321,13 +283,23 @@ jobs:
             fi
           }
 
+          mtouch_link_for() {
+            local variant="$1"
+            local value_file
+            value_file="$(find "experiment-results/ios-aot-experiment-$variant" \
+              -type f -name mtouch-link.txt -print -quit 2>/dev/null || true)"
+            if [[ -n "$value_file" ]]; then
+              tr -d '\r\n' < "$value_file"
+            else
+              echo -n "not-resolved"
+            fi
+          }
+
           {
             echo "## iOS Mono AOT Experiment Results"
             echo
-            echo "| Variant | Config | Shared iOS TFM | SDK defaults | Result |"
+            echo "| Variant | Config | Shared iOS TFM | MtouchLink (resolved) | Result |"
             echo "| --- | --- | --- | --- | --- |"
-            echo "| current-control | Release | No | No | $(result_for current-control) |"
-            echo "| fork-debug-ios-tfm | Debug | Yes | Yes | $(result_for fork-debug-ios-tfm) |"
-            echo "| fork-release-ios-tfm | Release | Yes | Yes | $(result_for fork-release-ios-tfm) |"
-            echo "| fork-debug-net10 | Debug | No | Yes | $(result_for fork-debug-net10) |"
+            echo "| current-control | Release | No | $(mtouch_link_for current-control) | $(result_for current-control) |"
+            echo "| release-net10-link-none | Release | No | $(mtouch_link_for release-net10-link-none) | $(result_for release-net10-link-none) |"
           } >> "$GITHUB_STEP_SUMMARY"
