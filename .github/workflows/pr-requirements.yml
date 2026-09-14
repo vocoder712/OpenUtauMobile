@@ -103,7 +103,7 @@ jobs:
           APP_PROPERTIES="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
-            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,MtouchLink \
+            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,TrimMode,EnableAssemblyILStripping \
             -p:_IsPublishing=true \
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
@@ -113,7 +113,9 @@ jobs:
           if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"'; then
+            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"TrimMode": "copy"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"'; then
             echo "::error::iOS simulator entry project did not select Mono AOT with LLVM"
             exit 1
           fi
@@ -147,6 +149,8 @@ jobs:
             -p:PublishAot=false \
             -p:MtouchUseLlvm=true \
             -p:UseInterpreter=false \
+            -p:TrimMode=copy \
+            -p:EnableAssemblyILStripping=false \
             -p:EnableCodeSigning=true \
             -p:CodesignKey=- \
             -p:BuildIpa=false \

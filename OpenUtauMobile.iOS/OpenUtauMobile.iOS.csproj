@@ -12,7 +12,8 @@
         <PublishAot>false</PublishAot>
         <MtouchUseLlvm>true</MtouchUseLlvm>
         <UseInterpreter>false</UseInterpreter>
-        <MtouchLink>None</MtouchLink>
+        <TrimMode>copy</TrimMode>
+        <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
         <AppIcon>AppIcon</AppIcon>
     </PropertyGroup>
 

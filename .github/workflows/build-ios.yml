@@ -100,7 +100,7 @@ jobs:
           APP_PROPERTIES="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \
-            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,MtouchLink \
+            -getProperty:PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,TrimMode,EnableAssemblyILStripping \
             -p:_IsPublishing=true \
             -p:Configuration=Release \
             -p:TargetFramework=net10.0-ios \
@@ -110,7 +110,9 @@ jobs:
           if ! echo "$APP_PROPERTIES" | grep -q '"PublishAot": "false"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"UseMonoRuntime": "true"' \
             || ! echo "$APP_PROPERTIES" | grep -q '"MtouchUseLlvm": "true"' \
-            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"'; then
+            || ! echo "$APP_PROPERTIES" | grep -q '"UseInterpreter": "false"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"TrimMode": "copy"' \
+            || ! echo "$APP_PROPERTIES" | grep -q '"EnableAssemblyILStripping": "false"'; then
             echo "::error::iOS entry project did not select Mono AOT with LLVM"
             exit 1
           fi
@@ -129,6 +131,7 @@ jobs:
           IPA_PATH="$IPA_DIR/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-llvm-unsigned.ipa"
 
           mkdir -p "$IPA_DIR"
+          PUBLISH_STARTED_AT=$SECONDS
 
           dotnet publish \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
@@ -145,11 +148,32 @@ jobs:
             -p:PublishAot=false \
             -p:MtouchUseLlvm=true \
             -p:UseInterpreter=false \
+            -p:TrimMode=copy \
+            -p:EnableAssemblyILStripping=false \
             -p:BuildIpa=true \
             -p:EnableCodeSigning=false \
             -p:IpaPackagePath="$IPA_PATH" \
             -bl:"${GITHUB_WORKSPACE}/artifacts/ios-mono-llvm-logs/publish.binlog" \
-            --verbosity minimal
+            --verbosity minimal &
+          PUBLISH_PID=$!
+
+          while kill -0 "$PUBLISH_PID" 2>/dev/null; do
+            for _ in {1..30}; do
+              if ! kill -0 "$PUBLISH_PID" 2>/dev/null; then
+                break
+              fi
+              sleep 10
+            done
+            if kill -0 "$PUBLISH_PID" 2>/dev/null; then
+              ELAPSED_MINUTES=$(((SECONDS - PUBLISH_STARTED_AT) / 60))
+              echo "::notice::iOS device publish is still running after ${ELAPSED_MINUTES} minutes"
+              ps -axo pid,etime,%cpu,%mem,comm \
+                | awk '$5 ~ /(^|\/)(dotnet|mono-aot-cross|illink|clang|ld)$/ { print }' \
+                | sed -n '1,12p' || true
+            fi
+          done
+          wait "$PUBLISH_PID"
+          echo "iOS device publish completed in $((SECONDS - PUBLISH_STARTED_AT)) seconds"
 
           ls -lh "$IPA_PATH"
 
