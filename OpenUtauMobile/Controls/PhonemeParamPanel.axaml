@@ -4,6 +4,9 @@
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:local="clr-namespace:OpenUtauMobile"
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:Class="OpenUtauMobile.Controls.PhonemeParamPanel"
              x:DataType="vm:PianoRollViewModel">
 
@@ -61,6 +64,26 @@
                 VerticalAlignment="Top"
                 Margin="0,16,10,0"
                 CurrentMode="{Binding PhonemePanelMode, Mode=TwoWay}" />
+        </Panel>
+        <!-- 提示浮于画布底部，命中测试穿透到下方曲线。 -->
+        <Panel Grid.Column="1" VerticalAlignment="Bottom" IsHitTestVisible="False"
+               IsVisible="{Binding IsParameterMode}" Opacity="0.85">
+            <Border x:Name="ExpressionSupportNotice" IsVisible="{Binding HasUnsupportedExpression}"
+                    Background="{DynamicResource Sem.Color.SecondaryContainer}"
+                    Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <icons:PackIconPhosphorIcons Kind="Info" Width="20" Height="20" VerticalAlignment="Top"
+                                               Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="{DynamicResource Expressions.RendererUnsupported}" TextWrapping="Wrap"
+                                   FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                   Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+                        <TextBlock Text="{Binding UnsupportedExpressionNames}" TextWrapping="Wrap" FontWeight="Medium"
+                                   FontSize="{x:Static semantic:TypographyTokens.LabelMSize}"
+                                   Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Panel>
     </Grid>
 </UserControl>

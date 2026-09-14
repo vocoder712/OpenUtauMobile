@@ -1892,4 +1892,41 @@
   <data name="Mixer.Axis.Time" xml:space="preserve"><value>时间 (s)</value></data>
   <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>湿声峰值 (dB)</value></data>
   <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>音频排队延迟</value></data>
+  <data name="Expressions.Title" xml:space="preserve"><value>表情</value></data>
+  <data name="Expressions.Project" xml:space="preserve"><value>工程表情</value></data>
+  <data name="Expressions.Track" xml:space="preserve"><value>轨道表情（覆盖）</value></data>
+  <data name="Expressions.Name" xml:space="preserve"><value>名称</value></data>
+  <data name="Expressions.Abbr" xml:space="preserve"><value>简称</value></data>
+  <data name="Expressions.Type" xml:space="preserve"><value>类型</value></data>
+  <data name="Expressions.Numerical" xml:space="preserve"><value>数值</value></data>
+  <data name="Expressions.Options" xml:space="preserve"><value>选项</value></data>
+  <data name="Expressions.Curve" xml:space="preserve"><value>曲线</value></data>
+  <data name="Expressions.IsFlag" xml:space="preserve"><value>是否为 Resampler flag</value></data>
+  <data name="Expressions.Flag" xml:space="preserve"><value>Resampler flag</value></data>
+  <data name="Expressions.Min" xml:space="preserve"><value>最小值</value></data>
+  <data name="Expressions.Max" xml:space="preserve"><value>最大值</value></data>
+  <data name="Expressions.Default" xml:space="preserve"><value>默认值</value></data>
+  <data name="Expressions.SystemDefault" xml:space="preserve"><value>系统默认</value></data>
+  <data name="Expressions.ProjectDefault" xml:space="preserve"><value>工程默认</value></data>
+  <data name="Expressions.TrackDefault" xml:space="preserve"><value>轨道默认</value></data>
+  <data name="Expressions.SkipOutput" xml:space="preserve"><value>值为系统默认时跳过标记输出</value></data>
+  <data name="Expressions.OptionValues" xml:space="preserve"><value>选项值</value></data>
+  <data name="Expressions.CommaHint" xml:space="preserve"><value>用&apos;,&apos;分隔多项值</value></data>
+  <data name="Expressions.Apply" xml:space="preserve"><value>应用</value></data>
+  <data name="Expressions.Error.Name" xml:space="preserve"><value>必须设置名称</value></data>
+  <data name="Expressions.Error.Abbr" xml:space="preserve"><value>必须设置缩写</value></data>
+  <data name="Expressions.Error.AbbrLength" xml:space="preserve"><value>缩写长度必须在 1 到 4 字符之间</value></data>
+  <data name="Expressions.Error.Range" xml:space="preserve"><value>最小值必须比最大值小</value></data>
+  <data name="Expressions.Error.Default" xml:space="preserve"><value>默认值必须在最小值和最大值之间</value></data>
+  <data name="Expressions.Error.CustomDefault" xml:space="preserve"><value>工程/轨道默认值必须在最小值与最大值之间</value></data>
+  <data name="Expressions.Error.DuplicateAbbr" xml:space="preserve"><value>缩写必须唯一</value></data>
+  <data name="Expressions.Error.DuplicateFlag" xml:space="preserve"><value>flag必须唯一</value></data>
+  <data name="Expressions.Add" xml:space="preserve"><value>添加</value></data>
+  <data name="Expressions.Remove" xml:space="preserve"><value>删除</value></data>
+  <data name="Expressions.Suggestions" xml:space="preserve"><value>获取建议</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>工程</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>轨道</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>当前渲染器不支持以下表情</value>
+  </data>
 </root>

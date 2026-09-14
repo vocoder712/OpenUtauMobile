@@ -1892,4 +1892,41 @@
   <data name="Mixer.Axis.Time" xml:space="preserve"><value>Time (s)</value></data>
   <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>Wet peak (dB)</value></data>
   <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>Audio queue latency</value></data>
+  <data name="Expressions.Title" xml:space="preserve"><value>Expressions</value></data>
+  <data name="Expressions.Project" xml:space="preserve"><value>Project Expressions</value></data>
+  <data name="Expressions.Track" xml:space="preserve"><value>Track Expressions (override)</value></data>
+  <data name="Expressions.Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Expressions.Abbr" xml:space="preserve"><value>Abbreviation</value></data>
+  <data name="Expressions.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Expressions.Numerical" xml:space="preserve"><value>Numerical</value></data>
+  <data name="Expressions.Options" xml:space="preserve"><value>Options</value></data>
+  <data name="Expressions.Curve" xml:space="preserve"><value>Curve</value></data>
+  <data name="Expressions.IsFlag" xml:space="preserve"><value>Is Resampler Flag</value></data>
+  <data name="Expressions.Flag" xml:space="preserve"><value>Resampler Flag</value></data>
+  <data name="Expressions.Min" xml:space="preserve"><value>Min</value></data>
+  <data name="Expressions.Max" xml:space="preserve"><value>Max</value></data>
+  <data name="Expressions.Default" xml:space="preserve"><value>Default</value></data>
+  <data name="Expressions.SystemDefault" xml:space="preserve"><value>System Default</value></data>
+  <data name="Expressions.ProjectDefault" xml:space="preserve"><value>Project Default</value></data>
+  <data name="Expressions.TrackDefault" xml:space="preserve"><value>Track Default</value></data>
+  <data name="Expressions.SkipOutput" xml:space="preserve"><value>Skip flag output when the value is system default</value></data>
+  <data name="Expressions.OptionValues" xml:space="preserve"><value>Option Values</value></data>
+  <data name="Expressions.CommaHint" xml:space="preserve"><value>Separate values by &apos;,&apos;</value></data>
+  <data name="Expressions.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Expressions.Error.Name" xml:space="preserve"><value>Name must be set</value></data>
+  <data name="Expressions.Error.Abbr" xml:space="preserve"><value>Abbreviation must be set</value></data>
+  <data name="Expressions.Error.AbbrLength" xml:space="preserve"><value>Abbreviation must be between 1 and 4 characters long</value></data>
+  <data name="Expressions.Error.Range" xml:space="preserve"><value>Min must be smaller than max</value></data>
+  <data name="Expressions.Error.Default" xml:space="preserve"><value>Default value must be between min and max</value></data>
+  <data name="Expressions.Error.CustomDefault" xml:space="preserve"><value>Project/Track default value must be between min and max</value></data>
+  <data name="Expressions.Error.DuplicateAbbr" xml:space="preserve"><value>Abbreviations must be unique</value></data>
+  <data name="Expressions.Error.DuplicateFlag" xml:space="preserve"><value>Flags must be unique</value></data>
+  <data name="Expressions.Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Expressions.Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Expressions.Suggestions" xml:space="preserve"><value>Suggestions</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>Project</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>Track</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>The current renderer does not support these expressions.</value>
+  </data>
 </root>

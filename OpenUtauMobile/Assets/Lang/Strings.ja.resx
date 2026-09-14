@@ -1885,4 +1885,41 @@
   <data name="Mixer.Axis.Time" xml:space="preserve"><value>時間 (s)</value></data>
   <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>ウェットピーク (dB)</value></data>
   <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>音声キュー遅延</value></data>
+  <data name="Expressions.Title" xml:space="preserve"><value>表情</value></data>
+  <data name="Expressions.Project" xml:space="preserve"><value>Project Expressions</value></data>
+  <data name="Expressions.Track" xml:space="preserve"><value>Track Expressions (override)</value></data>
+  <data name="Expressions.Name" xml:space="preserve"><value>名前</value></data>
+  <data name="Expressions.Abbr" xml:space="preserve"><value>パラメータの略称</value></data>
+  <data name="Expressions.Type" xml:space="preserve"><value>タイプ</value></data>
+  <data name="Expressions.Numerical" xml:space="preserve"><value>数値</value></data>
+  <data name="Expressions.Options" xml:space="preserve"><value>カスタム</value></data>
+  <data name="Expressions.Curve" xml:space="preserve"><value>カーブ</value></data>
+  <data name="Expressions.IsFlag" xml:space="preserve"><value>エンジン内フラグ</value></data>
+  <data name="Expressions.Flag" xml:space="preserve"><value>フラグ</value></data>
+  <data name="Expressions.Min" xml:space="preserve"><value>最小</value></data>
+  <data name="Expressions.Max" xml:space="preserve"><value>最大</value></data>
+  <data name="Expressions.Default" xml:space="preserve"><value>初期値</value></data>
+  <data name="Expressions.SystemDefault" xml:space="preserve"><value>System Default</value></data>
+  <data name="Expressions.ProjectDefault" xml:space="preserve"><value>Project Default</value></data>
+  <data name="Expressions.TrackDefault" xml:space="preserve"><value>Track Default</value></data>
+  <data name="Expressions.SkipOutput" xml:space="preserve"><value>Skip flag output when the value is system default</value></data>
+  <data name="Expressions.OptionValues" xml:space="preserve"><value>カスタム値</value></data>
+  <data name="Expressions.CommaHint" xml:space="preserve"><value>カスタム値は &apos;,&apos;で区切ってください。</value></data>
+  <data name="Expressions.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Expressions.Error.Name" xml:space="preserve"><value>表情名を入力してください</value></data>
+  <data name="Expressions.Error.Abbr" xml:space="preserve"><value>パラメータの略称を入力してください</value></data>
+  <data name="Expressions.Error.AbbrLength" xml:space="preserve"><value>パラメータの略称は1～4文字で入力してください</value></data>
+  <data name="Expressions.Error.Range" xml:space="preserve"><value>最小値は最大値より小さくしてください</value></data>
+  <data name="Expressions.Error.Default" xml:space="preserve"><value>デフォルト値は最小値以上、最大値以下にしてください</value></data>
+  <data name="Expressions.Error.CustomDefault" xml:space="preserve"><value>Project/Track default value must be between min and max</value></data>
+  <data name="Expressions.Error.DuplicateAbbr" xml:space="preserve"><value>パラメータの略称が重複しています</value></data>
+  <data name="Expressions.Error.DuplicateFlag" xml:space="preserve"><value>フラグが重複しています</value></data>
+  <data name="Expressions.Add" xml:space="preserve"><value>追加</value></data>
+  <data name="Expressions.Remove" xml:space="preserve"><value>削除</value></data>
+  <data name="Expressions.Suggestions" xml:space="preserve"><value>提案を取得</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>プロジェクト</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>トラック</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>現在のレンダラーは以下のエクスプレッションに対応していません。</value>
+  </data>
 </root>

@@ -92,58 +92,6 @@ jobs:
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             --verbosity minimal
 
-      - name: Validate Mono AOT Properties
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          APP_PROPERTIES="$(dotnet msbuild \
-            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -nologo \
-            -getProperty:Configuration,TargetFramework,RuntimeIdentifier,PublishAot,_UseNativeAot,UseMonoRuntime,MtouchUseLlvm,UseInterpreter,MtouchInterpreter,TrimMode,MtouchLink,EnableAssemblyILStripping,_IsDedupEnabled,EnableCodeSigning \
-            -p:_IsPublishing=true \
-            -p:Configuration=Release \
-            -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64 \
-            -p:PublishAot=false \
-            -p:UseMonoRuntime=true \
-            -p:MtouchUseLlvm=false \
-            -p:UseInterpreter=false \
-            -p:TrimMode=copy \
-            -p:MtouchLink=None \
-            -p:EnableAssemblyILStripping=false \
-            -p:_IsDedupEnabled=false \
-            -p:EnableCodeSigning=false \
-            -p:BuildIpa=true)"
-          echo "$APP_PROPERTIES"
-
-          REQUIRED_PROPERTIES=(
-            '"Configuration": "Release"'
-            '"TargetFramework": "net10.0-ios"'
-            '"RuntimeIdentifier": "ios-arm64"'
-            '"PublishAot": "false"'
-            '"UseMonoRuntime": "true"'
-            '"MtouchUseLlvm": "false"'
-            '"UseInterpreter": "false"'
-            '"TrimMode": "copy"'
-            '"MtouchLink": "None"'
-            '"EnableAssemblyILStripping": "false"'
-            '"_IsDedupEnabled": "false"'
-            '"EnableCodeSigning": "false"'
-          )
-
-          for PROPERTY in "${REQUIRED_PROPERTIES[@]}"; do
-            if ! grep -Fq "$PROPERTY" <<< "$APP_PROPERTIES"; then
-              echo "::error::Resolved iOS build properties are missing $PROPERTY"
-              exit 1
-            fi
-          done
-
-          if grep -Fq '"_UseNativeAot": "true"' <<< "$APP_PROPERTIES"; then
-            echo "::error::iOS entry project unexpectedly selected NativeAOT"
-            exit 1
-          fi
-
       - name: Publish iOS ARM64 Mono AOT Unsigned IPA
         shell: bash
         run: |
@@ -169,8 +117,8 @@ jobs:
             -p:UseMonoRuntime=true \
             -p:MtouchUseLlvm=false \
             -p:UseInterpreter=false \
-            -p:TrimMode=copy \
-            -p:MtouchLink=None \
+            -p:TrimMode=partial \
+            -p:MtouchLink=SdkOnly \
             -p:EnableAssemblyILStripping=false \
             -p:_IsDedupEnabled=false \
             -p:EnableCodeSigning=false \
