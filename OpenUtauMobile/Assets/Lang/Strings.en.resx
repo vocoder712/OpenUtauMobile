@@ -1926,4 +1926,7 @@
   <data name="Expressions.Suggestions" xml:space="preserve"><value>Suggestions</value></data>
   <data name="Expressions.ProjectScope" xml:space="preserve"><value>Project</value></data>
   <data name="Expressions.TrackScope" xml:space="preserve"><value>Track</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>The current renderer does not support these expressions.</value>
+  </data>
 </root>

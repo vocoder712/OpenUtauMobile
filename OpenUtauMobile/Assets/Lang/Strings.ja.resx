@@ -1919,4 +1919,7 @@
   <data name="Expressions.Suggestions" xml:space="preserve"><value>提案を取得</value></data>
   <data name="Expressions.ProjectScope" xml:space="preserve"><value>プロジェクト</value></data>
   <data name="Expressions.TrackScope" xml:space="preserve"><value>トラック</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>現在のレンダラーは以下のエクスプレッションに対応していません。</value>
+  </data>
 </root>

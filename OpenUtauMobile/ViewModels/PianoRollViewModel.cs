@@ -324,6 +324,42 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public UExpressionDescriptor? SecondaryExpressionDescriptor =>
         AvailableSecondaryExpressions.FirstOrDefault(x => x.Key == SecondaryExpressionKey)?.Descriptor;
 
+    public string UnsupportedExpressionNames => string.Join(" / ",
+        new[] { PrimaryExpressionKey, SecondaryExpressionKey }
+            .Where(key => !string.IsNullOrEmpty(key) && !IsExpressionSupported(key))
+            .Distinct()
+            .Select(key => key.ToUpperInvariant()));
+
+    public bool HasUnsupportedExpression => !string.IsNullOrEmpty(UnsupportedExpressionNames);
+
+    private bool IsExpressionSupported(string key)
+    {
+        UProject? project = DocManager.Inst.Project;
+        int trackNo = EditingVoicePart?.trackNo ?? -1;
+        if (project == null || trackNo < 0 || trackNo >= project.tracks.Count)
+        {
+            return true;
+        }
+        UTrack track = project.tracks[trackNo];
+        if (track.RendererSettings.Renderer == null)
+        {
+            return true;
+        }
+        // 与桌面端一致：优先使用轨道解析后的定义，未知表情不误报。
+        if (track.TryGetExpDescriptor(project, key, out UExpressionDescriptor? descriptor))
+        {
+            return track.RendererSettings.Renderer.SupportsExpression(descriptor);
+        }
+        return track.VoiceColorExp?.abbr != key
+            || track.RendererSettings.Renderer.SupportsExpression(track.VoiceColorExp);
+    }
+
+    private void RefreshExpressionSupport()
+    {
+        this.RaisePropertyChanged(nameof(UnsupportedExpressionNames));
+        this.RaisePropertyChanged(nameof(HasUnsupportedExpression));
+    }
+
     public System.Windows.Input.ICommand SwapExpressionsCommand { get; }
     public System.Windows.Input.ICommand SelectPrimaryExpressionCommand { get; }
     public System.Windows.Input.ICommand SelectSecondaryExpressionCommand { get; }
@@ -633,6 +669,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public void RefreshAvailableExpressions()
     {
+        RefreshExpressionSupport();
         AvailableExpressions.Clear();
         AvailableSecondaryExpressions.Clear();
 
@@ -853,6 +890,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         this.WhenAnyValue(x => x.PrimaryExpressionKey, x => x.SecondaryExpressionKey)
             .Subscribe(_ =>
             {
+                RefreshExpressionSupport();
                 this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
                 this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
                 this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));

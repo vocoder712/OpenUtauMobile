@@ -1881,4 +1881,7 @@
   <data name="Expressions.Suggestions" xml:space="preserve"><value>Рекомендації</value></data>
   <data name="Expressions.ProjectScope" xml:space="preserve"><value>Проєкт</value></data>
   <data name="Expressions.TrackScope" xml:space="preserve"><value>Доріжка</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>Поточний рендерер не підтримує наведені вирази.</value>
+  </data>
 </root>
