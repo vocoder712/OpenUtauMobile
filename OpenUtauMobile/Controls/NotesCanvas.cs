@@ -120,6 +120,8 @@ public class NotesCanvas : Control, ICmdSubscriber
 
     #region 事件订阅
 
+    private IDisposable? _renderViewSubscription;
+
     protected override void OnDataContextChanged(EventArgs e)
     {
         base.OnDataContextChanged(e);
@@ -147,6 +149,11 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        _renderViewSubscription?.Dispose();
+        _renderViewSubscription = RenderView.Inst.Observe(projection =>
+        {
+            if (ReferenceEquals(projection.Part, Part)) InvalidateVisual();
+        });
         ViewModel = DataContext as PianoRollViewModel;
         if (ViewModel != null)
         {
@@ -159,6 +166,8 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
+        _renderViewSubscription?.Dispose();
+        _renderViewSubscription = null;
         if (ViewModel != null) ViewModel.RequestInvalidateVisual -= InvalidateVisual;
     }
 
@@ -401,6 +410,8 @@ public class NotesCanvas : Control, ICmdSubscriber
     private void RenderFinalPitch(int leftTick, int rightTick, DrawingContext context)
     {
         if (ViewModel == null || Part == null) return;
+        // 注册当前分片，异步乐句构建完成后由上游投影通知触发重绘。
+        _ = RenderView.Inst.Current(Part);
         IPen pen = ViewModel.EditMode == PianoRollEditMode.PitchPen ? ThemeResources.GetPen("Sem.Color.Primary", 2) : ThemeResources.GetPen("Sem.Color.Outline");
         StreamGeometry geometry = new();
         bool hasVisibleSegment = false;

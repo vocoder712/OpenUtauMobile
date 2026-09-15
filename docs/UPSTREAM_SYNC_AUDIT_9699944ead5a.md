@@ -75,15 +75,15 @@
 - Plugin 对新 split 的差异仅为原有 csproj 的 NoWarn 配置，与旧定制一致；音素器和数据文件均直接来自同一 OPU SHA。
 - HifiSampler 两处旧 WaveSource 缓存写入改为上游 Wave.WriteMono16Wav，继续使用 44.1 kHz 单声道 16-bit WAV。
 - RenderPhraseEvents、GetSuggestions、EnsureAvatarLoaded、PartRenderedNotification 的现有调用端通过 Plugin/Mobile 编译检查；没有残留对已删除 WaveSource 的代码调用。
-- Mobile NotesCanvas 读取 renderPhrases 已使用分片锁；异步构建结果由上游调度回主线程发布。
+- Mobile NotesCanvas 读取 renderPhrases 已使用分片锁；异步构建结果由上游调度回主线程发布。新增生命周期内的 RenderView 订阅，并在绘制时登记当前分片，确保异步结果就绪后重绘最终音高；卸载控件时释放订阅。
 - Core 仅引用 ONNX Managed 1.29.0；Android 保留从官方 AAR 分发原生库及 ExcludeAssets，iOS 保留目标项目中的 ONNX 1.29.0。
 
 ## 验证
 
 - Plugin：`dotnet build OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj --nologo -v:minimal`，exit 0，73 warnings / 0 errors。
-- Mobile：`dotnet build OpenUtauMobile/OpenUtauMobile.csproj --nologo -v:minimal`，exit 0，34 warnings / 0 errors。
+- Mobile：`dotnet build OpenUtauMobile/OpenUtauMobile.csproj --nologo -v:minimal`，exit 0；追加 NotesCanvas 重绘适配后再次构建通过。
 - Android restore：`dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj`，exit 0。
-- Android ARM64 Release：`dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-arm64`，exit 0，9 warnings / 0 errors。沙箱内首次构建因 NuGet 缓存写权限失败，获准在沙箱外重试后通过。
+- Android ARM64 Release（NotesCanvas 重绘适配前，最终提交由 PR CI 再验证）：`dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -c Release -f net10.0-android36.0 -p:RuntimeIdentifier=android-arm64`，exit 0，9 warnings / 0 errors。沙箱内首次构建因 NuGet 缓存写权限失败，获准在沙箱外重试后通过。
 - Android 构建保留现有 XA0141 警告：`libworldline.so` 未满足 16 KB 页面大小要求；本次未更换该原生库。
 - 构建均设置 `AVALONIA_TELEMETRY_OPTOUT=1`，未以 --no-restore 代替依赖还原。
 - 当前仓库没有现成的测试 csproj；未新增测试套件。尚未做设备音频、声库推理和 USTX 文件读写的运行时验证。
