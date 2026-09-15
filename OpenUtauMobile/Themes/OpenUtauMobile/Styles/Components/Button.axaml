@@ -1,0 +1,7 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <!-- 自动生成的 AccessText 属于按钮逻辑内容，不属于 ContentPresenter 的模板树。 -->
+    <Style Selector="Button.tonal :is(TextBlock), Button.filled :is(TextBlock), Button.outlined :is(TextBlock), Button.text :is(TextBlock), Button.destructive :is(TextBlock), Button.Primary :is(TextBlock), Button.Secondary :is(TextBlock)">
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+</Styles>

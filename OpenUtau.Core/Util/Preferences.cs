@@ -5,14 +5,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using OpenUtau.Core.Render;
 using Serilog;
 
 namespace OpenUtau.Core.Util {
 
     public static class Preferences {
-        public static SerializablePreferences Default;
+        public static SerializablePreferences Default { get; private set; }
 
         static Preferences() {
             Load();
@@ -21,7 +21,7 @@ namespace OpenUtau.Core.Util {
         public static void Save() {
             try {
                 File.WriteAllText(PathManager.Inst.PrefsFilePath,
-                    JsonConvert.SerializeObject(Default, Formatting.Indented),
+                    Json.Serialize(Default, Json.WriteIndentedOptions),
                     Encoding.UTF8);
             } catch (Exception e) {
                 Log.Error(e, "Failed to save prefs.");
@@ -35,7 +35,7 @@ namespace OpenUtau.Core.Util {
                 string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
                 string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
                 if (File.Exists(shippedPrefsPath)) {
-                    var shippedPrefs = JsonConvert.DeserializeObject<SerializablePreferences>(
+                    var shippedPrefs = Json.Deserialize<SerializablePreferences>(
                         File.ReadAllText(shippedPrefsPath, Encoding.UTF8));
                     if (shippedPrefs != null) {
                         Default = shippedPrefs;
@@ -107,7 +107,7 @@ namespace OpenUtau.Core.Util {
             }
 
             try {
-                Default = JsonConvert.DeserializeObject<SerializablePreferences>(
+                Default = Json.Deserialize<SerializablePreferences>(
                     File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
                 if (Default == null) {
                     Log.Error("Failed to load prefs: deserialized prefs is null.");
@@ -135,6 +135,14 @@ namespace OpenUtau.Core.Util {
                 }
             });
             ValidatePreference("RealTimePitchMode", () => Default.MigrateRealTimePitchMode());
+            ValidatePreference("RecentSingers", () => {
+                Default.RecentSingers = Default.RecentSingers?
+                    .Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? new List<string>();
+            });
+            ValidatePreference("FavoriteSingers", () => {
+                Default.FavoriteSingers = Default.FavoriteSingers?
+                    .Where(s => !string.IsNullOrWhiteSpace(s)).ToList() ?? new List<string>();
+            });
             ValidatePreference("Language", () => {
                 if (!ValidString(new Action(() => CultureInfo.GetCultureInfo(Default.Language)))) {
                     Default.Language = string.Empty;
@@ -278,6 +286,7 @@ namespace OpenUtau.Core.Util {
             public string WinePath = string.Empty;
             public bool UseWayland  = Environment.GetEnvironmentVariable("WAYLAND_DISPLAY") != null
                                          || Environment.GetEnvironmentVariable("XDG_SESSION_TYPE") == "wayland"; //Check for Wayland
+            public bool DefaultSnapCurve = true;
             public string PhoneticAssistant = string.Empty;
             public string RecentOpenSingerDirectory = string.Empty;
             public string RecentOpenProjectDirectory = string.Empty;
@@ -287,38 +296,39 @@ namespace OpenUtau.Core.Util {
             public bool LyricLivePreview = true;
             public bool LyricApplySelectionOnly = true;
             public bool VoicebankPublishUseIgnore = true;
-            public string VoicebankPublishIgnores = @"#Adobe Audition
-*.pkf
+            public string VoicebankPublishIgnores = """
+                #Adobe Audition
+                *.pkf
 
-#UTAU Engines
-*.ctspec
-*.d4c
-*.dio
-*.frc
-*.frt
-#*.frq
-*.harvest
-*.lessaudio
-*.llsm
-*.mrq
-*.pitchtier
-*.pkf
-*.platinum
-*.pmk
-*.sc.npz
-*.star
-*.uspec
-*.vs4ufrq
+                #UTAU Engines
+                *.ctspec
+                *.d4c
+                *.dio
+                *.frc
+                *.frt
+                #*.frq
+                *.harvest
+                *.lessaudio
+                *.llsm
+                *.mrq
+                *.pitchtier
+                *.pkf
+                *.platinum
+                *.pmk
+                *.sc.npz
+                *.star
+                *.uspec
+                *.vs4ufrq
 
-#UTAU related tools
-\$read
-*.setParam-Scache
-*.lbp
-*.lbp.caches/*
+                #UTAU related tools
+                \$read
+                *.setParam-Scache
+                *.lbp
+                *.lbp.caches/*
 
-#OpenUtau
-errors.txt
-";
+                #OpenUtau
+                errors.txt
+                """;
             public string RecoveryPath = string.Empty;
             public bool DetachPianoRoll = true;
 
@@ -400,6 +410,9 @@ errors.txt
             /// </summary>
             public bool PerformanceMonitorEnabled = false;
 
+            /// <summary>放大镜实际采样倍率；保存连续值，不保存界面档位索引。</summary>
+            public double MagnifierMagnificationFactor = 1.0;
+
             public const int PitchPenNoteHitTickExtensionMinimum = 0;
             public const int PitchPenNoteHitTickExtensionMaximum = 960;
             public const int PitchPenNoteHitTickExtensionDefault = 240;
@@ -431,7 +444,7 @@ errors.txt
             public List<MixFxUserPreset> MixFxUserPresets = new List<MixFxUserPreset>();
 
             // Legacy
-            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
             public int? Theme;
             public bool? PreferPortAudio = false;
 

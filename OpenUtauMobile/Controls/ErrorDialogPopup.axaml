@@ -1,95 +1,80 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime"
-             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-             mc:Ignorable="d"
-             x:Class="OpenUtauMobile.Controls.ErrorDialogPopup"
-             d:DataContext="{d:DesignInstance Type=vm:ErrorDialogViewModel, IsDesignTimeCreatable=False}"
-             x:DataType="vm:ErrorDialogViewModel"
-             Classes="PopupDialogRoot">
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+    xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+    xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+    mc:Ignorable="d"
+    x:Class="OpenUtauMobile.Controls.ErrorDialogPopup"
+    d:DataContext="{d:DesignInstance Type=vm:ErrorDialogViewModel, IsDesignTimeCreatable=False}"
+    x:DataType="vm:ErrorDialogViewModel"
+    Classes="PopupDialogRoot">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/ErrorDialogPopup.axaml" />
+    </UserControl.Styles>
 
-    <UserControl.Resources>
-        <StreamGeometry x:Key="IconChevronDown">M7.41,8.59 L12,13.17 L16.59,8.59 L18,10 L12,16 L6,10 L7.41,8.59 Z</StreamGeometry>
-    </UserControl.Resources>
-
-    <Border Classes="PopupDialogSurface">
-        <Grid RowDefinitions="Auto,*,Auto">
-            <Border Grid.Row="0" Classes="PopupTitleBar" Padding="8">
-                <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0"
-                               Margin="8,0,4,0"
-                               Text="{Binding Title}"
-                               Classes="PopupTitle" />
-                    <Button Grid.Column="1"
-                            Classes="IconBtn PopupCloseBtn"
-                            Command="{Binding CloseCommand}">
-                        <iconPacks:PackIconPhosphorIcons Width="18" Height="18" Kind="X" />
-                    </Button>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1"
-                  Margin="{x:Static theme:ThemeSemErrorDialogTokens.ContentInset}"
-                  RowDefinitions="Auto,Auto,*">
-                <ScrollViewer MaxHeight="{x:Static theme:ThemeSemErrorDialogTokens.MessageMaxHeight}"
-                              ScrollViewer.VerticalScrollBarVisibility="Auto">
-                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
-                </ScrollViewer>
-
-                <Button Grid.Row="1"
-                        Classes="DetailToggle"
-                        IsVisible="{Binding HasDetail}"
-                        x:Name="DetailToggleBtn"
-                        Click="OnDetailToggleClicked">
-                    <StackPanel Orientation="Horizontal" Spacing="4">
-                        <PathIcon Width="12" Height="12"
-                                  x:Name="DetailChevron"
-                                  Data="{StaticResource IconChevronDown}"
-                                  Foreground="{DynamicResource Sem.Color.OnSurface}" />
-                        <TextBlock Text="{DynamicResource Common.Details}"
-                                   VerticalAlignment="Center" />
+    <dialogs:DialogShell CloseCommand="{Binding CloseCommand}" Header="{Binding Title}">
+        <dialogs:DialogShell.Footer>
+            <dialogs:DialogActions>
+                <Button Classes="DialogAction" Command="{Binding CopyCommand}">
+                    <StackPanel
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <iconPacks:PackIconPhosphorIcons
+                            Kind="Copy"
+                            Width="{x:Static semantic:IconTokens.Compact}"
+                            Height="{x:Static semantic:IconTokens.Compact}" />
+                        <TextBlock Text="{DynamicResource Common.Copy}" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
-
-                <TextBox Grid.Row="2"
-                         x:Name="DetailPanel"
-                         Classes="ErrorDetail"
-                         IsVisible="False"
-                         IsReadOnly="True"
-                         AcceptsReturn="True"
-                         Text="{Binding Detail}"
-                         MaxHeight="{x:Static theme:ThemeSemErrorDialogTokens.DetailMaxHeight}"
-                         Margin="0,6,0,0"
-                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                         ScrollViewer.VerticalScrollBarVisibility="Auto"
-                         TextWrapping="Wrap" />
+                <Button
+                    Classes="DialogAction DialogPrimary"
+                    Content="{DynamicResource Common.Confirm}"
+                    Command="{Binding CloseCommand}" />
+            </dialogs:DialogActions>
+        </dialogs:DialogShell.Footer>
+        <Border Classes="DialogBodyBorder">
+            <Grid RowDefinitions="Auto,Auto,*">
+                <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                </ScrollViewer>
+                <Button
+                    Grid.Row="1"
+                    Classes="text"
+                    IsVisible="{Binding HasDetail}"
+                    x:Name="DetailToggleBtn"
+                    Click="OnDetailToggleClicked">
+                    <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                        <iconPacks:PackIconPhosphorIcons
+                            Width="{x:Static semantic:IconTokens.Compact}"
+                            Height="{x:Static semantic:IconTokens.Compact}"
+                            x:Name="DetailChevron"
+                            Kind="CaretDown"
+                            VerticalAlignment="Center"
+                            Foreground="{Binding Foreground, ElementName=DetailToggleBtn}" />
+                        <TextBlock Text="{DynamicResource Common.Details}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <TextBox
+                    Grid.Row="2"
+                    x:Name="DetailPanel"
+                    Classes="ErrorDetail"
+                    IsVisible="False"
+                    IsReadOnly="True"
+                    AcceptsReturn="True"
+                    Text="{Binding Detail}"
+                    MaxHeight="280"
+                    Margin="0,6,0,0"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    TextWrapping="Wrap" />
             </Grid>
-
-            <Border Grid.Row="2"
-                    Padding="{x:Static theme:ThemeSemErrorDialogTokens.FooterInset}">
-                <Grid ColumnDefinitions="*,*">
-                    <Button Classes="SecondaryBtn"
-                            MinHeight="{x:Static theme:ThemeSemErrorDialogTokens.ActionMinHeight}"
-                            Command="{Binding CopyCommand}">
-                        <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Center"
-                                    Spacing="8">
-                            <iconPacks:PackIconPhosphorIcons Kind="Copy" Width="18" Height="18" />
-                            <TextBlock Text="{DynamicResource Common.Copy}"
-                                       VerticalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-                    <Button Grid.Column="1"
-                            Classes="PrimaryBtn"
-                            Margin="{x:Static theme:ThemeSemErrorDialogTokens.ActionSpacing}"
-                            MinHeight="{x:Static theme:ThemeSemErrorDialogTokens.ActionMinHeight}"
-                            Content="{DynamicResource Common.Confirm}"
-                            Command="{Binding CloseCommand}" />
-                </Grid>
-            </Border>
-        </Grid>
-    </Border>
+        </Border>
+    </dialogs:DialogShell>
 </UserControl>

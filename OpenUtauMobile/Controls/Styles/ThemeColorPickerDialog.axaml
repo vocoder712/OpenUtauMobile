@@ -1,0 +1,16 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <!-- 颜色选择器独立持有这些样式与数值，不与设置页建立联动。 -->
+    <Style Selector="TextBlock.PlaceholderText">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Opacity" Value="0.65" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="22" />
+    </Style>
+
+
+</Styles>

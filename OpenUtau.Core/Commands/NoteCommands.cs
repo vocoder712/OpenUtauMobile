@@ -11,6 +11,7 @@ namespace OpenUtau.Core {
             SkipTiming = true,
             Part = Part,
         };
+        public override Pipeline.ImpactSet Impact => Pipeline.ImpactSet.PartOf(Part);
         public NoteCommand(UVoicePart part, UNote note) {
             Part = part;
             Notes = new UNote[] { note };

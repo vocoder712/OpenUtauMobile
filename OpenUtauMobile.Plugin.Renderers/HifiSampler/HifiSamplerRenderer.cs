@@ -113,9 +113,7 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
 
                         // Cache to disk
                         try {
-                            var source = new WaveSource(0, 0, 0, 1);
-                            source.SetSamples(result.samples);
-                            WaveFileWriter.CreateWaveFile16(wavPath, WaveExtensionMethods.ToMono(new ExportAdapter(source), 1, 0));
+                            Wave.WriteMono16Wav(wavPath, result.samples);
                         } catch (Exception e) {
                             Log.Warning(e, "Failed to cache rendered wav.");
                         }
@@ -202,11 +200,9 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
                         return;
                     }
 
-                    var source = new WaveSource(0, 0, 0, 1);
-                    source.SetSamples(phoneSamples);
                     lock (OpenUtau.Core.Render.Renderers.GetCacheLock(item.outputFile)) {
                         if (!File.Exists(item.outputFile)) {
-                            WaveFileWriter.CreateWaveFile16(item.outputFile, WaveExtensionMethods.ToMono(new ExportAdapter(source), 1, 0));
+                            Wave.WriteMono16Wav(item.outputFile, phoneSamples);
                         }
                     }
                 } catch (Exception e) {

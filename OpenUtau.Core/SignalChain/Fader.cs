@@ -7,9 +7,11 @@ namespace OpenUtau.Core.SignalChain {
         private float scale = 1;
         private float scaleTarget = 1;
         private float[] scaleBuffer;
+        private readonly bool balance;
 
-        public Fader(ISignalSource source) {
+        public Fader(ISignalSource source, bool balance = false) {
             this.source = source;
+            this.balance = balance;
         }
 
         public float Scale {
@@ -38,6 +40,11 @@ namespace OpenUtau.Core.SignalChain {
                 scaleBuffer[i] = 0;
             }
             (float volumeLeft, float volumeRight) = MusicMath.PanToChannelVolumes(pan);
+            // 总线使用立体声平衡，居中不再叠加轨道声像的 -3 dB 衰减。
+            if (balance) {
+                volumeLeft = Math.Min(1, 1 - Math.Clamp(pan, -100, 100) / 100);
+                volumeRight = Math.Min(1, 1 + Math.Clamp(pan, -100, 100) / 100);
+            }
             int ret = source.Mix(position, scaleBuffer, 0, count);
             for (int i = 0; i < count; ++i) {
                 if (scaleTarget > scale) {

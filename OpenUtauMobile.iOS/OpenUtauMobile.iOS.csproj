@@ -8,9 +8,15 @@
 
     <!-- iOS 配置 -->
     <PropertyGroup>
-        <!-- 禁用 IL 链接器以避免 DryWetMidi 等库的问题 -->
-        <MtouchLink>None</MtouchLink>
-        <IsMacEnabled>false</IsMacEnabled>
+        <!-- 统一使用不带 LLVM 的 Mono AOT，并保留反射所需的托管元数据。 -->
+        <PublishAot>false</PublishAot>
+        <MtouchUseLlvm>false</MtouchUseLlvm>
+        <UseInterpreter>false</UseInterpreter>
+        <TrimMode>partial</TrimMode>
+        <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
+        <!-- 避免将全部泛型实例聚合到过大的 aot-instances.dll。 -->
+        <_IsDedupEnabled>false</_IsDedupEnabled>
+        <AppIcon>AppIcon</AppIcon>
     </PropertyGroup>
 
     <ItemGroup>

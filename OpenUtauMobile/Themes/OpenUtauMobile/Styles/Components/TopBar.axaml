@@ -1,0 +1,53 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+            <Border Classes="TopBar">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <Button Classes="TopBarBtn" Content="{iconPacks:PhosphorIcons ArrowLeft}">
+
+                    </Button>
+                    <TextBlock Classes="TopBarTitle" Text="Top App Bar" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Design.PreviewWith>
+    <!-- 共享顶栏 -->
+    <Style Selector="Border.TopBar">
+        <Setter Property="Height" Value="56" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetXS}" />
+        <Setter Property="Opacity" Value="0.8" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="Button.TopBarBtn">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+        <Setter Property="Height" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXXXL}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button.TopBarBtn Path">
+        <Setter Property="Fill" Value="{DynamicResource Sem.Color.OnSurface}" />
+    </Style>
+
+    <Style Selector="TextBlock.TopBarTitle">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.TitleMSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+</Styles>

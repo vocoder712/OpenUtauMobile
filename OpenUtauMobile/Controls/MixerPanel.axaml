@@ -1,0 +1,288 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Controls.MixerPanel"
+             x:DataType="vm:MixerViewModel"
+             Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
+    <UserControl.Resources>
+        <!-- Mixer通道模板 -->
+        <DataTemplate x:Key="MixerChannelTemplate" x:DataType="vm:MixerChannelViewModel">
+            <Border Classes="MixerChannelStrip" Classes.master="{Binding IsMaster}" Height="{Binding $parent[UserControl].((vm:MixerViewModel)DataContext).ChannelHeight}"
+                    CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="1" ClipToBounds="True">
+                <Grid RowDefinitions="4,56,Auto,Auto,*,Auto,Auto" RowSpacing="4">
+                    <!-- 通道颜色条 -->
+                    <Button x:Name="ChannelColorButton" Grid.Row="0" Grid.RowSpan="2" Click="OnColorClick" IsVisible="{Binding !IsMaster}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                            VerticalAlignment="Top" Height="20" Padding="0" Background="Transparent"
+                            BorderThickness="0" ZIndex="1" ToolTip.Tip="{DynamicResource TrackHeader.ChangeColor}">
+                        <Border Background="{Binding Color}" Height="4" VerticalAlignment="Top" IsHitTestVisible="False" />
+                    </Button>
+                    <!-- 通道名称 -->
+                    <Button IsVisible="{Binding !IsMaster}" x:Name="ChannelRenameButton" Grid.Row="1" Classes="MixerAction" Background="Transparent" Click="OnRenameClick" IsEnabled="{Binding !IsMaster}" Margin="4,16,4,4" ToolTip.Tip="{DynamicResource TrackHeader.Rename}">
+                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" ToolTip.Tip="{Binding Name}" />
+                    </Button>
+                    <TextBlock Grid.Row="1" Text="Master" IsVisible="{Binding IsMaster}" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="4,24,4,12" />
+                    <!-- FX按钮 -->
+                    <StackPanel Grid.Row="2" IsVisible="{Binding !IsMaster}" Spacing="2" Margin="0,0,0,4">
+                        <Grid ColumnDefinitions="56,32" ColumnSpacing="2" HorizontalAlignment="Center">
+                            <Button x:Name="ChannelFxEnabledButton" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
+                                    HorizontalAlignment="Stretch" CornerRadius="16,4,4,16" Click="OnFxToggleClick"
+                                    ToolTip.Tip="{DynamicResource Mixer.ToggleFx}">
+                                <StackPanel Orientation="Horizontal" Spacing="4"><icons:PackIconPhosphorIcons Kind="Power" Width="16" Height="16" /><TextBlock Text="FX" /></StackPanel>
+                            </Button>
+                            <Button x:Name="ChannelFxButton" Grid.Column="1" Classes="MixerSplit" Classes.filled="{Binding FxEnabled}" Classes.bypassed="{Binding !FxEnabled}"
+                                    HorizontalAlignment="Stretch" CornerRadius="4,16,16,4" Click="OnFxClick"
+                                    Content="{icons:PhosphorIcons CaretRight}" ToolTip.Tip="{DynamicResource Mixer.Effects}" />
+                        </Grid>
+                    </StackPanel>
+                    <!-- Pan旋钮 -->
+                    <StackPanel Grid.Row="3" IsVisible="{Binding !IsMaster}" Margin="8,0" Spacing="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                            <TextBlock Classes="MixerHint" Text="{DynamicResource TrackHeader.Pan}" />
+                            <TextBlock Text="{Binding PanText}" FontSize="11" FontWeight="SemiBold" />
+                        </StackPanel>
+                        <Grid>
+                            <Border Width="1" Height="20" Background="{DynamicResource Sem.Color.Outline}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                            <c:MixerSlider Classes="MixerReset MixerPan" Minimum="-100" Maximum="100" Value="{Binding Pan, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.ResetHint}" />
+                        </Grid>
+                    </StackPanel>
+                    <!-- 音量推子和电平 -->
+                    <Grid Grid.Row="4" ColumnDefinitions="*,Auto" Margin="12,4">
+                        <c:MixerSlider Grid.Column="0" Classes="MixerReset" x:Name="VolumeFader" IsVisible="{Binding !IsMaster}" Orientation="Vertical" Minimum="-24" Maximum="12"
+                                Value="{Binding Volume, Mode=TwoWay}" VerticalAlignment="Stretch"
+                                ToolTip.Tip="{DynamicResource Mixer.ResetHint}" />
+                        <!-- 电平表 -->
+                        <c:MixerLevelMeter Classes.master="{Binding IsMaster}" Width="40" Margin="4,0"
+                                           LeftDb="{Binding LeftDb}" RightDb="{Binding RightDb}"
+                                           TrackBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                                           LabelBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                           ClipBrush="#E65B55" />
+                    </Grid>
+                    <TextBlock Grid.Row="5" IsVisible="{Binding !IsMaster}" Text="{Binding Volume, StringFormat='{}{0:0.0} dB'}" FontSize="12" HorizontalAlignment="Center" Margin="0,2,0,6" />
+                    <!-- Mute和Solo按钮 -->
+                    <Grid IsVisible="{Binding !IsMaster}" Grid.Row="6" ColumnDefinitions="48,48" ColumnSpacing="4" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <ToggleButton Classes="MixerAction MixerState" Content="M" IsChecked="{Binding Mute, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.Mute}" />
+                        <ToggleButton Grid.Column="1" Classes="MixerAction MixerState" Content="S" IsChecked="{Binding Solo, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.Solo}" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Border.MixerChannelStrip">
+            <Setter Property="Width" Value="140" />
+        </Style>
+        <Style Selector="Border.MixerChannelStrip.master">
+            <Setter Property="Width" Value="80" />
+        </Style>
+        <Style Selector="TextBlock.MixerValue">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="c|MixerFxGraph">
+            <Setter Property="Height" Value="210" />
+            <Setter Property="CurveBrush" Value="{DynamicResource Sem.Color.Primary}" />
+            <Setter Property="SecondaryBrush" Value="{DynamicResource Sem.Color.Tertiary}" />
+            <Setter Property="GridBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+            <Setter Property="LabelBrush" Value="{DynamicResource Sem.Color.OnSurface}" />
+        </Style>
+        <Style Selector="c|MixerLevelMeter">
+            <Setter Property="Grid.Column" Value="1" />
+        </Style>
+        <Style Selector="c|MixerLevelMeter.master">
+            <Setter Property="Grid.Column" Value="0" />
+            <Setter Property="Grid.ColumnSpan" Value="2" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.MixerAction, ToggleButton.MixerAction">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Slider.MixerReset">
+            <Setter Property="ToolTip.Tip" Value="{DynamicResource Mixer.ResetHint}" />
+        </Style>
+        <Style Selector="Slider.MixerPan">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        </Style>
+        <Style Selector="ToggleButton.MixerState">
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+        </Style>
+        <Style Selector="Button.MixerSplit">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.MixerSplit.bypassed">
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHighest}" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        </Style>
+        <Style Selector="TextBlock.MixerHint">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            <Setter Property="FontSize" Value="11" />
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto,*" ClipToBounds="True">
+        <!-- 顶部标题栏 -->
+        <Grid ColumnDefinitions="*,Auto" Margin="12,4,4,0">
+            <TextBlock Text="{DynamicResource Mixer.Title}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+            <Button Grid.Column="1" x:Name="CloseMixerButton" Classes="TopBarBtn" Click="OnCloseClick"
+                    ToolTip.Tip="{DynamicResource Mixer.Close}" Content="{icons:PhosphorIcons X}" />
+        </Grid>
+        <!-- 主体内容 -->
+        <Grid Grid.Row="1" x:Name="BodyGrid" ColumnDefinitions="*,0">
+            <ScrollViewer x:Name="OverviewScroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <Border Padding="12,0,12,12">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <ContentControl x:Name="MasterStrip" Content="{Binding Master}" ContentTemplate="{StaticResource MixerChannelTemplate}" />
+                        <ScrollViewer Grid.Column="1" x:Name="ChannelsScroll" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding Channels}" ItemTemplate="{StaticResource MixerChannelTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate><StackPanel Orientation="Horizontal" Spacing="8" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        <TextBlock Grid.Column="1" IsVisible="{Binding IsEmpty}" Text="{DynamicResource Mixer.Empty}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+            </ScrollViewer>
+            <!-- 右侧FX面板 -->
+            <Border Grid.Column="0" x:Name="DetailBorder" IsVisible="False" Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                    BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="1,0,0,0">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="Auto,*,Auto" Margin="4">
+                        <Button Classes="TopBarBtn" Click="OnBackClick" Content="{icons:PhosphorIcons ArrowLeft}" ToolTip.Tip="{DynamicResource Common.Back}" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding FxChannels}" SelectedItem="{Binding SelectedChannel, Mode=TwoWay}" MinWidth="0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                            <ComboBox.ItemTemplate><DataTemplate x:DataType="vm:MixerChannelViewModel"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" /></DataTemplate></ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <!-- bypass按钮 -->
+                        <ToggleButton Grid.Column="2" Classes="MixerAction" VerticalAlignment="Center" Width="40" Height="40" Margin="4,0,0,0"
+                                      IsChecked="{Binding SelectedChannel.FxEnabled, Mode=TwoWay}" ToolTip.Tip="{DynamicResource Mixer.ToggleFx}">
+                            <icons:PackIconPhosphorIcons Kind="Power" Width="20" Height="20" />
+                        </ToggleButton>
+                    </Grid>
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <Border Padding="12,0,12,12">
+                            <StackPanel Spacing="12">
+                                <TextBlock Classes="MixerHint" Text="{DynamicResource Mixer.Order}" />
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="{DynamicResource Mixer.PresetLibrary}" />
+                                    <ComboBox ItemsSource="{Binding UserPresets}" SelectedItem="{Binding SelectedUserPreset, Mode=TwoWay}" PlaceholderText="{DynamicResource Mixer.ChoosePreset}" HorizontalAlignment="Stretch" MinWidth="0">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:CompileBindings="False"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" /></DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                        <Button Content="{DynamicResource Mixer.UpdatePreset}" Click="OnUpdateUserPreset" IsEnabled="{Binding HasUserPreset}" HorizontalAlignment="Stretch" />
+                                        <Button Grid.Column="1" Content="{DynamicResource Mixer.AddPreset}" Click="OnAddUserPreset" HorizontalAlignment="Stretch" />
+                                        <Button Grid.Column="2" Content="{DynamicResource Common.Delete}" Click="OnDeleteUserPreset" IsEnabled="{Binding HasUserPreset}" HorizontalAlignment="Stretch" />
+                                    </Grid>
+                                </StackPanel>
+                                <TabControl IsEnabled="{Binding SelectedChannel.FxEnabled}">
+                                    <!-- 均衡器 -->
+                                    <TabItem Header="EQ">
+                                        <StackPanel Spacing="8" DataContext="{Binding SelectedChannel}" x:DataType="vm:MixerChannelViewModel">
+                                            <Button Content="{DynamicResource Mixer.LoadPreset}" Tag="Eq" Click="OnLoadEffectPreset" HorizontalAlignment="Stretch" />
+                                            <Border CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
+                                                <c:MixerFxGraph Kind="Equalizer" Height="280" XAxisTitle="{DynamicResource Mixer.Axis.Frequency}" YAxisTitle="{DynamicResource Mixer.Axis.Gain}" />
+                                            </Border>
+                                            <TextBlock Classes="MixerHint" Text="{DynamicResource Mixer.EqGraphHint}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{DynamicResource Mixer.Low}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding LowDb, StringFormat='{}{0:0.0} dB'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="-12" Maximum="12" Value="{Binding LowDb, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.EqLowDb}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.MidFrequency}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding MidFrequency, StringFormat='{}{0:0} Hz'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="20" Maximum="20000" Value="{Binding MidFrequency, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.EqMidFreq}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.Mid}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding MidDb, StringFormat='{}{0:0.0} dB'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="-12" Maximum="12" Value="{Binding MidDb, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.EqMidDb}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.High}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding HighDb, StringFormat='{}{0:0.0} dB'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="-12" Maximum="12" Value="{Binding HighDb, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.EqHighDb}" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </TabItem>
+                                    <!-- 压缩器 -->
+                                    <TabItem Header="{DynamicResource Mixer.Compressor}">
+                                        <StackPanel Spacing="8" DataContext="{Binding SelectedChannel}" x:DataType="vm:MixerChannelViewModel">
+                                            <Button Content="{DynamicResource Mixer.LoadPreset}" Tag="Comp" Click="OnLoadEffectPreset" HorizontalAlignment="Stretch" />
+                                            <Border CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
+                                                <c:MixerFxGraph Kind="Compressor" XAxisTitle="{DynamicResource Mixer.Axis.Input}" YAxisTitle="{DynamicResource Mixer.Axis.Output}" />
+                                            </Border>
+                                            <TextBlock Classes="MixerHint" Text="{DynamicResource Mixer.CompGraphHint}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{DynamicResource Mixer.Threshold}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding ThresholdDb, StringFormat='{}{0:0.0} dB'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="-48" Maximum="0" Value="{Binding ThresholdDb, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.CompThresholdDb}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.Ratio}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding Ratio, StringFormat='{}{0:0.0}:1'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="1" Maximum="10" Value="{Binding Ratio, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.CompRatio}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.Makeup}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding MakeupDb, StringFormat='{}{0:0.0} dB'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="-12" Maximum="24" Value="{Binding MakeupDb, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.CompMakeupDb}" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </TabItem>
+                                    <!-- 混响 -->
+                                    <TabItem Header="{DynamicResource Mixer.Reverb}">
+                                        <StackPanel Spacing="8" DataContext="{Binding SelectedChannel}" x:DataType="vm:MixerChannelViewModel">
+                                            <Button Content="{DynamicResource Mixer.LoadPreset}" Tag="Reverb" Click="OnLoadEffectPreset" HorizontalAlignment="Stretch" />
+                                            <Border CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
+                                                <c:MixerFxGraph Kind="Reverb" XAxisTitle="{DynamicResource Mixer.Axis.Time}" YAxisTitle="{DynamicResource Mixer.Axis.WetPeak}" />
+                                            </Border>
+                                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                                <TextBlock Text="L" Foreground="{DynamicResource Sem.Color.Primary}" />
+                                                <TextBlock Text="R" Foreground="{DynamicResource Sem.Color.Tertiary}" />
+                                            </StackPanel>
+                                            <TextBlock Classes="MixerHint" Text="{DynamicResource Mixer.ReverbGraphHint}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{DynamicResource Mixer.Wet}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding ReverbWet, StringFormat='{}{0:0.00}×'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="0" Maximum="2" Value="{Binding ReverbWet, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.ReverbWet}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.Size}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding ReverbSize, StringFormat='{}{0:0.00}'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="0" Maximum="1" Value="{Binding ReverbSize, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.ReverbSize}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.Damp}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding ReverbDamp, StringFormat='{}{0:0.00}'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="0" Maximum="1" Value="{Binding ReverbDamp, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.ReverbDamp}" />
+                                            </Grid>
+                                            <TextBlock Text="{DynamicResource Mixer.PreDelay}" />
+                                            <Grid ColumnDefinitions="88,*" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding PreDelayMs, StringFormat='{}{0:0} ms'}" Classes="MixerValue" />
+                                                <c:MixerSlider Grid.Column="1" Classes="MixerReset" Minimum="0" Maximum="200" Value="{Binding PreDelayMs, Mode=TwoWay}" DefaultValue="{Binding ResetDefaults.ReverbPreDelayMs}" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </TabItem>
+                                </TabControl>
+                            </StackPanel>
+                        </Border>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

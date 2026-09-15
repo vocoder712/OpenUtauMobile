@@ -1,5 +1,16 @@
 Third-party notices for code adapted into this repository.
 
+Avalonia Fluent theme source
+
+- Source: https://github.com/AvaloniaUI/Avalonia/tree/12.1.0/src/Avalonia.Themes.Fluent
+- Copyright (c) AvaloniaUI OÜ. MIT License.
+- License: licenses/Avalonia.Themes.Fluent.MIT.txt
+- Adapted XAML resides in OpenUtauMobile/Themes/OpenUtauMobile/{Controls,Accents,Strings,DensityStyles}.
+- Changes: local resource URIs/private theme names, complete independent entry point,
+  semantic palettes, shared button templates, input/state/cursor handling and metrics.
+- The pinned commit, original SHA-256 hashes and template contracts are recorded in
+  OpenUtauMobile/Themes/OpenUtauMobile/UPSTREAM.json.
+
 OpenUtau.Core
 
 - Source project: OpenUtau

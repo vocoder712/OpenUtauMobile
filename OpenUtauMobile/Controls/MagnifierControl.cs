@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Helpers;
 
 namespace OpenUtauMobile.Controls
 {
@@ -21,7 +21,8 @@ namespace OpenUtauMobile.Controls
 
         public static readonly StyledProperty<double> MagnificationFactorProperty =
             AvaloniaProperty.Register<MagnifierControl, double>(
-                nameof(MagnificationFactor), 2.0);
+                nameof(MagnificationFactor), MagnifierSettings.Default,
+                coerce: (_, value) => MagnifierSettings.Normalize(value));
 
         public static readonly StyledProperty<Size> LensSizeProperty =
             AvaloniaProperty.Register<MagnifierControl, Size>(
@@ -31,6 +32,15 @@ namespace OpenUtauMobile.Controls
             AvaloniaProperty.Register<MagnifierControl, IBrush?>(
                 nameof(Background));
 
+        public static readonly StyledProperty<IBrush?> BorderBrushProperty =
+            AvaloniaProperty.Register<MagnifierControl, IBrush?>(nameof(BorderBrush));
+
+        public static readonly StyledProperty<CornerRadius> CornerRadiusProperty =
+            AvaloniaProperty.Register<MagnifierControl, CornerRadius>(nameof(CornerRadius));
+
+        public static readonly StyledProperty<Color> ShadowColorProperty =
+            AvaloniaProperty.Register<MagnifierControl, Color>(nameof(ShadowColor));
+
         public static readonly StyledProperty<Rect> SourceRectProperty =
             AvaloniaProperty.Register<MagnifierControl, Rect>(
                 nameof(SourceRect), new Rect(0, 0, 200, 200));
@@ -38,22 +48,23 @@ namespace OpenUtauMobile.Controls
         // 字段与内部对象
         private Visual? _source;
         private readonly VisualBrush _visualBrush = new();
-        private readonly TranslateTransform _translateTransform = new();
-        private readonly ScaleTransform _scaleTransform = new();
-        private readonly TransformGroup _transformGroup = new();
+        private bool _hasSample;
 
         private Point _focusPointInSource;
 
+        static MagnifierControl()
+        {
+            AffectsRender<MagnifierControl>(BackgroundProperty, BorderBrushProperty,
+                CornerRadiusProperty, ShadowColorProperty);
+            AffectsMeasure<MagnifierControl>(LensSizeProperty);
+        }
+
         public MagnifierControl()
         {
-            _transformGroup.Children.Add(_scaleTransform);
-            _transformGroup.Children.Add(_translateTransform);
-
             _visualBrush.Stretch = Stretch.Fill;
-            _visualBrush.DestinationRect = RelativeRect.Fill;
             _visualBrush.TileMode = TileMode.None;
-
-            Background ??= ThemeResources.GetBrush("Sem.Color.Scrim");
+            IsHitTestVisible = false;
+            Focusable = false;
         }
 
         // 公共属性
@@ -64,6 +75,10 @@ namespace OpenUtauMobile.Controls
             {
                 if (SetAndRaise(SourceProperty, ref _source, value))
                 {
+                    // 关闭时也同步释放笔刷引用，避免继续持有整个编辑器视觉树。
+                    _visualBrush.Visual = value;
+                    _hasSample = false;
+                    InvalidateVisual();
                     // 当 Source 发生改变且放大镜处于激活(可见)状态时，立即刷新一次
                     if (IsVisible)
                     {
@@ -91,6 +106,24 @@ namespace OpenUtauMobile.Controls
             set => SetValue(BackgroundProperty, value);
         }
 
+        public IBrush? BorderBrush
+        {
+            get => GetValue(BorderBrushProperty);
+            set => SetValue(BorderBrushProperty, value);
+        }
+
+        public CornerRadius CornerRadius
+        {
+            get => GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
+        }
+
+        public Color ShadowColor
+        {
+            get => GetValue(ShadowColorProperty);
+            set => SetValue(ShadowColorProperty, value);
+        }
+
         public Rect SourceRect
         {
             get => GetValue(SourceRectProperty);
@@ -110,24 +143,29 @@ namespace OpenUtauMobile.Controls
             _focusPointInSource = focusPointInSource;
 
             double factor = MagnificationFactor;
-            double halfWidth = LensSize.Width / factor / 2;
-            double halfHeight = LensSize.Height / factor / 2;
-
-            double x = _focusPointInSource.X - halfWidth;
-            double y = _focusPointInSource.Y - halfHeight;
-
-            // 越界限制（防止放大镜边缘看到控件外面的空白）
-            if (_source is Control c)
+            Size size = Bounds.Size;
+            double width = Math.Min(size.Width / factor, _source.Bounds.Width);
+            double height = Math.Min(size.Height / factor, _source.Bounds.Height);
+            _hasSample = width > 0 && height > 0;
+            if (!_hasSample)
             {
-                x = Math.Clamp(x, 0, Math.Max(0, c.Bounds.Width - LensSize.Width / factor));
-                y = Math.Clamp(y, 0, Math.Max(0, c.Bounds.Height - LensSize.Height / factor));
+                InvalidateVisual();
+                return;
             }
 
-            SourceRect = new Rect(x, y, LensSize.Width / factor, LensSize.Height / factor);
+            double x = Math.Clamp(_focusPointInSource.X - width / 2, 0, _source.Bounds.Width - width);
+            double y = Math.Clamp(_focusPointInSource.Y - height / 2, 0, _source.Bounds.Height - height);
+            SourceRect = new Rect(x, y, width, height);
 
             // 用 VisualBrush.SourceRect 指定“源控件中被采样”的绝对区域。
-            // DestinationRect=Fill + Stretch=Fill 会把该区域拉伸到整个镜片。
+            // 目标区域按实际倍率计算，避免源区域不足时改变缩放比例。
             _visualBrush.SourceRect = new RelativeRect(SourceRect, RelativeUnit.Absolute);
+
+            // 源区域小于镜片时居中留出主题背景，不把不足的内容拉伸到另一倍率。
+            _visualBrush.DestinationRect = new RelativeRect(new Rect(
+                (size.Width - width * factor) / 2,
+                (size.Height - height * factor) / 2,
+                width * factor, height * factor), RelativeUnit.Absolute);
 
             // 设置笔刷源
             _visualBrush.Visual = _source;
@@ -140,20 +178,43 @@ namespace OpenUtauMobile.Controls
         {
             base.Render(context);
 
-            Rect rect = new(new Point(0, 0), LensSize);
-
-            // 1. 画背景遮罩
-            context.FillRectangle(Background ?? ThemeResources.GetBrush("Sem.Color.Scrim"), rect);
-
-            // 2. 用 VisualBrush 画放大后的内容
-            if (_source != null)
+            Rect rect = new(Bounds.Size);
+            if (rect.Width <= 0 || rect.Height <= 0)
             {
-                context.FillRectangle(_visualBrush, rect);
+                return;
             }
 
-            // 3. 画放大镜边框
-            Pen pen = new(ThemeResources.GetBrush("Sem.Color.OnSurface"), 2);
-            context.DrawRectangle(null, pen, rect);
+            RoundedRect roundedRect = new(rect, CornerRadius);
+            BoxShadows shadows = new(new BoxShadow
+            {
+                OffsetY = 2,
+                Blur = 6,
+                Color = Color.FromArgb((byte)(ShadowColor.A * 0.18), ShadowColor.R, ShadowColor.G, ShadowColor.B)
+            });
+
+            // 阴影在裁切外绘制，镜片内容和背景共同使用圆角裁切。
+            context.DrawRectangle(Background, null, roundedRect, shadows);
+            using (context.PushClip(roundedRect))
+            {
+                if (_source != null && _hasSample)
+                {
+                    context.FillRectangle(_visualBrush, rect);
+                }
+            }
+
+            // 将细边框内缩半个逻辑像素，避免外侧被布局边界裁掉。
+            context.DrawRectangle(null, new Pen(BorderBrush, 1),
+                new RoundedRect(rect.Deflate(0.5), Math.Max(0, CornerRadius.TopLeft - 0.5)));
+        }
+
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+            if (change.Property == MagnificationFactorProperty || change.Property == BoundsProperty ||
+                change.Property == IsVisibleProperty)
+            {
+                UpdateView(_focusPointInSource);
+            }
         }
 
         protected override Size MeasureOverride(Size availableSize)

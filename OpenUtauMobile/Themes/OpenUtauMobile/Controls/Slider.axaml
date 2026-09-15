@@ -1,0 +1,85 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:metrics="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+                    xmlns:local="using:OpenUtauMobile.Themes.OpenUtauMobile.Controls"
+                    x:CompileBindings="False">
+    <!-- 轨道只负责命中，MD3 轨道及圆点由共享呈现器绘制。 -->
+    <ControlTheme x:Key="OpumSliderTrackButton" TargetType="RepeatButton">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template"><ControlTemplate><Border Background="Transparent" /></ControlTemplate></Setter>
+        <Style Selector="^:disabled"><Setter Property="Cursor" Value="Arrow" /></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="OpumSliderThumbTheme" TargetType="Thumb">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- 可见把手与 48 DIP 命中区分离，状态变化不改变 Track 的拖动坐标。 -->
+                <Grid Background="Transparent">
+                    <Border x:Name="Handle" Background="{TemplateBinding Background}" CornerRadius="2"
+                            Width="{x:Static metrics:SliderTokens.HandleWidth}" Height="{x:Static metrics:SliderTokens.HandleHeight}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Border x:Name="FocusRing" BorderBrush="{DynamicResource Sem.Color.Primary}" BorderThickness="3"
+                            CornerRadius="6" Width="12" Height="52" IsVisible="False"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^[Tag=vertical] /template/ Border#Handle, ^[Tag=vertical-active] /template/ Border#Handle, ^[Tag=vertical-focus] /template/ Border#Handle">
+            <Setter Property="Width" Value="{x:Static metrics:SliderTokens.HandleHeight}" />
+            <Setter Property="Height" Value="{x:Static metrics:SliderTokens.HandleWidth}" />
+        </Style>
+        <Style Selector="^[Tag=vertical-focus] /template/ Border#FocusRing">
+            <Setter Property="Width" Value="52" /><Setter Property="Height" Value="12" />
+        </Style>
+        <Style Selector="^[Tag=horizontal-active] /template/ Border#Handle, ^[Tag=horizontal-focus] /template/ Border#Handle">
+            <Setter Property="Width" Value="{x:Static metrics:SliderTokens.ActiveHandleWidth}" />
+        </Style>
+        <Style Selector="^[Tag=vertical-active] /template/ Border#Handle, ^[Tag=vertical-focus] /template/ Border#Handle">
+            <Setter Property="Height" Value="{x:Static metrics:SliderTokens.ActiveHandleWidth}" />
+        </Style>
+        <Style Selector="^[Tag=horizontal-focus] /template/ Border#FocusRing, ^[Tag=vertical-focus] /template/ Border#FocusRing">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:disabled"><Setter Property="Cursor" Value="Arrow" /></Style>
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type Slider}" TargetType="Slider">
+        <Setter Property="Background" Value="{DynamicResource SliderTrackFill}" />
+        <Setter Property="Foreground" Value="{DynamicResource SliderTrackValueFill}" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DataValidationErrors>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                        <Grid x:Name="SliderContainer" Background="Transparent" MinHeight="{x:Static metrics:SliderTokens.MinHeight}" MinWidth="{x:Static metrics:SliderTokens.MinHeight}">
+                            <local:SliderTrackPresenter Source="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                                       IsHitTestVisible="False"
+                                                       ActiveTickBrush="{DynamicResource Sem.Color.OnPrimary}"
+                                                       InactiveTickBrush="{DynamicResource Sem.Color.OnSecondaryContainer}"
+                                                       DisabledActiveBrush="{DynamicResource SliderTrackValueFillDisabled}"
+                                                       DisabledInactiveBrush="{DynamicResource SliderTrackFillDisabled}" />
+                            <Track x:Name="PART_Track" Minimum="{TemplateBinding Minimum}" Maximum="{TemplateBinding Maximum}"
+                                   Value="{TemplateBinding Value, Mode=TwoWay}" Orientation="{TemplateBinding Orientation}"
+                                   IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
+                                <Track.DecreaseButton><RepeatButton x:Name="PART_DecreaseButton" Theme="{StaticResource OpumSliderTrackButton}" Focusable="False" /></Track.DecreaseButton>
+                                <Track.IncreaseButton><RepeatButton x:Name="PART_IncreaseButton" Theme="{StaticResource OpumSliderTrackButton}" Focusable="False" /></Track.IncreaseButton>
+                                <Thumb x:Name="SliderThumb" Width="{x:Static metrics:SliderTokens.MinHeight}" Height="{x:Static metrics:SliderTokens.MinHeight}"
+                                       Theme="{StaticResource OpumSliderThumbTheme}" Background="{DynamicResource SliderThumbBackground}" />
+                            </Track>
+                        </Grid>
+                    </Border>
+                </DataValidationErrors>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:vertical /template/ Thumb"><Setter Property="Tag" Value="vertical" /></Style>
+        <!-- 状态只传递给把手主题，不覆盖调用方的轨道颜色。 -->
+        <Style Selector="^:horizontal:pressed:not(:disabled) /template/ Thumb"><Setter Property="Tag" Value="horizontal-active" /></Style>
+        <Style Selector="^:vertical:pressed:not(:disabled) /template/ Thumb"><Setter Property="Tag" Value="vertical-active" /></Style>
+        <Style Selector="^:horizontal:focus-visible:not(:disabled) /template/ Thumb"><Setter Property="Tag" Value="horizontal-focus" /></Style>
+        <Style Selector="^:vertical:focus-visible:not(:disabled) /template/ Thumb"><Setter Property="Tag" Value="vertical-focus" /></Style>
+        <Style Selector="^:disabled /template/ Thumb"><Setter Property="Background" Value="{DynamicResource SliderThumbBackgroundDisabled}" /></Style>
+        <Style Selector="^:error">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
+            <Style Selector="^ /template/ Thumb"><Setter Property="Background" Value="{DynamicResource Sem.Color.Error}" /></Style>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

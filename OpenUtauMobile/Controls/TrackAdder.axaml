@@ -1,5 +1,6 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              x:DataType="vm:EditorViewModel"
              x:Class="OpenUtauMobile.Controls.TrackAdder">
@@ -11,7 +12,7 @@
             Background="Transparent"
             Command="{Binding AddTrackCommand}"
             ToolTip.Tip="{DynamicResource TrackAdder.AddTrack}">
-        <StackPanel Orientation="Horizontal" Spacing="6">
+        <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
             <TextBlock Text="+" FontSize="16" FontWeight="Bold"
                        Foreground="{DynamicResource TrackAdderForegroundBrush}"
                        VerticalAlignment="Center" />

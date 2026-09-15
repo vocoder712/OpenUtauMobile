@@ -1,0 +1,32 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+        xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+            <Button Classes="FAB">
+                <Path
+                    Data="M12,2A10,10 0 1,0 22,12A10,10 0 0,0 12,2ZM13.5,17H10.5V14H7.5V11H10.5V8H13.5V11H16.5V14H13.5V17Z" />
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
+    <!-- 共享悬浮操作按钮 -->
+    <!-- TODO: 实现过于复杂且阴影有问题 -->
+    <Style Selector="Button.FAB">
+        <Setter Property="Width" Value="{x:Static components:FabTokens.Size}" />
+        <Setter Property="Height" Value="{x:Static components:FabTokens.Size}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXL}" />
+        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetS}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="Effect">
+            <DropShadowEffect BlurRadius="{x:Static components:FabTokens.RestBlur}" OffsetX="0" OffsetY="{x:Static components:FabTokens.RestOffset}" Opacity="{x:Static components:FabTokens.RestOpacity}"
+                              Color="{DynamicResource Sem.Value.Shadow}" />
+        </Setter>
+    </Style>
+
+</Styles>

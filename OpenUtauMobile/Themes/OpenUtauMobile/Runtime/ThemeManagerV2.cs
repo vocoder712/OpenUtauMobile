@@ -115,7 +115,12 @@ public static class ThemeManagerV2
         _currentVariant = variant;
 
         ThemeScheme scheme = ThemeGenerator.Generate(seed, variant);
-        ResourceBridge.ApplySemanticBrushes(scheme.SemanticColors);
+        ResourceBridge.EnsureAttached(Application.Current);
+        foreach (ThemeVariant paletteVariant in new[] { ThemeVariant.Default, ThemeVariant.Light, ThemeVariant.Dark })
+        {
+            ThemeScheme palette = paletteVariant == variant ? scheme : ThemeGenerator.Generate(seed, paletteVariant);
+            ResourceBridge.ApplySemanticBrushes(palette.SemanticColors, paletteVariant);
+        }
 
         foreach (KeyValuePair<string, string> alias in LegacyBrushAliases)
         {

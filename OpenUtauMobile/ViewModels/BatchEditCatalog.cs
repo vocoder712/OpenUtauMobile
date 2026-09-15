@@ -4,6 +4,7 @@ using System.Globalization;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Services;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -126,10 +127,12 @@ public static class BatchEditCatalog
             _ => new FixOverlap(), true),
         NoParameter("common-note-copy", BatchEditCategory.Notes,
             "BatchEdit.Action.CommonNoteCopy", PackIconPhosphorIconsKind.Copy,
-            _ => new CommonnoteCopy()),
+            _ => new CommonnoteCopy(text =>
+                ServiceHub.ClipboardService.SetTextAsync(text).GetAwaiter().GetResult())),
         NoParameter("common-note-paste", BatchEditCategory.Notes,
             "BatchEdit.Action.CommonNotePaste", PackIconPhosphorIconsKind.Clipboard,
-            _ => new CommonnotePaste()),
+            _ => new CommonnotePaste(() =>
+                ServiceHub.ClipboardService.GetTextAsync().GetAwaiter().GetResult())),
         NoParameter("hanzi-to-pinyin", BatchEditCategory.Notes,
             "BatchEdit.Action.HanziToPinyin", PackIconPhosphorIconsKind.Translate,
             _ => new HanziToPinyin()),

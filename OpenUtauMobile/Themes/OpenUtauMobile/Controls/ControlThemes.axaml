@@ -1,0 +1,91 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:CompileBindings="False">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/AdornerLayer.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Button.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/CommandBar.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/CarouselPage.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ContentPage.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/DrawerPage.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/NavigationPage.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TabbedPage.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/RadioButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Expander.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ProgressBar.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/AutoCompleteBox.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ButtonSpinner.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Calendar.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/CalendarButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/CalendarDatePicker.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/CalendarDayButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/CalendarItem.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Carousel.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/CheckBox.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/FlyoutPresenter.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/GroupBox.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/GridSplitter.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/HyperlinkButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ItemsControl.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Label.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ListBox.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ListBoxItem.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/MenuScrollViewer.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Menu.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/MenuItem.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/MenuFlyoutPresenter.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/NotificationCard.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/NumericUpDown.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/OverlayPopupHost.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/PopupRoot.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/PathIcon.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/PipsPager.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/RepeatButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ScrollBar.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ScrollViewer.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Separator.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/SplitButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/SplitView.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TabControl.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TabItem.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TableView.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TableViewCell.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TableViewColumnHeader.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TableViewRow.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TabStrip.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TabStripItem.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TextBox.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ToggleButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ToggleSwitch.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ToolTip.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TransitioningContentControl.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TreeView.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TreeViewItem.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/WindowNotificationManager.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Window.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/WindowDrawnDecorations.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ComboBox.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ComboBoxItem.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ContextMenu.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/DataValidationErrors.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/DateTimePickerShared.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/DatePicker.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TimePicker.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/DropDownButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/EmbeddableControlRoot.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/Slider.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ManagedFileChooser.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/SelectableTextBlock.axaml"/>
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/RefreshContainer.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/RefreshVisualizer.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ThemeVariantScope.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/HeaderedContentControl.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TextSelectionHandle.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+</Styles>

@@ -1,0 +1,22 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    <Design.PreviewWith>
+        <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+            <Button Classes="OptionEntry">
+                <TextBlock Text="Option Entry" />
+            </Button>
+        </StackPanel>
+    </Design.PreviewWith>
+    <!-- 选项页与关于页共用的入口按钮 -->
+    <Style Selector="Button.OptionEntry">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
+</Styles>

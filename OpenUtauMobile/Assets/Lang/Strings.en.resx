@@ -1119,9 +1119,6 @@
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>Export as Audio</value>
   </data>
-  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
-    <value>TODO: ImportTrack</value>
-  </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: ExportAudio</value>
   </data>
@@ -1794,5 +1791,154 @@
   </data>
   <data name="BulkLyricEdit.Apply" xml:space="preserve">
     <value>Apply</value>
+  </data>
+  <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>{0} files selected</value></data>
+  <data name="ImportTracks.Next" xml:space="preserve"><value>Next</value></data>
+  <data name="ImportTracks.ImportCount" xml:space="preserve"><value>Import {0} tracks</value></data>
+  <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>{0} tracks</value></data>
+  <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>{0} vocal parts · {1} audio parts</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>Singer missing or unassigned: {0}</value></data>
+  <data name="ImportTracks.Unassigned" xml:space="preserve"><value>Unassigned</value></data>
+  <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>Missing audio: {0}</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>Source voice colors differ from the installed singer. Review voice-color parameters after import.</value></data>
+  <data name="ImportTracks.AppendHint" xml:space="preserve"><value>Append as new tracks at their original positions without replacing existing tracks.</value></data>
+  <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>Existing expression definitions take precedence; otherwise the first selected file wins. Missing definitions will be imported.</value></data>
+  <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>Use source tempo and time signatures (off: keep current settings)</value></data>
+  <data name="ImportTracks.TimingSource" xml:space="preserve"><value>Tempo and time signature source</value></data>
+  <data name="ImportTracks.TimingSummary" xml:space="preserve"><value>Initial {0} BPM · {1}/{2}; {3} tempo markers, {4} time signature markers</value></data>
+  <data name="ImportTracks.TempoMarker" xml:space="preserve"><value>Position {0} ticks: {1} BPM</value></data>
+  <data name="ImportTracks.SignatureMarker" xml:space="preserve"><value>Bar {0}: {1}/{2}</value></data>
+  <data name="ImportTracks.ReplaceTimingWarning" xml:space="preserve"><value>This replaces tempo and time signatures for the entire project, including existing tracks.</value></data>
+  <data name="ImportTracks.MarkerDetails" xml:space="preserve"><value>All markers</value></data>
+  <data name="ImportTracks.SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="ImportTracks.SelectNone" xml:space="preserve"><value>Deselect all</value></data>
+  <data name="ImportTracks.RemoveFile" xml:space="preserve"><value>Remove this file</value></data>
+  <data name="ImportTracks.Reading" xml:space="preserve"><value>Reading track files…</value></data>
+  <data name="ImportTracks.Importing" xml:space="preserve"><value>Importing tracks…</value></data>
+  <data name="ImportTracks.Success" xml:space="preserve"><value>Imported {0} tracks</value></data>
+  <data name="ImportTracks.ProjectChanged" xml:space="preserve"><value>The current project changed. Start the import again.</value></data>
+  <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>Like the desktop app, importing tracks clears undo/redo history and resets the playhead. Tempo and time signatures come from the first imported project.</value></data>
+  <data name="VoiceMapping.Title" xml:space="preserve"><value>Voice color mapping</value></data>
+  <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>Imported vocal mode mapping</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>Map original voice colors to the current singer. Skipping leaves imported tracks in place.</value></data>
+  <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>Map imported vocal mode curves to DiffSinger voice colors. Default skips conversion; existing target curves are kept.</value></data>
+  <data name="VoiceMapping.Default" xml:space="preserve"><value>Default</value></data>
+  <data name="VoiceMapping.Skip" xml:space="preserve"><value>Skip</value></data>
+  <data name="VoiceMapping.Apply" xml:space="preserve"><value>Apply mapping</value></data>
+  <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>This track has no notes or voice colors to map.</value></data>
+  <data name="VoiceMapping.Undo" xml:space="preserve"><value>Remap voice colors</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>Sort</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>Magnifier</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>Magnification</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>Applies to pitch and parameter curve editing. Values below 1× show a wider area; 1× is the original scale.</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>Close mixer</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>Compressor</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>Effects</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>No tracks</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>High</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>Low</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>Meter unavailable</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>Mid</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>Mute</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>Fixed order: EQ → Compressor → Reverb</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>Audio controls are previews; names and colors update the project</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>Ratio</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>Reverb</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>Decay length</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>Solo</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>Threshold</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>Mixer</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>Reverb amount (preset multiplier)</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>Double-click a slider to restore its default</value></data>
+  <data name="Mixer.ToggleFx" xml:space="preserve"><value>Enable effects / bypass (lit when enabled)</value></data>
+  <data name="Mixer.FxOn" xml:space="preserve"><value>Enabled</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>Edit</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>Nothing to undo</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>Nothing to redo</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>Undid: {0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>Redid: {0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>Mid-band center (Hz)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>Makeup gain (dB)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>High-frequency damping</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>Pre-delay (ms)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>Three-band EQ · Frequency Hz → / Gain dB ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>Drag handles for gain; move the middle handle horizontally for frequency.</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>Digital compressor · Input dB → / Output dB ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>Move left handle horizontally for threshold, right vertically for ratio. Static curve includes makeup gain.</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Time s → / Wet peak dB ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Left/right impulse decay preview (4 s), wet only. Not live audio; long tails may extend beyond the window.</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>Effect preset</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>Apply</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>Apply effect preset</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>Effect chain presets</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>Apply default chain</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>Preset name</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>Save (replace same name)</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>Enter a preset name</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>Preset saved: {0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>Off</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>Vocal air</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>Warm</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>De-mud</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>Telephone</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>Gentle</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>Pop vocal</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>Heavy compression (10:1)</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>Small room</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>Vocal plate style</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>Hall</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>Ambient</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>Select to apply</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>Update</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>Add</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>Load preset</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>Default</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>New effect chain preset</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>Save this track’s EQ, compression and reverb as a user preset.</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>Name already exists. Use Update to replace it.</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>Frequency (Hz)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>Gain (dB)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>Input (dB)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>Output (dB)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>Time (s)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>Wet peak (dB)</value></data>
+  <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>Audio queue latency</value></data>
+  <data name="Expressions.Title" xml:space="preserve"><value>Expressions</value></data>
+  <data name="Expressions.Project" xml:space="preserve"><value>Project Expressions</value></data>
+  <data name="Expressions.Track" xml:space="preserve"><value>Track Expressions (override)</value></data>
+  <data name="Expressions.Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Expressions.Abbr" xml:space="preserve"><value>Abbreviation</value></data>
+  <data name="Expressions.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Expressions.Numerical" xml:space="preserve"><value>Numerical</value></data>
+  <data name="Expressions.Options" xml:space="preserve"><value>Options</value></data>
+  <data name="Expressions.Curve" xml:space="preserve"><value>Curve</value></data>
+  <data name="Expressions.IsFlag" xml:space="preserve"><value>Is Resampler Flag</value></data>
+  <data name="Expressions.Flag" xml:space="preserve"><value>Resampler Flag</value></data>
+  <data name="Expressions.Min" xml:space="preserve"><value>Min</value></data>
+  <data name="Expressions.Max" xml:space="preserve"><value>Max</value></data>
+  <data name="Expressions.Default" xml:space="preserve"><value>Default</value></data>
+  <data name="Expressions.SystemDefault" xml:space="preserve"><value>System Default</value></data>
+  <data name="Expressions.ProjectDefault" xml:space="preserve"><value>Project Default</value></data>
+  <data name="Expressions.TrackDefault" xml:space="preserve"><value>Track Default</value></data>
+  <data name="Expressions.SkipOutput" xml:space="preserve"><value>Skip flag output when the value is system default</value></data>
+  <data name="Expressions.OptionValues" xml:space="preserve"><value>Option Values</value></data>
+  <data name="Expressions.CommaHint" xml:space="preserve"><value>Separate values by &apos;,&apos;</value></data>
+  <data name="Expressions.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Expressions.Error.Name" xml:space="preserve"><value>Name must be set</value></data>
+  <data name="Expressions.Error.Abbr" xml:space="preserve"><value>Abbreviation must be set</value></data>
+  <data name="Expressions.Error.AbbrLength" xml:space="preserve"><value>Abbreviation must be between 1 and 4 characters long</value></data>
+  <data name="Expressions.Error.Range" xml:space="preserve"><value>Min must be smaller than max</value></data>
+  <data name="Expressions.Error.Default" xml:space="preserve"><value>Default value must be between min and max</value></data>
+  <data name="Expressions.Error.CustomDefault" xml:space="preserve"><value>Project/Track default value must be between min and max</value></data>
+  <data name="Expressions.Error.DuplicateAbbr" xml:space="preserve"><value>Abbreviations must be unique</value></data>
+  <data name="Expressions.Error.DuplicateFlag" xml:space="preserve"><value>Flags must be unique</value></data>
+  <data name="Expressions.Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Expressions.Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Expressions.Suggestions" xml:space="preserve"><value>Suggestions</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>Project</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>Track</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>The current renderer does not support these expressions.</value>
   </data>
 </root>

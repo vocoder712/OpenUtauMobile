@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:CompileBindings="False">
+  <Thickness x:Key="HyperlinkButtonBorderThemeThickness">0</Thickness>
+  <ControlTheme x:Key="{x:Type HyperlinkButton}" TargetType="HyperlinkButton" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+    <Setter Property="TextBlock.TextDecorations" Value="Underline" />
+    <Style Selector="^:visited">
+      <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Tertiary}" />
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

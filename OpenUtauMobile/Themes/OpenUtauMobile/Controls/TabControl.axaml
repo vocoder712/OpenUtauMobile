@@ -1,0 +1,64 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:CompileBindings="False">
+
+  <!-- 页签栏外层形状定制；页签本体保持 MD3 指示条语义。 -->
+  <CornerRadius x:Key="TabBarCornerRadius">8</CornerRadius>
+
+  <ControlTheme x:Key="{x:Type TabControl}" TargetType="TabControl">
+    <Setter Property="CornerRadius" Value="{DynamicResource TabBarCornerRadius}" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="{DynamicResource TabControlBackground}" />
+    <Setter Property="ItemsPanel">
+      <ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                Background="{TemplateBinding Background}"
+                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                VerticalAlignment="{TemplateBinding VerticalAlignment}">
+          <DockPanel>
+            <Border Name="PART_TabStrip" DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+                    CornerRadius="{TemplateBinding CornerRadius}" ClipToBounds="True"
+                    Background="{DynamicResource Sem.Color.Surface}">
+            <ScrollViewer Name="PART_HeaderScroller"
+                          Background="{DynamicResource Sem.Color.Surface}"
+                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+              <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
+            </ScrollViewer>
+            </Border>
+            <Panel ClipToBounds="True">
+              <ContentPresenter Name="PART_SelectedContentHost2"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                IsVisible="False" />
+              <ContentPresenter Name="PART_SelectedContentHost"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </Panel>
+          </DockPanel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+
+    <!-- 侧向页签保持单列并沿纵向滚动。 -->
+    <Style Selector="^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter, ^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter">
+      <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+    <Style Selector="^[TabStripPlacement=Left], ^[TabStripPlacement=Right]">
+      <Setter Property="ItemsPanel">
+        <ItemsPanelTemplate><UniformGrid Columns="1" /></ItemsPanelTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="^[TabStripPlacement=Left] /template/ ScrollViewer#PART_HeaderScroller, ^[TabStripPlacement=Right] /template/ ScrollViewer#PART_HeaderScroller">
+      <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+      <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

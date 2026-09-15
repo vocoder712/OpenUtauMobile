@@ -3,6 +3,9 @@ using OpenUtau.Core.SignalChain.Effects;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.SignalChain {
+    /// <summary>同步读取 EQ 输出、压缩器输入；接收方不得阻塞或保留样本视图。</summary>
+    public delegate void MixFxSampleObserver(int position, ReadOnlySpan<float> samples);
+
     /// <summary>
     /// ISignalSource wrapper that applies the user-configured post-FX chain
     /// (3-band EQ -> compressor -> reverb).  When all effects bypass, the
@@ -21,6 +24,8 @@ namespace OpenUtau.Core.SignalChain {
         private readonly BiquadEQ eq;
         private readonly SimpleCompressor comp;
         private readonly Freeverb reverb;
+        private bool enabled = true;
+        internal MixFxSampleObserver SampleObserver;
 
         // Scratch buffer.  The signal chain in MasterAdapter passes in a
         // zeroed buffer and we mix into it; we need a private writeable copy
@@ -38,6 +43,7 @@ namespace OpenUtau.Core.SignalChain {
         public bool IsReady(int position, int count) => source.IsReady(position, count);
 
         public int Mix(int position, float[] buffer, int index, int count) {
+            if (!enabled) return source.Mix(position, buffer, index, count);
             // Allocate / grow scratch as needed.  In the common case the
             // playback buffer size is constant so this is allocated once.
             if (scratch == null || scratch.Length < count) {
@@ -50,6 +56,7 @@ namespace OpenUtau.Core.SignalChain {
             // when its parameters are at unity so individually-disabled stages
             // cost effectively nothing.
             eq.Process(scratch, 0, count);
+            System.Threading.Volatile.Read(ref SampleObserver)?.Invoke(position, scratch.AsSpan(0, count));
             comp.Process(scratch, 0, count);
             reverb.Process(scratch, 0, count);
 
@@ -71,17 +78,33 @@ namespace OpenUtau.Core.SignalChain {
             if (fx == null || !fx.Enabled) {
                 return inner;
             }
-            var eq = new BiquadEQ(SampleRate, Channels);
+            var wrapper = Create(inner, fx);
+            return wrapper.IsAnythingEnabled ? wrapper : inner;
+        }
+
+        internal static MixFxSource Create(ISignalSource inner, UMixFx fx) {
+            var wrapper = new MixFxSource(inner, new BiquadEQ(SampleRate, Channels),
+                new SimpleCompressor(SampleRate, Channels), new Freeverb(SampleRate, Channels));
+            wrapper.Configure(fx);
+            return wrapper;
+        }
+
+        // 仅由音频线程在块边界调用，保留滤波器和混响状态。
+        internal void Configure(UMixFx fx) {
+            bool wasEnabled = enabled;
+            enabled = fx != null && fx.Enabled;
+            if (!enabled) {
+                if (wasEnabled) { eq.Reset(); comp.Reset(); reverb.Reset(); }
+                return;
+            }
             eq.Configure(fx.EqLowDb, fx.EqMidFreq, 0.707, fx.EqMidDb, fx.EqHighDb);
 
-            var comp = new SimpleCompressor(SampleRate, Channels);
             FxPresets.CompParams cParams = FxPresets.Comp.TryGetValue(fx.CompPreset ?? FxPresets.Off, out var cp)
                 ? cp
                 : FxPresets.Comp[FxPresets.Off];
             comp.Configure(fx.CompThresholdDb, fx.CompRatio,
                            cParams.AttackMs, cParams.ReleaseMs, fx.CompMakeupDb);
 
-            var reverb = new Freeverb(SampleRate, Channels);
             FxPresets.ReverbParams rParams = FxPresets.Reverb.TryGetValue(fx.ReverbPreset ?? FxPresets.Off, out var rp)
                 ? rp
                 : FxPresets.Reverb[FxPresets.Off];
@@ -89,8 +112,6 @@ namespace OpenUtau.Core.SignalChain {
             reverb.Configure(fx.ReverbSize, fx.ReverbDamp, rParams.Width,
                              rParams.Wet * userWet, rParams.Dry, fx.ReverbPreDelayMs);
 
-            var wrapper = new MixFxSource(inner, eq, comp, reverb);
-            return wrapper.IsAnythingEnabled ? wrapper : inner;
         }
     }
 }

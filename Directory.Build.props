@@ -1,8 +1,8 @@
-﻿<Project>
+<Project>
     <PropertyGroup>
         <AvaloniaVersion>12.1.0</AvaloniaVersion>
         <!-- OpenUtau.Core 及附加插件版本号 -->
-        <CoreVersion>0.1.570.1-alpha-2b03ad562fa6</CoreVersion>
+        <CoreVersion>0.1.570.4-alpha-9699944ead5a</CoreVersion>
         <!-- CI 传入产品版本和构建号；本地使用明显的非发布版本 -->
         <BuildNumber Condition="'$(BuildNumber)' == ''">0</BuildNumber>
         <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
@@ -10,7 +10,7 @@
         <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
         <!-- 包名 -->
         <BaseApplicationId>pers.vocoder712.openutaumobile.canary</BaseApplicationId>
-        <!-- Android 包名 -->
+        <!-- 全平台应用标识：Android package name / Apple bundle identifier -->
         <ApplicationId>$(BaseApplicationId)</ApplicationId>
         <!-- CI 的 BuildNumber 已包含 20000 偏移；本地 Android 使用有效的最小整数版本号 -->
         <ApplicationVersion Condition="'$(ApplicationVersion)' == '' and '$(BuildNumber)' == '0'">1</ApplicationVersion>

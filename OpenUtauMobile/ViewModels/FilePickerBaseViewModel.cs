@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -55,6 +56,14 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     /// <summary>当前选择器模式，供 View 绑定以切换底部工具条。</summary>
     public abstract FilePickerMode Mode { get; }
 
+    public virtual bool IsMultiSelect => false;
+    public bool HasFooter => IsMultiSelect || Mode != FilePickerMode.OpenFile;
+    public virtual string SelectionSummary => string.Empty;
+    public virtual ReactiveCommand<Unit, Unit>? ConfirmCommand => null;
+
+    /// <summary>单选与多选共用的文件行，多选子类附加勾选状态。</summary>
+    public ObservableCollection<FilePickerEntry> Entries { get; } = [];
+
     public ReactiveCommand<FileSystemInfo, Unit> SelectItemCommand { get; }
     public ReactiveCommand<Unit, Unit> GoUpCommand { get; }
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
@@ -71,6 +80,14 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     {
         Title = title;
         Filters = filters;
+        AllItems.CollectionChanged += (_, _) =>
+        {
+            Entries.Clear();
+            foreach (FileSystemInfo item in AllItems)
+            {
+                Entries.Add(CreateEntry(item));
+            }
+        };
 
         if (!Directory.Exists(initialPath))
             initialPath = string.Empty;
@@ -236,6 +253,8 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     // ── 点击条目时的确认逻辑，由子类实现 ────────────────────────────────
     /// <summary>点击条目时的确认逻辑，由子类实现。</summary>
     protected abstract void SelectItem(FileSystemInfo item);
+
+    protected virtual FilePickerEntry CreateEntry(FileSystemInfo item) => new(item);
 
 
     private void GoUp()

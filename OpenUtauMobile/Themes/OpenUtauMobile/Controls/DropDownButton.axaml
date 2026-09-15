@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic" x:CompileBindings="False"
+ xmlns:components="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components">
+ <x:Double x:Key="DropDownButtonMinHeight">40</x:Double>
+ <ControlTheme x:Key="{x:Type DropDownButton}" TargetType="DropDownButton" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border Background="Transparent">
+        <Panel Name="PART_Root">
+          <Border Name="RootBorder" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="{TemplateBinding CornerRadius}" />
+          <Border Name="PART_StateLayer" Background="{TemplateBinding Foreground}"
+                  CornerRadius="{TemplateBinding CornerRadius}" IsHitTestVisible="False" Opacity="0" />
+          <Grid Name="InnerGrid" ColumnDefinitions="*,Auto"><ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}"
+                            Padding="{TemplateBinding Padding}" Margin="{TemplateBinding BorderThickness}"
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" /><PathIcon Name="DropDownGlyph" Grid.Column="1" Width="12" Height="12" Margin="0,0,12,0"
+              Foreground="{TemplateBinding Foreground}" IsHitTestVisible="False"
+              Data="M 0,0 L 6,6 L 12,0" /></Grid>
+          <Border Name="PART_FocusRing" BorderBrush="{DynamicResource Sem.Color.Primary}"
+                  BorderThickness="{x:Static components:ButtonTokens.FocusThickness}"
+                  Margin="{x:Static components:ButtonTokens.FocusInset}" CornerRadius="{TemplateBinding CornerRadius}"
+                  IsHitTestVisible="False" IsVisible="False" />
+        </Panel>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+    <Style Selector="^:flyout-open:not(:disabled) /template/ Border#PART_StateLayer">
+    <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Pressed}" />
+  </Style>
+ </ControlTheme>
+</ResourceDictionary>

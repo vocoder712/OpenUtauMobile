@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
@@ -169,13 +169,7 @@ public class MainActivity : AvaloniaMainActivity
     /// </summary>
     private static void InitLogging()
     {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .WriteTo.Debug()
-            .WriteTo.Logger(lc => lc
-                .MinimumLevel.Information() // 
-                .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)) // 写入日志文件
-            .CreateLogger();
+        OpenUtauMobile.Services.AppLogging.Initialize(PathManager.Inst.LogFilePath);
         Log.Information("==========开始记录日志==========");
     }
 

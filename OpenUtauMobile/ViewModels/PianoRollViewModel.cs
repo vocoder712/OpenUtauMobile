@@ -1,3 +1,4 @@
+using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -275,6 +276,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     [Reactive] public string SecondaryExpressionKey { get; set; } = string.Empty;
 
+    private bool _expressionRefreshPending;
+
     public bool IsPhonemeSimpleMode => PhonemePanelMode == PhonemePanelMode.PhonemeSimple;
     public bool IsPhonemeAdvancedMode => PhonemePanelMode == PhonemePanelMode.PhonemeAdvanced;
     public bool IsParameterDrawMode => PhonemePanelMode == PhonemePanelMode.ParameterDraw;
@@ -320,6 +323,42 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public UExpressionDescriptor? SecondaryExpressionDescriptor =>
         AvailableSecondaryExpressions.FirstOrDefault(x => x.Key == SecondaryExpressionKey)?.Descriptor;
+
+    public string UnsupportedExpressionNames => string.Join(" / ",
+        new[] { PrimaryExpressionKey, SecondaryExpressionKey }
+            .Where(key => !string.IsNullOrEmpty(key) && !IsExpressionSupported(key))
+            .Distinct()
+            .Select(key => key.ToUpperInvariant()));
+
+    public bool HasUnsupportedExpression => !string.IsNullOrEmpty(UnsupportedExpressionNames);
+
+    private bool IsExpressionSupported(string key)
+    {
+        UProject? project = DocManager.Inst.Project;
+        int trackNo = EditingVoicePart?.trackNo ?? -1;
+        if (project == null || trackNo < 0 || trackNo >= project.tracks.Count)
+        {
+            return true;
+        }
+        UTrack track = project.tracks[trackNo];
+        if (track.RendererSettings.Renderer == null)
+        {
+            return true;
+        }
+        // 与桌面端一致：优先使用轨道解析后的定义，未知表情不误报。
+        if (track.TryGetExpDescriptor(project, key, out UExpressionDescriptor? descriptor))
+        {
+            return track.RendererSettings.Renderer.SupportsExpression(descriptor);
+        }
+        return track.VoiceColorExp?.abbr != key
+            || track.RendererSettings.Renderer.SupportsExpression(track.VoiceColorExp);
+    }
+
+    private void RefreshExpressionSupport()
+    {
+        this.RaisePropertyChanged(nameof(UnsupportedExpressionNames));
+        this.RaisePropertyChanged(nameof(HasUnsupportedExpression));
+    }
 
     public System.Windows.Input.ICommand SwapExpressionsCommand { get; }
     public System.Windows.Input.ICommand SelectPrimaryExpressionCommand { get; }
@@ -556,6 +595,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     /// </summary>
     public void SyncPlaybackState(int tick, bool isPlaying, bool isWaitingRender)
     {
+        if (IsPresentationSuspended) return;
         PlayPosTick = tick;
         IsPlaying = isPlaying;
         IsWaitingRender = isWaitingRender;
@@ -566,6 +606,28 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     }
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘
+
+    public bool IsPresentationSuspended { get; private set; }
+
+    public void SetPresentationSuspended(bool suspended)
+    {
+        if (IsPresentationSuspended == suspended) return;
+        IsPresentationSuspended = suspended;
+        if (suspended)
+        {
+            StopPreviewTone();
+            _panMotion.Cancel();
+            IsPlaying = false;
+            IsWaitingRender = false;
+            RequestMagnifierClose?.Invoke();
+        }
+        else
+        {
+            ValidateSelectedNotes();
+            ValidateSelectedAnchors();
+            RequestInvalidateVisual?.Invoke();
+        }
+    }
 
     /// <summary>
     /// 请求打开歌词编辑弹窗。
@@ -600,12 +662,14 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         (PrimaryExpressionKey, SecondaryExpressionKey) = (SecondaryExpressionKey, PrimaryExpressionKey);
+        ExpressionSelectionState.Store(DocManager.Inst.Project, PrimaryExpressionKey, SecondaryExpressionKey);
         this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
         this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
     }
 
     public void RefreshAvailableExpressions()
     {
+        RefreshExpressionSupport();
         AvailableExpressions.Clear();
         AvailableSecondaryExpressions.Clear();
 
@@ -622,17 +686,11 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             track = project.tracks[EditingVoicePart.trackNo];
         }
 
-        if (track != null)
+        // 桌面端选择器枚举工程定义，具体编辑属性通过轨道解析。
+        foreach (KeyValuePair<string, UExpressionDescriptor> pair in project.expressions)
         {
-            list = track.GetSupportedExps(project);
-        }
-
-        if (list.Count == 0)
-        {
-            foreach (KeyValuePair<string, UExpressionDescriptor> pair in project.expressions)
-            {
-                list.Add(pair.Value);
-            }
+            list.Add(track != null && track.TryGetExpDescriptor(project, pair.Key, out UExpressionDescriptor? descriptor)
+                ? descriptor : pair.Value);
         }
 
         foreach (UExpressionDescriptor desc in list)
@@ -648,10 +706,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             AvailableSecondaryExpressions.Add(new ExpressionOption(desc.abbr, disp, desc));
         }
 
-        if (!AvailableExpressions.Any(x => x.Key == PrimaryExpressionKey))
-        {
-            PrimaryExpressionKey = AvailableExpressions.FirstOrDefault()?.Key ?? "vel";
-        }
+        (PrimaryExpressionKey, SecondaryExpressionKey) = ExpressionSelectionState.Read(project);
 
         this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
         this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
@@ -732,6 +787,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             if (opt != null && !string.IsNullOrEmpty(opt.Key))
             {
                 PrimaryExpressionKey = opt.Key;
+                ExpressionSelectionState.Store(DocManager.Inst.Project, PrimaryExpressionKey, SecondaryExpressionKey);
             }
         });
         SelectSecondaryExpressionCommand = ReactiveCommand.Create<ExpressionOption>(opt =>
@@ -739,6 +795,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             if (opt != null)
             {
                 SecondaryExpressionKey = opt.Key;
+                ExpressionSelectionState.Store(DocManager.Inst.Project, PrimaryExpressionKey, SecondaryExpressionKey);
             }
         });
 
@@ -833,6 +890,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         this.WhenAnyValue(x => x.PrimaryExpressionKey, x => x.SecondaryExpressionKey)
             .Subscribe(_ =>
             {
+                RefreshExpressionSupport();
                 this.RaisePropertyChanged(nameof(PrimaryExpressionDisplayName));
                 this.RaisePropertyChanged(nameof(SecondaryExpressionDisplayName));
                 this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
@@ -2107,15 +2165,13 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     public void OnTwoFingerTap()
     {
         InterruptPanMotionIfRunning();
-        DocManager.Inst.Undo();
-        ToastService.Enqueue(L.S("PianoRoll.Undone"));
+        UndoRedoService.Undo();
     }
 
     public void OnThreeFingerTap()
     {
         InterruptPanMotionIfRunning();
-        DocManager.Inst.Redo();
-        ToastService.Enqueue(L.S("PianoRoll.Redone"));
+        UndoRedoService.Redo();
     }
 
     private void InterruptPanMotionIfRunning()
@@ -3421,6 +3477,21 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     {
         switch (cmd)
         {
+            case LoadProjectNotification:
+            case ConfigureExpressionsCommand:
+            case SingersRefreshedNotification:
+                RefreshAvailableExpressions();
+                RequestInvalidateVisual?.Invoke();
+                break;
+            case TrackChangeRenderSettingCommand:
+                _expressionRefreshPending = true;
+                break;
+            case PreRenderNotification when _expressionRefreshPending:
+                // 轨道命令先发布再校验，在命令组结束后读取重建的音色定义。
+                _expressionRefreshPending = false;
+                RefreshAvailableExpressions();
+                RequestInvalidateVisual?.Invoke();
+                break;
             case AddPitchPointCommand addPitchPointCommand:
                 ValidateSelectedAnchors();
                 break;
@@ -3432,6 +3503,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 RequestInvalidateVisual?.Invoke();
                 break;
             case TrackChangeSingerCommand: // 切换歌手
+                _expressionRefreshPending = true;
                 _ = UpdatePortraitAsync(); // 更新立绘
                 break;
             case AddNoteCommand:

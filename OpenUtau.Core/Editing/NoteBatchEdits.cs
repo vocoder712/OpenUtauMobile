@@ -233,14 +233,16 @@ namespace OpenUtau.Core.Editing {
         public virtual string Name => name;
 
         private string name;
+        private readonly Action<string> copyText;
 
-        public CommonnoteCopy() {
+        public CommonnoteCopy(Action<string> copyText) {
             name = $"pianoroll.menu.notes.commonnotecopy";
+            this.copyText = copyText;
         }
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            Commonnote.CopyToClipboard(notes, project);
+            copyText(Commonnote.Dumps(notes, project));
         }
     }
 
@@ -248,12 +250,18 @@ namespace OpenUtau.Core.Editing {
         public virtual string Name => name;
 
         private string name;
+        private readonly Func<string?> getText;
 
-        public CommonnotePaste() {
+        public CommonnotePaste(Func<string?> getText) {
             name = $"pianoroll.menu.notes.commonnotepaste";
+            this.getText = getText;
         }
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
-            var notes = Commonnote.LoadFromClipboard(project);
+            string? text = getText();
+            if (string.IsNullOrEmpty(text)) {
+                return;
+            }
+            var notes = Commonnote.Loads(text, project);
             if (notes == null) {
                 return;
             }
@@ -524,6 +532,12 @@ namespace OpenUtau.Core.Editing {
                     int? lastY = null;
                     for (int i = start; i < end; i++) {
                         if (result.tones[i] < 0) {
+                            continue;
+                        }
+                        // Padding and inter-phoneme gap frames are silence: the
+                        // pitch model's output there is an artifact, and writing
+                        // it back produces a spike at the phrase/gap boundary.
+                        if (result.voiced != null && i < result.voiced.Length && !result.voiced[i]) {
                             continue;
                         }
                         int x = phrase.position - part.position + (int)result.ticks[i];

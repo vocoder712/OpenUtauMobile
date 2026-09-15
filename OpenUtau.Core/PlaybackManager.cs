@@ -236,8 +236,6 @@ namespace OpenUtau.Core {
     }
 
     public class PlaybackManager : SingletonBase<PlaybackManager>, ICmdSubscriber {
-        public ConcurrentDictionary<string, (int trackNo, double posMs, float[] samples, DateTime renderTime)> LiveWaveformCache = new ConcurrentDictionary<string, (int, double, float[], DateTime)>();
-        public bool IsWaveformBlanked { get; set; } = false;
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
             try {
@@ -258,10 +256,34 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         MasterAdapter editingMix;
+        // 与播放指针使用同一输出时钟，单位为工程内的交错立体声样本位置。
+        public long AudibleSamplePosition => GetAudiblePosition(out _);
+        private long GetAudiblePosition(out bool waiting)
+        {
+            waiting = false;
+            return masterMix?.GetProjectPosition(AudioOutput.GetPosition() / sizeof(float), out waiting) ?? 0;
+        }
+        public PlaybackMixer LiveMixer => PlayingMaster && OutputActive ? masterMix?.Mixer : null;
+        public PlaybackMeters Meters => PlayingMaster && OutputActive ? masterMix?.Meters : null;
+        public void RefreshMixer(UProject project) {
+            var mixer = masterMix?.Mixer;
+            if (mixer?.Project == project) mixer.Refresh();
+        }
         
+
+        /// <summary>
+        /// The frozen-slot transport: phrase pcm cache (document lifetime) and the
+        /// active playback session's per-track slot sources. See MixPlanner.
+        /// </summary>
+        public MixPlanner MixPlanner { get; } = new MixPlanner();
+
         double startMs;
         public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
+        // One cancellation source per render lane so starting playback, pre-rendering
+        // or exporting no longer cancel each other in flight.
         CancellationTokenSource renderCancellation;
+        CancellationTokenSource preRenderCancellation;
+        CancellationTokenSource exportCancellation;
         UVoicePart preRenderFocusPart;
         int preRenderFocusTick = -1;
 
@@ -362,7 +384,7 @@ namespace OpenUtau.Core {
                 var playSound = Wave.OpenFile(file);
                 AudioOutput.Init(playSound.ToSampleProvider());
             } catch (Exception ex) {
-                Log.Error(ex, $"Failed to load sample {file}.");
+                Log.Error(ex, "Failed to load sample {File}.", file);
                 return;
             }
             AudioOutput.Play();
@@ -440,8 +462,10 @@ namespace OpenUtau.Core {
             this.startMs = startMs;
             metronomeEngine.StartPlayback(DocManager.Inst.Project.timeAxis, StartTick);
             var start = TimeSpan.FromMilliseconds(startMs);
-            Log.Information($"StartPlayback at {start}");
+            Log.Information("Start playback at {Position}", start);
             masterMix = masterAdapter;
+            // 渲染准备期间发生的参数修改也要进入首次播放。
+            masterMix.Mixer?.Refresh();
             AudioOutput.Stop();
             AudioOutput.Init(masterMix);
             AudioOutput.Play();
@@ -453,17 +477,17 @@ namespace OpenUtau.Core {
         private void Render(UProject project, int tick, int endTick, int trackNo) {
             Task.Run(() => {
                 try {
-                    LiveWaveformCache.Clear();
-                    IsWaveformBlanked = false;
-                    
                     Task.Factory.StartNew(() => {
                         DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
                     }, CancellationToken.None, TaskCreationOptions.None, DocManager.Inst.MainScheduler);
 
                     RenderEngine engine = new RenderEngine(project, startTick: tick, endTick: endTick, trackNo: trackNo);
-                    var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false);
+                    var meters = new PlaybackMeters(project);
+                    var mixer = new PlaybackMixer(project);
+                    var result = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: false, applyMixFx: true, meters: meters, mixer: mixer, applyMaster: false, planner: MixPlanner);
                     playbackMix = new PlaybackMix(result.Item1, metronomeEngine);
-                    var playbackAdapter = new MasterAdapter(playbackMix);
+                    var playbackAdapter = new MasterAdapter(mixer.WrapMaster(playbackMix), meters: meters) { Mixer = mixer };
+                    playbackAdapter.HoldWhenUnready = !LoopPlayback;
                     playbackAdapter.SetPosition((int)(project.timeAxis.TickPosToMsPos(tick) * 44100 / 1000) * 2);
                     faders = result.Item2;
                     StartPlayback(project.timeAxis.TickPosToMsPos(tick), playbackAdapter);
@@ -485,8 +509,8 @@ namespace OpenUtau.Core {
         public void UpdatePlayPos() {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && PlayingMaster && masterMix != null) {
 
-                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Waited / 2) * 1000.0 / 44100;
-                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs + ms);
+                double ms = GetAudiblePosition(out bool waiting) * 1000.0 / (44100 * 2);
+                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(ms);
                 if (playbackRangeEndTick > 0 && tick >= playbackRangeEndTick) {
                     HandlePlaybackBoundary(hasPlaybackRange: true);
                     return;
@@ -498,7 +522,7 @@ namespace OpenUtau.Core {
                     HandlePlaybackBoundary(hasPlaybackRange: false);
                     return;
                 }
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, masterMix.IsWaiting));
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, waiting));
             } else if (AudioOutput != null &&
                 AudioOutput.PlaybackState == PlaybackState.Stopped &&
                 PlayingMaster &&
@@ -539,7 +563,10 @@ namespace OpenUtau.Core {
             await Task.Run(() => {
                 try {
                     RenderEngine engine = new RenderEngine(project);
-                    var projectMix = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation, wait: true).Item1;
+                    // A throwaway planner: the export session must not clobber a live
+                    // playback session on the shared planner.
+                    var planner = new MixPlanner();
+                    var projectMix = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref exportCancellation, wait: true, applyMixFx: true, planner: planner).Item1;
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
 
                     CheckFileWritable(exportPath);
@@ -563,7 +590,10 @@ namespace OpenUtau.Core {
                 string file = "";
                 try {
                     RenderEngine engine = new RenderEngine(project);
-                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
+                    // A throwaway planner: the export session must not clobber a live
+                    // playback session on the shared planner.
+                    var planner = new MixPlanner();
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref exportCancellation, planner);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
                             continue;
@@ -597,12 +627,12 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
-            Log.Information("SchedulePreRender");
+            Log.Debug("Schedule pre-render");
             var engine = new RenderEngine(
                 DocManager.Inst.Project,
                 focusPart: preRenderFocusPart,
                 focusTick: preRenderFocusTick);
-            engine.PreRenderProject(ref renderCancellation);
+            engine.PreRenderProject(ref preRenderCancellation, MixPlanner);
         }
 
         #region ICmdSubscriber
@@ -613,12 +643,16 @@ namespace OpenUtau.Core {
                 StopPlayback();
                 int tick = _cmd!.playPosTick;
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, false, _cmd.pause));
+            } else if (cmd is MixCommand mixCommand) {
+                RefreshMixer(mixCommand.Project);
             } else if (cmd is VolumeChangeNotification) {
+                if (masterMix?.Mixer != null) { RefreshMixer(DocManager.Inst.Project); return; }
                 var _cmd = cmd as VolumeChangeNotification;
                 if (faders != null && faders.Count > _cmd.TrackNo) {
                     faders[_cmd.TrackNo].Scale = DecibelToVolume(_cmd.Volume);
                 }
             } else if (cmd is PanChangeNotification) {
+                if (masterMix?.Mixer != null) { RefreshMixer(DocManager.Inst.Project); return; }
                 var _cmd = cmd as PanChangeNotification;
                 if (faders != null && faders.Count > _cmd!.TrackNo) {
                     faders[_cmd.TrackNo].Pan = (float)_cmd.Pan;
@@ -635,11 +669,15 @@ namespace OpenUtau.Core {
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();
                 renderCancellation?.Cancel();
-                LiveWaveformCache.Clear();
+                preRenderCancellation?.Cancel();
+                exportCancellation?.Cancel();
+                MixPlanner.Clear();
                 DocManager.Inst.ExecuteCmd(new WaveformReadyNotification());
                 preRenderFocusPart = null;
                 preRenderFocusTick = -1;
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
+            } else if (cmd is TrackCommand) {
+                RefreshMixer(DocManager.Inst.Project);
             } else if (cmd is LoadPartNotification loadPart) {
                 preRenderFocusPart = loadPart.part as UVoicePart;
                 preRenderFocusTick = loadPart.tick;
@@ -664,8 +702,5 @@ namespace OpenUtau.Core {
         }
 
         #endregion
-    }
-    public class WaveformReadyNotification : UNotification {
-        public override string ToString() => "Waveform rendered and ready";
     }
 }

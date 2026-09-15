@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reactive;
 using System.Text;
@@ -55,13 +55,7 @@ sealed class Program
 
     private static void InitLogging()
     {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Verbose()
-            .WriteTo.Debug()
-            .WriteTo.Logger(lc => lc
-                .MinimumLevel.Information()
-                .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8))
-            .CreateLogger();
+        OpenUtauMobile.Services.AppLogging.Initialize(PathManager.Inst.LogFilePath);
         Log.Information("==========Start logging==========");
     }
 

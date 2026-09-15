@@ -9,5 +9,6 @@ public sealed record PerformanceSnapshot(
     double? AppCpuUsagePercent,
     double? SystemCpuUsagePercent,
     double? FramesPerSecond,
-    double? AverageFrameTimeMilliseconds);
+    double? AverageFrameTimeMilliseconds,
+    double? AudioOutputLatencyMilliseconds = null);
 

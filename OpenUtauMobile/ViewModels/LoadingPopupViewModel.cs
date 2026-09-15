@@ -1,3 +1,4 @@
+using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Reactive;
 using System.Threading;
@@ -12,7 +13,7 @@ namespace OpenUtauMobile.ViewModels;
 /// 通用后台操作加载弹窗 ViewModel
 /// </summary>
 /// <remarks>
-/// 由 <see cref="OpenUtauMobile.Services.LoadingPopupService"/> 创建并管理生命周期。
+/// 由 <see cref="OpenUtauMobile.Services.Dialogs.LoadingPopupService"/> 创建并管理生命周期。
 /// 后台任务可使用本类型更新进度或提示文本，不应直接持有或显示对应 View。
 /// </remarks>
 public class LoadingPopupViewModel : PopupViewModelBase, IProgress<double>

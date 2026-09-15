@@ -1,0 +1,2300 @@
+{
+  "version": "12.1.0",
+  "commit": "a21b9f573172f705a944dcc8aad7f036b9986f39",
+  "files": [
+    {
+      "source": "Accents/BaseColorsPalette.xaml",
+      "sha256": "cbb5ffd6b378cfcb278bf7179b0bf63ec2988003dea8aee9c9f75d5eb58244a1",
+      "local": "Accents/BaseColorsPalette.axaml",
+      "themes": [],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Accents/BaseResources.xaml",
+      "sha256": "628fad3a5f337b7cd855d157527cac34144d8279ccf472a3107b50dabbe7ba9b",
+      "local": "Accents/BaseResources.axaml",
+      "themes": [],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Accents/FluentControlResources.xaml",
+      "sha256": "a6a29e843cffbc975ee3685a2945b8be69cfccf9b04fa91aa78a287e6517755c",
+      "local": "Accents/ControlResources.axaml",
+      "themes": [],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/AdornerLayer.xaml",
+      "sha256": "abc715f03afe62574c966eacb9c0e0ce072c64f6cd8b038457f7e4f5b473d56c",
+      "local": "Controls/AdornerLayer.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type AdornerLayer}",
+          "TargetType": "AdornerLayer"
+        }
+      ],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/AutoCompleteBox.xaml",
+      "sha256": "ae83078a899d78ed487a011a9c2f2ad190e840e3538789a65d18931798ac91a1",
+      "local": "Controls/AutoCompleteBox.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type AutoCompleteBox}",
+          "TargetType": "AutoCompleteBox"
+        }
+      ],
+      "parts": [
+        "PART_LayoutRoot",
+        "PART_Popup",
+        "PART_SelectingItemsControl",
+        "PART_SuggestionsContainer",
+        "PART_TextBox"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/Button.xaml",
+      "sha256": "c4a9526a1170294d65a33918ce26719bd2c7986cff42c96a399e407e11f9bda3",
+      "local": "Controls/Button.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Button}",
+          "TargetType": "Button"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^.accent",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed",
+        "^:pressed  /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/ButtonSpinner.xaml",
+      "sha256": "5858572e77a3d63a0e699b12a9e4657d925bd2f1be97a52b050bc85b567ee4e4",
+      "local": "Controls/ButtonSpinner.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentButtonSpinnerRepeatButton",
+          "TargetType": "RepeatButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ButtonSpinner}",
+          "TargetType": "ButtonSpinner"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_DecreaseButton",
+        "PART_IncreaseButton",
+        "PART_SpinnerPanel"
+      ],
+      "states": [
+        "^ /template/ RepeatButton",
+        "^ /template/ StackPanel#PART_SpinnerPanel",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:error",
+        "^:left",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/Calendar.xaml",
+      "sha256": "c80880e02996fb3858651de339c1cacfe6ddc57d345c39cb66cb16d94250afda",
+      "local": "Controls/Calendar.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Calendar}",
+          "TargetType": "Calendar"
+        }
+      ],
+      "parts": [
+        "PART_CalendarItem",
+        "PART_Root"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/CalendarButton.xaml",
+      "sha256": "e3a2fbd58652b5874f4f49ed36e77a05b542dc73f72381c445a4a2ecc0f2caf6",
+      "local": "Controls/CalendarButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CalendarButton}",
+          "TargetType": "CalendarButton"
+        }
+      ],
+      "parts": [
+        "Border",
+        "PART_ContentPresenter",
+        "Root"
+      ],
+      "states": [
+        "^ /template/ Border#Border",
+        "^ /template/ Border#Root",
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:blackout /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:inactive",
+        "^:pointerover",
+        "^:pointerover /template/ Border#Border",
+        "^:pressed",
+        "^:pressed /template/ Border#Border",
+        "^:selected"
+      ]
+    },
+    {
+      "source": "Controls/CalendarDatePicker.xaml",
+      "sha256": "37b20baf1a305870a16e0bbfde744320ebd946465caf012995a0d3bf207e2055",
+      "local": "Controls/CalendarDatePicker.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentCalendarDatePickerButton",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CalendarDatePicker}",
+          "TargetType": "CalendarDatePicker"
+        }
+      ],
+      "parts": [
+        "Background",
+        "LayoutRoot",
+        "PART_Button",
+        "PART_Calendar",
+        "PART_Popup",
+        "PART_TextBox"
+      ],
+      "states": [
+        "TextBox#PART_TextBox:disabled",
+        "TextBox#PART_TextBox:focus /template/ Border#PART_BorderElement",
+        "^ /template/ Border#Background",
+        "^ /template/ Border#PART_BorderElement",
+        "^ /template/ Button#PART_Button",
+        "^ /template/ TextBlock#PART_Placeholder, ^ TextBlock#PART_FloatingPlaceholder",
+        "^:disabled",
+        "^:error /template/ Border#Background",
+        "^:focus-within:not(CalendarDatePicker:focus) /template/ Border#Background",
+        "^:pointerover /template/ Border#Background",
+        "^:pressed /template/ Border#Background"
+      ]
+    },
+    {
+      "source": "Controls/CalendarDayButton.xaml",
+      "sha256": "2dca08fa53bfdfcdf94feca18e1d6a59a1f11766dffc1303e535c92a69172996",
+      "local": "Controls/CalendarDayButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CalendarDayButton}",
+          "TargetType": "CalendarDayButton"
+        }
+      ],
+      "parts": [
+        "Border",
+        "PART_ContentPresenter",
+        "Root"
+      ],
+      "states": [
+        "^ /template/ Border#Border",
+        "^ /template/ Border#Root",
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:blackout /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:inactive",
+        "^:pointerover /template/ Border#Border",
+        "^:pressed /template/ Border#Border",
+        "^:selected",
+        "^:today"
+      ]
+    },
+    {
+      "source": "Controls/CalendarItem.xaml",
+      "sha256": "48278ae237c47904551de7ff48030821c2b3a6d68278e596edded8d12ecbc70c",
+      "local": "Controls/CalendarItem.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentCalendarButton",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CalendarItem}",
+          "TargetType": "CalendarItem"
+        }
+      ],
+      "parts": [
+        "BackgroundLayer",
+        "PART_ContentPresenter",
+        "PART_HeaderButton",
+        "PART_MonthView",
+        "PART_NextButton",
+        "PART_PreviousButton",
+        "PART_YearView"
+      ],
+      "states": [
+        "^ /template/ Button:pointerover > Path",
+        "^ /template/ Button:pressed > Path",
+        "^:disabled /template/ ContentPresenter",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/Carousel.xaml",
+      "sha256": "d2ca1ae1ae9b7d682500d7fbe92816c6e9373b245512f991a4ca4784ac14381e",
+      "local": "Controls/Carousel.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Carousel}",
+          "TargetType": "Carousel"
+        }
+      ],
+      "parts": [
+        "PART_ItemsPresenter",
+        "PART_ScrollViewer"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/CarouselPage.xaml",
+      "sha256": "336150ecabb3d2ec06cf8cfe5b8adb967daba942a6e4f3ab9b9f1e0334c3dd48",
+      "local": "Controls/CarouselPage.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CarouselPage}",
+          "TargetType": "CarouselPage"
+        }
+      ],
+      "parts": [
+        "PART_Carousel"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/CheckBox.xaml",
+      "sha256": "71208f6357537fcef17eecabe7a277dad0ba769a18675a7dac2e90320c9b0184",
+      "local": "Controls/CheckBox.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CheckBox}",
+          "TargetType": "CheckBox"
+        }
+      ],
+      "parts": [
+        "CheckGlyph",
+        "NormalRectangle",
+        "PART_Border",
+        "PART_ContentPresenter",
+        "RootGrid"
+      ],
+      "states": [
+        "^ /template/ Border#NormalRectangle",
+        "^ /template/ Border#PART_Border",
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^ /template/ Path#CheckGlyph",
+        "^ ContentPresenter#PART_ContentPresenter",
+        "^:checked",
+        "^:disabled",
+        "^:indeterminate",
+        "^:pointerover",
+        "^:pressed"
+      ]
+    },
+    {
+      "source": "Controls/ComboBox.xaml",
+      "sha256": "e9d5d058f3072fee63fa8d30a50ea01d3f577691272e58e4b13134a4719fc8ab",
+      "local": "Controls/ComboBox.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ComboBox}",
+          "TargetType": "ComboBox"
+        }
+      ],
+      "parts": [
+        "Background",
+        "ContentPresenter",
+        "DropDownGlyph",
+        "DropDownOverlay",
+        "HighlightBackground",
+        "PART_EditableTextBox",
+        "PART_ItemsPresenter",
+        "PART_Popup",
+        "PlaceholderTextBlock",
+        "PopupBorder"
+      ],
+      "states": [
+        "^ /template/ Border#Background",
+        "^ /template/ Border#HighlightBackground",
+        "^ /template/ ContentControl#ContentPresenter",
+        "^ /template/ PathIcon#DropDownGlyph",
+        "^ /template/ TextBlock#PlaceholderTextBlock",
+        "^:disabled",
+        "^:error /template/ Border#Background",
+        "^:focus-visible",
+        "^:focus:pressed",
+        "^:pointerover /template/ Border#Background",
+        "^:pressed /template/ Border#Background",
+        "^[IsEditable=true]"
+      ]
+    },
+    {
+      "source": "Controls/ComboBoxItem.xaml",
+      "sha256": "d512550f85d85526a2f26c5125b894d5d6f6989eb81ed5cfeb8138de7095d20b",
+      "local": "Controls/ComboBoxItem.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ComboBoxItem}",
+          "TargetType": "ComboBoxItem"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter",
+        "^:disabled /template/ ContentPresenter",
+        "^:pointerover /template/ ContentPresenter",
+        "^:pressed /template/ ContentPresenter",
+        "^:selected"
+      ]
+    },
+    {
+      "source": "Controls/CommandBar.xaml",
+      "sha256": "6a35e41aec1bc8f654b97724edb6523738b78097e5729c03f3f1c1082eb9ce65",
+      "local": "Controls/CommandBar.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CommandBarButton}",
+          "TargetType": "CommandBarButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CommandBarToggleButton}",
+          "TargetType": "CommandBarToggleButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CommandBarSeparator}",
+          "TargetType": "CommandBarSeparator"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type CommandBar}",
+          "TargetType": "CommandBar"
+        }
+      ],
+      "parts": [
+        "PART_Border",
+        "PART_ContentPresenter",
+        "PART_IconPresenter",
+        "PART_Label",
+        "PART_LayoutRoot",
+        "PART_OverflowButton",
+        "PART_OverflowPopup",
+        "PART_OverflowPresenter",
+        "PART_PrimaryCommands"
+      ],
+      "states": [
+        "^:checked /template/ Border#PART_Border",
+        "^:pointerover /template/ Border#PART_Border",
+        "^:pressed /template/ Border#PART_Border",
+        "^[IsCompact=True]",
+        "^[IsCompact=True] /template/ TextBlock#PART_Label",
+        "^[IsInOverflow=True]",
+        "^[IsInOverflow=True] /template/ ContentPresenter#PART_IconPresenter",
+        "^[IsInOverflow=True] /template/ StackPanel#PART_LayoutRoot",
+        "^[IsInOverflow=True] /template/ TextBlock#PART_Label",
+        "^[LabelPosition=Right]",
+        "^[LabelPosition=Right] /template/ ContentPresenter#PART_IconPresenter",
+        "^[LabelPosition=Right] /template/ StackPanel#PART_LayoutRoot",
+        "^[LabelPosition=Right] /template/ TextBlock#PART_Label"
+      ]
+    },
+    {
+      "source": "Controls/ContentPage.xaml",
+      "sha256": "be710f2bbc27617389625bdb315d5a77efe8c60dcc0475512c91ca3e5e13721a",
+      "local": "Controls/ContentPage.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ContentPage}",
+          "TargetType": "ContentPage"
+        }
+      ],
+      "parts": [
+        "PART_BottomCommandBar",
+        "PART_ContentPresenter",
+        "PART_TopCommandBar"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/ContextMenu.xaml",
+      "sha256": "dd4ae364dac1819fd4a2aa2581581b49422ea714c51d6c094257b208334f6458",
+      "local": "Controls/ContextMenu.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ContextMenu}",
+          "TargetType": "ContextMenu"
+        }
+      ],
+      "parts": [
+        "PART_ItemsPresenter"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/DataValidationErrors.xaml",
+      "sha256": "05b8c9197967a92fa590a7fd6db9c3ef72a7cfd96cec68d8758e0271617002b1",
+      "local": "Controls/DataValidationErrors.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type DataValidationErrors}",
+          "TargetType": "DataValidationErrors"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "TooltipDataValidationErrors",
+          "TargetType": "DataValidationErrors"
+        }
+      ],
+      "parts": [
+        "InlineDataValidationContentControl",
+        "PART_ContentPresenter",
+        "PART_InlineErrorTemplatePanel"
+      ],
+      "states": [
+        "DataValidationErrors",
+        "Panel#PART_InlineErrorTemplatePanel",
+        "Panel#PART_InlineErrorTemplatePanel ToolTip",
+        "Panel#PART_InlineErrorTemplatePanel ToolTip TextBlock",
+        "TextBlock"
+      ]
+    },
+    {
+      "source": "Controls/DatePicker.xaml",
+      "sha256": "90f565bc19797745b0b686ea3e03a4ba5ac83b242a0457030168cb5bd076b6da",
+      "local": "Controls/DatePicker.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentDatePickerFlyoutButton",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type DatePicker}",
+          "TargetType": "DatePicker"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type DatePickerPresenter}",
+          "TargetType": "DatePickerPresenter"
+        }
+      ],
+      "parts": [
+        "AcceptDismissGrid",
+        "Background",
+        "ContentRoot",
+        "HighlightRect",
+        "LayoutRoot",
+        "PART_AcceptButton",
+        "PART_ButtonContentGrid",
+        "PART_ContentPresenter",
+        "PART_DayDownButton",
+        "PART_DayHost",
+        "PART_DaySelector",
+        "PART_DayTextBlock",
+        "PART_DayUpButton",
+        "PART_DismissButton",
+        "PART_FirstSpacer",
+        "PART_FlyoutButton",
+        "PART_MonthDownButton",
+        "PART_MonthHost",
+        "PART_MonthSelector",
+        "PART_MonthTextBlock",
+        "PART_MonthUpButton",
+        "PART_PickerContainer",
+        "PART_PickerPresenter",
+        "PART_Popup",
+        "PART_SecondSpacer",
+        "PART_YearDownButton",
+        "PART_YearHost",
+        "PART_YearSelector",
+        "PART_YearTextBlock",
+        "PART_YearUpButton"
+      ],
+      "states": [
+        "DateTimePickerPanel > ListBoxItem",
+        "^ /template/ Panel",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ Rectangle",
+        "^:error /template/ Button#PART_FlyoutButton",
+        "^:hasnodate /template/ Button#PART_FlyoutButton TextBlock",
+        "^:pointerover RepeatButton",
+        "^:pressed",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/DateTimePickerShared.xaml",
+      "sha256": "49677a0a5a7dbc7c31c222b88f772e46a6a91adb655424931020510319bdc1da",
+      "local": "Controls/DateTimePickerShared.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentDateTimePickerItem",
+          "TargetType": "ListBoxItem",
+          "BasedOn": "{StaticResource {x:Type ListBoxItem}}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentDateTimePickerButton",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentDateTimePickerUpButton",
+          "TargetType": "RepeatButton",
+          "BasedOn": "{StaticResource FluentDateTimePickerButton}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentDateTimePickerDownButton",
+          "TargetType": "RepeatButton",
+          "BasedOn": "{StaticResource FluentDateTimePickerButton}"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^.MonthItem",
+        "^/template/ ContentPresenter",
+        "^/template/ Rectangle#PressedBackground",
+        "^:pointerover /template/ ContentPresenter",
+        "^:pressed /template/ ContentPresenter",
+        "^:selected"
+      ]
+    },
+    {
+      "source": "Controls/DrawerPage.xaml",
+      "sha256": "c42fa05f1fad5fb5b49782e8380121da8de894773f6fc67ccc626faf6abe35f1",
+      "local": "Controls/DrawerPage.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type DrawerPage}",
+          "TargetType": "DrawerPage"
+        }
+      ],
+      "parts": [
+        "PART_Backdrop",
+        "PART_BottomBar",
+        "PART_BottomPaneButton",
+        "PART_BottomPaneIconPresenter",
+        "PART_BottomTitlePresenter",
+        "PART_CompactPaneIconPresenter",
+        "PART_CompactPaneToggle",
+        "PART_ContentDock",
+        "PART_ContentPresenter",
+        "PART_DrawerFooter",
+        "PART_DrawerHeader",
+        "PART_DrawerPresenter",
+        "PART_PaneButton",
+        "PART_PaneIconPresenter",
+        "PART_SplitView",
+        "PART_TitlePresenter",
+        "PART_TopBar",
+        "Toggle navigation drawer"
+      ],
+      "states": [
+        "Button:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:detail-is-navpage /template/ Border#PART_TopBar",
+        "^:detail-is-navpage /template/ ToggleButton#PART_CompactPaneToggle",
+        "^:placement-bottom /template/ Border#PART_BottomBar",
+        "^:placement-bottom /template/ Border#PART_TopBar",
+        "^:placement-bottom /template/ ToggleButton#PART_CompactPaneToggle",
+        "^:placement-bottom[DisplayMode=CompactInline] /template/ Border#PART_BottomBar",
+        "^:placement-bottom[DisplayMode=CompactOverlay] /template/ Border#PART_BottomBar",
+        "^:placement-right /template/ ToggleButton#PART_PaneButton",
+        "^:placement-top /template/ ToggleButton#PART_CompactPaneToggle",
+        "^[DisplayMode=CompactInline] /template/ Border#PART_TopBar",
+        "^[DisplayMode=CompactInline] /template/ ToggleButton#PART_CompactPaneToggle",
+        "^[DisplayMode=CompactOverlay] /template/ Border#PART_TopBar",
+        "^[DisplayMode=CompactOverlay] /template/ ToggleButton#PART_CompactPaneToggle",
+        "^[DrawerBehavior=Disabled] /template/ Border#PART_TopBar",
+        "^[DrawerBehavior=Locked] /template/ Border#PART_TopBar",
+        "^[IsInNavigationPage=True] /template/ Border#PART_TopBar"
+      ]
+    },
+    {
+      "source": "Controls/DropDownButton.xaml",
+      "sha256": "ab93de3f96e5070b93aeb0e2a0d155c29b3a616e5a763b942b6a7fe28a245e83",
+      "local": "Controls/DropDownButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type DropDownButton}",
+          "TargetType": "DropDownButton"
+        }
+      ],
+      "parts": [
+        "DropDownGlyph",
+        "InnerGrid",
+        "PART_ContentPresenter",
+        "RootBorder"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ Border#RootBorder",
+        "^:disabled /template/ PathIcon#DropDownGlyph",
+        "^:pointerover /template/ Border#RootBorder",
+        "^:pointerover /template/ PathIcon#DropDownGlyph",
+        "^:pressed",
+        "^:pressed /template/ Border#RootBorder",
+        "^:pressed /template/ PathIcon#DropDownGlyph"
+      ]
+    },
+    {
+      "source": "Controls/EmbeddableControlRoot.xaml",
+      "sha256": "e74b50442a2118376445b6344c7d950c56e36c738bd52761d5c36f6cf3344e59",
+      "local": "Controls/EmbeddableControlRoot.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type EmbeddableControlRoot}",
+          "TargetType": "EmbeddableControlRoot"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_TransparencyFallback",
+        "PART_VisualLayerManager"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/Expander.xaml",
+      "sha256": "01a57c0b7af45a4daa9ffe14bc2decdff93937e26a2ff8d7167fa911fcc7ce80",
+      "local": "Controls/Expander.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentExpanderToggleButtonTheme",
+          "TargetType": "ToggleButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentExpanderToggleButtonUpTheme",
+          "TargetType": "ToggleButton",
+          "BasedOn": "{StaticResource FluentExpanderToggleButtonTheme}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentExpanderToggleButtonDownTheme",
+          "TargetType": "ToggleButton",
+          "BasedOn": "{StaticResource FluentExpanderToggleButtonTheme}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentExpanderToggleButtonLeftTheme",
+          "TargetType": "ToggleButton",
+          "BasedOn": "{StaticResource FluentExpanderToggleButtonTheme}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentExpanderToggleButtonRightTheme",
+          "TargetType": "ToggleButton",
+          "BasedOn": "{StaticResource FluentExpanderToggleButtonTheme}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Expander}",
+          "TargetType": "Expander"
+        }
+      ],
+      "parts": [
+        "ExpandCollapseChevron",
+        "ExpandCollapseChevronBorder",
+        "ExpanderContent",
+        "ExpanderHeader",
+        "PART_ContentPresenter",
+        "ToggleButtonBackground",
+        "ToggleButtonGrid"
+      ],
+      "states": [
+        "^ /template/ Path#ExpandCollapseChevron",
+        "^ /template/ ToggleButton#ExpanderHeader:pressed",
+        "^:disabled /template/ Border#ExpandCollapseChevronBorder",
+        "^:disabled /template/ Border#ToggleButtonBackground",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ Path#ExpandCollapseChevron",
+        "^:down /template/ Border#ExpanderContent",
+        "^:down /template/ ToggleButton#ExpanderHeader",
+        "^:expanded /template/ ToggleButton#ExpanderHeader",
+        "^:expanded:down /template/ Border#ExpanderContent",
+        "^:expanded:down /template/ ToggleButton#ExpanderHeader",
+        "^:expanded:left /template/ Border#ExpanderContent",
+        "^:expanded:left /template/ ToggleButton#ExpanderHeader",
+        "^:expanded:right /template/ Border#ExpanderContent",
+        "^:expanded:right /template/ ToggleButton#ExpanderHeader",
+        "^:expanded:up /template/ Border#ExpanderContent",
+        "^:expanded:up /template/ ToggleButton#ExpanderHeader",
+        "^:left /template/ Border#ExpanderContent",
+        "^:left /template/ ToggleButton#ExpanderHeader",
+        "^:left /template/ ToggleButton#ExpanderHeader, ^:right /template/ ToggleButton#ExpanderHeader",
+        "^:not(:expanded) /template/ ToggleButton#ExpanderHeader",
+        "^:pointerover /template/ Border#ExpandCollapseChevronBorder",
+        "^:pointerover /template/ Border#ToggleButtonBackground",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pointerover /template/ Path#ExpandCollapseChevron",
+        "^:pressed /template/ Border#ExpandCollapseChevronBorder",
+        "^:pressed /template/ Border#ToggleButtonBackground",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed /template/ Path#ExpandCollapseChevron",
+        "^:right /template/ Border#ExpanderContent",
+        "^:right /template/ ToggleButton#ExpanderHeader",
+        "^:up /template/ Border#ExpanderContent",
+        "^:up /template/ ToggleButton#ExpanderHeader",
+        "^[Tag=collapsed] /template/ Path#ExpandCollapseChevron",
+        "^[Tag=expanded] /template/ Path#ExpandCollapseChevron"
+      ]
+    },
+    {
+      "source": "Controls/FluentControls.xaml",
+      "sha256": "bc6cdb439e4d7c4f7efef00a9b0eab403629e113cf2a70ff3d6f8c6cf53f1fb8",
+      "local": "Controls/ControlThemes.axaml",
+      "themes": [],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/FlyoutPresenter.xaml",
+      "sha256": "0a4394fdcd662f9ff58aa1e6938705db752b5190031c7455e9ca45e7bc30813b",
+      "local": "Controls/FlyoutPresenter.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type FlyoutPresenter}",
+          "TargetType": "FlyoutPresenter"
+        }
+      ],
+      "parts": [
+        "LayoutRoot",
+        "PART_ContentPresenter"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/GridSplitter.xaml",
+      "sha256": "8ca9893aec060626f671846d4240009ee059d481b80bb6b7ee175a6c9a758e60",
+      "local": "Controls/GridSplitter.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type GridSplitter}",
+          "TargetType": "GridSplitter"
+        }
+      ],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/GroupBox.xaml",
+      "sha256": "83f61e857f267c35aa8b9d76b38e68a4a44bec764ca09b488e4ec3b52109f541",
+      "local": "Controls/GroupBox.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type GroupBox}",
+          "TargetType": "GroupBox"
+        }
+      ],
+      "parts": [
+        "Header",
+        "PART_ContentPresenter",
+        "PART_HeaderPresenter",
+        "RootGrid"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^ /template/ ContentPresenter#PART_HeaderPresenter"
+      ]
+    },
+    {
+      "source": "Controls/HeaderedContentControl.xaml",
+      "sha256": "6593c6a07e8a9a75fab2fc4cdb6b5c459a1f871a4dd151b3ec81172eab9105f7",
+      "local": "Controls/HeaderedContentControl.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type HeaderedContentControl}",
+          "TargetType": "HeaderedContentControl"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_HeaderPresenter"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^ /template/ ContentPresenter#PART_HeaderPresenter"
+      ]
+    },
+    {
+      "source": "Controls/HyperlinkButton.xaml",
+      "sha256": "ce24ba3e6228a23cca584ae9183a6f857e26d8deaf262cba1b6422188fccc555",
+      "local": "Controls/HyperlinkButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type HyperlinkButton}",
+          "TargetType": "HyperlinkButton"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter",
+        "^:visited"
+      ]
+    },
+    {
+      "source": "Controls/ItemsControl.xaml",
+      "sha256": "1d5958681d7a99dd7be989e6c8b1f880ee8dccb1fca433886ad687c03c81ee53",
+      "local": "Controls/ItemsControl.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ItemsControl}",
+          "TargetType": "ItemsControl"
+        }
+      ],
+      "parts": [
+        "PART_ItemsPresenter"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/Label.xaml",
+      "sha256": "4ecdf2450c7d88c95bcbd36d678092ec5e787cb18faff2e5653b0bdb04ebed7a",
+      "local": "Controls/Label.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Label}",
+          "TargetType": "Label"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/ListBox.xaml",
+      "sha256": "f98c91602aa6d3831d1ca3af413c73593462fa62859e933861b6b0254591a4ca",
+      "local": "Controls/ListBox.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ListBox}",
+          "TargetType": "ListBox"
+        }
+      ],
+      "parts": [
+        "PART_ItemsPresenter",
+        "PART_ScrollViewer",
+        "border"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/ListBoxItem.xaml",
+      "sha256": "b35470082a85307751b14d0174e149f693c454c92cff93b2a67b9ef4b872261b",
+      "local": "Controls/ListBoxItem.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ListBoxItem}",
+          "TargetType": "ListBoxItem"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:not(:focus) /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter",
+        "^:selected"
+      ]
+    },
+    {
+      "source": "Controls/ManagedFileChooser.xaml",
+      "sha256": "1596f9e3b21a6b6b789bfe76c1b383d608d24a6b890963cadaf09cb515cd9847",
+      "local": "Controls/ManagedFileChooser.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type dialogs:ManagedFileChooser}",
+          "TargetType": "dialogs:ManagedFileChooser"
+        },
+        {
+          "TargetType": "ListBoxItem"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type dialogs:ManagedFileChooserOverwritePrompt}",
+          "TargetType": "dialogs:ManagedFileChooserOverwritePrompt"
+        }
+      ],
+      "parts": [
+        "Finalize",
+        "LayoutRoot",
+        "Location",
+        "NavBar",
+        "PART_ContentPresenter",
+        "PART_Files",
+        "PART_ItemsPresenter",
+        "PART_QuickLinks",
+        "PART_ScrollViewer",
+        "SelectedLine",
+        "border"
+      ],
+      "states": [
+        "GridSplitter",
+        "^ /template/ DockPanel#NavBar Button",
+        "^ /template/ DockPanel#NavBar Button, ^ /template/ DockPanel#NavBar TextBox",
+        "^ /template/ DockPanel#NavBar Button:not(:pointerover):not(:pressed)",
+        "^ /template/ ListBox#QuickLinks",
+        "^ /template/ UniformGrid#Finalize > Button",
+        "^:pointerover /template/ Border#LayoutRoot",
+        "^:selected /template/ Border#LayoutRoot"
+      ]
+    },
+    {
+      "source": "Controls/Menu.xaml",
+      "sha256": "cacee8a6c4815ebc71a49310d6b36345c529ad81898655f97f01ceaf1049fd5a",
+      "local": "Controls/Menu.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentTopLevelMenuItem",
+          "TargetType": "MenuItem"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Menu}",
+          "TargetType": "Menu"
+        }
+      ],
+      "parts": [
+        "PART_HeaderPresenter",
+        "PART_ItemsPresenter",
+        "PART_LayoutRoot",
+        "PART_Popup"
+      ],
+      "states": [
+        "^ /template/ Border#PART_LayoutRoot",
+        "^ /template/ ContentPresenter#PART_HeaderPresenter",
+        "^ ContentPresenter#PART_HeaderPresenter",
+        "^:disabled",
+        "^:pressed /template/ Border#PART_LayoutRoot:pointerover",
+        "^:selected"
+      ]
+    },
+    {
+      "source": "Controls/MenuFlyoutPresenter.xaml",
+      "sha256": "612592250dd354472ba002cc820d185c7be57ed832615f661cddb99fa9410390",
+      "local": "Controls/MenuFlyoutPresenter.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type MenuFlyoutPresenter}",
+          "TargetType": "MenuFlyoutPresenter"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "HorizontalMenuFlyoutPresenter",
+          "TargetType": "MenuFlyoutPresenter",
+          "BasedOn": "{StaticResource {x:Type MenuFlyoutPresenter}}"
+        }
+      ],
+      "parts": [
+        "LayoutRoot",
+        "PART_ItemsPresenter"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/MenuItem.xaml",
+      "sha256": "627d67e3aeb2c08d5f90efa3707e90d7c92b64569999f017e049b399feb37e60",
+      "local": "Controls/MenuItem.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type MenuItem}",
+          "TargetType": "MenuItem"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "HorizontalMenuItem",
+          "TargetType": "MenuItem",
+          "BasedOn": "{StaticResource FluentTopLevelMenuItem}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentMenuItemIconTheme",
+          "TargetType": "ContentControl"
+        }
+      ],
+      "parts": [
+        "PART_ChevronPath",
+        "PART_ContentPresenter",
+        "PART_HeaderPresenter",
+        "PART_IconPresenter",
+        "PART_InputGestureText",
+        "PART_ItemsPresenter",
+        "PART_LayoutRoot",
+        "PART_Popup",
+        "PART_ToggleIconPresenter"
+      ],
+      "states": [
+        "^ /template/ Border#PART_LayoutRoot",
+        "^ /template/ ContentPresenter#PART_HeaderPresenter",
+        "^ /template/ Image#PART_ToggleIconImage",
+        "^ /template/ Path#PART_ChevronPath",
+        "^ /template/ TextBlock#PART_InputGestureText",
+        "^ ContentPresenter#PART_HeaderPresenter",
+        "^ Path#PART_ChevronPath",
+        "^ TextBlock#PART_InputGestureText",
+        "^:checked:radio /template/ ContentControl#PART_ToggleIconPresenter",
+        "^:checked:toggle /template/ ContentControl#PART_ToggleIconPresenter",
+        "^:disabled",
+        "^:empty /template/ Path#PART_ChevronPath",
+        "^:icon /template/ ContentControl#PART_IconPresenter",
+        "^:open /template/ Path#PART_ChevronPath",
+        "^:pressed /template/ Border#PART_LayoutRoot:pointerover",
+        "^:selected",
+        "^:separator"
+      ]
+    },
+    {
+      "source": "Controls/MenuScrollViewer.xaml",
+      "sha256": "776ac7c3e6825a9a6c0fe6029d529bd20b9ee7432620666ec392b4ea712393bb",
+      "local": "Controls/MenuScrollViewer.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentMenuScrollViewer",
+          "TargetType": "ScrollViewer"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^ /template/ RepeatButton:pointerover > Viewbox > Path"
+      ]
+    },
+    {
+      "source": "Controls/NavigationPage.xaml",
+      "sha256": "1d0a9abb9b8687c3058eaa14376298104819dc0d58a6493e4d3f9107f18b4930",
+      "local": "Controls/NavigationPage.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type NavigationPage}",
+          "TargetType": "NavigationPage"
+        }
+      ],
+      "parts": [
+        "PART_BackButton",
+        "PART_BackButtonContentPresenter",
+        "PART_BackButtonDefaultIcon",
+        "PART_BottomCommandBar",
+        "PART_ContentHost",
+        "PART_Header",
+        "PART_ModalBackPresenter",
+        "PART_ModalPresenter",
+        "PART_NavBarShadow",
+        "PART_NavBarSpacer",
+        "PART_NavigationBar",
+        "PART_PageBackPresenter",
+        "PART_PagePresenter",
+        "PART_TopCommandBar"
+      ],
+      "states": [
+        "Button#PART_BackButton /template/ ContentPresenter#PART_ContentPresenter",
+        "Button#PART_BackButton:disabled",
+        "Button#PART_BackButton:focus-visible /template/ ContentPresenter#PART_ContentPresenter",
+        "Button#PART_BackButton:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "Button#PART_BackButton:pressed /template/ ContentPresenter#PART_ContentPresenter",
+        "Button#PART_OverflowButton",
+        "Button#PART_OverflowButton /template/ ContentPresenter#PART_ContentPresenter",
+        "Button#PART_OverflowButton:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "Button#PART_OverflowButton:pressed /template/ ContentPresenter#PART_ContentPresenter",
+        "Button:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "CommandBar",
+        "CommandBarButton",
+        "CommandBarToggleButton",
+        "^ /template/ Border#PART_NavigationBar",
+        "^:nav-bar-compact /template/ ContentPresenter#PART_TopCommandBar CommandBar",
+        "^:nav-bar-inset /template/ Border#PART_NavBarSpacer"
+      ]
+    },
+    {
+      "source": "Controls/NotificationCard.xaml",
+      "sha256": "164dc4cef732fdb5202fb3ccb029115b46bfa763912f02f8d132f3f382b2f124",
+      "local": "Controls/NotificationCard.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type NotificationCard}",
+          "TargetType": "NotificationCard"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_HeaderBar",
+        "PART_LayoutTransformControl"
+      ],
+      "states": [
+        "^:error /template/ Panel#PART_HeaderBar",
+        "^:information /template/ Panel#PART_HeaderBar",
+        "^:success /template/ Panel#PART_HeaderBar",
+        "^:warning /template/ Panel#PART_HeaderBar",
+        "^[IsClosing=true]",
+        "^[IsClosing=true] /template/ LayoutTransformControl#PART_LayoutTransformControl"
+      ]
+    },
+    {
+      "source": "Controls/NumericUpDown.xaml",
+      "sha256": "6f55edaa0867d3ce2dcf23b3408f70e60c99bd9852a409bdc0ae155b3f5959a5",
+      "local": "Controls/NumericUpDown.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type NumericUpDown}",
+          "TargetType": "NumericUpDown"
+        }
+      ],
+      "parts": [
+        "PART_Spinner",
+        "PART_TextBox"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/OverlayPopupHost.xaml",
+      "sha256": "2ec3fceafba53852443e2d1c3d1ddecad50d82e89ab43b8acf04e5fd9a0826c7",
+      "local": "Controls/OverlayPopupHost.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type OverlayPopupHost}",
+          "TargetType": "OverlayPopupHost"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_VisualLayerManager"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/PathIcon.xaml",
+      "sha256": "244e95630feb27532a94ca6876ae193af5362f62eb713d90196da8940642b6fb",
+      "local": "Controls/PathIcon.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type PathIcon}",
+          "TargetType": "PathIcon"
+        }
+      ],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/PipsPager.xaml",
+      "sha256": "b6198c160b73cf399b85262db620fad798be00f58109a6626044dc49de7e1d37",
+      "local": "Controls/PipsPager.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "PipsPagerNavigationButtonTheme",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "PipsPagerPreviousButtonTheme",
+          "TargetType": "Button",
+          "BasedOn": "{StaticResource PipsPagerNavigationButtonTheme}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "PipsPagerNextButtonTheme",
+          "TargetType": "Button",
+          "BasedOn": "{StaticResource PipsPagerNavigationButtonTheme}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "PipsPagerItemTheme",
+          "TargetType": "ListBoxItem"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type PipsPager}",
+          "TargetType": "PipsPager"
+        }
+      ],
+      "parts": [
+        "NextButtonIcon",
+        "PART_ContentPresenter",
+        "PART_NextButton",
+        "PART_PipsPagerList",
+        "PART_PreviousButton",
+        "PART_RootPanel",
+        "Pip",
+        "PipBackground",
+        "PreviousButtonIcon"
+      ],
+      "states": [
+        "ScrollViewer",
+        "^ /template/ Button#PART_NextButton:pressed",
+        "^ /template/ Button#PART_PreviousButton:pressed",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ Ellipse#Pip",
+        "^:disabled /template/ Ellipse#PipBackground",
+        "^:first-page /template/ Button#PART_PreviousButton",
+        "^:horizontal /template/ StackPanel#PART_RootPanel",
+        "^:last-page /template/ Button#PART_NextButton",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pointerover /template/ Ellipse#Pip",
+        "^:pointerover /template/ Ellipse#PipBackground",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed /template/ Ellipse#Pip",
+        "^:pressed /template/ Ellipse#PipBackground",
+        "^:selected /template/ Ellipse#Pip",
+        "^:selected /template/ Ellipse#PipBackground",
+        "^:selected:pointerover /template/ Ellipse#Pip",
+        "^:selected:pointerover /template/ Ellipse#PipBackground",
+        "^:vertical /template/ Button#PART_NextButton PathIcon#NextButtonIcon",
+        "^:vertical /template/ Button#PART_PreviousButton PathIcon#PreviousButtonIcon",
+        "^:vertical /template/ ListBox ListBoxItem",
+        "^:vertical /template/ StackPanel#PART_RootPanel"
+      ]
+    },
+    {
+      "source": "Controls/PopupRoot.xaml",
+      "sha256": "0febebb48e9e750db41f47a2ba2d1c76090df5d4ec8adcef8315a7c01b71684c",
+      "local": "Controls/PopupRoot.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type PopupRoot}",
+          "TargetType": "PopupRoot"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_TransparencyFallback",
+        "PART_VisualLayerManager"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/ProgressBar.xaml",
+      "sha256": "f3036ceb206a944c6561a3441144ac7a5132dcad6670bc42f7f7fa07cdf7be5a",
+      "local": "Controls/ProgressBar.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ProgressBar}",
+          "TargetType": "ProgressBar"
+        }
+      ],
+      "parts": [
+        "DeterminateRoot",
+        "IndeterminateProgressBarIndicator",
+        "IndeterminateProgressBarIndicator2",
+        "IndeterminateRoot",
+        "PART_Indicator",
+        "PART_LayoutTransformControl",
+        "ProgressBarRoot"
+      ],
+      "states": [
+        "^:horizontal",
+        "^:horizontal /template/ Border#IndeterminateProgressBarIndicator",
+        "^:horizontal /template/ Border#IndeterminateProgressBarIndicator2",
+        "^:horizontal /template/ Border#PART_Indicator",
+        "^:horizontal:indeterminate /template/ Border#IndeterminateProgressBarIndicator",
+        "^:horizontal:indeterminate /template/ Border#IndeterminateProgressBarIndicator2",
+        "^:indeterminate /template/ Panel#DeterminateRoot",
+        "^:indeterminate /template/ Panel#IndeterminateRoot",
+        "^:vertical",
+        "^:vertical /template/ Border#IndeterminateProgressBarIndicator",
+        "^:vertical /template/ Border#IndeterminateProgressBarIndicator2",
+        "^:vertical /template/ Border#PART_Indicator",
+        "^:vertical /template/ LayoutTransformControl#PART_LayoutTransformControl",
+        "^:vertical:indeterminate /template/ Border#IndeterminateProgressBarIndicator",
+        "^:vertical:indeterminate /template/ Border#IndeterminateProgressBarIndicator2"
+      ]
+    },
+    {
+      "source": "Controls/RadioButton.xaml",
+      "sha256": "dbef38bd3bcb8ad0bfbfa5e84b8633b0e211c55ef694c5abd949ca48ad466ac3",
+      "local": "Controls/RadioButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type RadioButton}",
+          "TargetType": "RadioButton"
+        }
+      ],
+      "parts": [
+        "CheckGlyph",
+        "CheckOuterEllipse",
+        "OuterEllipse",
+        "PART_ContentPresenter",
+        "RootBorder"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:checked /template/ Ellipse#CheckGlyph",
+        "^:checked /template/ Ellipse#CheckOuterEllipse",
+        "^:checked /template/ Ellipse#OuterEllipse",
+        "^:disabled /template/ Border#RootBorder",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ Ellipse#CheckGlyph",
+        "^:disabled /template/ Ellipse#CheckOuterEllipse",
+        "^:disabled /template/ Ellipse#OuterEllipse",
+        "^:pointerover /template/ Border#RootBorder",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pointerover /template/ Ellipse#CheckGlyph",
+        "^:pointerover /template/ Ellipse#CheckOuterEllipse",
+        "^:pointerover /template/ Ellipse#OuterEllipse",
+        "^:pressed /template/ Border#RootBorder",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed /template/ Ellipse#CheckGlyph",
+        "^:pressed /template/ Ellipse#CheckOuterEllipse",
+        "^:pressed /template/ Ellipse#OuterEllipse"
+      ]
+    },
+    {
+      "source": "Controls/RefreshContainer.xaml",
+      "sha256": "1dac05e67c1cc8cca232801ee5f97472fd955790da58468c36c216c904493f87",
+      "local": "Controls/RefreshContainer.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type RefreshContainer}",
+          "TargetType": "RefreshContainer"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_RefreshVisualizerPresenter"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/RefreshVisualizer.xaml",
+      "sha256": "9ee11bdbbf73bd2573b89028f26429eb1614bcd65a556e35742ac13ee650f01b",
+      "local": "Controls/RefreshVisualizer.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type RefreshVisualizer}",
+          "TargetType": "RefreshVisualizer"
+        }
+      ],
+      "parts": [
+        "PART_Icon",
+        "PART_Root"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/RepeatButton.xaml",
+      "sha256": "9e678b8de18fb7d0e6ff3efbe860db3da2b6aa73c0cfb0a28edd7f8a0bfe4931",
+      "local": "Controls/RepeatButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type RepeatButton}",
+          "TargetType": "RepeatButton"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/ScrollBar.xaml",
+      "sha256": "f1d7604191e0e66a834e262d08da47142f1d691b0f6bba250d15845020b74cd5",
+      "local": "Controls/ScrollBar.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentScrollBarThumb",
+          "TargetType": "Thumb"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentScrollBarPageButton",
+          "TargetType": "RepeatButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentScrollBarLineButton",
+          "TargetType": "RepeatButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ScrollBar}",
+          "TargetType": "ScrollBar"
+        }
+      ],
+      "parts": [
+        "Column left",
+        "Column right",
+        "HorizontalRoot",
+        "Line down",
+        "Line up",
+        "PART_ContentPresenter",
+        "PART_LineDownButton",
+        "PART_LineUpButton",
+        "PART_PageDownButton",
+        "PART_PageUpButton",
+        "Page down",
+        "Page left",
+        "Page right",
+        "Page up",
+        "Position",
+        "Root",
+        "TrackRect",
+        "VerticalRoot"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter",
+        "^ /template/ Grid#Root",
+        "^ /template/ Rectangle#TrackRect",
+        "^ /template/ RepeatButton",
+        "^ /template/ Thumb",
+        "^:disabled",
+        "^:disabled  /template/ Border",
+        "^:horizontal",
+        "^:pointerover",
+        "^:pointerover /template/ Border",
+        "^:pressed",
+        "^:pressed  /template/ Border",
+        "^:vertical",
+        "^[IsExpanded=true]"
+      ]
+    },
+    {
+      "source": "Controls/ScrollViewer.xaml",
+      "sha256": "616f3eb13add17a704097518e2fdfadc40cc61dc94e46c557aed7e6e981f2ab6",
+      "local": "Controls/ScrollViewer.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ScrollViewer}",
+          "TargetType": "ScrollViewer"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_HorizontalScrollBar",
+        "PART_ScrollBarsSeparator",
+        "PART_VerticalScrollBar"
+      ],
+      "states": [
+        "^[AllowAutoHide=True] /template/ ScrollContentPresenter#PART_ContentPresenter",
+        "^[IsExpanded=true] /template/ Panel#PART_ScrollBarsSeparator"
+      ]
+    },
+    {
+      "source": "Controls/SelectableTextBlock.xaml",
+      "sha256": "e733cf05db64c4963b5c9281f6a79a762571ac9cef8efae3cfe352d24dcd58cd",
+      "local": "Controls/SelectableTextBlock.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type SelectableTextBlock}",
+          "TargetType": "SelectableTextBlock"
+        }
+      ],
+      "parts": [],
+      "states": [
+        "^[IsEnabled=True]"
+      ]
+    },
+    {
+      "source": "Controls/Separator.xaml",
+      "sha256": "92188b07f6b86c0da71094d57c0aa5c3378bc380e8ca58a6f775722ebbd86b92",
+      "local": "Controls/Separator.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Separator}",
+          "TargetType": "Separator"
+        }
+      ],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/Slider.xaml",
+      "sha256": "ecba484a70dbf730bb8fec052daa6269357b1a450ae118d2810573ad3d9558e4",
+      "local": "Controls/Slider.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentSliderHorizontalRepeatButton",
+          "TargetType": "RepeatButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentSliderVerticalRepeatButton",
+          "TargetType": "RepeatButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentSliderThumbTheme",
+          "TargetType": "Thumb"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Slider}",
+          "TargetType": "Slider"
+        }
+      ],
+      "parts": [
+        "BottomTickBar",
+        "FocusTarget",
+        "HorizontalTemplate",
+        "LeftTickBar",
+        "PART_DecreaseButton",
+        "PART_IncreaseButton",
+        "PART_Track",
+        "RightTickBar",
+        "SliderContainer",
+        "SliderThumb",
+        "TopTickBar",
+        "TrackBackground",
+        "VerticalTemplate",
+        "thumb"
+      ],
+      "states": [
+        "TickBar",
+        "^ /template/ Grid#SliderContainer",
+        "^ /template/ RepeatButton#PART_DecreaseButton",
+        "^ /template/ RepeatButton#PART_IncreaseButton",
+        "^ /template/ Thumb",
+        "^ /template/ TickBar",
+        "^:disabled",
+        "^:error",
+        "^:horizontal",
+        "^:pointerover",
+        "^:pressed",
+        "^:vertical",
+        "^[TickPlacement=BottomRight] /template/ TickBar#BottomTickBar, ^[TickPlacement=Outside] /template/ TickBar#BottomTickBar",
+        "^[TickPlacement=BottomRight] /template/ TickBar#RightTickBar, ^[TickPlacement=Outside] /template/ TickBar#RightTickBar",
+        "^[TickPlacement=TopLeft] /template/ TickBar#LeftTickBar, ^[TickPlacement=Outside] /template/ TickBar#LeftTickBar",
+        "^[TickPlacement=TopLeft] /template/ TickBar#TopTickBar, ^[TickPlacement=Outside] /template/ TickBar#TopTickBar"
+      ]
+    },
+    {
+      "source": "Controls/SplitButton.xaml",
+      "sha256": "d8b3a480ae6c0c7404ad0964b535ae45cdb295f8184e826d0b482d1ade1c4836",
+      "local": "Controls/SplitButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentSplitButtonComponent",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type SplitButton}",
+          "TargetType": "SplitButton"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_PrimaryButton",
+        "PART_SecondaryButton",
+        "SeparatorBorder"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter",
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:checked /template/ Button",
+        "^:checked:flyout-open /template/ Button",
+        "^:disabled /template/ ContentPresenter",
+        "^:flyout-open /template/ Button",
+        "^:pointerover /template/ ContentPresenter",
+        "^:pressed /template/ ContentPresenter",
+        "^[Tag=checked-flyout-open] /template/ ContentPresenter",
+        "^[Tag=checked]",
+        "^[Tag=flyout-open] /template/ ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/SplitView.xaml",
+      "sha256": "c46334b5d8788f192b30f1470b050b9960aca5605b6824bc677e7c6ac9c05da6",
+      "local": "Controls/SplitView.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type SplitView}",
+          "TargetType": "SplitView"
+        }
+      ],
+      "parts": [
+        "Container",
+        "ContentRoot",
+        "HCPaneBorder",
+        "LightDismissLayer",
+        "PART_ContentPresenter",
+        "PART_PanePresenter",
+        "PART_PaneRoot"
+      ],
+      "states": [
+        "^ /template/ Panel#ContentRoot",
+        "^ /template/ Panel#PART_PaneRoot",
+        "^:bottom",
+        "^:bottom:closed /template/ Panel#PART_PaneRoot",
+        "^:bottom:open /template/ Panel#PART_PaneRoot",
+        "^:compactinline",
+        "^:compactoverlay",
+        "^:compactoverlay:open /template/ Rectangle#LightDismissLayer",
+        "^:inline",
+        "^:left",
+        "^:left:closed /template/ Panel#PART_PaneRoot",
+        "^:left:open /template/ Panel#PART_PaneRoot",
+        "^:lightDismiss /template/ Rectangle#LightDismissLayer",
+        "^:overlay",
+        "^:overlay:open /template/ Rectangle#LightDismissLayer",
+        "^:right",
+        "^:right:closed /template/ Panel#PART_PaneRoot",
+        "^:right:open /template/ Panel#PART_PaneRoot",
+        "^:top",
+        "^:top:closed /template/ Panel#PART_PaneRoot",
+        "^:top:open /template/ Panel#PART_PaneRoot"
+      ]
+    },
+    {
+      "source": "Controls/TabbedPage.xaml",
+      "sha256": "51b125f01e35826004bb4e57e6582c3279f23578d0ef372176208ae050b563c7",
+      "local": "Controls/TabbedPage.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "TabbedPageTabControlTheme",
+          "TargetType": "TabControl"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "TabbedPageTabItemTheme",
+          "TargetType": "TabItem"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TabbedPage}",
+          "TargetType": "TabbedPage"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_HeaderPanel",
+        "PART_IconPresenter",
+        "PART_ItemsPresenter",
+        "PART_LayoutRoot",
+        "PART_SelectedContentHost",
+        "PART_SelectedContentHost2",
+        "PART_SelectedPipe",
+        "PART_TabControl",
+        "PART_TabStrip"
+      ],
+      "states": [
+        "^:disabled /template/ Border#PART_LayoutRoot",
+        "^:focus-visible /template/ Border#PART_LayoutRoot",
+        "^:pointerover /template/ Border#PART_LayoutRoot",
+        "^:pressed /template/ Border#PART_LayoutRoot",
+        "^:selected",
+        "^:selected /template/ ContentPresenter#PART_SelectedPipe",
+        "^:selected:pointerover /template/ Border#PART_LayoutRoot",
+        "^:selected:pressed /template/ Border#PART_LayoutRoot",
+        "^[TabStripPlacement=Bottom] /template/ ContentPresenter#PART_SelectedPipe",
+        "^[TabStripPlacement=Left]",
+        "^[TabStripPlacement=Left] /template/ ContentPresenter#PART_SelectedPipe",
+        "^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter > UniformGrid,\n           ^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter > UniformGrid",
+        "^[TabStripPlacement=Right]",
+        "^[TabStripPlacement=Right] /template/ ContentPresenter#PART_SelectedPipe",
+        "^[TabStripPlacement=Top] /template/ ContentPresenter#PART_SelectedPipe"
+      ]
+    },
+    {
+      "source": "Controls/TabControl.xaml",
+      "sha256": "19ef69d53e55e1c944022a40ed67c2143087c3d60d621ff8e23ec969b869f788",
+      "local": "Controls/TabControl.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TabControl}",
+          "TargetType": "TabControl"
+        }
+      ],
+      "parts": [
+        "PART_ItemsPresenter",
+        "PART_SelectedContentHost",
+        "PART_SelectedContentHost2"
+      ],
+      "states": [
+        "^[TabStripPlacement=Left] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel",
+        "^[TabStripPlacement=Right] /template/ ItemsPresenter#PART_ItemsPresenter > WrapPanel",
+        "^[TabStripPlacement=Top] /template/ ItemsPresenter#PART_ItemsPresenter"
+      ]
+    },
+    {
+      "source": "Controls/TabItem.xaml",
+      "sha256": "fd233175979270d26bf27d3eda9b0cf42d3fe77172d6b95430a635ae0cd0a4d2",
+      "local": "Controls/TabItem.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TabItem}",
+          "TargetType": "TabItem"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_LayoutRoot",
+        "PART_SelectedPipe"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ Border#PART_LayoutRoot",
+        "^:pointerover /template/ Border#PART_LayoutRoot",
+        "^:pressed /template/ Border#PART_LayoutRoot",
+        "^:selected",
+        "^:selected /template/ Border#PART_SelectedPipe",
+        "^:selected:pointerover /template/ Border#PART_LayoutRoot",
+        "^:selected:pressed /template/ Border#PART_LayoutRoot",
+        "^[TabStripPlacement=Left] /template/ Border#PART_SelectedPipe",
+        "^[TabStripPlacement=Left] /template/ ContentPresenter#PART_ContentPresenter",
+        "^[TabStripPlacement=Right]",
+        "^[TabStripPlacement=Right] /template/ Border#PART_SelectedPipe",
+        "^[TabStripPlacement=Right] /template/ ContentPresenter#PART_ContentPresenter",
+        "^[TabStripPlacement=Top] /template/ Border#PART_SelectedPipe, ^[TabStripPlacement=Bottom] /template/ Border#PART_SelectedPipe"
+      ]
+    },
+    {
+      "source": "Controls/TableView.xaml",
+      "sha256": "2cb873c3071093b0e9ba33af3e43f32d6be46e216035a3441e6eb93f67cd6a09",
+      "local": "Controls/TableView.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "TableViewScrollViewerTheme",
+          "TargetType": "ScrollViewer"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TableView}",
+          "TargetType": "TableView"
+        }
+      ],
+      "parts": [
+        "ContentPanel",
+        "PART_ContentPresenter",
+        "PART_HorizontalScrollBar",
+        "PART_ItemsPresenter",
+        "PART_ScrollBarsSeparator",
+        "PART_ScrollViewer",
+        "PART_VerticalScrollBar"
+      ],
+      "states": [
+        "^[AllowAutoHide=True] /template/ DockPanel#ContentPanel",
+        "^[IsExpanded=true] /template/ Panel#PART_ScrollBarsSeparator"
+      ]
+    },
+    {
+      "source": "Controls/TableViewCell.xaml",
+      "sha256": "82a36acdf94ebac07f20991c3ec1ff7f5b32b1561afc88bc3a3d14084adb7b9c",
+      "local": "Controls/TableViewCell.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TableViewCell}",
+          "TargetType": "TableViewCell"
+        }
+      ],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/TableViewColumnHeader.xaml",
+      "sha256": "d50aa4c89c25c2083255cd881ae898c09a251dc31a6b23379aefdbd178caf911",
+      "local": "Controls/TableViewColumnHeader.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TableViewColumnHeader}",
+          "TargetType": "TableViewColumnHeader"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_Resizer"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/TableViewRow.xaml",
+      "sha256": "4fd652fbb8a9e52db043a584048dc0bd59eb0b213dc211400e52f5505cfda6a7",
+      "local": "Controls/TableViewRow.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TableViewRow}",
+          "TargetType": "TableViewRow"
+        }
+      ],
+      "parts": [
+        "Border",
+        "PART_CellsPresenter"
+      ],
+      "states": [
+        "^ /template/ Border#Border",
+        "^:disabled /template/ Border#Border",
+        "^:pointerover /template/ Border#Border",
+        "^:pressed /template/ Border#Border",
+        "^:selected"
+      ]
+    },
+    {
+      "source": "Controls/TabStrip.xaml",
+      "sha256": "1ac003492c6798e75c2565fd5295c8271efc4d39165c6d6360c2de5c9ad11972",
+      "local": "Controls/TabStrip.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TabStrip}",
+          "TargetType": "TabStrip"
+        }
+      ],
+      "parts": [
+        "PART_ItemsPresenter"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/TabStripItem.xaml",
+      "sha256": "60541dc639a7ad227fd9c7c8bc720803830b56d2f96c02aa040849b59248ca96",
+      "local": "Controls/TabStripItem.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TabStripItem}",
+          "TargetType": "TabStripItem"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_LayoutRoot",
+        "PART_SelectedPipe"
+      ],
+      "states": [
+        "^:disabled /template/ Border#PART_LayoutRoot",
+        "^:pointerover /template/ Border#PART_LayoutRoot",
+        "^:pressed /template/ Border#PART_LayoutRoot",
+        "^:selected",
+        "^:selected /template/ Border#PART_SelectedPipe",
+        "^:selected:pointerover /template/ Border#PART_LayoutRoot",
+        "^:selected:pressed /template/ Border#PART_LayoutRoot"
+      ]
+    },
+    {
+      "source": "Controls/TextBox.xaml",
+      "sha256": "b477d41a79c9c638426cd9fb5c1204e4d28c9979d48b4ed3d2fa4dd647806930",
+      "local": "Controls/TextBox.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentTextBoxButton",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentTextBoxToggleButton",
+          "TargetType": "ToggleButton",
+          "BasedOn": "{StaticResource FluentTextBoxButton}"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TextBox}",
+          "TargetType": "TextBox"
+        }
+      ],
+      "parts": [
+        "PART_BorderElement",
+        "PART_ContentPresenter",
+        "PART_FloatingPlaceholder",
+        "PART_InnerDockPanel",
+        "PART_Placeholder",
+        "PART_ScrollViewer",
+        "PART_TextPresenter"
+      ],
+      "states": [
+        "ScrollContentPresenter#PART_ContentPresenter",
+        "^ /template/ Border#PART_BorderElement",
+        "^ /template/ TextBlock#PART_FloatingPlaceholder",
+        "^.clearButton[AcceptsReturn=False][IsReadOnly=False]:focus:not(TextBox:empty)",
+        "^.revealPasswordButton[AcceptsReturn=False][IsReadOnly=False]:not(TextBox:empty)",
+        "^:checked /template/ ContentPresenter, ^:indeterminate /template/ ContentPresenter",
+        "^:disabled",
+        "^:disabled /template/ ContentPresenter",
+        "^:error /template/ Border#PART_BorderElement",
+        "^:focus",
+        "^:pointerover",
+        "^:pointerover /template/ ContentPresenter",
+        "^:pressed /template/ ContentPresenter",
+        "^:touch-mode",
+        "^[UseFloatingPlaceholder=true]:not(:empty) /template/ TextBlock#PART_FloatingPlaceholder"
+      ]
+    },
+    {
+      "source": "Controls/TextSelectionHandle.xaml",
+      "sha256": "9f6aad3f99ebdd22b684e6aaea0ec62260caf9843be2bd0d79c9b9ea93747ffe",
+      "local": "Controls/TextSelectionHandle.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TextSelectionHandle}",
+          "TargetType": "TextSelectionHandle"
+        }
+      ],
+      "parts": [
+        "PART_HandlePathIcon",
+        "PART_Indicator"
+      ],
+      "states": [
+        "^:caret /template/ Border#PART_Indicator",
+        "^:caret /template/ Image#PART_HandlePathIcon",
+        "^:end /template/ Border#PART_Indicator",
+        "^:start /template/ Border#PART_Indicator",
+        "^:start /template/ Image#PART_HandlePathIcon"
+      ]
+    },
+    {
+      "source": "Controls/ThemeVariantScope.xaml",
+      "sha256": "4416e6ce6d8ebd035dd45a5901f7c922d7af6f4f503054fee9582b5f7ca59194",
+      "local": "Controls/ThemeVariantScope.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ThemeVariantScope}",
+          "TargetType": "ThemeVariantScope"
+        }
+      ],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Controls/TimePicker.xaml",
+      "sha256": "d2cfd13e8f3a93bc127a3d28a29733bbdc40fa2817e2cb079b207ddbf7bd212e",
+      "local": "Controls/TimePicker.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentTimePickerFlyoutButton",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TimePicker}",
+          "TargetType": "TimePicker"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TimePickerPresenter}",
+          "TargetType": "TimePickerPresenter"
+        }
+      ],
+      "parts": [
+        "AcceptDismissGrid",
+        "Background",
+        "ContentPanel",
+        "HighlightRect",
+        "LayoutRoot",
+        "PART_AcceptButton",
+        "PART_ContentPresenter",
+        "PART_DismissButton",
+        "PART_FirstColumnDivider",
+        "PART_FirstPickerHost",
+        "PART_FirstSpacer",
+        "PART_FlyoutButton",
+        "PART_FlyoutButtonContentGrid",
+        "PART_FourthPickerHost",
+        "PART_HourDownButton",
+        "PART_HourHost",
+        "PART_HourSelector",
+        "PART_HourTextBlock",
+        "PART_HourUpButton",
+        "PART_MinuteDownButton",
+        "PART_MinuteHost",
+        "PART_MinuteSelector",
+        "PART_MinuteTextBlock",
+        "PART_MinuteUpButton",
+        "PART_PeriodDownButton",
+        "PART_PeriodHost",
+        "PART_PeriodSelector",
+        "PART_PeriodTextBlock",
+        "PART_PeriodUpButton",
+        "PART_PickerContainer",
+        "PART_PickerPresenter",
+        "PART_Popup",
+        "PART_SecondColumnDivider",
+        "PART_SecondDownButton",
+        "PART_SecondHost",
+        "PART_SecondPickerHost",
+        "PART_SecondSelector",
+        "PART_SecondSpacer",
+        "PART_SecondTextBlock",
+        "PART_SecondUpButton",
+        "PART_ThirdColumnDivider",
+        "PART_ThirdPickerHost",
+        "PART_ThirdSpacer"
+      ],
+      "states": [
+        "DateTimePickerPanel > ListBoxItem",
+        "^ /template/ Panel",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:disabled /template/ Rectangle",
+        "^:error /template/ Button#PART_FlyoutButton",
+        "^:hasnotime /template/ Button#PART_FlyoutButton TextBlock",
+        "^:pointerover RepeatButton",
+        "^:pressed",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/ToggleButton.xaml",
+      "sha256": "ab81ac213246c70c7200ee332b3821c42a523c0369f3273f0a99a32fcec42f10",
+      "local": "Controls/ToggleButton.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ToggleButton}",
+          "TargetType": "ToggleButton"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^:checked",
+        "^:disabled /template/ ContentPresenter#PART_ContentPresenter",
+        "^:indeterminate",
+        "^:pointerover /template/ ContentPresenter#PART_ContentPresenter",
+        "^:pressed",
+        "^:pressed /template/ ContentPresenter#PART_ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/ToggleSwitch.xaml",
+      "sha256": "0618ec8f6b8d8f5243750629b172f2f2dea0d3485cc8e10194446b6bd101c732",
+      "local": "Controls/ToggleSwitch.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ToggleSwitch}",
+          "TargetType": "ToggleSwitch"
+        }
+      ],
+      "parts": [
+        "OuterBorder",
+        "PART_ContentPresenter",
+        "PART_MovingKnobs",
+        "PART_OffContentPresenter",
+        "PART_OnContentPresenter",
+        "PART_SwitchKnob",
+        "SwitchAreaGrid",
+        "SwitchKnobBounds",
+        "SwitchKnobOff",
+        "SwitchKnobOn"
+      ],
+      "states": [
+        "^ /template/ ContentPresenter#PART_ContentPresenter",
+        "^ /template/ ContentPresenter#PART_ContentPresenter:empty",
+        "^:checked  /template/ Border#SwitchKnobBounds",
+        "^:checked  /template/ Ellipse#SwitchKnobOff",
+        "^:checked /template/ Border#OuterBorder",
+        "^:checked /template/ ContentPresenter#PART_OffContentPresenter",
+        "^:checked /template/ ContentPresenter#PART_OnContentPresenter",
+        "^:checked /template/ Ellipse#SwitchKnobOn",
+        "^:disabled",
+        "^:disabled /template/ Border#OuterBorder",
+        "^:disabled /template/ Border#SwitchKnobBounds",
+        "^:disabled /template/ Ellipse#SwitchKnobOff",
+        "^:disabled /template/ Ellipse#SwitchKnobOn",
+        "^:pointerover /template/ Border#OuterBorder",
+        "^:pointerover /template/ Border#SwitchKnobBounds",
+        "^:pointerover /template/ Ellipse#SwitchKnobOff",
+        "^:pointerover /template/ Ellipse#SwitchKnobOn",
+        "^:pointerover /template/ Grid#SwitchAreaGrid",
+        "^:pressed /template/ Border#OuterBorder",
+        "^:pressed /template/ Border#SwitchKnobBounds",
+        "^:pressed /template/ Ellipse#SwitchKnobOff",
+        "^:pressed /template/ Ellipse#SwitchKnobOn",
+        "^:pressed /template/ Grid#SwitchAreaGrid",
+        "^:unchecked  /template/ Border#SwitchKnobBounds",
+        "^:unchecked /template/ Border#OuterBorder",
+        "^:unchecked /template/ ContentPresenter#PART_OffContentPresenter",
+        "^:unchecked /template/ ContentPresenter#PART_OnContentPresenter",
+        "^:unchecked /template/ Ellipse#SwitchKnobOff",
+        "^:unchecked /template/ Ellipse#SwitchKnobOn"
+      ]
+    },
+    {
+      "source": "Controls/ToolTip.xaml",
+      "sha256": "99180b98e99f599eaaff9780cc7a0c58d454329ef91626b4784327d385f78896",
+      "local": "Controls/ToolTip.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type ToolTip}",
+          "TargetType": "ToolTip"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_LayoutRoot"
+      ],
+      "states": [
+        "^:open"
+      ]
+    },
+    {
+      "source": "Controls/TransitioningContentControl.xaml",
+      "sha256": "8e0d11608386d15181a807b5a2d23d8050dc9bf46c68cc613627256628b2d737",
+      "local": "Controls/TransitioningContentControl.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TransitioningContentControl}",
+          "TargetType": "TransitioningContentControl"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_ContentPresenter2"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/TreeView.xaml",
+      "sha256": "47a9fd0ec63d8cbe96cef096c9fc79b50e731793c27ee9f2ddd8c64c62294e47",
+      "local": "Controls/TreeView.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TreeView}",
+          "TargetType": "TreeView"
+        }
+      ],
+      "parts": [
+        "PART_ItemsPresenter"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/TreeViewItem.xaml",
+      "sha256": "a8014774e524f92d203cd0539fe65c36126c1c5a54491ae0be4a9ed1d280b212",
+      "local": "Controls/TreeViewItem.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentTreeViewExpandCollapseChevron",
+          "TargetType": "ToggleButton"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type TreeViewItem}",
+          "TargetType": "TreeViewItem"
+        }
+      ],
+      "parts": [
+        "ChevronPath",
+        "PART_ExpandCollapseChevron",
+        "PART_ExpandCollapseChevronContainer",
+        "PART_Header",
+        "PART_HeaderPresenter",
+        "PART_ItemsPresenter",
+        "PART_LayoutRoot"
+      ],
+      "states": [
+        "^ /template/ Border#PART_LayoutRoot:pointerover",
+        "^ /template/ Border#PART_LayoutRoot:pointerover > ContentPresenter#PART_HeaderPresenter",
+        "^:checked /template/ Path#ChevronPath",
+        "^:disabled /template/ Border#PART_LayoutRoot",
+        "^:disabled /template/ ContentPresenter#PART_HeaderPresenter",
+        "^:disabled:selected /template/ Border#PART_LayoutRoot",
+        "^:disabled:selected /template/ Border#PART_LayoutRoot > ContentPresenter#PART_HeaderPresenter",
+        "^:empty /template/ Panel#PART_ExpandCollapseChevronContainer",
+        "^:empty /template/ ToggleButton#PART_ExpandCollapseChevron",
+        "^:pressed /template/ Border#PART_LayoutRoot:pointerover",
+        "^:pressed /template/ Border#PART_LayoutRoot:pointerover > ContentPresenter#PART_HeaderPresenter",
+        "^:pressed:selected /template/ Border#PART_LayoutRoot:pointerover",
+        "^:pressed:selected /template/ Border#PART_LayoutRoot:pointerover > ContentPresenter#PART_HeaderPresenter",
+        "^:selected /template/ Border#PART_LayoutRoot",
+        "^:selected /template/ Border#PART_LayoutRoot > ContentPresenter#PART_HeaderPresenter",
+        "^:selected /template/ Border#PART_LayoutRoot:pointerover",
+        "^:selected /template/ Border#PART_LayoutRoot:pointerover > ContentPresenter#PART_HeaderPresenter"
+      ]
+    },
+    {
+      "source": "Controls/Window.xaml",
+      "sha256": "b689b5b447940a00029351ecaf58aa5aa8087853a98b1cea825183e673f87f28",
+      "local": "Controls/Window.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type Window}",
+          "TargetType": "Window"
+        }
+      ],
+      "parts": [
+        "PART_ContentPresenter",
+        "PART_TransparencyFallback",
+        "PART_VisualLayerManager"
+      ],
+      "states": []
+    },
+    {
+      "source": "Controls/WindowDrawnDecorations.xaml",
+      "sha256": "d76a07f3001a72d3ccf4c8ae7e7f6176ef49cd5351caa2a739cb7e19d395870e",
+      "local": "Controls/WindowDrawnDecorations.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "FluentDrawnCaptionButton",
+          "TargetType": "Button"
+        },
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type WindowDrawnDecorations}",
+          "TargetType": "WindowDrawnDecorations"
+        }
+      ],
+      "parts": [
+        "FullScreenButtonPath",
+        "PART_CloseButton",
+        "PART_ContentPresenter",
+        "PART_FullScreenButton",
+        "PART_MaximizeButton",
+        "PART_MinimizeButton",
+        "PART_OverlayPanel",
+        "PART_OverlayWrapper",
+        "PART_PopoverCloseButton",
+        "PART_PopoverFullScreenButton",
+        "PART_TitleBar",
+        "PART_TitleTextPanel",
+        "PART_UnderlayWrapper",
+        "PART_WindowBorder",
+        "RestoreButtonPath"
+      ],
+      "states": [
+        "^ /template/ Button:disabled",
+        "^:fullscreen /template/ Panel#PART_TitleBar",
+        "^:fullscreen /template/ Panel#PART_TitleTextPanel",
+        "^:fullscreen /template/ StackPanel#PART_OverlayPanel",
+        "^:has-border /template/ Panel#PART_TitleBar",
+        "^:has-border /template/ Panel#PART_TitleTextPanel",
+        "^:has-border /template/ StackPanel#PART_OverlayPanel",
+        "^:has-shadow /template/ Border#PART_WindowBorder",
+        "^:has-shadow /template/ Panel#PART_OverlayWrapper",
+        "^:has-shadow /template/ Panel#PART_UnderlayWrapper",
+        "^:maximized /template/ Path#RestoreButtonPath",
+        "^:not(:has-fullscreen) /template/ Button#PART_FullScreenButton",
+        "^:not(:has-fullscreen) /template/ Button#PART_PopoverFullScreenButton",
+        "^:not(:has-maximize) /template/ Button#PART_MaximizeButton",
+        "^:not(:has-minimize) /template/ Button#PART_MinimizeButton",
+        "^:pointerover /template/ ContentPresenter",
+        "^:pressed /template/ ContentPresenter"
+      ]
+    },
+    {
+      "source": "Controls/WindowNotificationManager.xaml",
+      "sha256": "7482f934d45b8d083c299ce69134f7e8778b3976a00ae5ab86d290c0b321bc2f",
+      "local": "Controls/WindowNotificationManager.axaml",
+      "themes": [
+        {
+          "{http://schemas.microsoft.com/winfx/2006/xaml}Key": "{x:Type WindowNotificationManager}",
+          "TargetType": "WindowNotificationManager"
+        }
+      ],
+      "parts": [
+        "PART_Items"
+      ],
+      "states": [
+        "^:bottomcenter /template/ ReversibleStackPanel#PART_Items",
+        "^:bottomleft /template/ ReversibleStackPanel#PART_Items",
+        "^:bottomright /template/ ReversibleStackPanel#PART_Items",
+        "^:topcenter /template/ ReversibleStackPanel#PART_Items",
+        "^:topleft /template/ ReversibleStackPanel#PART_Items",
+        "^:topright /template/ ReversibleStackPanel#PART_Items"
+      ]
+    },
+    {
+      "source": "DensityStyles/Compact.xaml",
+      "sha256": "ec056b881ecd8a0d9671f597fd8a3337d48931f84589fbeaafbff77ad560bd4c",
+      "local": "DensityStyles/Compact.axaml",
+      "themes": [],
+      "parts": [],
+      "states": []
+    },
+    {
+      "source": "Strings/InvariantResources.xaml",
+      "sha256": "7e404e36fb41c1d66b606d882fa9af4cb5920c91141e1205eff3219f501787d0",
+      "local": "Strings/InvariantResources.axaml",
+      "themes": [],
+      "parts": [],
+      "states": []
+    }
+  ]
+}

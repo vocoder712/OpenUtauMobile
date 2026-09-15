@@ -36,7 +36,26 @@
                       TargetType="iconPacks:PackIconControlBase" />
         <ControlTheme x:Key="{x:Type iconPacks:PackIconPhosphorIcons}"
                       BasedOn="{StaticResource OpenUtauMobile.IconPacks.BaseTheme}"
-                      TargetType="iconPacks:PackIconPhosphorIcons" />
+                      TargetType="iconPacks:PackIconPhosphorIcons">
+            <!-- 保留 Phosphor 的 256 画布留白，避免按路径包围盒放大不同字形。 -->
+            <Setter Property="Template">
+                <ControlTemplate TargetType="iconPacks:PackIconPhosphorIcons">
+                    <Border CornerRadius="{TemplateBinding CornerRadius}"
+                            ClipToBounds="{TemplateBinding ClipToBounds}"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Viewbox Stretch="Uniform">
+                            <Canvas Width="256" Height="256">
+                                <Path Data="{TemplateBinding Data}" Stretch="None"
+                                      Fill="{TemplateBinding Foreground}" UseLayoutRounding="False" />
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
         <ControlTheme x:Key="{x:Type iconPacks:PackIconFontaudio}"
                       BasedOn="{StaticResource OpenUtauMobile.IconPacks.BaseTheme}"
                       TargetType="iconPacks:PackIconFontaudio" />

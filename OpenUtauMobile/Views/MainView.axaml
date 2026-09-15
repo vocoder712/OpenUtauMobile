@@ -11,17 +11,17 @@
              Background="{DynamicResource Sem.Color.Surface}">
     <!-- Root 根 -->
     <!-- 弹窗容器，覆盖在导航页之上 -->
-    <!-- 背景模糊，点击外部不关闭，启用打开动画，禁止多重弹窗 -->
+    <!-- 保留背景模糊并叠加共享遮罩，点击外部不关闭，支持多重弹窗。 -->
     <Panel>
         <dialogHostAvalonia:DialogHost BlurBackground="True"
                                        CloseOnClickAway="False"
                                        Identifier="MainDialogHost"
                                        IsMultipleDialogsEnabled="True"
-                                       OverlayBackground="Transparent">
+                                       OverlayBackground="{DynamicResource Sem.Color.Shadow}">
             <dialogHostAvalonia:DialogHost.PopupTemplate>
                 <ControlTemplate>
                     <!-- 这里的 Border 就是弹窗的“背景容器”，透明背景 -->
-                    <Border Background="Transparent">
+                    <Border Background="Transparent" Padding="{TemplateBinding Padding}">
                         <ContentPresenter Content="{TemplateBinding Content}" />
                     </Border>
                 </ControlTemplate>

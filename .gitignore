@@ -470,3 +470,7 @@ native/CMakeUserPresets.json
 
 ## codex
 .codex/
+# Local tests
+/tests/
+# Agent 计划
+/plans/

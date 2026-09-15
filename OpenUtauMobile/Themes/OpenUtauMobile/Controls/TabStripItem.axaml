@@ -1,0 +1,81 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:metrics="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+                    x:CompileBindings="False">
+    <!-- 全局文字页签采用 MD3 Primary Tab；状态层不改变容器底色。 -->
+    <ControlTheme x:Key="{x:Type TabStripItem}" TargetType="TabStripItem">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="{x:Static metrics:TabItemTokens.LabelSize}" />
+        <Setter Property="FontWeight" Value="{x:Static metrics:TabItemTokens.LabelWeight}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <Setter Property="Padding" Value="{x:Static metrics:TabItemTokens.HeaderInset}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MinHeight" Value="{x:Static metrics:TabItemTokens.ContainerHeight}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Name="PART_LayoutRoot">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}" />
+                    <Border Name="PART_StateLayer" Background="{DynamicResource Sem.Color.OnSurface}"
+                            Opacity="0" IsHitTestVisible="False" />
+                    <Border Name="PART_Divider" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
+                            BorderThickness="0,0,0,1" IsHitTestVisible="False" />
+                    <Border Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                    <Border Name="PART_SelectedPipe" Background="{DynamicResource Sem.Color.Primary}"
+                            Width="{Binding Bounds.Width, ElementName=PART_ContentPresenter}"
+                            Height="{x:Static metrics:TabItemTokens.ActiveIndicatorHeight}"
+                            CornerRadius="{x:Static metrics:TabItemTokens.ActiveIndicatorCorner}"
+                            HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                            IsVisible="False" IsHitTestVisible="False" />
+                    <Border Name="PART_FocusRing" BorderBrush="{DynamicResource Sem.Color.Primary}"
+                            BorderThickness="2" Margin="2" IsVisible="False" IsHitTestVisible="False" />
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:selected">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
+        </Style>
+        <Style Selector="^:selected /template/ Border#PART_SelectedPipe">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:selected /template/ Border#PART_StateLayer">
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+        </Style>
+        <Style Selector="^:pointerover:not(:selected):not(:disabled), ^:focus-visible:not(:selected):not(:disabled), ^:pressed:not(:selected):not(:disabled)">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        </Style>
+        <Style Selector="^:pointerover:not(:disabled) /template/ Border#PART_StateLayer">
+            <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Hover}" />
+        </Style>
+        <Style Selector="^:focus-visible:not(:disabled) /template/ Border#PART_StateLayer">
+            <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Focus}" />
+        </Style>
+        <Style Selector="^:pressed:not(:disabled) /template/ Border#PART_StateLayer">
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.Primary}" />
+            <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Pressed}" />
+        </Style>
+        <Style Selector="^:focus-visible:not(:disabled) /template/ Border#PART_FocusRing">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Cursor" Value="Arrow" />
+        </Style>
+        <Style Selector="^:disabled /template/ Panel#PART_LayoutRoot">
+            <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Disabled}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

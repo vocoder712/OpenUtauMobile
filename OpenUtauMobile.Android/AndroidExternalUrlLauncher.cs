@@ -1,7 +1,7 @@
+using OpenUtauMobile.Services.Platform;
 using System;
 using System.Threading.Tasks;
 using Android.Content;
-using OpenUtauMobile.Services;
 
 namespace OpenUtauMobile.Android;
 

@@ -1116,9 +1116,6 @@
   <data name="EditorMore.ExportAudio" xml:space="preserve">
     <value>オーディオとしてエクスポート</value>
   </data>
-  <data name="EditorMore.Toast.ImportTrack" xml:space="preserve">
-    <value>TODO: トラックをインポート</value>
-  </data>
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: オーディオをエクスポート</value>
   </data>
@@ -1787,5 +1784,154 @@
   </data>
   <data name="BulkLyricEdit.Apply" xml:space="preserve">
     <value>適用</value>
+  </data>
+  <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>{0} 個のファイルを選択</value></data>
+  <data name="ImportTracks.Next" xml:space="preserve"><value>次へ</value></data>
+  <data name="ImportTracks.ImportCount" xml:space="preserve"><value>{0} トラックをインポート</value></data>
+  <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>{0} トラック</value></data>
+  <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>歌声パート {0} · 音声パート {1}</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>歌手が未指定または未インストール：{0}</value></data>
+  <data name="ImportTracks.Unassigned" xml:space="preserve"><value>未指定</value></data>
+  <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>音声ファイルが見つかりません：{0}</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>音色設定が現在の歌手と異なります。インポート後に確認してください。</value></data>
+  <data name="ImportTracks.AppendHint" xml:space="preserve"><value>既存のトラックを置き換えず、元の位置を保って新しいトラックとして追加します。</value></data>
+  <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>同名の表現は現在のプロジェクト、次に先の選択ファイルを優先します。不足する定義を追加します。</value></data>
+  <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>元のテンポと拍子を使用（オフ：現在の設定を保持）</value></data>
+  <data name="ImportTracks.TimingSource" xml:space="preserve"><value>テンポと拍子の参照元</value></data>
+  <data name="ImportTracks.TimingSummary" xml:space="preserve"><value>初期 {0} BPM · {1}/{2}、テンポ {3} 個・拍子 {4} 個のマーカー</value></data>
+  <data name="ImportTracks.TempoMarker" xml:space="preserve"><value>位置 {0} tick：{1} BPM</value></data>
+  <data name="ImportTracks.SignatureMarker" xml:space="preserve"><value>第 {0} 小節：{1}/{2}</value></data>
+  <data name="ImportTracks.ReplaceTimingWarning" xml:space="preserve"><value>既存トラックを含むプロジェクト全体のテンポと拍子を置き換えます。</value></data>
+  <data name="ImportTracks.MarkerDetails" xml:space="preserve"><value>すべてのマーカー</value></data>
+  <data name="ImportTracks.SelectAll" xml:space="preserve"><value>すべて選択</value></data>
+  <data name="ImportTracks.SelectNone" xml:space="preserve"><value>選択を解除</value></data>
+  <data name="ImportTracks.RemoveFile" xml:space="preserve"><value>このファイルを除外</value></data>
+  <data name="ImportTracks.Reading" xml:space="preserve"><value>トラックファイルを読み込み中…</value></data>
+  <data name="ImportTracks.Importing" xml:space="preserve"><value>トラックをインポート中…</value></data>
+  <data name="ImportTracks.Success" xml:space="preserve"><value>{0} トラックをインポートしました</value></data>
+  <data name="ImportTracks.ProjectChanged" xml:space="preserve"><value>現在のプロジェクトが変更されました。もう一度インポートしてください。</value></data>
+  <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>デスクトップ版と同様に、インポートすると元に戻す・やり直しの履歴と再生位置がリセットされます。テンポと拍子は最初のインポート元を使用します。</value></data>
+  <data name="VoiceMapping.Title" xml:space="preserve"><value>音色マッピング</value></data>
+  <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>インポートした歌唱スタイルのマッピング</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>元の音色を現在の歌手に割り当てます。スキップしてもインポート済みのトラックは残ります。</value></data>
+  <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>歌唱スタイルのカーブを DiffSinger の音色に割り当てます。デフォルトは変換しません。既存のカーブは保持します。</value></data>
+  <data name="VoiceMapping.Default" xml:space="preserve"><value>デフォルト</value></data>
+  <data name="VoiceMapping.Skip" xml:space="preserve"><value>スキップ</value></data>
+  <data name="VoiceMapping.Apply" xml:space="preserve"><value>適用</value></data>
+  <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>割り当てる音符または音色がありません。</value></data>
+  <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色を再割り当て</value></data>
+  <data name="DependencyManager.Sort" xml:space="preserve"><value>並べ替え</value></data>
+  <data name="Settings.Edit.Magnifier" xml:space="preserve"><value>拡大鏡</value></data>
+  <data name="Settings.Edit.MagnifierFactor" xml:space="preserve"><value>表示倍率</value></data>
+  <data name="Settings.Edit.MagnifierFactor.Desc" xml:space="preserve"><value>ピッチとパラメーターカーブの編集に適用します。1× 未満では広い範囲を表示し、1× は元の倍率です。</value></data>
+  <data name="Mixer.Close" xml:space="preserve"><value>ミキサーを閉じる</value></data>
+  <data name="Mixer.Compressor" xml:space="preserve"><value>圧縮</value></data>
+  <data name="Mixer.Effects" xml:space="preserve"><value>エフェクト</value></data>
+  <data name="Mixer.Empty" xml:space="preserve"><value>トラックなし</value></data>
+  <data name="Mixer.High" xml:space="preserve"><value>高域</value></data>
+  <data name="Mixer.Low" xml:space="preserve"><value>低域</value></data>
+  <data name="Mixer.MeterPending" xml:space="preserve"><value>メーター未接続</value></data>
+  <data name="Mixer.Mid" xml:space="preserve"><value>中域</value></data>
+  <data name="Mixer.Mute" xml:space="preserve"><value>ミュート</value></data>
+  <data name="Mixer.Order" xml:space="preserve"><value>固定順序：EQ → 圧縮 → リバーブ</value></data>
+  <data name="Mixer.Preview" xml:space="preserve"><value>音声設定はプレビューです。名前と色はプロジェクトに反映されます</value></data>
+  <data name="Mixer.Ratio" xml:space="preserve"><value>比率</value></data>
+  <data name="Mixer.Reverb" xml:space="preserve"><value>リバーブ</value></data>
+  <data name="Mixer.Size" xml:space="preserve"><value>減衰の長さ</value></data>
+  <data name="Mixer.Solo" xml:space="preserve"><value>ソロ</value></data>
+  <data name="Mixer.Threshold" xml:space="preserve"><value>しきい値</value></data>
+  <data name="Mixer.Title" xml:space="preserve"><value>ミキサー</value></data>
+  <data name="Mixer.Wet" xml:space="preserve"><value>残響量（プリセット倍率）</value></data>
+  <data name="Mixer.ResetHint" xml:space="preserve"><value>スライダーをダブルタップすると初期値に戻ります</value></data>
+  <data name="Mixer.ToggleFx" xml:space="preserve"><value>エフェクト有効 / バイパス（点灯時は有効）</value></data>
+  <data name="Mixer.FxOn" xml:space="preserve"><value>有効</value></data>
+  <data name="EditorMore.EditTab" xml:space="preserve"><value>編集</value></data>
+  <data name="History.NoUndo" xml:space="preserve"><value>元に戻す操作はありません</value></data>
+  <data name="History.NoRedo" xml:space="preserve"><value>やり直す操作はありません</value></data>
+  <data name="History.Undone" xml:space="preserve"><value>元に戻しました：{0}</value></data>
+  <data name="History.Redone" xml:space="preserve"><value>やり直しました：{0}</value></data>
+  <data name="History.Edit" xml:space="preserve"><value>編集操作</value></data>
+  <data name="Mixer.MidFrequency" xml:space="preserve"><value>中域中心周波数 (Hz)</value></data>
+  <data name="Mixer.Makeup" xml:space="preserve"><value>メイクアップゲイン (dB)</value></data>
+  <data name="Mixer.Damp" xml:space="preserve"><value>高域減衰</value></data>
+  <data name="Mixer.PreDelay" xml:space="preserve"><value>プリディレイ (ms)</value></data>
+  <data name="Mixer.EqGraph" xml:space="preserve"><value>3 バンド EQ · 周波数 Hz → / ゲイン dB ↑</value></data>
+  <data name="Mixer.EqGraphHint" xml:space="preserve"><value>点を上下に動かしてゲイン、中央の点を左右に動かして周波数を調整。</value></data>
+  <data name="Mixer.CompGraph" xml:space="preserve"><value>デジタルコンプレッサー · 入力 dB → / 出力 dB ↑</value></data>
+  <data name="Mixer.CompGraphHint" xml:space="preserve"><value>左の点を左右に動かしてスレッショルド、右を上下に動かして比率を調整。ゲイン補正込みの静特性。</value></data>
+  <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · 時間 s → / ウェットピーク dB ↑</value></data>
+  <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>左右のインパルス減衰プレビュー（4 秒、ウェットのみ）。実時間表示ではなく、長い残響は範囲外に続きます。</value></data>
+  <data name="Mixer.Preset" xml:space="preserve"><value>エフェクトプリセット</value></data>
+  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>適用</value></data>
+  <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>エフェクトプリセットを適用</value></data>
+  <data name="Mixer.PresetLibrary" xml:space="preserve"><value>エフェクトチェーンのプリセット</value></data>
+  <data name="Mixer.DefaultPreset" xml:space="preserve"><value>標準チェーンを適用</value></data>
+  <data name="Mixer.PresetName" xml:space="preserve"><value>プリセット名</value></data>
+  <data name="Mixer.SavePreset" xml:space="preserve"><value>保存（同名は上書き）</value></data>
+  <data name="Mixer.PresetNameRequired" xml:space="preserve"><value>プリセット名を入力してください</value></data>
+  <data name="Mixer.PresetSaved" xml:space="preserve"><value>プリセット保存：{0}</value></data>
+  <data name="Mixer.Preset.off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Mixer.Preset.vocal_air" xml:space="preserve"><value>ボーカルの空気感</value></data>
+  <data name="Mixer.Preset.warm" xml:space="preserve"><value>ウォーム</value></data>
+  <data name="Mixer.Preset.demud" xml:space="preserve"><value>濁りを軽減</value></data>
+  <data name="Mixer.Preset.telephone" xml:space="preserve"><value>電話</value></data>
+  <data name="Mixer.Preset.gentle" xml:space="preserve"><value>穏やか</value></data>
+  <data name="Mixer.Preset.pop" xml:space="preserve"><value>ポップボーカル</value></data>
+  <data name="Mixer.Preset.limit" xml:space="preserve"><value>強い圧縮（10:1）</value></data>
+  <data name="Mixer.Preset.small_room" xml:space="preserve"><value>小部屋</value></data>
+  <data name="Mixer.Preset.vocal_plate" xml:space="preserve"><value>ボーカルプレート風</value></data>
+  <data name="Mixer.Preset.hall" xml:space="preserve"><value>ホール</value></data>
+  <data name="Mixer.Preset.ambient" xml:space="preserve"><value>アンビエント</value></data>
+  <data name="Mixer.ChoosePreset" xml:space="preserve"><value>選択して適用</value></data>
+  <data name="Mixer.UpdatePreset" xml:space="preserve"><value>更新</value></data>
+  <data name="Mixer.AddPreset" xml:space="preserve"><value>追加</value></data>
+  <data name="Mixer.LoadPreset" xml:space="preserve"><value>プリセットを読み込む</value></data>
+  <data name="Mixer.PresetDefault" xml:space="preserve"><value>標準</value></data>
+  <data name="Mixer.NewPresetTitle" xml:space="preserve"><value>エフェクトプリセットを追加</value></data>
+  <data name="Mixer.NewPresetHint" xml:space="preserve"><value>このトラックの EQ、コンプレッサー、リバーブを保存します。</value></data>
+  <data name="Mixer.PresetNameExists" xml:space="preserve"><value>同名があります。上書きには「更新」を使用してください。</value></data>
+  <data name="Mixer.Axis.Frequency" xml:space="preserve"><value>周波数 (Hz)</value></data>
+  <data name="Mixer.Axis.Gain" xml:space="preserve"><value>ゲイン (dB)</value></data>
+  <data name="Mixer.Axis.Input" xml:space="preserve"><value>入力 (dB)</value></data>
+  <data name="Mixer.Axis.Output" xml:space="preserve"><value>出力 (dB)</value></data>
+  <data name="Mixer.Axis.Time" xml:space="preserve"><value>時間 (s)</value></data>
+  <data name="Mixer.Axis.WetPeak" xml:space="preserve"><value>ウェットピーク (dB)</value></data>
+  <data name="PerformanceMonitor.AudioLatency" xml:space="preserve"><value>音声キュー遅延</value></data>
+  <data name="Expressions.Title" xml:space="preserve"><value>表情</value></data>
+  <data name="Expressions.Project" xml:space="preserve"><value>Project Expressions</value></data>
+  <data name="Expressions.Track" xml:space="preserve"><value>Track Expressions (override)</value></data>
+  <data name="Expressions.Name" xml:space="preserve"><value>名前</value></data>
+  <data name="Expressions.Abbr" xml:space="preserve"><value>パラメータの略称</value></data>
+  <data name="Expressions.Type" xml:space="preserve"><value>タイプ</value></data>
+  <data name="Expressions.Numerical" xml:space="preserve"><value>数値</value></data>
+  <data name="Expressions.Options" xml:space="preserve"><value>カスタム</value></data>
+  <data name="Expressions.Curve" xml:space="preserve"><value>カーブ</value></data>
+  <data name="Expressions.IsFlag" xml:space="preserve"><value>エンジン内フラグ</value></data>
+  <data name="Expressions.Flag" xml:space="preserve"><value>フラグ</value></data>
+  <data name="Expressions.Min" xml:space="preserve"><value>最小</value></data>
+  <data name="Expressions.Max" xml:space="preserve"><value>最大</value></data>
+  <data name="Expressions.Default" xml:space="preserve"><value>初期値</value></data>
+  <data name="Expressions.SystemDefault" xml:space="preserve"><value>System Default</value></data>
+  <data name="Expressions.ProjectDefault" xml:space="preserve"><value>Project Default</value></data>
+  <data name="Expressions.TrackDefault" xml:space="preserve"><value>Track Default</value></data>
+  <data name="Expressions.SkipOutput" xml:space="preserve"><value>Skip flag output when the value is system default</value></data>
+  <data name="Expressions.OptionValues" xml:space="preserve"><value>カスタム値</value></data>
+  <data name="Expressions.CommaHint" xml:space="preserve"><value>カスタム値は &apos;,&apos;で区切ってください。</value></data>
+  <data name="Expressions.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Expressions.Error.Name" xml:space="preserve"><value>表情名を入力してください</value></data>
+  <data name="Expressions.Error.Abbr" xml:space="preserve"><value>パラメータの略称を入力してください</value></data>
+  <data name="Expressions.Error.AbbrLength" xml:space="preserve"><value>パラメータの略称は1～4文字で入力してください</value></data>
+  <data name="Expressions.Error.Range" xml:space="preserve"><value>最小値は最大値より小さくしてください</value></data>
+  <data name="Expressions.Error.Default" xml:space="preserve"><value>デフォルト値は最小値以上、最大値以下にしてください</value></data>
+  <data name="Expressions.Error.CustomDefault" xml:space="preserve"><value>Project/Track default value must be between min and max</value></data>
+  <data name="Expressions.Error.DuplicateAbbr" xml:space="preserve"><value>パラメータの略称が重複しています</value></data>
+  <data name="Expressions.Error.DuplicateFlag" xml:space="preserve"><value>フラグが重複しています</value></data>
+  <data name="Expressions.Add" xml:space="preserve"><value>追加</value></data>
+  <data name="Expressions.Remove" xml:space="preserve"><value>削除</value></data>
+  <data name="Expressions.Suggestions" xml:space="preserve"><value>提案を取得</value></data>
+  <data name="Expressions.ProjectScope" xml:space="preserve"><value>プロジェクト</value></data>
+  <data name="Expressions.TrackScope" xml:space="preserve"><value>トラック</value></data>
+  <data name="Expressions.RendererUnsupported" xml:space="preserve">
+    <value>現在のレンダラーは以下のエクスプレッションに対応していません。</value>
   </data>
 </root>

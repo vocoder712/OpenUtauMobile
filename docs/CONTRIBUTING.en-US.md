@@ -1,6 +1,6 @@
 ﻿# Contributing to OpenUtau Mobile
 
-[简体中文](CONTRIBUTING.md) | **English**
+[简体中文](../CONTRIBUTING.md) | **English**
 
 Thank you for your interest in contributing to OpenUtau Mobile!
 
@@ -70,7 +70,7 @@ Do not base new contributions on `master` unless the change specifically targets
 
 ### 3. Install the required toolchain
 
-The exact .NET SDK version is defined by [`global.json`](global.json).
+The exact .NET SDK version is defined by [`global.json`](../global.json).
 
 Project-specific target frameworks and platform requirements are defined by the corresponding project files (`*.csproj`).
 
@@ -101,7 +101,7 @@ Common choices include:
 * Visual Studio
 * Visual Studio Code with C# tooling
 
-Whichever editor you use, make sure it respects the repository's [`.editorconfig`](.editorconfig).
+Whichever editor you use, make sure it respects the repository's [`.editorconfig`](../.editorconfig).
 
 ---
 
@@ -217,13 +217,18 @@ Before submitting a Pull Request:
 
 * restore dependencies successfully;
 * build the affected project(s);
-* run relevant tests if available;
+* follow the repository policy: do not create or run unit tests after implementing new features;
 * manually verify the affected functionality where appropriate;
 * test platform-specific changes on the corresponding platform whenever possible.
 
 A Pull Request does not need to build every supported platform locally, but changes should not knowingly break unrelated platforms.
 
-CI checks should pass before the Pull Request is merged.
+CI checks should pass before the Pull Request is merged. Documentation-only changes
+need diff/link review rather than an application build. Before `dotnet build`, set
+`AVALONIA_TELEMETRY_OPTOUT=1` in the environment.
+
+Engineering references: [architecture boundaries](ARCHITECTURE.md) and
+[platform integration and local run commands](PLATFORMS.md).
 
 ### 3. Keep the Pull Request focused
 
@@ -330,7 +335,7 @@ Before submitting AI-assisted changes:
 * review every relevant change;
 * understand the behavior being modified;
 * remove unrelated or speculative changes;
-* build and test the result;
+* verify the result according to the build/verification guidance above;
 * verify that generated code follows existing architecture and style;
 * do not include secrets, credentials, private data, or copyrighted material that cannot legally be contributed.
 
@@ -348,11 +353,18 @@ Upstream synchronization is a repository maintenance operation and is different 
 
 Do **not** manually merge arbitrary OpenUtau upstream commits into `dev`.
 
-See [Upstream Synchronization Guide](docs/UPSTREAM_SYNC.md) for the complete procedure.
+See [Upstream Synchronization Guide](UPSTREAM_SYNC.md) for the complete procedure.
 
 ---
 
-## 
+## Version ownership
+
+Product release versions and build numbers are resolved by
+[main.yml](../.github/workflows/main.yml); local defaults and assembly metadata
+are owned by [Directory.Build.props](../Directory.Build.props).
+CoreVersion identifies the upstream snapshot and follows the upstream guide.
+Do not infer product-version increments from an upstream sync or duplicate CI
+version formulas in documentation.
 
 ## Reporting bugs
 

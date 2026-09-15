@@ -1,0 +1,60 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <!-- NavRail item button -->
+    <Style Selector="Button.NavItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="56" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <!-- Expand/collapse toggle button -->
+    <Style Selector="Button.NavToggle">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+        <Setter Property="CornerRadius" Value="0" />
+    </Style>
+
+    <!-- Category heading in content area -->
+    <Style Selector="TextBlock.CategoryTitle">
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.TitleLSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Margin" Value="0,0,0,16" />
+    </Style>
+
+    <!-- Setting group card -->
+    <Style Selector="Border.SettingCard">
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXL}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="Padding" Value="16,8" />
+    </Style>
+
+    <!-- Section label inside card -->
+    <Style Selector="TextBlock.SettingItemTitle">
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Placeholder description text -->
+    <Style Selector="TextBlock.PlaceholderText">
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodySSize}" />
+        <Setter Property="Opacity" Value="0.65" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="22" />
+    </Style>
+
+    <!-- Accent action button (e.g. "Change path") -->
+
+</Styles>
