@@ -916,11 +916,7 @@ namespace OpenUtau.Core.Neutrino
 
         private static void SaveWaveCache(string path, float[] samples)
         {
-            WaveSource source = new WaveSource(0, 0, 0, 1);
-            source.SetSamples(samples);
-            WaveFileWriter.CreateWaveFile16(
-                path,
-                new ExportAdapter(source).ToMono(1, 0));
+            Wave.WriteMono16Wav(path, samples);
         }
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase)

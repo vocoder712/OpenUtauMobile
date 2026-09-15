@@ -10,7 +10,7 @@ using Serilog;
 using WanaKanaNet;
 
 namespace OpenUtau.Classic {
-    public class ClassicSinger : USinger {
+    public class ClassicSinger : USinger, IDisposable {
         public override string Id => voicebank.Id;
         public override string Name => voicebank.Name;
         public override Dictionary<string, string> LocalizedNames => voicebank.LocalizedNames;
@@ -33,6 +33,7 @@ namespace OpenUtau.Classic {
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
         public override IList<UOto> Otos => otos;
+        public object SessionLock { get; } = new object();
 
         Voicebank voicebank;
         List<string> errors = new List<string>();
@@ -158,6 +159,23 @@ namespace OpenUtau.Classic {
                 VoicebankLoader.WriteOtoSets(voicebank);
             } finally {
                 otoWatcher.Paused = false;
+            }
+        }
+        
+        public void Dispose() {
+            otoWatcher?.Dispose();
+            otoWatcher = null;
+        }
+
+        public override void FreeMemory() {
+            Log.Information($"Freeing memory for singer {Id}");
+            lock (SessionLock) {
+                Dispose();
+                subbanks.Clear();
+                otoSets.Clear();
+                otos.Clear();
+                otoMap.Clear();
+                errors.Clear();
             }
         }
 
