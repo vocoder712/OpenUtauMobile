@@ -34,7 +34,6 @@ internal sealed partial class Program
         try
         {
             AppBuilder appBuilder = BuildAvaloniaApp()
-                .WithInterFont()
                 .UseReactiveUI(reactiveUIBuilder =>
                 {
                     reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
