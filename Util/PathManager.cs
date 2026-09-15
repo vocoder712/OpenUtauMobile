@@ -146,14 +146,8 @@ namespace OpenUtau.Core {
                 }
             }
             OpenUtau.Core.PlaybackManager.Inst.StopPlayback();
-            OpenUtau.Core.PlaybackManager.Inst.LiveWaveformCache.Clear();
-            if (OpenUtau.Core.DocManager.Inst.Project != null) {
-                foreach (var part in OpenUtau.Core.DocManager.Inst.Project.parts) {
-                    if (part is OpenUtau.Core.Ustx.UVoicePart voicePart) {
-                        voicePart.Mix = null!; 
-                    }
-                }
-            }
+            // Drop the slot registry's cache and session: everything below is re-rendered.
+            OpenUtau.Core.PlaybackManager.Inst.MixPlanner.Clear();
             OpenUtau.Core.DocManager.Inst.ExecuteCmd(new OpenUtau.Core.WaveformReadyNotification());
         }
 
