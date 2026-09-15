@@ -32,6 +32,9 @@ on:
 permissions:
   contents: read
 
+env:
+  AVALONIA_TELEMETRY_OPTOUT: "1"
+
 jobs:
   # ============================================================
   # Android
@@ -114,25 +117,15 @@ jobs:
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
 
-      # 再次显式复制当前 RID 的 worldline，保证架构正确
-      - name: Select Correct Linux Native Library
+      - name: Setup native verification interpreter
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          architecture: ${{ matrix.arch }}
+
+      - name: Verify native runtime loading
         shell: bash
-        run: |
-          PUBLISH_DIR="${GITHUB_WORKSPACE}/artifacts/publish/${{ matrix.rid }}"
-          NATIVE_LIB="$PUBLISH_DIR/runtimes/${{ matrix.rid }}/native/libworldline.so"
-
-          if [ ! -f "$NATIVE_LIB" ]; then
-            echo "::error::Cannot find $NATIVE_LIB"
-            exit 1
-          fi
-
-          cp -f "$NATIVE_LIB" "$PUBLISH_DIR/libworldline.so"
-
-          echo "===== Executable ====="
-          file "$PUBLISH_DIR/OpenUtauMobile.Linux" || true
-
-          echo "===== worldline ====="
-          file "$PUBLISH_DIR/libworldline.so"
+        run: python native/verify-runtime.py "artifacts/publish/${{ matrix.rid }}"
 
       - name: Package Linux ${{ matrix.arch }}
         shell: bash
@@ -215,26 +208,15 @@ jobs:
             -p:SourceCommit=${{ inputs.source_sha }} `
             -p:ActionRunId=${{ inputs.action_run_id }}
 
-      # 明确覆盖为本 RID 对应的 worldline.dll
-      - name: Select Correct Windows Native Library
-        shell: pwsh
-        run: |
-          $publishDir = "$env:GITHUB_WORKSPACE/artifacts/publish/${{ matrix.rid }}"
-          $native = Join-Path `
-            $publishDir `
-            "runtimes/${{ matrix.rid }}/native/worldline.dll"
+      - name: Setup native verification interpreter
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          architecture: ${{ matrix.arch }}
 
-          if (!(Test-Path $native)) {
-            throw "Cannot find native library: $native"
-          }
-
-          Copy-Item `
-            $native `
-            (Join-Path $publishDir "worldline.dll") `
-            -Force
-
-          Get-ChildItem $publishDir |
-            Select-Object Name, Length
+      - name: Verify native runtime loading
+        shell: bash
+        run: python native/verify-runtime.py "artifacts/publish/${{ matrix.rid }}"
 
       - name: Package Windows ${{ matrix.arch }}
         shell: pwsh
@@ -314,31 +296,15 @@ jobs:
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
 
-      - name: Validate macOS Native Library
+      - name: Setup native verification interpreter
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+          architecture: ${{ matrix.arch }}
+
+      - name: Verify native runtime loading
         shell: bash
-        run: |
-          PUBLISH_DIR="${GITHUB_WORKSPACE}/artifacts/publish/${{ matrix.rid }}"
-          DYLIB="$PUBLISH_DIR/runtimes/osx/native/libworldline.dylib"
-
-          if [ ! -f "$DYLIB" ]; then
-            echo "::error::Cannot find libworldline.dylib"
-            exit 1
-          fi
-
-          echo "===== libworldline.dylib ====="
-          file "$DYLIB"
-          lipo -info "$DYLIB"
-
-          ARCHS="$(lipo -archs "$DYLIB")"
-
-          echo "$ARCHS" |
-            tr ' ' '\n' |
-            grep -qx "${{ matrix.native_arch }}" || {
-              echo "::error::libworldline.dylib does not contain ${{ matrix.native_arch }}"
-              exit 1
-            }
-
-          cp -f "$DYLIB" "$PUBLISH_DIR/libworldline.dylib"
+        run: python native/verify-runtime.py "artifacts/publish/${{ matrix.rid }}"
 
       - name: Package macOS ${{ matrix.arch }}
         shell: bash

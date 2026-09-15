@@ -1045,18 +1045,6 @@
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: Экспорт аудио</value>
   </data>
-  <data name="EditorMore.TranscribeAudio" xml:space="preserve">
-    <value>Транскрипция аудио</value>
-  </data>
-  <data name="EditorMore.TranscribeProgress" xml:space="preserve">
-    <value>Идёт транскрипция…</value>
-  </data>
-  <data name="EditorMore.Toast.TranscribeDone" xml:space="preserve">
-    <value>Транскрипция завершена</value>
-  </data>
-  <data name="EditorMore.Toast.TranscribeFailed" xml:space="preserve">
-    <value>Не удалось выполнить транскрипцию</value>
-  </data>
   <data name="ExportAudioPopup.Title" xml:space="preserve">
     <value>Экспорт аудио</value>
   </data>
@@ -1896,4 +1884,31 @@
   <data name="Expressions.RendererUnsupported" xml:space="preserve">
     <value>Текущий рендерер не поддерживает следующие параметры.</value>
   </data>
+  <data name="NoteExtraction.Title" xml:space="preserve"><value>Извлечь ноты</value></data>
+<data name="NoteExtraction.Running" xml:space="preserve"><value>Извлечение нот…</value></data>
+  <data name="NoteExtraction.Empty" xml:space="preserve"><value>Ноты не обнаружены.</value></data>
+  <data name="NoteExtraction.Unsupported" xml:space="preserve"><value>Извлечение нот не поддерживается на этой платформе.</value></data>
+  <data name="NoteExtraction.MissingOnnx" xml:space="preserve"><value>Установите модель GAME ONNX (game) в разделе зависимостей.</value></data>
+  <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>Установите пакет GAME GGML (game-ggml-medium), содержащий ровно одну модель GGUF.</value></data>
+  <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>Эта сборка не содержит совместимой библиотеки GAME GGML. Используйте сборку с поддержкой GGML или выберите ONNX.</value></data>
+  <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}: {2}</value></data>
+  <data name="NoteExtraction.Installed" xml:space="preserve"><value>Установлено</value></data>
+  <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>Отсутствует или неполный пакет</value></data>
+  <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>Язык не поддерживается</value></data>
+  <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe: установлено</value></data>
+  <data name="NoteExtraction.RmvpeMissing" xml:space="preserve"><value>Для извлечения высоты установите зависимость rmvpe</value></data>
+  <data name="NoteExtraction.ExtractPitch" xml:space="preserve"><value>Извлечь кривую высоты через RMVPE</value></data>
+  <data name="NoteExtraction.Universal" xml:space="preserve"><value>Универсальный</value></data>
+  <data name="NoteExtraction.Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="NoteExtraction.SamplingSteps" xml:space="preserve"><value>Шаги сэмплирования</value></data>
+  <data name="NoteExtraction.BoundaryThreshold" xml:space="preserve"><value>Порог границ нот</value></data>
+  <data name="NoteExtraction.BoundaryRadius" xml:space="preserve"><value>Радиус границ (кадры)</value></data>
+  <data name="NoteExtraction.ScoreThreshold" xml:space="preserve"><value>Порог уверенности ноты</value></data>
+  <data name="NoteExtraction.BatchSize" xml:space="preserve"><value>Фрагментов в пакете</value></data>
+  <data name="NoteExtraction.BatchDuration" xml:space="preserve"><value>Макс. длительность с дополнением (с)</value></data>
+  <data name="NoteExtraction.BatchHint" xml:space="preserve"><value>Только ONNX: фрагменты дополняются до самого длинного. 1 — по одному; 0 с — без ограничения длительности.</value></data>
+  <data name="NoteExtraction.RunOnnx" xml:space="preserve"><value>Извлечь: ONNX</value></data>
+  <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>Извлечь: GGML</value></data>
+  <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>Извлечение кривой высоты…</value></data>
+  <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>Введите допустимые значения; радиус и число фрагментов должны быть целыми.</value></data>
 </root>

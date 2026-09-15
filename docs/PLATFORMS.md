@@ -41,11 +41,12 @@ Do not infer capability parity merely because hosts share App.
 - [MacOS](../OpenUtauMobile.MacOS/OpenUtauMobile.MacOS.csproj) is an Avalonia desktop
   host, not Mac Catalyst; its Program uses the classic desktop lifetime.
 - [Windows](../OpenUtauMobile.Windows/OpenUtauMobile.Windows.csproj) and
-  [Linux](../OpenUtauMobile.Linux/OpenUtauMobile.Linux.csproj) publish targets copy
+  [Linux](../OpenUtauMobile.Linux/OpenUtauMobile.Linux.csproj) Build and Publish targets copy
   RID-native files beside the executable for P/Invoke lookup. Preserve this during
   packaging changes; an assembly-only output is insufficient.
-- [iOS AppDelegate](../OpenUtauMobile.iOS/AppDelegate.cs) does not register audio
-  initialization or external storage. 
+- [iOS AppDelegate](../OpenUtauMobile.iOS/AppDelegate.cs) registers AVAudioEngine audio
+  initialization (with a Dummy fallback) and probes ONNX Runtime at startup. It does
+  not establish complete desktop/mobile feature parity.
 - [Browser Program](../OpenUtauMobile.Browser/Program.cs)
   uses silent Dummy audio and injects PathManager through private fields instead of
   its normal constructor. Core singleton/property changes therefore need browser
@@ -54,18 +55,9 @@ Do not infer capability parity merely because hosts share App.
 
 ## Local build/run
 
-Use the pinned SDK. Android additionally needs the Android workload, SDK platform
-matching its target framework (currently API 36), and JDK 17 as used by CI.
-From the repository root, PowerShell examples for an installed toolchain:
-
-```powershell
-$env:AVALONIA_TELEMETRY_OPTOUT='1'
-dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -t:Run -c Debug -p:AndroidDebugger=true
-dotnet run --project OpenUtauMobile.Windows/OpenUtauMobile.Windows.csproj -c Debug
-```
-
-Android deployment needs a connected device/emulator. For Linux or macOS, run on
-the corresponding OS and substitute that host's project in the desktop command.
-For release RIDs, native dependencies and packaging commands use the current
-[full-platform workflow](../.github/workflows/build-all-platforms.yml), rather than
-assuming the solution can be built/run identically on every development host.
+Windows-host setup, project-specific restore, and Windows/Android Rider debugging
+are documented in [CONTRIBUTING.md](../CONTRIBUTING.md). Feature and accelerator
+status belong to the [global README](../README.md#feature-matrix).
+For Linux or macOS, build the corresponding host project on that OS with Git,
+CMake and its native C/C++ toolchain. Release RIDs and packaging are defined in the
+[full-platform workflow](../.github/workflows/build-all-platforms.yml).

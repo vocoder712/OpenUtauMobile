@@ -79,16 +79,6 @@
                                         <vm:EditorMoreAction>ImportTrack</vm:EditorMoreAction>
                                     </Button.CommandParameter>
                                 </Button>
-                                <Button
-                                    Classes="tonal"
-                                    HorizontalAlignment="Stretch"
-                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                    Content="{DynamicResource EditorMore.TranscribeAudio}"
-                                    Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter>
-                                        <vm:EditorMoreAction>TranscribeAudio</vm:EditorMoreAction>
-                                    </Button.CommandParameter>
-                                </Button>
                             </StackPanel>
                         </Border>
                     </TabItem>

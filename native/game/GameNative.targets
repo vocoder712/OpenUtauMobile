@@ -1,0 +1,50 @@
+<Project>
+    <PropertyGroup>
+        <EnableGameGgml Condition="'$(EnableGameGgml)' == ''">true</EnableGameGgml>
+        <!-- 不改变应用的 RID 和输出目录；默认调试使用 SDK 所在平台的原生库。 -->
+        <_GameRid>$(RuntimeIdentifier)</_GameRid>
+        <_GameRid Condition="'$(_GameRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</_GameRid>
+        <_GameRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'x86' and $([MSBuild]::IsOSPlatform('Windows'))">win-x86</_GameRid>
+        <_GameRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'ARM64' and $([MSBuild]::IsOSPlatform('Windows'))">win-arm64</_GameRid>
+        <GameNativeRoot Condition="'$(GameNativeRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/game-native</GameNativeRoot>
+        <GameBuildRoot Condition="'$(GameBuildRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/game-build</GameBuildRoot>
+        <GameCMakeExecutable Condition="'$(GameCMakeExecutable)' == ''">cmake</GameCMakeExecutable>
+        <_GameResolveToolchainDependsOn Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">_ResolveSdks</_GameResolveToolchainDependsOn>
+        <_GameNativeName Condition="$([System.String]::Copy('$(_GameRid)').StartsWith('win-'))">opum_game.dll</_GameNativeName>
+        <_GameNativeName Condition="$([System.String]::Copy('$(_GameRid)').StartsWith('linux-')) or $([System.String]::Copy('$(_GameRid)').StartsWith('android-'))">libopum_game.so</_GameNativeName>
+        <_GameNativeName Condition="$([System.String]::Copy('$(_GameRid)').StartsWith('osx-'))">libopum_game.dylib</_GameNativeName>
+        <_GameAbi Condition="'$(_GameRid)' == 'android-arm64'">arm64-v8a</_GameAbi>
+        <_GameAbi Condition="'$(_GameRid)' == 'android-arm'">armeabi-v7a</_GameAbi>
+        <_GameAbi Condition="'$(_GameRid)' == 'android-x64'">x86_64</_GameAbi>
+        <_GameAbi Condition="'$(_GameRid)' == 'android-x86'">x86</_GameAbi>
+        <_GameRuntimeDirectory>$(GameNativeRoot)/$(_GameRid)</_GameRuntimeDirectory>
+    </PropertyGroup>
+    <Target Name="BuildGameNative" BeforeTargets="PrepareForBuild"
+            DependsOnTargets="$(_GameResolveToolchainDependsOn)"
+            Condition="'$(EnableGameGgml)' == 'true' and '$(DesignTimeBuild)' != 'true'">
+        <Error Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(_GameAbi)' == ''" Text="Android native builds require an Android RuntimeIdentifier, such as android-arm64." />
+        <Error Condition="'$(_GameNativeName)' == ''" Text="Unsupported GAME native RID: $(_GameRid). Specify a supported RuntimeIdentifier." />
+        <!-- 使用 Android 工作负载解析后的路径，支持 IDE 将 SDK 和 NDK 配置在不同目录。 -->
+        <PropertyGroup>
+            <_GameAndroidNdk>$(_AndroidNdkDirectory)</_GameAndroidNdk>
+            <_GameAndroidNdk Condition="'$(_GameAndroidNdk)' == ''">$(AndroidNdkDirectory)</_GameAndroidNdk>
+            <_GameAndroidNdk>$([System.String]::Copy('$(_GameAndroidNdk)').Replace('\', '/'))</_GameAndroidNdk>
+            <_GameAndroidSdk>$([System.String]::Copy('$(AndroidSdkDirectory)').Replace('\', '/'))</_GameAndroidSdk>
+        </PropertyGroup>
+        <Exec Command="&quot;$(GameCMakeExecutable)&quot; -DOPUM_RID=&quot;$(_GameRid)&quot; -DOPUM_BUILD_ROOT=&quot;$(GameBuildRoot)&quot; -DOPUM_INSTALL_ROOT=&quot;$(GameNativeRoot)&quot; -DOPUM_GENERATOR=&quot;$(GameCMakeGenerator)&quot; -DOPUM_ANDROID_SDK=&quot;$(_GameAndroidSdk)&quot; -DOPUM_ANDROID_NDK=&quot;$(_GameAndroidNdk)&quot; -P &quot;$(MSBuildThisFileDirectory)Build.cmake&quot;" />
+        <Error Condition="!Exists('$(_GameRuntimeDirectory)/$(_GameNativeName)')" Text="GAME build did not produce $(_GameNativeName) for $(_GameRid)." />
+        <!-- 先收集独立项，再用限定元数据映射到平台项，避免 Content / Asset 批处理串用文件名。 -->
+        <ItemGroup>
+            <_GameBuiltFile Include="$(_GameRuntimeDirectory)/*" />
+            <_GameLicenseFile Include="$(_GameRuntimeDirectory)/LICENSE.*.txt" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_GameAbi)' != ''">
+            <AndroidNativeLibrary Include="$(_GameRuntimeDirectory)/*.so" Abi="$(_GameAbi)" />
+            <AndroidAsset Include="@(_GameLicenseFile)" Link="GameLicenses/%(_GameLicenseFile.Filename)%(_GameLicenseFile.Extension)" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_GameAbi)' == ''">
+            <Content Include="@(_GameBuiltFile)" Link="%(_GameBuiltFile.Filename)%(_GameBuiltFile.Extension)"
+                     CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+        </ItemGroup>
+    </Target>
+</Project>

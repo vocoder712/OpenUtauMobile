@@ -1122,18 +1122,6 @@
   <data name="EditorMore.Toast.ExportAudio" xml:space="preserve">
     <value>TODO: 导出音频功能</value>
   </data>
-  <data name="EditorMore.TranscribeAudio" xml:space="preserve">
-    <value>音频转写</value>
-  </data>
-  <data name="EditorMore.TranscribeProgress" xml:space="preserve">
-    <value>正在转写音频…</value>
-  </data>
-  <data name="EditorMore.Toast.TranscribeDone" xml:space="preserve">
-    <value>转写完成</value>
-  </data>
-  <data name="EditorMore.Toast.TranscribeFailed" xml:space="preserve">
-    <value>转写失败</value>
-  </data>
   <data name="ExportAudioPopup.Title" xml:space="preserve">
     <value>导出音频</value>
   </data>
@@ -1941,4 +1929,31 @@
   <data name="Expressions.RendererUnsupported" xml:space="preserve">
     <value>当前渲染器不支持以下表情</value>
   </data>
+  <data name="NoteExtraction.Title" xml:space="preserve"><value>音符提取</value></data>
+<data name="NoteExtraction.Running" xml:space="preserve"><value>正在提取音符…</value></data>
+  <data name="NoteExtraction.Empty" xml:space="preserve"><value>未提取到音符。</value></data>
+  <data name="NoteExtraction.Unsupported" xml:space="preserve"><value>此平台暂不支持音符提取。</value></data>
+  <data name="NoteExtraction.MissingOnnx" xml:space="preserve"><value>请先在依赖管理中安装 GAME ONNX 模型包（game）。</value></data>
+  <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>请安装 GAME GGML 模型包（game-ggml-medium），包中应恰有一个 GGUF 模型。</value></data>
+  <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>此应用构建未包含可用的 GAME GGML 运行库。请使用支持 GGML 的安装包，或选择 ONNX。</value></data>
+  <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}：{2}</value></data>
+  <data name="NoteExtraction.Installed" xml:space="preserve"><value>已安装</value></data>
+  <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>未安装或文件不完整</value></data>
+  <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>不支持所选语言</value></data>
+  <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe：已安装</value></data>
+  <data name="NoteExtraction.RmvpeMissing" xml:space="preserve"><value>需安装 rmvpe 依赖项才能提取音高</value></data>
+  <data name="NoteExtraction.ExtractPitch" xml:space="preserve"><value>使用 RMVPE 提取音高曲线</value></data>
+  <data name="NoteExtraction.Universal" xml:space="preserve"><value>通用</value></data>
+  <data name="NoteExtraction.Language" xml:space="preserve"><value>语言</value></data>
+  <data name="NoteExtraction.SamplingSteps" xml:space="preserve"><value>采样步数</value></data>
+  <data name="NoteExtraction.BoundaryThreshold" xml:space="preserve"><value>音符边界阈值</value></data>
+  <data name="NoteExtraction.BoundaryRadius" xml:space="preserve"><value>边界检测半径（帧）</value></data>
+  <data name="NoteExtraction.ScoreThreshold" xml:space="preserve"><value>音符置信度阈值</value></data>
+  <data name="NoteExtraction.BatchSize" xml:space="preserve"><value>每批片段数</value></data>
+  <data name="NoteExtraction.BatchDuration" xml:space="preserve"><value>批次时长上限（秒）</value></data>
+  <data name="NoteExtraction.BatchHint" xml:space="preserve"><value>仅 ONNX；按最长片段补齐计时。1 段逐个处理；0 秒不限。</value></data>
+  <data name="NoteExtraction.RunOnnx" xml:space="preserve"><value>ONNX 提取</value></data>
+  <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>GGML 提取</value></data>
+  <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>正在提取音高曲线…</value></data>
+  <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>请填写有效数值；检测半径与片段数需为整数。</value></data>
 </root>

@@ -1,4 +1,4 @@
-using System.Reactive;
+﻿using System.Reactive;
 using ReactiveUI;
 using OpenUtau.Core;
 
@@ -9,7 +9,6 @@ public enum EditorMoreAction
     None, // 无操作
     ImportAudio, // 导入音频
     ImportTrack, // 导入轨道
-    TranscribeAudio, // 音频转写（GAME ggml 后端）
     ExportAudio, // 导出音频
     SaveAs, // 另存为
     Undo,

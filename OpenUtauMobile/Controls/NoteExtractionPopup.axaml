@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             x:Class="OpenUtauMobile.Controls.NoteExtractionPopup"
+             x:DataType="vm:NoteExtractionPopupViewModel"
+             Classes="PopupDialogRoot">
+    <UserControl.Styles>
+        <Style Selector="TextBlock.FieldLabel">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.Hint">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        </Style>
+    </UserControl.Styles>
+    <dialogs:DialogShell Header="{DynamicResource NoteExtraction.Title}" CloseCommand="{Binding CancelCommand}">
+        <dialogs:DialogShell.Footer>
+            <dialogs:DialogActionRow>
+                <Button Classes="DialogAction DialogPrimary" Content="{DynamicResource NoteExtraction.RunOnnx}" Command="{Binding OnnxCommand}" />
+                <Button Classes="DialogAction" Content="{DynamicResource NoteExtraction.RunGgml}" Command="{Binding GgmlCommand}" />
+            </dialogs:DialogActionRow>
+        </dialogs:DialogShell.Footer>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                        <TextBlock Classes="Hint" Text="{Binding OnnxStatus}" />
+                        <TextBlock Classes="Hint" Text="{Binding GgmlStatus}" />
+                    </StackPanel>
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" ToolTip.Tip="{Binding RmvpeStatus}">
+                        <CheckBox IsEnabled="{Binding RmvpeAvailable}" IsChecked="{Binding ExtractPitch, Mode=TwoWay}">
+                            <TextBlock Text="{DynamicResource NoteExtraction.ExtractPitch}" TextWrapping="Wrap" />
+                        </CheckBox>
+                        <TextBlock Classes="Hint" Text="{Binding RmvpeStatus}" />
+                    </StackPanel>
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock Classes="FieldLabel" Text="{DynamicResource NoteExtraction.Language}" />
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language, Mode=TwoWay}" HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NoteExtractionLanguage"><TextBlock Text="{Binding Label}" /></DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock Grid.Row="1" Classes="FieldLabel" Text="{DynamicResource NoteExtraction.SamplingSteps}" />
+                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding SamplingStepOptions}" SelectedItem="{Binding SamplingSteps, Mode=TwoWay}" HorizontalAlignment="Stretch" />
+                        <TextBlock Grid.Row="2" Classes="FieldLabel" Text="{DynamicResource NoteExtraction.BoundaryThreshold}" />
+                        <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding BoundaryThreshold, Mode=TwoWay}" Minimum="0" Maximum="1" Increment="0.01" FormatString="0.00" />
+                        <TextBlock Grid.Row="3" Classes="FieldLabel" Text="{DynamicResource NoteExtraction.BoundaryRadius}" />
+                        <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding BoundaryRadius, Mode=TwoWay}" Minimum="0" Maximum="10" Increment="1" FormatString="0" />
+                        <TextBlock Grid.Row="4" Classes="FieldLabel" Text="{DynamicResource NoteExtraction.ScoreThreshold}" />
+                        <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding ScoreThreshold, Mode=TwoWay}" Minimum="0" Maximum="1" Increment="0.01" FormatString="0.00" />
+                    </Grid>
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock Classes="Hint" Text="{DynamicResource NoteExtraction.BatchHint}" />
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Classes="FieldLabel" Text="{DynamicResource NoteExtraction.BatchSize}" />
+                            <NumericUpDown Grid.Column="1" Value="{Binding BatchSize, Mode=TwoWay}" Minimum="1" Maximum="32" Increment="1" FormatString="0" />
+                            <TextBlock Grid.Row="1" Classes="FieldLabel" Text="{DynamicResource NoteExtraction.BatchDuration}" />
+                            <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding MaxBatchDuration, Mode=TwoWay}" Minimum="0" Maximum="600" Increment="10" FormatString="0.##" />
+                        </Grid>
+                    </StackPanel>
+                    <TextBlock Text="{DynamicResource NoteExtraction.InvalidSettings}" IsVisible="{Binding HasInvalidSettings}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </dialogs:DialogShell>
+</UserControl>
