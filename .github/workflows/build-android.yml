@@ -40,6 +40,9 @@ on:
 permissions:
   contents: read
 
+env:
+  AVALONIA_TELEMETRY_OPTOUT: "1"
+
 jobs:
   build:
     name: Android ${{ inputs.arch }}
@@ -62,6 +65,18 @@ jobs:
 
       - name: Install Android workload
         run: dotnet workload install android
+
+      - name: Install GAME Android toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
+          sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
+          test -f "$SDK_ROOT/ndk/$NDK_VERSION/build/cmake/android.toolchain.cmake"
+          echo "GAME_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
+          cmake --version
+          ninja --version
 
       - name: Create Swap Space
         shell: bash
@@ -114,12 +129,18 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
+            -p:AndroidNdkDirectory="$GAME_ANDROID_NDK" \
             -p:AndroidPackageFormat=apk \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
             -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
             -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
             -p:AndroidSigningKeyPass="$KEY_PASSWORD"
+
+      - name: Setup APK verification interpreter
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
 
       - name: Verify and prepare Android artifact
         shell: bash
@@ -148,6 +169,7 @@ jobs:
             exit 1
           fi
           SIGNED_APK="${SIGNED_APKS[0]}"
+          python native/verify-android-runtime.py "$SIGNED_APK" "${{ inputs.rid }}"
 
           ANDROID_SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
           if [ -z "$ANDROID_SDK" ] || [ ! -d "$ANDROID_SDK/build-tools" ]; then
@@ -182,7 +204,7 @@ jobs:
             exit 1
           fi
 
-          for LIBRARY in libonnxruntime.so libonnxruntime4j_jni.so; do
+          for LIBRARY in libworldline.so libonnxruntime.so libonnxruntime4j_jni.so libopum_game.so; do
             ENTRY="lib/$EXPECTED_ABI/$LIBRARY"
             COUNT="$(unzip -Z1 "$SIGNED_APK" | grep -Fxc "$ENTRY" || true)"
             if [ "$COUNT" -ne 1 ]; then
@@ -192,12 +214,14 @@ jobs:
             unzip -p "$SIGNED_APK" "$ENTRY" > "$VERIFY_DIR/native/$LIBRARY"
           done
 
-          readelf -d "$VERIFY_DIR/native/libonnxruntime.so" > "$VERIFY_DIR/libonnxruntime.dynamic.txt"
-          if grep -E 'libdl\.so\.2|libc\.so\.6|libm\.so\.6|libpthread\.so\.0|librt\.so\.1|ld-linux' \
-              "$VERIFY_DIR/libonnxruntime.dynamic.txt"; then
-            echo "::error::libonnxruntime.so 包含 Linux/glibc 依赖，不是 Android 原生库"
-            exit 1
-          fi
+          for LIBRARY in "$VERIFY_DIR/native/"*.so; do
+            DYNAMIC_INFO="$VERIFY_DIR/$(basename "$LIBRARY").dynamic.txt"
+            readelf -d "$LIBRARY" > "$DYNAMIC_INFO"
+            if grep -E 'libdl\.so\.2|libc\.so\.6|libm\.so\.6|libpthread\.so\.0|librt\.so\.1|ld-linux' "$DYNAMIC_INFO"; then
+              echo "::error::$(basename "$LIBRARY") 包含 Linux/glibc 依赖，不是 Android 原生库"
+              exit 1
+            fi
+          done
 
           find "$VERIFY_DIR/native" -maxdepth 1 -type f -name '*.so' -print0 |
             sort -z |
@@ -212,6 +236,7 @@ jobs:
           package_format=apk
           restore=explicit-rid
           publish=no-restore
+          android_ndk=$GAME_ANDROID_NDK
           product_version=${{ inputs.version }}
           build_number=${{ inputs.build_number }}
           source_commit=${{ inputs.source_sha }}
@@ -223,7 +248,7 @@ jobs:
 
           echo "===== Android build contract ====="
           cat "$VERIFY_DIR/build-contract.txt"
-          echo "===== ONNX native hashes ====="
+          echo "===== Native library hashes ====="
           cat "$VERIFY_DIR/native-libraries.sha256"
 
       - name: Upload Android ${{ inputs.arch }}
@@ -241,5 +266,5 @@ jobs:
           path: |
             artifacts/verification-android-${{ inputs.arch }}/build-contract.txt
             artifacts/verification-android-${{ inputs.arch }}/native-libraries.sha256
-            artifacts/verification-android-${{ inputs.arch }}/libonnxruntime.dynamic.txt
+            artifacts/verification-android-${{ inputs.arch }}/*.dynamic.txt
           if-no-files-found: error

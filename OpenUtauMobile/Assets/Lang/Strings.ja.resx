@@ -1922,4 +1922,31 @@
   <data name="Expressions.RendererUnsupported" xml:space="preserve">
     <value>現在のレンダラーは以下のエクスプレッションに対応していません。</value>
   </data>
+  <data name="NoteExtraction.Title" xml:space="preserve"><value>音符抽出</value></data>
+<data name="NoteExtraction.Running" xml:space="preserve"><value>音符を抽出中…</value></data>
+  <data name="NoteExtraction.Empty" xml:space="preserve"><value>音符が検出されませんでした。</value></data>
+  <data name="NoteExtraction.Unsupported" xml:space="preserve"><value>このプラットフォームでは音符抽出に対応していません。</value></data>
+  <data name="NoteExtraction.MissingOnnx" xml:space="preserve"><value>依存関係の管理で GAME ONNX モデル（game）をインストールしてください。</value></data>
+  <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>GGUF モデルを1つ含む GAME GGML パッケージ（game-ggml-medium）をインストールしてください。</value></data>
+  <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>このアプリには互換性のある GAME GGML ランタイムが含まれていません。GGML 対応版を使用するか、ONNX を選択してください。</value></data>
+  <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}：{2}</value></data>
+  <data name="NoteExtraction.Installed" xml:space="preserve"><value>インストール済み</value></data>
+  <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>未導入または不完全</value></data>
+  <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>選択言語は非対応</value></data>
+  <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe：インストール済み</value></data>
+  <data name="NoteExtraction.RmvpeMissing" xml:space="preserve"><value>音高抽出には依存パッケージ rmvpe が必要です</value></data>
+  <data name="NoteExtraction.ExtractPitch" xml:space="preserve"><value>RMVPE で音高カーブを抽出</value></data>
+  <data name="NoteExtraction.Universal" xml:space="preserve"><value>汎用</value></data>
+  <data name="NoteExtraction.Language" xml:space="preserve"><value>言語</value></data>
+  <data name="NoteExtraction.SamplingSteps" xml:space="preserve"><value>サンプリングステップ数</value></data>
+  <data name="NoteExtraction.BoundaryThreshold" xml:space="preserve"><value>音符境界のしきい値</value></data>
+  <data name="NoteExtraction.BoundaryRadius" xml:space="preserve"><value>境界検出半径（フレーム）</value></data>
+  <data name="NoteExtraction.ScoreThreshold" xml:space="preserve"><value>音符信頼度のしきい値</value></data>
+  <data name="NoteExtraction.BatchSize" xml:space="preserve"><value>バッチ内の区間数</value></data>
+  <data name="NoteExtraction.BatchDuration" xml:space="preserve"><value>バッチ最大補完時間（秒）</value></data>
+  <data name="NoteExtraction.BatchHint" xml:space="preserve"><value>ONNX のみ。最長区間に揃えた時間で計算。1 区間は個別処理、0 秒は時間制限なし。</value></data>
+  <data name="NoteExtraction.RunOnnx" xml:space="preserve"><value>ONNX で抽出</value></data>
+  <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>GGML で抽出</value></data>
+  <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>音高カーブを抽出中…</value></data>
+  <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>有効な値を入力してください。半径と区間数は整数です。</value></data>
 </root>

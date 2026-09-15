@@ -1,4 +1,4 @@
-﻿name: PR Build
+name: PR Build
 
 on:
   pull_request:
@@ -11,6 +11,8 @@ permissions:
 jobs:
   android-build:
     name: PR build test for Android ARM64
+    env:
+      AVALONIA_TELEMETRY_OPTOUT: "1"
     runs-on: ubuntu-latest
 
     steps:
@@ -34,15 +36,74 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android
 
+      - name: Install GAME Android toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
+          sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
+          test -f "$SDK_ROOT/ndk/$NDK_VERSION/build/cmake/android.toolchain.cmake"
+          echo "GAME_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
+          cmake --version
+          ninja --version
+
       - name: Restore
-        run: dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj
+        run: dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -r android-arm64 -p:Configuration=Release
 
       - name: Build Android ARM64
         run: |
           dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
             -c Release \
             -f net10.0-android36.0 \
-            -p:RuntimeIdentifier=android-arm64
+            --no-restore \
+            -p:RuntimeIdentifier=android-arm64 \
+            -p:AndroidNdkDirectory="$GAME_ANDROID_NDK"
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Verify Android native packaging
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t APKS < <(find OpenUtauMobile.Android/bin/Release/net10.0-android36.0/android-arm64 -maxdepth 1 -type f -iname '*-signed.apk')
+          if [ "${#APKS[@]}" -ne 1 ]; then
+            echo "::error::Expected exactly one signed APK; found ${#APKS[@]}"
+            exit 1
+          fi
+          python native/verify-android-runtime.py "${APKS[0]}" android-arm64
+
+  desktop-native-build:
+    name: Default desktop build and native loading (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            platform: Windows
+            framework: net10.0-windows
+          - runner: ubuntu-latest
+            platform: Linux
+            framework: net10.0
+          - runner: macos-15
+            platform: MacOS
+            framework: net10.0
+    runs-on: ${{ matrix.runner }}
+    env:
+      AVALONIA_TELEMETRY_OPTOUT: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Build without explicit RID or GGML switches
+        run: dotnet build OpenUtauMobile.${{ matrix.platform }}/OpenUtauMobile.${{ matrix.platform }}.csproj -c Debug
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Verify native runtime loading
+        run: python native/verify-runtime.py OpenUtauMobile.${{ matrix.platform }}/bin/Debug/${{ matrix.framework }}
 
   ios-build:
     name: PR build test for iOS Intel Simulator Mono AOT

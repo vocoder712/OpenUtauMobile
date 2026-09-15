@@ -1929,4 +1929,31 @@
   <data name="Expressions.RendererUnsupported" xml:space="preserve">
     <value>The current renderer does not support these expressions.</value>
   </data>
+  <data name="NoteExtraction.Title" xml:space="preserve"><value>Extract notes</value></data>
+<data name="NoteExtraction.Running" xml:space="preserve"><value>Extracting notes…</value></data>
+  <data name="NoteExtraction.Empty" xml:space="preserve"><value>No notes were detected.</value></data>
+  <data name="NoteExtraction.Unsupported" xml:space="preserve"><value>Note extraction is not supported on this platform.</value></data>
+  <data name="NoteExtraction.MissingOnnx" xml:space="preserve"><value>Install the GAME ONNX model package (game) in dependency management first.</value></data>
+  <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>Install the GAME GGML model package (game-ggml-medium) containing exactly one GGUF model.</value></data>
+  <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>This app build does not contain a compatible GAME GGML runtime. Use a GGML-enabled app build or select ONNX.</value></data>
+  <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}: {2}</value></data>
+  <data name="NoteExtraction.Installed" xml:space="preserve"><value>Installed</value></data>
+  <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>Missing or incomplete</value></data>
+  <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>Language unsupported</value></data>
+  <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe: installed</value></data>
+  <data name="NoteExtraction.RmvpeMissing" xml:space="preserve"><value>Install the rmvpe dependency to extract pitch</value></data>
+  <data name="NoteExtraction.ExtractPitch" xml:space="preserve"><value>Extract pitch curve with RMVPE</value></data>
+  <data name="NoteExtraction.Universal" xml:space="preserve"><value>Universal</value></data>
+  <data name="NoteExtraction.Language" xml:space="preserve"><value>Language</value></data>
+  <data name="NoteExtraction.SamplingSteps" xml:space="preserve"><value>Sampling steps</value></data>
+  <data name="NoteExtraction.BoundaryThreshold" xml:space="preserve"><value>Note boundary threshold</value></data>
+  <data name="NoteExtraction.BoundaryRadius" xml:space="preserve"><value>Boundary radius (frames)</value></data>
+  <data name="NoteExtraction.ScoreThreshold" xml:space="preserve"><value>Note confidence threshold</value></data>
+  <data name="NoteExtraction.BatchSize" xml:space="preserve"><value>Clips per batch</value></data>
+  <data name="NoteExtraction.BatchDuration" xml:space="preserve"><value>Max padded batch duration (s)</value></data>
+  <data name="NoteExtraction.BatchHint" xml:space="preserve"><value>ONNX only: duration counts padding to the longest clip. 1 clip runs individually; 0 s removes the duration limit.</value></data>
+  <data name="NoteExtraction.RunOnnx" xml:space="preserve"><value>Extract with ONNX</value></data>
+  <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>Extract with GGML</value></data>
+  <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>Extracting pitch curve…</value></data>
+  <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>Enter valid values; radius and clip count must be integers.</value></data>
 </root>

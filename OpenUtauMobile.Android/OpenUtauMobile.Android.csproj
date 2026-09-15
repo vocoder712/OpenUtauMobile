@@ -69,4 +69,5 @@
             <Abi>x86_64</Abi>
         </AndroidNativeLibrary>
     </ItemGroup>
+    <Import Project="../native/game/GameNative.targets" />
 </Project>

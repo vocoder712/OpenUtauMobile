@@ -1884,4 +1884,31 @@
   <data name="Expressions.RendererUnsupported" xml:space="preserve">
     <value>Поточний рендерер не підтримує наведені вирази.</value>
   </data>
+  <data name="NoteExtraction.Title" xml:space="preserve"><value>Видобути ноти</value></data>
+<data name="NoteExtraction.Running" xml:space="preserve"><value>Видобування нот…</value></data>
+  <data name="NoteExtraction.Empty" xml:space="preserve"><value>Нот не виявлено.</value></data>
+  <data name="NoteExtraction.Unsupported" xml:space="preserve"><value>Видобування нот не підтримується на цій платформі.</value></data>
+  <data name="NoteExtraction.MissingOnnx" xml:space="preserve"><value>Установіть модель GAME ONNX (game) у розділі залежностей.</value></data>
+  <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>Установіть пакет GAME GGML (game-ggml-medium), що містить рівно одну модель GGUF.</value></data>
+  <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>Ця збірка не містить сумісної бібліотеки GAME GGML. Скористайтеся збіркою з підтримкою GGML або виберіть ONNX.</value></data>
+  <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}: {2}</value></data>
+  <data name="NoteExtraction.Installed" xml:space="preserve"><value>Встановлено</value></data>
+  <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>Відсутній або неповний пакет</value></data>
+  <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>Мова не підтримується</value></data>
+  <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe: встановлено</value></data>
+  <data name="NoteExtraction.RmvpeMissing" xml:space="preserve"><value>Для виділення висоти встановіть залежність rmvpe</value></data>
+  <data name="NoteExtraction.ExtractPitch" xml:space="preserve"><value>Виділити криву висоти через RMVPE</value></data>
+  <data name="NoteExtraction.Universal" xml:space="preserve"><value>Універсальна</value></data>
+  <data name="NoteExtraction.Language" xml:space="preserve"><value>Мова</value></data>
+  <data name="NoteExtraction.SamplingSteps" xml:space="preserve"><value>Кроки семплювання</value></data>
+  <data name="NoteExtraction.BoundaryThreshold" xml:space="preserve"><value>Поріг меж нот</value></data>
+  <data name="NoteExtraction.BoundaryRadius" xml:space="preserve"><value>Радіус меж (кадри)</value></data>
+  <data name="NoteExtraction.ScoreThreshold" xml:space="preserve"><value>Поріг впевненості ноти</value></data>
+  <data name="NoteExtraction.BatchSize" xml:space="preserve"><value>Фрагментів у пакеті</value></data>
+  <data name="NoteExtraction.BatchDuration" xml:space="preserve"><value>Макс. тривалість із доповненням (с)</value></data>
+  <data name="NoteExtraction.BatchHint" xml:space="preserve"><value>Лише ONNX: фрагменти доповнюються до найдовшого. 1 — по одному; 0 с — без обмеження тривалості.</value></data>
+  <data name="NoteExtraction.RunOnnx" xml:space="preserve"><value>Виділити: ONNX</value></data>
+  <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>Виділити: GGML</value></data>
+  <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>Виділення кривої висоти…</value></data>
+  <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>Введіть допустимі значення; радіус і кількість фрагментів мають бути цілими.</value></data>
 </root>

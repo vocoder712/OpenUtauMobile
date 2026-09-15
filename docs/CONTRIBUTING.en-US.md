@@ -28,80 +28,129 @@ Other planned development tasks can be found in [TODO](https://docs.qq.com/sheet
 
 ---
 
-## Setting up your development environment
+## Setting up your development environment on Windows
 
-### 1. Fork and clone the repository
+The following assumes a Windows x64 PC and Rider. For the detailed walkthrough and troubleshooting,
+see the [Chinese guide](../CONTRIBUTING.md). Platform, renderer and accelerator status belongs to the
+[global feature matrix](../README.md#feature-matrix); native implementation details belong to
+[native/game/README.md](../native/game/README.md).
 
-Fork the repository on GitHub, then clone your fork:
+### 1. Install the common tools
 
-```bash
+- Git for Windows, available on PATH.
+- The **.NET SDK**, not only the runtime, matching [global.json](../global.json)
+  (currently `10.0.400`, with `latestPatch` roll-forward).
+- Visual Studio Build Tools: **Desktop development with C++**, including MSVC x64/x86 and Windows SDK.
+  Rider does not replace the C++ compiler required by the default GGML build.
+- CMake 3.24+ on PATH.
+- Rider with support for the pinned .NET SDK.
+
+Restart terminals and Rider after installing tools or changing PATH. The first build downloads fixed native
+sources from GitHub and packages from NuGet; it also compiles GAME. Models are installed separately in the app.
+
+### 2. Clone and create a branch
+
+Fork the repository on GitHub, then run:
+
+```powershell
 git clone https://github.com/<your-username>/OpenUtauMobile.git
 cd OpenUtauMobile
-```
-
-Add the official repository as an upstream remote:
-
-```bash
 git remote add upstream https://github.com/vocoder712/OpenUtauMobile.git
-```
-
-You can verify the remotes with:
-
-```bash
-git remote -v
-```
-
-### 2. Switch to the development branch
-
-Active development takes place on `dev`.
-
-```bash
-git switch dev
-```
-
-Update it before starting new work:
-
-```bash
 git fetch upstream
+git switch dev
 git pull --ff-only upstream dev
+git switch -c feature/your-feature
 ```
 
-Do not base new contributions on `master` unless the change specifically targets the legacy version.
+Preserve local changes before switching branches or syncing. Run the following from the repository root:
 
-### 3. Install the required toolchain
-
-The exact .NET SDK version is defined by [`global.json`](../global.json).
-
-Project-specific target frameworks and platform requirements are defined by the corresponding project files (`*.csproj`).
-
-These repository files are the source of truth for SDK and target framework versions.
-
-Verify your .NET installation with:
-
-```bash
+```powershell
+git --version
 dotnet --version
-dotnet --info
+cmake --version
+$env:AVALONIA_TELEMETRY_OPTOUT='1'
 ```
 
-For Android development, you will also need the Android SDK and the workloads required by the currently configured .NET SDK.
+This environment variable applies to this shell and child processes. Set it as a Windows user environment
+variable and restart Rider if you launch the IDE from a shortcut.
 
-### 4. Restore dependencies
+### 3. Debug Windows
 
-From the repository root:
-
-```bash
-dotnet restore
+```powershell
+$env:AVALONIA_TELEMETRY_OPTOUT='1'
+dotnet restore OpenUtauMobile.Windows/OpenUtauMobile.Windows.csproj
+dotnet run --project OpenUtauMobile.Windows/OpenUtauMobile.Windows.csproj -c Debug
 ```
 
-### 5. IDE
+Use project-specific restore/build: restoring the whole solution may require unrelated platform workloads.
+In Rider, open `OpenUtauMobile.sln`, check the .NET CLI path, and select the Windows project's **.NET Project**
+run configuration and **Debug** build configuration. Build the target project and dependencies before launch,
+set a C# breakpoint, then click Debug. If necessary, create the configuration under **Run → Edit Configurations**.
 
-Common choices include:
+No explicit RID or `EnableGameGgml` flag is needed. GAME and worldline are placed in the correct output directory.
+Default output is `OpenUtauMobile.Windows/bin/Debug/net10.0-windows/`; an explicit RID adds a RID subdirectory.
 
-* JetBrains Rider
-* Visual Studio
-* Visual Studio Code with C# tooling
+### 4. Prepare Android
 
-Whichever editor you use, make sure it respects the repository's [`.editorconfig`](../.editorconfig).
+Install `dotnet workload install android` from the repository root (use an elevated terminal if requested).
+Install JDK 21 and use Android Studio's SDK Manager to install API 36, Build-Tools 36.0.0, Platform-Tools,
+Command-line Tools (latest), and the NDK from [android-ndk-version.txt](../native/game/android-ndk-version.txt).
+Install Ninja on PATH as well as CMake. Android uses the NDK's Clang compiler.
+The Android project and installed workload remain the source of truth for SDK requirements.
+Current CI uses JDK 17; local builds have also passed with JDK 21.
+
+Replace the JDK placeholder and SDK path with your installation:
+
+```powershell
+$androidSdk = Join-Path $env:LOCALAPPDATA 'Android/Sdk'
+$androidNdkVersion = (Get-Content native/game/android-ndk-version.txt -Raw).Trim()
+$androidNdk = Join-Path $androidSdk "ndk/$androidNdkVersion"
+$javaSdk = 'C:/replace-with-your-JDK21-directory'
+$env:JAVA_HOME = $javaSdk
+$env:ANDROID_HOME = $androidSdk
+& "$javaSdk/bin/java.exe" -version
+& "$androidSdk/cmdline-tools/latest/bin/sdkmanager.bat" --licenses
+& "$androidSdk/cmdline-tools/latest/bin/sdkmanager.bat" "ndk;$androidNdkVersion"
+ninja --version
+Test-Path "$androidNdk/build/cmake/android.toolchain.cmake"
+```
+
+Read and accept required licenses. The final check should return `True`. If the NDK is installed separately,
+set `$androidNdk` to that directory. In Rider settings, search for **Android SDK** and set SDK, NDK and Java SDK
+roots to these actual locations. Shell variables do not update an already running IDE. SDK and NDK may be on
+different drives; the GAME build uses the path resolved by the Android workload.
+
+### 5. Debug Android
+
+For a physical device, enable developer options and USB debugging, connect a data cable, accept the authorization
+prompt, and install the manufacturer's ADB driver if needed. Alternatively, start an emulator from Android
+Studio Device Manager (usually an x86_64 image on a Windows x64 PC).
+
+```powershell
+& "$androidSdk/platform-tools/adb.exe" devices -l
+& "$androidSdk/platform-tools/adb.exe" -s <device-serial> shell getprop ro.product.cpu.abilist
+```
+
+The connection must report `device`, not `unauthorized` or `offline`. Match the RID to the device:
+`arm64-v8a` → `android-arm64`, `x86_64` → `android-x64`, `armeabi-v7a` → `android-arm`.
+To check the build before attaching a debugger:
+
+```powershell
+$env:AVALONIA_TELEMETRY_OPTOUT='1'
+$androidRid = 'android-arm64'
+dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -c Debug -r $androidRid "-p:AndroidSdkDirectory=$androidSdk" "-p:AndroidNdkDirectory=$androidNdk" "-p:JavaSdkDirectory=$javaSdk"
+```
+
+The signed APK is under `OpenUtauMobile.Android/bin/Debug/net10.0-android36.0/<RID>/`.
+In Rider, choose or create an **Android** run configuration for `OpenUtauMobile.Android`, use **Debug** and
+**Default APK**, select the device, keep the pre-launch build, set a C# breakpoint and click Debug.
+Rider builds, installs, launches and attaches the debugger. No CI release-signing secrets are needed for Debug.
+See [Rider's Android instructions](https://www.jetbrains.com/help/rider/Run_Debug_Configuration_Xamarin_Android.html).
+
+If compilation fails, inspect the first error and resolved SDK/NDK/JDK paths. A missing native library differs
+from a missing model; do not copy binaries from another RID. After changing CMake generators, use a fresh
+`GameBuildRoot`. Check the [known limitations](../README.md#verification-and-known-limits), including Android
+16 KB alignment warnings in existing dependencies. See the Chinese guide for the full troubleshooting table.
 
 ---
 
