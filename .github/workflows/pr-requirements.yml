@@ -33,6 +33,12 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Setup Android SDK command-line tools
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+          log-accepted-android-sdk-licenses: false
+
       - name: Install Android workload
         run: dotnet workload install android
 
@@ -40,6 +46,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          command -v sdkmanager
           NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
