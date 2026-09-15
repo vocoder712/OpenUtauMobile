@@ -1,0 +1,20 @@
+<Project>
+    <PropertyGroup>
+        <_DesktopNativeRid>$(RuntimeIdentifier)</_DesktopNativeRid>
+        <_DesktopNativeRid Condition="'$(_DesktopNativeRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</_DesktopNativeRid>
+        <_DesktopNativeRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'x86' and $([MSBuild]::IsOSPlatform('Windows'))">win-x86</_DesktopNativeRid>
+        <_DesktopNativeRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'ARM64' and $([MSBuild]::IsOSPlatform('Windows'))">win-arm64</_DesktopNativeRid>
+        <!-- macOS 仓库使用一个同时包含两种架构的通用库目录。 -->
+        <_DesktopNativeRid Condition="$([System.String]::Copy('$(_DesktopNativeRid)').StartsWith('osx-'))">osx</_DesktopNativeRid>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- worldline 在 Build 和 Publish 中都进入程序根目录，且只包含目标架构。 -->
+        <None Remove="runtimes/**" />
+        <Content Include="runtimes/$(_DesktopNativeRid)/native/*" Link="%(Filename)%(Extension)"
+                 CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+    <Target Name="ValidateDesktopNativeAssets" BeforeTargets="PrepareForBuild" Condition="'$(DesignTimeBuild)' != 'true'">
+        <Error Condition="!Exists('$(MSBuildProjectDirectory)/runtimes/$(_DesktopNativeRid)/native')"
+               Text="Missing desktop native assets for $(_DesktopNativeRid). Check RuntimeIdentifier / PlatformTarget." />
+    </Target>
+</Project>

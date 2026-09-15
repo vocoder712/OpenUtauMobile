@@ -56,6 +56,7 @@ public readonly record struct PartResizeHandleHit(UPart Part, PartResizeEdge Edg
 
 public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable
 {
+    private readonly Services.NoteExtraction.NoteExtractionAction noteExtraction = new();
     // ── 内部状态 ────────────────────────────────────────────────────────
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
@@ -1895,6 +1896,16 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                 break;
         }
 
+        if (SelectedParts.Count == 1 && SelectedParts[0] is UWavePart wavePart
+            && Services.NoteExtraction.GameBackendProvider.IsSupported)
+        {
+            items.Add(new ContextActionItem
+            {
+                Icon = PackIconPhosphorIconsKind.MusicNotes,
+                Tip = L.S("NoteExtraction.Title"),
+                Command = ReactiveCommand.CreateFromTask(() => noteExtraction.RunAsync(wavePart))
+            });
+        }
         TrackContextActions = items;
     }
 
