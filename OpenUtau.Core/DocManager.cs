@@ -262,7 +262,10 @@ namespace OpenUtau.Core {
                 return;
             }
             if (mainThread != Thread.CurrentThread) {
-                if (!synchronousMainThreadDispatch && !(cmd is ProgressBarNotification)) {
+                // 渲染进度和结果通知正常来自后台，仍由下方统一派发到主线程。
+                if (!synchronousMainThreadDispatch && cmd is not (
+                    ProgressBarNotification or WaveformReadyNotification or
+                    RealCurvesUpdatedNotification or RealCurveCoverageNotification or PartRenderedNotification)) {
                     Log.Warning("{Command} not on main thread", cmd);
                 }
                 if (synchronousMainThreadDispatch) {
