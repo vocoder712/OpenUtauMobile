@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using NAudio.Wave;
 
@@ -70,6 +70,16 @@ namespace OpenUtau.Core.SignalChain {
         public WaveFormat WaveFormat => waveFormat;
         public int Waited { get; private set; }
         public bool IsWaiting { get; private set; }
+
+        /// <summary>
+        /// Hold mode (default): while the source is not ready the
+        /// adapter returns silence and accumulates <see cref="Waited"/> so the playhead
+        /// stays put until the streaming render catches up.
+        /// Passthrough mode (loop playback): missing audio is simply silence and the
+        /// position advances, so the loop keeps its tempo and late audio pops in on the
+        /// next pass.
+        /// </summary>
+        public bool HoldWhenUnready { get; set; } = true;
         public PlaybackMeters Meters { get; }
         public PlaybackMixer Mixer { get; set; }
         public MasterAdapter(ISignalSource source, double endMs = double.PositiveInfinity, PlaybackMeters meters = null) {
@@ -91,7 +101,7 @@ namespace OpenUtau.Core.SignalChain {
             for (int i = offset; i < offset + count; ++i) {
                 buffer[i] = 0;
             }
-            if (!source.IsReady(position, count)) {
+            if (HoldWhenUnready && !source.IsReady(position, count)) {
                 RecordPosition(position, count, true);
                 Waited += count;
                 IsWaiting = true;

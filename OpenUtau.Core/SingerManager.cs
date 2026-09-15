@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +29,7 @@ namespace OpenUtau.Core {
             Log.Information("Searching singers.");
             Directory.CreateDirectory(PathManager.Inst.SingersPath);
             var stopWatch = Stopwatch.StartNew();
+            var oldSingers = Singers.Values.ToList();
             List<USinger> singers = ClassicSingerLoader.FindAllSingers()
                 .Concat(Vogen.VogenSingerLoader.FindAllSingers())
                 .Distinct()
@@ -39,6 +40,9 @@ namespace OpenUtau.Core {
             SingerGroups = singers
                 .GroupBy(s => s.SingerType)
                 .ToDictionary(s => s.Key, s => s.LocalizedOrderBy(singer => singer.LocalizedName).ToList());
+            foreach (var old in oldSingers) {
+                (old as IDisposable)?.Dispose();
+            }
             stopWatch.Stop();
             Log.Information($"Search all singers: {stopWatch.Elapsed}");
         }
@@ -141,8 +145,10 @@ namespace OpenUtau.Core {
             }
         }
 
-        //Check which singers are in use and free memory for those that are not
+        //Check which singers are in use and free memory for those that are not.
+        //UI thread only: it mutates the singer map the UI reads.
         public void ReleaseSingersNotInUse(UProject project) {
+            Util.ThreadGuard.AssertUi();
             //Check which singers are in use
             var singersInUse = new HashSet<USinger>();
             foreach (var track in project.tracks) {
