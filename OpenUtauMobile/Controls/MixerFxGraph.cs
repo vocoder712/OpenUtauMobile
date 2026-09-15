@@ -129,6 +129,8 @@ public sealed partial class MixerFxGraph : Control
     {
         base.Render(context);
         if (_channel == null) return;
+        // 让网格空白处也参与命中测试，以便阻止从图表内部开始的页面滚动。
+        context.DrawRectangle(Brushes.Transparent, null, Plot);
         Pen grid = new(GridBrush, 1);
         double[] levels = Kind == MixerFxGraphKind.Equalizer ? [-24, -12, 0, 12]
             : Kind == MixerFxGraphKind.Compressor ? [-60, -36, -12, CompressorTop] : [-90, -60, -30, 0];
@@ -217,21 +219,31 @@ public sealed partial class MixerFxGraph : Control
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
-        if (_pointer != null || _channel == null || !_channel.FxEnabled || Kind == MixerFxGraphKind.Reverb
-            || (e.Pointer.Type == PointerType.Mouse && !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)) return;
         Point position = e.GetPosition(this);
-        Point[] handles = Handles();
-        double nearest = 26;
-        for (int i = 0; i < handles.Length; i++)
+        bool insidePlot = Plot.Contains(position);
+        if (insidePlot) e.PreventGestureRecognition();
+        if (_pointer != null || _channel == null
+            || (e.Pointer.Type == PointerType.Mouse && !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)) return;
+        if (_channel.FxEnabled && Kind != MixerFxGraphKind.Reverb)
         {
-            double distance = Math.Sqrt(Math.Pow(handles[i].X - position.X, 2) + Math.Pow(handles[i].Y - position.Y, 2));
-            if (distance < nearest) { nearest = distance; _handle = i; }
+            Point[] handles = Handles();
+            double nearest = 36;
+            for (int i = 0; i < handles.Length; i++)
+            {
+                double distance = Math.Sqrt(Math.Pow(handles[i].X - position.X, 2) + Math.Pow(handles[i].Y - position.Y, 2));
+                if (distance < nearest) { nearest = distance; _handle = i; }
+            }
         }
-        if (_handle < 0) return;
-        _start = position;
-        _startGain = _handle == 0 ? _channel.LowDb : _handle == 1 ? _channel.MidDb : _channel.HighDb;
-        _editingMixer = this.FindAncestorOfType<MixerPanel>()?.ViewModel;
-        _editingMixer?.BeginEdit();
+        if (_handle < 0 && !insidePlot) return;
+        // 网格内开始的输入持续由图表接管，移出网格后也不滚动页面。
+        e.PreventGestureRecognition();
+        if (_handle >= 0)
+        {
+            _start = position;
+            _startGain = _handle == 0 ? _channel.LowDb : _handle == 1 ? _channel.MidDb : _channel.HighDb;
+            _editingMixer = this.FindAncestorOfType<MixerPanel>()?.ViewModel;
+            _editingMixer?.BeginEdit();
+        }
         _pointer = e.Pointer;
         e.Pointer.Capture(this);
         e.Handled = true;
@@ -240,7 +252,10 @@ public sealed partial class MixerFxGraph : Control
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-        if (_handle < 0 || _channel == null || e.Pointer != _pointer) return;
+        if (e.Pointer != _pointer) return;
+        e.PreventGestureRecognition();
+        e.Handled = true;
+        if (_handle < 0 || _channel == null) return;
         Point position = e.GetPosition(this);
         if (Kind == MixerFxGraphKind.Equalizer)
         {
@@ -265,7 +280,12 @@ public sealed partial class MixerFxGraph : Control
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
-        if (_handle >= 0) { EndDrag(); e.Handled = true; }
+        if (e.Pointer == _pointer)
+        {
+            e.PreventGestureRecognition();
+            EndDrag();
+            e.Handled = true;
+        }
         base.OnPointerReleased(e);
     }
 

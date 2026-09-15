@@ -278,7 +278,6 @@ namespace OpenUtau.Core.Render {
 
         private RenderPartRequest[] PrepareRequests(bool includeMuted = false) {
             UVoicePart[] parts;
-            SingerManager.Inst.ReleaseSingersNotInUse(project);
             lock (project) {
                 parts = project.parts
                     .Where(part => part is UVoicePart && (trackNo == -1 || part.trackNo == trackNo))

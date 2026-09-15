@@ -33,7 +33,7 @@ namespace OpenUtau.Core.Util {
                     Reset();
                 }
             } catch (Exception e) {
-                Log.Error(e, "Failed to load prefs.");
+                Log.Error(e, "Failed to load note presets.");
                 Default = new SerializableNotePresets();
             }
         }
