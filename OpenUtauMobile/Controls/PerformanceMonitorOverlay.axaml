@@ -8,30 +8,32 @@
              IsVisible="{Binding IsEnabled}"
              HorizontalAlignment="Right"
              VerticalAlignment="Top">
-    <Border Margin="12"
-            CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
-            Opacity="0.92"
-            Background="{DynamicResource Sem.Color.InverseSurface}" Padding="12,8">
-        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-            <TextBlock Text="{Binding AppMemoryText}"
-                       FontSize="11"
-                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
-            <TextBlock Text="{Binding ManagedHeapText}"
-                       FontSize="11"
-                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
-            <TextBlock Text="{Binding SystemMemoryText}"
-                       FontSize="11"
-                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
-            <TextBlock Text="{Binding CpuText}"
-                       FontSize="11"
-                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
-            <TextBlock Text="{Binding FrameRateText}"
-                       FontSize="11"
-                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
-            <TextBlock Text="{Binding AudioLatencyText}"
-                       FontSize="11"
-                       Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
-        </StackPanel>
-    </Border>
+    <Panel Margin="12">
+        <Border CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
+                Opacity="0.5"
+                Background="{DynamicResource Sem.Color.InverseSurface}" />
+        <Border Padding="12,8">
+            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                <TextBlock Text="{Binding AppMemoryText}"
+                           FontSize="11"
+                           Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+                <TextBlock Text="{Binding ManagedHeapText}"
+                           FontSize="11"
+                           Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+                <TextBlock Text="{Binding SystemMemoryText}"
+                           FontSize="11"
+                           Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+                <TextBlock Text="{Binding CpuText}"
+                           FontSize="11"
+                           Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+                <TextBlock Text="{Binding FrameRateText}"
+                           FontSize="11"
+                           Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+                <TextBlock Text="{Binding AudioLatencyText}"
+                           FontSize="11"
+                           Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+            </StackPanel>
+        </Border>
+    </Panel>
 </UserControl>
 
