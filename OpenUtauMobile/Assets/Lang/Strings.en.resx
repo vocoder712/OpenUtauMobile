@@ -2010,4 +2010,9 @@
   <data name="NoteProperties.Tab.Portamento" xml:space="preserve"><value>Glide</value></data>
   <data name="NoteProperties.Tab.Vibrato" xml:space="preserve"><value>Vibr.</value></data>
   <data name="NoteProperties.Tab.Expressions" xml:space="preserve"><value>Expr.</value></data>
+  <data name="EditorMore.SaveAsTemplate" xml:space="preserve"><value>Save as template</value></data>
+  <data name="ProjectTemplates.Title" xml:space="preserve"><value>Project templates</value></data>
+  <data name="ProjectTemplates.Empty" xml:space="preserve"><value>No templates yet. Save one from More → File in the editor.</value></data>
+  <data name="ProjectTemplates.Name" xml:space="preserve"><value>Template name</value></data>
+  <data name="ProjectTemplates.HoldHint" xml:space="preserve"><value>Hold to open project templates</value></data>
 </root>

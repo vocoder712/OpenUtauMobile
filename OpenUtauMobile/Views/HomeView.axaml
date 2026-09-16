@@ -85,12 +85,19 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                            <Button Classes="HomeActionButton" Command="{Binding NewCommand}">
-                                <StackPanel Orientation="Vertical"
-                                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                    <iconPacks:PackIconPhosphorIcons Kind="Plus" />
-                                    <TextBlock Text="{DynamicResource Home.Action.New}" />
-                                </StackPanel>
+                            <Button x:Name="NewProjectButton" Classes="HomeActionButton" Click="NewProjectClick"
+                                    HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                    ToolTip.Tip="{DynamicResource ProjectTemplates.HoldHint}">
+                                <Grid IsHitTestVisible="False">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <iconPacks:PackIconPhosphorIcons Kind="Plus" />
+                                        <TextBlock Text="{DynamicResource Home.Action.New}" />
+                                    </StackPanel>
+                                    <Path Data="M 0,5 L 5,5 L 5,0 Z" Width="5" Height="5" Margin="4"
+                                          HorizontalAlignment="Right" VerticalAlignment="Bottom" StrokeThickness="0"
+                                          Fill="{Binding #NewProjectButton.Foreground}" />
+                                </Grid>
                             </Button>
                             <Button Classes="HomeActionButton" Command="{Binding OpenCommand}">
                                 <StackPanel Orientation="Vertical"

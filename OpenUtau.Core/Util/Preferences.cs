@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -91,10 +91,10 @@ namespace OpenUtau.Core.Util {
             var recent = Default.RecentFiles;
             recent.RemoveAll(f => f == filePath);
             recent.Insert(0, filePath);
-            recent.RemoveAll(f => string.IsNullOrEmpty(f)
-                || !File.Exists(f)
-                || f.Contains(PathManager.Inst.TemplatesPath));
-            if (recent.Count > 16) {
+            recent.RemoveAll(f => string.IsNullOrEmpty(f) // 删除空的文件名
+                || !File.Exists(f) // 删除不存在的文件
+                || f.Contains(PathManager.Inst.TemplatesPath)); // 删除来自模板的
+            if (recent.Count > 16) { // 最多保留16个
                 recent.RemoveRange(16, recent.Count - 16);
             }
             Save();

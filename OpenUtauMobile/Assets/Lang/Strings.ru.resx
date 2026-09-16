@@ -1965,4 +1965,9 @@
   <data name="NoteProperties.Tab.Portamento" xml:space="preserve"><value>Порт.</value></data>
   <data name="NoteProperties.Tab.Vibrato" xml:space="preserve"><value>Вибр.</value></data>
   <data name="NoteProperties.Tab.Expressions" xml:space="preserve"><value>Парам.</value></data>
+  <data name="EditorMore.SaveAsTemplate" xml:space="preserve"><value>Сохранить как шаблон</value></data>
+  <data name="ProjectTemplates.Title" xml:space="preserve"><value>Шаблоны проектов</value></data>
+  <data name="ProjectTemplates.Empty" xml:space="preserve"><value>Шаблонов пока нет. Сохраните шаблон в меню «Ещё → Файл» редактора.</value></data>
+  <data name="ProjectTemplates.Name" xml:space="preserve"><value>Имя шаблона</value></data>
+  <data name="ProjectTemplates.HoldHint" xml:space="preserve"><value>Удерживайте для открытия шаблонов</value></data>
 </root>

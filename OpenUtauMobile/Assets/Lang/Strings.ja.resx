@@ -2003,4 +2003,9 @@
   <data name="NoteProperties.Tab.Portamento" xml:space="preserve"><value>滑音</value></data>
   <data name="NoteProperties.Tab.Vibrato" xml:space="preserve"><value>ビブラート</value></data>
   <data name="NoteProperties.Tab.Expressions" xml:space="preserve"><value>表現</value></data>
+  <data name="EditorMore.SaveAsTemplate" xml:space="preserve"><value>テンプレートとして保存</value></data>
+  <data name="ProjectTemplates.Title" xml:space="preserve"><value>プロジェクトテンプレート</value></data>
+  <data name="ProjectTemplates.Empty" xml:space="preserve"><value>テンプレートはありません。編集画面の「その他 → ファイル」から保存できます。</value></data>
+  <data name="ProjectTemplates.Name" xml:space="preserve"><value>テンプレート名</value></data>
+  <data name="ProjectTemplates.HoldHint" xml:space="preserve"><value>長押しでテンプレートを開く</value></data>
 </root>

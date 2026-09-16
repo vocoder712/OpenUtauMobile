@@ -61,6 +61,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
     private readonly string _initialProjectPath;
+    private readonly bool _fromTemplate;
     private bool _loadStarted;
     private bool _projectLoaded;
     private bool _disposed;
@@ -257,9 +258,10 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘事件，供 PianoRollViewModel 调用，通知 PartsCanvas 刷新显示
 
-    public EditorViewModel(MainViewModel navigator, string path = "") : base(navigator)
+    public EditorViewModel(MainViewModel navigator, string path = "", bool fromTemplate = false) : base(navigator)
     {
         _initialProjectPath = path;
+        _fromTemplate = fromTemplate;
         DocManager.Inst.AddSubscriber(this); // 订阅事件
         // 命令初始化
         BackCommand = ReactiveCommand.CreateFromTask(OnBackAsync);
@@ -520,6 +522,11 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             if (project == null)
                 throw new InvalidDataException($"Project reader returned no project: {path}");
 
+            if (_fromTemplate)
+            {
+                project.FilePath = string.Empty;
+                project.Saved = false;
+            }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
@@ -740,9 +747,32 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             case EditorMoreAction.ExportAudio:
                 _ = ShowExportAudioPopupAsync();
                 break;
+            case EditorMoreAction.SaveAsTemplate:
+                await SaveAsTemplateAsync();
+                break;
             case EditorMoreAction.SaveAs:
                 _ = RequestSaveAs();
                 break;
+        }
+    }
+
+    private async Task SaveAsTemplateAsync()
+    {
+        UProject project = DocManager.Inst.Project;
+        string? file = await TextInputPopupService.ShowAsync(
+            L.S("EditorMore.SaveAsTemplate"), string.Empty,
+            L.S("ProjectTemplates.Name"), "default");
+        if (string.IsNullOrEmpty(file) || _disposed || Navigator.CurrentViewModel != this) return;
+        try
+        {
+            file = Path.GetFileNameWithoutExtension(file);
+            file = Path.Combine(PathManager.Inst.TemplatesPath, $"{file}.ustx");
+            Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
+            Ustx.Save(file, project.CloneAsTemplate());
+        }
+        catch (Exception exception)
+        {
+            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
         }
     }
 
