@@ -455,6 +455,47 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- Android 显示行为 -->
+                                <Border Classes="SettingCard"
+                                        IsVisible="{Binding IsAndroidPlatform}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.AndroidFullscreenMode}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.AndroidFullscreenMode.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableAndroidFullscreenModes}"
+                                                  SelectedItem="{Binding SelectedAndroidFullscreenMode, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:AndroidFullscreenModeOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="SettingCard"
+                                        IsVisible="{Binding IsAndroidPlatform}">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <StackPanel Grid.Column="0"
+                                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.AndroidKeepScreenAwake}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.AndroidKeepScreenAwake.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      IsChecked="{Binding AndroidKeepScreenAwakeWhileEditing, Mode=TwoWay}"
+                                                      OffContent=""
+                                                      OnContent="" />
+                                    </Grid>
+                                </Border>
+
                                 <!-- 音高线编辑模式画布拖拽 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">

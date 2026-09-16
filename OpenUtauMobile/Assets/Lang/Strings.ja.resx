@@ -231,6 +231,13 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>再生中の自動ページめくり動作の設定</value>
   </data>
+  <data name="Settings.Edit.AndroidFullscreenMode" xml:space="preserve"><value>全画面表示</value></data>
+  <data name="Settings.Edit.AndroidFullscreenMode.Desc" xml:space="preserve"><value>Android のシステムバーを非表示にするタイミングを選択します。</value></data>
+  <data name="Settings.AndroidFullscreen.Always" xml:space="preserve"><value>常に</value></data>
+  <data name="Settings.AndroidFullscreen.EditorOnly" xml:space="preserve"><value>編集画面のみ</value></data>
+  <data name="Settings.AndroidFullscreen.Off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake" xml:space="preserve"><value>編集中は画面をオンに保つ</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake.Desc" xml:space="preserve"><value>編集画面を開いている間、画面のスリープを防ぎます。</value></data>
   <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
     <value>ピッチ編集時のキャンバスドラッグ</value>
   </data>

@@ -8,7 +8,6 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
-using AndroidX.Core.View;
 using Avalonia;
 using Avalonia.Android;
 using Avalonia.Media;
@@ -63,6 +62,7 @@ public class MainActivity : AvaloniaMainActivity
             new Storage.AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new AndroidPerformanceProvider();
+        ServiceHub.PlatformDisplayService = new AndroidDisplayService(() => CurrentActivity);
         return builder.UseReactiveUI(reactiveUIBuilder =>
         {
             reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
@@ -80,7 +80,7 @@ public class MainActivity : AvaloniaMainActivity
         _currentActivity = this;
         base.OnCreate(savedInstanceState);
         HandleIntent(Intent); // 处理启动时的 Intent
-        EnterImmersiveMode();
+        ServiceHub.PlatformDisplayService?.Refresh();
     }
 
     protected override void OnDestroy()
@@ -102,29 +102,8 @@ public class MainActivity : AvaloniaMainActivity
 
         if (hasFocus)
         {
-            EnterImmersiveMode();
+            ServiceHub.PlatformDisplayService?.Refresh();
         }
-    }
-    /// <summary>
-    /// 进入沉浸模式
-    /// </summary>
-    private void EnterImmersiveMode()
-    {
-        Window? window = Window;
-        View? decorView = window?.DecorView;
-        if (window == null || decorView == null)
-        {
-            return;
-        }
-
-        WindowInsetsControllerCompat? controller = WindowCompat.GetInsetsController(window, decorView);
-        if (controller == null)
-        {
-            return;
-        }
-
-        controller.Hide(WindowInsetsCompat.Type.SystemBars());
-        controller.SystemBarsBehavior = WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
     }
     /// <summary>
     /// 处理Intent

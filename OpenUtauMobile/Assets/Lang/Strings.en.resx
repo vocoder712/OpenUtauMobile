@@ -231,6 +231,13 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Automatic page-turning behavior during playback</value>
   </data>
+  <data name="Settings.Edit.AndroidFullscreenMode" xml:space="preserve"><value>Fullscreen Display</value></data>
+  <data name="Settings.Edit.AndroidFullscreenMode.Desc" xml:space="preserve"><value>Choose when Android system bars are hidden.</value></data>
+  <data name="Settings.AndroidFullscreen.Always" xml:space="preserve"><value>Always</value></data>
+  <data name="Settings.AndroidFullscreen.EditorOnly" xml:space="preserve"><value>Editor Only</value></data>
+  <data name="Settings.AndroidFullscreen.Off" xml:space="preserve"><value>Off</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake" xml:space="preserve"><value>Keep Screen Awake While Editing</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake.Desc" xml:space="preserve"><value>Prevent the screen from sleeping while the editor is open.</value></data>
   <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
     <value>Canvas Dragging in Pitch Editing</value>
   </data>

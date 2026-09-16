@@ -334,6 +334,16 @@ namespace OpenUtau.Core.Util {
             #region OpenUtau Mobile 特定选项
             public double PlaybackRefreshRate = 20.0;
 
+            /// <summary>
+            /// Android 全屏模式：0 = 始终，1 = 仅编辑页，2 = 关闭。
+            /// </summary>
+            public int AndroidFullscreenMode = 0;
+
+            /// <summary>
+            /// Android 编辑页是否阻止屏幕休眠。
+            /// </summary>
+            public bool AndroidKeepScreenAwakeWhileEditing = false;
+
 /// <summary>
             /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont
             /// </summary>

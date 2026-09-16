@@ -13,6 +13,7 @@
 ## Boundaries and style
 - Forbid modifications to `OpenUtau.Core/Ustx`, which could break compatibility with universal USTX files.
 - Avoid unnecessary changes to upstream-derived `OpenUtau.Core`; keep application orchestration in the Mobile layer. Always ask for permission before modifying upstream-derived code.
+- `OpenUtau.Core/Util/Preferences.cs#OpenUtau Mobile特定选项` can be modified. 
 - Do not hand-edit upstream-copy `OpenUtau.Plugin.Builtin` for feature work. For upstream synchronization, follow `docs/UPSTREAM_SYNC.md`, including its compatibility-review requirements.
 - Follow `.editorconfig`. Write new code comments in Simplified Chinese; preserve upstream comments.
 

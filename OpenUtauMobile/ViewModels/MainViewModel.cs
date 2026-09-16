@@ -23,6 +23,7 @@ public class MainViewModel : ViewModelBase
         });
         CurrentViewModel = new SplashScreenViewModel(this);
         _navigationStack.Push(CurrentViewModel);
+        UpdatePlatformDisplayState();
         // 在UI线程上调用OnNavigatedTo
         Dispatcher.UIThread.Post(() =>
         {
@@ -43,6 +44,7 @@ public class MainViewModel : ViewModelBase
     {
         CurrentViewModel = vm;
         _navigationStack.Push(vm);
+        UpdatePlatformDisplayState();
         CurrentViewModel.OnNavigatedTo(); // 调用导航到新视图模型时的处理逻辑
     }
 
@@ -75,8 +77,15 @@ public class MainViewModel : ViewModelBase
 
             // 设置上一个视图模型为当前视图模型
             CurrentViewModel = _navigationStack.Peek();
+            UpdatePlatformDisplayState();
             CurrentViewModel.OnNavigatedTo(); // 调用导航到新视图模型时的处理逻辑
         }
+    }
+
+    /// <summary>将当前页面类型同步给平台显示服务。</summary>
+    private void UpdatePlatformDisplayState()
+    {
+        ServiceHub.PlatformDisplayService?.SetEditorActive(CurrentViewModel is EditorViewModel);
     }
 
     public void OnBackRequested()

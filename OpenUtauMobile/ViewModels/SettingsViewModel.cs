@@ -141,6 +141,26 @@ public class OnnxRunnerOption
     }
 }
 
+public enum AndroidFullscreenMode
+{
+    Always = 0,
+    EditorOnly = 1,
+    Off = 2
+}
+
+/// <summary>Android 全屏显示选项。</summary>
+public class AndroidFullscreenModeOption
+{
+    public AndroidFullscreenMode Value { get; }
+    public string DisplayName { get; }
+
+    public AndroidFullscreenModeOption(AndroidFullscreenMode value, string displayName)
+    {
+        Value = value;
+        DisplayName = displayName;
+    }
+}
+
 /// <summary>机器学习加速设备选项（用于绑定到选择器）。</summary>
 public class OnnxDeviceOption
 {
@@ -325,6 +345,25 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> ClearRenderCacheCommand { get; }
 
     // ── Edit & Behaviour ─────────────────────────────────────────────
+    public bool IsAndroidPlatform { get; } = OperatingSystem.IsAndroid();
+
+    /// <summary>Android 全屏显示选项。</summary>
+    public IReadOnlyList<AndroidFullscreenModeOption> AvailableAndroidFullscreenModes { get; } =
+        new List<AndroidFullscreenModeOption>
+        {
+            new(AndroidFullscreenMode.Always, L.S("Settings.AndroidFullscreen.Always")),
+            new(AndroidFullscreenMode.EditorOnly, L.S("Settings.AndroidFullscreen.EditorOnly")),
+            new(AndroidFullscreenMode.Off, L.S("Settings.AndroidFullscreen.Off"))
+        };
+
+    /// <summary>当前 Android 全屏显示模式。</summary>
+    [Reactive]
+    public AndroidFullscreenModeOption? SelectedAndroidFullscreenMode { get; set; }
+
+    /// <summary>Android 编辑页是否阻止屏幕休眠。</summary>
+    [Reactive]
+    public bool AndroidKeepScreenAwakeWhileEditing { get; set; }
+
     public const double PitchPenNoteHitTickExtensionSliderMinimum =
         Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum;
     public const double PitchPenNoteHitTickExtensionSliderMaximum =
@@ -659,6 +698,37 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             {
                 Preferences.Default.StopButtonBehavior = (int)opt.Value;
                 Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        // Android 显示行为
+        int fullscreenModeValue = Preferences.Default.AndroidFullscreenMode;
+        AndroidFullscreenMode fullscreenMode = fullscreenModeValue is >= 0 and <= 2
+            ? (AndroidFullscreenMode)fullscreenModeValue
+            : AndroidFullscreenMode.Always;
+        SelectedAndroidFullscreenMode = AvailableAndroidFullscreenModes
+            .FirstOrDefault(option => option.Value == fullscreenMode)
+            ?? AvailableAndroidFullscreenModes[0];
+        AndroidKeepScreenAwakeWhileEditing = Preferences.Default.AndroidKeepScreenAwakeWhileEditing;
+
+        this.WhenAnyValue(x => x.SelectedAndroidFullscreenMode)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(option =>
+            {
+                Preferences.Default.AndroidFullscreenMode = (int)option.Value;
+                Preferences.Save();
+                ServiceHub.PlatformDisplayService?.Refresh();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.AndroidKeepScreenAwakeWhileEditing)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.AndroidKeepScreenAwakeWhileEditing = enabled;
+                Preferences.Save();
+                ServiceHub.PlatformDisplayService?.Refresh();
             })
             .DisposeWith(_disposables);
 

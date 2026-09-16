@@ -20,4 +20,5 @@ public static class ServiceHub
     public static Func<(bool success, Color color, string source)>? TryGetPlatformAccentFallback { get; set; }
     public static IPlatformPerformanceProvider? PlatformPerformanceProvider { get; set; }
     public static IFrameRateProvider? FrameRateProvider { get; set; }
+    public static IPlatformDisplayService? PlatformDisplayService { get; set; }
 }

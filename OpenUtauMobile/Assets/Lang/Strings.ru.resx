@@ -172,6 +172,13 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Поведение автоматической прокрутки во время воспроизведения</value>
   </data>
+  <data name="Settings.Edit.AndroidFullscreenMode" xml:space="preserve"><value>Полноэкранный режим</value></data>
+  <data name="Settings.Edit.AndroidFullscreenMode.Desc" xml:space="preserve"><value>Выберите, когда скрывать системные панели Android.</value></data>
+  <data name="Settings.AndroidFullscreen.Always" xml:space="preserve"><value>Всегда</value></data>
+  <data name="Settings.AndroidFullscreen.EditorOnly" xml:space="preserve"><value>Только в редакторе</value></data>
+  <data name="Settings.AndroidFullscreen.Off" xml:space="preserve"><value>Выкл.</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake" xml:space="preserve"><value>Не выключать экран при редактировании</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake.Desc" xml:space="preserve"><value>Не позволять экрану переходить в спящий режим, пока открыт редактор.</value></data>
   <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
     <value>Перетаскивание холста при редактировании высоты</value>
   </data>
