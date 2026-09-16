@@ -1984,10 +1984,10 @@
   <data name="NoteProperties.Depth" xml:space="preserve"><value>深度（音分）</value></data>
   <data name="NoteProperties.FadeIn" xml:space="preserve"><value>淡入（%）</value></data>
   <data name="NoteProperties.FadeOut" xml:space="preserve"><value>淡出（%）</value></data>
-  <data name="NoteProperties.Shift" xml:space="preserve"><value>相位偏移（%）</value></data>
-  <data name="NoteProperties.Drift" xml:space="preserve"><value>漂移（%）</value></data>
+  <data name="NoteProperties.Shift" xml:space="preserve"><value>相位（%）</value></data>
+  <data name="NoteProperties.Drift" xml:space="preserve"><value>音高偏移（%）</value></data>
   <data name="NoteProperties.VolumeLink" xml:space="preserve"><value>音量联动（%）</value></data>
-  <data name="NoteProperties.Expressions" xml:space="preserve"><value>表达式</value></data>
+  <data name="NoteProperties.Expressions" xml:space="preserve"><value>表情</value></data>
   <data name="NoteProperties.Stale" xml:space="preserve"><value>正在编辑的音轨片段或音符已失效，请关闭并重新打开弹窗。</value></data>
   <data name="NoteProperties.Invalid" xml:space="preserve"><value>请检查输入范围、空白值和整数要求。</value></data>
   <data name="NoteProperties.Title" xml:space="preserve"><value>音符属性</value></data>
