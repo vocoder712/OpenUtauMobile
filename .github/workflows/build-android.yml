@@ -258,11 +258,22 @@ jobs:
           echo "===== Native library hashes ====="
           cat "$VERIFY_DIR/native-libraries.sha256"
 
+      - name: Generate Android SHA-256 checksum
+        shell: bash
+        working-directory: artifacts/android-${{ inputs.arch }}
+        run: |
+          set -euo pipefail
+          PACKAGE="OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk"
+          sha256sum "$PACKAGE" > "$PACKAGE.sha256"
+          sha256sum --check "$PACKAGE.sha256"
+
       - name: Upload Android ${{ inputs.arch }}
         uses: actions/upload-artifact@v7
         with:
           name: OpenUtauMobile-android-${{ inputs.arch }}
-          path: artifacts/android-${{ inputs.arch }}/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk
+          path: |
+            artifacts/android-${{ inputs.arch }}/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk
+            artifacts/android-${{ inputs.arch }}/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk.sha256
           if-no-files-found: error
           compression-level: 0
 

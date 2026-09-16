@@ -1911,4 +1911,58 @@
   <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>Виділити: GGML</value></data>
   <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>Виділення кривої висоти…</value></data>
   <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>Введіть допустимі значення; радіус і кількість фрагментів мають бути цілими.</value></data>
+  <data name="NoteProperties.Apply" xml:space="preserve"><value>Застосувати</value></data>
+  <data name="NoteProperties.Summary" xml:space="preserve"><value>Вибрано нот: {0}</value></data>
+  <data name="NoteProperties.Hint" xml:space="preserve"><value>Застосовуються лише змінені поля. Порожні поля означають різні значення.</value></data>
+  <data name="NoteProperties.Mixed" xml:space="preserve"><value>Різні значення</value></data>
+  <data name="NoteProperties.Choose" xml:space="preserve"><value>Виберіть значення</value></data>
+  <data name="NoteProperties.Reset" xml:space="preserve"><value>Скинути параметр до типового</value></data>
+  <data name="NoteProperties.Basic" xml:space="preserve"><value>Основне</value></data>
+  <data name="NoteProperties.Lyric" xml:space="preserve"><value>Текст</value></data>
+  <data name="NoteProperties.Tone" xml:space="preserve"><value>Висота</value></data>
+  <data name="NoteProperties.Tuning" xml:space="preserve"><value>Підлаштування (центи)</value></data>
+  <data name="NoteProperties.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
+  <data name="NoteProperties.TrackDefault" xml:space="preserve"><value>Фонемайзер доріжки</value></data>
+  <data name="NoteProperties.Portamento" xml:space="preserve"><value>Портаменто</value></data>
+  <data name="NoteProperties.PortamentoLength" xml:space="preserve"><value>Довжина (мс)</value></data>
+  <data name="NoteProperties.PortamentoStart" xml:space="preserve"><value>Початок (мс)</value></data>
+  <data name="NoteProperties.Shape" xml:space="preserve"><value>Форма кривої</value></data>
+  <data name="NoteProperties.EaseInOut" xml:space="preserve"><value>Плавний вхід/вихід</value></data>
+  <data name="NoteProperties.Linear" xml:space="preserve"><value>Лінійна</value></data>
+  <data name="NoteProperties.EaseIn" xml:space="preserve"><value>Плавний вхід</value></data>
+  <data name="NoteProperties.EaseOut" xml:space="preserve"><value>Плавний вихід</value></data>
+  <data name="NoteProperties.Smooth" xml:space="preserve"><value>Згладжена</value></data>
+  <data name="NoteProperties.Preset" xml:space="preserve"><value>Пресет</value></data>
+  <data name="NoteProperties.Vibrato" xml:space="preserve"><value>Вібрато</value></data>
+  <data name="NoteProperties.VibratoLength" xml:space="preserve"><value>Довжина (%) · 0 = вимк.</value></data>
+  <data name="NoteProperties.Period" xml:space="preserve"><value>Період (мс)</value></data>
+  <data name="NoteProperties.Depth" xml:space="preserve"><value>Глибина (центи)</value></data>
+  <data name="NoteProperties.FadeIn" xml:space="preserve"><value>Наростання (%)</value></data>
+  <data name="NoteProperties.FadeOut" xml:space="preserve"><value>Згасання (%)</value></data>
+  <data name="NoteProperties.Shift" xml:space="preserve"><value>Зсув фази (%)</value></data>
+  <data name="NoteProperties.Drift" xml:space="preserve"><value>Дрейф (%)</value></data>
+  <data name="NoteProperties.VolumeLink" xml:space="preserve"><value>Зв’язок із гучністю (%)</value></data>
+  <data name="NoteProperties.Expressions" xml:space="preserve"><value>Параметри</value></data>
+  <data name="NoteProperties.Stale" xml:space="preserve"><value>Редагована партія або ноти більше недоступні. Відкрийте діалог знову.</value></data>
+  <data name="NoteProperties.Invalid" xml:space="preserve"><value>Перевірте діапазони, порожні значення та вимоги до цілих чисел.</value></data>
+  <data name="NoteProperties.Title" xml:space="preserve"><value>Властивості нот</value></data>
+  <data name="NoteProperties.ToneHint" xml:space="preserve"><value>Введіть C4, F#4, номер MIDI або +2 / -2 для відносного зсуву.</value></data>
+  <data name="NoteProperties.InvalidTone" xml:space="preserve"><value>Введіть ноту, номер MIDI або зсув у півтонах із результатом у діапазоні MIDI 0–127.</value></data>
+  <data name="NoteProperties.PhonemizerHint" xml:space="preserve"><value>Ноти-продовження (текст починається з +) використовують фонемайзер попередньої ноти.</value></data>
+  <data name="NoteProperties.NoExpressions" xml:space="preserve"><value>Доріжка не має доступних параметрів, окрім кривих.</value></data>
+  <data name="NoteProperties.VibratoEnabled" xml:space="preserve"><value>Увімкнути вібрато</value></data>
+  <data name="NoteProperties.AutoVibrato" xml:space="preserve"><value>Вібрато лише для довгих нот</value></data>
+  <data name="NoteProperties.AutoDuration" xml:space="preserve"><value>Мінімальна тривалість (тики)</value></data>
+  <data name="NoteProperties.AutoHint" xml:space="preserve"><value>Діє при зміні довжини або увімкненні вібрато. Як на ПК, перша вибрана нота не обмежується тривалістю.</value></data>
+  <data name="NoteProperties.PresetName" xml:space="preserve"><value>Назва пресета</value></data>
+  <data name="NoteProperties.SavePreset" xml:space="preserve"><value>Зберегти пресет</value></data>
+  <data name="NoteProperties.RemovePreset" xml:space="preserve"><value>Видалити пресет</value></data>
+  <data name="NoteProperties.PresetHint" xml:space="preserve"><value>Зберігається чернетка першої вибраної ноти. Зміни пресетів зберігаються кнопкою «Застосувати».</value></data>
+  <data name="NoteProperties.PresetNameRequired" xml:space="preserve"><value>Введіть назву пресета.</value></data>
+  <data name="NoteProperties.On" xml:space="preserve"><value>Увімк.</value></data>
+  <data name="NoteProperties.Off" xml:space="preserve"><value>Вимк.</value></data>
+  <data name="NoteProperties.Tab.Basic" xml:space="preserve"><value>Ноти</value></data>
+  <data name="NoteProperties.Tab.Portamento" xml:space="preserve"><value>Порт.</value></data>
+  <data name="NoteProperties.Tab.Vibrato" xml:space="preserve"><value>Вібр.</value></data>
+  <data name="NoteProperties.Tab.Expressions" xml:space="preserve"><value>Парам.</value></data>
 </root>

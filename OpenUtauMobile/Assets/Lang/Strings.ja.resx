@@ -1949,4 +1949,58 @@
   <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>GGML で抽出</value></data>
   <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>音高カーブを抽出中…</value></data>
   <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>有効な値を入力してください。半径と区間数は整数です。</value></data>
+  <data name="NoteProperties.Apply" xml:space="preserve"><value>適用</value></data>
+  <data name="NoteProperties.Summary" xml:space="preserve"><value>{0} 個のノートを選択中</value></data>
+  <data name="NoteProperties.Hint" xml:space="preserve"><value>変更した項目のみ適用します。空欄は異なる値を示します。</value></data>
+  <data name="NoteProperties.Mixed" xml:space="preserve"><value>異なる値</value></data>
+  <data name="NoteProperties.Choose" xml:space="preserve"><value>値を選択</value></data>
+  <data name="NoteProperties.Reset" xml:space="preserve"><value>表現を既定値に戻す</value></data>
+  <data name="NoteProperties.Basic" xml:space="preserve"><value>基本</value></data>
+  <data name="NoteProperties.Lyric" xml:space="preserve"><value>歌詞</value></data>
+  <data name="NoteProperties.Tone" xml:space="preserve"><value>音高</value></data>
+  <data name="NoteProperties.Tuning" xml:space="preserve"><value>微調整（セント）</value></data>
+  <data name="NoteProperties.Phonemizer" xml:space="preserve"><value>音素変換器</value></data>
+  <data name="NoteProperties.TrackDefault" xml:space="preserve"><value>トラックの音素変換器を使用</value></data>
+  <data name="NoteProperties.Portamento" xml:space="preserve"><value>ポルタメント</value></data>
+  <data name="NoteProperties.PortamentoLength" xml:space="preserve"><value>長さ（ms）</value></data>
+  <data name="NoteProperties.PortamentoStart" xml:space="preserve"><value>開始（ms）</value></data>
+  <data name="NoteProperties.Shape" xml:space="preserve"><value>曲線の形状</value></data>
+  <data name="NoteProperties.EaseInOut" xml:space="preserve"><value>イーズイン・アウト</value></data>
+  <data name="NoteProperties.Linear" xml:space="preserve"><value>線形</value></data>
+  <data name="NoteProperties.EaseIn" xml:space="preserve"><value>イーズイン</value></data>
+  <data name="NoteProperties.EaseOut" xml:space="preserve"><value>イーズアウト</value></data>
+  <data name="NoteProperties.Smooth" xml:space="preserve"><value>スムーズ</value></data>
+  <data name="NoteProperties.Preset" xml:space="preserve"><value>プリセット</value></data>
+  <data name="NoteProperties.Vibrato" xml:space="preserve"><value>ビブラート</value></data>
+  <data name="NoteProperties.VibratoLength" xml:space="preserve"><value>長さ（%）· 0 で無効</value></data>
+  <data name="NoteProperties.Period" xml:space="preserve"><value>周期（ms）</value></data>
+  <data name="NoteProperties.Depth" xml:space="preserve"><value>深さ（セント）</value></data>
+  <data name="NoteProperties.FadeIn" xml:space="preserve"><value>フェードイン（%）</value></data>
+  <data name="NoteProperties.FadeOut" xml:space="preserve"><value>フェードアウト（%）</value></data>
+  <data name="NoteProperties.Shift" xml:space="preserve"><value>位相（%）</value></data>
+  <data name="NoteProperties.Drift" xml:space="preserve"><value>ドリフト（%）</value></data>
+  <data name="NoteProperties.VolumeLink" xml:space="preserve"><value>音量連動（%）</value></data>
+  <data name="NoteProperties.Expressions" xml:space="preserve"><value>表現</value></data>
+  <data name="NoteProperties.Stale" xml:space="preserve"><value>編集中のパートまたはノートがありません。ダイアログを開き直してください。</value></data>
+  <data name="NoteProperties.Invalid" xml:space="preserve"><value>入力範囲、空欄、整数の指定を確認してください。</value></data>
+  <data name="NoteProperties.Title" xml:space="preserve"><value>ノートのプロパティ</value></data>
+  <data name="NoteProperties.ToneHint" xml:space="preserve"><value>C4、F#4、MIDI 番号、または相対半音数 +2 / -2 を入力します。</value></data>
+  <data name="NoteProperties.InvalidTone" xml:space="preserve"><value>音名、MIDI 番号、または相対半音数を入力してください。結果は MIDI 0–127 の範囲です。</value></data>
+  <data name="NoteProperties.PhonemizerHint" xml:space="preserve"><value>歌詞が + で始まる延長ノートは前のノートの音素変換器を使用します。</value></data>
+  <data name="NoteProperties.NoExpressions" xml:space="preserve"><value>このトラックには編集可能な非曲線の表現がありません。</value></data>
+  <data name="NoteProperties.VibratoEnabled" xml:space="preserve"><value>ビブラートを有効にする</value></data>
+  <data name="NoteProperties.AutoVibrato" xml:space="preserve"><value>長いノートのみビブラートを有効にする</value></data>
+  <data name="NoteProperties.AutoDuration" xml:space="preserve"><value>最小ノート長（tick）</value></data>
+  <data name="NoteProperties.AutoHint" xml:space="preserve"><value>長さの変更または有効化時に使用します。デスクトップ版と同様、最初の選択ノートは長さ制限の対象外です。</value></data>
+  <data name="NoteProperties.PresetName" xml:space="preserve"><value>プリセット名</value></data>
+  <data name="NoteProperties.SavePreset" xml:space="preserve"><value>プリセットを保存</value></data>
+  <data name="NoteProperties.RemovePreset" xml:space="preserve"><value>プリセットを削除</value></data>
+  <data name="NoteProperties.PresetHint" xml:space="preserve"><value>最初の選択ノートの編集内容を保存します。プリセットの変更は「適用」で保存されます。</value></data>
+  <data name="NoteProperties.PresetNameRequired" xml:space="preserve"><value>プリセット名を入力してください。</value></data>
+  <data name="NoteProperties.On" xml:space="preserve"><value>オン</value></data>
+  <data name="NoteProperties.Off" xml:space="preserve"><value>オフ</value></data>
+  <data name="NoteProperties.Tab.Basic" xml:space="preserve"><value>基本</value></data>
+  <data name="NoteProperties.Tab.Portamento" xml:space="preserve"><value>滑音</value></data>
+  <data name="NoteProperties.Tab.Vibrato" xml:space="preserve"><value>ビブラート</value></data>
+  <data name="NoteProperties.Tab.Expressions" xml:space="preserve"><value>表現</value></data>
 </root>

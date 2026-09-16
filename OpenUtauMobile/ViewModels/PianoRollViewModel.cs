@@ -2271,13 +2271,22 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                     {
                         Icon = PackIconPhosphorIconsKind.Wrench,
                         Tip = L.S("PianoRoll.Action.Properties"),
-                        Command = ReactiveCommand.Create(EditNoteProperties)
+                        Command = ReactiveCommand.CreateFromTask(EditNotePropertiesAsync)
                     });
                 }
 
                 break;
 
             case PianoRollEditMode.MultiSelect:
+                if (hasNoteSelection)
+                {
+                    items.Add(new ContextActionItem
+                    {
+                        Icon = PackIconPhosphorIconsKind.Wrench,
+                        Tip = L.S("PianoRoll.Action.Properties"),
+                        Command = ReactiveCommand.CreateFromTask(EditNotePropertiesAsync)
+                    });
+                }
                 if (IsSelecting)
                 {
                     items.Add(new ContextActionItem
@@ -2614,10 +2623,14 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         SelectedNotes.Clear();
     }
 
-    private void EditNoteProperties()
+    private async Task EditNotePropertiesAsync()
     {
-        // TODO: 实现音符属性编辑弹窗
-        ToastService.Enqueue(L.S("PianoRoll.Toast.NotePropertiesNotImpl"));
+        if (EditingVoicePart == null || SelectedNotes.Count == 0)
+        {
+            return;
+        }
+        using NotePropertiesViewModel viewModel = new(EditingVoicePart, SelectedNotes);
+        await PopupService.Show<object>(new NotePropertiesPopup(), viewModel);
     }
 
     private void BeginSelection()
