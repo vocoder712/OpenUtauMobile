@@ -2015,4 +2015,7 @@
   <data name="ProjectTemplates.Empty" xml:space="preserve"><value>暂无模板，可在编辑界面“更多 → 文件”中保存模板。</value></data>
   <data name="ProjectTemplates.Name" xml:space="preserve"><value>模板名</value></data>
   <data name="ProjectTemplates.HoldHint" xml:space="preserve"><value>长按打开工程模板</value></data>
+  <data name="Picker.PartRename.Title" xml:space="preserve"><value>重命名分片</value></data>
+  <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>输入分片名称</value></data>
+  <data name="PartRename.Error.Empty" xml:space="preserve"><value>分片名称不能为空</value></data>
 </root>

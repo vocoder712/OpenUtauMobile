@@ -2015,4 +2015,7 @@
   <data name="ProjectTemplates.Empty" xml:space="preserve"><value>No templates yet. Save one from More → File in the editor.</value></data>
   <data name="ProjectTemplates.Name" xml:space="preserve"><value>Template name</value></data>
   <data name="ProjectTemplates.HoldHint" xml:space="preserve"><value>Hold to open project templates</value></data>
+  <data name="Picker.PartRename.Title" xml:space="preserve"><value>Rename Part</value></data>
+  <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>Enter part name</value></data>
+  <data name="PartRename.Error.Empty" xml:space="preserve"><value>Part name cannot be empty</value></data>
 </root>

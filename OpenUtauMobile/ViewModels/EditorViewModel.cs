@@ -1775,12 +1775,15 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                         IsDanger = true,
                         Command = ReactiveCommand.Create(DeleteSelectedParts)
                     });
-                    items.Add(new ContextActionItem
+                    if (SelectedParts.Count == 1)
                     {
-                        Icon = PackIconPhosphorIconsKind.Textbox,
-                        Tip = L.S("Editor.Action.Rename"),
-                        Command = ReactiveCommand.Create(RenameSelectedPart)
-                    });
+                        items.Add(new ContextActionItem
+                        {
+                            Icon = PackIconPhosphorIconsKind.Textbox,
+                            Tip = L.S("Editor.Action.Rename"),
+                            Command = ReactiveCommand.CreateFromTask(RenameSelectedPart)
+                        });
+                    }
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Copy,
@@ -1993,9 +1996,31 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         SelectedParts.Clear();
     }
 
-    private void RenameSelectedPart()
+    private async Task RenameSelectedPart()
     {
-        ToastService.Enqueue("功能正在开发");
+        if (SelectedParts.Count != 1) return;
+
+        UProject project = DocManager.Inst.Project;
+        UPart part = SelectedParts[0];
+        string? name = await TextInputPopupService.ShowAsync(
+            L.S("Picker.PartRename.Title"), string.Empty,
+            L.S("Picker.PartRename.Placeholder"), part.name,
+            value => string.IsNullOrWhiteSpace(value) ? L.S("PartRename.Error.Empty") : null);
+        if (string.IsNullOrWhiteSpace(name)) return;
+
+        name = name.Trim();
+        // 弹窗关闭前可能已切换工程或删除分片，不向失效对象提交命令。
+        if (DocManager.Inst.Project != project || !project.parts.Contains(part) || name == part.name) return;
+
+        DocManager.Inst.StartUndoGroup("重命名分片");
+        try
+        {
+            DocManager.Inst.ExecuteCmd(new RenamePartCommand(project, part, name));
+        }
+        finally
+        {
+            DocManager.Inst.EndUndoGroup();
+        }
     }
 
     private void CopySelectedParts()

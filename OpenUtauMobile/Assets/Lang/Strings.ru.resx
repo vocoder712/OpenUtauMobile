@@ -1970,4 +1970,7 @@
   <data name="ProjectTemplates.Empty" xml:space="preserve"><value>Шаблонов пока нет. Сохраните шаблон в меню «Ещё → Файл» редактора.</value></data>
   <data name="ProjectTemplates.Name" xml:space="preserve"><value>Имя шаблона</value></data>
   <data name="ProjectTemplates.HoldHint" xml:space="preserve"><value>Удерживайте для открытия шаблонов</value></data>
+  <data name="Picker.PartRename.Title" xml:space="preserve"><value>Переименовать фрагмент</value></data>
+  <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>Введите название фрагмента</value></data>
+  <data name="PartRename.Error.Empty" xml:space="preserve"><value>Название фрагмента не может быть пустым</value></data>
 </root>

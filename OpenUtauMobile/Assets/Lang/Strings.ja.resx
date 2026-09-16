@@ -2008,4 +2008,7 @@
   <data name="ProjectTemplates.Empty" xml:space="preserve"><value>テンプレートはありません。編集画面の「その他 → ファイル」から保存できます。</value></data>
   <data name="ProjectTemplates.Name" xml:space="preserve"><value>テンプレート名</value></data>
   <data name="ProjectTemplates.HoldHint" xml:space="preserve"><value>長押しでテンプレートを開く</value></data>
+  <data name="Picker.PartRename.Title" xml:space="preserve"><value>パート名を変更</value></data>
+  <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>パート名を入力</value></data>
+  <data name="PartRename.Error.Empty" xml:space="preserve"><value>パート名を入力してください</value></data>
 </root>

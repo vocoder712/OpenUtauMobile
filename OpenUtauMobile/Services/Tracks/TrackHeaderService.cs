@@ -1,9 +1,10 @@
-﻿using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Dialogs;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Controls;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Services.Tracks;
@@ -46,7 +47,9 @@ public class TrackHeaderService : ITrackHeaderService
     public async Task<string?> PickTrackNameAsync(string currentName)
     {
         return await Dispatcher.UIThread.InvokeAsync(() =>
-            PopupService.Show<string?>(new TrackRenamePopup(), new TrackRenamePopupViewModel(currentName)));
+            TextInputPopupService.ShowAsync(L.S("Picker.TrackRename.Title"), string.Empty,
+                L.S("Picker.TrackRename.Placeholder"), currentName,
+                name => string.IsNullOrWhiteSpace(name) ? L.S("TrackRename.Toast.Empty") : null));
     }
 
     public async Task<string?> PickTrackColorAsync(string currentColorName)
