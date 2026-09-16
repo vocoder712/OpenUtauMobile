@@ -88,4 +88,31 @@ Plugin 的 `OpenUtau.Plugin.Builtin.csproj` 保留既有 NoWarn，整个 Plugin 
   - Plugin cache：`5d3fc6697a507c1d4e839516cd0cd76e6f0f87fa`。
   - CPP cache：`14168d10c6fa497338c569033d65e680bbbc0cf9`。
 - 同步指南 34 个 PowerShell 代码块通过语法解析。
-- 构建及 CI：待记录。
+
+### 本地构建（2026-09-16）
+
+全部 dotnet 构建均设置 `AVALONIA_TELEMETRY_OPTOUT=1`。
+
+| 检查 | 结果 |
+| --- | --- |
+| `dotnet build OpenUtau.Plugin.Builtin/OpenUtau.Plugin.Builtin.csproj --nologo -v:minimal` | exit 0；35 个警告、0 错误 |
+| `dotnet build OpenUtauMobile/OpenUtauMobile.csproj --nologo -v:minimal` | exit 0；30 个警告、0 错误 |
+| `dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -r android-arm64 -p:Configuration=Release` | exit 0；实际完成依赖还原 |
+| `dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -c Release -f net10.0-android36.0 --no-restore -p:RuntimeIdentifier=android-arm64` | exit 0；70 个警告、0 错误 |
+| `python native/verify-android-runtime.py <signed-apk> android-arm64` | PASS：ABI、必需 native 库、GAME 对齐及许可证 |
+| CPP `worldline`（Bazel 6.6.0 / MinGW64 GCC 14.2.0） | exit 0；88 actions；输出 `bazel-bin/worldline/libworldline.so`，未替换应用原有二进制 |
+| 上游已有 `worldline/classic:timing_test` | 未能编译：上游测试引用了当前快照中不存在的 `worldline/model/model_utils.h`；0 个测试执行。未改写测试或源码掩盖问题 |
+
+Core 的 project.assets.json 已确认解析到 `Melanchall.DryWetMidi.Nativeless/7.2.0`。Android 首次沙箱构建被阻止执行 NDK clang；沙箱外重试通过。构建仍提示应用原有 `Libs/arm64-v8a/libworldline.so` 非 16 KB 页面大小（XA0141），本次仅同步 CPP 源码，未改变该已有二进制。
+
+MSVC 编译器位于自定义目录，但该安装缺少 Bazel 所需的 vcvarsall.bat 和常规头文件目录。最终使用已安装的 MinGW64 验证 CPP：临时 Bazel toolchain 把 compiler 和 builtin include 根目录指向实际 `C:/app/mingw64`；忽略默认 MSVC rc，显式启用 Bzlmod、cc_shared_library 和 C++17；仅通过 C 编译参数为 libpyin 补充其所需的 min 宏。成功命令的关键参数为：
+
+```text
+bazel --ignore_all_rc_files build worldline --enable_bzlmod --experimental_cc_shared_library --compiler=mingw-gcc --cxxopt=-std=c++17 --conlyopt=-Dmin(a,b)=((a)<(b)?(a):(b)) --lockfile_mode=off --override_repository=bazel_tools~cc_configure_extension~local_config_cc=<临时toolchain目录>
+```
+
+本地日志保存在 `artifacts/upstream-sync-ceedbe5d1d01/`，不纳入源码。临时工具链配置也仅用于本机验证；没有修改导入的 CPP 文件或系统工具安装。CPP 的 `.patch` 文件含上游原有的空格和空行，按 tree 一致性要求原样保留；排除该原样目录后 `git diff --check` 通过。
+
+### 云检查
+
+以本次同步 PR 的实时检查结果为准。只有必需检查通过，才使用 Create a merge commit 合入 dev。
