@@ -2018,4 +2018,5 @@
   <data name="Picker.PartRename.Title" xml:space="preserve"><value>重命名分片</value></data>
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>输入分片名称</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>分片名称不能为空</value></data>
+  <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>切换歌声波形与渲染进度</value></data>
 </root>

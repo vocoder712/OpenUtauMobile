@@ -10,7 +10,6 @@
              xmlns:c="clr-namespace:OpenUtauMobile.Controls"
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
@@ -320,9 +319,6 @@
             <!-- 同层编辑区：钢琴卷帘与混音面板互斥挂载。 -->
             <Panel x:Name="DetailAreaHost" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True">
             <Grid x:Name="PianoRollAreaGrid"
-                  Grid.Row="1"
-                  Grid.Column="0"
-                  Grid.ColumnSpan="2"
                   Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
                 <!-- 上下文为PianoRollViewModel，放大镜的Source -->
@@ -349,6 +345,14 @@
                         IsVisible="{Binding IsVoiceMode}"
                         KeyHeight="{Binding KeyHeight}"
                         KeyOffset="{Binding KeyOffset}" />
+                    <c:RenderWaveformCanvas Grid.Row="0" Grid.Column="1"
+                                         IsVisible="{Binding IsVoiceMode}"
+                                         Part="{Binding EditingVoicePart}"
+                                         TickWidth="{Binding TickWidth}"
+                                         TickOffset="{Binding TickOffset}"
+                                         ShowWaveform="{Binding ShowRenderWaveform}"
+                                         ReadyBrush="{DynamicResource Sem.Color.PrimaryContainer}"
+                                         PendingBrush="{DynamicResource Sem.Color.Primary}" />
                     <!-- 纵向时间网格 覆盖右列全高（Row 0..1, Col 1） -->
                     <c:TickBackground Grid.Row="0"
                                       Grid.RowSpan="2"
@@ -361,6 +365,23 @@
                                       ShowBarNumber="True"
                                       ShowTempoMarkers="False"
                                       ShowTimeSignatureMarkers="False" />
+                    <ToggleButton Grid.Row="0" Grid.Column="0"
+                                  IsVisible="{Binding IsVoiceMode}"
+                                  IsChecked="{Binding ShowRenderWaveform, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  Padding="2" Margin="2,0" CornerRadius="4"
+                                  Background="Transparent"
+                                  Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                  ToolTip.Tip="{DynamicResource PianoRoll.RenderDisplay.Toggle}"
+                                  AutomationProperties.Name="{DynamicResource PianoRoll.RenderDisplay.Toggle}">
+                        <Grid>
+                            <iconPacks:PackIconPhosphorIcons Kind="Waveform" Width="18" Height="18"
+                                                              IsVisible="{Binding ShowRenderWaveform}" />
+                            <iconPacks:PackIconPhosphorIcons Kind="Rectangle" Width="18" Height="18"
+                                                              IsVisible="{Binding !ShowRenderWaveform}" />
+                        </Grid>
+                    </ToggleButton>
                     <!-- 立绘 （Row 1, Col 1） 靠右 -->
                     <Image Grid.Column="1"
                            Grid.Row="1"

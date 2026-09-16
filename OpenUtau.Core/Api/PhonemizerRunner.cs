@@ -10,6 +10,8 @@ using Serilog;
 
 namespace OpenUtau.Api {
     internal class PhonemizerRequest {
+        public UProject project;
+        public UTrack track;
         public USinger singer;
         public UVoicePart part;
         public long timestamp;
@@ -109,7 +111,7 @@ namespace OpenUtau.Api {
                 p.SetTiming(request.timeAxis);
                 if (p.SetUpException == null) {
                     try {
-                        p.SetUp(notes, DocManager.Inst.Project, DocManager.Inst.Project.tracks[request.part.trackNo]);
+                        p.SetUp(notes, request.project, request.track);
                     } catch (Exception e) {
                         Log.Error(e, "Phonemizer {Phonemizer} failed to set up part {Part}", p.GetType().FullName, request.part.DisplayName);
                         p.SetUpException = e;

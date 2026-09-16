@@ -1973,4 +1973,5 @@
   <data name="Picker.PartRename.Title" xml:space="preserve"><value>Переименовать фрагмент</value></data>
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>Введите название фрагмента</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>Название фрагмента не может быть пустым</value></data>
+  <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>Переключить волну вокала и ход рендеринга</value></data>
 </root>

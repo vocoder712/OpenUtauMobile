@@ -108,6 +108,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     #region 绑定属性
 
     [Reactive] public UVoicePart? EditingVoicePart { get; set; }
+    [Reactive] public bool ShowRenderWaveform { get; set; } = true;
     [Reactive] public UWavePart? EditingWavePart { get; set; }
     public bool IsVoiceMode => EditingVoicePart != null;
     public bool IsWaveMode => EditingWavePart != null;
