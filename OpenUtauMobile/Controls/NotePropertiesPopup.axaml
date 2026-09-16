@@ -1,0 +1,154 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels"
+             xmlns:controls="using:OpenUtauMobile.Controls"
+             xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             x:Class="OpenUtauMobile.Controls.NotePropertiesPopup"
+             x:DataType="vm:NotePropertiesViewModel"
+             Classes="PopupDialogRoot DialogHeightList">
+    <UserControl.Styles>
+        <Style Selector="NumericUpDown, ComboBox, TextBox, Slider">
+            <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="Width" Value="{Binding $parent[TabControl].Bounds.Width, Converter={x:Static controls:NotePropertiesPopup.TabWidthConverter}}" />
+        </Style>
+        <Style Selector="TextBlock.PropertyLabel">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
+        </Style>
+        <Style Selector="Button.PresetAction">
+            <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+        </Style>
+    </UserControl.Styles>
+    <controls:DialogShell Header="{DynamicResource NoteProperties.Title}" CloseCommand="{Binding CancelCommand}">
+        <controls:DialogShell.Footer>
+            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
+                <controls:DialogActionRow>
+                    <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                    <Button Content="{DynamicResource NoteProperties.Apply}" Click="OnApply" Classes="DialogPrimary" />
+                </controls:DialogActionRow>
+            </StackPanel>
+        </controls:DialogShell.Footer>
+        <Grid RowDefinitions="Auto,*">
+            <Border Padding="24,0,24,12">
+                <TextBlock Text="{Binding Summary}" Classes="DialogSubtitle" TextWrapping="Wrap" />
+            </Border>
+            <Border Grid.Row="1" Classes="DialogBodyBorder">
+                <TabControl Name="PropertyTabs" ItemsSource="{Binding Groups}" SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}"
+                            HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NotePropertyGroup">
+                            <TextBlock Text="{Binding TabTitle}" ToolTip.Tip="{Binding Title}" AutomationProperties.Name="{Binding Title}"
+                                   TextWrapping="Wrap" TextAlignment="Center" />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate x:DataType="vm:NotePropertyGroup">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" Offset="{Binding ScrollOffset, Mode=TwoWay}">
+                                <Border Padding="0,8">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <TextBlock Text="{DynamicResource NoteProperties.Hint}" Classes="DialogSubtitle" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding EmptyMessage}" IsVisible="{Binding EmptyMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                   Classes="DialogSubtitle" TextWrapping="Wrap" />
+                                        <ContentControl Content="{Binding Vibrato}" IsVisible="{Binding Vibrato, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                            <ContentControl.ContentTemplate>
+                                                <DataTemplate x:DataType="vm:NoteVibratoOptions">
+                                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                        <ToggleSwitch IsChecked="{Binding Enabled, Mode=TwoWay}" Content="{DynamicResource NoteProperties.VibratoEnabled}"
+                                                                      OnContent="{DynamicResource NoteProperties.On}" OffContent="{DynamicResource NoteProperties.Off}" />
+                                                        <CheckBox IsChecked="{Binding AutoEnabled, Mode=TwoWay}" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}">
+                                                            <TextBlock Text="{DynamicResource NoteProperties.AutoVibrato}" TextWrapping="Wrap" />
+                                                        </CheckBox>
+                                                        <StackPanel IsVisible="{Binding AutoEnabled}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                            <TextBlock Text="{DynamicResource NoteProperties.AutoDuration}" Classes="PropertyLabel" />
+                                                            <NumericUpDown Value="{Binding Duration.Number, Mode=TwoWay}" Text="{Binding Duration.NumberText, Mode=TwoWay}"
+                                                                           Minimum="10" Maximum="1920" Increment="1"
+                                                                           AutomationProperties.Name="{DynamicResource NoteProperties.AutoDuration}" />
+                                                            <TextBlock Text="{DynamicResource NoteProperties.AutoHint}" Classes="DialogSubtitle" TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ContentControl.ContentTemplate>
+                                        </ContentControl>
+                                        <ContentControl Content="{Binding Presets}" IsVisible="{Binding Presets, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                            <ContentControl.ContentTemplate>
+                                                <DataTemplate x:DataType="vm:NotePropertyPresets">
+                                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                        <TextBlock Text="{DynamicResource NoteProperties.Preset}" Classes="PropertyLabel" />
+                                                        <ComboBox ItemsSource="{Binding Items}" SelectedItem="{Binding Selected, Mode=TwoWay}"
+                                                                  PlaceholderText="{DynamicResource NoteProperties.Choose}" AutomationProperties.Name="{DynamicResource NoteProperties.Preset}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ContentControl.ContentTemplate>
+                                        </ContentControl>
+                                        <ItemsControl ItemsSource="{Binding Fields}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:NotePropertyField">
+                                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                        <TextBlock Text="{Binding Label}" Classes="PropertyLabel" />
+                                                        <TextBox IsVisible="{Binding IsText}" Text="{Binding Text, Mode=TwoWay}"
+                                                                 PlaceholderText="{DynamicResource NoteProperties.Mixed}" AutomationProperties.Name="{Binding Label}" />
+                                                        <NumericUpDown IsVisible="{Binding IsNumber}" Value="{Binding Number, Mode=TwoWay}"
+                                                                       Text="{Binding NumberText, Mode=TwoWay}"
+                                                                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" Increment="{Binding Increment}"
+                                                                       PlaceholderText="{DynamicResource NoteProperties.Mixed}"
+                                                                       AutomationProperties.Name="{Binding Label}" />
+                                                        <Slider IsVisible="{Binding IsNumber}" Minimum="{Binding SliderMinimum}" Maximum="{Binding SliderMaximum}"
+                                                                Value="{Binding SliderValue, Mode=TwoWay}" AutomationProperties.Name="{Binding Label}" />
+                                                        <ComboBox IsVisible="{Binding IsChoice}" ItemsSource="{Binding Options}" IsEnabled="{Binding IsEnabled}"
+                                                                  SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                                                                  PlaceholderText="{DynamicResource NoteProperties.Choose}" AutomationProperties.Name="{Binding Label}" />
+                                                        <TextBlock Text="{Binding Hint}" IsVisible="{Binding Hint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                                   Classes="DialogSubtitle" TextWrapping="Wrap" />
+                                                        <CheckBox IsVisible="{Binding CanReset}" IsChecked="{Binding ResetRequested, Mode=OneWay}"
+                                                                  Command="{Binding ResetCommand}" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}">
+                                                            <TextBlock Text="{DynamicResource NoteProperties.Reset}" TextWrapping="Wrap" />
+                                                        </CheckBox>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <ContentControl Content="{Binding Presets}" IsVisible="{Binding Presets, Converter={x:Static ObjectConverters.IsNotNull}}">
+                                            <ContentControl.ContentTemplate>
+                                                <DataTemplate x:DataType="vm:NotePropertyPresets">
+                                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                        <TextBlock Text="{DynamicResource NoteProperties.PresetName}" Classes="PropertyLabel" />
+                                                        <TextBox Text="{Binding Name, Mode=TwoWay}" PlaceholderText="{DynamicResource NoteProperties.PresetName}"
+                                                                 AutomationProperties.Name="{DynamicResource NoteProperties.PresetName}" />
+                                                        <Grid ColumnDefinitions="*,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                            <Button Classes="tonal PresetAction" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch">
+                                                                <TextBlock Text="{DynamicResource NoteProperties.SavePreset}" TextWrapping="Wrap" TextAlignment="Center" />
+                                                            </Button>
+                                                            <Button Grid.Column="1" Classes="text PresetAction" Command="{Binding RemoveCommand}" HorizontalAlignment="Stretch">
+                                                                <TextBlock Text="{DynamicResource NoteProperties.RemovePreset}" TextWrapping="Wrap" TextAlignment="Center" />
+                                                            </Button>
+                                                        </Grid>
+                                                        <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                                   Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
+                                                        <TextBlock Text="{DynamicResource NoteProperties.PresetHint}" Classes="DialogSubtitle" TextWrapping="Wrap" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ContentControl.ContentTemplate>
+                                        </ContentControl>
+                                    </StackPanel>
+                                </Border>
+                            </ScrollViewer>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
+            </Border>
+        </Grid>
+    </controls:DialogShell>
+</UserControl>

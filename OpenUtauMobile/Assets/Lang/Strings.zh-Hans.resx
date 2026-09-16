@@ -1956,4 +1956,58 @@
   <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>GGML 提取</value></data>
   <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>正在提取音高曲线…</value></data>
   <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>请填写有效数值；检测半径与片段数需为整数。</value></data>
+  <data name="NoteProperties.Apply" xml:space="preserve"><value>应用</value></data>
+  <data name="NoteProperties.Summary" xml:space="preserve"><value>已选择 {0} 个音符</value></data>
+  <data name="NoteProperties.Hint" xml:space="preserve"><value>只应用修改过的字段，空白表示多个不同值。</value></data>
+  <data name="NoteProperties.Mixed" xml:space="preserve"><value>多个不同值</value></data>
+  <data name="NoteProperties.Choose" xml:space="preserve"><value>选择一个值</value></data>
+  <data name="NoteProperties.Reset" xml:space="preserve"><value>将表达式恢复为默认值</value></data>
+  <data name="NoteProperties.Basic" xml:space="preserve"><value>基础</value></data>
+  <data name="NoteProperties.Lyric" xml:space="preserve"><value>歌词</value></data>
+  <data name="NoteProperties.Tone" xml:space="preserve"><value>音高</value></data>
+  <data name="NoteProperties.Tuning" xml:space="preserve"><value>微调（音分）</value></data>
+  <data name="NoteProperties.Phonemizer" xml:space="preserve"><value>音素器</value></data>
+  <data name="NoteProperties.TrackDefault" xml:space="preserve"><value>使用音轨音素器</value></data>
+  <data name="NoteProperties.Portamento" xml:space="preserve"><value>滑音</value></data>
+  <data name="NoteProperties.PortamentoLength" xml:space="preserve"><value>长度（毫秒）</value></data>
+  <data name="NoteProperties.PortamentoStart" xml:space="preserve"><value>起点（毫秒）</value></data>
+  <data name="NoteProperties.Shape" xml:space="preserve"><value>曲线形状</value></data>
+  <data name="NoteProperties.EaseInOut" xml:space="preserve"><value>缓入缓出</value></data>
+  <data name="NoteProperties.Linear" xml:space="preserve"><value>线性</value></data>
+  <data name="NoteProperties.EaseIn" xml:space="preserve"><value>缓入</value></data>
+  <data name="NoteProperties.EaseOut" xml:space="preserve"><value>缓出</value></data>
+  <data name="NoteProperties.Smooth" xml:space="preserve"><value>平滑</value></data>
+  <data name="NoteProperties.Preset" xml:space="preserve"><value>预设</value></data>
+  <data name="NoteProperties.Vibrato" xml:space="preserve"><value>颤音</value></data>
+  <data name="NoteProperties.VibratoLength" xml:space="preserve"><value>长度（%）· 0 为关闭</value></data>
+  <data name="NoteProperties.Period" xml:space="preserve"><value>周期（毫秒）</value></data>
+  <data name="NoteProperties.Depth" xml:space="preserve"><value>深度（音分）</value></data>
+  <data name="NoteProperties.FadeIn" xml:space="preserve"><value>淡入（%）</value></data>
+  <data name="NoteProperties.FadeOut" xml:space="preserve"><value>淡出（%）</value></data>
+  <data name="NoteProperties.Shift" xml:space="preserve"><value>相位偏移（%）</value></data>
+  <data name="NoteProperties.Drift" xml:space="preserve"><value>漂移（%）</value></data>
+  <data name="NoteProperties.VolumeLink" xml:space="preserve"><value>音量联动（%）</value></data>
+  <data name="NoteProperties.Expressions" xml:space="preserve"><value>表达式</value></data>
+  <data name="NoteProperties.Stale" xml:space="preserve"><value>正在编辑的音轨片段或音符已失效，请关闭并重新打开弹窗。</value></data>
+  <data name="NoteProperties.Invalid" xml:space="preserve"><value>请检查输入范围、空白值和整数要求。</value></data>
+  <data name="NoteProperties.Title" xml:space="preserve"><value>音符属性</value></data>
+  <data name="NoteProperties.ToneHint" xml:space="preserve"><value>音名如 C4、F#4；输入 +2 或 -2 可相对移调，也可输入 MIDI 编号。</value></data>
+  <data name="NoteProperties.InvalidTone" xml:space="preserve"><value>请输入有效音名、MIDI 编号或相对半音数，结果须在 MIDI 0–127 内。</value></data>
+  <data name="NoteProperties.PhonemizerHint" xml:space="preserve"><value>延续音符（歌词以 + 开头）使用前一个音符的音素器。</value></data>
+  <data name="NoteProperties.NoExpressions" xml:space="preserve"><value>当前音轨没有可编辑的非曲线表达式。</value></data>
+  <data name="NoteProperties.VibratoEnabled" xml:space="preserve"><value>启用颤音</value></data>
+  <data name="NoteProperties.AutoVibrato" xml:space="preserve"><value>仅对长音符启用颤音</value></data>
+  <data name="NoteProperties.AutoDuration" xml:space="preserve"><value>最短音符时长（tick）</value></data>
+  <data name="NoteProperties.AutoHint" xml:space="preserve"><value>更改颤音长度或开启颤音时生效；与桌面端一致，首个选中音符不受时长限制。</value></data>
+  <data name="NoteProperties.PresetName" xml:space="preserve"><value>预设名称</value></data>
+  <data name="NoteProperties.SavePreset" xml:space="preserve"><value>保存预设</value></data>
+  <data name="NoteProperties.RemovePreset" xml:space="preserve"><value>删除预设</value></data>
+  <data name="NoteProperties.PresetHint" xml:space="preserve"><value>保存首个选中音符的当前草稿。预设变更将在点击“应用”后保存。</value></data>
+  <data name="NoteProperties.PresetNameRequired" xml:space="preserve"><value>请输入预设名称。</value></data>
+  <data name="NoteProperties.On" xml:space="preserve"><value>开启</value></data>
+  <data name="NoteProperties.Off" xml:space="preserve"><value>关闭</value></data>
+  <data name="NoteProperties.Tab.Basic" xml:space="preserve"><value>基础</value></data>
+  <data name="NoteProperties.Tab.Portamento" xml:space="preserve"><value>滑音</value></data>
+  <data name="NoteProperties.Tab.Vibrato" xml:space="preserve"><value>颤音</value></data>
+  <data name="NoteProperties.Tab.Expressions" xml:space="preserve"><value>表达式</value></data>
 </root>

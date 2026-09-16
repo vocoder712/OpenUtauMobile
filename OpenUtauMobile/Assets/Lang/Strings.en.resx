@@ -1956,4 +1956,58 @@
   <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>Extract with GGML</value></data>
   <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>Extracting pitch curve…</value></data>
   <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>Enter valid values; radius and clip count must be integers.</value></data>
+  <data name="NoteProperties.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="NoteProperties.Summary" xml:space="preserve"><value>{0} notes selected</value></data>
+  <data name="NoteProperties.Hint" xml:space="preserve"><value>Only edited fields are applied. Blank fields indicate mixed values.</value></data>
+  <data name="NoteProperties.Mixed" xml:space="preserve"><value>Mixed values</value></data>
+  <data name="NoteProperties.Choose" xml:space="preserve"><value>Choose a value</value></data>
+  <data name="NoteProperties.Reset" xml:space="preserve"><value>Reset expression to default</value></data>
+  <data name="NoteProperties.Basic" xml:space="preserve"><value>Basic</value></data>
+  <data name="NoteProperties.Lyric" xml:space="preserve"><value>Lyric</value></data>
+  <data name="NoteProperties.Tone" xml:space="preserve"><value>Pitch</value></data>
+  <data name="NoteProperties.Tuning" xml:space="preserve"><value>Fine tuning (cents)</value></data>
+  <data name="NoteProperties.Phonemizer" xml:space="preserve"><value>Phonemizer</value></data>
+  <data name="NoteProperties.TrackDefault" xml:space="preserve"><value>Use track phonemizer</value></data>
+  <data name="NoteProperties.Portamento" xml:space="preserve"><value>Portamento</value></data>
+  <data name="NoteProperties.PortamentoLength" xml:space="preserve"><value>Length (ms)</value></data>
+  <data name="NoteProperties.PortamentoStart" xml:space="preserve"><value>Start (ms)</value></data>
+  <data name="NoteProperties.Shape" xml:space="preserve"><value>Curve shape</value></data>
+  <data name="NoteProperties.EaseInOut" xml:space="preserve"><value>Ease in/out</value></data>
+  <data name="NoteProperties.Linear" xml:space="preserve"><value>Linear</value></data>
+  <data name="NoteProperties.EaseIn" xml:space="preserve"><value>Ease in</value></data>
+  <data name="NoteProperties.EaseOut" xml:space="preserve"><value>Ease out</value></data>
+  <data name="NoteProperties.Smooth" xml:space="preserve"><value>Smooth</value></data>
+  <data name="NoteProperties.Preset" xml:space="preserve"><value>Preset</value></data>
+  <data name="NoteProperties.Vibrato" xml:space="preserve"><value>Vibrato</value></data>
+  <data name="NoteProperties.VibratoLength" xml:space="preserve"><value>Length (%) · 0 = off</value></data>
+  <data name="NoteProperties.Period" xml:space="preserve"><value>Period (ms)</value></data>
+  <data name="NoteProperties.Depth" xml:space="preserve"><value>Depth (cents)</value></data>
+  <data name="NoteProperties.FadeIn" xml:space="preserve"><value>Fade in (%)</value></data>
+  <data name="NoteProperties.FadeOut" xml:space="preserve"><value>Fade out (%)</value></data>
+  <data name="NoteProperties.Shift" xml:space="preserve"><value>Phase shift (%)</value></data>
+  <data name="NoteProperties.Drift" xml:space="preserve"><value>Drift (%)</value></data>
+  <data name="NoteProperties.VolumeLink" xml:space="preserve"><value>Volume link (%)</value></data>
+  <data name="NoteProperties.Expressions" xml:space="preserve"><value>Expressions</value></data>
+  <data name="NoteProperties.Stale" xml:space="preserve"><value>The edited part or notes are no longer available. Close and reopen this dialog.</value></data>
+  <data name="NoteProperties.Invalid" xml:space="preserve"><value>Check input ranges, empty values, and integer requirements.</value></data>
+  <data name="NoteProperties.Title" xml:space="preserve"><value>Note properties</value></data>
+  <data name="NoteProperties.ToneHint" xml:space="preserve"><value>Use C4 or F#4, a MIDI number, or +2 / -2 for relative semitones.</value></data>
+  <data name="NoteProperties.InvalidTone" xml:space="preserve"><value>Enter a note name, MIDI number, or relative semitones resulting in MIDI 0–127.</value></data>
+  <data name="NoteProperties.PhonemizerHint" xml:space="preserve"><value>Extension notes (lyrics starting with +) use the preceding note’s phonemizer.</value></data>
+  <data name="NoteProperties.NoExpressions" xml:space="preserve"><value>This track has no editable non-curve expressions.</value></data>
+  <data name="NoteProperties.VibratoEnabled" xml:space="preserve"><value>Enable vibrato</value></data>
+  <data name="NoteProperties.AutoVibrato" xml:space="preserve"><value>Enable vibrato only on long notes</value></data>
+  <data name="NoteProperties.AutoDuration" xml:space="preserve"><value>Minimum note duration (ticks)</value></data>
+  <data name="NoteProperties.AutoHint" xml:space="preserve"><value>Used when changing length or enabling vibrato. As on desktop, the first selected note is exempt.</value></data>
+  <data name="NoteProperties.PresetName" xml:space="preserve"><value>Preset name</value></data>
+  <data name="NoteProperties.SavePreset" xml:space="preserve"><value>Save preset</value></data>
+  <data name="NoteProperties.RemovePreset" xml:space="preserve"><value>Delete preset</value></data>
+  <data name="NoteProperties.PresetHint" xml:space="preserve"><value>Save the first selected note’s draft. Preset changes are saved when you select Apply.</value></data>
+  <data name="NoteProperties.PresetNameRequired" xml:space="preserve"><value>Enter a preset name.</value></data>
+  <data name="NoteProperties.On" xml:space="preserve"><value>On</value></data>
+  <data name="NoteProperties.Off" xml:space="preserve"><value>Off</value></data>
+  <data name="NoteProperties.Tab.Basic" xml:space="preserve"><value>Basic</value></data>
+  <data name="NoteProperties.Tab.Portamento" xml:space="preserve"><value>Glide</value></data>
+  <data name="NoteProperties.Tab.Vibrato" xml:space="preserve"><value>Vibr.</value></data>
+  <data name="NoteProperties.Tab.Expressions" xml:space="preserve"><value>Expr.</value></data>
 </root>
