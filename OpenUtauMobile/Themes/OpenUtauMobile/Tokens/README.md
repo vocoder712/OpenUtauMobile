@@ -61,7 +61,7 @@ Do not use height profile names to infer or change width.
 For composition and layout see [DialogShell](../../../Controls/DialogShell.cs),
 [PopupDialogControl](../../../Controls/PopupDialogControl.cs) and the shared
 [Dialog styles](../Styles/Components/Dialog.axaml). Source examples:
-[TrackRenamePopup](../../../Controls/TrackRenamePopup.axaml) for a short form,
+[TextInputPopup](../../../Controls/TextInputPopup.axaml) for a short form,
 [ImportTracksPopup](../../../Controls/ImportTracksPopup.axaml) for scrolling content,
 and [OptionConfirmPopup](../../../Controls/OptionConfirmPopup.axaml) for explicit
 dynamic action rows.

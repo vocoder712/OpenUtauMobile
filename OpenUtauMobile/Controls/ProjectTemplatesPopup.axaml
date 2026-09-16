@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Controls.ProjectTemplatesPopup"
+             x:DataType="vm:ProjectTemplatesViewModel"
+             Classes="PopupDialogRoot">
+    <UserControl.Resources><conv:CountZeroToBoolConverter x:Key="CountZero" /></UserControl.Resources>
+    <dialogs:DialogShell Header="{DynamicResource ProjectTemplates.Title}" CloseCommand="{Binding CancelCommand}">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <TextBlock Text="{DynamicResource ProjectTemplates.Empty}" TextWrapping="Wrap" IsVisible="{Binding Items.Count, Converter={StaticResource CountZero}}" x:Name="EmptyLabel" />
+                    <ItemsControl ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ProjectTemplateItem">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" Margin="0,4">
+                                    <Button Classes="tonal" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            Command="{Binding $parent[UserControl].((vm:ProjectTemplatesViewModel)DataContext).OpenCommand}" CommandParameter="{Binding}">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                                    </Button>
+                                    <Button Grid.Column="1" Classes="text" MinWidth="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            Content="{icons:PhosphorIcons Trash}" ToolTip.Tip="{DynamicResource Common.Delete}"
+                                            AutomationProperties.Name="{DynamicResource Common.Delete}"
+                                            Command="{Binding $parent[UserControl].((vm:ProjectTemplatesViewModel)DataContext).DeleteCommand}" CommandParameter="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </dialogs:DialogShell>
+</UserControl>

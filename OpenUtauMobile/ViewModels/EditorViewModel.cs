@@ -61,6 +61,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
     private readonly string _initialProjectPath;
+    private readonly bool _fromTemplate;
     private bool _loadStarted;
     private bool _projectLoaded;
     private bool _disposed;
@@ -257,9 +258,10 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘事件，供 PianoRollViewModel 调用，通知 PartsCanvas 刷新显示
 
-    public EditorViewModel(MainViewModel navigator, string path = "") : base(navigator)
+    public EditorViewModel(MainViewModel navigator, string path = "", bool fromTemplate = false) : base(navigator)
     {
         _initialProjectPath = path;
+        _fromTemplate = fromTemplate;
         DocManager.Inst.AddSubscriber(this); // 订阅事件
         // 命令初始化
         BackCommand = ReactiveCommand.CreateFromTask(OnBackAsync);
@@ -520,6 +522,11 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             if (project == null)
                 throw new InvalidDataException($"Project reader returned no project: {path}");
 
+            if (_fromTemplate)
+            {
+                project.FilePath = string.Empty;
+                project.Saved = false;
+            }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
@@ -740,9 +747,32 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             case EditorMoreAction.ExportAudio:
                 _ = ShowExportAudioPopupAsync();
                 break;
+            case EditorMoreAction.SaveAsTemplate:
+                await SaveAsTemplateAsync();
+                break;
             case EditorMoreAction.SaveAs:
                 _ = RequestSaveAs();
                 break;
+        }
+    }
+
+    private async Task SaveAsTemplateAsync()
+    {
+        UProject project = DocManager.Inst.Project;
+        string? file = await TextInputPopupService.ShowAsync(
+            L.S("EditorMore.SaveAsTemplate"), string.Empty,
+            L.S("ProjectTemplates.Name"), "default");
+        if (string.IsNullOrEmpty(file) || _disposed || Navigator.CurrentViewModel != this) return;
+        try
+        {
+            file = Path.GetFileNameWithoutExtension(file);
+            file = Path.Combine(PathManager.Inst.TemplatesPath, $"{file}.ustx");
+            Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
+            Ustx.Save(file, project.CloneAsTemplate());
+        }
+        catch (Exception exception)
+        {
+            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
         }
     }
 
@@ -1745,12 +1775,15 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                         IsDanger = true,
                         Command = ReactiveCommand.Create(DeleteSelectedParts)
                     });
-                    items.Add(new ContextActionItem
+                    if (SelectedParts.Count == 1)
                     {
-                        Icon = PackIconPhosphorIconsKind.Textbox,
-                        Tip = L.S("Editor.Action.Rename"),
-                        Command = ReactiveCommand.Create(RenameSelectedPart)
-                    });
+                        items.Add(new ContextActionItem
+                        {
+                            Icon = PackIconPhosphorIconsKind.Textbox,
+                            Tip = L.S("Editor.Action.Rename"),
+                            Command = ReactiveCommand.CreateFromTask(RenameSelectedPart)
+                        });
+                    }
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Copy,
@@ -1963,9 +1996,31 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         SelectedParts.Clear();
     }
 
-    private void RenameSelectedPart()
+    private async Task RenameSelectedPart()
     {
-        ToastService.Enqueue("功能正在开发");
+        if (SelectedParts.Count != 1) return;
+
+        UProject project = DocManager.Inst.Project;
+        UPart part = SelectedParts[0];
+        string? name = await TextInputPopupService.ShowAsync(
+            L.S("Picker.PartRename.Title"), string.Empty,
+            L.S("Picker.PartRename.Placeholder"), part.name,
+            value => string.IsNullOrWhiteSpace(value) ? L.S("PartRename.Error.Empty") : null);
+        if (string.IsNullOrWhiteSpace(name)) return;
+
+        name = name.Trim();
+        // 弹窗关闭前可能已切换工程或删除分片，不向失效对象提交命令。
+        if (DocManager.Inst.Project != project || !project.parts.Contains(part) || name == part.name) return;
+
+        DocManager.Inst.StartUndoGroup("重命名分片");
+        try
+        {
+            DocManager.Inst.ExecuteCmd(new RenamePartCommand(project, part, name));
+        }
+        finally
+        {
+            DocManager.Inst.EndUndoGroup();
+        }
     }
 
     private void CopySelectedParts()

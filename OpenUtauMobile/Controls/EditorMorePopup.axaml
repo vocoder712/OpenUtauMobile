@@ -52,6 +52,12 @@
                                         <vm:EditorMoreAction>SaveAs</vm:EditorMoreAction>
                                     </Button.CommandParameter>
                                 </Button>
+                                <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource EditorMore.SaveAsTemplate}"
+                                        Command="{Binding ConfirmCommand}">
+                                    <Button.CommandParameter><vm:EditorMoreAction>SaveAsTemplate</vm:EditorMoreAction></Button.CommandParameter>
+                                </Button>
                             </StackPanel>
                         </Border>
                     </TabItem>

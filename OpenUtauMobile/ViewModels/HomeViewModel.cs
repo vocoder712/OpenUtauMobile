@@ -105,7 +105,26 @@ public class HomeViewModel : NavigateViewModelBase
 
     private void New()
     {
-        Navigator.Navigate(new EditorViewModel(Navigator));
+        string defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
+        Navigator.Navigate(File.Exists(defaultTemplate)
+            ? new EditorViewModel(Navigator, defaultTemplate, fromTemplate: true)
+            : new EditorViewModel(Navigator));
+    }
+
+    public async Task OpenTemplatesAsync()
+    {
+        try
+        {
+            string? path = await PopupService.Show<string>(new ProjectTemplatesPopup(), new ProjectTemplatesViewModel());
+            if (!string.IsNullOrEmpty(path) && Navigator.CurrentViewModel == this)
+            {
+                Navigator.Navigate(new EditorViewModel(Navigator, path, fromTemplate: true));
+            }
+        }
+        catch (Exception exception)
+        {
+            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+        }
     }
 
     private async void Open()
