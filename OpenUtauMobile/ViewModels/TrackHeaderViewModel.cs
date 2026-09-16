@@ -37,6 +37,10 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     [Reactive] public double Pan { get; set; }
     [Reactive] public IBrush TrackColorBrush { get; set; } = Brushes.Transparent;
     [Reactive] public string SingerName { get; set; } = string.Empty;
+    [Reactive] public string SingerAvatarName { get; set; } = string.Empty;
+    [Reactive] public USingerType SingerType { get; set; } = USingerType.Classic;
+    [Reactive] public bool HasSinger { get; set; }
+    [Reactive] public bool HasSingerAvatar { get; set; }
     [Reactive] public Bitmap? SingerIcon { get; set; }
 
     /// <summary>
@@ -333,6 +337,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         if (singer?.AvatarData == null)
         {
             SingerIcon = null;
+            HasSingerAvatar = false;
             return;
         }
 
@@ -340,10 +345,12 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         {
             using MemoryStream stream = new(singer.AvatarData);
             SingerIcon = new Bitmap(stream);
+            HasSingerAvatar = true;
         }
         catch (Exception e)
         {
             SingerIcon = null;
+            HasSingerAvatar = false;
             Debug.WriteLine(e);
             Log.Error(e, "Failed to decode avatar.");
         }
@@ -360,7 +367,11 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             TrackName = _track.TrackName;
             RefreshMixFields();
 
-            SingerName = _track.Singer?.Name ?? string.Empty; // 为什么 Core 项目里面乱写null啊啊啊啊！！！~~~
+            USinger? singer = _track.Singer;
+            SingerName = singer?.Name ?? string.Empty; // 为什么 Core 项目里面乱写null啊啊啊啊！！！~~~
+            SingerAvatarName = singer?.LocalizedName ?? string.Empty;
+            SingerType = singer?.SingerType ?? USingerType.Classic;
+            HasSinger = singer != null;
             PhonemizerTag = _track.Phonemizer?.Tag ?? string.Empty;
             RendererName = _track.RendererSettings.renderer ?? string.Empty;
             RefreshAvatar();
