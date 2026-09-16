@@ -354,6 +354,12 @@
   <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
     <value>Select ONNX Runtime execution backend for machine learning models.</value>
   </data>
+  <data name="Settings.Render.OnnxDevice" xml:space="preserve">
+    <value>Hardware Device</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice.Desc" xml:space="preserve">
+    <value>Select the GPU used by the current ONNX hardware backend. Restart the app to apply.</value>
+  </data>
   <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
     <value>Some devices do not support hardware acceleration. Choosing NNAPI may cause crashes.</value>
   </data>

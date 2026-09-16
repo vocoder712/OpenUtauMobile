@@ -141,6 +141,19 @@ public class OnnxRunnerOption
     }
 }
 
+/// <summary>机器学习加速设备选项（用于绑定到选择器）。</summary>
+public class OnnxDeviceOption
+{
+    public int DeviceId { get; }
+    public string DisplayName { get; }
+
+    public OnnxDeviceOption(int deviceId, string displayName)
+    {
+        DeviceId = deviceId;
+        DisplayName = displayName;
+    }
+}
+
 /// <summary>音频设备选项（用于绑定到选择器）。</summary>
 public class AudioDeviceOption
 {
@@ -443,6 +456,17 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>当前选中的机器学习运行器后端。</summary>
     [Reactive]
     public OnnxRunnerOption? SelectedOnnxRunner { get; set; }
+
+    /// <summary>可选机器学习加速设备列表。</summary>
+    public IReadOnlyList<OnnxDeviceOption> AvailableOnnxDevices { get; }
+
+    /// <summary>当前选中的机器学习加速设备。</summary>
+    [Reactive]
+    public OnnxDeviceOption? SelectedOnnxDevice { get; set; }
+
+    /// <summary>当前后端是否支持选择具体加速设备。</summary>
+    [Reactive]
+    public bool ShowOnnxDeviceSelector { get; set; }
 
     // ── Audio Backend & Device ──────────────────────────────────────
     /// <summary>可选音频后端列表（根据平台动态生成）。</summary>
@@ -851,10 +875,16 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
         // 机器学习运行器后端初始化
         AvailableOnnxRunners = GetAvailableOnnxRunners();
+        AvailableOnnxDevices = GetAvailableOnnxDevices();
         string savedOnnxRunner = Preferences.Default.OnnxRunner;
         SelectedOnnxRunner = AvailableOnnxRunners.FirstOrDefault(r =>
                                  string.Equals(r.Value, savedOnnxRunner, StringComparison.OrdinalIgnoreCase))
                              ?? AvailableOnnxRunners[0];
+        SelectedOnnxDevice = AvailableOnnxDevices.FirstOrDefault(device =>
+                                 device.DeviceId == Preferences.Default.OnnxGpu)
+                             ?? AvailableOnnxDevices.FirstOrDefault();
+        ShowOnnxDeviceSelector = SupportsOnnxDeviceSelection(SelectedOnnxRunner.Value)
+                                 && AvailableOnnxDevices.Count > 0;
 
         this.WhenAnyValue(x => x.SelectedOnnxRunner)
             .Skip(1)
@@ -862,6 +892,18 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .Subscribe(opt =>
             {
                 Preferences.Default.OnnxRunner = opt.Value;
+                ShowOnnxDeviceSelector = SupportsOnnxDeviceSelection(opt.Value)
+                                         && AvailableOnnxDevices.Count > 0;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.SelectedOnnxDevice)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(device =>
+            {
+                Preferences.Default.OnnxGpu = device.DeviceId;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
@@ -1003,6 +1045,29 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         }
 
         return runners.Select(runner => new OnnxRunnerOption(runner, runner)).ToList();
+    }
+
+    /// <summary>
+    /// 获取当前平台可用的机器学习加速设备。
+    /// </summary>
+    private static List<OnnxDeviceOption> GetAvailableOnnxDevices()
+    {
+        try
+        {
+            return Onnx.getGpuInfo()
+                .Select(device => new OnnxDeviceOption(device.deviceId, device.ToString()))
+                .ToList();
+        }
+        catch (Exception e)
+        {
+            Log.Warning(e, "枚举ONNX加速设备失败");
+            return [];
+        }
+    }
+
+    private static bool SupportsOnnxDeviceSelection(string runner)
+    {
+        return runner is "DirectML" or "CUDA";
     }
 
     /// <summary>

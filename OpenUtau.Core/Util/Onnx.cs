@@ -41,10 +41,11 @@ namespace OpenUtau.Core {
 
         public static List<string> getRunnerOptions() {
             if (OS.IsWindows()) {
-                return new List<string> {
-                "CPU",
-                "DirectML"
-                };
+                var runners = new List<string> { "CPU" };
+                if (devices.Count > 0) {
+                    runners.Add("DirectML");
+                }
+                return runners;
             } else if (OS.IsMacOS()) {
                 return new List<string> {
                 "CPU",
@@ -114,7 +115,12 @@ namespace OpenUtau.Core {
             }
             switch (runner) {
                 case "DirectML":
-                    var d = devices[Preferences.Default.OnnxGpu];
+                    options.EnableMemoryPattern = false;
+                    options.ExecutionMode = ExecutionMode.ORT_SEQUENTIAL;
+                    var deviceId = devices.ContainsKey(Preferences.Default.OnnxGpu)
+                        ? Preferences.Default.OnnxGpu
+                        : devices.Keys.OrderBy(id => id).First();
+                    var d = devices[deviceId];
                     options.AppendExecutionProvider(
                         OrtEnv.Instance(),
                         new List<OrtEpDevice> { d },

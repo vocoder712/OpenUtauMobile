@@ -29,6 +29,9 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
         volatile InferenceSession vocoderSession;
         InferenceSession hnsepSession;
         readonly object modelsLock = new object();
+        readonly object vocoderRunLock = new object();
+        readonly object hnsepRunLock = new object();
+        bool serializeInferenceRuns;
 
         static readonly object sourceCacheLock = new object();
         static readonly Dictionary<string, float[]> sourceAudioCache = new Dictionary<string, float[]>();
@@ -161,6 +164,8 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
                 byte[] vocoderBytes = File.ReadAllBytes(vocoderPath);
 
                 string hnsepPath = Path.Combine(basePath, "hnsep.onnx");
+                serializeInferenceRuns = OperatingSystem.IsWindows()
+                    && Preferences.Default.OnnxRunner == "DirectML";
                 if (File.Exists(hnsepPath)) {
                     byte[] hnsepBytes = File.ReadAllBytes(hnsepPath);
                     hnsepSession = Onnx.getInferenceSession(hnsepBytes, OnnxRunnerChoice.Default);
@@ -428,14 +433,11 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
             };
 
             float[] render;
-            using (var results = vocoderSession.Run(inputs)) {
-                var audioOut = results.First().AsTensor<float>();
-                float[] vocoderOutput = audioOut.ToArray();
-                int renderStart = Math.Clamp((int)Math.Round(newStart * HifiSamplerDsp.SampleRate), 0, vocoderOutput.Length);
-                int renderEnd = Math.Clamp((int)Math.Round(newEnd * HifiSamplerDsp.SampleRate), renderStart, vocoderOutput.Length);
-                render = new float[renderEnd - renderStart];
-                Array.Copy(vocoderOutput, renderStart, render, 0, render.Length);
-            }
+            float[] vocoderOutput = RunInference(vocoderSession, vocoderRunLock, inputs);
+            int renderStart = Math.Clamp((int)Math.Round(newStart * HifiSamplerDsp.SampleRate), 0, vocoderOutput.Length);
+            int renderEnd = Math.Clamp((int)Math.Round(newEnd * HifiSamplerDsp.SampleRate), renderStart, vocoderOutput.Length);
+            render = new float[renderEnd - renderStart];
+            Array.Copy(vocoderOutput, renderStart, render, 0, render.Length);
 
             // Post-processing: amplitude modulation (A flag)
             if (MathF.Abs(aFlag) > 0.01f) {
@@ -624,10 +626,7 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
                 NamedOnnxValue.CreateFromTensor("input", inputTensor),
             };
 
-            float[] maskData;
-            using (var results = hnsepSession.Run(inputs)) {
-                maskData = results.First().AsTensor<float>().ToArray();
-            }
+            float[] maskData = RunInference(hnsepSession, hnsepRunLock, inputs);
 
             float[] separated = HifiSamplerDsp.ApplyHnsepMask(maskData, useBins, nFrames,
                 specRe, specIm, audio.Length);
@@ -640,6 +639,20 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
                 return noise;
             }
             return separated; // harmonic/voiced component
+        }
+
+        float[] RunInference(InferenceSession session, object runLock, List<NamedOnnxValue> inputs) {
+            if (serializeInferenceRuns) {
+                lock (runLock) {
+                    return RunInference(session, inputs);
+                }
+            }
+            return RunInference(session, inputs);
+        }
+
+        static float[] RunInference(InferenceSession session, List<NamedOnnxValue> inputs) {
+            using var results = session.Run(inputs);
+            return results.First().AsTensor<float>().ToArray();
         }
 
         float[] BuildF0(RenderPhrase phrase, ResamplerItem item, int vocoderFrames) {

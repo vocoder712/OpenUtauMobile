@@ -295,6 +295,12 @@
   <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
     <value>Виберіть бекенд виконання ONNX Runtime для моделей машинного навчання.</value>
   </data>
+  <data name="Settings.Render.OnnxDevice" xml:space="preserve">
+    <value>Апаратний пристрій</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice.Desc" xml:space="preserve">
+    <value>Виберіть GPU для поточного апаратного бекенда ONNX. Перезапустіть застосунок, щоб застосувати зміни.</value>
+  </data>
   <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
     <value>Деякі пристрої не підтримують апаратне прискорення. Вибір NNAPI може спричинити збій застосунку.</value>
   </data>

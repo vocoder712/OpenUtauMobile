@@ -354,6 +354,12 @@
   <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
     <value>选择机器学习模型使用的 ONNX Runtime 执行后端</value>
   </data>
+  <data name="Settings.Render.OnnxDevice" xml:space="preserve">
+    <value>硬件设备</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice.Desc" xml:space="preserve">
+    <value>选择当前 ONNX 硬件后端使用的 GPU，重启应用后生效</value>
+  </data>
   <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
     <value>部分机型不支持硬件加速，选择此选项可能导致闪退。</value>
   </data>

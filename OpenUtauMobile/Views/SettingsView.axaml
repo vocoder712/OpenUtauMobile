@@ -746,6 +746,22 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
+                                        <StackPanel IsVisible="{Binding ShowOnnxDeviceSelector}"
+                                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Render.OnnxDevice}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.OnnxDevice.Desc}" />
+                                            <ComboBox HorizontalAlignment="Stretch"
+                                                      ItemsSource="{Binding AvailableOnnxDevices}"
+                                                      SelectedItem="{Binding SelectedOnnxDevice, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:OnnxDeviceOption">
+                                                        <TextBlock Text="{Binding DisplayName}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </StackPanel>
                                         <TextBlock FontSize="12"
                                                    Foreground="{DynamicResource Sem.Color.Error}"
                                                    IsVisible="{Binding SelectedOnnxRunner.Value,
