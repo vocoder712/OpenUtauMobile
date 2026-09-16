@@ -89,6 +89,8 @@ public class TrackHeaderCanvas : Panel, ICmdSubscriber
     /// <param name="track"></param>
     private void Add(UTrack track)
     {
+        if (_trackHeaders.ContainsKey(track)) return;
+
         TrackHeaderViewModel vm = new(track);
         TrackHeader view = new(vm)
         {
@@ -107,6 +109,7 @@ public class TrackHeaderCanvas : Panel, ICmdSubscriber
         header.Dispose();
         _trackHeaders.Remove(track);
         Children.Remove(header);
+        InvalidateArrange();
     }
     /// <summary>
     /// 通知指定的轨道头刷新自身属性
@@ -164,10 +167,16 @@ public class TrackHeaderCanvas : Panel, ICmdSubscriber
                 FullUpdate();
                 break;
             case AddTrackCommand addTrackCommand:
-                Add(addTrackCommand.track);
+                if (isUndo)
+                    Remove(addTrackCommand.track);
+                else
+                    Add(addTrackCommand.track);
                 break;
             case RemoveTrackCommand removeTrackCommand:
-                Remove(removeTrackCommand.track);
+                if (isUndo)
+                    Add(removeTrackCommand.track);
+                else
+                    Remove(removeTrackCommand.track);
                 break;
             case MoveTrackCommand:
                 FullUpdate();

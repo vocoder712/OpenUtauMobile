@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using NWaves.Signals;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -71,6 +73,7 @@ public class WaveCanvas : Control, ICmdSubscriber
     }
 
     private WaveCache? _waveCache;
+    private Task<DiscreteSignal[]>? _pendingPeaks;
 
     static WaveCanvas()
     {
@@ -91,18 +94,50 @@ public class WaveCanvas : Control, ICmdSubscriber
             if (_waveCache != null)
                 _waveCache.IsDirty = true;
         }
+
+        if (change.Property == WavePartProperty)
+        {
+            if (_waveCache != null)
+                _waveCache.IsDirty = true;
+            ObservePeaks();
+        }
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        ObservePeaks();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
+        _pendingPeaks = null;
+    }
+
+    /// <summary>
+    /// 波形峰值在后台完成后，请求 UI 线程重绘当前分片。
+    /// </summary>
+    private void ObservePeaks()
+    {
+        UWavePart? part = WavePart;
+        Task<DiscreteSignal[]>? peaks = part?.Peaks;
+        if (peaks == null || peaks.IsCompleted || ReferenceEquals(peaks, _pendingPeaks))
+            return;
+
+        _pendingPeaks = peaks;
+        peaks.ContinueWith(_ => Dispatcher.UIThread.Post(() =>
+        {
+            if (!ReferenceEquals(_pendingPeaks, peaks) || !ReferenceEquals(WavePart, part))
+                return;
+
+            _pendingPeaks = null;
+            if (_waveCache != null)
+                _waveCache.IsDirty = true;
+            InvalidateVisual();
+        }), TaskScheduler.Default);
     }
 
     public override void Render(DrawingContext context)

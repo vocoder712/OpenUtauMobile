@@ -143,6 +143,7 @@ public class PartsCanvas : Control, ICmdSubscriber
     }
 
     private readonly Dictionary<UWavePart, WaveCache> _waveCache = [];
+    private readonly HashSet<UWavePart> _pendingPeakLoads = [];
 
     #endregion
 
@@ -199,6 +200,7 @@ public class PartsCanvas : Control, ICmdSubscriber
         DocManager.Inst.RemoveSubscriber(this);
         foreach (WaveCache c in _waveCache.Values) c.Dispose();
         _waveCache.Clear();
+        _pendingPeakLoads.Clear();
         _toneRangeCache.Clear();
     }
 
@@ -258,14 +260,18 @@ public class PartsCanvas : Control, ICmdSubscriber
     {
         if (item is not UWavePart wp) return;
         if (wp.Peaks.IsCompleted) return;
+        if (!_pendingPeakLoads.Add(wp)) return;
 
-        TaskScheduler scheduler = TaskScheduler.FromCurrentSynchronizationContext();
         wp.Peaks.ContinueWith(_ =>
         {
-            if (_waveCache.TryGetValue(wp, out WaveCache? cache))
-                cache.IsDirty = true;
-            InvalidateVisual();
-        }, CancellationToken.None, TaskContinuationOptions.None, scheduler);
+            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+            {
+                _pendingPeakLoads.Remove(wp);
+                if (_waveCache.TryGetValue(wp, out WaveCache? cache))
+                    cache.IsDirty = true;
+                InvalidateVisual();
+            });
+        }, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
     }
 
     #endregion
@@ -281,12 +287,15 @@ public class PartsCanvas : Control, ICmdSubscriber
         switch (cmd)
         {
             case LoadProjectNotification:
+                foreach (UPart part in DocManager.Inst.Project.parts)
+                    RegisterPeaksCallback(part);
                 InvalidateVisual();
                 break;
             case TrackCommand:
                 InvalidateVisual();
                 break;
             case PartCommand { part: UWavePart wp }:
+                RegisterPeaksCallback(wp);
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
                     if (_waveCache.TryGetValue(wp, out WaveCache? wc))
@@ -481,7 +490,11 @@ public class PartsCanvas : Control, ICmdSubscriber
         if (rect.Right <= 0 || rect.Left >= Bounds.Width) return;
         if (rect.Bottom <= 0 || rect.Top >= Bounds.Height) return;
 
-        if (!part.Peaks.IsCompletedSuccessfully) return;
+        if (!part.Peaks.IsCompletedSuccessfully)
+        {
+            RegisterPeaksCallback(part);
+            return;
+        }
         // Peaks.Result 注解为 non-null，但 Load() 存在 Task.FromResult<>(null) 路径
         if (ReferenceEquals(part.Peaks.Result, null)) return;
 
