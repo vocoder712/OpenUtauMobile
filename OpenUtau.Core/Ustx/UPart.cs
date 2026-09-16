@@ -178,6 +178,8 @@ namespace OpenUtau.Core.Ustx {
                 }
 
                 var request = new PhonemizerRequest() {
+                    project = project,
+                    track = track,
                     singer = track.Singer,
                     part = this,
                     timestamp = DateTime.Now.ToFileTimeUtc(),
