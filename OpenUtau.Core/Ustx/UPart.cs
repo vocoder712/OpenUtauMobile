@@ -91,10 +91,18 @@ namespace OpenUtau.Core.Ustx {
             }
             Duration = Math.Max(Duration, GetMinDurTick(project));
             foreach (var curve in curves) {
-                if (project.expressions.TryGetValue(curve.abbr, out var descriptor)) {
+                // Curves may belong to track expressions, so resolve through the track.
+                // Keep the existing descriptor when not found, so that undoing an expression
+                // configuration change does not lose curves.
+                if (track.TryGetExpDescriptor(project, curve.abbr, out var descriptor)) {
                     curve.descriptor = descriptor;
                 }
             }
+            // Same as UNote.AfterLoad: drop data whose expression no longer exists.
+            foreach (var curve in curves.Where(curve => curve.descriptor == null)) {
+                Log.Warning($"Removed curve \"{curve.abbr}\" with unknown expression from part \"{name}\".");
+            }
+            curves.RemoveAll(curve => curve.descriptor == null);
         }
 
         [YamlIgnore] internal long phraseGeneration;

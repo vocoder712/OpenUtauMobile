@@ -101,7 +101,10 @@ namespace OpenUtau.Core.DiffSinger
             if(!string.IsNullOrEmpty(langCode)){
                 //For diffsinger multi dict voicebanks, the replacements of g2p phonemes default to the <langcode>/<phoneme>
                 foreach(var ph in GetBaseG2pVowels().Concat(GetBaseG2pConsonants())){
-                    if(!replacements.ContainsKey(ph)){
+                    if (!useLangId) {
+                        replacements[ph] = ph;
+                    }
+                    else if(!replacements.ContainsKey(ph)){
                         replacements[ph]=langCode + "/" + ph;
                     }
                 }
