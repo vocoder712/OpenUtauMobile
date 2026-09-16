@@ -211,10 +211,21 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+      - name: Generate iOS SHA-256 checksum
+        shell: bash
+        working-directory: artifacts/ios-arm64
+        run: |
+          set -euo pipefail
+          PACKAGE="OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
+          shasum -a 256 "$PACKAGE" > "$PACKAGE.sha256"
+          shasum -a 256 --check "$PACKAGE.sha256"
+
       - name: Upload iOS ARM64 Mono AOT Unsigned IPA
         uses: actions/upload-artifact@v4
         with:
           name: OpenUtauMobile-ios-arm64-mono-aot-unsigned
-          path: artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa
+          path: |
+            artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa
+            artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa.sha256
           if-no-files-found: error
           compression-level: 0
