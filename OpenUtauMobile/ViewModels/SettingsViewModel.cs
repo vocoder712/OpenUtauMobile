@@ -141,6 +141,19 @@ public class OnnxRunnerOption
     }
 }
 
+/// <summary>钢琴键标签显示选项。</summary>
+public class PianoKeyLabelModeOption
+{
+    public PianoKeyLabelMode Value { get; }
+    public string DisplayName { get; }
+
+    public PianoKeyLabelModeOption(PianoKeyLabelMode value, string displayName)
+    {
+        Value = value;
+        DisplayName = displayName;
+    }
+}
+
 public enum AndroidFullscreenMode
 {
     Always = 0,
@@ -385,6 +398,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public PianoKeyBehaviorOption? SelectedPianoKeyBehavior { get; set; }
 
+    /// <summary>可选钢琴键标签显示方式。</summary>
+    public IReadOnlyList<PianoKeyLabelModeOption> AvailablePianoKeyLabelModes { get; } =
+        new List<PianoKeyLabelModeOption>
+        {
+            new(PianoKeyLabelMode.PitchLabels, L.S("Settings.PianoKeyLabel.PitchLabels")),
+            new(PianoKeyLabelMode.TonicPitchLabels, L.S("Settings.PianoKeyLabel.TonicPitchLabels")),
+            new(PianoKeyLabelMode.NumberedNotation, L.S("Settings.PianoKeyLabel.NumberedNotation")),
+        };
+
+    /// <summary>当前钢琴键标签显示方式。</summary>
+    [Reactive]
+    public PianoKeyLabelModeOption? SelectedPianoKeyLabelMode { get; set; }
+
     /// <summary>当前 SoundFont 文件路径。</summary>
     [Reactive]
     public string SoundFontPath { get; set; }
@@ -628,6 +654,20 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             : PianoKeyBehavior.SineWave;
         SelectedPianoKeyBehavior = AvailablePianoKeyBehaviors.FirstOrDefault(b => b.Value == behavior)
                                    ?? AvailablePianoKeyBehaviors[1]; // 默认正弦波
+
+        PianoKeyLabelMode labelMode = PianoKeyLabelFormatter.NormalizeMode(Preferences.Default.PianoKeyLabelMode);
+        SelectedPianoKeyLabelMode = AvailablePianoKeyLabelModes.First(option => option.Value == labelMode);
+
+        this.WhenAnyValue(x => x.SelectedPianoKeyLabelMode)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(option =>
+            {
+                Preferences.Default.PianoKeyLabelMode = (int)option.Value;
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new PianoKeyLabelModeChangedEvent(option.Value));
+            })
+            .DisposeWith(_disposables);
 
         SoundFontPath = Preferences.Default.SoundFontPath;
         IsSoundFontLoaded = SoundFontPlayer.Instance.IsReady;

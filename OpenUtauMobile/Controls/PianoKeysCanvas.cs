@@ -28,6 +28,13 @@ public class PianoKeysCanvas : Control
     public static readonly StyledProperty<double> KeyOffsetProperty =
         AvaloniaProperty.Register<PianoKeysCanvas, double>(nameof(KeyOffset), 70.0);
 
+    public static readonly StyledProperty<int> ProjectKeyProperty =
+        AvaloniaProperty.Register<PianoKeysCanvas, int>(nameof(ProjectKey));
+
+    public static readonly StyledProperty<PianoKeyLabelMode> LabelModeProperty =
+        AvaloniaProperty.Register<PianoKeysCanvas, PianoKeyLabelMode>(
+            nameof(LabelMode), PianoKeyLabelMode.TonicPitchLabels);
+
     public double KeyHeight
     {
         get => GetValue(KeyHeightProperty);
@@ -38,6 +45,18 @@ public class PianoKeysCanvas : Control
     {
         get => GetValue(KeyOffsetProperty);
         set => SetValue(KeyOffsetProperty, value);
+    }
+
+    public int ProjectKey
+    {
+        get => GetValue(ProjectKeyProperty);
+        set => SetValue(ProjectKeyProperty, value);
+    }
+
+    public PianoKeyLabelMode LabelMode
+    {
+        get => GetValue(LabelModeProperty);
+        set => SetValue(LabelModeProperty, value);
     }
 
     #endregion
@@ -63,7 +82,9 @@ public class PianoKeysCanvas : Control
     {
         base.OnPropertyChanged(change);
         if (change.Property == KeyHeightProperty ||
-            change.Property == KeyOffsetProperty)
+            change.Property == KeyOffsetProperty ||
+            change.Property == ProjectKeyProperty ||
+            change.Property == LabelModeProperty)
         {
             InvalidateVisual();
         }
@@ -225,7 +246,8 @@ public class PianoKeysCanvas : Control
             double y = (ViewConstants.MaxTone - 1 - tone - KeyOffset) * KeyHeight;
             bool isActive = _activeTones.Contains(tone);
             bool isBlack = MusicMath.IsBlackKey(tone);
-            bool isC = MusicMath.IsCenterKey(tone); // tone % 12 == 0
+            bool isTonic = PianoKeyLabelFormatter.NormalizePitchClass(tone) ==
+                PianoKeyLabelFormatter.NormalizePitchClass(ProjectKey);
 
             IBrush brush;
 
@@ -233,13 +255,17 @@ public class PianoKeysCanvas : Control
             {
                 brush = ThemeResources.GetBrush("Sem.Color.Primary");
             }
+            else if (isTonic) // 工程主音
+            {
+                brush = ThemeResources.GetBrush("Sem.Color.CenterKey");
+            }
             else if (isBlack) // 黑键
             {
                 brush = ThemeResources.GetBrush("Sem.Color.BlackKey");
             }
             else // 白键
             {
-                brush = ThemeResources.GetBrush(isC ? "Sem.Color.CenterKey" : "Sem.Color.WhiteKey");
+                brush = ThemeResources.GetBrush("Sem.Color.WhiteKey");
             }
 
             context.DrawRectangle(brush, null, new Rect(0, y, w, KeyHeight));
@@ -252,11 +278,21 @@ public class PianoKeysCanvas : Control
                     new Point(w, y + KeyHeight));
             }
 
-            // C 键音名标注：KeyHeight >= NoteHeightMin(8) 时才绘制
-            if (isC && !isActive && KeyHeight >= ViewConstants.NoteHeightMin)
+            // 琴键标签：KeyHeight >= NoteHeightMin(8) 时才绘制
+            if (!isActive && KeyHeight >= ViewConstants.NoteHeightMin)
             {
-                string name = MusicMath.GetToneName(tone); // 如 "C4"
-                TextLayout text = TextLayoutCache.Get(name, ThemeResources.GetBrush("Sem.Color.Outline"), 10);
+                string name = PianoKeyLabelFormatter.GetLabel(tone, ProjectKey, LabelMode);
+                if (string.IsNullOrEmpty(name))
+                {
+                    continue;
+                }
+
+                IBrush textBrush = ThemeResources.GetBrush(isTonic
+                    ? "Sem.Color.OnPrimaryContainer"
+                    : isBlack
+                        ? "Sem.Color.WhiteKey"
+                        : "Sem.Color.Outline");
+                TextLayout text = TextLayoutCache.Get(name, textBrush, 10);
                 double textY = y + (KeyHeight - text.Height) / 2;
                 double textX = w - text.Width - 2;
                 if (textX >= 0)

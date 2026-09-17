@@ -350,6 +350,11 @@ namespace OpenUtau.Core.Util {
             public int PianoKeyBehavior = 1;
 
             /// <summary>
+            /// 钢琴键标签：0 = 音高标签，1 = 仅主音音高标签，2 = 简谱。
+            /// </summary>
+            public int PianoKeyLabelMode = 1;
+
+            /// <summary>
             /// Path to SoundFont (SF2) file for piano key playback.
             /// If empty or file not found, falls back to SineWave.
             /// </summary>

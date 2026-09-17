@@ -349,6 +349,27 @@
                                 ConverterParameter=EditAndBehaviour}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Edit.CategoryTitle}" />
 
+                                <!-- 钢琴键标签 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.PianoKeyLabelMode}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.PianoKeyLabelMode.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailablePianoKeyLabelModes}"
+                                                  SelectedItem="{Binding SelectedPianoKeyLabelMode, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:PianoKeyLabelModeOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- 钢琴键行为 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">

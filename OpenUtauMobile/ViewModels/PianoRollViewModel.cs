@@ -146,6 +146,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     [Reactive] public double TickOffset { get; set; } // X 滚动
     [Reactive] public double KeyOffset { get; set; } = 56; // Y 滚动
 
+    /// <summary>当前工程主音的十二平均律音级索引。</summary>
+    [Reactive] public int ProjectKey { get; private set; }
+
+    /// <summary>钢琴键标签的显示方式。</summary>
+    [Reactive] public PianoKeyLabelMode PianoKeyLabelMode { get; private set; }
+
     /// <summary>是否以轻量矩形块显示各 phrase 的渲染状态。</summary>
 
     // ── 播放状态（直接由权威源驱动）─────
@@ -768,6 +774,8 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public PianoRollViewModel()
     {
+        ProjectKey = PianoKeyLabelFormatter.NormalizePitchClass(DocManager.Inst.Project.key);
+        PianoKeyLabelMode = PianoKeyLabelFormatter.NormalizeMode(Preferences.Default.PianoKeyLabelMode);
         IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
         PitchPenNoteHitTickExtension = Math.Clamp(
             Preferences.Default.PitchPenNoteHitTickExtension,
@@ -801,6 +809,10 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         });
 
         DocManager.Inst.AddSubscriber(this);
+
+        MessageBus.Current.Listen<PianoKeyLabelModeChangedEvent>()
+            .Subscribe(message => PianoKeyLabelMode = message.Mode)
+            .DisposeWith(_disposables);
 
         PlayPosTick = DocManager.Inst.playPosTick;
 
@@ -3492,6 +3504,10 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         switch (cmd)
         {
             case LoadProjectNotification:
+                ProjectKey = PianoKeyLabelFormatter.NormalizePitchClass(DocManager.Inst.Project.key);
+                RefreshAvailableExpressions();
+                RequestInvalidateVisual?.Invoke();
+                break;
             case ConfigureExpressionsCommand:
             case SingersRefreshedNotification:
                 RefreshAvailableExpressions();
@@ -3514,6 +3530,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 RequestInvalidateVisual?.Invoke();
                 break;
             case ProjectCommand:
+                ProjectKey = PianoKeyLabelFormatter.NormalizePitchClass(DocManager.Inst.Project.key);
                 RequestInvalidateVisual?.Invoke();
                 break;
             case TrackChangeSingerCommand: // 切换歌手

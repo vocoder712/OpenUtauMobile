@@ -20,9 +20,8 @@ public class PianoRollBackground : Control
     public static readonly StyledProperty<double> KeyOffsetProperty =
         AvaloniaProperty.Register<PianoRollBackground, double>(nameof(KeyOffset));
 
-    // TODO: 未来支持按项目设置高亮1，而非C
-    public static readonly StyledProperty<bool> HighlightCProperty =
-        AvaloniaProperty.Register<PianoRollBackground, bool>(nameof(HighlightC), true);
+    public static readonly StyledProperty<int> ProjectKeyProperty =
+        AvaloniaProperty.Register<PianoRollBackground, int>(nameof(ProjectKey));
 
     public double KeyHeight
     {
@@ -36,10 +35,10 @@ public class PianoRollBackground : Control
         set => SetValue(KeyOffsetProperty, value);
     }
 
-    public bool HighlightC
+    public int ProjectKey
     {
-        get => GetValue(HighlightCProperty);
-        set => SetValue(HighlightCProperty, value);
+        get => GetValue(ProjectKeyProperty);
+        set => SetValue(ProjectKeyProperty, value);
     }
 
     public PianoRollBackground()
@@ -56,7 +55,7 @@ public class PianoRollBackground : Control
         base.OnPropertyChanged(change);
         if (change.Property == KeyHeightProperty ||
             change.Property == KeyOffsetProperty ||
-            change.Property == HighlightCProperty)
+            change.Property == ProjectKeyProperty)
         {
             InvalidateVisual();
         }
@@ -85,38 +84,28 @@ public class PianoRollBackground : Control
         {
             double y = (ViewConstants.MaxTone - 1 - tone - KeyOffset) * keyHeight;
             bool isBlack = MusicMath.IsBlackKey(tone);
-            bool isC = MusicMath.IsCenterKey(tone);
+            bool isTonic = PianoKeyLabelFormatter.NormalizePitchClass(tone) ==
+                PianoKeyLabelFormatter.NormalizePitchClass(ProjectKey);
 
-            if (!isBlack && !isC)
+            // 背景填充与分隔线独立处理，避免普通白键提前跳过其边界。
+            if (isBlack || isTonic)
             {
-                continue;
+                IBrush brush = isTonic
+                    ? ThemeResources.GetBrush("Sem.Color.CenterKey") // 工程主音
+                    : ThemeResources.GetBrush("Sem.Color.BlackKey.Background"); // 黑键
+
+                using (context.PushOpacity(isTonic ? 0.5 : 1))
+                {
+                    context.DrawRectangle(brush, null, new Rect(0, y, width, keyHeight));
+                }
             }
 
-            IBrush brush = isBlack
-                ? ThemeResources.GetBrush("Sem.Color.BlackKey.Background") // 黑键
-                : HighlightC && isC
-                    ? ThemeResources.GetBrush("Sem.Color.CenterKey") // C
-                    : ThemeResources.GetBrush("Sem.Color.WhiteKey.Background"); // 白键
-
-            using (context.PushOpacity(isC ? 0.1 : 0.9))
-            {
-                context.DrawRectangle(brush, null, new Rect(0, y, width, keyHeight));
-            }
-
-
-            // 键分隔线：仅在白键底部绘制，减少噪声
-            if (!isBlack)
+            // 仅绘制 B–C 和 E–F 两类相邻白键边界。
+            bool hasWhiteKeyBelow = tone > 0 && !isBlack && !MusicMath.IsBlackKey(tone - 1);
+            if (hasWhiteKeyBelow)
             {
                 double lineY = Math.Round(y + keyHeight) + 0.5;
-                context.DrawLine(ThemeResources.GetPen("Sem.Color.OutlineVariant", 1), new Point(0, lineY),
-                    new Point(width, lineY));
-            }
-
-            // 八度分隔：C 行上方
-            if (isC)
-            {
-                double lineY = Math.Round(y) + 0.5;
-                context.DrawLine(ThemeResources.GetPen("Sem.Color.OutlineVariant", 1.5), new Point(0, lineY),
+                context.DrawLine(ThemeResources.GetPen("Sem.Color.OutlineVariant"), new Point(0, lineY),
                     new Point(width, lineY));
             }
         }
