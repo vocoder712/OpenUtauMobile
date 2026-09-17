@@ -60,11 +60,12 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     // ── 内部状态 ────────────────────────────────────────────────────────
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
-    private readonly string _initialProjectPath;
-    private readonly bool _fromTemplate;
+    private readonly ProjectOpenOptions _projectOpenOptions;
     private bool _loadStarted;
     private bool _projectLoaded;
     private bool _disposed;
+    private readonly TaskCompletionSource<bool> _projectLoadCompletion =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     [Reactive]
     public bool IsLoadingProject { get; private set; } = true;
@@ -258,10 +259,9 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘事件，供 PianoRollViewModel 调用，通知 PartsCanvas 刷新显示
 
-    public EditorViewModel(MainViewModel navigator, string path = "", bool fromTemplate = false) : base(navigator)
+    public EditorViewModel(MainViewModel navigator, ProjectOpenOptions? projectOpenOptions = null) : base(navigator)
     {
-        _initialProjectPath = path;
-        _fromTemplate = fromTemplate;
+        _projectOpenOptions = projectOpenOptions ?? new ProjectOpenOptions();
         DocManager.Inst.AddSubscriber(this); // 订阅事件
         // 命令初始化
         BackCommand = ReactiveCommand.CreateFromTask(OnBackAsync);
@@ -478,8 +478,10 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     {
         if (_loadStarted || _disposed) return;
         _loadStarted = true;
-        _ = LoadProjectAsync(_initialProjectPath);
+        _ = LoadProjectAsync(_projectOpenOptions);
     }
+
+    internal Task<bool> ProjectLoadCompletion => _projectLoadCompletion.Task;
 
     private static void AutoSaveProject()
     {
@@ -507,36 +509,49 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// <summary>
     /// 异步加载项目，避免阻塞UI线程
     /// </summary>
-    /// <param name="path"></param>
-    private async Task LoadProjectAsync(string path)
+    /// <param name="openOptions"></param>
+    private async Task LoadProjectAsync(ProjectOpenOptions openOptions)
     {
         ProgressValue = 50;
         ProgressMessage = L.S("Editor.LoadingProject");
+        bool loadSucceeded = false;
         try
         {
             // 后台只读取，回到 UI 线程并确认页面仍有效后才提交工程。
-            UProject? project = await Task.Run(() => string.IsNullOrEmpty(path)
+            UProject? project = await Task.Run(() => string.IsNullOrEmpty(openOptions.Path)
                 ? Ustx.Create()
-                : Formats.ReadProject([path]));
+                : Formats.ReadProject([openOptions.Path]));
             if (_disposed || Navigator.CurrentViewModel != this) return;
             if (project == null)
-                throw new InvalidDataException($"Project reader returned no project: {path}");
+                throw new InvalidDataException($"Project reader returned no project: {openOptions.Path}");
 
-            if (_fromTemplate)
+            switch (openOptions.Kind)
             {
-                project.FilePath = string.Empty;
-                project.Saved = false;
+                case ProjectOpenKind.Template:
+                    // 模板文件已由模板保存流程裁剪；这里只移除模板文件身份。
+                    project.FilePath = string.Empty;
+                    project.Saved = false;
+                    break;
+                case ProjectOpenKind.ExternalCopy:
+                    // 外部副本保留完整工程内容，只移除来源文件身份。
+                    project.FilePath = string.Empty;
+                    project.Saved = false;
+                    break;
+                case ProjectOpenKind.Normal:
+                default:
+                    break;
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
             _projectLoaded = true;
+            loadSucceeded = true;
             PlaybackTimer.Start();
             _autoSaveTimer?.Start();
         }
         catch (Exception exception)
         {
-            Log.Error(exception, "Failed to open project {Path}", path);
+            Log.Error(exception, "Failed to open project {Path}", openOptions.Path);
             if (!_disposed && Navigator.CurrentViewModel == this)
             {
                 // 失败直接退回，不对尚未打开的工程触发保存确认。
@@ -546,9 +561,21 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         }
         finally
         {
+            if (openOptions.DeleteSourceAfterRead && !string.IsNullOrEmpty(openOptions.Path))
+            {
+                try
+                {
+                    File.Delete(openOptions.Path);
+                }
+                catch (Exception exception)
+                {
+                    Log.Warning(exception, "Failed to delete external project cache {Path}", openOptions.Path);
+                }
+            }
             IsLoadingProject = false;
             ProgressValue = 0;
             ProgressMessage = string.Empty;
+            _projectLoadCompletion.TrySetResult(loadSucceeded);
         }
     }
 

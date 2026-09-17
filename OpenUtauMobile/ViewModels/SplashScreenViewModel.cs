@@ -165,7 +165,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 {
                     ProgressPercent = 100;
                     InitState = L.S("Splash.Complete");
-                    Navigator.Navigate(new HomeViewModel(Navigator));
+                    Navigator.CompleteStartup(new HomeViewModel(Navigator));
                 });
             }
             catch (OperationCanceledException)
