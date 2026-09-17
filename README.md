@@ -31,13 +31,13 @@ This is a developer preview. The tables describe the current source and packagin
 | Target | Configured release architectures | Status |
 | --- | --- | --- |
 | Windows | x64, ARM64 | Desktop host; x64 local build, native loading and GAME inference verified. |
-| Android | ARM64 (`arm64-v8a`), ARM32 (`armeabi-v7a`), x64 (`x86_64`) | Minimum Android 7 / API 24; ARM64 and x64 local APK builds verified. |
+| Android | ARM64 (`arm64-v8a`), x64 (`x86_64`) | Minimum Android 7 / API 24; ARM64 and x64 local APK builds verified. |
 | Linux | x64, ARM64 | Desktop host and release jobs configured; use a matching Linux build host. |
 | macOS | x64, ARM64 | Desktop host and release jobs configured; build on macOS. |
 | iOS | Simulator build configuration exists | Experimental host with AVAudioEngine audio and ONNX initialization; full feature parity is not established. Requires macOS/Xcode for development. |
 | Browser / WebAssembly | Browser host exists | Experimental; Dummy audio output, no complete singing synthesis runtime integration. |
 
-Windows x86 and Android x86 have some project/toolchain mappings but are not part of the current release matrix.
+Windows x86 and Android x86/ARM32 have some project/toolchain mappings but are not part of the current release matrix.
 Frameworks and minimum OS versions are defined by the host projects; architectures above follow the
 [release workflow](.github/workflows/build-all-platforms.yml).
 

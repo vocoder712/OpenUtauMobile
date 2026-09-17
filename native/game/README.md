@@ -30,7 +30,9 @@ Android 目标先执行工作负载的 `_ResolveSdks`，再将解析出的 NDK �
 `Build.cmake` 的 `OPUM_ANDROID_NDK`。SDK 与 NDK 可以分开安装；未提供 NDK 时，脚本才从
 SDK 的 `ndk/<固定版本>` 查找。Windows 路径传给 CMake 前转换为正斜杠，避免末尾反斜杠影响引号。
 
-Windows 默认使用注册的 Visual Studio C++ 工具链；已配置的 MSVC 终端或 MinGW 也可使用。
+Windows x64/x86 默认使用注册的 Visual Studio C++ 工具链；Windows ARM64 使用 Visual Studio
+ARM64 生成器和 ClangCL 工具集，因为 ggml 不支持 MSVC ARM。已配置的 MSVC 终端或 MinGW
+也可用于 x64/x86。
 Linux 需要本机 C/C++ 工具链；macOS 需要 Xcode Command Line Tools。Android 使用 NDK Clang 和 Ninja。
 所有平台均需 Git 和 CMake 3.24+。原生部分固定构建 Release，应用的 Debug 配置仍可调试 C#。
 当前自动化覆盖正常 Build / Publish，不将 `publish --no-build` 作为原生文件收集的验证路径。
