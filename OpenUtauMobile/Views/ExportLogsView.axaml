@@ -42,11 +42,19 @@
                     <TextBlock Grid.Column="1"
                                Classes="TopBarTitle"
                                Text="{DynamicResource ExportLogs.Title}" />
-                    <Button Grid.Column="2"
-                            Classes="TopBarBtn"
-                            Command="{Binding RefreshCommand}"
-                            ToolTip.Tip="{DynamicResource ExportLogs.Refresh}"
-                            Content="{iconPacks:PhosphorIcons ArrowsClockwise}" />
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <Button Classes="TopBarBtn"
+                                IsVisible="{Binding IsCrashLogExportAvailable}"
+                                Command="{Binding ExportCrashLogsCommand}"
+                                ToolTip.Tip="{DynamicResource ExportLogs.ExportCrashLogs}"
+                                Content="{iconPacks:PhosphorIcons Bug}" />
+                        <Button Classes="TopBarBtn"
+                                Command="{Binding RefreshCommand}"
+                                ToolTip.Tip="{DynamicResource ExportLogs.Refresh}"
+                                Content="{iconPacks:PhosphorIcons ArrowsClockwise}" />
+                    </StackPanel>
                 </Grid>
             </Border>
 

@@ -56,6 +56,9 @@ public class MainActivity : AvaloniaMainActivity
         InitPathManager();
         InitLogging();
         InitExceptionHandler();
+        AndroidCrashLogService crashLogService = new(global::Android.App.Application.Context);
+        ServiceHub.PlatformCrashLogService = crashLogService;
+        _ = crashLogService.CollectPreviousExitAsync();
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
         ServiceHub.ExternalUrlLauncher = new AndroidExternalUrlLauncher(() => CurrentActivity);
         ServiceHub.ExternalStorageService =

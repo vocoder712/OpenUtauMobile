@@ -2047,4 +2047,8 @@
   <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>Choose where to save the log archive</value></data>
   <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>Exported {0} log file(s)</value></data>
   <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>Could not export logs</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>Export Android crash logs</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>Choose where to save the crash log archive</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>Exported crash diagnostics ({0} abnormal exit record(s))</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>Could not export crash logs</value></data>
 </root>

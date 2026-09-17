@@ -2002,4 +2002,8 @@
   <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>Выберите место для архива журналов</value></data>
   <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>Экспортировано файлов журналов: {0}</value></data>
   <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>Не удалось экспортировать журналы</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>Экспорт журналов сбоев Android</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>Выберите место для архива журналов сбоев</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>Диагностика сбоев экспортирована (записей об аварийном завершении: {0})</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>Не удалось экспортировать журналы сбоев</value></data>
 </root>

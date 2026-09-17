@@ -21,4 +21,5 @@ public static class ServiceHub
     public static IPlatformPerformanceProvider? PlatformPerformanceProvider { get; set; }
     public static IFrameRateProvider? FrameRateProvider { get; set; }
     public static IPlatformDisplayService? PlatformDisplayService { get; set; }
+    public static IPlatformCrashLogService? PlatformCrashLogService { get; set; }
 }

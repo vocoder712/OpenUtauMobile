@@ -2040,4 +2040,8 @@
   <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>ログアーカイブの保存先を選択</value></data>
   <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>{0} 件のログファイルをエクスポートしました</value></data>
   <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>ログをエクスポートできませんでした</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>Android クラッシュログをエクスポート</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>クラッシュログアーカイブの保存先を選択</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>クラッシュ診断情報をエクスポートしました（異常終了記録: {0} 件）</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>クラッシュログをエクスポートできませんでした</value></data>
 </root>

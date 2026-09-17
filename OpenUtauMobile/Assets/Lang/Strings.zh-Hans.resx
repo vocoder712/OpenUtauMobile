@@ -2047,4 +2047,8 @@
   <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>选择日志压缩包的保存位置</value></data>
   <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>已导出 {0} 个日志文件</value></data>
   <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>日志导出失败</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>导出 Android 崩溃日志</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>选择崩溃日志压缩包的保存位置</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>已导出崩溃诊断信息（{0} 条异常退出记录）</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>崩溃日志导出失败</value></data>
 </root>

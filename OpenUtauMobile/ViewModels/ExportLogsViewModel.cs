@@ -8,6 +8,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Storage;
 using ReactiveUI;
@@ -28,6 +29,7 @@ public sealed class ExportLogsViewModel : NavigateViewModelBase
 
     public bool HasLogs => Logs.Count > 0;
     public bool HasSelection => SelectedCount > 0;
+    public bool IsCrashLogExportAvailable => ServiceHub.PlatformCrashLogService != null;
     public int SelectedCount => Logs.Count(item => item.IsSelected);
     public string SelectionSummary => string.Format(
         L.S("ExportLogs.SelectionSummary"), SelectedCount, Logs.Count);
@@ -37,6 +39,7 @@ public sealed class ExportLogsViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> SelectAllCommand { get; }
     public ReactiveCommand<Unit, Unit> SelectNoneCommand { get; }
     public ReactiveCommand<Unit, Unit> ExportCommand { get; }
+    public ReactiveCommand<Unit, Unit> ExportCrashLogsCommand { get; }
 
     public ExportLogsViewModel(MainViewModel navigator) : base(navigator)
     {
@@ -49,6 +52,9 @@ public sealed class ExportLogsViewModel : NavigateViewModelBase
         ExportCommand = ReactiveCommand.CreateFromTask(ExportAsync,
             this.WhenAnyValue(model => model.HasSelection, model => model.IsExporting,
                 (hasSelection, exporting) => hasSelection && !exporting));
+        ExportCrashLogsCommand = ReactiveCommand.CreateFromTask(ExportCrashLogsAsync,
+            this.WhenAnyValue(model => model.IsExporting, exporting =>
+                !exporting && ServiceHub.PlatformCrashLogService != null));
     }
 
     public override void OnNavigatedTo()
@@ -129,6 +135,33 @@ public sealed class ExportLogsViewModel : NavigateViewModelBase
         {
             Log.Error(exception, "Failed to export {LogCount} application logs", selected.Length);
             ToastService.Enqueue(L.S("ExportLogs.ExportFailed"));
+        }
+        finally
+        {
+            IsExporting = false;
+        }
+    }
+
+    private async Task ExportCrashLogsAsync()
+    {
+        var service = ServiceHub.PlatformCrashLogService;
+        if (service == null) return;
+
+        try
+        {
+            string defaultName = $"OpenUtau-android-crash-{DateTime.Now:yyyyMMdd-HHmmss}";
+            string destination = await FilePicker.SaveFileAsync(
+                L.S("ExportLogs.CrashSaveDialogTitle"), ".zip", defaultName);
+            if (string.IsNullOrEmpty(destination)) return;
+
+            IsExporting = true;
+            int crashCount = await service.ExportAsync(destination);
+            ToastService.Enqueue(string.Format(L.S("ExportLogs.CrashExportSuccess"), crashCount));
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to export Android crash logs");
+            ToastService.Enqueue(L.S("ExportLogs.CrashExportFailed"));
         }
         finally
         {
