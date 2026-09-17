@@ -1,12 +1,13 @@
-﻿using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Threading;
-using OpenUtauMobile.Messages;
+using OpenUtau.Core;
 using OpenUtauMobile.Services;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -14,16 +15,15 @@ public class MainViewModel : ViewModelBase
 {
     [Reactive] public NavigateViewModelBase CurrentViewModel { get; set; }
     private readonly Stack<NavigateViewModelBase> _navigationStack = []; // 导航栈
+    private bool _externalProjectOpeningReady;
+    private bool _externalProjectDrainActive;
 
     public MainViewModel()
     {
-        MessageBus.Current.Listen<OpenFileMessage>().Subscribe(message =>
-        {
-            ToastService.Enqueue($"TODO: {message.FilePath}");
-        });
         CurrentViewModel = new SplashScreenViewModel(this);
         _navigationStack.Push(CurrentViewModel);
         UpdatePlatformDisplayState();
+        ExternalProjectOpenService.RegisterConsumer(RequestExternalProjectDrain);
         // 在UI线程上调用OnNavigatedTo
         Dispatcher.UIThread.Post(() =>
         {
@@ -60,26 +60,157 @@ public class MainViewModel : ViewModelBase
 
     private void OnNavigateBack(NavigateViewModelBase caller)
     {
-        if (_navigationStack.Count > 1)
+        TryRemoveCurrentViewModel(caller, notifyRevealedViewModel: true);
+    }
+
+    private bool TryRemoveCurrentViewModel(NavigateViewModelBase caller, bool notifyRevealedViewModel)
+    {
+        if (_navigationStack.Count <= 1 || _navigationStack.Peek() != caller)
         {
-            if (_navigationStack.Peek() != caller) // 确保调用者是当前视图模型
-            {
-                return;
-            }
-
-            // 弹出当前视图模型
-            ViewModelBase popped = _navigationStack.Pop();
-            // 释放资源
-            if (popped is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
-
-            // 设置上一个视图模型为当前视图模型
-            CurrentViewModel = _navigationStack.Peek();
-            UpdatePlatformDisplayState();
-            CurrentViewModel.OnNavigatedTo(); // 调用导航到新视图模型时的处理逻辑
+            return false;
         }
+
+        ViewModelBase popped = _navigationStack.Pop();
+        if (popped is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+
+        CurrentViewModel = _navigationStack.Peek();
+        UpdatePlatformDisplayState();
+        if (notifyRevealedViewModel)
+        {
+            CurrentViewModel.OnNavigatedTo();
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 完成启动导航，并允许处理启动期间收到的外部工程请求。
+    /// </summary>
+    public void CompleteStartup(HomeViewModel homeViewModel)
+    {
+        void Complete()
+        {
+            OnNavigate(homeViewModel);
+            _externalProjectOpeningReady = true;
+            RequestExternalProjectDrain();
+        }
+
+        if (Dispatcher.UIThread.CheckAccess())
+        {
+            Complete();
+        }
+        else
+        {
+            Dispatcher.UIThread.Post(Complete);
+        }
+    }
+
+    private void RequestExternalProjectDrain()
+    {
+        Dispatcher.UIThread.Post(() => _ = DrainExternalProjectItemsAsync());
+    }
+
+    private async Task DrainExternalProjectItemsAsync()
+    {
+        if (!_externalProjectOpeningReady || _externalProjectDrainActive)
+        {
+            return;
+        }
+
+        _externalProjectDrainActive = true;
+        try
+        {
+            while (ExternalProjectOpenService.TryDequeue(out ExternalProjectOpenItem? item))
+            {
+                try
+                {
+                    switch (item)
+                    {
+                        case ExternalProjectOpenRequest request:
+                            await OpenExternalProjectAsync(request);
+                            break;
+                        case ExternalProjectOpenFailure failure:
+                            ShowExternalProjectError(failure.Exception);
+                            break;
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Log.Error(exception, "Failed to handle external project request");
+                    ShowExternalProjectError(exception);
+                }
+            }
+        }
+        finally
+        {
+            _externalProjectDrainActive = false;
+            if (_externalProjectOpeningReady && ExternalProjectOpenService.HasPendingItems)
+            {
+                RequestExternalProjectDrain();
+            }
+        }
+    }
+
+    private async Task OpenExternalProjectAsync(ExternalProjectOpenRequest request)
+    {
+        bool sourceTransferred = false;
+        try
+        {
+            if (CurrentViewModel is EditorViewModel currentEditor)
+            {
+                bool canExit = await currentEditor.ConfirmExitAsync();
+                if (!canExit || CurrentViewModel != currentEditor)
+                {
+                    return;
+                }
+
+                // 替换编辑器时不激活栈中页面，避免它在下一帧启动后台工作。
+                if (!TryRemoveCurrentViewModel(currentEditor, notifyRevealedViewModel: false))
+                {
+                    return;
+                }
+            }
+
+            EditorViewModel editor = new(this, new ProjectOpenOptions(
+                request.LocalPath,
+                ProjectOpenKind.ExternalCopy,
+                request.DeleteSourceAfterRead));
+            OnNavigate(editor);
+            sourceTransferred = true;
+            await editor.ProjectLoadCompletion;
+        }
+        finally
+        {
+            if (!sourceTransferred)
+            {
+                DeleteExternalProjectCache(request);
+            }
+        }
+    }
+
+    private static void DeleteExternalProjectCache(ExternalProjectOpenRequest request)
+    {
+        if (!request.DeleteSourceAfterRead || string.IsNullOrEmpty(request.LocalPath))
+        {
+            return;
+        }
+
+        try
+        {
+            File.Delete(request.LocalPath);
+        }
+        catch (Exception exception)
+        {
+            Log.Warning(exception, "Failed to delete unused external project cache {Path}", request.LocalPath);
+        }
+    }
+
+    private static void ShowExternalProjectError(Exception exception)
+    {
+        ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
     }
 
     /// <summary>将当前页面类型同步给平台显示服务。</summary>
