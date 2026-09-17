@@ -54,9 +54,6 @@ jobs:
           - arch: arm64
             rid: android-arm64
 
-          - arch: armhf
-            rid: android-arm
-
           - arch: x64
             rid: android-x64
     uses: ./.github/workflows/build-android.yml
@@ -195,6 +192,13 @@ jobs:
 
           "BUILD_MACHINE=$env:RUNNER_OS / $env:PROCESSOR_ARCHITECTURE" |
             Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: Validate Windows ARM64 Clang toolchain
+        if: matrix.rid == 'win-arm64'
+        shell: pwsh
+        run: |
+          Get-Command clang-cl
+          clang-cl --version
 
       - name: Publish Windows ${{ matrix.arch }}
         shell: pwsh
