@@ -77,7 +77,7 @@ public sealed class PerformanceMonitorViewModel : ReactiveObject, IDisposable
         _monitor.SnapshotUpdated += OnSnapshotUpdated;
         IsEnabled = _monitor.IsEnabled;
 
-        if (_monitor.LatestSnapshot is PerformanceSnapshot snapshot)
+        if (_monitor.LatestSnapshot is { } snapshot)
         {
             OnSnapshotUpdated(snapshot);
         }
@@ -112,13 +112,13 @@ public sealed class PerformanceMonitorViewModel : ReactiveObject, IDisposable
                   $"{FormatPercent(snapshot.AppCpuUsagePercent)} {L.S("PerformanceMonitor.AppShort")} / " +
                   $"{FormatPercent(snapshot.SystemCpuUsagePercent)} {L.S("PerformanceMonitor.SystemShort")}";
         AudioLatencyText = $"{L.S("PerformanceMonitor.AudioLatency")}: " +
-            (snapshot.AudioOutputLatencyMilliseconds is double latency ? $"{latency:F1} ms" : MissingValue);
-        FrameRateText = $"{L.S("PerformanceMonitor.Fps")}: {FormatFrameRate(snapshot)}";
+            (snapshot.AudioOutputLatencyMilliseconds is { } latency ? $"{latency:F1} ms" : MissingValue);
+        FrameRateText = $"{L.S("PerformanceMonitor.Fps")}FPS: {FormatFrameRate(snapshot)}";
     }
 
     private static string FormatBytes(long? bytes)
     {
-        if (bytes is not long value)
+        if (bytes is not { } value)
         {
             return MissingValue;
         }
@@ -133,17 +133,17 @@ public sealed class PerformanceMonitorViewModel : ReactiveObject, IDisposable
 
     private static string FormatPercent(double? value)
     {
-        return value is double percent ? $"{percent:F1}%" : MissingValue;
+        return value is { } percent ? $"{percent:F1}%" : MissingValue;
     }
 
     private static string FormatFrameRate(PerformanceSnapshot snapshot)
     {
-        if (snapshot.FramesPerSecond is not double framesPerSecond)
+        if (snapshot.FramesPerSecond is not { } framesPerSecond)
         {
             return MissingValue;
         }
 
-        if (snapshot.AverageFrameTimeMilliseconds is double frameTime)
+        if (snapshot.AverageFrameTimeMilliseconds is { } frameTime)
         {
             return $"{framesPerSecond:F1} ({frameTime:F1} ms)";
         }

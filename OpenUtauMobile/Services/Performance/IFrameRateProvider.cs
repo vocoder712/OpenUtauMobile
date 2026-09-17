@@ -1,9 +1,15 @@
 namespace OpenUtauMobile.Services.Performance;
 
-/// <summary>提供 UI 帧率数据；具体渲染后端接入将在后续实现。</summary>
+/// <summary>一次 UI 帧率采样结果。</summary>
+public readonly record struct FrameRateMetrics(
+    double FramesPerSecond,
+    double AverageFrameTimeMilliseconds);
+
+/// <summary>提供 UI 帧率数据并管理帧回调生命周期。</summary>
 public interface IFrameRateProvider
 {
-    double? FramesPerSecond { get; }
-    double? AverageFrameTimeMilliseconds { get; }
+    void Start();
+    void Stop();
+    FrameRateMetrics? Capture();
 }
 
