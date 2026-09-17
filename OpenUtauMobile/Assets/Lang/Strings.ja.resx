@@ -1219,6 +1219,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>最後のノートです</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>音素</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>シンガーが割り当てられていないか、読み込まれていません</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>一致する候補はありません</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>歌詞ヘルパー</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>入力した歌詞を仮名、ローマ字、または音素に変換します。</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>角括弧付きの変換結果も候補に追加</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>シンガーを選択</value>
   </data>

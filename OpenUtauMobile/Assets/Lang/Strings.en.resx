@@ -1222,6 +1222,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>This is the last note</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>Phonetic</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>No singer is assigned or loaded</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>No matching suggestions</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>Lyrics helper</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>Convert typed lyrics into kana, romanization, or phonemes.</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>Also suggest the converted result in brackets</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>Select Singer</value>
   </data>

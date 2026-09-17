@@ -349,6 +349,32 @@
                                 ConverterParameter=EditAndBehaviour}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Edit.CategoryTitle}" />
 
+                                <!-- 歌词助手 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.LyricsHelper}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.LyricsHelper.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableLyricsHelpers}"
+                                                  SelectedItem="{Binding SelectedLyricsHelper, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:LyricsHelperOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <ToggleSwitch
+                                            IsChecked="{Binding LyricsHelperBrackets, Mode=TwoWay}"
+                                            Content="{DynamicResource Settings.Edit.LyricsHelper.Brackets}"
+                                            OffContent=""
+                                            OnContent="" />
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- 钢琴键标签 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">

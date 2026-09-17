@@ -1222,6 +1222,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>已是最后一个音符</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>音标</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>尚未分配或加载歌手</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>没有匹配的候选</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>歌词助手</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>将输入的歌词转换为假名、罗马字或音素。</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>同时提供带方括号的转换结果</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>选择歌手</value>
   </data>

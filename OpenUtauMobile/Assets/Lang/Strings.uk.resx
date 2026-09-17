@@ -1145,6 +1145,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>Це остання нота</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>Фонетика</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>Співака не призначено або не завантажено</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>Відповідних варіантів немає</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>Помічник для тексту</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>Перетворює введений текст на кану, романізацію або фонеми.</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>Також пропонувати результат у квадратних дужках</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>Вибрати банк</value>
   </data>

@@ -141,6 +141,18 @@ public class OnnxRunnerOption
     }
 }
 
+/// <summary>歌词助手选项。</summary>
+public class LyricsHelperOption
+{
+    public Type HelperType { get; }
+    public string DisplayName => HelperType.Name;
+
+    public LyricsHelperOption(Type helperType)
+    {
+        HelperType = helperType;
+    }
+}
+
 /// <summary>钢琴键标签显示选项。</summary>
 public class PianoKeyLabelModeOption
 {
@@ -359,6 +371,17 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     // ── Edit & Behaviour ─────────────────────────────────────────────
     public bool IsAndroidPlatform { get; } = OperatingSystem.IsAndroid();
+
+    public IReadOnlyList<LyricsHelperOption> AvailableLyricsHelpers { get; } =
+        ActiveLyricsHelper.Inst.Available
+            .Select(type => new LyricsHelperOption(type))
+            .ToList();
+
+    [Reactive]
+    public LyricsHelperOption? SelectedLyricsHelper { get; set; }
+
+    [Reactive]
+    public bool LyricsHelperBrackets { get; set; }
 
     /// <summary>Android 全屏显示选项。</summary>
     public IReadOnlyList<AndroidFullscreenModeOption> AvailableAndroidFullscreenModes { get; } =
@@ -646,6 +669,32 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 PathManager.Inst.ClearCache();
             });
         });
+
+        // 歌词助手设置与桌面端共用 Core 偏好。
+        Type preferredLyricsHelper = ActiveLyricsHelper.Inst.GetPreferred();
+        SelectedLyricsHelper = AvailableLyricsHelpers.FirstOrDefault(option =>
+            option.HelperType == preferredLyricsHelper);
+        LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets;
+
+        this.WhenAnyValue(x => x.SelectedLyricsHelper)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(option =>
+            {
+                ActiveLyricsHelper.Inst.Set(option.HelperType);
+                Preferences.Default.LyricHelper = option.HelperType.Name;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.LyricsHelperBrackets)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.LyricsHelperBrackets = enabled;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
 
         // 钢琴键行为初始化
         int behaviorVal = Preferences.Default.PianoKeyBehavior;
