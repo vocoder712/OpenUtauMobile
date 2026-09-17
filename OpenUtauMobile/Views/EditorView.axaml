@@ -344,7 +344,8 @@
                         ClipToBounds="True"
                         IsVisible="{Binding IsVoiceMode}"
                         KeyHeight="{Binding KeyHeight}"
-                        KeyOffset="{Binding KeyOffset}" />
+                        KeyOffset="{Binding KeyOffset}"
+                        ProjectKey="{Binding ProjectKey}" />
                     <c:RenderWaveformCanvas Grid.Row="0" Grid.Column="1"
                                          IsVisible="{Binding IsVoiceMode}"
                                          Part="{Binding EditingVoicePart}"
@@ -414,7 +415,9 @@
                     <Border Grid.Row="1" Grid.Column="0" IsVisible="{Binding IsVoiceMode}">
                         <c:PianoKeysCanvas ClipToBounds="True"
                                            KeyHeight="{Binding KeyHeight}"
-                                           KeyOffset="{Binding KeyOffset}" />
+                                           KeyOffset="{Binding KeyOffset}"
+                                           ProjectKey="{Binding ProjectKey}"
+                                           LabelMode="{Binding PianoKeyLabelMode}" />
                         <!-- <Border.Effect> -->
                         <!--     <DropShadowEffect Color="{DynamicResource ShadowColor}" BlurRadius="12" OffsetX="4" OffsetY="4" Opacity="0.5"/> -->
                         <!-- </Border.Effect> -->

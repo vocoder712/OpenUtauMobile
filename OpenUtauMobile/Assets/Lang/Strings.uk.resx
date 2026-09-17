@@ -154,6 +154,12 @@
   <data name="Settings.Edit.PianoKeyBehavior.Desc" xml:space="preserve">
     <value>Відтворення звуку під час натискання клавіш піаніно</value>
   </data>
+  <data name="Settings.Edit.PianoKeyLabelMode" xml:space="preserve">
+    <value>Показувати на клавішах</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyLabelMode.Desc" xml:space="preserve">
+    <value>Виберіть позначення висоти на клавішах</value>
+  </data>
   <data name="Settings.Edit.SoundFontPath" xml:space="preserve">
     <value>Шлях до файлу SoundFont</value>
   </data>
@@ -172,6 +178,13 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Поведінка автоматичного перегортання під час відтворення</value>
   </data>
+  <data name="Settings.Edit.AndroidFullscreenMode" xml:space="preserve"><value>Повноекранний режим</value></data>
+  <data name="Settings.Edit.AndroidFullscreenMode.Desc" xml:space="preserve"><value>Виберіть, коли приховувати системні панелі Android.</value></data>
+  <data name="Settings.AndroidFullscreen.Always" xml:space="preserve"><value>Завжди</value></data>
+  <data name="Settings.AndroidFullscreen.EditorOnly" xml:space="preserve"><value>Лише в редакторі</value></data>
+  <data name="Settings.AndroidFullscreen.Off" xml:space="preserve"><value>Вимк.</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake" xml:space="preserve"><value>Не вимикати екран під час редагування</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake.Desc" xml:space="preserve"><value>Не дозволяти екрану переходити в режим сну, поки відкрито редактор.</value></data>
   <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
     <value>Перетягування полотна під час редагування висоти</value>
   </data>
@@ -225,6 +238,15 @@
   </data>
   <data name="Settings.PianoKey.SoundFont" xml:space="preserve">
     <value>Семпл піаніно (SF2)</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.PitchLabels" xml:space="preserve">
+    <value>Назви нот</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.TonicPitchLabels" xml:space="preserve">
+    <value>Лише тоніка</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.NumberedNotation" xml:space="preserve">
+    <value>Цифрова нотація</value>
   </data>
   <data name="Settings.AutoScroll.Disabled" xml:space="preserve">
     <value>Вимкнено</value>
@@ -294,6 +316,12 @@
   </data>
   <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
     <value>Виберіть бекенд виконання ONNX Runtime для моделей машинного навчання.</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice" xml:space="preserve">
+    <value>Апаратний пристрій</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice.Desc" xml:space="preserve">
+    <value>Виберіть GPU для поточного апаратного бекенда ONNX. Перезапустіть застосунок, щоб застосувати зміни.</value>
   </data>
   <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
     <value>Деякі пристрої не підтримують апаратне прискорення. Вибір NNAPI може спричинити збій застосунку.</value>
@@ -1117,6 +1145,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>Це остання нота</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>Фонетика</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>Співака не призначено або не завантажено</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>Відповідних варіантів немає</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>Помічник для тексту</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>Перетворює введений текст на кану, романізацію або фонеми.</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>Також пропонувати результат у квадратних дужках</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>Вибрати банк</value>
   </data>
@@ -1974,4 +2008,23 @@
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>Введіть назву фрагмента</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>Назва фрагмента не може бути порожньою</value></data>
   <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>Перемкнути хвилю вокалу та поступ рендерингу</value></data>
+  <data name="ExportLogs.Title" xml:space="preserve"><value>Експорт журналів</value></data>
+  <data name="ExportLogs.Refresh" xml:space="preserve"><value>Оновити список журналів</value></data>
+  <data name="ExportLogs.Hint" xml:space="preserve"><value>Виберіть журнали для діагностики. Архів може містити відомості про пристрій і шляхи до файлів — перевірте його перед поширенням.</value></data>
+  <data name="ExportLogs.Available" xml:space="preserve"><value>Доступні журнали</value></data>
+  <data name="ExportLogs.SelectNone" xml:space="preserve"><value>Зняти вибір</value></data>
+  <data name="ExportLogs.SelectionSummary" xml:space="preserve"><value>Вибрано: {0} з {1}</value></data>
+  <data name="ExportLogs.Export" xml:space="preserve"><value>Експорт</value></data>
+  <data name="ExportLogs.Loading" xml:space="preserve"><value>Завантаження журналів…</value></data>
+  <data name="ExportLogs.EmptyTitle" xml:space="preserve"><value>Журналів ще немає</value></data>
+  <data name="ExportLogs.EmptyDescription" xml:space="preserve"><value>Журнали з’являться тут після їх створення застосунком.</value></data>
+  <data name="ExportLogs.LoadFailed" xml:space="preserve"><value>Не вдалося завантажити список журналів.</value></data>
+  <data name="ExportLogs.Retry" xml:space="preserve"><value>Повторити</value></data>
+  <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>Виберіть місце для архіву журналів</value></data>
+  <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>Експортовано файлів журналів: {0}</value></data>
+  <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>Не вдалося експортувати журнали</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>Експортувати журнали збоїв Android</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>Виберіть місце для архіву журналів збоїв</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>Діагностику збоїв експортовано (записів про аварійне завершення: {0})</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>Не вдалося експортувати журнали збоїв</value></data>
 </root>

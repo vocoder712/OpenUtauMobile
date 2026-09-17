@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Threading;
 using Avalonia.Controls;
@@ -6,6 +8,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Views;
@@ -85,6 +88,23 @@ public partial class HomeView : UserControl
 
     private bool _isLandscape;
 
+    private void FooterLogotypePointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.ClickCount != 3)
+        {
+            return;
+        }
+
+        string? lyrics = typeof(HomeView).Assembly
+            .GetCustomAttributes<AssemblyMetadataAttribute>()
+            .FirstOrDefault(attribute => attribute.Key == "VersionLyrics")?
+            .Value;
+        if (!string.IsNullOrWhiteSpace(lyrics))
+        {
+            ToastService.Enqueue(lyrics);
+        }
+    }
+
     protected override void OnSizeChanged(SizeChangedEventArgs e)
     {
         base.OnSizeChanged(e);
@@ -116,8 +136,8 @@ public partial class HomeView : UserControl
     {
         if (_isLandscape)
         {
-            MainLayoutGrid.RowDefinitions = new RowDefinitions("Auto, *, Auto");
-            MainLayoutGrid.ColumnDefinitions = new ColumnDefinitions("Auto, *");
+            MainLayoutGrid.RowDefinitions = [with("Auto, *, Auto")];
+            MainLayoutGrid.ColumnDefinitions = [with("Auto, *")];
 
             Grid.SetRow(RecoveryHost, 0);
             Grid.SetColumn(RecoveryHost, 0);

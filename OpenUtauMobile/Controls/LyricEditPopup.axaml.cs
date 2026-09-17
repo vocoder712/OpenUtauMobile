@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input.TextInput;
 using Avalonia.Threading;
 using OpenUtauMobile.ViewModels;
 
@@ -15,6 +16,12 @@ public partial class LyricEditPopup : PopupDialogControl
     public LyricEditPopup()
     {
         InitializeComponent();
+
+        if (OperatingSystem.IsAndroid())
+        {
+            // Avalonia 的 Android Next 会先移动焦点，随后 Enter 无法送达当前输入框；Go 保留箭头键帽且不抢焦点。
+            TextInputOptions.SetReturnKeyType(LyricInput, TextInputReturnKeyType.Go);
+        }
     }
 
     protected override void OnDataContextChanged(EventArgs e)

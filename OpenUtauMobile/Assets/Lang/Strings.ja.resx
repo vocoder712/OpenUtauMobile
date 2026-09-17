@@ -213,6 +213,12 @@
   <data name="Settings.Edit.PianoKeyBehavior.Desc" xml:space="preserve">
     <value>ピアノキーを押したときの音声出力方式</value>
   </data>
+  <data name="Settings.Edit.PianoKeyLabelMode" xml:space="preserve">
+    <value>ピアノキーに表示</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyLabelMode.Desc" xml:space="preserve">
+    <value>ピアノキーの音高ラベルの表示方法を選択します</value>
+  </data>
   <data name="Settings.Edit.SoundFontPath" xml:space="preserve">
     <value>SoundFont ファイルパス</value>
   </data>
@@ -231,6 +237,13 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>再生中の自動ページめくり動作の設定</value>
   </data>
+  <data name="Settings.Edit.AndroidFullscreenMode" xml:space="preserve"><value>全画面表示</value></data>
+  <data name="Settings.Edit.AndroidFullscreenMode.Desc" xml:space="preserve"><value>Android のシステムバーを非表示にするタイミングを選択します。</value></data>
+  <data name="Settings.AndroidFullscreen.Always" xml:space="preserve"><value>常に</value></data>
+  <data name="Settings.AndroidFullscreen.EditorOnly" xml:space="preserve"><value>編集画面のみ</value></data>
+  <data name="Settings.AndroidFullscreen.Off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake" xml:space="preserve"><value>編集中は画面をオンに保つ</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake.Desc" xml:space="preserve"><value>編集画面を開いている間、画面のスリープを防ぎます。</value></data>
   <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
     <value>ピッチ編集時のキャンバスドラッグ</value>
   </data>
@@ -284,6 +297,15 @@
   </data>
   <data name="Settings.PianoKey.SoundFont" xml:space="preserve">
     <value>ピアノサンプル (SF2)</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.PitchLabels" xml:space="preserve">
+    <value>音高ラベル</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.TonicPitchLabels" xml:space="preserve">
+    <value>主音の音高ラベルのみ</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.NumberedNotation" xml:space="preserve">
+    <value>数字譜</value>
   </data>
   <data name="Settings.AutoScroll.Disabled" xml:space="preserve">
     <value>自動スクロール無効</value>
@@ -353,6 +375,12 @@
   </data>
   <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
     <value>機械学習モデルに使用する ONNX Runtime 実行バックエンドを選択します。</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice" xml:space="preserve">
+    <value>ハードウェアデバイス</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice.Desc" xml:space="preserve">
+    <value>現在の ONNX ハードウェアバックエンドで使用する GPU を選択します。適用するにはアプリを再起動してください。</value>
   </data>
   <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
     <value>一部の端末はハードウェアアクセラレーションに対応していません。NNAPI を選ぶとクラッシュする場合があります。</value>
@@ -1191,6 +1219,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>最後のノートです</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>音素</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>シンガーが割り当てられていないか、読み込まれていません</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>一致する候補はありません</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>歌詞ヘルパー</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>入力した歌詞を仮名、ローマ字、または音素に変換します。</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>角括弧付きの変換結果も候補に追加</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>シンガーを選択</value>
   </data>
@@ -2012,4 +2046,23 @@
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>パート名を入力</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>パート名を入力してください</value></data>
   <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>歌声の波形とレンダリング進捗を切り替える</value></data>
+  <data name="ExportLogs.Title" xml:space="preserve"><value>ログをエクスポート</value></data>
+  <data name="ExportLogs.Refresh" xml:space="preserve"><value>ログ一覧を更新</value></data>
+  <data name="ExportLogs.Hint" xml:space="preserve"><value>問題調査に使用するログを選択してください。アーカイブには端末情報やファイルパスが含まれる場合があります。共有前に内容をご確認ください。</value></data>
+  <data name="ExportLogs.Available" xml:space="preserve"><value>利用可能なログ</value></data>
+  <data name="ExportLogs.SelectNone" xml:space="preserve"><value>選択を解除</value></data>
+  <data name="ExportLogs.SelectionSummary" xml:space="preserve"><value>{1} 件中 {0} 件を選択</value></data>
+  <data name="ExportLogs.Export" xml:space="preserve"><value>エクスポート</value></data>
+  <data name="ExportLogs.Loading" xml:space="preserve"><value>ログを読み込み中…</value></data>
+  <data name="ExportLogs.EmptyTitle" xml:space="preserve"><value>ログはありません</value></data>
+  <data name="ExportLogs.EmptyDescription" xml:space="preserve"><value>アプリがログを作成すると、ここに表示されます。</value></data>
+  <data name="ExportLogs.LoadFailed" xml:space="preserve"><value>ログ一覧を読み込めませんでした。</value></data>
+  <data name="ExportLogs.Retry" xml:space="preserve"><value>再試行</value></data>
+  <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>ログアーカイブの保存先を選択</value></data>
+  <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>{0} 件のログファイルをエクスポートしました</value></data>
+  <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>ログをエクスポートできませんでした</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>Android クラッシュログをエクスポート</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>クラッシュログアーカイブの保存先を選択</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>クラッシュ診断情報をエクスポートしました（異常終了記録: {0} 件）</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>クラッシュログをエクスポートできませんでした</value></data>
 </root>

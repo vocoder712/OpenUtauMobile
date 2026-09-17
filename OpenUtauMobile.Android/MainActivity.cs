@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
-using AndroidX.Core.View;
 using Avalonia;
 using Avalonia.Android;
 using Avalonia.Media;
@@ -17,9 +17,7 @@ using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtauMobile.Android.Audio;
 using OpenUtauMobile.Helpers;
-using OpenUtauMobile.Messages;
 using OpenUtauMobile.Services;
-using ReactiveUI;
 using Serilog;
 using Environment = System.Environment;
 using Log = Serilog.Log;
@@ -33,19 +31,39 @@ namespace OpenUtauMobile.Android;
     Icon = "@drawable/icon",
     MainLauncher = true, // 主activity
     LaunchMode = LaunchMode.SingleTask, // 单例模式
-    WindowSoftInputMode = SoftInput.AdjustPan, // 键盘弹出时调整布局
+    WindowSoftInputMode = SoftInput.AdjustResize, // 键盘弹出时调整布局
     ResizeableActivity = true, // 允许调整大小
     HardwareAccelerated = true, // 启用硬件加速
     ConfigurationChanges = ConfigChanges.Orientation | 
                            ConfigChanges.ScreenSize | 
                            ConfigChanges.UiMode)]
-// 注册对 file:// 协议的支持
+// 注册对 file:// 和 content:// 协议的支持
 [IntentFilter(actions:[Intent.ActionView],
     Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
     DataScheme = "file", // file协议
     DataHost = "*",
     DataMimeType = "*/*",
     DataPathPattern = ".*\\\\.ustx")] // 匹配 ".*\\.ustx"
+[IntentFilter(actions:[Intent.ActionView],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    DataScheme = "content",
+    DataPathPattern = ".*\\\\.ustx")]
+[IntentFilter(actions:[Intent.ActionView],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    DataScheme = "content",
+    DataMimeType = "application/yaml")]
+[IntentFilter(actions:[Intent.ActionView],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    DataScheme = "content",
+    DataMimeType = "application/x-yaml")]
+[IntentFilter(actions:[Intent.ActionView],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    DataScheme = "content",
+    DataMimeType = "text/yaml")]
+[IntentFilter(actions:[Intent.ActionView],
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    DataScheme = "content",
+    DataMimeType = "application/octet-stream")]
 public class MainActivity : AvaloniaMainActivity
 {
     private static MainActivity? _currentActivity;
@@ -57,12 +75,16 @@ public class MainActivity : AvaloniaMainActivity
         InitPathManager();
         InitLogging();
         InitExceptionHandler();
+        AndroidCrashLogService crashLogService = new(global::Android.App.Application.Context);
+        ServiceHub.PlatformCrashLogService = crashLogService;
+        _ = crashLogService.CollectPreviousExitAsync();
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
         ServiceHub.ExternalUrlLauncher = new AndroidExternalUrlLauncher(() => CurrentActivity);
         ServiceHub.ExternalStorageService =
             new Storage.AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new AndroidPerformanceProvider();
+        ServiceHub.PlatformDisplayService = new AndroidDisplayService(() => CurrentActivity);
         return builder.UseReactiveUI(reactiveUIBuilder =>
         {
             reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
@@ -72,6 +94,7 @@ public class MainActivity : AvaloniaMainActivity
     protected override void OnNewIntent(Intent? intent)
     {
         base.OnNewIntent(intent);
+        Intent = intent;
         HandleIntent(intent);
     }
     
@@ -80,7 +103,7 @@ public class MainActivity : AvaloniaMainActivity
         _currentActivity = this;
         base.OnCreate(savedInstanceState);
         HandleIntent(Intent); // 处理启动时的 Intent
-        EnterImmersiveMode();
+        ServiceHub.PlatformDisplayService?.Refresh();
     }
 
     protected override void OnDestroy()
@@ -102,54 +125,100 @@ public class MainActivity : AvaloniaMainActivity
 
         if (hasFocus)
         {
-            EnterImmersiveMode();
+            ServiceHub.PlatformDisplayService?.Refresh();
         }
-    }
-    /// <summary>
-    /// 进入沉浸模式
-    /// </summary>
-    private void EnterImmersiveMode()
-    {
-        Window? window = Window;
-        View? decorView = window?.DecorView;
-        if (window == null || decorView == null)
-        {
-            return;
-        }
-
-        WindowInsetsControllerCompat? controller = WindowCompat.GetInsetsController(window, decorView);
-        if (controller == null)
-        {
-            return;
-        }
-
-        controller.Hide(WindowInsetsCompat.Type.SystemBars());
-        controller.SystemBarsBehavior = WindowInsetsControllerCompat.BehaviorShowTransientBarsBySwipe;
     }
     /// <summary>
     /// 处理Intent
     /// </summary>
     /// <param name="intent"></param>
-    private static void HandleIntent(Intent? intent)
+    private void HandleIntent(Intent? intent)
     {
-        if (intent?.Data == null)
+        if (intent?.Action != global::Android.Content.Intent.ActionView || intent.Data == null)
         {
             return;
         }
+
+        global::Android.Net.Uri uri = intent.Data;
+        intent.SetData(null); // 防止 Activity 重建时重复处理同一请求
+        _ = HandleViewIntentAsync(uri);
+    }
+
+    private async Task HandleViewIntentAsync(global::Android.Net.Uri uri)
+    {
         try
         {
-            string? data = intent.Data.ToString(); // 形如content://authority/xxx
-            if (data == null)
+            string scheme = uri.Scheme ?? string.Empty;
+            if (scheme.Equals("file", StringComparison.OrdinalIgnoreCase))
             {
+                string path = uri.Path ?? string.Empty;
+                EnsureUstxName(path);
+                ExternalProjectOpenService.Enqueue(new ExternalProjectOpenRequest(path, false));
                 return;
             }
-            System.Diagnostics.Debug.WriteLine($"Received intent with data: {data}");
-            MessageBus.Current.SendMessage(new OpenFileMessage(data)); // 发送打开文件消息
+
+            if (scheme.Equals("content", StringComparison.OrdinalIgnoreCase))
+            {
+                string path = await Task.Run(() => CopyContentUriToCache(uri));
+                ExternalProjectOpenService.Enqueue(new ExternalProjectOpenRequest(path, true));
+                return;
+            }
+
+            throw new NotSupportedException($"Unsupported project URI scheme: {scheme}");
         }
         catch (Exception ex)
         {
-            // 处理读取无权限或失败等异常
-            System.Diagnostics.Debug.WriteLine($"Failed to open file: {ex.Message}");
+            Log.Error(ex, "Failed to receive external USTX from {Uri}", uri);
+            ExternalProjectOpenService.ReportFailure(ex);
+        }
+    }
+
+    private string CopyContentUriToCache(global::Android.Net.Uri uri)
+    {
+        string displayName = GetContentDisplayName(uri) ?? uri.LastPathSegment ?? string.Empty;
+        EnsureUstxName(displayName);
+        ContentResolver resolver = ContentResolver
+            ?? throw new InvalidOperationException("Android ContentResolver is unavailable.");
+
+        string importDirectory = Path.Combine(PathManager.Inst.CachePath, "IntentImports");
+        Directory.CreateDirectory(importDirectory);
+        string destinationPath = Path.Combine(importDirectory, $"{Guid.NewGuid():N}.ustx");
+        try
+        {
+            using Stream input = resolver.OpenInputStream(uri)
+                ?? throw new IOException($"Unable to open project URI: {uri}");
+            using FileStream output = File.Create(destinationPath);
+            input.CopyTo(output);
+            return destinationPath;
+        }
+        catch
+        {
+            File.Delete(destinationPath);
+            throw;
+        }
+    }
+
+    private string? GetContentDisplayName(global::Android.Net.Uri uri)
+    {
+        ContentResolver resolver = ContentResolver
+            ?? throw new InvalidOperationException("Android ContentResolver is unavailable.");
+        string[] projection = [global::Android.Provider.IOpenableColumns.DisplayName];
+        using global::Android.Database.ICursor? cursor =
+            resolver.Query(uri, projection, null, null, null);
+        if (cursor == null || !cursor.MoveToFirst())
+        {
+            return null;
+        }
+
+        int column = cursor.GetColumnIndex(global::Android.Provider.IOpenableColumns.DisplayName);
+        return column >= 0 ? cursor.GetString(column) : null;
+    }
+
+    private static void EnsureUstxName(string name)
+    {
+        if (!Path.GetExtension(name).Equals(".ustx", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidDataException($"External project is not a USTX file: {name}");
         }
     }
     /// <summary>

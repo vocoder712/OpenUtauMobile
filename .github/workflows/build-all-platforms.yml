@@ -19,6 +19,10 @@ on:
         description: Caller workflow run ID
         required: true
         type: string
+      version_lyrics:
+        description: 版本歌词
+        required: true
+        type: string
     secrets:
       ANDROID_KEYSTORE_BASE64:
         required: true
@@ -34,6 +38,7 @@ permissions:
 
 env:
   AVALONIA_TELEMETRY_OPTOUT: "1"
+  VersionLyrics: ${{ inputs.version_lyrics }}
 
 jobs:
   # ============================================================
@@ -62,6 +67,7 @@ jobs:
       action_run_id: ${{ inputs.action_run_id }}
       arch: ${{ matrix.arch }}
       rid: ${{ matrix.rid }}
+      version_lyrics: ${{ inputs.version_lyrics }}
     secrets: inherit
 
 
@@ -341,3 +347,4 @@ jobs:
       build_number: ${{ inputs.build_number }}
       source_sha: ${{ inputs.source_sha }}
       action_run_id: ${{ inputs.action_run_id }}
+      version_lyrics: ${{ inputs.version_lyrics }}

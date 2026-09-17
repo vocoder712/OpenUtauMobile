@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
@@ -79,11 +78,6 @@ public class NotesCanvas : Control, ICmdSubscriber
     #region 内部属性
 
     private PianoRollViewModel? ViewModel { get; set; }
-
-    // 帧率计数器
-    private readonly Stopwatch _fpsStopwatch = new();
-
-    private int _frameCount;
 
     // 绘制辅助
     private readonly Points _tmpPoints = []; // 临时缓存，避免GC
@@ -296,11 +290,6 @@ public class NotesCanvas : Control, ICmdSubscriber
 
         // ———— 绘制画笔指示器 ————
         RenderPitchDrawIndicator(context);
-        // ———— 帧速率计数器 ————
-        if (ViewConstants.EnableBenchMarkTest)
-        {
-            _frameCount++;
-        }
     }
 
     /// <summary>
@@ -880,11 +869,6 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         base.OnPointerPressed(e);
         ViewModel?.Gesture.OnPointerPressed(e, this);
-        if (ViewConstants.EnableBenchMarkTest)
-        {
-            _fpsStopwatch.Restart();
-            _frameCount = 0;
-        }
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -897,16 +881,6 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         base.OnPointerReleased(e);
         ViewModel?.Gesture.OnPointerReleased(e, this);
-        if (ViewConstants.EnableBenchMarkTest)
-        {
-            _fpsStopwatch.Stop();
-            double elapsedSeconds = _fpsStopwatch.Elapsed.TotalSeconds;
-            if (elapsedSeconds > 0)
-            {
-                double fps = _frameCount / elapsedSeconds;
-                Debug.WriteLine($"拖拽滚动平均帧率: {fps:F2} FPS over {elapsedSeconds:F2} seconds.");
-            }
-        }
     }
 
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)

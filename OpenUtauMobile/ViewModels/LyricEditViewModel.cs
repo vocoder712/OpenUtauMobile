@@ -1,13 +1,33 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtauMobile.ViewModels;
+
+public sealed class LyricSuggestion
+{
+    public string Alias { get; }
+    public string Source { get; }
+
+    public LyricSuggestion(string alias, string source)
+    {
+        Alias = alias;
+        Source = source;
+    }
+}
 
 /// <summary>
 /// 歌词编辑弹窗 ViewModel。
@@ -17,7 +37,10 @@ namespace OpenUtauMobile.ViewModels;
 public class LyricEditViewModel : PopupViewModelBase, IDisposable
 {
     private readonly UVoicePart _part;
+    private readonly CompositeDisposable _disposables = new();
     private int _currentNoteIndex;
+    private int _suggestionRequestVersion;
+    private bool _disposed;
 
     /// <summary>
     /// 当前编辑的音符引用
@@ -42,6 +65,14 @@ public class LyricEditViewModel : PopupViewModelBase, IDisposable
     /// </summary>
     [Reactive]
     public string NextButtonTooltip { get; private set; } = "";
+
+    public ObservableCollection<LyricSuggestion> Suggestions { get; } = [];
+
+    [Reactive]
+    public string SuggestionStatus { get; private set; } = "";
+
+    [Reactive]
+    public LyricSuggestion? SelectedSuggestion { get; set; }
 
     /// <summary>
     /// 取消命令
@@ -76,9 +107,129 @@ public class LyricEditViewModel : PopupViewModelBase, IDisposable
         CancelCommand = ReactiveCommand.Create(OnCancel);
         NextCommand = ReactiveCommand.Create(OnNext);
         ConfirmCommand = ReactiveCommand.Create(OnConfirm);
-
         // 初始化加载第一个音符
         LoadCurrentNote();
+
+        this.WhenAnyValue(x => x.CurrentLyric)
+            .DistinctUntilChanged()
+            .Subscribe(lyric => _ = RefreshSuggestionsAsync(lyric ?? string.Empty))
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.SelectedSuggestion)
+            .WhereNotNull()
+            .Subscribe(suggestion =>
+            {
+                CurrentLyric = suggestion.Alias;
+                SelectedSuggestion = null;
+            })
+            .DisposeWith(_disposables);
+    }
+
+    private async Task RefreshSuggestionsAsync(string lyric)
+    {
+        int requestVersion = Interlocked.Increment(ref _suggestionRequestVersion);
+        USinger? singer = GetCurrentSinger();
+        ILyricsHelper? helper = ActiveLyricsHelper.Inst.Current;
+        bool addBrackets = Preferences.Default.LyricsHelperBrackets;
+        string phoneticSource = L.S("LyricEdit.PhoneticSource");
+
+        await Task.Delay(150);
+        if (_disposed || requestVersion != _suggestionRequestVersion)
+        {
+            return;
+        }
+
+        List<LyricSuggestion> suggestions = await Task.Run(() =>
+            BuildSuggestions(lyric, singer, helper, addBrackets, phoneticSource));
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (_disposed || requestVersion != _suggestionRequestVersion)
+            {
+                return;
+            }
+
+            Suggestions.Clear();
+            foreach (LyricSuggestion suggestion in suggestions)
+            {
+                Suggestions.Add(suggestion);
+            }
+
+            SuggestionStatus = suggestions.Count > 0
+                ? string.Empty
+                : singer is not { Found: true, Loaded: true }
+                    ? L.S("LyricEdit.NoSinger")
+                    : L.S("LyricEdit.NoSuggestions");
+        });
+    }
+
+    private USinger? GetCurrentSinger()
+    {
+        UProject project = DocManager.Inst.Project;
+        return _part.trackNo >= 0 && _part.trackNo < project.tracks.Count
+            ? project.tracks[_part.trackNo].Singer
+            : null;
+    }
+
+    private static List<LyricSuggestion> BuildSuggestions(
+        string lyric,
+        USinger? singer,
+        ILyricsHelper? helper,
+        bool addBrackets,
+        string phoneticSource)
+    {
+        List<LyricSuggestion> suggestions = [];
+        HashSet<string> seenAliases = [with(StringComparer.Ordinal)];
+
+        // 尝试使用歌词助手转换歌词
+        if (!string.IsNullOrEmpty(lyric) && helper != null)
+        {
+            try
+            {
+                string converted = helper.Convert(lyric);
+                AddSuggestion(converted, helper.Source);
+                if (addBrackets && !string.IsNullOrEmpty(converted)) // 如果启用括号选项，则添加带括号的候选
+                {
+                    AddSuggestion($"[{converted}]", helper.Source);
+                }
+            }
+            catch
+            {
+                // 单个歌词助手失败时仍然保留音源候选。
+            }
+        }
+
+        // 尝试使用音源获取候选
+        if (singer is { Found: true, Loaded: true })
+        {
+            try
+            {
+                foreach (KeyValuePair<string, UOto> pair in singer.GetSuggestions(lyric, false).Take(32))
+                {
+                    UOto oto = pair.Value;
+                    string source = string.IsNullOrEmpty(oto.Set)
+                        ? singer.Id
+                        : string.Equals(pair.Key, oto.Alias, StringComparison.Ordinal)
+                            ? oto.Set
+                            : phoneticSource;
+                    AddSuggestion(pair.Key, source);
+                }
+            }
+            catch
+            {
+                // 音源候选失败不应中断歌词编辑。
+            }
+        }
+
+        return suggestions;
+
+        void AddSuggestion(string alias, string source)
+        {
+            if (!string.IsNullOrEmpty(alias) && seenAliases.Add(alias))
+            {
+                suggestions.Add(new LyricSuggestion(alias, source));
+            }
+        }
     }
 
     /// <summary>
@@ -178,6 +329,9 @@ public class LyricEditViewModel : PopupViewModelBase, IDisposable
     /// </summary>
     public void Dispose()
     {
+        _disposed = true;
+        Interlocked.Increment(ref _suggestionRequestVersion);
+        _disposables.Dispose();
         CancelCommand.Dispose();
         NextCommand.Dispose();
         ConfirmCommand.Dispose();

@@ -1,0 +1,201 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             mc:Ignorable="d"
+             d:DesignWidth="400"
+             d:DesignHeight="880"
+             x:Class="OpenUtauMobile.Views.ExportLogsView"
+             x:DataType="vm:ExportLogsViewModel">
+    <UserControl.Styles>
+        <Style Selector="Border.LogList">
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+            <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXL}" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </Style>
+        <Style Selector="Border.LogRow">
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+        </Style>
+        <Style Selector="Border.ExportFooter">
+            <Setter Property="Padding" Value="20,12,20,16" />
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+            <Setter Property="BorderThickness" Value="0,1,0,0" />
+        </Style>
+    </UserControl.Styles>
+
+    <Panel Background="{DynamicResource Sem.Color.Surface}">
+        <DockPanel>
+            <Border DockPanel.Dock="Top" Classes="TopBar">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <Button Grid.Column="0"
+                            Classes="TopBarBtn"
+                            Command="{Binding BackCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Back}"
+                            Content="{iconPacks:PhosphorIcons ArrowLeft}" />
+                    <TextBlock Grid.Column="1"
+                               Classes="TopBarTitle"
+                               Text="{DynamicResource ExportLogs.Title}" />
+                    <StackPanel Grid.Column="2"
+                                Orientation="Horizontal"
+                                Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <Button Classes="TopBarBtn"
+                                IsVisible="{Binding IsCrashLogExportAvailable}"
+                                Command="{Binding ExportCrashLogsCommand}"
+                                ToolTip.Tip="{DynamicResource ExportLogs.ExportCrashLogs}"
+                                Content="{iconPacks:PhosphorIcons Bug}" />
+                        <Button Classes="TopBarBtn"
+                                Command="{Binding RefreshCommand}"
+                                ToolTip.Tip="{DynamicResource ExportLogs.Refresh}"
+                                Content="{iconPacks:PhosphorIcons ArrowsClockwise}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border DockPanel.Dock="Bottom"
+                    Classes="ExportFooter"
+                    IsVisible="{Binding HasLogs}">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <TextBlock Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Text="{Binding SelectionSummary}"
+                               FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <Button Grid.Column="1"
+                            Classes="filled"
+                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                            Command="{Binding ExportCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <iconPacks:PackIconPhosphorIcons Kind="Archive"
+                                                            Width="{x:Static semantic:IconTokens.Small}"
+                                                            Height="{x:Static semantic:IconTokens.Small}" />
+                            <TextBlock Text="{DynamicResource ExportLogs.Export}" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Grid>
+                <ScrollViewer IsVisible="{Binding HasLogs}"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <Border Padding="20,12,20,20">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                            <TextBlock Text="{DynamicResource ExportLogs.Hint}"
+                                       TextWrapping="Wrap"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <TextBlock Grid.Column="0"
+                                           VerticalAlignment="Center"
+                                           Text="{DynamicResource ExportLogs.Available}" 
+                                           FontSize="{x:Static semantic:TypographyTokens.TitleSSize}"
+                                           FontWeight="SemiBold" />
+                                <Button Grid.Column="1"
+                                        Classes="text"
+                                        Command="{Binding SelectAllCommand}"
+                                        Content="{DynamicResource Common.SelectAll}" />
+                                <Button Grid.Column="2"
+                                        Classes="text"
+                                        Command="{Binding SelectNoneCommand}"
+                                        Content="{DynamicResource ExportLogs.SelectNone}" />
+                            </Grid>
+                            <Border Classes="LogList">
+                                <ItemsControl ItemsSource="{Binding Logs}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:LogFileItemViewModel">
+                                            <Border Classes="LogRow">
+                                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                          HorizontalAlignment="Stretch"
+                                                          HorizontalContentAlignment="Stretch"
+                                                          MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}">
+                                                    <Grid ColumnDefinitions="*,Auto"
+                                                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                                        <StackPanel Grid.Column="0"
+                                                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                            <TextBlock Text="{Binding Name}"
+                                                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                                                       FontWeight="SemiBold"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock Text="{Binding ModifiedAt}"
+                                                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                        </StackPanel>
+                                                        <TextBlock Grid.Column="1"
+                                                                   VerticalAlignment="Center"
+                                                                   Text="{Binding Size}"
+                                                                   FontSize="{x:Static semantic:TypographyTokens.LabelMSize}"
+                                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                    </Grid>
+                                                </CheckBox>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+
+                <StackPanel IsVisible="{Binding IsLoading}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <ProgressBar Width="160" IsIndeterminate="True" />
+                    <TextBlock Text="{DynamicResource ExportLogs.Loading}"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                </StackPanel>
+
+                <StackPanel IsVisible="{Binding HasError}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            MaxWidth="280"
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                    <iconPacks:PackIconPhosphorIcons Kind="WarningCircle"
+                                                    Width="48" Height="48"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{DynamicResource Sem.Color.Error}" />
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <Button Classes="tonal"
+                            HorizontalAlignment="Center"
+                            Command="{Binding RefreshCommand}"
+                            Content="{DynamicResource ExportLogs.Retry}" />
+                </StackPanel>
+
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            MaxWidth="280"
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                    <StackPanel.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="HasLogs" Converter="{x:Static BoolConverters.Not}" />
+                            <Binding Path="IsLoading" Converter="{x:Static BoolConverters.Not}" />
+                            <Binding Path="HasError" Converter="{x:Static BoolConverters.Not}" />
+                        </MultiBinding>
+                    </StackPanel.IsVisible>
+                    <iconPacks:PackIconPhosphorIcons Kind="FileText"
+                                                    Width="56" Height="56"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{DynamicResource Sem.Color.Outline}" />
+                    <TextBlock Text="{DynamicResource ExportLogs.EmptyTitle}"
+                               HorizontalAlignment="Center"
+                               FontSize="{x:Static semantic:TypographyTokens.TitleMSize}"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="{DynamicResource ExportLogs.EmptyDescription}"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                </StackPanel>
+            </Grid>
+        </DockPanel>
+    </Panel>
+</UserControl>

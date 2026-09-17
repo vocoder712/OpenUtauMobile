@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
-             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
              mc:Ignorable="d"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
@@ -233,6 +232,7 @@
                          Css="{DynamicResource SvgCss}"
                          Width="256"
                          Stretch="Uniform"
+                         PointerPressed="FooterLogotypePointerPressed"
                          HorizontalAlignment="Center" />
                 </StackPanel>
             </Grid>

@@ -16,6 +16,8 @@
     <UserControl.Resources>
         <!-- 反转布尔值转换器：用于根据 IsExpanded 切换显示轨道名 -->
         <tools:BoolInvertConverter x:Key="BoolInvertConverter" />
+        <tools:SingerTypeToColorConverter x:Key="SingerTypeToColor" />
+        <tools:StringToInitialConverter x:Key="StringToInitial" />
     </UserControl.Resources>
     <!--
         主体背景层 + HUD 层：半透明和模糊效果；HUD 层默认不可见，调整旋钮时显示。
@@ -30,23 +32,57 @@
                 <!-- 左侧头像和轨道名：固定宽度，始终可见 -->
                 <Grid Grid.Column="0" RowDefinitions="*, Auto">
                     <!-- 圆形歌手头像（点击弹出歌手选择器） -->
-                    <!-- TODO: 当歌手为 null 时，绘制一圈虚线表示未选择 -->
-                    <Button Grid.Row="0"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Padding="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Margin="4,0,0,0"
-                            Command="{Binding SelectSingerCommand}"
-                            ToolTip.Tip="{DynamicResource TrackHeader.Singer}">
-                        <Ellipse Width="32" Height="32">
-                            <Ellipse.Fill>
-                                <ImageBrush Source="{Binding SingerIcon}"
-                                            Stretch="UniformToFill" />
-                            </Ellipse.Fill>
-                        </Ellipse>
-                    </Button>
+                    <controls:ShapeHitTestButton Grid.Row="0"
+                                                 HitTestShape="Ellipse"
+                                                 Width="32"
+                                                 Height="32"
+                                                 MinWidth="0"
+                                                 MinHeight="0"
+                                                 CornerRadius="16"
+                                                 ClipToBounds="True"
+                                                 Background="Transparent"
+                                                 BorderThickness="0"
+                                                 Padding="0"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Margin="4,0,0,0"
+                                                 Command="{Binding SelectSingerCommand}"
+                                                 ToolTip.Tip="{DynamicResource TrackHeader.Singer}">
+                        <Grid Width="32" Height="32" IsHitTestVisible="False">
+                            <!-- 未选择歌手时，以虚线圆提示此处可点击。 -->
+                            <Ellipse Width="30"
+                                     Height="30"
+                                     IsVisible="{Binding HasSinger, Converter={StaticResource BoolInvertConverter}}"
+                                     Stroke="{DynamicResource Sem.Color.Outline}"
+                                     StrokeThickness="1.5"
+                                     StrokeDashArray="2,2" />
+
+                            <!-- 有歌手但无可用头像时，沿用歌手卡片的类型色和首字母。 -->
+                            <Panel IsVisible="{Binding HasSingerAvatar, Converter={StaticResource BoolInvertConverter}}">
+                                <Ellipse Width="32"
+                                         Height="32"
+                                         IsVisible="{Binding HasSinger}"
+                                         Fill="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}"
+                                         Opacity="0.25" />
+                                <TextBlock IsVisible="{Binding HasSinger}"
+                                           Text="{Binding SingerAvatarName, Converter={StaticResource StringToInitial}}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Foreground="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}" />
+                            </Panel>
+
+                            <Ellipse Width="32"
+                                     Height="32"
+                                     IsVisible="{Binding HasSingerAvatar}">
+                                <Ellipse.Fill>
+                                    <ImageBrush Source="{Binding SingerIcon}"
+                                                Stretch="UniformToFill" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </Grid>
+                    </controls:ShapeHitTestButton>
                     <!-- 轨道名 -->
                     <TextBlock Grid.Row="1"
                                IsVisible="{Binding IsExpanded, Converter={StaticResource BoolInvertConverter}}"
@@ -193,8 +229,9 @@
             </Grid>
 
             <!-- 左上角彩色等腰直角三角形色标（可点击） -->
-            <Button Name="ColorBarButton"
-                    Width="20" Height="20" CornerRadius="0"
+            <controls:ShapeHitTestButton Name="ColorBarButton"
+                    HitTestShape="TopLeftTriangle"
+                    Width="20" Height="20" MinWidth="0" MinHeight="0" CornerRadius="0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Padding="0"
@@ -204,11 +241,12 @@
                     ToolTip.Tip="{DynamicResource TrackHeader.Mute}"
                     Command="{Binding MuteCommand}">
                 <Polygon Name="ColorTriangle"
+                                 IsHitTestVisible="False"
                                  Fill="{Binding TrackColorBrush}"
                                  Points="0,0 20,0 0,20"
                                  HorizontalAlignment="Left"
                                  VerticalAlignment="Top" />
-            </Button>
+            </controls:ShapeHitTestButton>
         </Panel>
 
 

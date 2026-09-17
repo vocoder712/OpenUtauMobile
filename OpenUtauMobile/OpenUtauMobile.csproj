@@ -5,7 +5,12 @@
         <LangVersion>preview</LangVersion>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <VersionLyrics Condition="'$(VersionLyrics)' == ''">8(:D</VersionLyrics>
     </PropertyGroup>
+
+    <ItemGroup>
+        <AssemblyMetadata Include="VersionLyrics" Value="$(VersionLyrics)"/>
+    </ItemGroup>
 
     <ItemGroup>
         <!-- .axaml 会被 Avalonia SDK 默认收集；这里仅补充非 axaml 资产，避免重复键冲突 -->

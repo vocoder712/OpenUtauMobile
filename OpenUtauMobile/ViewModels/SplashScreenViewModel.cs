@@ -165,7 +165,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 {
                     ProgressPercent = 100;
                     InitState = L.S("Splash.Complete");
-                    Navigator.Navigate(new HomeViewModel(Navigator));
+                    Navigator.CompleteStartup(new HomeViewModel(Navigator));
                 });
             }
             catch (OperationCanceledException)
@@ -200,13 +200,14 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
 
     private static void EnsureBuiltinLoaded()
     {
+        Assembly.Load("OpenUtauMobile.Plugin.Renderers");
+
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
         {
-            return; // 桌面平台已经在core通过dll加载了
+            return; // 桌面平台的内建音素器已经由Core加载
         }
 
         Assembly builtinAssembly = Assembly.Load("OpenUtau.Plugin.Builtin");
-        Assembly.Load("OpenUtauMobile.Plugin.Renderers");
 
         foreach (Type type in builtinAssembly.GetExportedTypes())
         {

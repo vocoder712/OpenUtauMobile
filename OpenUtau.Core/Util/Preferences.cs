@@ -334,10 +334,25 @@ namespace OpenUtau.Core.Util {
             #region OpenUtau Mobile 特定选项
             public double PlaybackRefreshRate = 20.0;
 
+            /// <summary>
+            /// Android 全屏模式：0 = 始终，1 = 仅编辑页，2 = 关闭。
+            /// </summary>
+            public int AndroidFullscreenMode = 2;
+
+            /// <summary>
+            /// Android 编辑页是否阻止屏幕休眠。
+            /// </summary>
+            public bool AndroidKeepScreenAwakeWhileEditing = true;
+
 /// <summary>
             /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont
             /// </summary>
             public int PianoKeyBehavior = 1;
+
+            /// <summary>
+            /// 钢琴键标签：0 = 音高标签，1 = 仅主音音高标签，2 = 简谱。
+            /// </summary>
+            public int PianoKeyLabelMode = 1;
 
             /// <summary>
             /// Path to SoundFont (SF2) file for piano key playback.

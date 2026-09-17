@@ -27,6 +27,11 @@ on:
         description: .NET Android runtime identifier
         required: true
         type: string
+      version_lyrics:
+        description: 版本歌词
+        required: false
+        default: ''
+        type: string
     secrets:
       ANDROID_KEYSTORE_BASE64:
         required: true
@@ -42,6 +47,7 @@ permissions:
 
 env:
   AVALONIA_TELEMETRY_OPTOUT: "1"
+  VersionLyrics: ${{ inputs.version_lyrics }}
 
 jobs:
   build:

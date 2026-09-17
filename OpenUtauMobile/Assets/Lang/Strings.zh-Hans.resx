@@ -213,6 +213,12 @@
   <data name="Settings.Edit.PianoKeyBehavior.Desc" xml:space="preserve">
     <value>按下钢琴键时的声音输出方式</value>
   </data>
+  <data name="Settings.Edit.PianoKeyLabelMode" xml:space="preserve">
+    <value>在钢琴键上显示</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyLabelMode.Desc" xml:space="preserve">
+    <value>选择钢琴键上的音高标记方式</value>
+  </data>
   <data name="Settings.Edit.SoundFontPath" xml:space="preserve">
     <value>SoundFont 文件路径</value>
   </data>
@@ -231,6 +237,13 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>设置走带时的自动翻页行为</value>
   </data>
+  <data name="Settings.Edit.AndroidFullscreenMode" xml:space="preserve"><value>全屏显示</value></data>
+  <data name="Settings.Edit.AndroidFullscreenMode.Desc" xml:space="preserve"><value>选择何时隐藏 Android 系统栏。</value></data>
+  <data name="Settings.AndroidFullscreen.Always" xml:space="preserve"><value>始终</value></data>
+  <data name="Settings.AndroidFullscreen.EditorOnly" xml:space="preserve"><value>仅编辑页</value></data>
+  <data name="Settings.AndroidFullscreen.Off" xml:space="preserve"><value>关</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake" xml:space="preserve"><value>编辑时阻止屏幕休眠</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake.Desc" xml:space="preserve"><value>编辑页打开时保持屏幕常亮。</value></data>
   <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
     <value>音高编辑模式下拖拽画布</value>
   </data>
@@ -284,6 +297,15 @@
   </data>
   <data name="Settings.PianoKey.SoundFont" xml:space="preserve">
     <value>钢琴采样 (SF2)</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.PitchLabels" xml:space="preserve">
+    <value>音高标签</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.TonicPitchLabels" xml:space="preserve">
+    <value>仅主音音高标签</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.NumberedNotation" xml:space="preserve">
+    <value>简谱</value>
   </data>
   <data name="Settings.AutoScroll.Disabled" xml:space="preserve">
     <value>关闭自动翻页</value>
@@ -353,6 +375,12 @@
   </data>
   <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
     <value>选择机器学习模型使用的 ONNX Runtime 执行后端</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice" xml:space="preserve">
+    <value>硬件设备</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice.Desc" xml:space="preserve">
+    <value>选择当前 ONNX 硬件后端使用的 GPU，重启应用后生效</value>
   </data>
   <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
     <value>部分机型不支持硬件加速，选择此选项可能导致闪退。</value>
@@ -1194,6 +1222,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>已是最后一个音符</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>音标</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>尚未分配或加载歌手</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>没有匹配的候选</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>歌词助手</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>将输入的歌词转换为假名、罗马字或音素。</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>同时提供带方括号的转换结果</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>选择歌手</value>
   </data>
@@ -2019,4 +2053,23 @@
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>输入分片名称</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>分片名称不能为空</value></data>
   <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>切换歌声波形与渲染进度</value></data>
+  <data name="ExportLogs.Title" xml:space="preserve"><value>导出日志</value></data>
+  <data name="ExportLogs.Refresh" xml:space="preserve"><value>刷新日志列表</value></data>
+  <data name="ExportLogs.Hint" xml:space="preserve"><value>选择要用于问题排查的日志。导出的压缩包可能包含设备和文件路径信息，请在分享前确认内容。</value></data>
+  <data name="ExportLogs.Available" xml:space="preserve"><value>可用日志</value></data>
+  <data name="ExportLogs.SelectNone" xml:space="preserve"><value>取消全选</value></data>
+  <data name="ExportLogs.SelectionSummary" xml:space="preserve"><value>已选择 {0} / {1}</value></data>
+  <data name="ExportLogs.Export" xml:space="preserve"><value>导出</value></data>
+  <data name="ExportLogs.Loading" xml:space="preserve"><value>正在读取日志…</value></data>
+  <data name="ExportLogs.EmptyTitle" xml:space="preserve"><value>暂无日志</value></data>
+  <data name="ExportLogs.EmptyDescription" xml:space="preserve"><value>应用生成日志后，它们会显示在这里。</value></data>
+  <data name="ExportLogs.LoadFailed" xml:space="preserve"><value>无法读取日志列表。</value></data>
+  <data name="ExportLogs.Retry" xml:space="preserve"><value>重试</value></data>
+  <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>选择日志压缩包的保存位置</value></data>
+  <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>已导出 {0} 个日志文件</value></data>
+  <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>日志导出失败</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>导出 Android 崩溃日志</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>选择崩溃日志压缩包的保存位置</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>已导出崩溃诊断信息（{0} 条异常退出记录）</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>崩溃日志导出失败</value></data>
 </root>

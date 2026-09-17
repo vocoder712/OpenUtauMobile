@@ -349,6 +349,53 @@
                                 ConverterParameter=EditAndBehaviour}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Edit.CategoryTitle}" />
 
+                                <!-- 歌词助手 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.LyricsHelper}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.LyricsHelper.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableLyricsHelpers}"
+                                                  SelectedItem="{Binding SelectedLyricsHelper, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:LyricsHelperOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <ToggleSwitch
+                                            IsChecked="{Binding LyricsHelperBrackets, Mode=TwoWay}"
+                                            Content="{DynamicResource Settings.Edit.LyricsHelper.Brackets}"
+                                            OffContent=""
+                                            OnContent="" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 钢琴键标签 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.PianoKeyLabelMode}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.PianoKeyLabelMode.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailablePianoKeyLabelModes}"
+                                                  SelectedItem="{Binding SelectedPianoKeyLabelMode, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:PianoKeyLabelModeOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- 钢琴键行为 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
@@ -453,6 +500,47 @@
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
                                     </StackPanel>
+                                </Border>
+
+                                <!-- Android 显示行为 -->
+                                <Border Classes="SettingCard"
+                                        IsVisible="{Binding IsAndroidPlatform}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.AndroidFullscreenMode}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.AndroidFullscreenMode.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  ItemsSource="{Binding AvailableAndroidFullscreenModes}"
+                                                  SelectedItem="{Binding SelectedAndroidFullscreenMode, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:AndroidFullscreenModeOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Classes="SettingCard"
+                                        IsVisible="{Binding IsAndroidPlatform}">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <StackPanel Grid.Column="0"
+                                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.AndroidKeepScreenAwake}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.AndroidKeepScreenAwake.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      IsChecked="{Binding AndroidKeepScreenAwakeWhileEditing, Mode=TwoWay}"
+                                                      OffContent=""
+                                                      OnContent="" />
+                                    </Grid>
                                 </Border>
 
                                 <!-- 音高线编辑模式画布拖拽 -->
@@ -746,6 +834,22 @@
                                                 </DataTemplate>
                                             </ComboBox.ItemTemplate>
                                         </ComboBox>
+                                        <StackPanel IsVisible="{Binding ShowOnnxDeviceSelector}"
+                                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Render.OnnxDevice}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Render.OnnxDevice.Desc}" />
+                                            <ComboBox HorizontalAlignment="Stretch"
+                                                      ItemsSource="{Binding AvailableOnnxDevices}"
+                                                      SelectedItem="{Binding SelectedOnnxDevice, Mode=TwoWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:OnnxDeviceOption">
+                                                        <TextBlock Text="{Binding DisplayName}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </StackPanel>
                                         <TextBlock FontSize="12"
                                                    Foreground="{DynamicResource Sem.Color.Error}"
                                                    IsVisible="{Binding SelectedOnnxRunner.Value,

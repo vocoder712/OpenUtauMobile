@@ -141,6 +141,64 @@ public class OnnxRunnerOption
     }
 }
 
+/// <summary>歌词助手选项。</summary>
+public class LyricsHelperOption
+{
+    public Type HelperType { get; }
+    public string DisplayName => HelperType.Name;
+
+    public LyricsHelperOption(Type helperType)
+    {
+        HelperType = helperType;
+    }
+}
+
+/// <summary>钢琴键标签显示选项。</summary>
+public class PianoKeyLabelModeOption
+{
+    public PianoKeyLabelMode Value { get; }
+    public string DisplayName { get; }
+
+    public PianoKeyLabelModeOption(PianoKeyLabelMode value, string displayName)
+    {
+        Value = value;
+        DisplayName = displayName;
+    }
+}
+
+public enum AndroidFullscreenMode
+{
+    Always = 0,
+    EditorOnly = 1,
+    Off = 2
+}
+
+/// <summary>Android 全屏显示选项。</summary>
+public class AndroidFullscreenModeOption
+{
+    public AndroidFullscreenMode Value { get; }
+    public string DisplayName { get; }
+
+    public AndroidFullscreenModeOption(AndroidFullscreenMode value, string displayName)
+    {
+        Value = value;
+        DisplayName = displayName;
+    }
+}
+
+/// <summary>机器学习加速设备选项（用于绑定到选择器）。</summary>
+public class OnnxDeviceOption
+{
+    public int DeviceId { get; }
+    public string DisplayName { get; }
+
+    public OnnxDeviceOption(int deviceId, string displayName)
+    {
+        DeviceId = deviceId;
+        DisplayName = displayName;
+    }
+}
+
 /// <summary>音频设备选项（用于绑定到选择器）。</summary>
 public class AudioDeviceOption
 {
@@ -312,6 +370,36 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> ClearRenderCacheCommand { get; }
 
     // ── Edit & Behaviour ─────────────────────────────────────────────
+    public bool IsAndroidPlatform { get; } = OperatingSystem.IsAndroid();
+
+    public IReadOnlyList<LyricsHelperOption> AvailableLyricsHelpers { get; } =
+        ActiveLyricsHelper.Inst.Available
+            .Select(type => new LyricsHelperOption(type))
+            .ToList();
+
+    [Reactive]
+    public LyricsHelperOption? SelectedLyricsHelper { get; set; }
+
+    [Reactive]
+    public bool LyricsHelperBrackets { get; set; }
+
+    /// <summary>Android 全屏显示选项。</summary>
+    public IReadOnlyList<AndroidFullscreenModeOption> AvailableAndroidFullscreenModes { get; } =
+        new List<AndroidFullscreenModeOption>
+        {
+            new(AndroidFullscreenMode.Always, L.S("Settings.AndroidFullscreen.Always")),
+            new(AndroidFullscreenMode.EditorOnly, L.S("Settings.AndroidFullscreen.EditorOnly")),
+            new(AndroidFullscreenMode.Off, L.S("Settings.AndroidFullscreen.Off"))
+        };
+
+    /// <summary>当前 Android 全屏显示模式。</summary>
+    [Reactive]
+    public AndroidFullscreenModeOption? SelectedAndroidFullscreenMode { get; set; }
+
+    /// <summary>Android 编辑页是否阻止屏幕休眠。</summary>
+    [Reactive]
+    public bool AndroidKeepScreenAwakeWhileEditing { get; set; }
+
     public const double PitchPenNoteHitTickExtensionSliderMinimum =
         Preferences.SerializablePreferences.PitchPenNoteHitTickExtensionMinimum;
     public const double PitchPenNoteHitTickExtensionSliderMaximum =
@@ -332,6 +420,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>当前选中的钢琴键行为选项。</summary>
     [Reactive]
     public PianoKeyBehaviorOption? SelectedPianoKeyBehavior { get; set; }
+
+    /// <summary>可选钢琴键标签显示方式。</summary>
+    public IReadOnlyList<PianoKeyLabelModeOption> AvailablePianoKeyLabelModes { get; } =
+        new List<PianoKeyLabelModeOption>
+        {
+            new(PianoKeyLabelMode.PitchLabels, L.S("Settings.PianoKeyLabel.PitchLabels")),
+            new(PianoKeyLabelMode.TonicPitchLabels, L.S("Settings.PianoKeyLabel.TonicPitchLabels")),
+            new(PianoKeyLabelMode.NumberedNotation, L.S("Settings.PianoKeyLabel.NumberedNotation")),
+        };
+
+    /// <summary>当前钢琴键标签显示方式。</summary>
+    [Reactive]
+    public PianoKeyLabelModeOption? SelectedPianoKeyLabelMode { get; set; }
 
     /// <summary>当前 SoundFont 文件路径。</summary>
     [Reactive]
@@ -443,6 +544,17 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>当前选中的机器学习运行器后端。</summary>
     [Reactive]
     public OnnxRunnerOption? SelectedOnnxRunner { get; set; }
+
+    /// <summary>可选机器学习加速设备列表。</summary>
+    public IReadOnlyList<OnnxDeviceOption> AvailableOnnxDevices { get; }
+
+    /// <summary>当前选中的机器学习加速设备。</summary>
+    [Reactive]
+    public OnnxDeviceOption? SelectedOnnxDevice { get; set; }
+
+    /// <summary>当前后端是否支持选择具体加速设备。</summary>
+    [Reactive]
+    public bool ShowOnnxDeviceSelector { get; set; }
 
     // ── Audio Backend & Device ──────────────────────────────────────
     /// <summary>可选音频后端列表（根据平台动态生成）。</summary>
@@ -558,6 +670,32 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             });
         });
 
+        // 歌词助手设置与桌面端共用 Core 偏好。
+        Type preferredLyricsHelper = ActiveLyricsHelper.Inst.GetPreferred();
+        SelectedLyricsHelper = AvailableLyricsHelpers.FirstOrDefault(option =>
+            option.HelperType == preferredLyricsHelper);
+        LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets;
+
+        this.WhenAnyValue(x => x.SelectedLyricsHelper)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(option =>
+            {
+                ActiveLyricsHelper.Inst.Set(option.HelperType);
+                Preferences.Default.LyricHelper = option.HelperType.Name;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.LyricsHelperBrackets)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.LyricsHelperBrackets = enabled;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
         // 钢琴键行为初始化
         int behaviorVal = Preferences.Default.PianoKeyBehavior;
         PianoKeyBehavior behavior = behaviorVal is >= 0 and <= 2
@@ -565,6 +703,20 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             : PianoKeyBehavior.SineWave;
         SelectedPianoKeyBehavior = AvailablePianoKeyBehaviors.FirstOrDefault(b => b.Value == behavior)
                                    ?? AvailablePianoKeyBehaviors[1]; // 默认正弦波
+
+        PianoKeyLabelMode labelMode = PianoKeyLabelFormatter.NormalizeMode(Preferences.Default.PianoKeyLabelMode);
+        SelectedPianoKeyLabelMode = AvailablePianoKeyLabelModes.First(option => option.Value == labelMode);
+
+        this.WhenAnyValue(x => x.SelectedPianoKeyLabelMode)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(option =>
+            {
+                Preferences.Default.PianoKeyLabelMode = (int)option.Value;
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new PianoKeyLabelModeChangedEvent(option.Value));
+            })
+            .DisposeWith(_disposables);
 
         SoundFontPath = Preferences.Default.SoundFontPath;
         IsSoundFontLoaded = SoundFontPlayer.Instance.IsReady;
@@ -635,6 +787,37 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             {
                 Preferences.Default.StopButtonBehavior = (int)opt.Value;
                 Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        // Android 显示行为
+        int fullscreenModeValue = Preferences.Default.AndroidFullscreenMode;
+        AndroidFullscreenMode fullscreenMode = fullscreenModeValue is >= 0 and <= 2
+            ? (AndroidFullscreenMode)fullscreenModeValue
+            : AndroidFullscreenMode.Always;
+        SelectedAndroidFullscreenMode = AvailableAndroidFullscreenModes
+            .FirstOrDefault(option => option.Value == fullscreenMode)
+            ?? AvailableAndroidFullscreenModes[0];
+        AndroidKeepScreenAwakeWhileEditing = Preferences.Default.AndroidKeepScreenAwakeWhileEditing;
+
+        this.WhenAnyValue(x => x.SelectedAndroidFullscreenMode)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(option =>
+            {
+                Preferences.Default.AndroidFullscreenMode = (int)option.Value;
+                Preferences.Save();
+                ServiceHub.PlatformDisplayService?.Refresh();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.AndroidKeepScreenAwakeWhileEditing)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.AndroidKeepScreenAwakeWhileEditing = enabled;
+                Preferences.Save();
+                ServiceHub.PlatformDisplayService?.Refresh();
             })
             .DisposeWith(_disposables);
 
@@ -851,10 +1034,16 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
         // 机器学习运行器后端初始化
         AvailableOnnxRunners = GetAvailableOnnxRunners();
+        AvailableOnnxDevices = GetAvailableOnnxDevices();
         string savedOnnxRunner = Preferences.Default.OnnxRunner;
         SelectedOnnxRunner = AvailableOnnxRunners.FirstOrDefault(r =>
                                  string.Equals(r.Value, savedOnnxRunner, StringComparison.OrdinalIgnoreCase))
                              ?? AvailableOnnxRunners[0];
+        SelectedOnnxDevice = AvailableOnnxDevices.FirstOrDefault(device =>
+                                 device.DeviceId == Preferences.Default.OnnxGpu)
+                             ?? AvailableOnnxDevices.FirstOrDefault();
+        ShowOnnxDeviceSelector = SupportsOnnxDeviceSelection(SelectedOnnxRunner.Value)
+                                 && AvailableOnnxDevices.Count > 0;
 
         this.WhenAnyValue(x => x.SelectedOnnxRunner)
             .Skip(1)
@@ -862,6 +1051,18 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .Subscribe(opt =>
             {
                 Preferences.Default.OnnxRunner = opt.Value;
+                ShowOnnxDeviceSelector = SupportsOnnxDeviceSelection(opt.Value)
+                                         && AvailableOnnxDevices.Count > 0;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.SelectedOnnxDevice)
+            .Skip(1)
+            .WhereNotNull()
+            .Subscribe(device =>
+            {
+                Preferences.Default.OnnxGpu = device.DeviceId;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
@@ -1003,6 +1204,29 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         }
 
         return runners.Select(runner => new OnnxRunnerOption(runner, runner)).ToList();
+    }
+
+    /// <summary>
+    /// 获取当前平台可用的机器学习加速设备。
+    /// </summary>
+    private static List<OnnxDeviceOption> GetAvailableOnnxDevices()
+    {
+        try
+        {
+            return Onnx.getGpuInfo()
+                .Select(device => new OnnxDeviceOption(device.deviceId, device.ToString()))
+                .ToList();
+        }
+        catch (Exception e)
+        {
+            Log.Warning(e, "枚举ONNX加速设备失败");
+            return [];
+        }
+    }
+
+    private static bool SupportsOnnxDeviceSelection(string runner)
+    {
+        return runner is "DirectML" or "CUDA";
     }
 
     /// <summary>

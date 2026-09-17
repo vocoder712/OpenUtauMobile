@@ -28,6 +28,10 @@ on:
         description: Optional short text prepended to generated release notes
         required: false
         type: string
+      version_lyrics:
+        description: 版本歌词
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -143,6 +147,7 @@ jobs:
       action_run_id: ${{ github.run_id }}
       arch: arm64
       rid: android-arm64
+      version_lyrics: ''
     secrets: inherit
 
   ios-canary:
@@ -157,6 +162,7 @@ jobs:
       build_number: ${{ fromJSON(needs.prepare.outputs.build_number) }}
       source_sha: ${{ github.sha }}
       action_run_id: ${{ github.run_id }}
+      version_lyrics: ''
 
   all-platforms:
     name: Full platform build
@@ -170,6 +176,7 @@ jobs:
       build_number: ${{ fromJSON(needs.prepare.outputs.build_number) }}
       source_sha: ${{ github.sha }}
       action_run_id: ${{ github.run_id }}
+      version_lyrics: ${{ inputs.version_lyrics }}
     secrets: inherit
 
   tag-and-release:
@@ -244,6 +251,7 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
           RELEASE_MODE: ${{ inputs.release }}
           CUSTOM_NOTES: ${{ inputs.release_notes }}
+          VERSION_LYRICS: ${{ inputs.version_lyrics }}
         run: |
           set -euo pipefail
 
@@ -257,8 +265,10 @@ jobs:
             release_args+=(--draft)
           fi
 
+          NOTES_PREFIX="$VERSION_LYRICS"
           if [ -n "$CUSTOM_NOTES" ]; then
-            release_args+=(--notes "$CUSTOM_NOTES")
+            NOTES_PREFIX+=$'\n\n'"$CUSTOM_NOTES"
           fi
+          release_args+=(--notes "$NOTES_PREFIX")
 
           gh release create "$TAG" "${release_args[@]}" release-assets/*

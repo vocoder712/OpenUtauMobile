@@ -92,7 +92,7 @@ public class HomeViewModel : NavigateViewModelBase
                 new ErrorMessageNotification(new FileNotFoundException(null, path))));
             return;
         }
-        Navigator.Navigate(new EditorViewModel(Navigator, path));
+        Navigator.Navigate(new EditorViewModel(Navigator, new ProjectOpenOptions(path)));
     }
 
     private void RemoveRecent(string path)
@@ -107,7 +107,8 @@ public class HomeViewModel : NavigateViewModelBase
     {
         string defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
         Navigator.Navigate(File.Exists(defaultTemplate)
-            ? new EditorViewModel(Navigator, defaultTemplate, fromTemplate: true)
+            ? new EditorViewModel(Navigator,
+                new ProjectOpenOptions(defaultTemplate, ProjectOpenKind.Template))
             : new EditorViewModel(Navigator));
     }
 
@@ -118,7 +119,8 @@ public class HomeViewModel : NavigateViewModelBase
             string? path = await PopupService.Show<string>(new ProjectTemplatesPopup(), new ProjectTemplatesViewModel());
             if (!string.IsNullOrEmpty(path) && Navigator.CurrentViewModel == this)
             {
-                Navigator.Navigate(new EditorViewModel(Navigator, path, fromTemplate: true));
+                Navigator.Navigate(new EditorViewModel(Navigator,
+                    new ProjectOpenOptions(path, ProjectOpenKind.Template)));
             }
         }
         catch (Exception exception)
@@ -138,7 +140,7 @@ public class HomeViewModel : NavigateViewModelBase
                 return;
             }
 
-            Navigator.Navigate(new EditorViewModel(Navigator, path));
+            Navigator.Navigate(new EditorViewModel(Navigator, new ProjectOpenOptions(path)));
         }
         catch (Exception e)
         {
@@ -160,7 +162,7 @@ public class HomeViewModel : NavigateViewModelBase
     {
         if (string.IsNullOrEmpty(RecoveryPath)) return;
         DismissRecovery();
-        Navigator.Navigate(new EditorViewModel(Navigator, RecoveryPath));
+        Navigator.Navigate(new EditorViewModel(Navigator, new ProjectOpenOptions(RecoveryPath)));
     }
 
     private void DismissRecovery()
@@ -174,7 +176,7 @@ public class HomeViewModel : NavigateViewModelBase
     private static async Task<string> SelectProjectFile()
     {
         return await Storage.FilePicker.PickSingleFileAsync(L.S("FilePicker.OpenProject"),
-            ["*.ustx", "*.vsqx", "*.ust", "*.mid", "*.midi", "*.ufdata", "*.musicxml"]);
+            ["*.ustx", "*.vsqx", "*.ust", "*.mid", "*.midi", "*.ufdata", "*.musicxml", "*.svp"]);
     }
 
     private async Task Initialize()
@@ -208,7 +210,7 @@ public class HomeViewModel : NavigateViewModelBase
 
     private async Task ShowSetupWizardAsync()
     {
-        var vm = new SetupWizardViewModel();
+        SetupWizardViewModel vm = new();
         await PopupService.Show<object>(new SetupWizardPopup(), vm);
     }
 

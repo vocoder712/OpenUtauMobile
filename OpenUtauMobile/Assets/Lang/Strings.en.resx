@@ -213,6 +213,12 @@
   <data name="Settings.Edit.PianoKeyBehavior.Desc" xml:space="preserve">
     <value>Sound output when pressing piano keys</value>
   </data>
+  <data name="Settings.Edit.PianoKeyLabelMode" xml:space="preserve">
+    <value>Show on Piano Keys</value>
+  </data>
+  <data name="Settings.Edit.PianoKeyLabelMode.Desc" xml:space="preserve">
+    <value>Choose how pitches are labeled on the piano keys</value>
+  </data>
   <data name="Settings.Edit.SoundFontPath" xml:space="preserve">
     <value>SoundFont File Path</value>
   </data>
@@ -231,6 +237,13 @@
   <data name="Settings.Edit.AutoScrollBehavior.Desc" xml:space="preserve">
     <value>Automatic page-turning behavior during playback</value>
   </data>
+  <data name="Settings.Edit.AndroidFullscreenMode" xml:space="preserve"><value>Fullscreen Display</value></data>
+  <data name="Settings.Edit.AndroidFullscreenMode.Desc" xml:space="preserve"><value>Choose when Android system bars are hidden.</value></data>
+  <data name="Settings.AndroidFullscreen.Always" xml:space="preserve"><value>Always</value></data>
+  <data name="Settings.AndroidFullscreen.EditorOnly" xml:space="preserve"><value>Editor Only</value></data>
+  <data name="Settings.AndroidFullscreen.Off" xml:space="preserve"><value>Off</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake" xml:space="preserve"><value>Keep Screen Awake While Editing</value></data>
+  <data name="Settings.Edit.AndroidKeepScreenAwake.Desc" xml:space="preserve"><value>Prevent the screen from sleeping while the editor is open.</value></data>
   <data name="Settings.Edit.PitchPenCanvasDrag" xml:space="preserve">
     <value>Canvas Dragging in Pitch Editing</value>
   </data>
@@ -284,6 +297,15 @@
   </data>
   <data name="Settings.PianoKey.SoundFont" xml:space="preserve">
     <value>Piano Sample (SF2)</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.PitchLabels" xml:space="preserve">
+    <value>Pitch Labels</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.TonicPitchLabels" xml:space="preserve">
+    <value>Tonic Pitch Labels Only</value>
+  </data>
+  <data name="Settings.PianoKeyLabel.NumberedNotation" xml:space="preserve">
+    <value>Numbered Notation</value>
   </data>
   <data name="Settings.AutoScroll.Disabled" xml:space="preserve">
     <value>Disabled</value>
@@ -353,6 +375,12 @@
   </data>
   <data name="Settings.Render.OnnxRunner.Desc" xml:space="preserve">
     <value>Select ONNX Runtime execution backend for machine learning models.</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice" xml:space="preserve">
+    <value>Hardware Device</value>
+  </data>
+  <data name="Settings.Render.OnnxDevice.Desc" xml:space="preserve">
+    <value>Select the GPU used by the current ONNX hardware backend. Restart the app to apply.</value>
   </data>
   <data name="Settings.Render.OnnxRunner.NnapiWarning" xml:space="preserve">
     <value>Some devices do not support hardware acceleration. Choosing NNAPI may cause crashes.</value>
@@ -1194,6 +1222,12 @@
   <data name="LyricEdit.LastNote" xml:space="preserve">
     <value>This is the last note</value>
   </data>
+  <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>Phonetic</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>No singer is assigned or loaded</value></data>
+  <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>No matching suggestions</value></data>
+  <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>Lyrics helper</value></data>
+  <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>Convert typed lyrics into kana, romanization, or phonemes.</value></data>
+  <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>Also suggest the converted result in brackets</value></data>
   <data name="Picker.Singer.Title" xml:space="preserve">
     <value>Select Singer</value>
   </data>
@@ -2019,4 +2053,23 @@
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>Enter part name</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>Part name cannot be empty</value></data>
   <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>Switch between vocal waveform and render progress</value></data>
+  <data name="ExportLogs.Title" xml:space="preserve"><value>Export logs</value></data>
+  <data name="ExportLogs.Refresh" xml:space="preserve"><value>Refresh log list</value></data>
+  <data name="ExportLogs.Hint" xml:space="preserve"><value>Select logs to help troubleshoot an issue. The archive may contain device and file-path information, so review it before sharing.</value></data>
+  <data name="ExportLogs.Available" xml:space="preserve"><value>Available logs</value></data>
+  <data name="ExportLogs.SelectNone" xml:space="preserve"><value>Select none</value></data>
+  <data name="ExportLogs.SelectionSummary" xml:space="preserve"><value>{0} of {1} selected</value></data>
+  <data name="ExportLogs.Export" xml:space="preserve"><value>Export</value></data>
+  <data name="ExportLogs.Loading" xml:space="preserve"><value>Loading logs…</value></data>
+  <data name="ExportLogs.EmptyTitle" xml:space="preserve"><value>No logs yet</value></data>
+  <data name="ExportLogs.EmptyDescription" xml:space="preserve"><value>Logs will appear here after the app creates them.</value></data>
+  <data name="ExportLogs.LoadFailed" xml:space="preserve"><value>Could not load the log list.</value></data>
+  <data name="ExportLogs.Retry" xml:space="preserve"><value>Retry</value></data>
+  <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>Choose where to save the log archive</value></data>
+  <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>Exported {0} log file(s)</value></data>
+  <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>Could not export logs</value></data>
+  <data name="ExportLogs.ExportCrashLogs" xml:space="preserve"><value>Export Android crash logs</value></data>
+  <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>Choose where to save the crash log archive</value></data>
+  <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>Exported crash diagnostics ({0} abnormal exit record(s))</value></data>
+  <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>Could not export crash logs</value></data>
 </root>

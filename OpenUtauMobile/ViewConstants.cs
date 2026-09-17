@@ -148,10 +148,5 @@ namespace OpenUtauMobile
         /// 设置页面侧边栏收起宽度（px，仅图标）。
         /// </summary>
         public const double SettingsNavCollapsedWidth = 64;
-
-        /// <summary>
-        /// 是否启用基准测试模式
-        /// </summary>
-        public static bool EnableBenchMarkTest { get; set; } = true;
     }
 }

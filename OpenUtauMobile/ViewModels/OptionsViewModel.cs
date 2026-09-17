@@ -11,7 +11,7 @@ public class OptionsViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenDependencyManagerCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenHelpCommand { get; }
-    public ReactiveCommand<Unit, Unit> ExportLogCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenExportLogsCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenAboutCommand { get; }
 
     public OptionsViewModel(MainViewModel navigator) : base(navigator)
@@ -20,7 +20,7 @@ public class OptionsViewModel : NavigateViewModelBase
         OpenSettingsCommand = ReactiveCommand.Create(OnOpenSettings);
         OpenDependencyManagerCommand = ReactiveCommand.Create(OnOpenDependencyManager);
         OpenHelpCommand = ReactiveCommand.Create(OnOpenHelp);
-        ExportLogCommand = ReactiveCommand.Create(OnExportLog);
+        OpenExportLogsCommand = ReactiveCommand.Create(OnOpenExportLogs);
         OpenAboutCommand = ReactiveCommand.Create(OnOpenAbout);
     }
 
@@ -45,10 +45,9 @@ public class OptionsViewModel : NavigateViewModelBase
         ToastService.Enqueue(L.S("Options.Toast.HelpNotImpl"));
     }
 
-    private void OnExportLog()
+    private void OnOpenExportLogs()
     {
-        // TODO: 导出日志
-        ToastService.Enqueue(L.S("Options.Toast.ExportLogNotImpl"));
+        Navigator.Navigate(new ExportLogsViewModel(Navigator));
     }
 
     private void OnOpenAbout()

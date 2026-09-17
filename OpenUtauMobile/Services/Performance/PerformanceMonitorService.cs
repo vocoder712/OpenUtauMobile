@@ -14,6 +14,7 @@ public sealed class PerformanceMonitorService
 
     private readonly object _stateLock = new object();
     private CancellationTokenSource? _samplingCancellation;
+    private IFrameRateProvider? _frameRateProvider;
     private TimeSpan? _previousProcessCpuTime;
     private long? _previousSampleTimestamp;
 
@@ -47,6 +48,15 @@ public sealed class PerformanceMonitorService
             cancellationToDispose = _samplingCancellation;
             cancellationToStart = enabled ? new CancellationTokenSource() : null;
             _samplingCancellation = cancellationToStart;
+
+            if (enabled)
+            {
+                _frameRateProvider?.Start();
+            }
+            else
+            {
+                _frameRateProvider?.Stop();
+            }
         }
 
         cancellationToDispose?.Cancel();
@@ -57,6 +67,38 @@ public sealed class PerformanceMonitorService
         {
             CancellationToken cancellationToken = cancellationToStart!.Token;
             _ = Task.Run(() => SamplingLoopAsync(cancellationToken), cancellationToken);
+        }
+    }
+
+    public void AttachFrameRateProvider(IFrameRateProvider provider)
+    {
+        lock (_stateLock)
+        {
+            if (ReferenceEquals(_frameRateProvider, provider))
+            {
+                return;
+            }
+
+            _frameRateProvider?.Stop();
+            _frameRateProvider = provider;
+            if (IsEnabled)
+            {
+                provider.Start();
+            }
+        }
+    }
+
+    public void DetachFrameRateProvider(IFrameRateProvider provider)
+    {
+        lock (_stateLock)
+        {
+            if (!ReferenceEquals(_frameRateProvider, provider))
+            {
+                return;
+            }
+
+            provider.Stop();
+            _frameRateProvider = null;
         }
     }
 
@@ -100,7 +142,12 @@ public sealed class PerformanceMonitorService
             systemMemoryUsedBytes = Math.Max(0L, totalBytes - availableBytes);
         }
 
-        IFrameRateProvider? frameRateProvider = ServiceHub.FrameRateProvider;
+        IFrameRateProvider? frameRateProvider;
+        lock (_stateLock)
+        {
+            frameRateProvider = _frameRateProvider;
+        }
+        FrameRateMetrics? frameRateMetrics = frameRateProvider?.Capture();
         return new PerformanceSnapshot(
             platformMetrics.AppMemoryBytes ?? processMemoryBytes,
             GC.GetTotalMemory(false),
@@ -108,8 +155,8 @@ public sealed class PerformanceMonitorService
             platformMetrics.SystemMemoryTotalBytes,
             processCpuUsage,
             platformMetrics.SystemCpuUsagePercent,
-            frameRateProvider?.FramesPerSecond,
-            frameRateProvider?.AverageFrameTimeMilliseconds,
+            frameRateMetrics?.FramesPerSecond,
+            frameRateMetrics?.AverageFrameTimeMilliseconds,
             CaptureAudioLatency());
     }
 
