@@ -337,12 +337,12 @@ namespace OpenUtau.Core.Util {
             /// <summary>
             /// Android 全屏模式：0 = 始终，1 = 仅编辑页，2 = 关闭。
             /// </summary>
-            public int AndroidFullscreenMode = 0;
+            public int AndroidFullscreenMode = 2;
 
             /// <summary>
             /// Android 编辑页是否阻止屏幕休眠。
             /// </summary>
-            public bool AndroidKeepScreenAwakeWhileEditing = false;
+            public bool AndroidKeepScreenAwakeWhileEditing = true;
 
 /// <summary>
             /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont

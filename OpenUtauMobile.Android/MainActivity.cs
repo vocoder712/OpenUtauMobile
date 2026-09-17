@@ -32,7 +32,7 @@ namespace OpenUtauMobile.Android;
     Icon = "@drawable/icon",
     MainLauncher = true, // 主activity
     LaunchMode = LaunchMode.SingleTask, // 单例模式
-    WindowSoftInputMode = SoftInput.AdjustPan, // 键盘弹出时调整布局
+    WindowSoftInputMode = SoftInput.AdjustResize, // 键盘弹出时调整布局
     ResizeableActivity = true, // 允许调整大小
     HardwareAccelerated = true, // 启用硬件加速
     ConfigurationChanges = ConfigChanges.Orientation | 
