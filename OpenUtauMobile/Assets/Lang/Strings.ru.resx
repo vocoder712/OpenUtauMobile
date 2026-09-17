@@ -1987,4 +1987,19 @@
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>Введите название фрагмента</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>Название фрагмента не может быть пустым</value></data>
   <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>Переключить волну вокала и ход рендеринга</value></data>
+  <data name="ExportLogs.Title" xml:space="preserve"><value>Экспорт журналов</value></data>
+  <data name="ExportLogs.Refresh" xml:space="preserve"><value>Обновить список журналов</value></data>
+  <data name="ExportLogs.Hint" xml:space="preserve"><value>Выберите журналы для диагностики. Архив может содержать сведения об устройстве и пути к файлам — проверьте его перед отправкой.</value></data>
+  <data name="ExportLogs.Available" xml:space="preserve"><value>Доступные журналы</value></data>
+  <data name="ExportLogs.SelectNone" xml:space="preserve"><value>Снять выбор</value></data>
+  <data name="ExportLogs.SelectionSummary" xml:space="preserve"><value>Выбрано: {0} из {1}</value></data>
+  <data name="ExportLogs.Export" xml:space="preserve"><value>Экспорт</value></data>
+  <data name="ExportLogs.Loading" xml:space="preserve"><value>Загрузка журналов…</value></data>
+  <data name="ExportLogs.EmptyTitle" xml:space="preserve"><value>Журналов пока нет</value></data>
+  <data name="ExportLogs.EmptyDescription" xml:space="preserve"><value>Журналы появятся здесь после их создания приложением.</value></data>
+  <data name="ExportLogs.LoadFailed" xml:space="preserve"><value>Не удалось загрузить список журналов.</value></data>
+  <data name="ExportLogs.Retry" xml:space="preserve"><value>Повторить</value></data>
+  <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>Выберите место для архива журналов</value></data>
+  <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>Экспортировано файлов журналов: {0}</value></data>
+  <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>Не удалось экспортировать журналы</value></data>
 </root>

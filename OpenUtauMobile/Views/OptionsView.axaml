@@ -149,7 +149,7 @@
                             <Border Classes="Separator" />
 
                             <!-- 鈺愨晲鈺?4. 瀵煎嚭鏃ュ織 鈺愨晲鈺?-->
-                            <Button Classes="OptionEntry" Command="{Binding ExportLogCommand}">
+                            <Button Classes="OptionEntry" Command="{Binding OpenExportLogsCommand}">
                                 <Border Padding="{x:Static components:OptionEntryTokens.TrailingInset}">
                                     <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
                                         <Panel Grid.Column="0"

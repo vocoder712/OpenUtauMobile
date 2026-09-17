@@ -2025,4 +2025,19 @@
   <data name="Picker.PartRename.Placeholder" xml:space="preserve"><value>パート名を入力</value></data>
   <data name="PartRename.Error.Empty" xml:space="preserve"><value>パート名を入力してください</value></data>
   <data name="PianoRoll.RenderDisplay.Toggle" xml:space="preserve"><value>歌声の波形とレンダリング進捗を切り替える</value></data>
+  <data name="ExportLogs.Title" xml:space="preserve"><value>ログをエクスポート</value></data>
+  <data name="ExportLogs.Refresh" xml:space="preserve"><value>ログ一覧を更新</value></data>
+  <data name="ExportLogs.Hint" xml:space="preserve"><value>問題調査に使用するログを選択してください。アーカイブには端末情報やファイルパスが含まれる場合があります。共有前に内容をご確認ください。</value></data>
+  <data name="ExportLogs.Available" xml:space="preserve"><value>利用可能なログ</value></data>
+  <data name="ExportLogs.SelectNone" xml:space="preserve"><value>選択を解除</value></data>
+  <data name="ExportLogs.SelectionSummary" xml:space="preserve"><value>{1} 件中 {0} 件を選択</value></data>
+  <data name="ExportLogs.Export" xml:space="preserve"><value>エクスポート</value></data>
+  <data name="ExportLogs.Loading" xml:space="preserve"><value>ログを読み込み中…</value></data>
+  <data name="ExportLogs.EmptyTitle" xml:space="preserve"><value>ログはありません</value></data>
+  <data name="ExportLogs.EmptyDescription" xml:space="preserve"><value>アプリがログを作成すると、ここに表示されます。</value></data>
+  <data name="ExportLogs.LoadFailed" xml:space="preserve"><value>ログ一覧を読み込めませんでした。</value></data>
+  <data name="ExportLogs.Retry" xml:space="preserve"><value>再試行</value></data>
+  <data name="ExportLogs.SaveDialogTitle" xml:space="preserve"><value>ログアーカイブの保存先を選択</value></data>
+  <data name="ExportLogs.ExportSuccess" xml:space="preserve"><value>{0} 件のログファイルをエクスポートしました</value></data>
+  <data name="ExportLogs.ExportFailed" xml:space="preserve"><value>ログをエクスポートできませんでした</value></data>
 </root>
