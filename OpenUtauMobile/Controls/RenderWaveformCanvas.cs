@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
@@ -252,15 +253,24 @@ namespace OpenUtauMobile.Controls
             _geometry = geometry;
         }
 
-        private async void StartBuild(ulong hash, Frozen<float> pcm, int channels)
+        private void StartBuild(ulong hash, Frozen<float> pcm, int channels)
         {
             CancellationTokenSource work = new();
             _work = work;
             UVoicePart? part = Part;
+            // 先占用任务槽，再退出当前绘制。后台任务即使同步完成，也不能在 Render 内请求重绘。
+            Dispatcher.UIThread.Post(() => _ = BuildPeaksAsync(hash, pcm, channels, work, part));
+        }
+
+        private async Task BuildPeaksAsync(ulong hash, Frozen<float> pcm, int channels,
+            CancellationTokenSource work, UVoicePart? part)
+        {
             try
             {
+                // 排队期间可能已经切换分片、关闭波形或卸载控件。
+                work.Token.ThrowIfCancellationRequested();
                 // 单个后台任务串行生成峰值，缩放只改变查询，不启动并行重采样任务。
-                RenderPeakPyramid peaks = await Task.Run(() => RenderPeakPyramid.Build(pcm, channels, work.Token));
+                RenderPeakPyramid peaks = await Task.Run(() => RenderPeakPyramid.Build(pcm, channels, work.Token), work.Token);
                 if (!work.IsCancellationRequested && ReferenceEquals(part, Part) && ShowWaveform && _subscription != null)
                 {
                     if (_peaks.Remove(hash, out PeakEntry? previous))
@@ -298,7 +308,10 @@ namespace OpenUtauMobile.Controls
             {
                 _work = null;
                 work.Dispose();
-                Dirty();
+                if (_subscription != null)
+                {
+                    Dirty();
+                }
             }
         }
     }
