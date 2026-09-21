@@ -287,11 +287,14 @@ public class PianoKeysCanvas : Control
                     continue;
                 }
 
+                // 深色主题的白键底色就是 Outline，标签需使用与底色有对比的深色。
                 IBrush textBrush = ThemeResources.GetBrush(isTonic
                     ? "Sem.Color.OnPrimaryContainer"
                     : isBlack
                         ? "Sem.Color.WhiteKey"
-                        : "Sem.Color.Outline");
+                        : ThemeResources.IsDarkMode
+                            ? "Sem.Color.BlackKey"
+                            : "Sem.Color.OnSurface");
                 TextLayout text = TextLayoutCache.Get(name, textBrush, 10);
                 double textY = y + (KeyHeight - text.Height) / 2;
                 double textX = w - text.Width - 2;
