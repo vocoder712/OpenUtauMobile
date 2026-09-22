@@ -39,6 +39,7 @@ public static class AppLogging
                 hooks: new BufferedFileHooks());
         }
         Log.Logger = configuration.CreateLogger();
+        Avalonia.Logging.Logger.Sink = new AvaloniaLogSink(); // 将 Avalonia 日志转发到 Serilog
         Log.Information("Application logging initialized");
     }
 
