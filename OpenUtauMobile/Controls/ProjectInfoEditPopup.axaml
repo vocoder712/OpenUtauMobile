@@ -44,7 +44,7 @@
                         Classes="DialogAction"
                         Command="{Binding CancelCommand}"
                         Content="{DynamicResource Common.Cancel}" />
-                    <Button
+                    <Button dialogs:DialogShell.IsDefaultAction="True"
                         Classes="DialogAction DialogPrimary"
                         Command="{Binding ConfirmCommand}"
                         Content="{DynamicResource Common.Confirm}" />
@@ -54,7 +54,7 @@
                         Classes="DialogAction"
                         Command="{Binding CancelCommand}"
                         Content="{DynamicResource Common.Cancel}" />
-                    <Button
+                    <Button dialogs:DialogShell.IsDefaultAction="True"
                         Classes="DialogAction DialogPrimary"
                         Command="{Binding ConfirmCommand}"
                         Content="{DynamicResource Common.Confirm}" />

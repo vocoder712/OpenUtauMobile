@@ -30,6 +30,7 @@ sealed class Program
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
+        ServiceHub.ViewportInputPlatform = new WindowsViewportInput();
         ServiceHub.ExternalUrlLauncher = new WindowsExternalUrlLauncher();
         ServiceHub.ExternalStorageService = new Storage.WindowsExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;

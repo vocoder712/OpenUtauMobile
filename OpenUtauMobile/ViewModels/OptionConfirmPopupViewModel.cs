@@ -15,12 +15,14 @@ public sealed class OptionConfirmOption
     public string Value { get; }
     public bool IsPrimary { get; }
     public bool IsDestructive { get; }
+    public bool IsDefault { get; }
 
     public OptionConfirmOption(
         string label,
         string value,
         bool isPrimary = false,
-        bool isDestructive = false)
+        bool isDestructive = false,
+        bool isDefault = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(label);
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
@@ -28,6 +30,7 @@ public sealed class OptionConfirmOption
         Value = value;
         IsPrimary = isPrimary;
         IsDestructive = isDestructive;
+        IsDefault = isDefault;
     }
 }
 
@@ -86,6 +89,8 @@ public sealed class OptionConfirmPopupViewModel : PopupViewModelBase
         }
 
         List<OptionConfirmOption> optionList = rows.SelectMany(row => row.Options).ToList();
+        if (optionList.Count(option => option.IsDefault) > 1)
+            throw new ArgumentException("Only one default option is allowed.", nameof(optionRows));
         if (optionList.Count == 0)
         {
             throw new ArgumentException("At least one confirmation option is required.", nameof(optionRows));

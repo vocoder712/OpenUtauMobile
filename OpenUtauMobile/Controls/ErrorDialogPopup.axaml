@@ -33,7 +33,7 @@
                         <TextBlock Text="{DynamicResource Common.Copy}" VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>
-                <Button
+                <Button dialogs:DialogShell.IsDefaultAction="True"
                     Classes="DialogAction DialogPrimary"
                     Content="{DynamicResource Common.Confirm}"
                     Command="{Binding CloseCommand}" />

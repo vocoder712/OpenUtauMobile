@@ -283,7 +283,7 @@
                         ShowTempoMarkers="True"
                         ShowTimeSignatureMarkers="True" />
 
-                    <c:PartsCanvas
+                    <c:PartsCanvas x:Name="PartsInputCanvas"
                         ClipToBounds="True"
                         Margin="0,24,0,0"
                         SelectedParts="{Binding SelectedParts, Mode=TwoWay}"
@@ -391,11 +391,11 @@
                            Opacity="{Binding PortraitOpacity}"
                            Source="{Binding PortraitBitmap}" />
                     <!-- 透明占位继续阻挡标尺点击穿透到音符画布。 -->
-                    <Border Grid.Row="0" Grid.Column="1"
+                    <Border x:Name="PianoInputRuler" Grid.Row="0" Grid.Column="1"
                             Background="Transparent"
                             Height="{x:Static local:ViewConstants.PianoRollTickRulerHeight}" />
                     <!-- 音符画布（Row 1, Col 1） -->
-                    <c:NotesCanvas Grid.Row="1"
+                    <c:NotesCanvas x:Name="NotesInputCanvas" Grid.Row="1"
                                    Grid.Column="1"
                                    IsVisible="{Binding IsVoiceMode}"
                                    ClipToBounds="True"

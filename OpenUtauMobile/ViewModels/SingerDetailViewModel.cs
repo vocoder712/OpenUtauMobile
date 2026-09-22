@@ -114,7 +114,7 @@ public class SingerDetailViewModel : NavigateViewModelBase
     {
         List<OptionConfirmOption> options =
         [
-            new(L.S("Common.Cancel"), CancelUninstallOption),
+            new(L.S("Common.Cancel"), CancelUninstallOption, isDefault: true),
             new(
                 L.S("Common.Uninstall"),
                 ConfirmUninstallOption,

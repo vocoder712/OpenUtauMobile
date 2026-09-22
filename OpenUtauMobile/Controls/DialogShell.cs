@@ -10,6 +10,19 @@ namespace OpenUtauMobile.Controls;
 /// <summary>统一弹窗外框；业务视图只提供标题、内容、操作和关闭命令。</summary>
 public class DialogShell : HeaderedContentControl
 {
+    public static readonly AttachedProperty<bool> IsDefaultActionProperty =
+        AvaloniaProperty.RegisterAttached<DialogShell, Button, bool>("IsDefaultAction");
+
+    public static bool GetIsDefaultAction(Button button) => button.GetValue(IsDefaultActionProperty);
+    public static void SetIsDefaultAction(Button button, bool value) => button.SetValue(IsDefaultActionProperty, value);
+
+    public DialogShell()
+    {
+        Focusable = true;
+        AttachedToVisualTree += (_, _) => DialogKeyboard.Attach(this);
+        DetachedFromVisualTree += (_, _) => DialogKeyboard.Detach(this);
+    }
+
     public static readonly StyledProperty<ICommand?> CloseCommandProperty =
         AvaloniaProperty.Register<DialogShell, ICommand?>(nameof(CloseCommand));
 

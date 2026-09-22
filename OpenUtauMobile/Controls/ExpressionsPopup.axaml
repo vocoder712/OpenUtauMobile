@@ -14,7 +14,7 @@
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActionRow>
                 <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
-                <Button Content="{DynamicResource Expressions.Apply}" Command="{Binding ApplyCommand}" Classes="DialogPrimary" />
+                <Button dialogs:DialogShell.IsDefaultAction="True" Content="{DynamicResource Expressions.Apply}" Command="{Binding ApplyCommand}" Classes="DialogPrimary" />
             </dialogs:DialogActionRow>
         </dialogs:DialogShell.Footer>
         <Grid RowDefinitions="Auto,Auto,*">

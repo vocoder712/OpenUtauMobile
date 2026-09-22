@@ -167,6 +167,7 @@ public class GestureInterpreter
     #region 内部状态字段
 
     private readonly Dictionary<IPointer, TouchPoint> _touches = [];
+    public bool HasActivePointers => _touches.Count > 0;
     private GestureState _state = GestureState.Idle;
 
     // SingleFinger 状态
@@ -217,6 +218,8 @@ public class GestureInterpreter
     /// <summary>由控件 OnPointerPressed 调用。</summary>
     public void OnPointerPressed(PointerPressedEventArgs e, Control relativeTo)
     {
+        if (e.Pointer.Type == PointerType.Mouse &&
+            (e.GetCurrentPoint(relativeTo).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed || _touches.ContainsKey(e.Pointer))) return;
         Point pos = e.GetPosition(relativeTo);
         ulong ts = e.Timestamp;
 
@@ -273,6 +276,7 @@ public class GestureInterpreter
     /// <summary>由控件 OnPointerReleased 调用。</summary>
     public void OnPointerReleased(PointerReleasedEventArgs e, Control relativeTo)
     {
+        if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(relativeTo).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonReleased) return;
         if (!_touches.TryGetValue(e.Pointer, out TouchPoint tp)) return;
 
         Point pos = e.GetPosition(relativeTo);

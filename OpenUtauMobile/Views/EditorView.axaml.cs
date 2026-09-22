@@ -38,6 +38,7 @@ public partial class EditorView : UserControl
     public void OpenMixer()
     {
         if (IsMixerOpen || DataContext is not EditorViewModel vm) return;
+        CancelEditorInput();
         _mixerPanel ??= CreateMixerPanel();
         OnMagnifierClose();
         vm.PianoRollViewModel.SetPresentationSuspended(true);
@@ -76,6 +77,7 @@ public partial class EditorView : UserControl
     public EditorView()
     {
         InitializeComponent();
+        InitializeEditorInput();
 
         SplitDragHandle.PointerPressed += OnSplitHandlePointerPressed;
         SplitDragHandle.PointerMoved += OnSplitHandlePointerMoved;

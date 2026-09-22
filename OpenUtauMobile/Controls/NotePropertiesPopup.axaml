@@ -32,7 +32,7 @@
                            Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
                 <controls:DialogActionRow>
                     <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
-                    <Button Content="{DynamicResource NoteProperties.Apply}" Click="OnApply" Classes="DialogPrimary" />
+                    <Button controls:DialogShell.IsDefaultAction="True" Content="{DynamicResource NoteProperties.Apply}" Click="OnApply" Classes="DialogPrimary" />
                 </controls:DialogActionRow>
             </StackPanel>
         </controls:DialogShell.Footer>

@@ -35,13 +35,13 @@
                     <dialogs:DialogActionRow>
                         <Button Content="{DynamicResource Common.Cancel}"
                                 Command="{Binding CloseCommand}" />
-                        <Button Content="{DynamicResource ImportTracks.Next}"
+                        <Button dialogs:DialogShell.IsDefaultAction="True" Content="{DynamicResource ImportTracks.Next}"
                                 Command="{Binding ConfirmCommand}"
                                 Classes="DialogPrimary" />
                     </dialogs:DialogActionRow>
                 </StackPanel>
                 <Border IsVisible="{Binding Mode, Converter={StaticResource ModeEq}, ConverterParameter=OpenFolder}">
-                    <Button
+                    <Button dialogs:DialogShell.IsDefaultAction="True"
                         Content="{DynamicResource FilePicker.SelectFolder}"
                         Command="{Binding SelectCurrentFolderCommand}"
                         Classes="DialogAction DialogPrimary" />
@@ -75,7 +75,7 @@
                                 Opacity="0.6" />
                         </Grid>
                         <!-- 保存按钮（跨两行，右侧对齐） -->
-                        <Button
+                        <Button dialogs:DialogShell.IsDefaultAction="True"
                             Grid.Row="0"
                             Grid.RowSpan="2"
                             Grid.Column="1"

@@ -21,7 +21,7 @@
                     Classes="DialogAction"
                     Content="{DynamicResource Common.Cancel}"
                     Command="{Binding CancelCommand}" />
-                <Button
+                <Button dialogs:DialogShell.IsDefaultAction="True"
                     Classes="DialogAction DialogPrimary"
                     Content="{DynamicResource ExportAudioPopup.Start}"
                     Command="{Binding StartCommand}" />

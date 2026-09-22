@@ -26,7 +26,7 @@
                     Command="{Binding CancelCommand}"
                     Classes="DialogAction"
                     Content="{DynamicResource Common.Cancel}" />
-                <Button
+                <Button dialogs:DialogShell.IsDefaultAction="True"
                     Command="{Binding NextCommand}"
                     Classes="DialogAction"
                     Content="{DynamicResource Common.Next}"
@@ -55,9 +55,6 @@
                     FontSize="14"
                     BorderThickness="1"
                     Padding="12,8">
-                    <TextBox.KeyBindings>
-                        <KeyBinding Gesture="Enter" Command="{Binding NextCommand}" />
-                    </TextBox.KeyBindings>
                 </TextBox>
                 <Grid Grid.Row="2" MinHeight="0">
                     <ListBox

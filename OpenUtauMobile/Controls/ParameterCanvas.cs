@@ -81,6 +81,10 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
     // 绘制与触摸交互状态
     private bool _isDrawing;
+    private IPointer? _drawingDevice;
+    private MouseButton _drawingButton;
+    private bool _strokeErase;
+    private bool EffectiveErase => _isDrawing ? _strokeErase : IsEraseMode;
     private bool _isMagnifierOpen;
     private int _lastTick;
     private int _lastValue;
@@ -130,6 +134,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        EndStroke();
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
         if (_viewModel != null)
@@ -142,6 +147,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
+        if (change.Property == PartProperty || change.Property == PrimaryKeyProperty) EndStroke();
         if (change.Property == PartProperty ||
             change.Property == TickWidthProperty ||
             change.Property == TickOffsetProperty ||
@@ -199,7 +205,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
         if (_isDrawing && _drawingPointer.HasValue)
         {
             Point center = _drawingPointer.Value;
-            IBrush haloBrush = ThemeResources.GetBrush(IsEraseMode ? "Sem.Color.Error" : "Sem.Color.Primary");
+            IBrush haloBrush = ThemeResources.GetBrush(EffectiveErase ? "Sem.Color.Error" : "Sem.Color.Primary");
             using (context.PushOpacity(0.25))
             {
                 context.DrawEllipse(haloBrush, null, center, 10.0, 10.0);
@@ -480,6 +486,10 @@ public class ParameterCanvas : Control, ICmdSubscriber
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (_isDrawing) { e.Handled = true; return; }
+        PointerPointProperties buttons = e.GetCurrentPoint(this).Properties;
+        bool right = e.Pointer.Type == PointerType.Mouse && buttons.PointerUpdateKind == PointerUpdateKind.RightButtonPressed;
+        if (e.Pointer.Type == PointerType.Mouse && !right && buttons.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed) return;
         if (Part == null || DocManager.Inst.Project == null || string.IsNullOrEmpty(PrimaryKey))
         {
             return;
@@ -504,6 +514,9 @@ public class ParameterCanvas : Control, ICmdSubscriber
         }
 
         _isDrawing = true;
+        _drawingDevice = e.Pointer;
+        _drawingButton = right ? MouseButton.Right : MouseButton.Left;
+        _strokeErase = right || IsEraseMode;
         _drawingPointer = pos;
         e.Pointer.Capture(this);
         DocManager.Inst.StartUndoGroup();
@@ -528,7 +541,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-        if (!_isDrawing || Part == null || DocManager.Inst.Project == null || string.IsNullOrEmpty(PrimaryKey))
+        if (!_isDrawing || e.Pointer != _drawingDevice || Part == null || DocManager.Inst.Project == null || string.IsNullOrEmpty(PrimaryKey))
         {
             return;
         }
@@ -572,37 +585,32 @@ public class ParameterCanvas : Control, ICmdSubscriber
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-        if (_isDrawing)
-        {
-            _isDrawing = false;
-            _drawingPointer = null;
-            DocManager.Inst.EndUndoGroup();
-            e.Pointer.Capture(null);
-            if (ViewModel != null)
-            {
-                ViewModel.EditingTip = string.Empty;
-            }
-            CloseMagnifier();
-            InvalidateVisual();
-            e.Handled = true;
-        }
+        if (!_isDrawing || e.Pointer != _drawingDevice) return;
+        PointerUpdateKind kind = e.GetCurrentPoint(this).Properties.PointerUpdateKind;
+        if (e.Pointer.Type == PointerType.Mouse && kind != (_drawingButton == MouseButton.Right
+                ? PointerUpdateKind.RightButtonReleased : PointerUpdateKind.LeftButtonReleased)) return;
+        EndStroke();
+        e.Handled = true;
     }
 
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
-        if (_isDrawing)
-        {
-            _isDrawing = false;
-            _drawingPointer = null;
-            DocManager.Inst.EndUndoGroup();
-            if (ViewModel != null)
-            {
-                ViewModel.EditingTip = string.Empty;
-            }
-            CloseMagnifier();
-            InvalidateVisual();
-        }
+        if (_drawingDevice == e.Pointer) EndStroke();
+    }
+
+    private void EndStroke()
+    {
+        if (!_isDrawing) return;
+        _isDrawing = false;
+        _drawingPointer = null;
+        IPointer? pointer = _drawingDevice;
+        _drawingDevice = null;
+        DocManager.Inst.EndUndoGroup();
+        pointer?.Capture(null);
+        if (ViewModel != null) ViewModel.EditingTip = string.Empty;
+        CloseMagnifier();
+        InvalidateVisual();
     }
 
     private void CloseMagnifier()
@@ -625,7 +633,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
         if (descriptor.type == UExpressionType.Curve)
         {
-            if (IsEraseMode)
+            if (EffectiveErase)
             {
                 ViewModel.EditingTip = $"{descriptor.name}: Erase (Default: {descriptor.defaultValue:F0})";
             }
@@ -643,7 +651,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
         if (descriptor.type == UExpressionType.Numerical)
         {
-            if (IsEraseMode)
+            if (EffectiveErase)
             {
                 ViewModel.EditingTip = $"{phonemePrefix}{descriptor.name}: Reset (Default: {descriptor.defaultValue:F0})";
             }
@@ -657,7 +665,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
             string optName = (descriptor.options != null && value >= 0 && value < descriptor.options.Length)
                 ? descriptor.options[value]
                 : value.ToString();
-            if (IsEraseMode)
+            if (EffectiveErase)
             {
                 ViewModel.EditingTip = $"{phonemePrefix}{descriptor.name}: Reset";
             }
@@ -699,7 +707,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
         double ratio = Math.Clamp(1.0 - (y - TopMargin) / usableHeight, 0.0, 1.0);
         float val = descriptor.min + (float)(ratio * (descriptor.max - descriptor.min));
-        if (IsEraseMode)
+        if (EffectiveErase)
         {
             return (int)descriptor.defaultValue;
         }
@@ -740,8 +748,8 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
         if (descriptor.type == UExpressionType.Curve)
         {
-            int targetVal = IsEraseMode ? (int)descriptor.defaultValue : value;
-            int targetLastVal = IsEraseMode ? (int)descriptor.defaultValue : lastValue;
+            int targetVal = EffectiveErase ? (int)descriptor.defaultValue : value;
+            int targetLastVal = EffectiveErase ? (int)descriptor.defaultValue : lastValue;
             int partTick = Math.Clamp(tick - Part.position, 0, Part.duration);
             int lastPartTick = Math.Clamp(lastTick - Part.position, 0, Part.duration);
             DocManager.Inst.ExecuteCmd(new SetCurveCommand(
@@ -761,7 +769,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
         {
             if (partRelativeTick >= phoneme.position && partRelativeTick <= phoneme.End)
             {
-                float? newVal = IsEraseMode ? null : (float?)value;
+                float? newVal = EffectiveErase ? null : (float?)value;
                 DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(project, track, Part, phoneme, descriptor.abbr, newVal));
                 break;
             }

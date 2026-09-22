@@ -466,6 +466,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed) return;
         if (Part == null || DocManager.Inst.Project == null)
         {
             return;
@@ -610,6 +611,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+        if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonReleased) return;
         if (_activeHandleType != AdvancedHandleType.None)
         {
             _isResetTargetActive = IsInsideResetTarget(e.GetPosition(this));

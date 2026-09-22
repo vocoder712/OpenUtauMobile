@@ -103,7 +103,7 @@ public readonly record struct VibratoOverlayHit(UNote Note, VibratoHandleKind Ha
 public readonly record struct PitchPointHit(UNote Note, PitchPoint Point, int Index);
 public readonly record struct PitchCurveHit(UNote Note, int InsertIndex, float XMs, float Y, PitchPointShape Shape);
 
-public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
+public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber, IEditorViewport
 {
     #region 绑定属性
 
@@ -607,7 +607,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         IsPlaying = isPlaying;
         IsWaitingRender = isWaitingRender;
 
-        if (TickWidth > 0)
+        if (TickWidth > 0 && !_viewportInputActive)
             TickOffset = tick - PlayMarkerX / TickWidth;
         ApplyViewportLimits();
     }
@@ -1905,7 +1905,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                     break;
                 }
 
-                if (IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
+                if (!IsTemporaryPitchErase && IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
                 {
                     _inputState = PianoRollInputState.Panning;
                     break;
@@ -2053,7 +2053,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 // 更新放大镜
                 RequestMagnifierUpdate?.Invoke(currentPoint);
 
-                if (IsPitchEraserMode)
+                if (IsEffectivePitchErase)
                 {
                     UpdateErasingPitch(currentPoint);
                 }
@@ -2696,7 +2696,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     // ── 操作方法存根 ──────────────────────────────────────────────────
 
-    private void DeleteSelectedNotes()
+    public void DeleteSelectedNotes()
     {
         if (EditingVoicePart == null || SelectedNotes.Count == 0)
         {
@@ -2704,12 +2704,13 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
+        try
         {
-            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
+            // 命令通知会同步校验并缩减选区，因此遍历本次操作的快照。
+            foreach (UNote note in SelectedNotes.ToArray())
+                DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
         }
-
-        DocManager.Inst.EndUndoGroup();
+        finally { DocManager.Inst.EndUndoGroup(); }
         SelectedNotes.Clear();
     }
 
@@ -2790,7 +2791,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Selected"), SelectedNotes.Count));
     }
 
-    private void SelectAllNotes()
+    public void SelectAllNotes()
     {
         SelectedNotes.Clear();
         if (EditingVoicePart == null)
@@ -2802,7 +2803,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.AllSelected"), SelectedNotes.Count));
     }
 
-    private void CopySelectedNotes()
+    public void CopySelectedNotes()
     {
         if (EditingVoicePart == null || SelectedNotes.Count == 0)
         {
@@ -2816,7 +2817,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Copied"), SelectedNotes.Count));
     }
 
-    private void CutSelectedNotes()
+    public void CutSelectedNotes()
     {
         if (EditingVoicePart == null || SelectedNotes.Count == 0)
         {
@@ -2828,20 +2829,23 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             .Select(n => n.Clone())
             .ToList();
 
+        UNote[] selected = SelectedNotes.ToArray();
         DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
+        try
         {
-            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
+            foreach (UNote note in selected)
+            {
+                DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
+            }
         }
+        finally { DocManager.Inst.EndUndoGroup(); }
 
-        DocManager.Inst.EndUndoGroup();
-
-        int count = SelectedNotes.Count;
+        int count = selected.Length;
         SelectedNotes.Clear();
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Cut"), count));
     }
 
-    private void PasteNotes()
+    public void PasteNotes()
     {
         if (EditingVoicePart == null || DocManager.Inst.NotesClipboard == null || DocManager.Inst.NotesClipboard.Count == 0)
         {

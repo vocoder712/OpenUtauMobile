@@ -1,6 +1,9 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using System.Windows.Input;
 using Avalonia.Input.TextInput;
 using Avalonia.Threading;
 using OpenUtauMobile.ViewModels;
@@ -16,6 +19,13 @@ public partial class LyricEditPopup : PopupDialogControl
     public LyricEditPopup()
     {
         InitializeComponent();
+        LyricInput.AddHandler(KeyDownEvent, (_, e) =>
+        {
+            if (e.Key != Key.Tab || e.KeyModifiers is not (KeyModifiers.None or KeyModifiers.Shift) || _viewModel == null || DialogKeyboard.IsComposing(LyricInput)) return;
+            e.Handled = true;
+            ICommand command = e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? _viewModel.PreviousCommand : _viewModel.NextCommand;
+            if (command.CanExecute(null)) command.Execute(null);
+        }, RoutingStrategies.Tunnel);
 
         if (OperatingSystem.IsAndroid())
         {

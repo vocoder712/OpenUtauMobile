@@ -54,7 +54,7 @@ public enum PartResizeEdge
 
 public readonly record struct PartResizeHandleHit(UPart Part, PartResizeEdge Edge);
 
-public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable
+public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable, IEditorViewport
 {
     private readonly Services.NoteExtraction.NoteExtractionAction noteExtraction = new();
     // ── 内部状态 ────────────────────────────────────────────────────────
@@ -778,7 +778,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
                 await SaveAsTemplateAsync();
                 break;
             case EditorMoreAction.SaveAs:
-                _ = RequestSaveAs();
+                _ = SaveFromInputAsync(true);
                 break;
         }
     }
@@ -1049,7 +1049,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
             return;
         }
 
-        if (_inputState != TrackInputState.Idle)
+        if (_inputState != TrackInputState.Idle || _viewportInputActive)
         {
             return;
         }
@@ -1670,7 +1670,9 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
     /// <summary>
     /// 判断直接保存还是另存为
     /// </summary>
-    private async Task<bool> Save()
+    private Task<bool> Save() => SaveFromInputAsync(false);
+
+    private async Task<bool> SaveCore()
     {
         if (!Saved) return await RequestSaveAs();
         SaveAs(string.Empty);
@@ -2050,7 +2052,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         }
     }
 
-    private void CopySelectedParts()
+    public void CopySelectedParts()
     {
         if (SelectedParts.Count == 0)
         {
@@ -2061,7 +2063,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.Copied"), SelectedParts.Count));
     }
 
-    private void CutSelectedParts()
+    public void CutSelectedParts()
     {
         if (SelectedParts.Count == 0)
         {
@@ -2070,6 +2072,7 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
 
         DocManager.Inst.PartsClipboard = SelectedParts.Select(p => p.Clone()).ToList();
 
+        UPart[] selected = SelectedParts.ToArray();
         if (EditingVoicePart != null && SelectedParts.Contains(EditingVoicePart))
         {
             EditingVoicePart = null;
@@ -2081,19 +2084,21 @@ public class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposabl
         }
 
         DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UPart part in SelectedParts)
+        try
         {
-            DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, part));
+            foreach (UPart part in selected)
+            {
+                DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, part));
+            }
         }
+        finally { DocManager.Inst.EndUndoGroup(); }
 
-        DocManager.Inst.EndUndoGroup();
-
-        int count = SelectedParts.Count;
+        int count = selected.Length;
         SelectedParts.Clear();
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.Cut"), count));
     }
 
-    private void PasteParts()
+    public void PasteParts()
     {
         if (DocManager.Inst.PartsClipboard == null || DocManager.Inst.PartsClipboard.Count == 0)
         {

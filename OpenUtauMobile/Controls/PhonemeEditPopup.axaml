@@ -22,7 +22,7 @@
                     Command="{Binding NextCommand}"
                     Classes="DialogAction"
                     Content="{DynamicResource Common.Next}" />
-                <Button
+                <Button dialogs:DialogShell.IsDefaultAction="True"
                     Command="{Binding ConfirmCommand}"
                     Classes="DialogAction DialogPrimary"
                     Content="{DynamicResource Common.Confirm}" />
