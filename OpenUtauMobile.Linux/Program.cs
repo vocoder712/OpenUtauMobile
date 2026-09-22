@@ -37,8 +37,7 @@ sealed class Program
             .UseReactiveUI(reactiveUIBuilder =>
             {
                 reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
-            })
-            .LogToTrace();
+            });
     }
 
     private static void InitPathManager()
