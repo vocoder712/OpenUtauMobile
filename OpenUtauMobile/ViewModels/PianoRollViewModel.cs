@@ -1626,6 +1626,85 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     private double _editingVibratoDurationMs;
 
     /// <summary>
+    /// 按时间区间处理新建音符的重叠，将关联修改合并为一次撤销。
+    /// </summary>
+    private static void AddCreatedNote(UVoicePart part, UNote newNote)
+    {
+        int start = newNote.position;
+        int requestedEnd = newNote.End;
+        List<UNote> overlaps = [];
+        int previousEnd = int.MinValue;
+        foreach (UNote note in part.notes)
+        {
+            if (note.position >= requestedEnd) break;
+            if (note.End <= start) continue;
+
+            // 旧音符本身已有重叠时，只保留现有遍历顺序中的首个候选。
+            if (overlaps.Count > 0 && note.position < previousEnd)
+            {
+                overlaps.RemoveRange(1, overlaps.Count - 1);
+                break;
+            }
+
+            overlaps.Add(note);
+            previousEnd = Math.Max(previousEnd, note.End);
+        }
+
+        bool extendsLeft = overlaps.Count > 0 && overlaps[0].position < start;
+        int end = requestedEnd;
+        foreach (UNote note in overlaps)
+        {
+            // 左侧延续保护全部右侧音符；否则只在完全覆盖右侧音符时截短新音符。
+            if (note.position > start && (extendsLeft || note.End <= requestedEnd))
+            {
+                end = note.position;
+                break;
+            }
+        }
+
+        newNote.duration = end - start;
+        foreach (UNote note in overlaps)
+        {
+            if (note.position >= end) break;
+            if (note.position < start)
+            {
+                newNote.lyric = "+";
+            }
+            else if (note.End > end)
+            {
+                newNote.lyric = note.lyric;
+            }
+        }
+
+        DocManager docManager = DocManager.Inst;
+        docManager.StartUndoGroup(deferValidate: true);
+        foreach (UNote note in overlaps)
+        {
+            if (note.position >= end) break;
+            if (note.position < start)
+            {
+                docManager.ExecuteCmd(new ResizeNoteCommand(part, note, start - note.End));
+            }
+            else if (note.End > end)
+            {
+                int deltaPosition = end - note.position;
+                // 先缩短再移动，避免移动命令按临时过大的终点扩展分片。
+                docManager.ExecuteCmd(new ResizeNoteCommand(part, note, -deltaPosition));
+                docManager.ExecuteCmd(new MoveNoteCommand(part, note, deltaPosition, 0));
+                docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, "+"));
+            }
+            else
+            {
+                // 异起点的完全覆盖已通过截短处理，剩下的仅有同起点替换。
+                docManager.ExecuteCmd(new RemoveNoteCommand(part, note));
+            }
+        }
+
+        docManager.ExecuteCmd(new AddNoteCommand(part, newNote));
+        docManager.EndUndoGroup();
+    }
+
+    /// <summary>
     /// 单击事件
     /// </summary>
     /// <param name="point"></param>
@@ -1678,9 +1757,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                         if (snapUnit <= 0) snapUnit = DocManager.Inst.Project.resolution; // 关闭吸附时默认四分音符
                         UNote newNote =
                             DocManager.Inst.Project.CreateNote(tone, tick - EditingVoicePart.position, snapUnit);
-                        DocManager.Inst.StartUndoGroup();
-                        DocManager.Inst.ExecuteCmd(new AddNoteCommand(EditingVoicePart, newNote));
-                        DocManager.Inst.EndUndoGroup();
+                        AddCreatedNote(EditingVoicePart, newNote);
                         PlayCreatedNotePreview(newNote); // 播放测试音
                         SelectedNotes.Add(newNote);
                     }
@@ -3537,11 +3614,11 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 _expressionRefreshPending = true;
                 _ = UpdatePortraitAsync(); // 更新立绘
                 break;
-            case AddNoteCommand:
-                if (isUndo) // 修复撤销添加音符后，选区仍然保留已删除音符的bug
-                {
-                    ValidateSelectedNotes();
-                }
+            case RemoveNoteCommand when !isUndo:
+            case AddNoteCommand when isUndo:
+                // 创建替换、撤销及重做移除音符时，同时清理音符和锚点选区。
+                ValidateSelectedNotes();
+                ValidateSelectedAnchors();
                 break;
         }
     }
