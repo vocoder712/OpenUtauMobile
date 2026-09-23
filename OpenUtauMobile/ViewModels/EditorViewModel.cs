@@ -248,8 +248,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     private bool _streamWaitingRender;
 
     private int _stopSeekState;
-    private bool _isSeekingInternally = false;
-    private bool _playheadMovedSinceStart = false;
+    private bool _isSeekingInternally;
+    private bool _playheadMovedSinceStart;
 
     // 随机数生成器
     private Random Randomer { get; } = new();
@@ -627,7 +627,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 UTrack? mappingTrack = remapping.TrackNo >= 0 && remapping.TrackNo < mappingProject.tracks.Count
                     ? mappingProject.tracks[remapping.TrackNo] : null;
                 // 歌手选择仍处于原命令组中；下一轮 UI 调度再打开映射弹窗。
-                Dispatcher.UIThread.Post(async () =>
+                Dispatcher.UIThread.Post(async void () =>
                 {
                     try
                     {
@@ -661,6 +661,12 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             case PartCommand:
                 RunOnUiThread(() =>
                 {
+                    UPart[] remainingSelection = SelectedParts
+                        .Where(part => DocManager.Inst.Project.parts.Contains(part)).ToArray();
+                    if (remainingSelection.Length != SelectedParts.Count)
+                    {
+                        ReplaceSelectedParts(remainingSelection);
+                    }
                     InvalidateMaxOffsets();
                     ApplyViewportLimits();
                     // 更新钢琴卷帘视口限制
@@ -1842,13 +1848,13 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     Tip = L.S("Common.Paste"),
                     Command = ReactiveCommand.Create(PasteParts)
                 });
-                if (hasSelection)
+                if (SelectedParts.Any(part => part is UVoicePart))
                 {
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.SplitHorizontal,
                         Tip = L.S("Editor.Action.Split"),
-                        Command = ReactiveCommand.Create(SplitSelectedParts)
+                        Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
                     });
                 }
                 break;
@@ -1878,12 +1884,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 });
                 if (hasSelection)
                 {
-                    items.Add(new ContextActionItem
+                    if (SelectedParts.Any(part => part is UVoicePart))
                     {
-                        Icon = PackIconPhosphorIconsKind.SplitHorizontal,
-                        Tip = L.S("Editor.Action.Split"),
-                        Command = ReactiveCommand.Create(SplitSelectedParts)
-                    });
+                        items.Add(new ContextActionItem
+                        {
+                            Icon = PackIconPhosphorIconsKind.SplitHorizontal,
+                            Tip = L.S("Editor.Action.Split"),
+                            Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
+                        });
+                    }
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Unite,
@@ -2031,9 +2040,115 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.Pasted"), clones.Count));
     }
 
-    private void SplitSelectedParts()
+    private async Task SplitSelectedParts()
     {
-        ToastService.Enqueue("功能正在开发");
+        UProject project = DocManager.Inst.Project;
+        int playTick = PlayPosTick;
+        List<(UVoicePart source, UVoicePart left, UVoicePart right)> splits = [];
+        List<UPart> selection = [.. SelectedParts];
+        foreach (UVoicePart part in selection.OfType<UVoicePart>().ToArray())
+        {
+            if (!project.parts.Contains(part) || part.position >= playTick || part.End <= playTick) continue;
+            int tick = FindSplitTick(part, playTick);
+            if (tick != playTick)
+            {
+                string? answer = await OptionConfirmPopupService.ShowAsync(
+                    L.S("Editor.Action.Split"), L.S("Editor.Split.NotesInTheWay"),
+                    new OptionConfirmOption[]
+                    {
+                        new(L.S("Common.Cancel"), "cancel"),
+                        new(L.S("Common.Confirm"), "split", isPrimary: true),
+                    });
+                // 弹窗期间可能切换工程或删除分片，不向失效对象提交命令。
+                if (DocManager.Inst.Project != project) return;
+                if (answer != "split" || !project.parts.Contains(part)) continue;
+                tick = FindSplitTick(part, playTick);
+            }
+
+            int relativeTick = tick - part.position;
+            UVoicePart left = new()
+            {
+                name = part.name + "-1",
+                comment = part.comment,
+                trackNo = part.trackNo,
+                position = part.position,
+                notes = GetNotes(part.notes, relativeTick, after: false),
+                curves = GetCurves(part.curves, relativeTick, after: false),
+                Duration = relativeTick,
+            };
+            UVoicePart right = new()
+            {
+                name = part.name + "-2",
+                comment = part.comment,
+                trackNo = part.trackNo,
+                position = tick,
+                notes = GetNotes(part.notes, relativeTick, after: true),
+                curves = GetCurves(part.curves, relativeTick, after: true),
+                Duration = part.End - tick,
+            };
+            splits.Add((part, left, right));
+            selection.Remove(part);
+            selection.Add(left);
+            selection.Add(right);
+        }
+        if (splits.Count == 0 || DocManager.Inst.Project != project
+            || splits.Any(split => !project.parts.Contains(split.source))) return;
+
+        DocManager.Inst.StartUndoGroup("Editor.Action.Split");
+        try
+        {
+            foreach ((UVoicePart source, UVoicePart left, UVoicePart right) in splits)
+            {
+                DocManager.Inst.ExecuteCmd(new RemovePartCommand(project, source));
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(project, left));
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(project, right));
+            }
+        }
+        finally
+        {
+            DocManager.Inst.EndUndoGroup();
+        }
+        ReplaceSelectedParts(selection.Where(project.parts.Contains));
+
+        static int FindSplitTick(UVoicePart part, int playTick)
+        {
+            int relativeTick = playTick - part.position;
+            // 音符按起点排序，一次扫描即可越过连续重叠的音符。
+            foreach (UNote note in part.notes)
+            {
+                if (note.position >= relativeTick) break;
+                relativeTick = Math.Max(relativeTick, note.End);
+            }
+            return part.position + relativeTick;
+        }
+
+        static SortedSet<UNote> GetNotes(IEnumerable<UNote> notes, int tick, bool after)
+        {
+            return new SortedSet<UNote>(notes
+                .Where(note => after ? note.position >= tick : note.position < tick)
+                .Select(note =>
+                {
+                    UNote clone = note.Clone();
+                    if (after) clone.position -= tick;
+                    return clone;
+                }));
+        }
+
+        static List<UCurve> GetCurves(IEnumerable<UCurve> curves, int tick, bool after)
+        {
+            return curves.Select(curve =>
+            {
+                UCurve clone = curve.Clone();
+                IEnumerable<(int x, int y)> points = clone.xs.Zip(clone.ys, (x, y) => (x, y));
+                points = after
+                    ? points.Where(point => point.x >= tick).Select(point => (point.x - tick, point.y))
+                    : points.Where(point => point.x < tick);
+                (int x, int y)[] filtered = points.ToArray();
+                clone.xs = filtered.Select(point => point.x).ToList();
+                clone.ys = filtered.Select(point => point.y).ToList();
+                return clone;
+            }).ToList();
+        }
     }
 
     private void MergeSelectedParts()

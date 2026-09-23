@@ -812,7 +812,7 @@
     <value>ペースト</value>
   </data>
   <data name="PianoRoll.Action.Split" xml:space="preserve">
-    <value>分割</value>
+    <value>ノートを分割</value>
   </data>
   <data name="PianoRoll.Action.Merge" xml:space="preserve">
     <value>結合</value>
@@ -2065,4 +2065,13 @@
   <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>クラッシュログアーカイブの保存先を選択</value></data>
   <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>クラッシュ診断情報をエクスポートしました（異常終了記録: {0} 件）</value></data>
   <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>クラッシュログをエクスポートできませんでした</value></data>
+  <data name="Editor.Split.NotesInTheWay" xml:space="preserve">
+    <value>再生ヘッドと重なっているノートがあります。再生ヘッドより後で、ノートと重ならない最も近い位置で分割しますか？</value>
+  </data>
+  <data name="PianoRoll.Split.NoIntersection" xml:space="preserve">
+    <value>分割するには、再生ヘッドを選択したノートの内側に移動してください。</value>
+  </data>
+  <data name="PianoRoll.Split.TooShort" xml:space="preserve">
+    <value>分割後の各ノートには最低 10 tick が必要です。分割位置は変更していません。</value>
+  </data>
 </root>
