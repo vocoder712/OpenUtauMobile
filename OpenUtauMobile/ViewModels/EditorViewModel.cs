@@ -1188,9 +1188,14 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     public UPart? HitTestPart(Point canvasPoint)
     {
+        return HitTestPart(canvasPoint, DocManager.Inst.Project.parts);
+    }
+
+    private UPart? HitTestPart(Point canvasPoint, IEnumerable<UPart> parts)
+    {
         double tick = CanvasXToTick(canvasPoint.X);
         int trackNo = CanvasYToTrackNo(canvasPoint.Y);
-        foreach (UPart part in DocManager.Inst.Project.parts)
+        foreach (UPart part in parts)
         {
             if (part.trackNo == trackNo && tick >= part.position && tick < part.position + part.Duration)
                 return part;
@@ -1362,7 +1367,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        UPart? hit = HitTestPart(point);
+        // 重叠区域优先命中已选中的分片，避免未选中的分片阻挡拖动。
+        UPart? hit = HitTestPart(point, SelectedParts) ?? HitTestPart(point);
         // 无论哪种模式，在选中的分片上开始拖动都进入拖动状态。
         if (hit != null && SelectedParts.Contains(hit))
         {
