@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -9,7 +8,6 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using DialogHostAvalonia;
-using OpenUtau.Core;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Services;
@@ -21,22 +19,17 @@ namespace OpenUtauMobile.Views;
 public partial class EditorView
 {
     private readonly ViewportInputSession _viewportInput = new();
-    private readonly HashSet<Key> _pressedKeys = [];
     private readonly HashSet<IPointer> _editorPointers = [];
     private TopLevel? _inputRoot;
     private IDisposable? _platformInput;
     private PianoRollViewModel? _inputPiano;
-    private bool _pianoInputActive;
 
     private static bool IsModalOpen => DialogHost.IsDialogOpen("MainDialogHost");
 
     private void InitializeEditorInput()
     {
         Focusable = true;
-        AddHandler(PointerWheelChangedEvent, OnEditorWheel, RoutingStrategies.Bubble);
-        AddHandler(PointerTouchPadGestureMagnifyEvent, OnEditorMagnify, RoutingStrategies.Bubble);
         AddHandler(PointerPressedEvent, OnEditorPress, RoutingStrategies.Tunnel, true);
-        AddHandler(KeyDownEvent, OnEditorKeyDown, RoutingStrategies.Tunnel);
         AttachedToVisualTree += (_, _) => AttachEditorInput();
         DetachedFromVisualTree += (_, _) => DetachEditorInput();
         DataContextChanged += (_, _) => { if (_inputRoot != null) AttachEditorInput(); };
@@ -48,7 +41,9 @@ public partial class EditorView
         _inputRoot = TopLevel.GetTopLevel(this);
         if (_inputRoot == null) return;
         _platformInput = ServiceHub.ViewportInputPlatform?.Attach(_inputRoot, DispatchViewportInput);
-        _inputRoot.AddHandler(KeyUpEvent, OnEditorKeyUp, RoutingStrategies.Tunnel, true);
+        AttachKeyboardInput();
+        _inputRoot.AddHandler(PointerWheelChangedEvent, OnEditorWheel, RoutingStrategies.Bubble);
+        _inputRoot.AddHandler(PointerTouchPadGestureMagnifyEvent, OnEditorMagnify, RoutingStrategies.Bubble);
         _inputRoot.AddHandler(PointerReleasedEvent, OnEditorRelease, RoutingStrategies.Bubble, true);
         _inputRoot.AddHandler(PointerCaptureLostEvent, OnEditorCaptureLost, RoutingStrategies.Bubble, true);
         if (_inputRoot is Window window) window.Deactivated += OnInputDeactivated;
@@ -63,14 +58,15 @@ public partial class EditorView
     private void DetachEditorInput()
     {
         CancelEditorInput();
-        _pressedKeys.Clear();
+        DetachKeyboardInput();
         PopupService.Opening -= CancelEditorInput;
         _platformInput?.Dispose();
         _platformInput = null;
         if (_inputPiano != null) _inputPiano.PropertyChanged -= OnInputPianoPropertyChanged;
         _inputPiano = null;
         if (_inputRoot == null) return;
-        _inputRoot.RemoveHandler(KeyUpEvent, OnEditorKeyUp);
+        _inputRoot.RemoveHandler(PointerWheelChangedEvent, OnEditorWheel);
+        _inputRoot.RemoveHandler(PointerTouchPadGestureMagnifyEvent, OnEditorMagnify);
         _inputRoot.RemoveHandler(PointerReleasedEvent, OnEditorRelease);
         _inputRoot.RemoveHandler(PointerCaptureLostEvent, OnEditorCaptureLost);
         if (_inputRoot is Window window) window.Deactivated -= OnInputDeactivated;
@@ -96,10 +92,6 @@ public partial class EditorView
         _editorPointers.Clear();
     }
 
-    private void OnEditorKeyUp(object? sender, KeyEventArgs e)
-    {
-        if (_pressedKeys.Remove(e.Key)) e.Handled = true;
-    }
     private void OnEditorRelease(object? sender, PointerReleasedEventArgs e)
     {
         PointerPointProperties p = e.GetCurrentPoint(this).Properties;
@@ -110,10 +102,10 @@ public partial class EditorView
     private void OnEditorPress(object? sender, PointerPressedEventArgs e)
     {
         _viewportInput.Cancel();
-        _pianoInputActive = e.Source is Visual target && target.GetSelfAndVisualAncestors().Contains(PianoRollAreaGrid) && !IsMixerOpen;
+        UpdateActiveEditArea(e.Source as Visual);
         if (e.Source is not Visual visual || !TryGetSurface(visual, out bool piano, out _)) return;
         _editorPointers.Add(e.Pointer);
-        _pianoInputActive = piano;
+        _activeEditArea = piano ? EditArea.PianoRoll : EditArea.Tracks;
         Focus();
     }
 
@@ -142,8 +134,8 @@ public partial class EditorView
             return true;
         }
         _editorPointers.RemoveWhere(pointer => pointer.Captured == null);
-        if (_inputRoot == null || !IsEffectivelyVisible || !IsEffectivelyEnabled || IsModalOpen ||
-            _editorPointers.Count != 0 || DataContext is not EditorViewModel vm || vm.IsLoadingProject) return false;
+        if (_inputRoot == null || !IsEditorInputActive ||
+            _editorPointers.Count != 0 || DataContext is not EditorViewModel vm) return false;
         if (_inputRoot.InputHitTest(input.Position) is not Visual hit ||
             !TryGetSurface(hit, out bool piano, out ViewportAxes axes)) return false;
         Control canvas = piano ? NotesInputCanvas : PartsInputCanvas;
@@ -171,73 +163,5 @@ public partial class EditorView
             { piano = node is Control { DataContext: PianoRollViewModel }; axes = ViewportAxes.Horizontal; return !piano || !IsMixerOpen; }
         }
         return false;
-    }
-
-    private async void OnEditorKeyDown(object? sender, KeyEventArgs e)
-    {
-        if (IsModalOpen || DataContext is not EditorViewModel vm || vm.IsLoadingProject) return;
-        bool saveModifier = e.KeyModifiers is KeyModifiers.Control or (KeyModifiers.Control | KeyModifiers.Shift) ||
-            OperatingSystem.IsMacOS() && e.KeyModifiers is KeyModifiers.Meta or (KeyModifiers.Meta | KeyModifiers.Shift);
-        if (e.Key == Key.S && saveModifier)
-        {
-            e.Handled = true;
-            if (!_pressedKeys.Add(e.Key)) return;
-            await vm.SaveFromInputAsync(e.KeyModifiers.HasFlag(KeyModifiers.Shift));
-            return;
-        }
-        if (e.Source is not Visual source ||
-            source.GetSelfAndVisualAncestors().Any(v => v is TextBox or ComboBox or RangeBase)) return;
-        bool commandModifier = e.KeyModifiers == KeyModifiers.Control ||
-            OperatingSystem.IsMacOS() && e.KeyModifiers == KeyModifiers.Meta;
-        if (commandModifier)
-        {
-            if (e.Key is Key.C or Key.V or Key.X && !IsMixerOpen)
-            {
-                e.Handled = true;
-                if (!_pressedKeys.Add(e.Key) || _editorPointers.Count != 0 || DocManager.Inst.HasOpenUndoGroup) return;
-                if (_pianoInputActive)
-                {
-                    if (!vm.PianoRollViewModel.CanNavigateViewport || vm.PianoRollViewModel.EditingVoicePart == null) return;
-                }
-                else if (!vm.CanNavigateViewport) return;
-                Action action = (_pianoInputActive, e.Key) switch
-                {
-                    (true, Key.C) => vm.PianoRollViewModel.CopySelectedNotes,
-                    (true, Key.X) => vm.PianoRollViewModel.CutSelectedNotes,
-                    (true, _) => vm.PianoRollViewModel.PasteNotes,
-                    (false, Key.C) => vm.CopySelectedParts,
-                    (false, Key.X) => vm.CutSelectedParts,
-                    _ => vm.PasteParts
-                };
-                action();
-            }
-            else if (e.Key is Key.Z or Key.Y)
-            {
-                e.Handled = true;
-                if (!_pressedKeys.Add(e.Key) || _editorPointers.Count != 0) return;
-                ICommand command = e.Key == Key.Z ? vm.UndoCommand : vm.RedoCommand;
-                if (command.CanExecute(null)) command.Execute(null);
-            }
-            else if (e.Key == Key.A && _pianoInputActive && !IsMixerOpen && _editorPointers.Count == 0 &&
-                     vm.PianoRollViewModel.CanNavigateViewport && vm.PianoRollViewModel.EditingVoicePart != null)
-            {
-                e.Handled = true;
-                if (_pressedKeys.Add(e.Key)) vm.PianoRollViewModel.SelectAllNotes();
-            }
-            return;
-        }
-        if (e.KeyModifiers != KeyModifiers.None) return;
-        if (e.Key == Key.Space)
-        {
-            e.Handled = true;
-            if (_pressedKeys.Add(e.Key) && ((ICommand)vm.PlayPauseCommand).CanExecute(null))
-                ((ICommand)vm.PlayPauseCommand).Execute(null);
-        }
-        else if (e.Key == Key.Delete && _pianoInputActive && !IsMixerOpen && _editorPointers.Count == 0 &&
-                 vm.PianoRollViewModel.CanNavigateViewport && vm.PianoRollViewModel.SelectedNotes.Count > 0)
-        {
-            e.Handled = true;
-            if (_pressedKeys.Add(e.Key)) vm.PianoRollViewModel.DeleteSelectedNotes();
-        }
     }
 }
