@@ -108,7 +108,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     #region 绑定属性
 
     [Reactive] public UVoicePart? EditingVoicePart { get; set; }
-    [Reactive] public bool ShowRenderWaveform { get; set; } = true;
+    [Reactive] public bool ShowRenderWaveform { get; set; }
     [Reactive] public UWavePart? EditingWavePart { get; set; }
     public bool IsVoiceMode => EditingVoicePart != null;
     public bool IsWaveMode => EditingWavePart != null;
@@ -144,7 +144,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     [Reactive] public double TickWidth { get; set; } = ViewConstants.PianoRollTickWidthDefault; // 缩放
     [Reactive] public double KeyHeight { get; set; } = 32; // 高度
     [Reactive] public double TickOffset { get; set; } // X 滚动
-    [Reactive] public double KeyOffset { get; set; } = 56; // Y 滚动
+    [Reactive] public double KeyOffset { get; set; } = 64; // Y 滚动
 
     /// <summary>当前工程主音的十二平均律音级索引。</summary>
     [Reactive] public int ProjectKey { get; private set; }
@@ -774,6 +774,16 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public PianoRollViewModel()
     {
+        ShowRenderWaveform = Preferences.Default.ShowRenderWaveform;
+        this.WhenAnyValue(x => x.ShowRenderWaveform)
+            .Skip(1)
+            .Subscribe(showWaveform =>
+            {
+                Preferences.Default.ShowRenderWaveform = showWaveform;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
         ProjectKey = PianoKeyLabelFormatter.NormalizePitchClass(DocManager.Inst.Project.key);
         PianoKeyLabelMode = PianoKeyLabelFormatter.NormalizeMode(Preferences.Default.PianoKeyLabelMode);
         IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
