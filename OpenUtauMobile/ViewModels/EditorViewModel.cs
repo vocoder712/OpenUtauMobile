@@ -1246,6 +1246,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private TrackInputState _inputState = TrackInputState.Idle; // 输入状态机
     private readonly ViewportMotionController _panMotion = new();
+    private UPart[] _movingParts = []; // 拖动使用排序后的选区快照，不修改选区或触发编辑状态切换。
     private (int position, int trackNo)[] _movingPartOrigins = []; // 拖动开始时各选中分片的初始位置（position, trackNo），用于从绝对偏移计算目标位置
     private int _resizingReferencePartIndex; // 触发 resize 的手柄所属分片在 SelectedParts 中的索引，用作吸附基准
     private PartResizeEdge _resizingEdge = PartResizeEdge.End;
@@ -1270,7 +1271,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 }
 
                 // 单选
-                SelectedParts.Load(hitTestPart != null ? [hitTestPart] : []);
+                ReplaceSelectedParts(hitTestPart != null ? [hitTestPart] : []);
 
                 break;
             case TrackEditMode.MultiSelect:
@@ -1367,13 +1368,12 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         {
             _inputState = TrackInputState.MovingParts;
             // 记录所有选中分片的初始位置
-            UPart[] sortedParts =
+            _movingParts =
                 [.. SelectedParts.OrderBy(p => p.position).ThenBy(p => p.trackNo)]; // 先按 position 排序，position 相同则按 trackNo 排序，确保移动时分片顺序稳定
-            SelectedParts.Load(sortedParts);
-            _movingPartOrigins = new (int, int)[SelectedParts.Count];
-            for (int i = 0; i < SelectedParts.Count; i++)
+            _movingPartOrigins = new (int, int)[_movingParts.Length];
+            for (int i = 0; i < _movingParts.Length; i++)
             {
-                _movingPartOrigins[i] = (SelectedParts[i].position, SelectedParts[i].trackNo);
+                _movingPartOrigins[i] = (_movingParts[i].position, _movingParts[i].trackNo);
             }
 
             DocManager.Inst.StartUndoGroup(deferValidate: true);
@@ -1413,14 +1413,14 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 tickTotal = newPos0 - _movingPartOrigins[0].position;
                 int trackMax = DocManager.Inst.Project.tracks.Count - 1;
                 // 第一轮遍历：预计算所有目标位置，任一越界则放弃本次移动
-                (int pos, int track)[] targets = new (int pos, int track)[SelectedParts.Count];
-                for (int i = 0; i < SelectedParts.Count; i++)
+                (int pos, int track)[] targets = new (int pos, int track)[_movingParts.Length];
+                for (int i = 0; i < _movingParts.Length; i++)
                 {
                     (int originPos, int originTrack) = _movingPartOrigins[i];
                     int newPos = originPos + tickTotal;
                     int newTrack = originTrack + trackTotal;
-                    if (newTrack < 0 || newTrack > trackMax || newPos < 0 || (newPos == SelectedParts[i].position &&
-                                                                              newTrack == SelectedParts[i].trackNo))
+                    if (newTrack < 0 || newTrack > trackMax || newPos < 0 || (newPos == _movingParts[i].position &&
+                                                                              newTrack == _movingParts[i].trackNo))
                     {
                         return;
                     }
@@ -1429,10 +1429,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 }
 
                 // 第二轮遍历：执行移动
-                for (int i = 0; i < SelectedParts.Count; i++)
+                for (int i = 0; i < _movingParts.Length; i++)
                 {
                     DocManager.Inst.ExecuteCmd(new MovePartCommand(
-                        DocManager.Inst.Project, SelectedParts[i], targets[i].pos, targets[i].track));
+                        DocManager.Inst.Project, _movingParts[i], targets[i].pos, targets[i].track));
                 }
 
                 // O(SelectedParts.Count) 线性时间复杂度
@@ -1543,6 +1543,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
 
         _inputState = TrackInputState.Idle;
+        _movingParts = [];
         _movingPartOrigins = [];
         _resizingReferencePartIndex = 0;
         _resizingEdge = PartResizeEdge.End;
@@ -2083,7 +2084,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         DocManager.Inst.EndUndoGroup();
 
-        SelectedParts.Load(clones);
+        ReplaceSelectedParts(clones);
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.Pasted"), clones.Count));
     }
 
@@ -2099,8 +2100,17 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private void SelectAllParts()
     {
-        SelectedParts.Load(DocManager.Inst.Project.parts);
+        ReplaceSelectedParts(DocManager.Inst.Project.parts);
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.AllSelected"), SelectedParts.Count));
+    }
+
+    private void ReplaceSelectedParts(IEnumerable<UPart> parts)
+    {
+        // Load 会先清空再逐项添加；合并通知，避免中间选区触发编辑切换和手势取消。
+        using (SelectedParts.SuspendNotifications())
+        {
+            SelectedParts.Load(parts);
+        }
     }
 
     private void AddTimeSignatureMarker()
