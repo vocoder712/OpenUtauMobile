@@ -2370,6 +2370,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         IsDanger = true,
                         Command = ReactiveCommand.Create(DeleteSelectedNotes)
                     });
+                    items.Add(CreateSplitNotesAction());
                 }
 
                 if (hasSingleNote)
@@ -2434,6 +2435,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         IsDanger = true,
                         Command = ReactiveCommand.Create(DeleteSelectedNotes)
                     });
+                    items.Add(CreateSplitNotesAction());
                     items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Copy,
@@ -2861,6 +2863,108 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         int count = selected.Length;
         SelectedNotes.Clear();
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Cut"), count));
+    }
+
+    private ContextActionItem CreateSplitNotesAction()
+    {
+        return new ContextActionItem
+        {
+            Icon = PackIconPhosphorIconsKind.SplitHorizontal,
+            Tip = L.S("PianoRoll.Action.Split"),
+            Command = ReactiveCommand.Create(SplitSelectedNotes),
+        };
+    }
+
+    private void SplitSelectedNotes()
+    {
+        UVoicePart? part = EditingVoicePart;
+        UProject project = DocManager.Inst.Project;
+        if (part == null || !project.parts.Contains(part) || SelectedNotes.Count == 0) return;
+
+        int tick = PlayPosTick - part.position;
+        UNote[] notes = SelectedNotes
+            .Where(note => part.notes.Contains(note) && note.position < tick && tick < note.End)
+            .ToArray();
+        if (notes.Length == 0)
+        {
+            ToastService.Enqueue(L.S("PianoRoll.Split.NoIntersection"));
+            return;
+        }
+
+        // 核心校验会将不足 10 tick 的音符延长；拒绝无法表示的切点，不擅自移动它。
+        notes = notes.Where(note => tick - note.position >= 10 && note.End - tick >= 10).ToArray();
+        if (notes.Length == 0)
+        {
+            ToastService.Enqueue(L.S("PianoRoll.Split.TooShort"));
+            return;
+        }
+
+        List<UNote> newNotes = [];
+        DocManager.Inst.StartUndoGroup("PianoRoll.Action.Split");
+        try
+        {
+            foreach (UNote note in notes)
+            {
+                int oldDuration = note.duration;
+                float oldVibLength = note.vibrato.length;
+                float oldVibFadeIn = note.vibrato.@in;
+                float oldVibFadeOut = note.vibrato.@out;
+                float oldVibShift = note.vibrato.shift;
+                float oldVibLengthTicks = oldVibLength * oldDuration / 100;
+                float oldVibFadeInTicks = oldVibFadeIn * oldVibLengthTicks / 100;
+                float oldVibFadeOutTicks = oldVibFadeOut * oldVibLengthTicks / 100;
+                float vibPeriod = note.vibrato.period;
+
+                // 与桌面刀具一致，新音符使用默认音高锚点，仅迁移表达式和分割歌词。
+                UNote newNote = project.CreateNote(note.tone, tick, note.End - tick);
+                DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, newNote));
+                foreach (UExpression expression in note.phonemeExpressions.OrderBy(expression => expression.index))
+                {
+                    DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(
+                        project, project.tracks[part.trackNo], part, newNote,
+                        expression.abbr, new float?[] { expression.value }));
+                }
+                DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, newNote, NotePresets.Default.SplittedLyric));
+                DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(part, note, tick - note.End));
+
+                if (oldVibLength > 0)
+                {
+                    DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(part, newNote, note.vibrato.depth));
+                    DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(part, newNote, vibPeriod));
+                    if (oldVibLengthTicks > newNote.duration)
+                    {
+                        float newVibLengthTicks = oldVibLengthTicks - newNote.duration;
+                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, newNote, 100));
+                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, newVibLengthTicks * 100 / note.duration));
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(part, note, oldVibFadeInTicks * 100 / newVibLengthTicks));
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(part, note, 0));
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(part, newNote, 0));
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(part, newNote, oldVibFadeOutTicks * 100 / newNote.duration));
+                        // 沿用桌面端的颤音相位计算。
+                        double newVibLengthMs = project.timeAxis.MsBetweenTickPos(
+                            newNote.position, newNote.position + newVibLengthTicks);
+                        float newVibShift = (float)(100 * (newVibLengthMs % vibPeriod / vibPeriod)) + oldVibShift;
+                        if (newVibShift > 100) newVibShift -= 100;
+                        DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(part, newNote, newVibShift));
+                    }
+                    else
+                    {
+                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
+                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, newNote, oldVibLengthTicks * 100 / newNote.duration));
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(part, newNote, oldVibFadeIn));
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(part, newNote, oldVibFadeOut));
+                        DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(part, newNote, oldVibShift));
+                    }
+                }
+                newNotes.Add(newNote);
+            }
+        }
+        finally
+        {
+            DocManager.Inst.EndUndoGroup();
+        }
+        SelectedNotes.AddRange(newNotes);
+        RequestInvalidateVisual?.Invoke();
     }
 
     public void PasteNotes()

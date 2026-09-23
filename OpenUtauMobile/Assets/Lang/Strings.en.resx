@@ -815,7 +815,7 @@
     <value>Paste</value>
   </data>
   <data name="PianoRoll.Action.Split" xml:space="preserve">
-    <value>Split</value>
+    <value>Split notes</value>
   </data>
   <data name="PianoRoll.Action.Merge" xml:space="preserve">
     <value>Merge</value>
@@ -2072,4 +2072,13 @@
   <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>Choose where to save the crash log archive</value></data>
   <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>Exported crash diagnostics ({0} abnormal exit record(s))</value></data>
   <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>Could not export crash logs</value></data>
+  <data name="Editor.Split.NotesInTheWay" xml:space="preserve">
+    <value>There are one or more note(s) overlapping with the playhead. Do you want to continue splitting at the nearest position after the playhead where there are no notes?</value>
+  </data>
+  <data name="PianoRoll.Split.NoIntersection" xml:space="preserve">
+    <value>Move the playhead inside a selected note to split it.</value>
+  </data>
+  <data name="PianoRoll.Split.TooShort" xml:space="preserve">
+    <value>Each resulting note must be at least 10 ticks long. The split point has not been moved.</value>
+  </data>
 </root>

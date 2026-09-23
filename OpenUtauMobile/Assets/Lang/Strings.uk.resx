@@ -738,7 +738,7 @@
     <value>Вставити</value>
   </data>
   <data name="PianoRoll.Action.Split" xml:space="preserve">
-    <value>Розділити</value>
+    <value>Розділити ноти</value>
   </data>
   <data name="PianoRoll.Action.Merge" xml:space="preserve">
     <value>Об'єднати</value>
@@ -2027,4 +2027,13 @@
   <data name="ExportLogs.CrashSaveDialogTitle" xml:space="preserve"><value>Виберіть місце для архіву журналів збоїв</value></data>
   <data name="ExportLogs.CrashExportSuccess" xml:space="preserve"><value>Діагностику збоїв експортовано (записів про аварійне завершення: {0})</value></data>
   <data name="ExportLogs.CrashExportFailed" xml:space="preserve"><value>Не вдалося експортувати журнали збоїв</value></data>
+  <data name="Editor.Split.NotesInTheWay" xml:space="preserve">
+    <value>Бігунок перетинається з однією або більше нотами. Продовжити поділ у найближчій позиції після бігунка, де немає нот?</value>
+  </data>
+  <data name="PianoRoll.Split.NoIntersection" xml:space="preserve">
+    <value>Для поділу перемістіть курсор відтворення всередину вибраної ноти.</value>
+  </data>
+  <data name="PianoRoll.Split.TooShort" xml:space="preserve">
+    <value>Кожна частина ноти має бути не коротшою за 10 тіків. Точку поділу не змінено.</value>
+  </data>
 </root>
