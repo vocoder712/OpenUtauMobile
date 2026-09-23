@@ -25,7 +25,7 @@
                         Command="{Binding ExitWithoutSaveCommand}" />
                 </dialogs:DialogActionRow>
                 <dialogs:DialogActionRow>
-                    <Button
+                    <Button dialogs:DialogShell.IsDefaultAction="True"
                         Classes="DialogAction DialogPrimary"
                         Content="{DynamicResource Editor.BackConfirm.SaveAndExit}"
                         Command="{Binding SaveAndExitCommand}" />

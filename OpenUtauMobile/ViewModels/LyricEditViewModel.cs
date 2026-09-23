@@ -83,6 +83,7 @@ public class LyricEditViewModel : PopupViewModelBase, IDisposable
     /// "下一个"命令：保存当前歌词，移动到下一个音符，若无下一个则关闭
     /// </summary>
     public ReactiveCommand<Unit, Unit> NextCommand { get; }
+    public ReactiveCommand<Unit, Unit> PreviousCommand { get; }
 
     /// <summary>
     /// 确认命令：保存当前歌词并关闭
@@ -106,6 +107,12 @@ public class LyricEditViewModel : PopupViewModelBase, IDisposable
 
         CancelCommand = ReactiveCommand.Create(OnCancel);
         NextCommand = ReactiveCommand.Create(OnNext);
+        PreviousCommand = ReactiveCommand.Create(() =>
+        {
+            SaveCurrentNoteEdit();
+            _currentNoteIndex = Math.Max(0, _currentNoteIndex - 1);
+            LoadCurrentNote();
+        });
         ConfirmCommand = ReactiveCommand.Create(OnConfirm);
         // 初始化加载第一个音符
         LoadCurrentNote();
@@ -334,6 +341,7 @@ public class LyricEditViewModel : PopupViewModelBase, IDisposable
         _disposables.Dispose();
         CancelCommand.Dispose();
         NextCommand.Dispose();
+        PreviousCommand.Dispose();
         ConfirmCommand.Dispose();
         GC.SuppressFinalize(this);
     }

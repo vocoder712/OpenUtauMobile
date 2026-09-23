@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using DialogHostAvalonia;
+using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 using Serilog;
 
@@ -14,6 +15,7 @@ namespace OpenUtauMobile.Services.Dialogs;
 /// <remarks>支持泛型、mvvm绑定、关闭回调等特性</remarks>
 public static class PopupService
 {
+    public static event Action? Opening;
     private const string MainDialogHostIdentifier = "MainDialogHost";
 
     public static async Task<T?> Show<T>(ContentControl view, PopupViewModelBase vm)
@@ -21,6 +23,8 @@ public static class PopupService
 
     private static async Task<T?> ShowWithViewCore<T>(ContentControl view, PopupViewModelBase vm, string? dialogIdentifier)
     {
+        using IDisposable focus = DialogKeyboard.PreserveFocus(AppService.GetTopLevel());
+        Opening?.Invoke();
         try
         {
             EventHandler<object?> handler = (_, parameter) => DialogHost.Close(dialogIdentifier, parameter);
@@ -69,6 +73,8 @@ public static class PopupService
 
     private static async Task<T?> ShowWithViewLocatorCore<T>(PopupViewModelBase vm, string? dialogIdentifier)
     {
+        using IDisposable focus = DialogKeyboard.PreserveFocus(AppService.GetTopLevel());
+        Opening?.Invoke();
         EventHandler<object?> handler = (_, parameter) => DialogHost.Close(dialogIdentifier, parameter);
 
         vm.ClosingEvent += handler;

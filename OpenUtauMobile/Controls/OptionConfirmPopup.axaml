@@ -33,6 +33,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:OptionConfirmOption">
                                     <Button
+                                        dialogs:DialogShell.IsDefaultAction="{Binding IsDefault}"
                                         Classes="DialogAction"
                                         Content="{Binding Label}"
                                         Command="{Binding $parent[UserControl].((vm:OptionConfirmPopupViewModel)DataContext).SelectOptionCommand}"

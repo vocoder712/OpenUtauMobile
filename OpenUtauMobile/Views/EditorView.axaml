@@ -283,7 +283,7 @@
                         ShowTempoMarkers="True"
                         ShowTimeSignatureMarkers="True" />
 
-                    <c:PartsCanvas
+                    <c:PartsCanvas x:Name="PartsInputCanvas"
                         ClipToBounds="True"
                         Margin="0,24,0,0"
                         SelectedParts="{Binding SelectedParts, Mode=TwoWay}"
@@ -302,16 +302,16 @@
                         IsWaiting="{Binding IsWaitingRender}"
                         IsHitTestVisible="False" />
                     <!-- 上下文操作面板（右上角悬浮，ZIndex 置顶） -->
-                    <StackPanel ZIndex="100"
-                                Orientation="Vertical"
-                                Spacing="{x:Static foundation:LayoutTokens.SpaceS}"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                Margin="8">
+                    <Grid ZIndex="100"
+                          RowDefinitions="Auto,*"
+                          RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                          HorizontalAlignment="Right"
+                          Margin="{x:Static foundation:LayoutTokens.InsetM}">
                         <c:TrackEditModeSwitcher CurrentMode="{Binding TrackEditMode}" />
-                        <c:CollapsibleContextMenu Actions="{Binding TrackContextActions}"
+                        <c:CollapsibleContextMenu Grid.Row="1"
+                                                  Actions="{Binding TrackContextActions}"
                                                   IsExpanded="{Binding IsContextMenuExpanded}" />
-                    </StackPanel>
+                    </Grid>
 
                 </Panel>
             </Grid>
@@ -391,11 +391,11 @@
                            Opacity="{Binding PortraitOpacity}"
                            Source="{Binding PortraitBitmap}" />
                     <!-- 透明占位继续阻挡标尺点击穿透到音符画布。 -->
-                    <Border Grid.Row="0" Grid.Column="1"
+                    <Border x:Name="PianoInputRuler" Grid.Row="0" Grid.Column="1"
                             Background="Transparent"
                             Height="{x:Static local:ViewConstants.PianoRollTickRulerHeight}" />
                     <!-- 音符画布（Row 1, Col 1） -->
-                    <c:NotesCanvas Grid.Row="1"
+                    <c:NotesCanvas x:Name="NotesInputCanvas" Grid.Row="1"
                                    Grid.Column="1"
                                    IsVisible="{Binding IsVoiceMode}"
                                    ClipToBounds="True"
@@ -439,21 +439,21 @@
                                IsHitTestVisible="False"
                                Text="{Binding EditingTip}" />
                     <!-- 上下文操作面板（右上角悬浮，ZIndex 置顶） -->
-                    <StackPanel Grid.Row="1"
-                                Grid.Column="1"
-                                Orientation="Vertical"
-                                Spacing="{x:Static foundation:LayoutTokens.SpaceS}"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                Margin="8"
-                                ZIndex="100"
-                                IsHitTestVisible="True">
+                    <Grid Grid.Row="1"
+                          Grid.Column="1"
+                          RowDefinitions="Auto,*"
+                          RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                          HorizontalAlignment="Right"
+                          Margin="{x:Static foundation:LayoutTokens.InsetM}"
+                          ZIndex="100"
+                          IsHitTestVisible="True">
                         <!-- 编辑模式切换 -->
                         <c:PianoRollEditModeSwitcher CurrentMode="{Binding EditMode, Mode=TwoWay}" />
                         <!-- 上下文菜单 -->
-                        <c:CollapsibleContextMenu Actions="{Binding PianoRollContextActions}"
+                        <c:CollapsibleContextMenu Grid.Row="1"
+                                                  Actions="{Binding PianoRollContextActions}"
                                                   IsExpanded="{Binding IsContextMenuExpanded, Mode=TwoWay}" />
-                    </StackPanel>
+                    </Grid>
                     <!-- 编辑中的分片名 -->
                     <StackPanel Grid.Column="1"
                                 Grid.Row="1"

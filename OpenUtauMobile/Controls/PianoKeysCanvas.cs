@@ -106,6 +106,7 @@ public class PianoKeysCanvas : Control
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed) return;
 
         int pointerId = e.Pointer.Id;
 
@@ -177,6 +178,7 @@ public class PianoKeysCanvas : Control
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+        if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonReleased) return;
         ReleasePointer(e.Pointer);
         e.Handled = true;
     }

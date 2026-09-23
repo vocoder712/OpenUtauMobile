@@ -19,7 +19,7 @@
     <dialogs:DialogShell Header="{DynamicResource NoteExtraction.Title}" CloseCommand="{Binding CancelCommand}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActionRow>
-                <Button Classes="DialogAction DialogPrimary" Content="{DynamicResource NoteExtraction.RunOnnx}" Command="{Binding OnnxCommand}" />
+                <Button dialogs:DialogShell.IsDefaultAction="True" Classes="DialogAction DialogPrimary" Content="{DynamicResource NoteExtraction.RunOnnx}" Command="{Binding OnnxCommand}" />
                 <Button Classes="DialogAction" Content="{DynamicResource NoteExtraction.RunGgml}" Command="{Binding GgmlCommand}" />
             </dialogs:DialogActionRow>
         </dialogs:DialogShell.Footer>

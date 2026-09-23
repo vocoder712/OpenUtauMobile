@@ -83,6 +83,10 @@ public sealed class ViewportMotionController : IDisposable
         AddSample(deltaPx, timestampMs);
     }
 
+    /// <summary>
+    /// 结束直接操作，若速度足够则进入惯性阶段，否则直接完成运动。
+    /// </summary>
+    /// <param name="timestampMs"></param>
     public void EndDirectManipulation(ulong timestampMs)
     {
         if (_phase != MotionPhase.DirectManipulation)
@@ -229,6 +233,10 @@ public sealed class ViewportMotionController : IDisposable
         _sampleWriteIndex = 0;
     }
 
+    /// <summary>
+    /// 结束惯性运动，触发 MotionCompleted 事件。
+    /// </summary>
+    /// <param name="interrupted">是否被中断</param>
     private void CompleteMotion(bool interrupted)
     {
         StopInertiaTimer();

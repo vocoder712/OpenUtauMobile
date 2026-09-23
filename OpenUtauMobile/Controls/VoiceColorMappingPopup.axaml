@@ -22,7 +22,7 @@
                     Content="{DynamicResource VoiceMapping.Skip}"
                     Command="{Binding CancelCommand}"
                     Classes="DialogAction" />
-                <Button
+                <Button dialogs:DialogShell.IsDefaultAction="True"
                     Content="{DynamicResource VoiceMapping.Apply}"
                     Command="{Binding ApplyCommand}"
                     Classes="DialogAction DialogPrimary" />

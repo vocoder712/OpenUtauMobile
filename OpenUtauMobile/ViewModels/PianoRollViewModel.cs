@@ -103,12 +103,12 @@ public readonly record struct VibratoOverlayHit(UNote Note, VibratoHandleKind Ha
 public readonly record struct PitchPointHit(UNote Note, PitchPoint Point, int Index);
 public readonly record struct PitchCurveHit(UNote Note, int InsertIndex, float XMs, float Y, PitchPointShape Shape);
 
-public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
+public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber, IEditorViewport
 {
     #region 绑定属性
 
     [Reactive] public UVoicePart? EditingVoicePart { get; set; }
-    [Reactive] public bool ShowRenderWaveform { get; set; } = true;
+    [Reactive] public bool ShowRenderWaveform { get; set; }
     [Reactive] public UWavePart? EditingWavePart { get; set; }
     public bool IsVoiceMode => EditingVoicePart != null;
     public bool IsWaveMode => EditingWavePart != null;
@@ -144,7 +144,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
     [Reactive] public double TickWidth { get; set; } = ViewConstants.PianoRollTickWidthDefault; // 缩放
     [Reactive] public double KeyHeight { get; set; } = 32; // 高度
     [Reactive] public double TickOffset { get; set; } // X 滚动
-    [Reactive] public double KeyOffset { get; set; } = 56; // Y 滚动
+    [Reactive] public double KeyOffset { get; set; } = 64; // Y 滚动
 
     /// <summary>当前工程主音的十二平均律音级索引。</summary>
     [Reactive] public int ProjectKey { get; private set; }
@@ -607,7 +607,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         IsPlaying = isPlaying;
         IsWaitingRender = isWaitingRender;
 
-        if (TickWidth > 0)
+        if (TickWidth > 0 && !_viewportInputActive)
             TickOffset = tick - PlayMarkerX / TickWidth;
         ApplyViewportLimits();
     }
@@ -774,6 +774,16 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     public PianoRollViewModel()
     {
+        ShowRenderWaveform = Preferences.Default.ShowRenderWaveform;
+        this.WhenAnyValue(x => x.ShowRenderWaveform)
+            .Skip(1)
+            .Subscribe(showWaveform =>
+            {
+                Preferences.Default.ShowRenderWaveform = showWaveform;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
         ProjectKey = PianoKeyLabelFormatter.NormalizePitchClass(DocManager.Inst.Project.key);
         PianoKeyLabelMode = PianoKeyLabelFormatter.NormalizeMode(Preferences.Default.PianoKeyLabelMode);
         IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
@@ -830,12 +840,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             OnGesturePinch(scaleX, scaleY, center, panDelta);
             RequestInvalidateVisual?.Invoke();
         };
-        Gesture.PinchEnd = SyncPlayPosFromViewportCenter;
+        Gesture.PinchEnd = OnGesturePinchEnd;
         Gesture.TwoFingerTap = OnTwoFingerTap;
         Gesture.ThreeFingerTap = OnThreeFingerTap;
 
         _panMotion.PanDelta = ApplyPanDeltaFromMotion;
-        _panMotion.MotionCompleted = interrupted =>
+        _panMotion.MotionCompleted = interrupted => // 当手势结束时，如果没有被中断且不在播放状态，则同步播放位置到视口中心
         {
             WasPanMotionInterrupted = interrupted;
             if (!interrupted && !IsPlaying)
@@ -1905,7 +1915,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                     break;
                 }
 
-                if (IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
+                if (!IsTemporaryPitchErase && IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
                 {
                     _inputState = PianoRollInputState.Panning;
                     break;
@@ -2053,7 +2063,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
                 // 更新放大镜
                 RequestMagnifierUpdate?.Invoke(currentPoint);
 
-                if (IsPitchEraserMode)
+                if (IsEffectivePitchErase)
                 {
                     UpdateErasingPitch(currentPoint);
                 }
@@ -2215,6 +2225,11 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         _editingVibratoDurationMs = 0;
         EditingTip = string.Empty;
     }
+    
+    private void OnGesturePinchEnd()
+    {
+        SyncPlayPosFromViewportCenter();
+    }
 
     private void ResetPitchDrawPointerState()
     {
@@ -2290,9 +2305,12 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
     }
 
+    /// <summary>
+    /// 将播放位置同步到视口中心的 Tick。
+    /// </summary>
     private void SyncPlayPosFromViewportCenter()
     {
-        if (TickWidth <= 0)
+        if (TickWidth <= 0 || IsPlaying) // 播放中不允许同步
         {
             return;
         }
@@ -2696,7 +2714,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
 
     // ── 操作方法存根 ──────────────────────────────────────────────────
 
-    private void DeleteSelectedNotes()
+    public void DeleteSelectedNotes()
     {
         if (EditingVoicePart == null || SelectedNotes.Count == 0)
         {
@@ -2704,12 +2722,13 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         }
 
         DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
+        try
         {
-            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
+            // 命令通知会同步校验并缩减选区，因此遍历本次操作的快照。
+            foreach (UNote note in SelectedNotes.ToArray())
+                DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
         }
-
-        DocManager.Inst.EndUndoGroup();
+        finally { DocManager.Inst.EndUndoGroup(); }
         SelectedNotes.Clear();
     }
 
@@ -2790,7 +2809,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Selected"), SelectedNotes.Count));
     }
 
-    private void SelectAllNotes()
+    public void SelectAllNotes()
     {
         SelectedNotes.Clear();
         if (EditingVoicePart == null)
@@ -2802,7 +2821,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.AllSelected"), SelectedNotes.Count));
     }
 
-    private void CopySelectedNotes()
+    public void CopySelectedNotes()
     {
         if (EditingVoicePart == null || SelectedNotes.Count == 0)
         {
@@ -2816,7 +2835,7 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Copied"), SelectedNotes.Count));
     }
 
-    private void CutSelectedNotes()
+    public void CutSelectedNotes()
     {
         if (EditingVoicePart == null || SelectedNotes.Count == 0)
         {
@@ -2828,20 +2847,23 @@ public class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscriber
             .Select(n => n.Clone())
             .ToList();
 
+        UNote[] selected = SelectedNotes.ToArray();
         DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
+        try
         {
-            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
+            foreach (UNote note in selected)
+            {
+                DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(EditingVoicePart, note));
+            }
         }
+        finally { DocManager.Inst.EndUndoGroup(); }
 
-        DocManager.Inst.EndUndoGroup();
-
-        int count = SelectedNotes.Count;
+        int count = selected.Length;
         SelectedNotes.Clear();
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Cut"), count));
     }
 
-    private void PasteNotes()
+    public void PasteNotes()
     {
         if (EditingVoicePart == null || DocManager.Inst.NotesClipboard == null || DocManager.Inst.NotesClipboard.Count == 0)
         {

@@ -24,7 +24,7 @@
                     Content="{DynamicResource Common.Cancel}"
                     Command="{Binding CancelCommand}"
                     Classes="DialogAction" />
-                <Button
+                <Button dialogs:DialogShell.IsDefaultAction="True"
                     Classes="DialogAction DialogPrimary"
                     Content="{DynamicResource Common.Confirm}"
                     Command="{Binding ConfirmCommand}" />

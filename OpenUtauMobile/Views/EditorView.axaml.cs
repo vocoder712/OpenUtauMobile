@@ -38,12 +38,15 @@ public partial class EditorView : UserControl
     public void OpenMixer()
     {
         if (IsMixerOpen || DataContext is not EditorViewModel vm) return;
+        CancelEditorInput();
         _mixerPanel ??= CreateMixerPanel();
         OnMagnifierClose();
         vm.PianoRollViewModel.SetPresentationSuspended(true);
         // 移除整个控件树，参数面板、模式按钮和上下文菜单一同停止绘制与命中。
         DetailAreaHost.Children.Remove(PianoRollAreaGrid);
         DetailAreaHost.Children.Add(_mixerPanel);
+        _activeEditArea = EditArea.Mixer;
+        QueueEditorFocusRepair();
     }
 
     private MixerPanel CreateMixerPanel()
@@ -58,6 +61,8 @@ public partial class EditorView : UserControl
         if (!IsMixerOpen) return;
         DetailAreaHost.Children.Remove(_mixerPanel!);
         DetailAreaHost.Children.Add(PianoRollAreaGrid);
+        _activeEditArea = EditArea.PianoRoll;
+        QueueEditorFocusRepair();
         if (DataContext is EditorViewModel vm)
         {
             vm.PianoRollViewModel.SetPresentationSuspended(false);
@@ -76,6 +81,7 @@ public partial class EditorView : UserControl
     public EditorView()
     {
         InitializeComponent();
+        InitializeEditorInput();
 
         SplitDragHandle.PointerPressed += OnSplitHandlePointerPressed;
         SplitDragHandle.PointerMoved += OnSplitHandlePointerMoved;

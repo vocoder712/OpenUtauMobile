@@ -355,6 +355,11 @@ namespace OpenUtau.Core.Util {
             public int PianoKeyLabelMode = 1;
 
             /// <summary>
+            /// 钢琴卷帘顶部时间标尺是否显示渲染波形；关闭时显示渲染进度。
+            /// </summary>
+            public bool ShowRenderWaveform = false;
+
+            /// <summary>
             /// Path to SoundFont (SF2) file for piano key playback.
             /// If empty or file not found, falls back to SineWave.
             /// </summary>

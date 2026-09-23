@@ -277,6 +277,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed) return;
         if (Part == null)
         {
             return;
@@ -370,6 +371,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+        if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonReleased) return;
         if (_isDraggingBoundary)
         {
             _isDraggingBoundary = false;

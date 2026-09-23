@@ -158,6 +158,7 @@ public class NotesCanvas : Control, ICmdSubscriber
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        EndRightErase();
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
         _renderViewSubscription?.Dispose();
@@ -722,6 +723,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         }
 
         Point center = ViewModel.PitchDrawPointer.Value;
+        string indicatorBrush = ViewModel.IsEffectivePitchErase ? "Sem.Color.Error" : "Sem.Color.Primary";
 
         const double outerHaloRadius = 12.0; // 外部光晕
         const double strokeRingRadius = 7.0; // 轮廓环
@@ -731,12 +733,12 @@ public class NotesCanvas : Control, ICmdSubscriber
         // 1. 绘制底层软光晕
         using (context.PushOpacity(0.15))
         {
-            context.DrawEllipse(ThemeResources.GetBrush("Sem.Color.Primary"), null, center, outerHaloRadius,
+            context.DrawEllipse(ThemeResources.GetBrush(indicatorBrush), null, center, outerHaloRadius,
                 outerHaloRadius);
         }
 
         // 2. 绘制中间空心圆环
-        Pen ringPen = new Pen(ThemeResources.GetBrush("Sem.Color.Primary"), strokeThickness);
+        Pen ringPen = new Pen(ThemeResources.GetBrush(indicatorBrush), strokeThickness);
         using (context.PushOpacity(0.6))
         {
             context.DrawEllipse(null, ringPen, center, strokeRingRadius, strokeRingRadius);
@@ -865,27 +867,68 @@ public class NotesCanvas : Control, ICmdSubscriber
 
     #region 输入事件处理（转发给 GestureInterpreter）
 
+    private IPointer? _rightErasePointer;
+    private PianoRollViewModel? _rightEraseOwner;
+
+    private void EndRightErase()
+    {
+        IPointer? pointer = _rightErasePointer;
+        _rightErasePointer = null;
+        PianoRollViewModel? owner = _rightEraseOwner;
+        _rightEraseOwner = null;
+        owner?.EndTemporaryPitchErase();
+        pointer?.Capture(null);
+    }
+
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        if (_rightErasePointer != null) { e.Handled = true; return; }
+        PointerPointProperties properties = e.GetCurrentPoint(this).Properties;
+        if (e.Pointer.Type == PointerType.Mouse && properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed)
+        {
+            if (!properties.IsLeftButtonPressed && ViewModel is { Gesture.HasActivePointers: false } &&
+                ViewModel.BeginTemporaryPitchErase(e.GetPosition(this)))
+            {
+                _rightErasePointer = e.Pointer;
+                _rightEraseOwner = ViewModel;
+                e.Pointer.Capture(this);
+                e.Handled = true;
+            }
+            return;
+        }
         ViewModel?.Gesture.OnPointerPressed(e, this);
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
+        if (_rightErasePointer == e.Pointer)
+        {
+            if (_rightEraseOwner != ViewModel || _rightEraseOwner?.EditMode != PianoRollEditMode.PitchPen) EndRightErase();
+            else _rightEraseOwner.OnGestureDragUpdate(default, default, default, e.GetPosition(this), e.Timestamp);
+            e.Handled = true;
+            return;
+        }
         ViewModel?.Gesture.OnPointerMoved(e, this);
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+        if (_rightErasePointer == e.Pointer)
+        {
+            if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == PointerUpdateKind.RightButtonReleased) EndRightErase();
+            e.Handled = true;
+            return;
+        }
         ViewModel?.Gesture.OnPointerReleased(e, this);
     }
 
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        if (_rightErasePointer == e.Pointer) EndRightErase();
         ViewModel?.Gesture.OnPointerCancelled(e, this);
     }
 

@@ -41,12 +41,12 @@
                         Command="{Binding BackCommand}"
                         IsVisible="{Binding !IsFirstStep}"
                         Classes="DialogAction" />
-                    <Button
+                    <Button dialogs:DialogShell.IsDefaultAction="True"
                         Content="{DynamicResource Common.Next}"
                         Command="{Binding NextCommand}"
                         IsVisible="{Binding !IsLastStep}"
                         Classes="DialogAction DialogPrimary" />
-                    <Button
+                    <Button dialogs:DialogShell.IsDefaultAction="True"
                         Content="{DynamicResource SetupWizard.Finish}"
                         Command="{Binding FinishCommand}"
                         IsVisible="{Binding IsLastStep}"

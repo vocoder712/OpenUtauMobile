@@ -31,12 +31,7 @@ public partial class PhonemeEditPopup : PopupDialogControl
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
-        if (e.Key == Key.Enter && DataContext is PhonemeEditViewModel vm)
-        {
-            vm.ConfirmCommand.Execute().Subscribe();
-            e.Handled = true;
-        }
-        else if (e.Key == Key.Escape && DataContext is PhonemeEditViewModel vmEscape)
+        if (!e.Handled && e.Key == Key.Escape && DataContext is PhonemeEditViewModel vmEscape)
         {
             vmEscape.CancelCommand.Execute().Subscribe();
             e.Handled = true;

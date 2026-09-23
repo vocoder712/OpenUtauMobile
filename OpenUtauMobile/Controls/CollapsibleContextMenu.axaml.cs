@@ -67,7 +67,8 @@ public partial class CollapsibleContextMenu : UserControl
         IsVisible = true;
         UpdateActionsList();
         ActionsList.Measure(Size.Infinity);
-        ContentHost.Height = IsExpanded ? ActionsList.DesiredSize.Height : 0;
+        // 限制展开上限，同时让父级布局继续约束滚动视口的可用高度。
+        ContentHost.MaxHeight = IsExpanded ? ActionsList.DesiredSize.Height : 0;
         ToggleButton.Content = IsExpanded
             ? new PackIconPhosphorIcons
             {

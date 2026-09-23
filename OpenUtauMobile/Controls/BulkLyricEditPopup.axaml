@@ -18,7 +18,7 @@
                     Command="{Binding CancelCommand}"
                     Classes="DialogAction"
                     Content="{DynamicResource Common.Cancel}" />
-                <Button
+                <Button dialogs:DialogShell.IsDefaultAction="True"
                     Command="{Binding ApplyCommand}"
                     Classes="DialogAction DialogPrimary"
                     Content="{DynamicResource BulkLyricEdit.Apply}" />
