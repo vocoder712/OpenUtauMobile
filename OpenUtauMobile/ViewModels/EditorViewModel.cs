@@ -136,8 +136,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     #region 数据源
 
     [Reactive] public string ProjectPath { get; set; } = string.Empty;
-    [Reactive] public UVoicePart? EditingVoicePart { get; set; }
-    [Reactive] public UWavePart? EditingWavePart { get; set; }
+    [Reactive] public UVoicePart? EditingVoicePart { get; private set; }
+    [Reactive] public UWavePart? EditingWavePart { get; private set; }
     [Reactive] public ObservableCollectionExtended<UPart> SelectedParts { get; init; } = [];
 
     /// <summary>
@@ -458,9 +458,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         this.WhenAnyValue(x => x.TrackEditMode)
             .Subscribe(_ => RebuildTrackContextActions())
             .DisposeWith(_disposables);
-        // 选中的分片改变时rebuild上下文菜单
+        // 编辑分片只由选区决定：恰好选中一个时进入编辑，否则退出编辑。
         SelectedParts.ObserveCollectionChanges()
-            .Subscribe(_ => RebuildTrackContextActions())
+            .Subscribe(_ =>
+            {
+                UPart? part = SelectedParts.Count == 1 ? SelectedParts[0] : null;
+                EditingVoicePart = part as UVoicePart;
+                EditingWavePart = part as UWavePart;
+                RebuildTrackContextActions();
+            })
             .DisposeWith(_disposables);
 
         // 量化统一：SnapDiv 同时驱动钢琴卷帘的吸附分度（初始值也在此同步）
@@ -1264,26 +1270,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 }
 
                 // 单选
-                SelectedParts.Clear();
-                if (hitTestPart != null)
-                {
-                    SelectedParts.Add(hitTestPart);
-                    if (hitTestPart is UVoicePart voicePart)
-                    {
-                        EditingVoicePart = voicePart;
-                        EditingWavePart = null;
-                    }
-                    else if (hitTestPart is UWavePart wavePart)
-                    {
-                        EditingWavePart = wavePart;
-                        EditingVoicePart = null;
-                    }
-                }
-                else
-                {
-                    EditingVoicePart = null;
-                    EditingWavePart = null;
-                }
+                SelectedParts.Load(hitTestPart != null ? [hitTestPart] : []);
 
                 break;
             case TrackEditMode.MultiSelect:
@@ -1320,8 +1307,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 // 双击空白：退出编辑，清空选择，创建新分片
                 else
                 {
-                    EditingVoicePart = null;
-                    EditingWavePart = null;
                     SelectedParts.Clear();
                     int trackNo = CanvasYToTrackNo(point.Y);
                     if (trackNo >= 0 && trackNo < DocManager.Inst.Project.tracks.Count)
@@ -1338,7 +1323,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                         DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, newPart));
                         DocManager.Inst.EndUndoGroup();
                         SelectedParts.Add(newPart);
-                        EditingVoicePart = newPart;
                     }
                 }
 
@@ -1384,10 +1368,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             _inputState = TrackInputState.MovingParts;
             // 记录所有选中分片的初始位置
             UPart[] sortedParts =
-                SelectedParts.OrderBy(p => p.position).ThenBy(p => p.trackNo)
-                    .ToArray(); // 先按 position 排序，position 相同则按 trackNo 排序，确保移动时分片顺序稳定
-            SelectedParts.Clear();
-            SelectedParts.AddRange(sortedParts);
+                [.. SelectedParts.OrderBy(p => p.position).ThenBy(p => p.trackNo)]; // 先按 position 排序，position 相同则按 trackNo 排序，确保移动时分片顺序稳定
+            SelectedParts.Load(sortedParts);
             _movingPartOrigins = new (int, int)[SelectedParts.Count];
             for (int i = 0; i < SelectedParts.Count; i++)
             {
@@ -2004,25 +1986,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        // 将editing的分片置空
-        if (EditingVoicePart != null && SelectedParts.Contains(EditingVoicePart))
-        {
-            EditingVoicePart = null;
-        }
-
-        if (EditingWavePart != null && SelectedParts.Contains(EditingWavePart))
-        {
-            EditingWavePart = null;
-        }
+        UPart[] selected = SelectedParts.ToArray();
+        SelectedParts.Clear();
 
         DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UPart part in SelectedParts)
+        foreach (UPart part in selected)
         {
             DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, part));
         }
 
         DocManager.Inst.EndUndoGroup();
-        SelectedParts.Clear();
     }
 
     private async Task RenameSelectedPart()
@@ -2073,15 +2046,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         DocManager.Inst.PartsClipboard = SelectedParts.Select(p => p.Clone()).ToList();
 
         UPart[] selected = SelectedParts.ToArray();
-        if (EditingVoicePart != null && SelectedParts.Contains(EditingVoicePart))
-        {
-            EditingVoicePart = null;
-        }
-
-        if (EditingWavePart != null && SelectedParts.Contains(EditingWavePart))
-        {
-            EditingWavePart = null;
-        }
+        SelectedParts.Clear();
 
         DocManager.Inst.StartUndoGroup(deferValidate: true);
         try
@@ -2094,7 +2059,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         finally { DocManager.Inst.EndUndoGroup(); }
 
         int count = selected.Length;
-        SelectedParts.Clear();
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.Cut"), count));
     }
 
@@ -2105,7 +2069,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        var clones = DocManager.Inst.PartsClipboard.Select(p => p.Clone()).ToList();
+        List<UPart> clones = [.. DocManager.Inst.PartsClipboard.Select(p => p.Clone())]; // 读取剪贴板，且深拷贝，避免粘贴后修改原对象
+        // 对齐到播放位置
         int minPosition = clones.Min(p => p.position);
         int offset = PlayPosTick - minPosition;
         clones.ForEach(p => p.position += offset);
@@ -2118,8 +2083,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         DocManager.Inst.EndUndoGroup();
 
-        SelectedParts.Clear();
-        SelectedParts.AddRange(clones);
+        SelectedParts.Load(clones);
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.Pasted"), clones.Count));
     }
 
@@ -2135,8 +2099,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private void SelectAllParts()
     {
-        SelectedParts.Clear();
-        SelectedParts.AddRange(DocManager.Inst.Project.parts);
+        SelectedParts.Load(DocManager.Inst.Project.parts);
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.AllSelected"), SelectedParts.Count));
     }
 
