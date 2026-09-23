@@ -233,7 +233,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     private DispatcherTimer PlaybackTimer { get; set; }
 
     // 自动保存定时器
-    private DispatcherTimer? _autoSaveTimer;
+    private readonly DispatcherTimer? _autoSaveTimer;
 
     // 走带自动翻页状态
     private bool _autoPageActive;
@@ -1494,9 +1494,12 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             else
             {
                 IEnumerable<UWavePart> selectedWaveParts = SelectedParts.OfType<UWavePart>();
-                if (selectedWaveParts.Any())
+                // Avoid allocating a new array if the selectedWaveParts is already an array
+                // 避免在 selectedWaveParts 已经是数组的情况下分配新的数组
+                IEnumerable<UWavePart> uWaveParts = selectedWaveParts as UWavePart[] ?? [.. selectedWaveParts];
+                if (uWaveParts.Any())
                 {
-                    maxDurationExtension = selectedWaveParts.Min(part => Math.Max(0, part.trim));
+                    maxDurationExtension = uWaveParts.Min(part => Math.Max(0, part.trim));
                 }
             }
             deltaDuration = Math.Min(deltaDuration, maxDurationExtension);
@@ -1610,6 +1613,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
     }
 
+    /// <summary>
+    /// 视图平移
+    /// </summary>
+    /// <param name="delta"></param>
     private void ApplyPanDeltaFromMotion(Vector delta)
     {
         double prevTickOffset = TickOffset;
@@ -1698,6 +1705,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         return (byte)(register & 0b11);
     }
 
+    /// <summary>
+    /// 异步打开导出音频弹窗
+    /// </summary>
     private async Task ShowExportAudioPopupAsync()
     {
         string projectFilePath = DocManager.Inst.Project.FilePath;
@@ -1715,6 +1725,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         await PopupService.Show<object?>(new ExportAudioPopup(), vm);
     }
 
+    /// <summary>
+    /// 异步导出音频
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     private async Task<bool> ExecuteAudioExportAsync(ExportAudioRequest request)
     {
         try
@@ -1723,6 +1738,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             bool success;
             switch (request.Mode)
             {
+                // 缩混
                 case ExportAudioMode.Mixdown:
                     await PlaybackManager.Inst.RenderMixdown(DocManager.Inst.Project, request.ExportPath);
                     success = File.Exists(request.ExportPath) &&
@@ -1731,6 +1747,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                         ? "ExportAudioPopup.Toast.Success.Mixdown"
                         : "ExportAudioPopup.Toast.Failed"));
                     break;
+                // 分轨
                 case ExportAudioMode.Tracks:
                     await PlaybackManager.Inst.RenderToFiles(DocManager.Inst.Project, request.ExportPath);
                     string? trackDir = Path.GetDirectoryName(request.ExportPath);
@@ -1770,6 +1787,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     #region 上下文操作面板
 
+    /// <summary>
+    /// 重建走带编曲上下文菜单
+    /// </summary>
     private void RebuildTrackContextActions()
     {
         // 性能优化：收起状态下不构建菜单
@@ -1831,65 +1851,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                         Command = ReactiveCommand.Create(SplitSelectedParts)
                     });
                 }
-
-                // items.Add(new ContextActionItem
-                // {
-                //     Label = "♩+",
-                //     Tip = L.S("Editor.Action.AddTimeSig"),
-                //     Command = ReactiveCommand.Create(AddTimeSignatureMarker)
-                // });
-                // items.Add(new ContextActionItem
-                // {
-                //     Label = "♩=",
-                //     Tip = L.S("Editor.Action.AddTempo"),
-                //     Command = ReactiveCommand.Create(AddTempoMarker)
-                // });
-                // items.Add(new ContextActionItem
-                // {
-                //     Label = "⏮♩",
-                //     Tip = L.S("Editor.Action.PrevTimeSig"),
-                //     Command = ReactiveCommand.Create(GotoPrevTimeSignature)
-                // });
-                // items.Add(new ContextActionItem
-                // {
-                //     Label = "⏭♩",
-                //     Tip = L.S("Editor.Action.NextTimeSig"),
-                //     Command = ReactiveCommand.Create(GotoNextTimeSignature)
-                // });
-                // items.Add(new ContextActionItem
-                // {
-                //     Label = "⏮=",
-                //     Tip = L.S("Editor.Action.PrevTempo"),
-                //     Command = ReactiveCommand.Create(GotoPrevTempo)
-                // });
-                // items.Add(new ContextActionItem
-                // {
-                //     Label = "⏭=",
-                //     Tip = L.S("Editor.Action.NextTempo"),
-                //     Command = ReactiveCommand.Create(GotoNextTempo)
-                // });
-                // if (HasTimeSignatureAtPrevBar())
-                // {
-                //     items.Add(new ContextActionItem
-                //     {
-                //         Label = "♩×",
-                //         Tip = L.S("Editor.Action.DeleteTimeSig"),
-                //         IsDanger = true,
-                //         Command = ReactiveCommand.Create(DeleteTimeSignatureAtPrevBar)
-                //     });
-                // }
-                //
-                // if (HasTempoAtPlayPos())
-                // {
-                //     items.Add(new ContextActionItem
-                //     {
-                //         Label = "=×",
-                //         Tip = L.S("Editor.Action.DeleteTempo"),
-                //         IsDanger = true,
-                //         Command = ReactiveCommand.Create(DeleteTempoAtPlayPos)
-                //     });
-                // }
-
                 break;
 
             case TrackEditMode.MultiSelect:
@@ -1947,7 +1908,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 break;
         }
 
-        if (SelectedParts.Count == 1 && SelectedParts[0] is UWavePart wavePart
+        if (SelectedParts is [UWavePart wavePart]
             && Services.NoteExtraction.GameBackendProvider.IsSupported)
         {
             items.Add(new ContextActionItem
@@ -1960,30 +1921,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         TrackContextActions = items;
     }
 
-    // private void ResetTrackContextActionPlayPosCaches()
-    // {
-    //     _lastHasTempoAtPlayPos = null;
-    //     _lastHasTimeSignatureAtPrevBar = null;
-    // }
-
-    // private void MaybeRebuildTrackContextActionsForPlayPos()
-    // {
-    //     if (TrackEditMode != TrackEditMode.Normal)
-    //     {
-    //         return;
-    //     }
-    //     bool hasTempoAtPlayPos = HasTempoAtPlayPos();
-    //     bool hasTimeSignatureAtPrevBar = HasTimeSignatureAtPrevBar();
-    //     if (_lastHasTempoAtPlayPos == hasTempoAtPlayPos &&
-    //         _lastHasTimeSignatureAtPrevBar == hasTimeSignatureAtPrevBar)
-    //     {
-    //         return;
-    //     }
-    //     _lastHasTempoAtPlayPos = hasTempoAtPlayPos;
-    //     _lastHasTimeSignatureAtPrevBar = hasTimeSignatureAtPrevBar;
-    //     RebuildTrackContextActions();
-    // }
-
     // ── 操作方法存根 ──────────────────────────────────────────────────
 
     private void DeleteSelectedParts()
@@ -1993,7 +1930,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        UPart[] selected = SelectedParts.ToArray();
+        UPart[] selected = [.. SelectedParts];
         SelectedParts.Clear();
 
         DocManager.Inst.StartUndoGroup(deferValidate: true);
@@ -2039,7 +1976,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        DocManager.Inst.PartsClipboard = SelectedParts.Select(p => p.Clone()).ToList();
+        DocManager.Inst.PartsClipboard = [.. SelectedParts.Select(p => p.Clone())];
         ToastService.Enqueue(string.Format(L.S("Editor.Selection.Copied"), SelectedParts.Count));
     }
 
@@ -2050,9 +1987,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        DocManager.Inst.PartsClipboard = SelectedParts.Select(p => p.Clone()).ToList();
+        DocManager.Inst.PartsClipboard = [.. SelectedParts.Select(p => p.Clone())];
 
-        UPart[] selected = SelectedParts.ToArray();
+        UPart[] selected = [.. SelectedParts];
         SelectedParts.Clear();
 
         DocManager.Inst.StartUndoGroup(deferValidate: true);

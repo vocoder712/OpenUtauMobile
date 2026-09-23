@@ -131,6 +131,11 @@ public partial class EditorView
         // 页面工具栏只改变控件焦点，不改变音符／分片的编辑目标。
     }
 
+    /// <summary>
+    /// 编辑界面键盘按下事件
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OnEditorKeyDown(object? sender, KeyEventArgs e)
     {
         if (_pressedKeys.Contains(e.Key)) { e.Handled = true; return; }
@@ -140,6 +145,7 @@ public partial class EditorView
             !IsWithin(focused, this) && !IsWithin(this, focused)) return;
         Visual? source = focused ?? e.Source as Visual;
         if (DialogKeyboard.IsComposing(source)) return;
+        // 保存
         bool saveModifier = e.KeyModifiers is KeyModifiers.Control or (KeyModifiers.Control | KeyModifiers.Shift) ||
             OperatingSystem.IsMacOS() && e.KeyModifiers is KeyModifiers.Meta or (KeyModifiers.Meta | KeyModifiers.Shift);
         if (e.Key == Key.S && saveModifier)
@@ -155,6 +161,7 @@ public partial class EditorView
             OperatingSystem.IsMacOS() && e.KeyModifiers == KeyModifiers.Meta;
         if (commandModifier)
         {
+            // 复制、剪切、粘贴
             if (e.Key is Key.C or Key.V or Key.X && _activeEditArea != EditArea.Mixer)
             {
                 e.Handled = true;
@@ -166,15 +173,17 @@ public partial class EditorView
                 else if (!vm.CanNavigateViewport) return;
                 Action action = (pianoInputActive, e.Key) switch
                 {
-                    (true, Key.C) => vm.PianoRollViewModel.CopySelectedNotes,
-                    (true, Key.X) => vm.PianoRollViewModel.CutSelectedNotes,
-                    (true, _) => vm.PianoRollViewModel.PasteNotes,
-                    (false, Key.C) => vm.CopySelectedParts,
-                    (false, Key.X) => vm.CutSelectedParts,
-                    _ => vm.PasteParts
+                    (true, Key.C) => vm.PianoRollViewModel.CopySelectedNotes, // 复制音符
+                    (true, Key.X) => vm.PianoRollViewModel.CutSelectedNotes, // 剪切音符
+                    (true, Key.V) => vm.PianoRollViewModel.PasteNotes, // 粘贴音符
+                    (false, Key.C) => vm.CopySelectedParts, // 复制分片
+                    (false, Key.X) => vm.CutSelectedParts, // 剪切分片
+                    (false, Key.V) => vm.PasteParts, // 粘贴分片
+                    _ => () => { } // 无效组合
                 };
                 action();
             }
+            // 撤销、重做
             else if (e.Key is Key.Z or Key.Y)
             {
                 e.Handled = true;
@@ -182,6 +191,7 @@ public partial class EditorView
                 ICommand command = e.Key == Key.Z ? vm.UndoCommand : vm.RedoCommand;
                 if (command.CanExecute(null)) command.Execute(null);
             }
+            // 全选音符
             else if (e.Key == Key.A && pianoInputActive && _editorPointers.Count == 0 &&
                      vm.PianoRollViewModel.CanNavigateViewport && vm.PianoRollViewModel.EditingVoicePart != null)
             {
@@ -190,13 +200,16 @@ public partial class EditorView
             }
             return;
         }
+        // 跳过其它组合键，避免与系统快捷键冲突。
         if (e.KeyModifiers != KeyModifiers.None) return;
+        // 空格播放／暂停
         if (e.Key == Key.Space)
         {
             e.Handled = true;
             if (_pressedKeys.Add(e.Key) && ((ICommand)vm.PlayPauseCommand).CanExecute(null))
                 ((ICommand)vm.PlayPauseCommand).Execute(null);
         }
+        // 删除音符
         else if (e.Key == Key.Delete && pianoInputActive && _editorPointers.Count == 0 &&
                  vm.PianoRollViewModel.CanNavigateViewport && vm.PianoRollViewModel.SelectedNotes.Count > 0)
         {

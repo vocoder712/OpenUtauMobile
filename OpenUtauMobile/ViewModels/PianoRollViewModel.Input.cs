@@ -6,6 +6,9 @@ namespace OpenUtauMobile.ViewModels;
 public partial class PianoRollViewModel
 {
     private bool _viewportInputActive;
+    /// <summary>
+    /// 右键临时进入橡皮擦
+    /// </summary>
     public bool IsTemporaryPitchErase { get; private set; }
     public bool IsEffectivePitchErase => IsPitchEraserMode || IsTemporaryPitchErase;
 
@@ -24,6 +27,9 @@ public partial class PianoRollViewModel
         OnGestureDragEnd(default, 0);
         IsTemporaryPitchErase = false;
     }
+    /// <summary>
+    /// 是否可以平移视口
+    /// </summary>
     public bool CanNavigateViewport => !IsPresentationSuspended && _inputState is PianoRollInputState.Idle or PianoRollInputState.Panning;
     public bool SupportsVerticalZoom => true;
 
@@ -57,9 +63,14 @@ public partial class PianoRollViewModel
         RequestInvalidateVisual?.Invoke();
     }
 
-    public void EndViewportInput(bool zoomed, bool interrupted)
+    /// <summary>
+    /// 结束视口输入
+    /// </summary>
+    /// <param name="hadZoomInput"></param>
+    /// <param name="interrupted"></param>
+    public void EndViewportInput(bool hadZoomInput, bool interrupted)
     {
         _viewportInputActive = false;
-        if (!interrupted && (zoomed || !IsPlaying)) SyncPlayPosFromViewportCenter();
+        if (!interrupted) SyncPlayPosFromViewportCenter();
     }
 }

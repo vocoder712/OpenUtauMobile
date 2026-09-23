@@ -44,14 +44,39 @@ public interface IViewportInputPlatform
     IDisposable Attach(TopLevel root, Func<ViewportInput, bool> dispatch);
 }
 
+/// <summary>
+/// 主要分为编曲走带和钢琴卷帘两种视口；前者不支持垂直缩放，后者支持。
+/// </summary>
 public interface IEditorViewport
 {
     bool CanNavigateViewport { get; }
+    /// <summary>
+    /// 是否需要支持垂直缩放；走带编曲不需要
+    /// </summary>
     bool SupportsVerticalZoom { get; }
+    /// <summary>
+    /// 开始视口输入
+    /// </summary>
     void BeginViewportInput();
+    /// <summary>
+    /// 平移视口
+    /// </summary>
+    /// <param name="pixels"></param>
+    /// <returns></returns>
     Vector PanViewport(Vector pixels);
+    /// <summary>
+    /// 缩放视口
+    /// </summary>
+    /// <param name="scaleX"></param>
+    /// <param name="scaleY"></param>
+    /// <param name="anchor"></param>
     void ZoomViewport(double scaleX, double scaleY, Point anchor);
-    void EndViewportInput(bool zoomed, bool interrupted);
+    /// <summary>
+    /// 结束视口输入
+    /// </summary>
+    /// <param name="hadZoomInput">是否进行了缩放</param>
+    /// <param name="interrupted">是否被中断</param>
+    void EndViewportInput(bool hadZoomInput, bool interrupted);
 }
 
 /// <summary>所有平台共用的轴规则；不依据小数增量猜测设备类型。</summary>

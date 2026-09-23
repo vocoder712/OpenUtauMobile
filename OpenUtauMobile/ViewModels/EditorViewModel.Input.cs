@@ -42,7 +42,7 @@ public partial class EditorViewModel
         RequestInvalidateVisual?.Invoke();
     }
 
-    public void EndViewportInput(bool zoomed, bool interrupted) => _viewportInputActive = false;
+    public void EndViewportInput(bool hadZoomInput, bool interrupted) => _viewportInputActive = false;
 
     public async Task<bool> SaveFromInputAsync(bool saveAs)
     {

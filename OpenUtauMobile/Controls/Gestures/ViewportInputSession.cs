@@ -7,7 +7,7 @@ namespace OpenUtauMobile.Controls.Gestures;
 /// <summary>合并连续输入并短时平滑，不推算系统已提供的惯性。整个会话只完成一次。</summary>
 public sealed class ViewportInputSession : IDisposable
 {
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(16) };
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(16) }; // 60fps
     private IEditorViewport? _viewport;
     private Vector _pan;
     private Vector _zoom;

@@ -830,12 +830,12 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             OnGesturePinch(scaleX, scaleY, center, panDelta);
             RequestInvalidateVisual?.Invoke();
         };
-        Gesture.PinchEnd = SyncPlayPosFromViewportCenter;
+        Gesture.PinchEnd = OnGesturePinchEnd;
         Gesture.TwoFingerTap = OnTwoFingerTap;
         Gesture.ThreeFingerTap = OnThreeFingerTap;
 
         _panMotion.PanDelta = ApplyPanDeltaFromMotion;
-        _panMotion.MotionCompleted = interrupted =>
+        _panMotion.MotionCompleted = interrupted => // 当手势结束时，如果没有被中断且不在播放状态，则同步播放位置到视口中心
         {
             WasPanMotionInterrupted = interrupted;
             if (!interrupted && !IsPlaying)
@@ -2215,6 +2215,11 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         _editingVibratoDurationMs = 0;
         EditingTip = string.Empty;
     }
+    
+    private void OnGesturePinchEnd()
+    {
+        SyncPlayPosFromViewportCenter();
+    }
 
     private void ResetPitchDrawPointerState()
     {
@@ -2290,9 +2295,12 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         }
     }
 
+    /// <summary>
+    /// 将播放位置同步到视口中心的 Tick。
+    /// </summary>
     private void SyncPlayPosFromViewportCenter()
     {
-        if (TickWidth <= 0)
+        if (TickWidth <= 0 || IsPlaying) // 播放中不允许同步
         {
             return;
         }
