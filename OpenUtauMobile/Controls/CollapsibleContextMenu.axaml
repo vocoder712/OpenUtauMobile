@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              x:Class="OpenUtauMobile.Controls.CollapsibleContextMenu"
-             HorizontalAlignment="Right">
+             HorizontalAlignment="Right"
+             VerticalAlignment="Top">
     <UserControl.Styles>
         <StyleInclude Source="/Controls/Styles/CollapsibleContextMenu.axaml" />
     </UserControl.Styles>
@@ -12,23 +13,26 @@
             Background="{DynamicResource Sem.Color.SurfaceContainer}"
             CornerRadius="{x:Static foundation:ShapeTokens.CornerXXXXXL}"
             Padding="{x:Static foundation:LayoutTokens.InsetS}">
-        <Grid RowDefinitions="Auto,Auto"
+        <Grid RowDefinitions="*,Auto"
               HorizontalAlignment="Center">
             <Border x:Name="ContentHost"
                     Grid.Row="0"
-                    Background="Transparent">
+                    Background="Transparent"
+                    ClipToBounds="True">
                 <Border.Transitions>
                     <Transitions>
-                        <DoubleTransition Property="Height" Duration="{x:Static foundation:MotionTokens.DurationMedium}" Easing="CubicEaseOut" />
+                        <DoubleTransition Property="MaxHeight" Duration="{x:Static foundation:MotionTokens.DurationMedium}" Easing="CubicEaseOut" />
                     </Transitions>
                 </Border.Transitions>
-                <Panel x:Name="ContentPanel">
+                <ScrollViewer x:Name="ActionsScrollViewer"
+                              HorizontalScrollBarVisibility="Disabled"
+                              VerticalScrollBarVisibility="Hidden">
                     <StackPanel Orientation="Vertical"
                                 ClipToBounds="True"
                                 Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
                                 x:Name="ActionsList">
                     </StackPanel>
-                </Panel>
+                </ScrollViewer>
             </Border>
             <!-- 展开收起按钮 -->
             <Button Grid.Row="1"
