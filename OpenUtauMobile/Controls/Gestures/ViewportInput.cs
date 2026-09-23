@@ -82,10 +82,11 @@ public interface IEditorViewport
 /// <summary>所有平台共用的轴规则；不依据小数增量猜测设备类型。</summary>
 public static class ViewportInputMapping
 {
-    public static (Vector Pan, Vector Zoom) Map(ViewportInput input, ViewportAxes axes, bool verticalZoom)
+    public static (Vector Pan, Vector Zoom) Map(ViewportInput input, ViewportAxes axes, bool verticalZoom, bool zoomOnWheel = false)
     {
         bool shift = input.Modifiers.HasFlag(KeyModifiers.Shift);
-        bool zoom = input.Kind == ViewportInputKind.Magnify || input.Modifiers.HasFlag(KeyModifiers.Control);
+        bool zoom = input.Kind == ViewportInputKind.Magnify || input.Modifiers.HasFlag(KeyModifiers.Control) ||
+            input.Kind == ViewportInputKind.Wheel && zoomOnWheel;
         Vector delta = input.Delta;
         if (zoom)
         {

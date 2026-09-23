@@ -141,7 +141,10 @@ public partial class EditorView
         Control canvas = piano ? NotesInputCanvas : PartsInputCanvas;
         Point? anchor = _inputRoot.TranslatePoint(input.Position, canvas);
         if (anchor == null) return false;
-        return _viewportInput.Submit(piano ? vm.PianoRollViewModel : vm, input, anchor.Value, axes);
+        // 标尺和琴键的滚轮默认缩放；轴限制与平滑处理仍由共用输入层负责。
+        bool zoomOnWheel = piano && hit.GetSelfAndVisualAncestors()
+            .Any(node => node == PianoInputRuler || node is PianoKeysCanvas);
+        return _viewportInput.Submit(piano ? vm.PianoRollViewModel : vm, input, anchor.Value, axes, zoomOnWheel);
     }
 
     private bool TryGetSurface(Visual source, out bool piano, out ViewportAxes axes)

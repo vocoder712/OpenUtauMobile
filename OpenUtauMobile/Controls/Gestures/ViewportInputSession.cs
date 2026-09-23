@@ -23,7 +23,7 @@ public sealed class ViewportInputSession : IDisposable
 
     public void EndInput() => _ended = true;
 
-    public bool Submit(IEditorViewport viewport, ViewportInput input, Point anchor, ViewportAxes axes)
+    public bool Submit(IEditorViewport viewport, ViewportInput input, Point anchor, ViewportAxes axes, bool zoomOnWheel = false)
     {
         if (input.Phase == ViewportInputPhase.Cancel) { Cancel(); return true; }
         if (input.Phase == ViewportInputPhase.End)
@@ -34,7 +34,7 @@ public sealed class ViewportInputSession : IDisposable
         }
         if (!viewport.CanNavigateViewport || !double.IsFinite(input.Delta.X) || !double.IsFinite(input.Delta.Y) ||
             !double.IsFinite(input.Scale) || input.Scale <= 0) return false;
-        (Vector pan, Vector zoom) = ViewportInputMapping.Map(input, axes, viewport.SupportsVerticalZoom);
+        (Vector pan, Vector zoom) = ViewportInputMapping.Map(input, axes, viewport.SupportsVerticalZoom, zoomOnWheel);
         if (pan == default && zoom == default) return false;
         if (_viewport != viewport)
         {
