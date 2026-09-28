@@ -1969,8 +1969,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     {
         // 对选中的音符排序，按 position 升序（与 Part.notes 中的顺序一致），确保拖拽过程中位置关系不变。
         UNote[] sorted = SelectedNotes.OrderBy(n => n.position).ToArray();
-        SelectedNotes.Clear();
-        SelectedNotes.AddRange(sorted);
+        ReplaceSelectedNotes(sorted);
         // 记录所有选中分片的初始位置
         _movingNotesOrigins = new (int, int)[SelectedNotes.Count];
         for (int i = 0; i < SelectedNotes.Count; i++)
@@ -2788,7 +2787,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             endSelectionTick = temp;
         }
 
-        SelectedNotes.Clear();
+        List<UNote> notes = [];
         foreach (UNote note in EditingVoicePart.notes)
         {
             if (note.End < BeginSelectionTick)
@@ -2801,26 +2800,34 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 break;
             }
 
-            SelectedNotes.Add(note);
+            notes.Add(note);
         }
 
         EditingTip = string.Empty;
         IsSelecting = false;
-        RequestInvalidateVisual?.Invoke(); // 触发画布重绘以清除选区可视效果
-        RebuildPianoRollContextActions();
+        ReplaceSelectedNotes(notes);
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Selected"), SelectedNotes.Count));
     }
 
     public void SelectAllNotes()
     {
-        SelectedNotes.Clear();
         if (EditingVoicePart == null)
         {
+            SelectedNotes.Clear();
             return;
         }
 
-        SelectedNotes.AddRange(EditingVoicePart.notes);
+        ReplaceSelectedNotes(EditingVoicePart.notes);
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.AllSelected"), SelectedNotes.Count));
+    }
+
+    private void ReplaceSelectedNotes(IEnumerable<UNote> notes)
+    {
+        // Load 会先清空再逐项添加；合并通知，避免每个音符都重建菜单控件和测量布局。
+        using (SelectedNotes.SuspendNotifications())
+        {
+            SelectedNotes.Load(notes);
+        }
     }
 
     public void CopySelectedNotes()
@@ -2963,7 +2970,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         {
             DocManager.Inst.EndUndoGroup();
         }
-        SelectedNotes.AddRange(newNotes);
+        using (SelectedNotes.SuspendNotifications())
+        {
+            SelectedNotes.AddRange(newNotes);
+        }
         RequestInvalidateVisual?.Invoke();
     }
 
@@ -2997,8 +3007,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
         DocManager.Inst.EndUndoGroup();
 
-        SelectedNotes.Clear();
-        SelectedNotes.AddRange(notes);
+        ReplaceSelectedNotes(notes);
         ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Pasted"), notes.Count));
     }
 
