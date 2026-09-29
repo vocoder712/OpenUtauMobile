@@ -2081,4 +2081,70 @@
   <data name="PianoRoll.Split.TooShort" xml:space="preserve">
     <value>分割后的每段音符至少需要 10 tick，未移动分割位置。</value>
   </data>
+  <data name="Settings.Graphics.Title" xml:space="preserve">
+    <value>界面图形后端</value>
+  </data>
+  <data name="Settings.Graphics.Auto" xml:space="preserve">
+    <value>自动（推荐）</value>
+  </data>
+  <data name="Settings.Graphics.Vulkan" xml:space="preserve">
+    <value>优先 Vulkan</value>
+  </data>
+  <data name="Settings.Graphics.OpenGLES" xml:space="preserve">
+    <value>优先 OpenGL ES</value>
+  </data>
+  <data name="Settings.Graphics.Software" xml:space="preserve">
+    <value>软件渲染（故障排除）</value>
+  </data>
+  <data name="Settings.Graphics.ANGLE" xml:space="preserve">
+    <value>优先 ANGLE</value>
+  </data>
+  <data name="Settings.Graphics.OpenGL" xml:space="preserve">
+    <value>优先 OpenGL</value>
+  </data>
+  <data name="Settings.Graphics.GLX" xml:space="preserve">
+    <value>优先 OpenGL（GLX）</value>
+  </data>
+  <data name="Settings.Graphics.EGL" xml:space="preserve">
+    <value>优先 EGL</value>
+  </data>
+  <data name="Settings.Graphics.Metal" xml:space="preserve">
+    <value>优先 Metal</value>
+  </data>
+  <data name="Settings.Graphics.MetalExperimental" xml:space="preserve">
+    <value>优先 Metal（实验性）</value>
+  </data>
+  <data name="Settings.Graphics.WebGL2" xml:space="preserve">
+    <value>优先 WebGL 2</value>
+  </data>
+  <data name="Settings.Graphics.WebGL1" xml:space="preserve">
+    <value>优先 WebGL 1</value>
+  </data>
+  <data name="Settings.Graphics.Custom" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="Settings.Graphics.Default" xml:space="preserve">
+    <value>由 Avalonia 自动选择</value>
+  </data>
+  <data name="Settings.Graphics.RestartRequired" xml:space="preserve">
+    <value>更改后需重启应用。</value>
+  </data>
+  <data name="Settings.Graphics.ReloadRequired" xml:space="preserve">
+    <value>更改后需重新加载页面。</value>
+  </data>
+  <data name="Settings.Graphics.RestartPending" xml:space="preserve">
+    <value>已保存，重启应用后生效。</value>
+  </data>
+  <data name="Settings.Graphics.ReloadPending" xml:space="preserve">
+    <value>已保存，重新加载页面后生效。</value>
+  </data>
+  <data name="Settings.Graphics.StorageUnavailable" xml:space="preserve">
+    <value>无法访问设置存储，暂时无法更改图形后端。</value>
+  </data>
+  <data name="Settings.Graphics.SaveFailed" xml:space="preserve">
+    <value>保存失败，请重试。</value>
+  </data>
+  <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
+    <value>已忽略无效或重复的后端配置，原始设置保持不变。</value>
+  </data>
 </root>

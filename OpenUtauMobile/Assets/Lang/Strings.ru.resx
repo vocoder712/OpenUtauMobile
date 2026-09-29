@@ -2036,4 +2036,70 @@
   <data name="PianoRoll.Split.TooShort" xml:space="preserve">
     <value>Каждая часть ноты должна быть не короче 10 тиков. Точка разделения не изменена.</value>
   </data>
+  <data name="Settings.Graphics.Title" xml:space="preserve">
+    <value>Графический бэкенд интерфейса</value>
+  </data>
+  <data name="Settings.Graphics.Auto" xml:space="preserve">
+    <value>Автоматически (рекомендуется)</value>
+  </data>
+  <data name="Settings.Graphics.Vulkan" xml:space="preserve">
+    <value>Предпочитать Vulkan</value>
+  </data>
+  <data name="Settings.Graphics.OpenGLES" xml:space="preserve">
+    <value>Предпочитать OpenGL ES</value>
+  </data>
+  <data name="Settings.Graphics.Software" xml:space="preserve">
+    <value>Программный рендеринг (диагностика)</value>
+  </data>
+  <data name="Settings.Graphics.ANGLE" xml:space="preserve">
+    <value>Предпочитать ANGLE</value>
+  </data>
+  <data name="Settings.Graphics.OpenGL" xml:space="preserve">
+    <value>Предпочитать OpenGL</value>
+  </data>
+  <data name="Settings.Graphics.GLX" xml:space="preserve">
+    <value>Предпочитать OpenGL (GLX)</value>
+  </data>
+  <data name="Settings.Graphics.EGL" xml:space="preserve">
+    <value>Предпочитать EGL</value>
+  </data>
+  <data name="Settings.Graphics.Metal" xml:space="preserve">
+    <value>Предпочитать Metal</value>
+  </data>
+  <data name="Settings.Graphics.MetalExperimental" xml:space="preserve">
+    <value>Предпочитать Metal (экспериментально)</value>
+  </data>
+  <data name="Settings.Graphics.WebGL2" xml:space="preserve">
+    <value>Предпочитать WebGL 2</value>
+  </data>
+  <data name="Settings.Graphics.WebGL1" xml:space="preserve">
+    <value>Предпочитать WebGL 1</value>
+  </data>
+  <data name="Settings.Graphics.Custom" xml:space="preserve">
+    <value>Пользовательский</value>
+  </data>
+  <data name="Settings.Graphics.Default" xml:space="preserve">
+    <value>Avalonia выбирает автоматически</value>
+  </data>
+  <data name="Settings.Graphics.RestartRequired" xml:space="preserve">
+    <value>Для применения изменений перезапустите приложение.</value>
+  </data>
+  <data name="Settings.Graphics.ReloadRequired" xml:space="preserve">
+    <value>Для применения изменений перезагрузите страницу.</value>
+  </data>
+  <data name="Settings.Graphics.RestartPending" xml:space="preserve">
+    <value>Сохранено. Изменения вступят в силу после перезапуска приложения.</value>
+  </data>
+  <data name="Settings.Graphics.ReloadPending" xml:space="preserve">
+    <value>Сохранено. Изменения вступят в силу после перезагрузки страницы.</value>
+  </data>
+  <data name="Settings.Graphics.StorageUnavailable" xml:space="preserve">
+    <value>Хранилище настроек недоступно. Невозможно изменить графический бэкенд.</value>
+  </data>
+  <data name="Settings.Graphics.SaveFailed" xml:space="preserve">
+    <value>Не удалось сохранить. Повторите попытку.</value>
+  </data>
+  <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
+    <value>Недопустимые или повторяющиеся бэкенды проигнорированы. Сохранённые настройки не изменены.</value>
+  </data>
 </root>

@@ -332,6 +332,9 @@ namespace OpenUtau.Core.Util {
             public bool DetachPianoRoll = true;
 
             #region OpenUtau Mobile 特定选项
+            /// <summary>各平台的界面图形后端回退顺序；空列表使用 Avalonia 默认配置，重启后生效。</summary>
+            public Dictionary<string, List<string>> GraphicsBackendFallbackOrders = new();
+
             public double PlaybackRefreshRate = 20.0;
 
             /// <summary>

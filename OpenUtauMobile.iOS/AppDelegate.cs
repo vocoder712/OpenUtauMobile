@@ -13,6 +13,8 @@ using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.iOS.Audio;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.iOS.Graphics;
 using Serilog;
 using UIKit;
 
@@ -36,7 +38,11 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalUrlLauncher = new IosExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
+        IosGraphicsBackendProvider graphicsProvider = new();
+        GraphicsBackendService graphicsService = new(graphicsProvider);
+        ServiceHub.GraphicsBackendService = graphicsService;
         return base.CustomizeAppBuilder(builder)
+            .With(IosGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
             .UseReactiveUI(_ =>
             {
             });
@@ -58,7 +64,7 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
 
     private static void InitLogging()
     {
-        OpenUtauMobile.Services.AppLogging.Initialize(PathManager.Inst.LogFilePath);
+        AppLogging.Initialize(PathManager.Inst.LogFilePath);
         AppDomain.CurrentDomain.UnhandledException += (_, args) => {
             Log.Error((Exception)args.ExceptionObject, "未经处理的异常！"); // 未处理异常
             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification((Exception)args.ExceptionObject));

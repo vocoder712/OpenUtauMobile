@@ -750,6 +750,32 @@
                                     </Grid>
                                 </Border>
 
+                                <!-- 界面图形后端 -->
+                                <Border x:Name="GraphicsBackendCard" Classes="SettingCard"
+                                        IsVisible="{Binding GraphicsBackendSettings.IsAvailable}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <TextBlock Classes="SettingItemTitle"
+                                                   Text="{DynamicResource Settings.Graphics.Title}" />
+                                        <TextBlock Classes="PlaceholderText" TextWrapping="Wrap"
+                                                   Text="{Binding GraphicsBackendSettings.RestartDescription}" />
+                                        <ComboBox x:Name="GraphicsBackendSelector" HorizontalAlignment="Stretch"
+                                                  IsEnabled="{Binding GraphicsBackendSettings.CanSelect}"
+                                                  ItemsSource="{Binding GraphicsBackendSettings.Options}"
+                                                  SelectedItem="{Binding GraphicsBackendSettings.SelectedOption, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:GraphicsBackendOption">
+                                                    <TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <TextBlock Classes="PlaceholderText" TextWrapping="Wrap"
+                                                   Text="{Binding GraphicsBackendSettings.FallbackDescription}" />
+                                        <TextBlock Classes="PlaceholderText" TextWrapping="Wrap"
+                                                   IsVisible="{Binding GraphicsBackendSettings.HasStatusMessage}"
+                                                   Text="{Binding GraphicsBackendSettings.StatusMessage}" />
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- DiffSinger 推理参数 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">

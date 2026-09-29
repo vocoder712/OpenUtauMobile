@@ -2081,4 +2081,70 @@
   <data name="PianoRoll.Split.TooShort" xml:space="preserve">
     <value>Each resulting note must be at least 10 ticks long. The split point has not been moved.</value>
   </data>
+  <data name="Settings.Graphics.Title" xml:space="preserve">
+    <value>UI graphics backend</value>
+  </data>
+  <data name="Settings.Graphics.Auto" xml:space="preserve">
+    <value>Automatic (recommended)</value>
+  </data>
+  <data name="Settings.Graphics.Vulkan" xml:space="preserve">
+    <value>Prefer Vulkan</value>
+  </data>
+  <data name="Settings.Graphics.OpenGLES" xml:space="preserve">
+    <value>Prefer OpenGL ES</value>
+  </data>
+  <data name="Settings.Graphics.Software" xml:space="preserve">
+    <value>Software rendering (troubleshooting)</value>
+  </data>
+  <data name="Settings.Graphics.ANGLE" xml:space="preserve">
+    <value>Prefer ANGLE</value>
+  </data>
+  <data name="Settings.Graphics.OpenGL" xml:space="preserve">
+    <value>Prefer OpenGL</value>
+  </data>
+  <data name="Settings.Graphics.GLX" xml:space="preserve">
+    <value>Prefer OpenGL (GLX)</value>
+  </data>
+  <data name="Settings.Graphics.EGL" xml:space="preserve">
+    <value>Prefer EGL</value>
+  </data>
+  <data name="Settings.Graphics.Metal" xml:space="preserve">
+    <value>Prefer Metal</value>
+  </data>
+  <data name="Settings.Graphics.MetalExperimental" xml:space="preserve">
+    <value>Prefer Metal (experimental)</value>
+  </data>
+  <data name="Settings.Graphics.WebGL2" xml:space="preserve">
+    <value>Prefer WebGL 2</value>
+  </data>
+  <data name="Settings.Graphics.WebGL1" xml:space="preserve">
+    <value>Prefer WebGL 1</value>
+  </data>
+  <data name="Settings.Graphics.Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="Settings.Graphics.Default" xml:space="preserve">
+    <value>Selected automatically by Avalonia</value>
+  </data>
+  <data name="Settings.Graphics.RestartRequired" xml:space="preserve">
+    <value>Changes require restarting the app.</value>
+  </data>
+  <data name="Settings.Graphics.ReloadRequired" xml:space="preserve">
+    <value>Changes require reloading the page.</value>
+  </data>
+  <data name="Settings.Graphics.RestartPending" xml:space="preserve">
+    <value>Saved. Restart the app to apply.</value>
+  </data>
+  <data name="Settings.Graphics.ReloadPending" xml:space="preserve">
+    <value>Saved. Reload the page to apply.</value>
+  </data>
+  <data name="Settings.Graphics.StorageUnavailable" xml:space="preserve">
+    <value>Settings storage is unavailable. The graphics backend cannot be changed.</value>
+  </data>
+  <data name="Settings.Graphics.SaveFailed" xml:space="preserve">
+    <value>Could not save. Please try again.</value>
+  </data>
+  <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
+    <value>Invalid or duplicate backend entries were ignored. Stored settings are unchanged.</value>
+  </data>
 </root>

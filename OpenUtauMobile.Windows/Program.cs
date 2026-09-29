@@ -12,7 +12,8 @@ using OpenUtau.Core;
 using OpenUtauMobile.Windows.Audio;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
-using ReactiveUI;
+using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.Windows.Graphics;
 using Serilog;
 
 namespace OpenUtauMobile.Windows;
@@ -35,8 +36,12 @@ sealed class Program
         ServiceHub.ExternalStorageService = new Storage.WindowsExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new WindowsPerformanceProvider();
+        WindowsGraphicsBackendProvider graphicsProvider = new();
+        GraphicsBackendService graphicsService = new(graphicsProvider);
+        ServiceHub.GraphicsBackendService = graphicsService;
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .With(WindowsGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
             .UseReactiveUI(reactiveUIBuilder =>
             {
                 reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
@@ -57,7 +62,7 @@ sealed class Program
 
     private static void InitLogging()
     {
-        OpenUtauMobile.Services.AppLogging.Initialize(PathManager.Inst.LogFilePath);
+        AppLogging.Initialize(PathManager.Inst.LogFilePath);
         Log.Information("==========Start logging==========");
     }
 

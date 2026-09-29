@@ -2074,4 +2074,70 @@
   <data name="PianoRoll.Split.TooShort" xml:space="preserve">
     <value>分割後の各ノートには最低 10 tick が必要です。分割位置は変更していません。</value>
   </data>
+  <data name="Settings.Graphics.Title" xml:space="preserve">
+    <value>UI グラフィックスバックエンド</value>
+  </data>
+  <data name="Settings.Graphics.Auto" xml:space="preserve">
+    <value>自動（推奨）</value>
+  </data>
+  <data name="Settings.Graphics.Vulkan" xml:space="preserve">
+    <value>Vulkan を優先</value>
+  </data>
+  <data name="Settings.Graphics.OpenGLES" xml:space="preserve">
+    <value>OpenGL ES を優先</value>
+  </data>
+  <data name="Settings.Graphics.Software" xml:space="preserve">
+    <value>ソフトウェア描画（トラブルシューティング）</value>
+  </data>
+  <data name="Settings.Graphics.ANGLE" xml:space="preserve">
+    <value>ANGLE を優先</value>
+  </data>
+  <data name="Settings.Graphics.OpenGL" xml:space="preserve">
+    <value>OpenGL を優先</value>
+  </data>
+  <data name="Settings.Graphics.GLX" xml:space="preserve">
+    <value>OpenGL（GLX）を優先</value>
+  </data>
+  <data name="Settings.Graphics.EGL" xml:space="preserve">
+    <value>EGL を優先</value>
+  </data>
+  <data name="Settings.Graphics.Metal" xml:space="preserve">
+    <value>Metal を優先</value>
+  </data>
+  <data name="Settings.Graphics.MetalExperimental" xml:space="preserve">
+    <value>Metal を優先（実験的）</value>
+  </data>
+  <data name="Settings.Graphics.WebGL2" xml:space="preserve">
+    <value>WebGL 2 を優先</value>
+  </data>
+  <data name="Settings.Graphics.WebGL1" xml:space="preserve">
+    <value>WebGL 1 を優先</value>
+  </data>
+  <data name="Settings.Graphics.Custom" xml:space="preserve">
+    <value>カスタム</value>
+  </data>
+  <data name="Settings.Graphics.Default" xml:space="preserve">
+    <value>Avalonia が自動的に選択</value>
+  </data>
+  <data name="Settings.Graphics.RestartRequired" xml:space="preserve">
+    <value>変更後はアプリの再起動が必要です。</value>
+  </data>
+  <data name="Settings.Graphics.ReloadRequired" xml:space="preserve">
+    <value>変更後はページの再読み込みが必要です。</value>
+  </data>
+  <data name="Settings.Graphics.RestartPending" xml:space="preserve">
+    <value>保存しました。アプリの再起動後に適用されます。</value>
+  </data>
+  <data name="Settings.Graphics.ReloadPending" xml:space="preserve">
+    <value>保存しました。ページの再読み込み後に適用されます。</value>
+  </data>
+  <data name="Settings.Graphics.StorageUnavailable" xml:space="preserve">
+    <value>設定の保存先にアクセスできないため、グラフィックスバックエンドを変更できません。</value>
+  </data>
+  <data name="Settings.Graphics.SaveFailed" xml:space="preserve">
+    <value>保存できませんでした。もう一度お試しください。</value>
+  </data>
+  <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
+    <value>無効または重複したバックエンドを無視しました。保存済みの設定は変更されていません。</value>
+  </data>
 </root>
