@@ -582,6 +582,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     // ── Disposables ───────────────────────────────────────────────────
     private readonly CompositeDisposable _disposables = new();
 
+    public GraphicsBackendSettingsViewModel GraphicsBackendSettings { get; } = new(ServiceHub.GraphicsBackendService);
+
     /// <summary>防止开关回拨时再次触发 async 订阅的标志。</summary>
     private bool _suppressToggle;
 
@@ -614,6 +616,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .Subscribe(opt =>
             {
                 LocalizationManager.LoadLanguage(opt.Code);
+                GraphicsBackendSettings.RefreshLocalization();
                 Preferences.Default.Language = opt.Code;
                 Preferences.Save();
             })

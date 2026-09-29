@@ -18,6 +18,8 @@ using OpenUtau.Core;
 using OpenUtauMobile.Android.Audio;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.Android.Graphics;
 using Serilog;
 using Environment = System.Environment;
 using Log = Serilog.Log;
@@ -85,10 +87,14 @@ public class MainActivity : AvaloniaMainActivity
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new AndroidPerformanceProvider();
         ServiceHub.PlatformDisplayService = new AndroidDisplayService(() => CurrentActivity);
-        return builder.UseReactiveUI(reactiveUIBuilder =>
-        {
-            reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
-        });
+        AndroidGraphicsBackendProvider graphicsProvider = new();
+        GraphicsBackendService graphicsService = new(graphicsProvider);
+        ServiceHub.GraphicsBackendService = graphicsService;
+        return builder.With(AndroidGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
+            .UseReactiveUI(reactiveUIBuilder =>
+            {
+                reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
+            });
     }
 
     protected override void OnNewIntent(Intent? intent)

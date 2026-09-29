@@ -10,6 +10,8 @@ using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.MacOS.Graphics;
 using ReactiveUI;
 using Serilog;
 
@@ -31,8 +33,12 @@ sealed class Program
         ServiceHub.ExternalUrlLauncher = new MacOSExternalUrlLauncher();
         ServiceHub.ExternalStorageService = new Storage.MacOSExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
+        MacOSGraphicsBackendProvider graphicsProvider = new();
+        GraphicsBackendService graphicsService = new(graphicsProvider);
+        ServiceHub.GraphicsBackendService = graphicsService;
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .With(MacOSGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
             .UseReactiveUI(reactiveUIBuilder =>
             {
                 reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));

@@ -1,5 +1,6 @@
 ﻿using OpenUtauMobile.Services.Platform;
 using System;
+using OpenUtauMobile.Services.Graphics;
 using Avalonia.Media;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Services.Performance;
@@ -12,6 +13,7 @@ namespace OpenUtauMobile.Services;
 /// </summary>
 public static class ServiceHub
 {
+    public static IGraphicsBackendService? GraphicsBackendService { get; set; }
     public static Controls.Gestures.IViewportInputPlatform? ViewportInputPlatform { get; set; }
     public static Action? InitAudioOutput { get; set; }
     public static IClipboardService ClipboardService { get; set; } = new AvaloniaClipboardService();

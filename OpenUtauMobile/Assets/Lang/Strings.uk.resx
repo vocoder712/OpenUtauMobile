@@ -2036,4 +2036,70 @@
   <data name="PianoRoll.Split.TooShort" xml:space="preserve">
     <value>Кожна частина ноти має бути не коротшою за 10 тіків. Точку поділу не змінено.</value>
   </data>
+  <data name="Settings.Graphics.Title" xml:space="preserve">
+    <value>Графічний бекенд інтерфейсу</value>
+  </data>
+  <data name="Settings.Graphics.Auto" xml:space="preserve">
+    <value>Автоматично (рекомендовано)</value>
+  </data>
+  <data name="Settings.Graphics.Vulkan" xml:space="preserve">
+    <value>Надавати перевагу Vulkan</value>
+  </data>
+  <data name="Settings.Graphics.OpenGLES" xml:space="preserve">
+    <value>Надавати перевагу OpenGL ES</value>
+  </data>
+  <data name="Settings.Graphics.Software" xml:space="preserve">
+    <value>Програмний рендеринг (діагностика)</value>
+  </data>
+  <data name="Settings.Graphics.ANGLE" xml:space="preserve">
+    <value>Надавати перевагу ANGLE</value>
+  </data>
+  <data name="Settings.Graphics.OpenGL" xml:space="preserve">
+    <value>Надавати перевагу OpenGL</value>
+  </data>
+  <data name="Settings.Graphics.GLX" xml:space="preserve">
+    <value>Надавати перевагу OpenGL (GLX)</value>
+  </data>
+  <data name="Settings.Graphics.EGL" xml:space="preserve">
+    <value>Надавати перевагу EGL</value>
+  </data>
+  <data name="Settings.Graphics.Metal" xml:space="preserve">
+    <value>Надавати перевагу Metal</value>
+  </data>
+  <data name="Settings.Graphics.MetalExperimental" xml:space="preserve">
+    <value>Надавати перевагу Metal (експериментально)</value>
+  </data>
+  <data name="Settings.Graphics.WebGL2" xml:space="preserve">
+    <value>Надавати перевагу WebGL 2</value>
+  </data>
+  <data name="Settings.Graphics.WebGL1" xml:space="preserve">
+    <value>Надавати перевагу WebGL 1</value>
+  </data>
+  <data name="Settings.Graphics.Custom" xml:space="preserve">
+    <value>Власний</value>
+  </data>
+  <data name="Settings.Graphics.Default" xml:space="preserve">
+    <value>Avalonia вибирає автоматично</value>
+  </data>
+  <data name="Settings.Graphics.RestartRequired" xml:space="preserve">
+    <value>Зміни потребують перезапуску застосунку.</value>
+  </data>
+  <data name="Settings.Graphics.ReloadRequired" xml:space="preserve">
+    <value>Зміни потребують перезавантаження сторінки.</value>
+  </data>
+  <data name="Settings.Graphics.RestartPending" xml:space="preserve">
+    <value>Збережено. Зміни набудуть чинності після перезапуску застосунку.</value>
+  </data>
+  <data name="Settings.Graphics.ReloadPending" xml:space="preserve">
+    <value>Збережено. Зміни набудуть чинності після перезавантаження сторінки.</value>
+  </data>
+  <data name="Settings.Graphics.StorageUnavailable" xml:space="preserve">
+    <value>Сховище налаштувань недоступне. Неможливо змінити графічний бекенд.</value>
+  </data>
+  <data name="Settings.Graphics.SaveFailed" xml:space="preserve">
+    <value>Не вдалося зберегти. Спробуйте ще раз.</value>
+  </data>
+  <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
+    <value>Некоректні або повторювані бекенди пропущено. Збережені налаштування не змінено.</value>
+  </data>
 </root>

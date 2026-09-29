@@ -13,6 +13,8 @@ using OpenUtau.Core;
 using OpenUtauMobile;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.Browser.Graphics;
 using ReactiveUI;
 using Serilog;
 
@@ -39,7 +41,12 @@ internal sealed partial class Program
                     reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
                 });
             await OpenUtauMobile.Browser.BrowserExternalUrlLauncher.InitializeAsync();
-            await appBuilder.StartBrowserAppAsync("out");
+            BrowserGraphicsBackendPreferenceStore graphicsStore = await BrowserGraphicsBackendPreferenceStore.CreateAsync();
+            BrowserGraphicsBackendProvider graphicsProvider = new();
+            GraphicsBackendService graphicsService = new(graphicsProvider, graphicsStore);
+            ServiceHub.GraphicsBackendService = graphicsService;
+            await appBuilder.StartBrowserAppAsync("out",
+                BrowserGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder));
         }
         catch (Exception ex)
         {

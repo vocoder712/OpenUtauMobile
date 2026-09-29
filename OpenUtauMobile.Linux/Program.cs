@@ -11,6 +11,8 @@ using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.Linux.Graphics;
 using ReactiveUI;
 using Serilog;
 
@@ -32,8 +34,12 @@ sealed class Program
         ServiceHub.ExternalUrlLauncher = new LinuxExternalUrlLauncher();
         ServiceHub.ExternalStorageService = new Storage.LinuxExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
+        LinuxGraphicsBackendProvider graphicsProvider = new();
+        GraphicsBackendService graphicsService = new(graphicsProvider);
+        ServiceHub.GraphicsBackendService = graphicsService;
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
+            .With(LinuxGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
             .UseReactiveUI(reactiveUIBuilder =>
             {
                 reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
