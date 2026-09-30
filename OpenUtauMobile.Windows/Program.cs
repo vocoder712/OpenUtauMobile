@@ -57,10 +57,11 @@ sealed class Program
         string rootPath = Path.Combine(dataHome, "OpenUtauMobile");
         string dataPath = Path.Combine(dataHome, "OpenUtauMobile");
         string cachePath = Path.Combine(dataPath, "Cache");
-        PathManager.Inst.Configure(
+        PathManagerInitialization.Initialize(
             rootPath: rootPath,
             dataPath: dataPath,
-            cachePath: cachePath);
+            cachePath: cachePath,
+            isInstalled: File.Exists(Path.Combine(AppContext.BaseDirectory, "installed.txt")));
     }
 
     private static void InitLogging()

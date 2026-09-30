@@ -16,6 +16,8 @@ public class AndroidApp : AvaloniaAndroidApplication<App>
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
     {
+        // 基类及后续服务可能提前读取偏好，先确保路径已完成初始化。
+        MainActivity.InitPathManager();
         AppBuilder configuredBuilder = base.CustomizeAppBuilder(builder);
         return MainActivity.ConfigureAppBuilder(configuredBuilder);
     }

@@ -233,14 +233,14 @@ public class MainActivity : AvaloniaMainActivity
     /// <summary>
     /// 初始化路径
     /// </summary>
-    private static void InitPathManager() {
-        string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+    internal static void InitPathManager()
+    {
+        string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); // data/user/<user_id>/pers.vocoder712.openutaumobile/files
         string cache = Path.Combine(localData, "Cache");
-        PathManager.Inst.Configure(
+        PathManagerInitialization.Initialize(
             rootPath: localData,
             dataPath: localData,
-            cachePath: cache,
-            homePathIsAscii: true);
+            cachePath: cache);
     }
     /// <summary>
     /// 初始化日志记录

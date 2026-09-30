@@ -53,14 +53,10 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
     {
         string dataPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
         string cachePath = Path.Combine(dataPath, "Cache");
-        Directory.CreateDirectory(dataPath);
-        Directory.CreateDirectory(cachePath);
-        Directory.CreateDirectory(Path.Combine(dataPath, "Logs"));
-        PathManager.Inst.Configure(
+        PathManagerInitialization.Initialize(
             rootPath: dataPath,
             dataPath: dataPath,
-            cachePath: cachePath,
-            homePathIsAscii: true);
+            cachePath: cachePath);
     }
 
     private static void InitLogging()
