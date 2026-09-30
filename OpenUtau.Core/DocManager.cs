@@ -117,7 +117,10 @@ namespace OpenUtau.Core {
             var stopWatch = Stopwatch.StartNew();
             var files = new List<string>();
             try {
-                files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
+                string builtinPath = Path.Combine(AppContext.BaseDirectory, kBuiltin);
+                if (File.Exists(builtinPath)) {
+                    files.Add(builtinPath);
+                }
                 Directory.CreateDirectory(PathManager.Inst.PluginsPath);
                 string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
                 if (File.Exists(oldBuiltin)) {

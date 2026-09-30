@@ -2150,4 +2150,10 @@
   <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
     <value>Invalid or duplicate backend entries were ignored. Stored settings are unchanged.</value>
   </data>
+  <data name="Splash.Failed" xml:space="preserve">
+    <value>Initialization failed</value>
+  </data>
+  <data name="FilePicker.InvalidFileName" xml:space="preserve">
+    <value>Enter a valid file name without directory separators.</value>
+  </data>
 </root>

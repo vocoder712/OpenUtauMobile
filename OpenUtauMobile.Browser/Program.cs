@@ -104,6 +104,7 @@ internal sealed partial class Program
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
+        ServiceHub.FlushFileSystemAsync = BrowserFileSystem.FlushAsync;
         ServiceHub.ExternalUrlLauncher = new BrowserExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>()
@@ -127,9 +128,9 @@ internal sealed partial class Program
         {
             // 使用虚拟文件系统路径，正常构造实例并跳过桌面默认路径探测。
             PathManagerInitialization.Initialize(
-                rootPath: "OpenUtauMobile",
-                dataPath: Path.Combine("OpenUtauMobile", "Data"),
-                cachePath: Path.Combine("OpenUtauMobile", "Data", "Cache"));
+                rootPath: "/OpenUtauMobile",
+                dataPath: "/OpenUtauMobile/Data",
+                cachePath: "/OpenUtauMobile/Data/Cache");
             return;
         }
 

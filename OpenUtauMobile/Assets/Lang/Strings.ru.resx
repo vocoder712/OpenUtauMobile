@@ -2105,4 +2105,10 @@
   <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
     <value>Недопустимые или повторяющиеся бэкенды проигнорированы. Сохранённые настройки не изменены.</value>
   </data>
+  <data name="Splash.Failed" xml:space="preserve">
+    <value>Ошибка инициализации</value>
+  </data>
+  <data name="FilePicker.InvalidFileName" xml:space="preserve">
+    <value>Введите допустимое имя файла без разделителей каталогов.</value>
+  </data>
 </root>

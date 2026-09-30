@@ -684,7 +684,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 RequestInvalidateVisual?.Invoke();
                 break;
             case SaveProjectNotification saveProjectNotification:
-                ToastService.Enqueue(L.S("Editor.Saved"));
+                if (!OperatingSystem.IsBrowser()) ToastService.Enqueue(L.S("Editor.Saved"));
                 ProjectPath = DocManager.Inst.Project.FilePath;
                 Preferences.AddRecentFileIfEnabled(saveProjectNotification.Path);
                 break;
@@ -808,6 +808,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             file = Path.Combine(PathManager.Inst.TemplatesPath, $"{file}.ustx");
             Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
             Ustx.Save(file, project.CloneAsTemplate());
+            await ServiceHub.FlushFileSystemAsync();
         }
         catch (Exception exception)
         {
@@ -1686,14 +1687,22 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <returns>是否成功保存</returns>
     private static async Task<bool> RequestSaveAs()
     {
-        FilePickerPopup view = new();
-        // TODO: 使用统一文件入口
-        FileSavePickerViewModel vm = new(
-            L.S("FilePicker.SaveProjectAs"),
-            "ustx",
-            Preferences.Default.LastSaveProjectDirectory,
-            L.S("FilePicker.DefaultProjectName"));
-        string? fileName = await PopupService.Show<string>(view, vm);
+        string? fileName;
+        if (OperatingSystem.IsBrowser())
+        {
+            fileName = await FilePicker.SaveFileAsync(
+                L.S("FilePicker.SaveProjectAs"), "ustx",
+                L.S("FilePicker.DefaultProjectName"),
+                Preferences.Default.LastSaveProjectDirectory);
+        }
+        else
+        {
+            FileSavePickerViewModel vm = new(
+                L.S("FilePicker.SaveProjectAs"), "ustx",
+                Preferences.Default.LastSaveProjectDirectory,
+                L.S("FilePicker.DefaultProjectName"));
+            fileName = await PopupService.Show<string>(new FilePickerPopup(), vm);
+        }
         if (string.IsNullOrEmpty(fileName))
         {
             return false;
@@ -1747,6 +1756,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 // 缩混
                 case ExportAudioMode.Mixdown:
                     await PlaybackManager.Inst.RenderMixdown(DocManager.Inst.Project, request.ExportPath);
+                    await ServiceHub.FlushFileSystemAsync();
                     success = File.Exists(request.ExportPath) &&
                               File.GetLastWriteTimeUtc(request.ExportPath) >= startedAt.AddSeconds(-1);
                     ToastService.Enqueue(L.S(success
@@ -1756,6 +1766,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 // 分轨
                 case ExportAudioMode.Tracks:
                     await PlaybackManager.Inst.RenderToFiles(DocManager.Inst.Project, request.ExportPath);
+                    await ServiceHub.FlushFileSystemAsync();
                     string? trackDir = Path.GetDirectoryName(request.ExportPath);
                     string trackBase = Path.GetFileNameWithoutExtension(request.ExportPath);
                     success = !string.IsNullOrWhiteSpace(trackDir) &&

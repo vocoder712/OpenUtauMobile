@@ -32,7 +32,9 @@ namespace OpenUtau.Core.Util {
             Default = new SerializablePreferences();
             try
             {
-                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string exePath = OperatingSystem.IsBrowser()
+                    ? AppContext.BaseDirectory
+                    : Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
                 string shippedPrefsPath = Path.Combine(exePath, "prefs-default.json");
                 if (File.Exists(shippedPrefsPath)) {
                     var shippedPrefs = Json.Deserialize<SerializablePreferences>(

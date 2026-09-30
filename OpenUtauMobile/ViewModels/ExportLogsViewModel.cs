@@ -129,6 +129,7 @@ public sealed class ExportLogsViewModel : NavigateViewModelBase
 
             IsExporting = true;
             await Task.Run(() => CreateArchive(destination, selected));
+            await ServiceHub.FlushFileSystemAsync();
             ToastService.Enqueue(string.Format(L.S("ExportLogs.ExportSuccess"), selected.Length));
         }
         catch (Exception exception)
@@ -156,6 +157,7 @@ public sealed class ExportLogsViewModel : NavigateViewModelBase
 
             IsExporting = true;
             int crashCount = await service.ExportAsync(destination);
+            await ServiceHub.FlushFileSystemAsync();
             ToastService.Enqueue(string.Format(L.S("ExportLogs.CrashExportSuccess"), crashCount));
         }
         catch (Exception exception)

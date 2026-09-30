@@ -51,8 +51,8 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
         this.WhenAnyValue(x => x.CurrentPath, x => x.FileName)
             .Subscribe(_ => UpdatePreviewPath());
 
-        IObservable<bool> canSave = this.WhenAnyValue(x => x.FileName,
-            fn => !string.IsNullOrWhiteSpace(fn));
+        IObservable<bool> canSave = this.WhenAnyValue(x => x.FileName, x => x.CurrentPath,
+            (name, path) => IsValidFileName(name) && Directory.Exists(path));
         SaveCommand = ReactiveCommand.Create(Save, canSave);
     }
 
@@ -67,9 +67,11 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
 
     private void UpdatePreviewPath()
     {
-        if (string.IsNullOrWhiteSpace(FileName))
+        if (!IsValidFileName(FileName))
         {
             PreviewFullPath = string.Empty;
+            WarningMessage = L.S("FilePicker.InvalidFileName");
+            IsShowingWarningMessage = !string.IsNullOrEmpty(FileName);
             return;
         }
 
@@ -90,7 +92,12 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
 
     private void Save()
     {
-        if (string.IsNullOrWhiteSpace(FileName)) return;
+        if (!IsValidFileName(FileName) || !Directory.Exists(CurrentPath)) return;
         RaiseClose(PreviewFullPath);
     }
+
+    private static bool IsValidFileName(string name) =>
+        !string.IsNullOrWhiteSpace(name) && name is not "." and not ".." &&
+        name.IndexOfAny(Path.GetInvalidFileNameChars()) < 0 &&
+        !name.Contains('/') && !name.Contains('\\');
 }

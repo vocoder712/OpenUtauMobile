@@ -2,6 +2,9 @@ using Avalonia;
 using System;
 using System.Threading.Tasks;
 using OpenUtau.Core;
+using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
@@ -48,10 +51,18 @@ public partial class EditorViewModel
     {
         if (_saveInProgress) return false;
         _saveInProgress = true;
-        try { return saveAs ? await RequestSaveAs() : await SaveCore(); }
+        try
+        {
+            bool saved = saveAs ? await RequestSaveAs() : await SaveCore();
+            if (!saved) return false;
+            await ServiceHub.FlushFileSystemAsync();
+            if (OperatingSystem.IsBrowser()) ToastService.Enqueue(L.S("Editor.Saved"));
+            return true;
+        }
         catch (Exception exception)
         {
             Log.Error(exception, "保存工程失败");
+            if (OperatingSystem.IsBrowser()) DocManager.Inst.Project.Saved = false;
             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(exception));
             return false;
         }
