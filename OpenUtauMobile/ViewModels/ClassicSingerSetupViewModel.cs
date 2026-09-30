@@ -9,6 +9,7 @@ using DynamicData.Binding;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -372,6 +373,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
                 }
             });
 
+            await ServiceHub.FlushFileSystemAsync();
             // 安装成功
             IsInstalling = false;
             ShowProgressState = false;

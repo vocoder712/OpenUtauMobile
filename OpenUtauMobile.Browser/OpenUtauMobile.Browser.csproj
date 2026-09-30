@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
     <PropertyGroup>
         <TargetFramework>net10.0-browser</TargetFramework>
         <OutputType>Exe</OutputType>
@@ -6,11 +6,29 @@
         <Nullable>enable</Nullable>
         <RuntimeIdentifiers>browser-wasm</RuntimeIdentifiers>
         <DefineConstants>BROWSER</DefineConstants>
+        <WasmEnableThreads>true</WasmEnableThreads>
+        <EmccExtraLDFlags>$(EmccExtraLDFlags) -lidbfs.js</EmccExtraLDFlags>
+        <!-- 插件发现和现有 JSON 模型依赖反射，浏览器发布时保留其元数据。 -->
+        <PublishTrimmed>false</PublishTrimmed>
+        <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(WasmEnableThreads)' == 'true'">
+        <!-- .NET 10 多线程原生运行时在 -O0 下启动崩溃；仅优化原生部分，保留托管调试。 -->
+        <EmccCompileOptimizationFlag>-Oz</EmccCompileOptimizationFlag>
+        <EmccLinkOptimizationFlag>-O2</EmccLinkOptimizationFlag>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)"/>
         <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets/Fonts/*.otf"/>
+        <Content Include="Assets/Fonts/*.txt" Link="wwwroot/licenses/%(Filename)%(Extension)"
+                 CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"/>
     </ItemGroup>
 
     <ItemGroup>

@@ -2150,4 +2150,10 @@
   <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
     <value>已忽略无效或重复的后端配置，原始设置保持不变。</value>
   </data>
+  <data name="Splash.Failed" xml:space="preserve">
+    <value>初始化失败</value>
+  </data>
+  <data name="FilePicker.InvalidFileName" xml:space="preserve">
+    <value>请输入有效文件名，不要包含目录分隔符。</value>
+  </data>
 </root>

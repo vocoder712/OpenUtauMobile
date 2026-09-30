@@ -2143,4 +2143,10 @@
   <data name="Settings.Graphics.InvalidConfiguration" xml:space="preserve">
     <value>無効または重複したバックエンドを無視しました。保存済みの設定は変更されていません。</value>
   </data>
+  <data name="Splash.Failed" xml:space="preserve">
+    <value>初期化に失敗しました</value>
+  </data>
+  <data name="FilePicker.InvalidFileName" xml:space="preserve">
+    <value>ディレクトリ区切りを含まない有効なファイル名を入力してください。</value>
+  </data>
 </root>

@@ -28,7 +28,7 @@ namespace OpenUtauMobile.Browser.Services.Graphics
             try
             {
                 Directory.CreateDirectory(PathManager.Inst.DataPath);
-                await JSHost.ImportAsync(ModuleName, "./graphics-preferences.js");
+                await JSHost.ImportAsync(ModuleName, "/graphics-preferences.js");
                 string? json = ReadOrder();
                 store._canSave = true;
                 if (json != null)

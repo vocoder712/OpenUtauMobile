@@ -8,7 +8,7 @@ namespace OpenUtauMobile.Browser.Services.Platform;
 internal sealed partial class BrowserExternalUrlLauncher : IExternalUrlLauncher
 {
     private const string ModuleName = "OpenUtauMobileExternalUrl";
-    private const string ModulePath = "./external-url.js";
+    private const string ModulePath = "/external-url.js";
 
     public static async Task InitializeAsync()
     {

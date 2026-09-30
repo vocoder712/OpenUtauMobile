@@ -15,6 +15,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -174,9 +175,13 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
             }
             catch (Exception e)
             {
-                Log.Error($"OpenUtau后端初始化失败: {e}");
+                Log.Error(e, "OpenUtau后端初始化失败");
                 PostToUI(() =>
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e)));
+                {
+                    InitState = L.S("Splash.Failed");
+                    // 初始化可能尚未注册 DocManager 订阅者，直接显示启动错误。
+                    ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(e)));
+                });
             }
         }, ct);
     }

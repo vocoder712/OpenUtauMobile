@@ -42,7 +42,7 @@ public static class FilePicker
         ];
     }
 
-    private static readonly bool UseInternalPicker = OperatingSystem.IsAndroid()
+    private static readonly bool UseInternalPicker = OperatingSystem.IsBrowser() || OperatingSystem.IsAndroid()
 #if DEBUG
                                                      || OperatingSystem.IsWindows()
 #endif
@@ -53,6 +53,8 @@ public static class FilePicker
     /// <returns></returns>
     private static bool CheckAndRequestStoragePermission()
     {
+        // 浏览器仅访问应用虚拟目录，不申请设备文件系统权限。
+        if (OperatingSystem.IsBrowser()) return true;
         IExternalStorageService? service = ServiceHub.ExternalStorageService;
         if (service == null) return false;
         if (!service.HasManageExternalStoragePermissionAsync())
@@ -83,7 +85,7 @@ public static class FilePicker
     /// <returns>选中的文件路径，如果取消或失败则返回 <see cref="string.Empty"/></returns>
     public static async Task<string> PickSingleFileAsync(string title, string[] filters)
     {
-        // Android 需要特殊处理
+        // 浏览器与 Android 使用应用内置选择器。
         if (UseInternalPicker)
         {
             return await PickSingleFileInternalAsync(title, filters);
@@ -110,7 +112,7 @@ public static class FilePicker
     }
 
     /// <summary>
-    /// 使用内置文件夹选择器（Android 使用自定义 UI）。
+    /// 使用内置文件夹选择器。
     /// 取消或失败时返回 <see cref="string.Empty"/>。
     /// </summary>
     private static async Task<string> PickFolderInternalAsync(string title)
@@ -122,8 +124,8 @@ public static class FilePicker
     }
 
     /// <summary>
-    /// 使用系统文件夹选择器选择一个目录，全平台统一入口。
-    /// Android 回退至内置 UI。
+    /// 选择一个目录，全平台统一入口。
+    /// 浏览器与 Android 使用内置 UI。
     /// 取消或失败时返回 <see cref="string.Empty"/>。
     /// </summary>
     public static async Task<string> PickFolderAsync(string title)
@@ -148,7 +150,7 @@ public static class FilePicker
 
     /// <summary>
     /// 文件保存对话框，全平台统一入口。
-    /// Android / Windows 使用内置 UI；其他平台使用系统 <see cref="IStorageProvider.SaveFilePickerAsync"/>。
+    /// 浏览器、Android 与 Windows 调试版使用内置 UI；其他平台使用系统 <see cref="IStorageProvider.SaveFilePickerAsync"/>。
     /// </summary>
     /// <param name="title">对话框标题</param>
     /// <param name="extension">强制后缀（含点或不含均可，如 ".ustx" 或 "ustx"）</param>

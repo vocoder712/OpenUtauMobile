@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -89,13 +90,15 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
             }
         };
 
+        if (OperatingSystem.IsBrowser())
+            initialPath = BrowserWorkspace.NormalizeDirectory(initialPath);
         if (!Directory.Exists(initialPath))
             initialPath = string.Empty;
 
         if (!string.IsNullOrEmpty(initialPath))
             CurrentPath = initialPath;
         else
-            CurrentPath = OperatingSystem.IsAndroid()
+            CurrentPath = OperatingSystem.IsBrowser() ? BrowserWorkspace.Root : OperatingSystem.IsAndroid()
                 ? "/sdcard"
                 : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -118,11 +121,29 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
 
     public async Task RefreshItemsAsync()
     {
-        if (!Directory.Exists(CurrentPath)) return;
-
-        await _cts.CancelAsync();
+        // 先取消旧目录请求，路径无效时也不能让旧列表重新出现。
+        CancellationTokenSource previous = _cts;
         _cts = new CancellationTokenSource();
         CancellationToken token = _cts.Token;
+        await previous.CancelAsync();
+        previous.Dispose();
+        if (token.IsCancellationRequested) return;
+
+        if (OperatingSystem.IsBrowser())
+        {
+            string allowedPath = BrowserWorkspace.NormalizeDirectory(CurrentPath);
+            if (allowedPath != CurrentPath)
+            {
+                CurrentPath = allowedPath;
+                return;
+            }
+        }
+        if (!Directory.Exists(CurrentPath))
+        {
+            AllItems.Clear();
+            IsLoading = false;
+            return;
+        }
 
         IsLoading = true;
         IsAccessDenied = false;
@@ -259,6 +280,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
 
     private void GoUp()
     {
+        if (OperatingSystem.IsBrowser() && CurrentPath == BrowserWorkspace.Root) return;
         DirectoryInfo? parentDir = Directory.GetParent(CurrentPath);
         if (parentDir != null)
             CurrentPath = parentDir.FullName;
