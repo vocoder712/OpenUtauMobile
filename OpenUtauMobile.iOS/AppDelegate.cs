@@ -11,10 +11,11 @@ using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
-using OpenUtauMobile.iOS.Audio;
+using OpenUtauMobile.iOS.Services.Audio;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.iOS.Graphics;
+using OpenUtauMobile.iOS.Services.Graphics;
+using OpenUtauMobile.iOS.Services.Platform;
 using Serilog;
 using UIKit;
 
@@ -52,14 +53,10 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
     {
         string dataPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
         string cachePath = Path.Combine(dataPath, "Cache");
-        Directory.CreateDirectory(dataPath);
-        Directory.CreateDirectory(cachePath);
-        Directory.CreateDirectory(Path.Combine(dataPath, "Logs"));
-        PathManager.Inst.Configure(
+        PathManagerInitialization.Initialize(
             rootPath: dataPath,
             dataPath: dataPath,
-            cachePath: cachePath,
-            homePathIsAscii: true);
+            cachePath: cachePath);
     }
 
     private static void InitLogging()

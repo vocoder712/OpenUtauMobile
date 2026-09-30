@@ -424,14 +424,17 @@
   <data name="Settings.File.AdditionalSingerPath.Change" xml:space="preserve">
     <value>変更</value>
   </data>
-  <data name="Settings.File.RenderCache" xml:space="preserve">
-    <value>レンダーキャッシュ</value>
+  <data name="Settings.File.Cache" xml:space="preserve">
+    <value>アプリのキャッシュ</value>
   </data>
-  <data name="Settings.File.RenderCache.Desc" xml:space="preserve">
-    <value>アプリデータに保存されたレンダーキャッシュファイルを削除します。</value>
+  <data name="Settings.File.Cache.Desc" xml:space="preserve">
+    <value>キャッシュフォルダー内のレンダリング結果や一時ファイルなどを削除します。使用中に再生成される場合があります。</value>
   </data>
-  <data name="Settings.File.RenderCache.Clear" xml:space="preserve">
-    <value>レンダーキャッシュを削除</value>
+  <data name="Settings.File.Cache.Clear" xml:space="preserve">
+    <value>キャッシュを削除</value>
+  </data>
+  <data name="Settings.File.Cache.Size" xml:space="preserve">
+    <value>現在のキャッシュサイズ</value>
   </data>
   <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
     <value>外観と言語</value>

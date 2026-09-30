@@ -13,7 +13,51 @@ using Serilog;
 namespace OpenUtau.Core {
 
     public class PathManager : SingletonBase<PathManager> {
+        // 宿主在首次访问单例前注册；未注册时保留上游默认路径逻辑。
+        public sealed record PathConfiguration(
+            string RootPath, string DataPath, string CachePath,
+            bool HomePathIsAscii, bool IsInstalled);
+
+        private static readonly object configurationLock = new();
+        private static PathConfiguration? registeredPaths;
+        private static bool initializationStarted;
+
+        public static void RegisterPaths(PathConfiguration paths)
+        {
+            ArgumentNullException.ThrowIfNull(paths);
+            ArgumentException.ThrowIfNullOrWhiteSpace(paths.RootPath);
+            ArgumentException.ThrowIfNullOrWhiteSpace(paths.DataPath);
+            ArgumentException.ThrowIfNullOrWhiteSpace(paths.CachePath);
+            lock (configurationLock)
+            {
+                if (registeredPaths == paths)
+                {
+                    return;
+                }
+                if (initializationStarted || registeredPaths != null)
+                {
+                    throw new InvalidOperationException(
+                        "PathManager paths must be registered before initialization and cannot be replaced.");
+                }
+                registeredPaths = paths;
+            }
+        }
+
         public PathManager() {
+            // 与注册共用锁，避免首次构造与平台注册并发时出现混合路径。
+            lock (configurationLock)
+            {
+                initializationStarted = true;
+                if (registeredPaths is PathConfiguration paths)
+                {
+                    RootPath = paths.RootPath;
+                    DataPath = paths.DataPath;
+                    CachePath = paths.CachePath;
+                    HomePathIsAscii = paths.HomePathIsAscii;
+                    IsInstalled = paths.IsInstalled;
+                    return;
+                }
+            }
             try
             {
                 RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);

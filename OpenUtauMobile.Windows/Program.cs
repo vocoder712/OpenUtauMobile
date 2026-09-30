@@ -9,11 +9,14 @@ using ReactiveUI.Avalonia;
 using Microsoft.Win32;
 using OpenUtau.Audio;
 using OpenUtau.Core;
-using OpenUtauMobile.Windows.Audio;
+using OpenUtauMobile.Windows.Services.Audio;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.Windows.Graphics;
+using OpenUtauMobile.Windows.Services.Graphics;
+using OpenUtauMobile.Windows.Services.Platform;
+using OpenUtauMobile.Windows.Services.Performance;
+using OpenUtauMobile.Windows.Services.Storage;
 using Serilog;
 
 namespace OpenUtauMobile.Windows;
@@ -33,7 +36,7 @@ sealed class Program
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ViewportInputPlatform = new WindowsViewportInput();
         ServiceHub.ExternalUrlLauncher = new WindowsExternalUrlLauncher();
-        ServiceHub.ExternalStorageService = new Storage.WindowsExternalStorageService();
+        ServiceHub.ExternalStorageService = new WindowsExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new WindowsPerformanceProvider();
         WindowsGraphicsBackendProvider graphicsProvider = new();
@@ -54,10 +57,11 @@ sealed class Program
         string rootPath = Path.Combine(dataHome, "OpenUtauMobile");
         string dataPath = Path.Combine(dataHome, "OpenUtauMobile");
         string cachePath = Path.Combine(dataPath, "Cache");
-        PathManager.Inst.Configure(
+        PathManagerInitialization.Initialize(
             rootPath: rootPath,
             dataPath: dataPath,
-            cachePath: cachePath);
+            cachePath: cachePath,
+            isInstalled: File.Exists(Path.Combine(AppContext.BaseDirectory, "installed.txt")));
     }
 
     private static void InitLogging()

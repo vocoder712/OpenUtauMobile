@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:metrics="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
                     xmlns:local="using:OpenUtauMobile.Themes.OpenUtauMobile.Controls"
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+                    xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
                     x:CompileBindings="False">
     <!-- 轨道只负责命中，MD3 轨道及圆点由共享呈现器绘制。 -->
     <ControlTheme x:Key="OpumSliderTrackButton" TargetType="RepeatButton">
@@ -57,14 +59,25 @@
                                                        InactiveTickBrush="{DynamicResource Sem.Color.OnSecondaryContainer}"
                                                        DisabledActiveBrush="{DynamicResource SliderTrackValueFillDisabled}"
                                                        DisabledInactiveBrush="{DynamicResource SliderTrackFillDisabled}" />
-                            <Track x:Name="PART_Track" Minimum="{TemplateBinding Minimum}" Maximum="{TemplateBinding Maximum}"
+                            <local:RelativeSliderTrack x:Name="PART_Track" Minimum="{TemplateBinding Minimum}" Maximum="{TemplateBinding Maximum}"
                                    Value="{TemplateBinding Value, Mode=TwoWay}" Orientation="{TemplateBinding Orientation}"
                                    IsDirectionReversed="{TemplateBinding IsDirectionReversed}">
                                 <Track.DecreaseButton><RepeatButton x:Name="PART_DecreaseButton" Theme="{StaticResource OpumSliderTrackButton}" Focusable="False" /></Track.DecreaseButton>
                                 <Track.IncreaseButton><RepeatButton x:Name="PART_IncreaseButton" Theme="{StaticResource OpumSliderTrackButton}" Focusable="False" /></Track.IncreaseButton>
                                 <Thumb x:Name="SliderThumb" Width="{x:Static metrics:SliderTokens.MinHeight}" Height="{x:Static metrics:SliderTokens.MinHeight}"
                                        Theme="{StaticResource OpumSliderThumbTheme}" Background="{DynamicResource SliderThumbBackground}" />
-                            </Track>
+                            </local:RelativeSliderTrack>
+                            <local:SliderValueIndicator Source="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                                        PlacementTarget="{Binding #SliderThumb}">
+                                <Border Background="{DynamicResource Sem.Color.InverseSurface}"
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+                                        Padding="12,8" IsHitTestVisible="False">
+                                    <TextBlock Text="{TemplateBinding local:SliderValueIndicator.ValueText}"
+                                               Foreground="{DynamicResource Sem.Color.InverseOnSurface}"
+                                               FontSize="{x:Static semantic:TypographyTokens.LabelLSize}"
+                                               FontWeight="Medium" FontFeatures="tnum" />
+                                </Border>
+                            </local:SliderValueIndicator>
                         </Grid>
                     </Border>
                 </DataValidationErrors>

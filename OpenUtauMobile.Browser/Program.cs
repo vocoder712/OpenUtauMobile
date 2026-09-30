@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +13,8 @@ using OpenUtauMobile;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.Browser.Graphics;
+using OpenUtauMobile.Browser.Services.Graphics;
+using OpenUtauMobile.Browser.Services.Platform;
 using ReactiveUI;
 using Serilog;
 
@@ -40,7 +40,7 @@ internal sealed partial class Program
                 {
                     reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
                 });
-            await OpenUtauMobile.Browser.BrowserExternalUrlLauncher.InitializeAsync();
+            await BrowserExternalUrlLauncher.InitializeAsync();
             BrowserGraphicsBackendPreferenceStore graphicsStore = await BrowserGraphicsBackendPreferenceStore.CreateAsync();
             BrowserGraphicsBackendProvider graphicsProvider = new();
             GraphicsBackendService graphicsService = new(graphicsProvider, graphicsStore);
@@ -74,46 +74,21 @@ internal sealed partial class Program
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
-        ServiceHub.ExternalUrlLauncher = new OpenUtauMobile.Browser.BrowserExternalUrlLauncher();
+        ServiceHub.ExternalUrlLauncher = new BrowserExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>();
     }
 
     private static void InitPathManager()
     {
-        // On wasm/browser, PathManager ctor uses platform APIs that are unavailable and can crash the runtime.
-        // Create an uninitialized instance and inject it into SingletonBase<PathManager> via reflection.
         if (OperatingSystem.IsBrowser())
         {
-            try
-            {
-                var pmType = typeof(OpenUtau.Core.PathManager);
-                var pmObj = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(pmType);
-                var pm = (OpenUtau.Core.PathManager)pmObj;
-
-                // Set auto-properties backing fields
-                BindingFlags bf = BindingFlags.Instance | BindingFlags.NonPublic;
-                pmType.GetField("<RootPath>k__BackingField", bf)?.SetValue(pm, "OpenUtauMobile");
-                pmType.GetField("<DataPath>k__BackingField", bf)?.SetValue(pm, Path.Combine("OpenUtauMobile", "Data"));
-                pmType.GetField("<CachePath>k__BackingField", bf)?.SetValue(pm, Path.Combine("OpenUtauMobile", "Data", "Cache"));
-                pmType.GetField("<HomePathIsAscii>k__BackingField", bf)?.SetValue(pm, true);
-                pmType.GetField("<IsInstalled>k__BackingField", bf)?.SetValue(pm, false);
-
-                // Inject into SingletonBase<PathManager>.inst
-                var singletonType = typeof(OpenUtau.Core.Util.SingletonBase<OpenUtau.Core.PathManager>);
-                var instField = singletonType.GetField("inst", BindingFlags.Static | BindingFlags.NonPublic);
-                if (instField != null)
-                {
-                    var lazy = new Lazy<OpenUtau.Core.PathManager>(() => pm);
-                    instField.SetValue(null, lazy);
-                }
-
-                return;
-            }
-            catch (Exception e)
-            {
-                try { Console.Error.WriteLine($"InitPathManager(browser) failed: {e.GetType().FullName}: {e.Message}"); } catch { }
-            }
+            // 使用虚拟文件系统路径，正常构造实例并跳过桌面默认路径探测。
+            PathManagerInitialization.Initialize(
+                rootPath: "OpenUtauMobile",
+                dataPath: Path.Combine("OpenUtauMobile", "Data"),
+                cachePath: Path.Combine("OpenUtauMobile", "Data", "Cache"));
+            return;
         }
 
         // Non-browser fallback
@@ -121,7 +96,7 @@ internal sealed partial class Program
         string rootPath = Path.Combine(dataHome, "OpenUtauMobile");
         string dataPath = Path.Combine(dataHome, "OpenUtauMobile");
         string cachePath = Path.Combine(dataPath, "Cache");
-        PathManager.Inst.Configure(
+        PathManagerInitialization.Initialize(
             rootPath: rootPath,
             dataPath: dataPath,
             cachePath: cachePath);

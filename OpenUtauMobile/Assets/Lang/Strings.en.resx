@@ -424,14 +424,17 @@
   <data name="Settings.File.AdditionalSingerPath.Change" xml:space="preserve">
     <value>Change</value>
   </data>
-  <data name="Settings.File.RenderCache" xml:space="preserve">
-    <value>Render Cache</value>
+  <data name="Settings.File.Cache" xml:space="preserve">
+    <value>App Cache</value>
   </data>
-  <data name="Settings.File.RenderCache.Desc" xml:space="preserve">
-    <value>Deletes cached render files stored in app data.</value>
+  <data name="Settings.File.Cache.Desc" xml:space="preserve">
+    <value>Clears rendered results, temporary files, and other data in the cache directory. Files may be recreated during use.</value>
   </data>
-  <data name="Settings.File.RenderCache.Clear" xml:space="preserve">
-    <value>Clear Render Cache</value>
+  <data name="Settings.File.Cache.Clear" xml:space="preserve">
+    <value>Clear Cache</value>
+  </data>
+  <data name="Settings.File.Cache.Size" xml:space="preserve">
+    <value>Current cache size</value>
   </data>
   <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
     <value>Appearance &amp; Language</value>

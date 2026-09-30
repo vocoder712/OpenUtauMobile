@@ -8,6 +8,7 @@
              xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             xmlns:sliderTheme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
              x:Class="OpenUtauMobile.Views.SettingsView"
              x:Name="Root"
@@ -567,43 +568,35 @@
                                                 Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
                                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" IsEnabled="{Binding PitchPenCanvasDragEnabled}">
-                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
-                                                <StackPanel Grid.Column="0" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                                    <TextBlock Classes="SettingItemTitle"
-                                                               Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension}" />
-                                                    <TextBlock Classes="PlaceholderText"
-                                                               Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension.Desc}"
-                                                               TextWrapping="Wrap" />
-                                                </StackPanel>
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding PitchPenNoteHitTickExtension}"
-                                                           VerticalAlignment="Center"
-                                                           Opacity="0.65" />
-                                            </Grid>
-                                            <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMinimum}"
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Classes="SettingItemTitle"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension}" />
+                                                <TextBlock Text="{Binding PitchPenNoteHitTickExtension}" Classes="SettingValue" />
+                                            </StackPanel>
+                                            <Slider Classes="SettingSlider" Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMinimum}"
                                                     Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitTickExtensionSliderMaximum}"
                                                     Value="{Binding PitchPenNoteHitTickExtension, Mode=TwoWay}"
+                                                    sliderTheme:SliderValueIndicator.ValueText="{Binding PitchPenNoteHitTickExtension}"
+                                                    AutomationProperties.Name="{DynamicResource Settings.Edit.PitchPenHitTickExtension}"
                                                     TickFrequency="1"
                                                     IsSnapToTickEnabled="True" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension.Desc}" />
 
-                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" Margin="0,8,0,0">
-                                                <StackPanel Grid.Column="0" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                                    <TextBlock Classes="SettingItemTitle"
-                                                               Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension}" />
-                                                    <TextBlock Classes="PlaceholderText"
-                                                               Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension.Desc}"
-                                                               TextWrapping="Wrap" />
-                                                </StackPanel>
-                                                <TextBlock Grid.Column="1"
-                                                           Text="{Binding PitchPenNoteHitToneExtension}"
-                                                           VerticalAlignment="Center"
-                                                           Opacity="0.65" />
-                                            </Grid>
-                                            <Slider Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMinimum}"
+                                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" Margin="0,8,0,0">
+                                                <TextBlock Classes="SettingItemTitle"
+                                                           Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension}" />
+                                                <TextBlock Text="{Binding PitchPenNoteHitToneExtension}" Classes="SettingValue" />
+                                            </StackPanel>
+                                            <Slider Classes="SettingSlider" Minimum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMinimum}"
                                                     Maximum="{x:Static vm:SettingsViewModel.PitchPenNoteHitToneExtensionSliderMaximum}"
                                                     Value="{Binding PitchPenNoteHitToneExtension, Mode=TwoWay}"
+                                                    sliderTheme:SliderValueIndicator.ValueText="{Binding PitchPenNoteHitToneExtension}"
+                                                    AutomationProperties.Name="{DynamicResource Settings.Edit.PitchPenHitToneExtension}"
                                                     TickFrequency="1"
                                                     IsSnapToTickEnabled="True" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.PitchPenHitToneExtension.Desc}" />
                                         </StackPanel>
                                     </StackPanel>
                                 </Border>
@@ -613,16 +606,18 @@
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <TextBlock Classes="SettingItemTitle"
                                                    Text="{DynamicResource Settings.Edit.Magnifier}" />
-                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                             <TextBlock Text="{DynamicResource Settings.Edit.MagnifierFactor}"
                                                        TextWrapping="Wrap" VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding MagnifierMagnificationFactor, StringFormat='{}{0:0.00#}×'}"
-                                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                                       VerticalAlignment="Center" />
-                                        </Grid>
-                                        <Slider Minimum="0.75" Maximum="2.0"
+                                            <TextBlock Classes="SettingValue">
+                                                <Run Text="{Binding MagnifierMagnificationFactor, StringFormat='{}{0:0.00#}'}" />
+                                                <Run Text="×" FontWeight="Normal"
+                                                     FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <Slider Classes="SettingSlider" Minimum="0.75" Maximum="2.0"
                                                 Value="{Binding MagnifierSliderValue, Mode=TwoWay}"
+                                                sliderTheme:SliderValueIndicator.ValueText="{Binding MagnifierMagnificationFactor, StringFormat='{}{0:0.00#}×'}"
                                                 TickFrequency="0.25" SmallChange="0.25" LargeChange="0.25"
                                                 IsSnapToTickEnabled="True"
                                                 AutomationProperties.Name="{DynamicResource Settings.Edit.MagnifierFactor}" />
@@ -643,11 +638,16 @@
                                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                             <TextBlock Text="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
                                                        Classes="SettingItemTitle" />
-                                            <TextBlock Text="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
-                                                       Classes="PlaceholderText" />
+                                            <TextBlock Classes="SettingValue">
+                                                <Run Text="{Binding PlaybackRefreshRate}" />
+                                                <Run Text=" FPS" FontWeight="Normal"
+                                                     FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                            </TextBlock>
                                         </StackPanel>
-                                        <Slider Minimum="1" Maximum="60"
+                                        <Slider Classes="SettingSlider" Minimum="1" Maximum="60"
                                                 Value="{Binding PlaybackRefreshRate, Mode=TwoWay}"
+                                                sliderTheme:SliderValueIndicator.ValueText="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
+                                                AutomationProperties.Name="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
                                                 TickFrequency="1"
                                                 IsSnapToTickEnabled="True" />
                                         <TextBlock Classes="PlaceholderText"
@@ -677,11 +677,16 @@
                                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                             <TextBlock Text="{DynamicResource Settings.Edit.UndoLimit}"
                                                        Classes="SettingItemTitle" />
-                                            <TextBlock Text="{Binding UndoLimit, StringFormat='{}{0} steps'}"
-                                                       Classes="PlaceholderText" />
+                                            <TextBlock Classes="SettingValue">
+                                                <Run Text="{Binding UndoLimit}" />
+                                                <Run Text=" steps" FontWeight="Normal"
+                                                     FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                            </TextBlock>
                                         </StackPanel>
-                                        <Slider Minimum="10" Maximum="100"
+                                        <Slider Classes="SettingSlider" Minimum="10" Maximum="100"
                                                 Value="{Binding UndoLimit, Mode=TwoWay}"
+                                                sliderTheme:SliderValueIndicator.ValueText="{Binding UndoLimit, StringFormat='{}{0} steps'}"
+                                                AutomationProperties.Name="{DynamicResource Settings.Edit.UndoLimit}"
                                                 TickFrequency="1"
                                                 IsSnapToTickEnabled="True" />
                                         <TextBlock Classes="PlaceholderText"
@@ -693,16 +698,8 @@
                                 <!-- 自动保存 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                            <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
-                                                       Classes="SettingItemTitle" />
-                                            <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                                <TextBlock Text="{Binding AutoSaveInterval}"
-                                                           Classes="PlaceholderText" />
-                                                <TextBlock Text="s"
-                                                           Classes="PlaceholderText" />
-                                            </StackPanel>
-                                        </StackPanel>
+                                        <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
+                                                   Classes="SettingItemTitle" />
                                         <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                             <TextBlock Text="{DynamicResource Settings.Edit.AutoSave.Enabled}"
                                                        Classes="PlaceholderText" />
@@ -710,10 +707,18 @@
                                                           OffContent=""
                                                           OnContent="" />
                                         </StackPanel>
-                                        <Slider Minimum="30" Maximum="600"
+                                        <TextBlock Classes="SettingValue" IsVisible="{Binding AutoSaveEnabled}">
+                                            <Run Text="{Binding AutoSaveInterval}" />
+                                            <Run Text=" s" FontWeight="Normal"
+                                                 FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </TextBlock>
+                                        <Slider Classes="SettingSlider" Minimum="30" Maximum="600"
                                                 Value="{Binding AutoSaveInterval, Mode=TwoWay}"
+                                                sliderTheme:SliderValueIndicator.ValueText="{Binding AutoSaveInterval, StringFormat='{}{0} s'}"
+                                                AutomationProperties.Name="{DynamicResource Settings.Edit.AutoSave}"
                                                 TickFrequency="10"
                                                 IsSnapToTickEnabled="True"
+                                                IsVisible="{Binding AutoSaveEnabled}"
                                                 IsEnabled="{Binding AutoSaveEnabled}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.AutoSave.Desc}"
@@ -786,11 +791,16 @@
                                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                                 <TextBlock Text="{DynamicResource Settings.Render.AcousticSteps}"
                                                            Classes="SettingItemTitle" />
-                                                <TextBlock Text="{Binding DiffSingerSteps, StringFormat='{}{0} steps'}"
-                                                           Classes="PlaceholderText" />
+                                                <TextBlock Classes="SettingValue">
+                                                    <Run Text="{Binding DiffSingerSteps}" />
+                                                    <Run Text=" steps" FontWeight="Normal"
+                                                         FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                </TextBlock>
                                             </StackPanel>
-                                            <Slider Minimum="1" Maximum="100"
+                                            <Slider Classes="SettingSlider" Minimum="1" Maximum="100"
                                                     Value="{Binding DiffSingerSteps, Mode=TwoWay}"
+                                                    sliderTheme:SliderValueIndicator.ValueText="{Binding DiffSingerSteps, StringFormat='{}{0} steps'}"
+                                                    AutomationProperties.Name="{DynamicResource Settings.Render.AcousticSteps}"
                                                     TickFrequency="1"
                                                     IsSnapToTickEnabled="True" />
                                             <TextBlock Classes="PlaceholderText"
@@ -807,11 +817,16 @@
                                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                                 <TextBlock Text="{DynamicResource Settings.Render.VarianceSteps}"
                                                            Classes="SettingItemTitle" />
-                                                <TextBlock Text="{Binding DiffSingerStepsVariance, StringFormat='{}{0} steps'}"
-                                                           Classes="PlaceholderText" />
+                                                <TextBlock Classes="SettingValue">
+                                                    <Run Text="{Binding DiffSingerStepsVariance}" />
+                                                    <Run Text=" steps" FontWeight="Normal"
+                                                         FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                </TextBlock>
                                             </StackPanel>
-                                            <Slider Minimum="1" Maximum="100"
+                                            <Slider Classes="SettingSlider" Minimum="1" Maximum="100"
                                                     Value="{Binding DiffSingerStepsVariance, Mode=TwoWay}"
+                                                    sliderTheme:SliderValueIndicator.ValueText="{Binding DiffSingerStepsVariance, StringFormat='{}{0} steps'}"
+                                                    AutomationProperties.Name="{DynamicResource Settings.Render.VarianceSteps}"
                                                     TickFrequency="1"
                                                     IsSnapToTickEnabled="True" />
                                             <TextBlock Classes="PlaceholderText"
@@ -828,11 +843,16 @@
                                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                                 <TextBlock Text="{DynamicResource Settings.Render.PitchSteps}"
                                                            Classes="SettingItemTitle" />
-                                                <TextBlock Text="{Binding DiffSingerStepsPitch, StringFormat='{}{0} steps'}"
-                                                           Classes="PlaceholderText" />
+                                                <TextBlock Classes="SettingValue">
+                                                    <Run Text="{Binding DiffSingerStepsPitch}" />
+                                                    <Run Text=" steps" FontWeight="Normal"
+                                                         FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                </TextBlock>
                                             </StackPanel>
-                                            <Slider Minimum="1" Maximum="100"
+                                            <Slider Classes="SettingSlider" Minimum="1" Maximum="100"
                                                     Value="{Binding DiffSingerStepsPitch, Mode=TwoWay}"
+                                                    sliderTheme:SliderValueIndicator.ValueText="{Binding DiffSingerStepsPitch, StringFormat='{}{0} steps'}"
+                                                    AutomationProperties.Name="{DynamicResource Settings.Render.PitchSteps}"
                                                     TickFrequency="1"
                                                     IsSnapToTickEnabled="True" />
                                             <TextBlock Classes="PlaceholderText"
@@ -910,11 +930,16 @@
                                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                                 <TextBlock Text="{DynamicResource Settings.Render.ThreadCount}"
                                                            Classes="SettingItemTitle" />
-                                                <TextBlock Text="{Binding NumRenderThreads, StringFormat='{}{0} threads'}"
-                                                           Classes="PlaceholderText" />
+                                                <TextBlock Classes="SettingValue">
+                                                    <Run Text="{Binding NumRenderThreads}" />
+                                                    <Run Text=" threads" FontWeight="Normal"
+                                                         FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                </TextBlock>
                                             </StackPanel>
-                                            <Slider Minimum="1" Maximum="16"
+                                            <Slider Classes="SettingSlider" Minimum="1" Maximum="16"
                                                     Value="{Binding NumRenderThreads, Mode=TwoWay}"
+                                                    sliderTheme:SliderValueIndicator.ValueText="{Binding NumRenderThreads, StringFormat='{}{0} threads'}"
+                                                    AutomationProperties.Name="{DynamicResource Settings.Render.ThreadCount}"
                                                     TickFrequency="1"
                                                     IsSnapToTickEnabled="True" />
                                             <TextBlock Classes="PlaceholderText"
@@ -1036,18 +1061,25 @@
                                     </StackPanel>
                                 </Border>
 
-                                <!-- 渲染缓存 -->
+                                <!-- 应用缓存 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                             <TextBlock Classes="SettingItemTitle"
-                                                       Text="{DynamicResource Settings.File.RenderCache}" />
+                                                       Text="{DynamicResource Settings.File.Cache}" />
                                             <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.File.RenderCache.Desc}" />
+                                                       Text="{DynamicResource Settings.File.Cache.Desc}" />
                                         </StackPanel>
+                                        <Grid ColumnDefinitions="*,Auto"
+                                              ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.File.Cache.Size}" />
+                                            <TextBlock Grid.Column="1" Classes="SettingItemTitle"
+                                                       Text="{Binding CacheSize}" />
+                                        </Grid>
                                         <Button Classes="filled"
-                                                Content="{DynamicResource Settings.File.RenderCache.Clear}"
-                                                Command="{Binding ClearRenderCacheCommand}"
+                                                Content="{DynamicResource Settings.File.Cache.Clear}"
+                                                Command="{Binding ClearCacheCommand}"
                                                 HorizontalAlignment="Left" />
                                     </StackPanel>
                                 </Border>

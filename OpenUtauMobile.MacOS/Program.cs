@@ -11,7 +11,9 @@ using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.MacOS.Graphics;
+using OpenUtauMobile.MacOS.Services.Graphics;
+using OpenUtauMobile.MacOS.Services.Platform;
+using OpenUtauMobile.MacOS.Services.Storage;
 using ReactiveUI;
 using Serilog;
 
@@ -31,7 +33,7 @@ sealed class Program
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalUrlLauncher = new MacOSExternalUrlLauncher();
-        ServiceHub.ExternalStorageService = new Storage.MacOSExternalStorageService();
+        ServiceHub.ExternalStorageService = new MacOSExternalStorageService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         MacOSGraphicsBackendProvider graphicsProvider = new();
         GraphicsBackendService graphicsService = new(graphicsProvider);
@@ -51,7 +53,7 @@ sealed class Program
         string rootPath = Path.Combine(dataHome, "OpenUtauMobile");
         string dataPath = Path.Combine(dataHome, "OpenUtauMobile");
         string cachePath = Path.Combine(dataPath, "Cache");
-        PathManager.Inst.Configure(
+        PathManagerInitialization.Initialize(
             rootPath: rootPath,
             dataPath: dataPath,
             cachePath: cachePath);

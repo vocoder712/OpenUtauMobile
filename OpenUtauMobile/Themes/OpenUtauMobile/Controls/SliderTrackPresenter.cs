@@ -9,7 +9,7 @@ using OpenUtauMobile.Themes.OpenUtauMobile.Tokens;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Controls;
 
-/// <summary>全局 Slider 轨道绘制；输入、捕获和步进仍由框架的 Track 与 Thumb 处理。</summary>
+/// <summary>全局 Slider 轨道绘制；指针输入由共享相对拖动轨道处理。</summary>
 public class SliderTrackPresenter : Control
 {
     public static readonly StyledProperty<Slider?> SourceProperty = AvaloniaProperty.Register<SliderTrackPresenter, Slider?>(nameof(Source));

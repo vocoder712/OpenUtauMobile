@@ -366,8 +366,14 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>重新选择额外歌手路径命令。</summary>
     public ReactiveCommand<Unit, Unit> ChangeAdditionalSingerPathCommand { get; }
 
-    /// <summary>清除渲染缓存命令。</summary>
-    public ReactiveCommand<Unit, Unit> ClearRenderCacheCommand { get; }
+    /// <summary>整个应用缓存目录的大小，异步统计期间显示省略号。</summary>
+    [Reactive]
+    public string CacheSize { get; private set; } = "…";
+
+    private int _cacheSizeRefreshVersion;
+
+    /// <summary>清除应用缓存命令。</summary>
+    public ReactiveCommand<Unit, Unit> ClearCacheCommand { get; }
 
     // ── Edit & Behaviour ─────────────────────────────────────────────
     public bool IsAndroidPlatform { get; } = OperatingSystem.IsAndroid();
@@ -664,14 +670,22 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             }
         });
 
-        ClearRenderCacheCommand = ReactiveCommand.CreateFromTask(async () =>
+        ClearCacheCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            await Task.Run(() =>
+            try
             {
-                Directory.CreateDirectory(PathManager.Inst.CachePath);
-                PathManager.Inst.ClearCache();
-            });
+                await Task.Run(() =>
+                {
+                    Directory.CreateDirectory(PathManager.Inst.CachePath);
+                    PathManager.Inst.ClearCache();
+                });
+            }
+            finally
+            {
+                await RefreshCacheSizeAsync();
+            }
         });
+        _ = RefreshCacheSizeAsync();
 
         // 歌词助手设置与桌面端共用 Core 偏好。
         Type preferredLyricsHelper = ActiveLyricsHelper.Inst.GetPreferred();
@@ -745,7 +759,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         // 更改 SoundFont 路径命令
         ChangeSoundFontPathCommand = ReactiveCommand.CreateFromTask(async () =>
         {
-            string path = await FilePicker.PickSingleFileAsync(L.S("FilePicker.SelectSF2"), new[] { "*.sf2" });
+            string path = await FilePicker.PickSingleFileAsync(L.S("FilePicker.SelectSF2"), ["*.sf2"]);
             if (!string.IsNullOrEmpty(path))
             {
                 SoundFontPath = path;
@@ -1325,6 +1339,31 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         }
     }
 
+    private async Task RefreshCacheSizeAsync()
+    {
+        int version = ++_cacheSizeRefreshVersion;
+        CacheSize = "…";
+        string size;
+        try
+        {
+            size = await Task.Run(() => PathManager.Inst.GetCacheSize());
+        }
+        catch (Exception exception)
+        {
+            Log.Warning(exception, "Failed to calculate application cache size");
+            size = "—";
+        }
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            // 忽略旧统计结果，避免覆盖清理后或重新进入分类时的最新结果。
+            if (version == _cacheSizeRefreshVersion)
+            {
+                CacheSize = size;
+            }
+        });
+    }
+
     private void OnToggleNav()
     {
         IsNavExpanded = !IsNavExpanded;
@@ -1333,6 +1372,10 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     private void OnSelectCategory(SettingsCategory category)
     {
         SelectedCategory = category;
+        if (category == SettingsCategory.FileAndStorage)
+        {
+            _ = RefreshCacheSizeAsync();
+        }
     }
 
     public void Dispose()

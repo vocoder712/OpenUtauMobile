@@ -15,11 +15,14 @@ using Avalonia.Media;
 using ReactiveUI.Avalonia;
 using OpenUtau.Audio;
 using OpenUtau.Core;
-using OpenUtauMobile.Android.Audio;
+using OpenUtauMobile.Android.Services.Audio;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.Android.Graphics;
+using OpenUtauMobile.Android.Services.Graphics;
+using OpenUtauMobile.Android.Services.Platform;
+using OpenUtauMobile.Android.Services.Performance;
+using OpenUtauMobile.Android.Services.Storage;
 using Serilog;
 using Environment = System.Environment;
 using Log = Serilog.Log;
@@ -83,7 +86,7 @@ public class MainActivity : AvaloniaMainActivity
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
         ServiceHub.ExternalUrlLauncher = new AndroidExternalUrlLauncher(() => CurrentActivity);
         ServiceHub.ExternalStorageService =
-            new Storage.AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
+            new AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new AndroidPerformanceProvider();
         ServiceHub.PlatformDisplayService = new AndroidDisplayService(() => CurrentActivity);
@@ -230,14 +233,15 @@ public class MainActivity : AvaloniaMainActivity
     /// <summary>
     /// 初始化路径
     /// </summary>
-    private static void InitPathManager() {
-        string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        string cache = Path.Combine(localData, "Cache");
-        PathManager.Inst.Configure(
+    internal static void InitPathManager()
+    {
+        string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); // data/user/<user_id>/pers.vocoder712.openutaumobile/files
+        string cache = global::Android.App.Application.Context.CacheDir?.AbsolutePath
+            ?? throw new InvalidOperationException("无法获取 Android 缓存目录。");
+        PathManagerInitialization.Initialize(
             rootPath: localData,
             dataPath: localData,
-            cachePath: cache,
-            homePathIsAscii: true);
+            cachePath: cache);
     }
     /// <summary>
     /// 初始化日志记录
