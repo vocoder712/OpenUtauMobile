@@ -698,15 +698,8 @@
                                 <!-- 自动保存 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                            <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
-                                                       Classes="SettingItemTitle" />
-                                            <TextBlock Classes="SettingValue">
-                                                <Run Text="{Binding AutoSaveInterval}" />
-                                                <Run Text=" s" FontWeight="Normal"
-                                                     FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                                            </TextBlock>
-                                        </StackPanel>
+                                        <TextBlock Text="{DynamicResource Settings.Edit.AutoSave}"
+                                                   Classes="SettingItemTitle" />
                                         <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                             <TextBlock Text="{DynamicResource Settings.Edit.AutoSave.Enabled}"
                                                        Classes="PlaceholderText" />
@@ -714,12 +707,18 @@
                                                           OffContent=""
                                                           OnContent="" />
                                         </StackPanel>
+                                        <TextBlock Classes="SettingValue" IsVisible="{Binding AutoSaveEnabled}">
+                                            <Run Text="{Binding AutoSaveInterval}" />
+                                            <Run Text=" s" FontWeight="Normal"
+                                                 FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </TextBlock>
                                         <Slider Classes="SettingSlider" Minimum="30" Maximum="600"
                                                 Value="{Binding AutoSaveInterval, Mode=TwoWay}"
                                                 sliderTheme:SliderValueIndicator.ValueText="{Binding AutoSaveInterval, StringFormat='{}{0} s'}"
                                                 AutomationProperties.Name="{DynamicResource Settings.Edit.AutoSave}"
                                                 TickFrequency="10"
                                                 IsSnapToTickEnabled="True"
+                                                IsVisible="{Binding AutoSaveEnabled}"
                                                 IsEnabled="{Binding AutoSaveEnabled}" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.AutoSave.Desc}"
