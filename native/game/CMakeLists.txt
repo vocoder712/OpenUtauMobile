@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.24)
 project(OpumGame LANGUAGES C CXX)
 
+# 在下载依赖前检查实际编译器，也覆盖直接调用 CMake 或复用缓存的构建。
+if(OPUM_RID STREQUAL "win-arm64"
+    AND (NOT CMAKE_C_COMPILER_ID STREQUAL "Clang" OR NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+    message(FATAL_ERROR "Windows ARM64 GAME requires Clang for both C and C++. Configure a new build directory with a Visual Studio generator and -A ARM64 -T ClangCL.")
+endif()
+
 # 显式 RID 构建必须匹配工具链；仅检查指针位数无法区分 x64 和 ARM64。
 if(OPUM_RID)
     if(MSVC)
