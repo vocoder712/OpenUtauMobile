@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:metrics="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
                     xmlns:local="using:OpenUtauMobile.Themes.OpenUtauMobile.Controls"
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+                    xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
                     x:CompileBindings="False">
     <!-- 轨道只负责命中，MD3 轨道及圆点由共享呈现器绘制。 -->
     <ControlTheme x:Key="OpumSliderTrackButton" TargetType="RepeatButton">
@@ -65,6 +67,17 @@
                                 <Thumb x:Name="SliderThumb" Width="{x:Static metrics:SliderTokens.MinHeight}" Height="{x:Static metrics:SliderTokens.MinHeight}"
                                        Theme="{StaticResource OpumSliderThumbTheme}" Background="{DynamicResource SliderThumbBackground}" />
                             </Track>
+                            <local:SliderValueIndicator Source="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                                        PlacementTarget="{Binding #SliderThumb}">
+                                <Border Background="{DynamicResource Sem.Color.InverseSurface}"
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+                                        Padding="12,8" IsHitTestVisible="False">
+                                    <TextBlock Text="{TemplateBinding local:SliderValueIndicator.ValueText}"
+                                               Foreground="{DynamicResource Sem.Color.InverseOnSurface}"
+                                               FontSize="{x:Static semantic:TypographyTokens.LabelLSize}"
+                                               FontWeight="Medium" FontFeatures="tnum" />
+                                </Border>
+                            </local:SliderValueIndicator>
                         </Grid>
                     </Border>
                 </DataValidationErrors>

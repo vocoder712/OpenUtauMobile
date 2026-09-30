@@ -45,6 +45,21 @@
     <Style Selector="TextBlock.SettingItemTitle">
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- 参数值常驻显示，浏览页面时即可读取；独立行避免数字变化挤动轨道。 -->
+    <Style Selector="TextBlock.SettingValue">
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.HeadlineMSize}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="FontFeatures" Value="tnum" />
+        <Setter Property="MinHeight" Value="36" />
+    </Style>
+
+    <!-- 预留气泡高度，拖动至左端时也不遮住常驻读数，开合不改变布局。 -->
+    <Style Selector="Slider.SettingSlider">
+        <Setter Property="Margin" Value="0,40,0,0" />
     </Style>
 
     <!-- Placeholder description text -->
