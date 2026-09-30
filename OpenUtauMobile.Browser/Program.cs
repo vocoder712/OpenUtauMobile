@@ -15,22 +15,34 @@ using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
 using OpenUtauMobile.Browser.Services.Graphics;
 using OpenUtauMobile.Browser.Services.Platform;
-using ReactiveUI;
+using OpenUtauMobile.Browser.Services;
 using Serilog;
 
 internal sealed partial class Program
 {
+    [ThreadStatic]
+    private static bool _reportingFirstChance;
+
     private static async Task Main(string[] args)
     {
-        // Keep FirstChance handler minimal to avoid triggering complex formatting/resource lookup in WASM.
+        // WASM 首次抛出时堆栈可能尚未生成，延后输出；日志异常避免递归。
         AppDomain.CurrentDomain.FirstChanceException += (s, e) =>
         {
+            if (_reportingFirstChance)
+            {
+                return;
+            }
+            _reportingFirstChance = true;
             try
             {
                 var ex = e.Exception;
-                Console.Error.WriteLine($"FirstChanceException: {ex?.GetType().FullName}: {ex?.Message}");
+                _ = Task.Run(() => ReportFirstChance(ex));
             }
             catch { }
+            finally
+            {
+                _reportingFirstChance = false;
+            }
         };
 
         try
@@ -67,6 +79,24 @@ internal sealed partial class Program
         }
     }
 
+    private static void ReportFirstChance(Exception exception)
+    {
+        if (_reportingFirstChance)
+        {
+            return;
+        }
+        _reportingFirstChance = true;
+        try
+        {
+            Console.Error.WriteLine($"FirstChanceException: {exception}");
+        }
+        catch { }
+        finally
+        {
+            _reportingFirstChance = false;
+        }
+    }
+
     public static AppBuilder BuildAvaloniaApp()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -76,7 +106,19 @@ internal sealed partial class Program
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalUrlLauncher = new BrowserExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
-        return AppBuilder.Configure<App>();
+        return AppBuilder.Configure<App>()
+            .WithInterFont()
+            .With(new FontManagerOptions
+            {
+                DefaultFamilyName = "fonts:Inter#Inter",
+                FontFallbacks =
+                [
+                    new FontFallback
+                    {
+                        FontFamily = new FontFamily("avares://OpenUtauMobile.Browser/Assets/Fonts#Noto Sans CJK SC")
+                    }
+                ]
+            });
     }
 
     private static void InitPathManager()
@@ -104,7 +146,12 @@ internal sealed partial class Program
 
     private static void InitLogging()
     {
-        OpenUtauMobile.Services.AppLogging.Initialize();
+        AppLogging.Initialize();
+        // 浏览器没有桌面调试输出窗口，将应用日志和被捕获异常送到控制台。
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Sink(new BrowserConsoleLogSink())
+            .CreateLogger();
         Log.Information("==========Start logging==========");
     }
 
