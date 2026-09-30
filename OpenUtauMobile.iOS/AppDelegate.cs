@@ -11,10 +11,11 @@ using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
-using OpenUtauMobile.iOS.Audio;
+using OpenUtauMobile.iOS.Services.Audio;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.iOS.Graphics;
+using OpenUtauMobile.iOS.Services.Graphics;
+using OpenUtauMobile.iOS.Services.Platform;
 using Serilog;
 using UIKit;
 

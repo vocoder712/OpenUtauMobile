@@ -14,7 +14,8 @@ using OpenUtauMobile;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.Browser.Graphics;
+using OpenUtauMobile.Browser.Services.Graphics;
+using OpenUtauMobile.Browser.Services.Platform;
 using ReactiveUI;
 using Serilog;
 
@@ -40,7 +41,7 @@ internal sealed partial class Program
                 {
                     reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
                 });
-            await OpenUtauMobile.Browser.BrowserExternalUrlLauncher.InitializeAsync();
+            await BrowserExternalUrlLauncher.InitializeAsync();
             BrowserGraphicsBackendPreferenceStore graphicsStore = await BrowserGraphicsBackendPreferenceStore.CreateAsync();
             BrowserGraphicsBackendProvider graphicsProvider = new();
             GraphicsBackendService graphicsService = new(graphicsProvider, graphicsStore);
@@ -74,7 +75,7 @@ internal sealed partial class Program
         InitLogging();
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
-        ServiceHub.ExternalUrlLauncher = new OpenUtauMobile.Browser.BrowserExternalUrlLauncher();
+        ServiceHub.ExternalUrlLauncher = new BrowserExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>();
     }

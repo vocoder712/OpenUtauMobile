@@ -15,11 +15,14 @@ using Avalonia.Media;
 using ReactiveUI.Avalonia;
 using OpenUtau.Audio;
 using OpenUtau.Core;
-using OpenUtauMobile.Android.Audio;
+using OpenUtauMobile.Android.Services.Audio;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
-using OpenUtauMobile.Android.Graphics;
+using OpenUtauMobile.Android.Services.Graphics;
+using OpenUtauMobile.Android.Services.Platform;
+using OpenUtauMobile.Android.Services.Performance;
+using OpenUtauMobile.Android.Services.Storage;
 using Serilog;
 using Environment = System.Environment;
 using Log = Serilog.Log;
@@ -83,7 +86,7 @@ public class MainActivity : AvaloniaMainActivity
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
         ServiceHub.ExternalUrlLauncher = new AndroidExternalUrlLauncher(() => CurrentActivity);
         ServiceHub.ExternalStorageService =
-            new Storage.AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
+            new AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new AndroidPerformanceProvider();
         ServiceHub.PlatformDisplayService = new AndroidDisplayService(() => CurrentActivity);
