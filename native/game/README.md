@@ -33,6 +33,11 @@ SDK 的 `ndk/<固定版本>` 查找。Windows 路径传给 CMake 前转换为正
 Windows x64/x86 默认使用注册的 Visual Studio C++ 工具链；Windows ARM64 使用 Visual Studio
 ARM64 生成器和 ClangCL 工具集，因为 ggml 不支持 MSVC ARM。已配置的 MSVC 终端或 MinGW
 也可用于 x64/x86。
+Windows ARM64 需在 Visual Studio Installer 中安装 C++ ARM64 工具、Windows SDK、
+C++ Clang 编译器和 MSBuild 的 LLVM（ClangCL）工具集支持；不要求 `clang-cl` 位于 PATH。
+脚本在首次配置时检查 VS 组件，CMake 在下载依赖前核对实际 C/C++ 编译器。
+若旧的 `artifacts/game-build/win-arm64` 缓存使用 MSVC，请通过
+`-p:GameBuildRoot=artifacts/game-build-clang` 使用新的构建目录；脚本不会修改旧缓存的工具集。
 Linux 需要本机 C/C++ 工具链；macOS 需要 Xcode Command Line Tools。Android 使用 NDK Clang 和 Ninja。
 所有平台均需 Git 和 CMake 3.24+。原生部分固定构建 Release，应用的 Debug 配置仍可调试 C#。
 当前自动化覆盖正常 Build / Publish，不将 `publish --no-build` 作为原生文件收集的验证路径。

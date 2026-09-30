@@ -31,14 +31,14 @@ permissions:
 jobs:
   ios:
     name: iOS ARM64 Mono AOT unsigned IPA
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 90
     env:
       AVALONIA_TELEMETRY_OPTOUT: "1"
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
       VersionLyrics: ${{ inputs.version_lyrics }}
-      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_27.0.app/Contents/Developer
 
     steps:
       - name: Checkout
@@ -49,7 +49,8 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          global-json-file: global.json
+          # 与下方固定的工作负荷集配套，并满足 global.json 的 latestPatch 策略。
+          dotnet-version: '10.0.401'
 
       - name: Collect Build Metadata
         shell: bash
@@ -78,8 +79,8 @@ jobs:
           fi
 
           XCODE_VERSION="$(xcodebuild -version | awk '/^Xcode / { print $2 }')"
-          if [[ "$XCODE_VERSION" != "26.6" && "$XCODE_VERSION" != 26.6.* ]]; then
-            echo "::error::Expected Xcode 26.6, selected $XCODE_VERSION from $DEVELOPER_DIR"
+          if [[ "$XCODE_VERSION" != "27.0" && "$XCODE_VERSION" != 27.0.* ]]; then
+            echo "::error::Expected Xcode 27.0, selected $XCODE_VERSION from $DEVELOPER_DIR"
             exit 1
           fi
 
@@ -94,9 +95,13 @@ jobs:
         run: |
           set -euo pipefail
 
+          # 固定支持 Xcode 27.0 的工作负荷集，避免后续自动更新导致工具链不匹配。
           dotnet workload restore \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
+            --version 10.0.401.1 \
             --verbosity minimal
+
+          dotnet workload --info
 
       - name: Publish iOS ARM64 Mono AOT Unsigned IPA
         shell: bash
