@@ -31,6 +31,10 @@ set(GAME_GGML_CUDA OFF CACHE BOOL "Enable CUDA")
 set(GAME_GGML_VULKAN OFF CACHE BOOL "Enable Vulkan")
 set(GGML_NATIVE OFF CACHE BOOL "" FORCE)
 set(GGML_OPENMP OFF CACHE BOOL "Enable OpenMP")
+# 当前 llamafile 优化使用 ARMv7 不支持的 FP16 接口，32 位 Android 改用普通 CPU 后端。
+if(OPUM_RID STREQUAL "android-arm")
+    set(GGML_LLAMAFILE OFF CACHE BOOL "Enable llamafile" FORCE)
+endif()
 # 默认发布库不依赖构建机的 AVX 指令集；专用构建可逐项开启。
 foreach(feature SSE42 AVX AVX2 AVX512 F16C FMA BMI2)
     set(GGML_${feature} OFF CACHE BOOL "Enable ${feature}")

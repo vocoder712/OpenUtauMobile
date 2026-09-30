@@ -117,11 +117,13 @@ jobs:
         run: printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > signing.keystore
 
       # 必须按最终 RID 显式还原；发布阶段复用同一资产图，防止宿主平台原生资产混入 APK。
+      # 全局指定 Mono，让引用的普通 .NET 类库也使用 Mono，避免 armhf 请求不存在的 CoreCLR linux-bionic-arm 包。
       - name: Restore Android ${{ inputs.arch }}
         shell: bash
         run: |
           dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
             -r "${{ inputs.rid }}" \
+            -p:UseMonoRuntime=true \
             -p:Configuration=Release
 
       - name: Publish Android ${{ inputs.arch }}
@@ -136,6 +138,7 @@ jobs:
             -c Release \
             -f net10.0-android36.0 \
             -r "${{ inputs.rid }}" \
+            -p:UseMonoRuntime=true \
             -p:Version="${{ inputs.version }}" \
             -p:BuildNumber=${{ inputs.build_number }} \
             -p:BuildTimestamp="$BUILD_TIMESTAMP" \
@@ -245,6 +248,7 @@ jobs:
           configuration=Release
           target_framework=net10.0-android36.0
           runtime_identifier=${{ inputs.rid }}
+          use_mono_runtime=true
           android_abi=$EXPECTED_ABI
           package_format=apk
           restore=explicit-rid

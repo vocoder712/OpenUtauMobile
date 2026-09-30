@@ -54,6 +54,9 @@ jobs:
           - arch: arm64
             rid: android-arm64
 
+          - arch: armhf
+            rid: android-arm
+
           - arch: x64
             rid: android-x64
     uses: ./.github/workflows/build-android.yml
