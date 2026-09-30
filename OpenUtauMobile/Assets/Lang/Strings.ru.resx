@@ -365,14 +365,17 @@
   <data name="Settings.File.AdditionalSingerPath.Change" xml:space="preserve">
     <value>Изменить</value>
   </data>
-  <data name="Settings.File.RenderCache" xml:space="preserve">
-    <value>Кэш рендера</value>
+  <data name="Settings.File.Cache" xml:space="preserve">
+    <value>Кэш приложения</value>
   </data>
-  <data name="Settings.File.RenderCache.Desc" xml:space="preserve">
-    <value>Удаляет файлы кэша рендера, сохраненные в данных приложения.</value>
+  <data name="Settings.File.Cache.Desc" xml:space="preserve">
+    <value>Удаляет результаты рендеринга, временные файлы и другие данные из папки кэша. Во время работы файлы могут создаваться снова.</value>
   </data>
-  <data name="Settings.File.RenderCache.Clear" xml:space="preserve">
-    <value>Очистить кэш рендера</value>
+  <data name="Settings.File.Cache.Clear" xml:space="preserve">
+    <value>Очистить кэш</value>
+  </data>
+  <data name="Settings.File.Cache.Size" xml:space="preserve">
+    <value>Текущий размер кэша</value>
   </data>
   <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
     <value>Внешний вид и язык</value>

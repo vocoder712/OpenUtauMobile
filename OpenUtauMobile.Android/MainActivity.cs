@@ -236,7 +236,8 @@ public class MainActivity : AvaloniaMainActivity
     internal static void InitPathManager()
     {
         string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData); // data/user/<user_id>/pers.vocoder712.openutaumobile/files
-        string cache = Path.Combine(localData, "Cache");
+        string cache = global::Android.App.Application.Context.CacheDir?.AbsolutePath
+            ?? throw new InvalidOperationException("无法获取 Android 缓存目录。");
         PathManagerInitialization.Initialize(
             rootPath: localData,
             dataPath: localData,

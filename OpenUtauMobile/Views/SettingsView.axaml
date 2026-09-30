@@ -1061,18 +1061,25 @@
                                     </StackPanel>
                                 </Border>
 
-                                <!-- 渲染缓存 -->
+                                <!-- 应用缓存 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                         <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                             <TextBlock Classes="SettingItemTitle"
-                                                       Text="{DynamicResource Settings.File.RenderCache}" />
+                                                       Text="{DynamicResource Settings.File.Cache}" />
                                             <TextBlock Classes="PlaceholderText"
-                                                       Text="{DynamicResource Settings.File.RenderCache.Desc}" />
+                                                       Text="{DynamicResource Settings.File.Cache.Desc}" />
                                         </StackPanel>
+                                        <Grid ColumnDefinitions="*,Auto"
+                                              ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.File.Cache.Size}" />
+                                            <TextBlock Grid.Column="1" Classes="SettingItemTitle"
+                                                       Text="{Binding CacheSize}" />
+                                        </Grid>
                                         <Button Classes="filled"
-                                                Content="{DynamicResource Settings.File.RenderCache.Clear}"
-                                                Command="{Binding ClearRenderCacheCommand}"
+                                                Content="{DynamicResource Settings.File.Cache.Clear}"
+                                                Command="{Binding ClearCacheCommand}"
                                                 HorizontalAlignment="Left" />
                                     </StackPanel>
                                 </Border>
