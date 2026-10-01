@@ -102,8 +102,8 @@ namespace OpenUtau.Core {
             return gpuList;
         }
 
-        private static SessionOptions getOnnxSessionOptions(bool coremlEnableOnSubgraphs = false) {
-            SessionOptions options = new SessionOptions();
+        /// <summary>The runner the preference resolves to, always one of <see cref="getRunnerOptions"/>.</summary>
+        private static string getRunner() {
             List<string> runnerOptions = getRunnerOptions();
             string runner = Preferences.Default.OnnxRunner;
             if (String.IsNullOrEmpty(runner)) {
@@ -112,6 +112,17 @@ namespace OpenUtau.Core {
             if (!runnerOptions.Contains(runner)) {
                 runner = "CPU";
             }
+            return runner;
+        }
+
+        /// <summary>Whether a session created now runs on CPU, and so allows concurrent inference calls.</summary>
+        public static bool IsCpuRunner() {
+            return getRunner() == "CPU";
+        }
+
+        private static SessionOptions getOnnxSessionOptions(bool coremlEnableOnSubgraphs = false) {
+            SessionOptions options = new SessionOptions();
+            string runner = getRunner();
             switch (runner) {
                 case "DirectML":
                     var d = devices[Preferences.Default.OnnxGpu];
