@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
+        <ProjectReference Include="..\OpenUtauMobile.DesktopUI\OpenUtauMobile.DesktopUI.csproj"/>
     </ItemGroup>
 
     <Import Project="../native/DesktopNative.targets" />

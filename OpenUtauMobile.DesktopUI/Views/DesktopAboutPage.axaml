@@ -1,0 +1,27 @@
+<UserControl xmlns:shared="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile" xmlns="https://github.com/avaloniaui"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;assembly=OpenUtauMobile"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens;assembly=OpenUtauMobile"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels;assembly=OpenUtauMobile"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;assembly=OpenUtauMobile"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;assembly=OpenUtauMobile"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.DesktopUI.Views.DesktopAboutPage"
+             x:DataType="vm:AboutViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Button.OptionEntry">
+            <Setter Property="Padding" Value="16,12" />
+        </Style>
+    </UserControl.Styles>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <Border Padding="0,0,0,16">
+                    <shared:AboutContent />
+                </Border>
+            </ScrollViewer>
+</UserControl>

@@ -1,17 +1,21 @@
-﻿using OpenUtauMobile.Services.Dialogs;
+using Avalonia.Threading;
+using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -19,8 +23,14 @@ namespace OpenUtauMobile.ViewModels;
 /// 依赖项管理器 ViewModel
 /// 管理 OpenUtau 依赖包的安装、卸载和查看
 /// </summary>
-public class DependencyManagerViewModel : NavigateViewModelBase
+public class DependencyManagerViewModel : NavigateViewModelBase, IDisposable
 {
+    private readonly CompositeDisposable _subscriptions = [];
+    private ObservableCollection<DependencyItemViewModel>? _observedAvailable;
+    private ObservableCollection<InstalledDependencyViewModel>? _observedInstalled;
+    private bool _disposed;
+    [Reactive] public IReadOnlyList<DependencyItemViewModel> FilteredAvailablePackages { get; private set; } = [];
+    [Reactive] public IReadOnlyList<InstalledDependencyViewModel> FilteredInstalledPackages { get; private set; } = [];
     // ═══════════════════════════════════════════════════
     //  Observable Properties
     // ═══════════════════════════════════════════════════
@@ -41,9 +51,13 @@ public class DependencyManagerViewModel : NavigateViewModelBase
     [Reactive]
     public bool IsLoadingRegistry { get; set; }
 
+    [Reactive] public string RegistryError { get; private set; } = string.Empty;
+
     /// <summary>是否正在加载本地已安装列表</summary>
     [Reactive]
     public bool IsLoadingInstalled { get; set; }
+
+    [Reactive] public string InstalledError { get; private set; } = string.Empty;
 
     /// <summary>搜索关键词</summary>
     [Reactive]
@@ -65,6 +79,7 @@ public class DependencyManagerViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> RefreshRegistryCommand { get; }
     public ReactiveCommand<Unit, Unit> RefreshInstalledCommand { get; }
     public ReactiveCommand<Unit, Unit> InstallFromFileCommand { get; }
+    public ReactiveCommand<int, Unit> SetSortModeCommand { get; }
 
     // ═══════════════════════════════════════════════════
     //  Constructor
@@ -81,16 +96,47 @@ public class DependencyManagerViewModel : NavigateViewModelBase
         InstallFromFileCommand = ReactiveCommand.CreateFromTask(
             OnInstallFromFileAsync,
             canInstallFromFile);
+        SetSortModeCommand = ReactiveCommand.Create<int>(mode => SortMode = mode);
+        _subscriptions.Add(this.WhenAnyValue(x => x.SearchText, x => x.SortMode).Subscribe(_ => ApplyFilterAndSort()));
+        _subscriptions.Add(this.WhenAnyValue(x => x.AvailablePackages, x => x.InstalledPackages).Subscribe(collections =>
+        {
+            if (_observedAvailable != null) _observedAvailable.CollectionChanged -= OnPackagesChanged;
+            if (_observedInstalled != null) _observedInstalled.CollectionChanged -= OnPackagesChanged;
+            _observedAvailable = collections.Item1;
+            _observedInstalled = collections.Item2;
+            _observedAvailable.CollectionChanged += OnPackagesChanged;
+            _observedInstalled.CollectionChanged += OnPackagesChanged;
+            ApplyFilterAndSort();
+        }));
 
         // 独立加载，离线索引超时不阻塞本地列表；延续 UI 上下文更新绑定集合。
         _ = LoadInstalledPackagesAsync();
         _ = LoadAvailablePackagesAsync();
 
-        // TODO: 实现搜索和排序功能
-        // 监听 SearchText 和 SortMode 变化，自动过滤和排序列表
-        // this.WhenAnyValue(x => x.SearchText, x => x.SortMode)
-        //     .Throttle(TimeSpan.FromMilliseconds(300))
-        //     .Subscribe(_ => ApplyFilterAndSort());
+    }
+    private void OnPackagesChanged(object? sender, NotifyCollectionChangedEventArgs e) => ApplyFilterAndSort();
+    private void ApplyFilterAndSort()
+    {
+        if (_disposed) return;
+        if (!Dispatcher.UIThread.CheckAccess()) { Dispatcher.UIThread.Post(ApplyFilterAndSort); return; }
+        string query = SearchText.Trim();
+        IEnumerable<DependencyItemViewModel> available = AvailablePackages.Where(package =>
+            (package.Name + " " + package.Id + " " + package.Developers).Contains(query, StringComparison.CurrentCultureIgnoreCase));
+        FilteredAvailablePackages = (SortMode == 1
+            ? available.OrderBy(package => package.Developers, StringComparer.CurrentCultureIgnoreCase).ThenBy(package => package.Name, StringComparer.CurrentCultureIgnoreCase)
+            : available.OrderBy(package => package.Name, StringComparer.CurrentCultureIgnoreCase)).ToArray();
+        FilteredInstalledPackages = InstalledPackages.Where(package =>
+            (package.Id + " " + package.Description).Contains(query, StringComparison.CurrentCultureIgnoreCase))
+            .OrderBy(package => package.Id, StringComparer.CurrentCultureIgnoreCase).ToArray();
+    }
+    public void Dispose()
+    {
+        _disposed = true;
+        _subscriptions.Dispose();
+        if (_observedAvailable != null) _observedAvailable.CollectionChanged -= OnPackagesChanged;
+        if (_observedInstalled != null) _observedInstalled.CollectionChanged -= OnPackagesChanged;
+        BackCommand.Dispose(); RefreshRegistryCommand.Dispose(); RefreshInstalledCommand.Dispose();
+        InstallFromFileCommand.Dispose(); SetSortModeCommand.Dispose();
     }
 
     // ═══════════════════════════════════════════════════
@@ -105,58 +151,92 @@ public class DependencyManagerViewModel : NavigateViewModelBase
     /// <summary>从远程 registry 加载可用包列表</summary>
     private async Task LoadAvailablePackagesAsync()
     {
-        IsLoadingRegistry = true;
+        bool started = false;
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (_disposed) return;
+            IsLoadingRegistry = true;
+            RegistryError = string.Empty;
+            started = true;
+        });
+        if (!started) return;
         try
         {
-            List<RegistrySoftware> packages = await PackageManager.Inst.FetchRegistryAsync();
+            List<RegistrySoftware> packages = await Task.Run(() => PackageManager.Inst.FetchRegistryAsync());
 
             // 清空并重新填充
-            AvailablePackages.Clear();
-            foreach (RegistrySoftware pkg in packages)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                AvailablePackages.Add(new DependencyItemViewModel(pkg, this));
-            }
+                if (_disposed) return;
+                AvailablePackages.Clear();
+                foreach (RegistrySoftware pkg in packages)
+                {
+                    AvailablePackages.Add(new DependencyItemViewModel(pkg, this));
+                }
 
-            // 刷新已安装状态
-            UpdateInstalledStatus();
-
-            ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.Loaded"), packages.Count));
+                // 刷新已安装状态
+                UpdateInstalledStatus();
+            });
         }
         catch (Exception ex)
         {
-            ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.LoadFailed"), ex.Message));
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_disposed) return;
+                RegistryError = ex.Message;
+                if (OpenUtauMobile.Services.ServiceHub.DesktopWindowContext == null)
+                    ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.LoadFailed"), ex.Message));
+            });
         }
         finally
         {
-            IsLoadingRegistry = false;
+            await Dispatcher.UIThread.InvokeAsync(() => { if (!_disposed) IsLoadingRegistry = false; });
         }
     }
 
     /// <summary>加载已安装的依赖包列表</summary>
     public async Task LoadInstalledPackagesAsync()
     {
-        IsLoadingInstalled = true;
+        bool started = false;
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (_disposed) return;
+            IsLoadingInstalled = true;
+            InstalledError = string.Empty;
+            started = true;
+        });
+        if (!started) return;
         try
         {
-            List<OudepMetadata> installed = await PackageManager.Inst.GetInstalledAsync();
+            List<OudepMetadata> installed = await Task.Run(() => PackageManager.Inst.GetInstalledAsync());
 
             // 清空并重新填充
-            InstalledPackages.Clear();
-            foreach (OudepMetadata meta in installed)
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                InstalledPackages.Add(new InstalledDependencyViewModel(meta, this));
-            }
+                if (_disposed) return;
+                InstalledPackages.Clear();
+                foreach (OudepMetadata meta in installed)
+                {
+                    InstalledPackages.Add(new InstalledDependencyViewModel(meta, this));
+                }
 
-            // 更新可用包的已安装状态
-            UpdateInstalledStatus();
+                // 更新可用包的已安装状态
+                UpdateInstalledStatus();
+            });
         }
         catch (Exception ex)
         {
-            ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.InstalledListFailed"), ex.Message));
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_disposed) return;
+                InstalledError = ex.Message;
+                if (OpenUtauMobile.Services.ServiceHub.DesktopWindowContext == null)
+                    ToastService.Enqueue(string.Format(L.S("DependencyManager.Toast.InstalledListFailed"), ex.Message));
+            });
         }
         finally
         {
-            IsLoadingInstalled = false;
+            await Dispatcher.UIThread.InvokeAsync(() => { if (!_disposed) IsLoadingInstalled = false; });
         }
     }
 
@@ -314,7 +394,8 @@ public class DependencyItemViewModel : ReactiveObject
         _parent = parent;
 
         InstallCommand = ReactiveCommand.CreateFromTask(OnInstallAsync,
-            this.WhenAnyValue(x => x.IsInstalled).Select(installed => !installed || HasUpdate));
+            this.WhenAnyValue(x => x.IsInstalled, x => x.HasUpdate, x => x.IsInstalling)
+                .Select(state => !state.Item3 && (!state.Item1 || state.Item2)));
 
         // 监听状态变化，触发ButtonText更新
         this.WhenAnyValue(x => x.IsInstalling, x => x.IsInstalled, x => x.HasUpdate)

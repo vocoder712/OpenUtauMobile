@@ -51,12 +51,16 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
             Ustx.GENC, Ustx.TENC, Ustx.BREC,
             Ustx.DIR,
         };
+        static readonly HashSet<string> supportedFlags = new HashSet<string>(StringComparer.Ordinal) {
+            "g", "Hb", "Hv", "Ht", "HG", "A", "t", "P",
+        };
 
         public USingerType SingerType => USingerType.Classic;
         public bool SupportsRenderPitch => false;
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
-            return supportedExp.Contains(descriptor.abbr);
+            return supportedExp.Contains(descriptor.abbr)
+                || descriptor.type == UExpressionType.Numerical && descriptor.isFlag && supportedFlags.Contains(descriptor.flag);
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
@@ -777,7 +781,17 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) => null;
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            return new UExpressionDescriptor[] { };
+            // 建议只包含当前渲染器实际解析的标志；默认值与渲染路径保持一致。
+            return new UExpressionDescriptor[] {
+                new UExpressionDescriptor("gender", "gen", -100, 100, 0, "g"),
+                new UExpressionDescriptor("HifiSampler breath", "hbre", 0, 200, 100, "Hb"),
+                new UExpressionDescriptor("HifiSampler voicing", "hvoi", 0, 200, 100, "Hv"),
+                new UExpressionDescriptor("HifiSampler tension", "hten", -100, 100, 0, "Ht"),
+                new UExpressionDescriptor("HifiSampler growl", "hgrw", 0, 100, 0, "HG"),
+                new UExpressionDescriptor("HifiSampler amplitude modulation", "hmod", -100, 100, 0, "A"),
+                new UExpressionDescriptor("HifiSampler tone shift (cents)", "hshf", -1200, 1200, 0, "t"),
+                new UExpressionDescriptor("HifiSampler loudness normalization", "hnrm", 0, 100, 100, "P"),
+            };
         }
 
         public override string ToString() => "HIFISAMPLER";

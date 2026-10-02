@@ -1,4 +1,5 @@
 using OpenUtauMobile.Services.Tracks;
+using OpenUtauMobile.Services.Editor;
 using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -204,6 +205,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public PianoRollViewModel PianoRollViewModel { get; set; } = new();
 
     // 视口控制属性
+    public static IReadOnlyList<int> QuantizeOptions => ViewConstants.SnapDivOptions;
     [Reactive] public double TickWidth { get; set; } = ViewConstants.TickWidthDefault; // 缩放
     [Reactive] public double TrackHeight { get; set; } = 60; // 高度
     [Reactive] public double TickOffset { get; set; } // X 滚动
@@ -232,18 +234,14 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     // 回放定时器
     private DispatcherTimer PlaybackTimer { get; set; }
+    private long _playbackStateRevision;
 
     // 自动保存定时器
     private readonly DispatcherTimer? _autoSaveTimer;
 
     // 走带自动翻页状态
-    private bool _autoPageActive;
-    private double _autoPageTargetTickOffset;
-    private const double AutoPageViewportMarginRatio = 0.05; // 边界10%触发翻页
-    private const double AutoPageStopEpsilonTicks = 0.5;
-    private const double AutoPageLerpSharpness = 10.0;
-
-    private const double AutoPageMaxStepViewportRatio = 0.35;
+    private readonly PlaybackViewportFollow _playbackFollow = new();
+    private const double AutoPageViewportMarginRatio = PlaybackViewportFollow.MarginRatio;
 
     // 最近一次来自回放流的等待标记（SetPlayPosTickNotification.waitingRendering）
     private bool _streamWaitingRender;
@@ -418,11 +416,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             .DisposeWith(_disposables);
 
         // 订阅歌词编辑弹窗请求
-        _onRequestEditLyric = (part, noteIndex) => { _ = ShowLyricEditPopupAsync(part, noteIndex); };
+        _onRequestEditLyric = (part, noteIndex) => { if (!UseDesktopInput) _ = ShowLyricEditPopupAsync(part, noteIndex); };
         PianoRollViewModel.RequestEditLyric += _onRequestEditLyric;
 
         // 订阅音素别名编辑弹窗请求
-        _onRequestEditPhoneme = (part, note, phonemeIndex) => { _ = ShowPhonemeEditPopupAsync(part, note, phonemeIndex); };
+        _onRequestEditPhoneme = (part, note, phonemeIndex) => { if (!UseDesktopInput) _ = ShowPhonemeEditPopupAsync(part, note, phonemeIndex); };
         PianoRollViewModel.RequestEditPhoneme += _onRequestEditPhoneme;
 
         PlaybackTimer = new() // 回放定时器，定时通知回放管理器更新播放位置
@@ -431,8 +429,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         };
         PlaybackTimer.Tick += (_, _) => // 定时通知回放管理器更新播放位置
         {
+            long revision = _playbackStateRevision;
             PlaybackManager.Inst.UpdatePlayPos();
-            SyncPlaybackStateFromAuthority();
+            // 位置通知已经同步状态时，不在同一帧重复更新视口和绑定。
+            if (_playbackStateRevision == revision) SyncPlaybackStateFromAuthority();
             UpdateTrackAutoPaging(); // 更新自动翻页状态
         };
 
@@ -459,11 +459,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         this.WhenAnyValue(x => x.TrackEditMode)
             .Subscribe(_ => RebuildTrackContextActions())
             .DisposeWith(_disposables);
-        // 编辑分片只由选区决定：恰好选中一个时进入编辑，否则退出编辑。
+        // 多选时继续编辑最后选中的分片，与属性面板保持一致。
         SelectedParts.ObserveCollectionChanges()
             .Subscribe(_ =>
             {
-                UPart? part = SelectedParts.Count == 1 ? SelectedParts[0] : null;
+                UPart? part = SelectedParts.LastOrDefault();
                 EditingVoicePart = part as UVoicePart;
                 EditingWavePart = part as UWavePart;
                 RebuildTrackContextActions();
@@ -593,15 +593,22 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         // TODO: 一定要发到UI线程吗？:不需要！docman已经做了
         switch (cmd)
         {
-            case SeekPlayPosTickNotification _:
+            case SeekPlayPosTickNotification seek:
                 if (_isSeekingInternally)
                 {
                     _isSeekingInternally = false;
+                    if (UseDesktopInput)
+                    {
+                        TickOffset = seek.playPosTick - TrackAreaWidth * AutoPageViewportMarginRatio / TickWidth;
+                        ApplyViewportLimits();
+                        PianoRollViewModel.RevealDesktopPlaybackPosition(seek.playPosTick);
+                    }
                 }
                 else
                 {
                     _playheadMovedSinceStart = true;
                     _stopSeekState = 0;
+                    PianoRollViewModel.RevealDesktopPlaybackPosition(seek.playPosTick, onlyIfOutside: true);
                 }
                 break;
             case SetPlayPosTickNotification setPlayPos:
@@ -727,9 +734,17 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         ProjectInfoEditViewModel vm = new ProjectInfoEditViewModel(ProjectInfoEditViewModel.EditMode.Bpm, ProjectBpm);
         bool? confirmed = await ShowProjectInfoEditPopupAsync(vm);
         if (confirmed != true) return;
+        TrySetProjectBpm(vm.BpmText);
+    }
+
+    public bool TrySetProjectBpm(string? text)
+    {
+        if (!ProjectInfoEditViewModel.TryParseBpm(text, out double bpm)) return false;
+        if (DocManager.Inst.Project.tempos.FirstOrDefault()?.bpm == bpm) return true;
         DocManager.Inst.StartUndoGroup();
-        DocManager.Inst.ExecuteCmd(new BpmCommand(DocManager.Inst.Project, vm.ParsedBpm));
-        DocManager.Inst.EndUndoGroup();
+        try { DocManager.Inst.ExecuteCmd(new BpmCommand(DocManager.Inst.Project, bpm)); }
+        finally { DocManager.Inst.EndUndoGroup(); }
+        return true;
     }
 
     private async Task EditTimeSignatureAsync()
@@ -770,6 +785,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         EditorMoreAction action = await Dispatcher.UIThread.InvokeAsync(() =>
             PopupService.Show<EditorMoreAction>(new EditorMorePopup(), vm));
 
+        await ExecuteEditorActionAsync(action);
+    }
+
+    public async Task ExecuteEditorActionAsync(EditorMoreAction action)
+    {
         switch (action)
         {
             case EditorMoreAction.Undo:
@@ -802,7 +822,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         string? file = await TextInputPopupService.ShowAsync(
             L.S("EditorMore.SaveAsTemplate"), string.Empty,
             L.S("ProjectTemplates.Name"), "default");
-        if (string.IsNullOrEmpty(file) || _disposed || Navigator.CurrentViewModel != this) return;
+        if (string.IsNullOrEmpty(file) || _disposed || DocManager.Inst.Project != project ||
+            (ServiceHub.UseDesktopFileWorkflows ? Navigator.ActiveEditor != this : Navigator.CurrentViewModel != this)) return;
         try
         {
             file = Path.GetFileNameWithoutExtension(file);
@@ -826,6 +847,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
+        ImportAudioFile(file);
+    }
+
+    public static void ImportAudioFile(string file)
+    {
         UProject project = DocManager.Inst.Project;
         UWavePart part = new()
         {
@@ -1017,6 +1043,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// </summary>
     private void SyncPlaybackStateFromAuthority(bool? streamWaitingRender = null)
     {
+        _playbackStateRevision++;
         if (streamWaitingRender.HasValue)
         {
             _streamWaitingRender = streamWaitingRender.Value;
@@ -1049,7 +1076,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 PlaybackTimer.Stop();
             }
 
-            _autoPageActive = false;
+            _playbackFollow.Reset();
         }
 
         PianoRollViewModel.SyncPlaybackState(PlayPosTick, IsPlaying, IsWaitingRender);
@@ -1057,90 +1084,19 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private void UpdateTrackAutoPaging()
     {
-        if (!IsTrackAutoPagingEnabled() || !IsPlaying || TickWidth <= 0 || TrackAreaWidth <= 0)
-        {
-            _autoPageActive = false;
-            return;
-        }
-
-        if (_inputState != TrackInputState.Idle || _viewportInputActive)
-        {
-            return;
-        }
-
-        double visibleTicks = TrackAreaWidth / TickWidth; // 可见tick数
-        if (visibleTicks <= 0)
-        {
-            _autoPageActive = false;
-            return;
-        }
-
-        double leftSafe = TickOffset + visibleTicks * AutoPageViewportMarginRatio;
-        double rightSafe = TickOffset + visibleTicks * (1 - AutoPageViewportMarginRatio);
-        if (PlayPosTick < leftSafe || PlayPosTick > rightSafe)
-        {
-            _autoPageTargetTickOffset = PlayPosTick - visibleTicks * AutoPageViewportMarginRatio;
-            _autoPageActive = true;
-        }
-
-        if (!_autoPageActive)
-        {
-            return;
-        }
-
-        double target = _autoPageTargetTickOffset;
-        double delta = target - TickOffset;
-        if (Math.Abs(delta) <= AutoPageStopEpsilonTicks)
-        {
-            TickOffset = target;
-            ApplyViewportLimits();
-            _autoPageActive = false;
-            return;
-        }
-
-        // 检查是否使用硬翻页（配置为1）
-        if (Preferences.Default.PlaybackAutoScroll == 1)
-        {
-            // 硬翻页：直接跳转到目标位置
-            TickOffset = target;
-            ApplyViewportLimits();
-            _autoPageActive = false;
-        }
-        else
-        {
-            // 平滑翻页：使用原有的插值动画
-            double dt = PlaybackTimer.Interval.TotalSeconds;
-            double alpha = 1 - Math.Exp(-AutoPageLerpSharpness * dt);
-            double step = delta * alpha;
-            double maxStep = visibleTicks * AutoPageMaxStepViewportRatio;
-            if (Math.Abs(step) > maxStep)
-            {
-                step = Math.Sign(step) * maxStep;
-            }
-
-            TickOffset += step;
-            ApplyViewportLimits();
-
-            if (Math.Abs(_autoPageTargetTickOffset - TickOffset) <= AutoPageStopEpsilonTicks)
-            {
-                _autoPageActive = false;
-            }
-        }
-    }
-
-    /// <summary>
-    /// 是否启用自动翻页
-    /// </summary>
-    /// <returns></returns>
-    private static bool IsTrackAutoPagingEnabled()
-    {
-        // PlaybackAutoScroll: 0 = off, non-zero = on.
-        return Preferences.Default.PlaybackAutoScroll != 0;
+        double offset = _playbackFollow.Update(Preferences.Default.PlaybackAutoScroll, IsPlaying,
+            _inputState != TrackInputState.Idle || _viewportInputActive, PlayPosTick, TickOffset,
+            TickWidth > 0 ? TrackAreaWidth / TickWidth : 0, PlaybackTimer.Interval.TotalSeconds);
+        if (offset == TickOffset) return;
+        TickOffset = offset;
+        ApplyViewportLimits();
     }
 
     #endregion
 
     #region 坐标转换
+
+    public bool UseDesktopInput { get; set; }
 
     public double CanvasXToTick(double x) => (x / TickWidth) + TickOffset;
     public int CanvasYToTrackNo(double y) => (int)((y + TrackOffset) / TrackHeight);
@@ -1277,7 +1233,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         {
             case TrackEditMode.Normal:
                 // 移动播放标记
-                if (!IsPlaying)
+                if (!UseDesktopInput && !IsPlaying)
                 {
                     int tick = SnapToRound((int)CanvasXToTick(point.X));
                     DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(tick));
@@ -1678,7 +1634,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private async Task<bool> SaveCore()
     {
-        if (!Saved) return await RequestSaveAs();
+        if (ServiceHub.UseDesktopFileWorkflows ? string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) : !Saved) return await RequestSaveAs();
         SaveAs(string.Empty);
         return true;
     }
@@ -1688,22 +1644,25 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <returns>是否成功保存</returns>
     private static async Task<bool> RequestSaveAs()
     {
-        string? fileName;
-        if (OperatingSystem.IsBrowser())
+        if (ServiceHub.UseDesktopFileWorkflows || OperatingSystem.IsBrowser())
         {
-            fileName = await FilePicker.SaveFileAsync(
-                L.S("FilePicker.SaveProjectAs"), "ustx",
-                L.S("FilePicker.DefaultProjectName"),
+            string destination = await FilePicker.SaveFileAsync(L.S("FilePicker.SaveProjectAs"), "ustx",
+                string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) ? L.S("FilePicker.DefaultProjectName") : Path.GetFileNameWithoutExtension(DocManager.Inst.Project.FilePath),
                 Preferences.Default.LastSaveProjectDirectory);
+            if (string.IsNullOrEmpty(destination)) return false;
+            SaveAs(destination);
+            Preferences.Default.LastSaveProjectDirectory = Path.GetDirectoryName(destination) ?? string.Empty;
+            Preferences.Save();
+            return true;
         }
-        else
-        {
-            FileSavePickerViewModel vm = new(
-                L.S("FilePicker.SaveProjectAs"), "ustx",
-                Preferences.Default.LastSaveProjectDirectory,
-                L.S("FilePicker.DefaultProjectName"));
-            fileName = await PopupService.Show<string>(new FilePickerPopup(), vm);
-        }
+        FilePickerPopup view = new();
+        // TODO: 使用统一文件入口
+        FileSavePickerViewModel vm = new(
+            L.S("FilePicker.SaveProjectAs"),
+            "ustx",
+            Preferences.Default.LastSaveProjectDirectory,
+            L.S("FilePicker.DefaultProjectName"));
+        string? fileName = await PopupService.Show<string>(view, vm);
         if (string.IsNullOrEmpty(fileName))
         {
             return false;
@@ -1869,6 +1828,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                         Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
                     });
                 }
+                if (CanMergeSelectedParts)
+                {
+                    items.Add(new ContextActionItem
+                    {
+                        Icon = PackIconPhosphorIconsKind.Unite,
+                        Tip = L.S("Editor.Action.Merge"),
+                        Command = ReactiveCommand.Create(MergeSelectedParts)
+                    });
+                }
                 break;
 
             case TrackEditMode.MultiSelect:
@@ -1905,7 +1873,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                             Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
                         });
                     }
-                    items.Add(new ContextActionItem
+                    if (CanMergeSelectedParts) items.Add(new ContextActionItem
                     {
                         Icon = PackIconPhosphorIconsKind.Unite,
                         Tip = L.S("Editor.Action.Merge"),
@@ -1944,7 +1912,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     // ── 操作方法存根 ──────────────────────────────────────────────────
 
-    private void DeleteSelectedParts()
+    public void DeleteSelectedParts()
     {
         if (SelectedParts.Count == 0)
         {
@@ -1998,7 +1966,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
 
         DocManager.Inst.PartsClipboard = [.. SelectedParts.Select(p => p.Clone())];
-        ToastService.Enqueue(string.Format(L.S("Editor.Selection.Copied"), SelectedParts.Count));
+        if (!UseDesktopInput)
+            ToastService.Enqueue(string.Format(L.S("Editor.Selection.Copied"), SelectedParts.Count), 1000);
     }
 
     public void CutSelectedParts()
@@ -2023,8 +1992,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
         finally { DocManager.Inst.EndUndoGroup(); }
 
-        int count = selected.Length;
-        ToastService.Enqueue(string.Format(L.S("Editor.Selection.Cut"), count));
     }
 
     public void PasteParts()
@@ -2049,7 +2016,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         DocManager.Inst.EndUndoGroup();
 
         ReplaceSelectedParts(clones);
-        ToastService.Enqueue(string.Format(L.S("Editor.Selection.Pasted"), clones.Count));
     }
 
     private async Task SplitSelectedParts()
@@ -2217,15 +2183,92 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
     }
 
-    private void MergeSelectedParts()
+    public bool CanMergeSelectedParts => !DocManager.Inst.HasOpenUndoGroup && SelectedParts.OfType<UVoicePart>()
+        .Where(DocManager.Inst.Project.parts.Contains).GroupBy(part => part.trackNo).Any(parts => parts.Count() > 1);
+
+    public void MergeSelectedParts()
     {
-        ToastService.Enqueue("功能正在开发");
+        if (!CanMergeSelectedParts) return;
+        UProject project = DocManager.Inst.Project;
+        List<(UVoicePart[] sources, UVoicePart merged)> merges = [];
+        foreach (IGrouping<int, UVoicePart> group in SelectedParts.OfType<UVoicePart>().Where(project.parts.Contains).GroupBy(part => part.trackNo))
+        {
+            UVoicePart[] sources = group.OrderBy(part => part.position).ToArray();
+            if (sources.Length < 2 || group.Key < 0 || group.Key >= project.tracks.Count) continue;
+            UVoicePart merged = new()
+            {
+                name = sources[0].name,
+                comment = string.Join(Environment.NewLine, sources.Select(part => part.comment).Where(comment => !string.IsNullOrEmpty(comment)).Distinct()),
+                trackNo = group.Key,
+                position = sources[0].position,
+                Duration = sources.Max(part => part.End) - sources[0].position
+            };
+            foreach (UVoicePart source in sources)
+            {
+                foreach (UNote note in source.notes)
+                {
+                    UNote clone = note.Clone();
+                    clone.position += source.position - merged.position;
+                    merged.notes.Add(clone);
+                }
+            }
+            foreach (string abbreviation in sources.SelectMany(part => part.curves).Select(curve => curve.abbr).Distinct())
+            {
+                if (!project.tracks[group.Key].TryGetExpDescriptor(project, abbreviation, out UExpressionDescriptor descriptor)) continue;
+                SortedDictionary<int, int> points = [];
+                foreach (UVoicePart source in sources)
+                {
+                    int offset = source.position - merged.position;
+                    UCurve previous = new(descriptor) { xs = points.Keys.ToList(), ys = points.Values.ToList() };
+                    int before = previous.Sample(offset - 1);
+                    int after = previous.Sample(offset + source.Duration);
+                    // 重叠区采用后一个分片的曲线；分片外恢复默认值，避免空白区被线性连接。
+                    foreach (int tick in points.Keys.Where(tick => tick >= offset && tick < offset + source.Duration).ToArray()) points.Remove(tick);
+                    UCurve? curve = source.curves.FirstOrDefault(curve => curve.abbr == abbreviation);
+                    points[offset - 1] = before;
+                    points[offset] = curve?.Sample(0) ?? (int)descriptor.defaultValue;
+                    points[offset + source.Duration - 1] = curve?.Sample(source.Duration - 1) ?? (int)descriptor.defaultValue;
+                    points[offset + source.Duration] = after;
+                    if (curve == null) continue;
+                    foreach ((int x, int y) in curve.xs.Zip(curve.ys, (x, y) => (x, y)))
+                    {
+                        if (x < 0 || x >= source.Duration) continue;
+                        points[offset + x] = y;
+                    }
+                    if (curve.xs.Count > 0)
+                    {
+                        int first = curve.xs[0], last = curve.xs[^1];
+                        if (first > 0) points[offset + first - 1] = (int)descriptor.defaultValue;
+                        if (last < source.Duration - 1) points[offset + last + 1] = (int)descriptor.defaultValue;
+                    }
+                }
+                merged.curves.Add(new UCurve(descriptor) { xs = points.Keys.ToList(), ys = points.Values.ToList() });
+            }
+            merges.Add((sources, merged));
+        }
+        if (merges.Count == 0) return;
+        List<UPart> selection = SelectedParts.ToList();
+        DocManager.Inst.StartUndoGroup("Editor.Action.Merge", deferValidate: true);
+        try
+        {
+            foreach ((UVoicePart[] sources, UVoicePart merged) in merges)
+            {
+                foreach (UVoicePart source in sources)
+                {
+                    DocManager.Inst.ExecuteCmd(new RemovePartCommand(project, source));
+                    selection.Remove(source);
+                }
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(project, merged));
+                selection.Add(merged);
+            }
+        }
+        finally { DocManager.Inst.EndUndoGroup(); }
+        ReplaceSelectedParts(selection.Where(project.parts.Contains));
     }
 
-    private void SelectAllParts()
+    public void SelectAllParts()
     {
         ReplaceSelectedParts(DocManager.Inst.Project.parts);
-        ToastService.Enqueue(string.Format(L.S("Editor.Selection.AllSelected"), SelectedParts.Count));
     }
 
     private void ReplaceSelectedParts(IEnumerable<UPart> parts)

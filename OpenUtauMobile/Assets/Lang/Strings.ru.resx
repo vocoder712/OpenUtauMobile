@@ -686,18 +686,6 @@
   <data name="Editor.Toast.SyncTempo" xml:space="preserve">
     <value>Синхронизация темпа ещё не реализована</value>
   </data>
-  <data name="Editor.Selection.Copied" xml:space="preserve">
-    <value>Скопировано частей: {0}</value>
-  </data>
-  <data name="Editor.Selection.Cut" xml:space="preserve">
-    <value>Вырезано частей: {0}</value>
-  </data>
-  <data name="Editor.Selection.Pasted" xml:space="preserve">
-    <value>Вставлено частей: {0}</value>
-  </data>
-  <data name="Editor.Selection.AllSelected" xml:space="preserve">
-    <value>Выбраны все {0} частей</value>
-  </data>
   <data name="PianoRoll.DragSelect" xml:space="preserve">
     <value>Перетаскивание/выбор</value>
   </data>
@@ -797,47 +785,14 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>Пресет вибрато</value>
   </data>
-  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
-    <value>Режим вибрато</value>
-  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>Режим ластика питча</value>
-  </data>
-  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
-    <value>Режим карандаша питча</value>
-  </data>
-  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
-    <value>Режим редактирования якорей питча</value>
-  </data>
-  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
-    <value>Режим перетаскивания</value>
-  </data>
-  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
-    <value>Режим множественного выбора</value>
-  </data>
-  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
-    <value>Режим нот</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>Режим вибрато пока недоступен</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>Нажмите "|◀", чтобы завершить выделение</value>
-  </data>
-  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
-    <value>Выбрано нот: {0}</value>
-  </data>
-  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
-    <value>Выбраны все {0} нот</value>
-  </data>
-  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
-    <value>Скопировано нот: {0}</value>
-  </data>
-  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
-    <value>Вырезано нот: {0}</value>
-  </data>
-  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
-    <value>Вставлено нот: {0}</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>Редактор свойств ноты ещё не реализован</value>
@@ -904,9 +859,6 @@
   </data>
   <data name="DependencyManager.Installing" xml:space="preserve">
     <value>Установка...</value>
-  </data>
-  <data name="DependencyManager.Toast.Loaded" xml:space="preserve">
-    <value>Загружено доступных пакетов: {0}</value>
   </data>
   <data name="DependencyManager.Toast.LoadFailed" xml:space="preserve">
     <value>Не удалось загрузить: {0}</value>
@@ -1535,15 +1487,6 @@
   <data name="BatchEdit.Status.Progress" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
-  <data name="BatchEdit.Status.Completed" xml:space="preserve">
-    <value>Действие «{0}» завершено.</value>
-  </data>
-  <data name="BatchEdit.Status.Cancelled" xml:space="preserve">
-    <value>Операция отменена.</value>
-  </data>
-  <data name="BatchEdit.Status.Failed" xml:space="preserve">
-    <value>Ошибка выполнения «{0}».</value>
-  </data>
   <data name="BatchEdit.Action.RomajiToHiragana" xml:space="preserve">
     <value>Ромадзи в хирагану</value>
   </data>
@@ -1691,18 +1634,6 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>Режим ластика параметров</value>
   </data>
-  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
-    <value>Переключено в простой режим фонем</value>
-  </data>
-  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
-    <value>Переключено в продвинутый режим фонем</value>
-  </data>
-  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
-    <value>Переключено в режим рисования параметров</value>
-  </data>
-  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
-    <value>Переключено в режим ластика параметров</value>
-  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>Основной параметр</value>
   </data>
@@ -1777,10 +1708,10 @@
   <data name="ImportTracks.ImportCount" xml:space="preserve"><value>Импортировать дорожки: {0}</value></data>
   <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>Дорожек: {0}</value></data>
   <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>Вокальных частей: {0} · Аудиочастей: {1}</value></data>
-  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>Певец не назначен или не установлен: {0}</value></data>
+  <data name="ImportTracks.MissingSinger" xml:space="preserve"><value>Банк не назначен или не установлен: {0}</value></data>
   <data name="ImportTracks.Unassigned" xml:space="preserve"><value>Не назначен</value></data>
   <data name="ImportTracks.MissingAudio" xml:space="preserve"><value>Аудиофайл отсутствует: {0}</value></data>
-  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>Тембры источника отличаются от установленного певца. Проверьте параметры после импорта.</value></data>
+  <data name="ImportTracks.ColorMismatch" xml:space="preserve"><value>Тембры источника отличаются от установленного банка. Проверьте параметры после импорта.</value></data>
   <data name="ImportTracks.AppendHint" xml:space="preserve"><value>Добавить новые дорожки на исходных позициях, не заменяя существующие.</value></data>
   <data name="ImportTracks.ExpressionsHint" xml:space="preserve"><value>Приоритет у существующих определений параметров, затем у первого выбранного файла. Недостающие определения будут добавлены.</value></data>
   <data name="ImportTracks.UseSourceTiming" xml:space="preserve"><value>Использовать темп и размеры источника (выкл.: сохранить текущие)</value></data>
@@ -1800,7 +1731,7 @@
   <data name="ImportTracks.HistoryNotice" xml:space="preserve"><value>Как и в настольной версии, импорт очищает историю отмены/повтора и сбрасывает позицию воспроизведения. Темп и размеры берутся из первого импортируемого проекта.</value></data>
   <data name="VoiceMapping.Title" xml:space="preserve"><value>Сопоставление тембров</value></data>
   <data name="VoiceMapping.VocalModesTitle" xml:space="preserve"><value>Сопоставление импортированных вокальных режимов</value></data>
-  <data name="VoiceMapping.Hint" xml:space="preserve"><value>Сопоставьте исходные тембры с текущим певцом. Пропуск сохраняет импортированные дорожки.</value></data>
+  <data name="VoiceMapping.Hint" xml:space="preserve"><value>Сопоставьте исходные тембры с текущим банком. Пропуск сохраняет импортированные дорожки.</value></data>
   <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>Сопоставьте кривые вокальных режимов с тембрами DiffSinger. По умолчанию преобразование пропускается; существующие кривые сохраняются.</value></data>
   <data name="VoiceMapping.Default" xml:space="preserve"><value>По умолчанию</value></data>
   <data name="VoiceMapping.Skip" xml:space="preserve"><value>Пропустить</value></data>
@@ -1833,10 +1764,6 @@
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Включить эффекты / обход (подсвечено — включены)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Включены</value></data>
   <data name="EditorMore.EditTab" xml:space="preserve"><value>Правка</value></data>
-  <data name="History.NoUndo" xml:space="preserve"><value>Нечего отменять</value></data>
-  <data name="History.NoRedo" xml:space="preserve"><value>Нечего повторять</value></data>
-  <data name="History.Undone" xml:space="preserve"><value>Отменено: {0}</value></data>
-  <data name="History.Redone" xml:space="preserve"><value>Повторено: {0}</value></data>
   <data name="History.Edit" xml:space="preserve"><value>Редактирование</value></data>
   <data name="Mixer.MidFrequency" xml:space="preserve"><value>Центр средней полосы (Гц)</value></data>
   <data name="Mixer.Makeup" xml:space="preserve"><value>Выходное усиление (дБ)</value></data>
@@ -2290,5 +2217,94 @@
   </data>
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>Не удалось отменить удаление</value>
+  </data>
+  <data name="Desktop.Workspace" xml:space="preserve"><value>Рабочая область</value></data>
+  <data name="Desktop.Arrangement" xml:space="preserve"><value>Аранжировка</value></data>
+  <data name="Desktop.PianoRoll" xml:space="preserve"><value>Пианоролл</value></data>
+  <data name="Desktop.TuningMode" xml:space="preserve"><value>Настройка высоты</value></data>
+  <data name="Desktop.ArrangementAndPianoRoll" xml:space="preserve"><value>Аранжировка + Пианоролл</value></data>
+  <data name="Desktop.ArrangementHint" xml:space="preserve"><value>Щелчок: выбрать · Ctrl + щелчок: переключить выделение · Shift + щелчок: расширить выделение · Перетаскивание пустого места: рамка · Двойной щелчок: создать / изменить · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
+  <data name="Desktop.InputHint" xml:space="preserve"><value>Щелчок: выделение · Shift/Ctrl: дополнить выделение · Перетаскивание пустого места: рамка · Двойной щелчок: создать / изменить текст · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
+  <data name="Desktop.Tools" xml:space="preserve"><value>Внешние инструменты</value></data>
+  <data name="Desktop.File" xml:space="preserve"><value>Файл</value></data>
+  <data name="Desktop.Edit" xml:space="preserve"><value>Правка</value></data>
+  <data name="Desktop.View" xml:space="preserve"><value>Вид</value></data>
+  <data name="Desktop.Project" xml:space="preserve"><value>Проект</value></data>
+  <data name="Desktop.Transport" xml:space="preserve"><value>Транспорт</value></data>
+  <data name="Desktop.Help" xml:space="preserve"><value>Справка</value></data>
+  <data name="Desktop.CloseProject" xml:space="preserve"><value>Закрыть проект</value></data>
+  <data name="Desktop.NoteProperties" xml:space="preserve"><value>Свойства нот</value></data>
+  <data name="Desktop.Inspector" xml:space="preserve"><value>Инспектор</value></data>
+  <data name="Desktop.ResetLayout" xml:space="preserve"><value>Сбросить расположение</value></data>
+  <data name="Desktop.DropOneProject" xml:space="preserve"><value>Перетащите один проект. Аудиофайлы можно добавлять вместе.</value></data>
+  <data name="Desktop.Templates" xml:space="preserve"><value>Шаблоны</value></data>
+  <data name="Desktop.NoTemplates" xml:space="preserve"><value>Здесь появятся сохранённые шаблоны.</value></data>
+  <data name="Desktop.Search" xml:space="preserve"><value>Поиск</value></data>
+  <data name="Desktop.Refresh" xml:space="preserve"><value>Обновить</value></data>
+  <data name="Desktop.Install" xml:space="preserve"><value>Установить</value></data>
+  <data name="Desktop.Uninstall" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Desktop.InstallFile" xml:space="preserve"><value>Установить файл инструмента</value></data>
+  <data name="Desktop.InstallFolder" xml:space="preserve"><value>Установить папку инструмента</value></data>
+  <data name="Desktop.OpenFolder" xml:space="preserve"><value>Открыть папку</value></data>
+  <data name="Desktop.Resamplers" xml:space="preserve"><value>Ресамплеры</value></data>
+  <data name="Desktop.Wavtools" xml:space="preserve"><value>Wavtool</value></data>
+  <data name="Desktop.WinePath" xml:space="preserve"><value>Исполняемый файл Wine</value></data>
+  <data name="Desktop.Builtin" xml:space="preserve"><value>Встроенный</value></data>
+  <data name="Desktop.Discovered" xml:space="preserve"><value>Обнаружен</value></data>
+  <data name="Desktop.Unavailable" xml:space="preserve"><value>Недоступен или отсутствует среда выполнения</value></data>
+  <data name="Desktop.ExperimentalWine" xml:space="preserve"><value>Экспериментально · требуется Wine</value></data>
+  <data name="Desktop.NativeWavtoolUnavailable" xml:space="preserve"><value>Текущий движок пакетных скриптов не поддерживает нативные Unix wavtool</value></data>
+  <data name="Desktop.ToolChangesQueued" xml:space="preserve"><value>В очереди. Закройте проект для применения изменений.</value></data>
+  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>Инструменты должны соответствовать ОС и архитектуре CPU. Установка не подтверждает работу. Соседние файлы также копируются.</value></data>
+  <data name="Desktop.InvalidToolFolder" xml:space="preserve"><value>Выберите обычную папку вне каталога инструментов. Ссылки не поддерживаются.</value></data>
+  <data name="Desktop.ReplaceTool" xml:space="preserve"><value>Заменить установленные файлы?</value></data>
+  <data name="Desktop.Replace" xml:space="preserve"><value>Заменить</value></data>
+  <data name="Desktop.ToolInUse" xml:space="preserve"><value>Инструмент используется проектом и не может быть удалён.</value></data>
+  <data name="Desktop.Track" xml:space="preserve"><value>Дорожка</value></data>
+  <data name="Desktop.Notes" xml:space="preserve"><value>Ноты</value></data>
+  <data name="Desktop.Phoneme" xml:space="preserve"><value>Фонема</value></data>
+  <data name="Desktop.NoNotes" xml:space="preserve"><value>Выберите ноты для редактирования.</value></data>
+  <data name="Desktop.NoTrack" xml:space="preserve"><value>Добавьте или выберите дорожку.</value></data>
+  <data name="Desktop.NoPhoneme" xml:space="preserve"><value>Выберите ноты с фонемами.</value></data>
+  <data name="Desktop.Color" xml:space="preserve"><value>Цвет дорожки</value></data>
+  <data name="Desktop.Singer" xml:space="preserve"><value>Банк</value></data>
+  <data name="Desktop.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
+  <data name="Desktop.Renderer" xml:space="preserve"><value>Рендерер</value></data>
+  <data name="Desktop.UseDefault" xml:space="preserve"><value>Использовать по умолчанию</value></data>
+  <data name="Desktop.Alias" xml:space="preserve"><value>Алиас</value></data>
+  <data name="Desktop.Offset" xml:space="preserve"><value>Смещение (тики)</value></data>
+  <data name="Desktop.Preutter" xml:space="preserve"><value>Сдвиг preutterance (мс)</value></data>
+  <data name="Desktop.Overlap" xml:space="preserve"><value>Сдвиг перекрытия (мс)</value></data>
+  <data name="Desktop.Attack" xml:space="preserve"><value>Сдвиг атаки (мс)</value></data>
+  <data name="Desktop.Release" xml:space="preserve"><value>Сдвиг окончания (мс)</value></data>
+  <data name="Desktop.ToolChangesApplied" xml:space="preserve"><value>Изменения инструментов применены.</value></data>
+  <data name="Desktop.NotExecutable" xml:space="preserve"><value>Нет разрешения на запуск</value></data>
+  <data name="Desktop.NoteTool" xml:space="preserve"><value>Ноты · выделение, перемещение, размер и создание</value></data>
+  <data name="Desktop.TuningTool" xml:space="preserve"><value>Настройка · якоря питча и вибрато</value></data>
+  <data name="Desktop.TuningHint" xml:space="preserve"><value>Перетаскивание: якоря питча / ручки вибрато · Щелчок кривой: добавить якорь · Двойной щелчок вибрато: переключить · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>Перетаскивание: рисовать питч · Shift + правая кнопка: стереть · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
+  <data name="Desktop.AllLanguages" xml:space="preserve"><value>Все языки</value></data>
+  <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>Перетаскивайте по одному установочному файлу.</value></data>
+  <data name="Desktop.Parameters" xml:space="preserve"><value>Панель параметров</value></data>
+  <data name="Desktop.EditExpressionLane" xml:space="preserve"><value>Редактировать выражение в панели параметров</value></data>
+  <data name="DependencyManager.SortByName" xml:space="preserve"><value>По названию</value></data>
+  <data name="DependencyManager.SortByDeveloper" xml:space="preserve"><value>По разработчику</value></data>
+  <data name="DependencyManager.LatestVersion" xml:space="preserve"><value>Последняя версия</value></data>
+  <data name="DependencyManager.InstalledVersion" xml:space="preserve"><value>Установленная версия</value></data>
+  <data name="DependencyManager.EmptyAvailable" xml:space="preserve"><value>Нет доступных пакетов.</value></data>
+  <data name="DependencyManager.EmptyInstalled" xml:space="preserve"><value>Пакеты не установлены.</value></data>
+  <data name="DependencyManager.NoResults" xml:space="preserve"><value>По запросу ничего не найдено.</value></data>
+  <data name="Desktop.Window" xml:space="preserve"><value>OUM</value></data>
+  <data name="Desktop.SurfaceUnavailable" xml:space="preserve"><value>Этот экран пока недоступен в настольной версии.</value></data>
+  <data name="Desktop.Favorite" xml:space="preserve"><value>Избранное</value></data>
+  <data name="Home.Action.OpenTemplate" xml:space="preserve"><value>Создать из выбранного шаблона</value></data>
+  <data name="Desktop.NavigationHint" xml:space="preserve"><value>Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
+  <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>Перетаскивание: стереть питч · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
+  <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Нот для обновления: {0}</value></data>
+  <data name="Editor.Selection.Copied" xml:space="preserve">
+    <value>Скопировано частей: {0}</value>
+  </data>
+  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
+    <value>Скопировано нот: {0}</value>
   </data>
 </root>

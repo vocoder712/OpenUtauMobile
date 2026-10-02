@@ -1,4 +1,4 @@
-﻿using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Dialogs;
 using System.Reactive;
 using OpenUtauMobile.Helpers;
 using ReactiveUI;
@@ -93,9 +93,7 @@ public class ProjectInfoEditViewModel : PopupViewModelBase
         {
             case EditMode.Bpm:
                 {
-                    if (!double.TryParse(BpmText, System.Globalization.NumberStyles.Any,
-                            System.Globalization.CultureInfo.InvariantCulture, out double bpm)
-                        || bpm < 10 || bpm > 1000)
+                    if (!TryParseBpm(BpmText, out _))
                     {
                         ToastService.Enqueue(L.S("ProjectEdit.BpmRange"));
                         return;
@@ -125,6 +123,13 @@ public class ProjectInfoEditViewModel : PopupViewModelBase
         RaiseClose(true);
     }
 
+    public static bool TryParseBpm(string? text, out double bpm) =>
+        (double.TryParse(text, System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.CurrentCulture, out bpm)
+        || double.TryParse(text, System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture, out bpm))
+        && double.IsFinite(bpm) && bpm >= 10 && bpm <= 1000;
+
     /// <summary>音名模式：点击音名按钮直接确认关闭。</summary>
     private void OnSelectKey(string keyStr)
     {
@@ -144,8 +149,7 @@ public class ProjectInfoEditViewModel : PopupViewModelBase
     // ── 便捷只读解析属性（供调用方在弹窗关闭后读取结果） ─────────────
     /// <summary>解析后的 BPM 值。仅在 Mode==Bpm 且校验通过后有效。</summary>
     public double ParsedBpm =>
-        double.TryParse(BpmText, System.Globalization.NumberStyles.Any,
-            System.Globalization.CultureInfo.InvariantCulture, out double v)
+        TryParseBpm(BpmText, out double v)
             ? v
             : 120;
 

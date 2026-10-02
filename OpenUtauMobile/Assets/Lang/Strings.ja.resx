@@ -760,18 +760,6 @@
   <data name="Editor.Toast.SyncTempo" xml:space="preserve">
     <value>テンポ同期は未実装です（TODO）</value>
   </data>
-  <data name="Editor.Selection.Copied" xml:space="preserve">
-    <value>{0} 個のパートをコピー</value>
-  </data>
-  <data name="Editor.Selection.Cut" xml:space="preserve">
-    <value>{0} 個のパートをカット</value>
-  </data>
-  <data name="Editor.Selection.Pasted" xml:space="preserve">
-    <value>{0} 個のパートをペースト</value>
-  </data>
-  <data name="Editor.Selection.AllSelected" xml:space="preserve">
-    <value>全 {0} 個のパートを選択</value>
-  </data>
   <data name="PianoRoll.DragSelect" xml:space="preserve">
     <value>ドラッグ/選択</value>
   </data>
@@ -871,47 +859,14 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>ビブラートプリセット</value>
   </data>
-  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
-    <value>ビブラートモード</value>
-  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>ピッチ消しゴムモード</value>
-  </data>
-  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
-    <value>ピッチペンモード</value>
-  </data>
-  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
-    <value>ピッチアンカー編集モード</value>
-  </data>
-  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
-    <value>ドラッグモード</value>
-  </data>
-  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
-    <value>複数選択モード</value>
-  </data>
-  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
-    <value>ノートモード</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>ビブラートモードは準備中です</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>"|◀"を押して選択を終了</value>
-  </data>
-  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
-    <value>{0} 個のノートを選択</value>
-  </data>
-  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
-    <value>全 {0} 個のノートを選択</value>
-  </data>
-  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
-    <value>{0} 個のノートをコピー</value>
-  </data>
-  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
-    <value>{0} 個のノートをカット</value>
-  </data>
-  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
-    <value>{0} 個のノートをペースト</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>ノートプロパティエディターは未実装です</value>
@@ -978,9 +933,6 @@
   </data>
   <data name="DependencyManager.Installing" xml:space="preserve">
     <value>インストール中...</value>
-  </data>
-  <data name="DependencyManager.Toast.Loaded" xml:space="preserve">
-    <value>{0} 個の利用可能なパッケージを読み込みました</value>
   </data>
   <data name="DependencyManager.Toast.LoadFailed" xml:space="preserve">
     <value>読み込み失敗: {0}</value>
@@ -1612,15 +1564,6 @@
   <data name="BatchEdit.Status.Progress" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
-  <data name="BatchEdit.Status.Completed" xml:space="preserve">
-    <value>Completed {0}.</value>
-  </data>
-  <data name="BatchEdit.Status.Cancelled" xml:space="preserve">
-    <value>Operation cancelled.</value>
-  </data>
-  <data name="BatchEdit.Status.Failed" xml:space="preserve">
-    <value>{0} failed.</value>
-  </data>
   <data name="BatchEdit.Action.RomajiToHiragana" xml:space="preserve">
     <value>Romaji to Hiragana</value>
   </data>
@@ -1750,18 +1693,6 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>パラメータ消しゴムモード</value>
   </data>
-  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
-    <value>シンプル音素モード</value>
-  </data>
-  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
-    <value>詳細音素モード</value>
-  </data>
-  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
-    <value>パラメータ描画モード</value>
-  </data>
-  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
-    <value>パラメータ消しゴムモード</value>
-  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>主パラメータ</value>
   </data>
@@ -1871,10 +1802,6 @@
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>エフェクト有効 / バイパス（点灯時は有効）</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>有効</value></data>
   <data name="EditorMore.EditTab" xml:space="preserve"><value>編集</value></data>
-  <data name="History.NoUndo" xml:space="preserve"><value>元に戻す操作はありません</value></data>
-  <data name="History.NoRedo" xml:space="preserve"><value>やり直す操作はありません</value></data>
-  <data name="History.Undone" xml:space="preserve"><value>元に戻しました：{0}</value></data>
-  <data name="History.Redone" xml:space="preserve"><value>やり直しました：{0}</value></data>
   <data name="History.Edit" xml:space="preserve"><value>編集操作</value></data>
   <data name="Mixer.MidFrequency" xml:space="preserve"><value>中域中心周波数 (Hz)</value></data>
   <data name="Mixer.Makeup" xml:space="preserve"><value>メイクアップゲイン (dB)</value></data>
@@ -2328,5 +2255,94 @@
   </data>
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>削除予定の取り消しに失敗しました</value>
+  </data>
+  <data name="Desktop.Workspace" xml:space="preserve"><value>ワークスペース</value></data>
+  <data name="Desktop.Arrangement" xml:space="preserve"><value>アレンジ</value></data>
+  <data name="Desktop.PianoRoll" xml:space="preserve"><value>ピアノロール</value></data>
+  <data name="Desktop.TuningMode" xml:space="preserve"><value>調声</value></data>
+  <data name="Desktop.ArrangementAndPianoRoll" xml:space="preserve"><value>アレンジ + ピアノロール</value></data>
+  <data name="Desktop.ArrangementHint" xml:space="preserve"><value>クリック: 選択 · Ctrl＋クリック: 選択切替 · Shift＋クリック: 選択追加 · 空白をドラッグ: 範囲選択 · ダブルクリック: 作成 / 編集 · 中ボタンでドラッグ: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
+  <data name="Desktop.InputHint" xml:space="preserve"><value>クリック: 選択 · Shift/Ctrl: 選択追加 · 空白をドラッグ: 範囲選択 · ダブルクリック: 作成 / 歌詞編集 · 中ボタンでドラッグ: 移動 · Ctrl/Cmd + ホイール: ズーム</value></data>
+  <data name="Desktop.Tools" xml:space="preserve"><value>外部ツール</value></data>
+  <data name="Desktop.File" xml:space="preserve"><value>ファイル</value></data>
+  <data name="Desktop.Edit" xml:space="preserve"><value>編集</value></data>
+  <data name="Desktop.View" xml:space="preserve"><value>表示</value></data>
+  <data name="Desktop.Project" xml:space="preserve"><value>プロジェクト</value></data>
+  <data name="Desktop.Transport" xml:space="preserve"><value>トランスポート</value></data>
+  <data name="Desktop.Help" xml:space="preserve"><value>ヘルプ</value></data>
+  <data name="Desktop.CloseProject" xml:space="preserve"><value>プロジェクトを閉じる</value></data>
+  <data name="Desktop.NoteProperties" xml:space="preserve"><value>ノートプロパティ</value></data>
+  <data name="Desktop.Inspector" xml:space="preserve"><value>インスペクター</value></data>
+  <data name="Desktop.ResetLayout" xml:space="preserve"><value>レイアウトをリセット</value></data>
+  <data name="Desktop.DropOneProject" xml:space="preserve"><value>プロジェクトは一度に1つだけドロップできます。音声は複数選択できます。</value></data>
+  <data name="Desktop.Templates" xml:space="preserve"><value>テンプレート</value></data>
+  <data name="Desktop.NoTemplates" xml:space="preserve"><value>保存したテンプレートはここに表示されます。</value></data>
+  <data name="Desktop.Search" xml:space="preserve"><value>検索</value></data>
+  <data name="Desktop.Refresh" xml:space="preserve"><value>更新</value></data>
+  <data name="Desktop.Install" xml:space="preserve"><value>インストール</value></data>
+  <data name="Desktop.Uninstall" xml:space="preserve"><value>アンインストール</value></data>
+  <data name="Desktop.InstallFile" xml:space="preserve"><value>ツールファイルを追加</value></data>
+  <data name="Desktop.InstallFolder" xml:space="preserve"><value>ツールフォルダーを追加</value></data>
+  <data name="Desktop.OpenFolder" xml:space="preserve"><value>フォルダーを開く</value></data>
+  <data name="Desktop.Resamplers" xml:space="preserve"><value>リサンプラー</value></data>
+  <data name="Desktop.Wavtools" xml:space="preserve"><value>Wavtool</value></data>
+  <data name="Desktop.WinePath" xml:space="preserve"><value>Wine 実行ファイル</value></data>
+  <data name="Desktop.Builtin" xml:space="preserve"><value>内蔵</value></data>
+  <data name="Desktop.Discovered" xml:space="preserve"><value>検出済み</value></data>
+  <data name="Desktop.Unavailable" xml:space="preserve"><value>この環境では利用不可、またはランタイムがありません</value></data>
+  <data name="Desktop.ExperimentalWine" xml:space="preserve"><value>実験的・Wine が必要</value></data>
+  <data name="Desktop.NativeWavtoolUnavailable" xml:space="preserve"><value>現在のバッチエンジンでは Unix ネイティブ wavtool は利用できません</value></data>
+  <data name="Desktop.ToolChangesQueued" xml:space="preserve"><value>保留中。プロジェクトを閉じると変更を適用します。</value></data>
+  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>OS と CPU に適合するツールが必要です。インストールは動作保証ではありません。同じフォルダーの付属ファイルもコピーされます。</value></data>
+  <data name="Desktop.InvalidToolFolder" xml:space="preserve"><value>管理フォルダー以外の通常のフォルダーを選択してください。リンクは非対応です。</value></data>
+  <data name="Desktop.ReplaceTool" xml:space="preserve"><value>既存のツールファイルを置換しますか？</value></data>
+  <data name="Desktop.Replace" xml:space="preserve"><value>置換</value></data>
+  <data name="Desktop.ToolInUse" xml:space="preserve"><value>使用中のツールは削除できません。</value></data>
+  <data name="Desktop.Track" xml:space="preserve"><value>トラック</value></data>
+  <data name="Desktop.Notes" xml:space="preserve"><value>ノート</value></data>
+  <data name="Desktop.Phoneme" xml:space="preserve"><value>音素</value></data>
+  <data name="Desktop.NoNotes" xml:space="preserve"><value>ノートを選択して編集します。</value></data>
+  <data name="Desktop.NoTrack" xml:space="preserve"><value>トラックを追加または選択します。</value></data>
+  <data name="Desktop.NoPhoneme" xml:space="preserve"><value>音素が生成されたノートを選択します。</value></data>
+  <data name="Desktop.Color" xml:space="preserve"><value>トラックの色</value></data>
+  <data name="Desktop.Singer" xml:space="preserve"><value>歌手</value></data>
+  <data name="Desktop.Phonemizer" xml:space="preserve"><value>音素変換器</value></data>
+  <data name="Desktop.Renderer" xml:space="preserve"><value>レンダラー</value></data>
+  <data name="Desktop.UseDefault" xml:space="preserve"><value>既定にする</value></data>
+  <data name="Desktop.Alias" xml:space="preserve"><value>エイリアス</value></data>
+  <data name="Desktop.Offset" xml:space="preserve"><value>オフセット（tick）</value></data>
+  <data name="Desktop.Preutter" xml:space="preserve"><value>先行発声差分（ms）</value></data>
+  <data name="Desktop.Overlap" xml:space="preserve"><value>オーバーラップ差分（ms）</value></data>
+  <data name="Desktop.Attack" xml:space="preserve"><value>アタック差分（ms）</value></data>
+  <data name="Desktop.Release" xml:space="preserve"><value>リリース差分（ms）</value></data>
+  <data name="Desktop.ToolChangesApplied" xml:space="preserve"><value>ツールの変更を適用しました。</value></data>
+  <data name="Desktop.NotExecutable" xml:space="preserve"><value>実行権限がありません</value></data>
+  <data name="Desktop.NoteTool" xml:space="preserve"><value>ノート · 選択、移動、長さ変更、作成</value></data>
+  <data name="Desktop.TuningTool" xml:space="preserve"><value>調声 · ピッチアンカーとビブラート</value></data>
+  <data name="Desktop.TuningHint" xml:space="preserve"><value>ドラッグ: ピッチ点／ビブラートハンドルを移動 · 曲線をクリック: 点を追加 · ビブラートをダブルクリック: 切替 · 中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>ドラッグ: ピッチを描画 · Shift＋右ドラッグ: 消去 · 中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
+  <data name="Desktop.AllLanguages" xml:space="preserve"><value>すべての言語</value></data>
+  <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>インストールファイルは一度に1つドロップしてください。</value></data>
+  <data name="Desktop.Parameters" xml:space="preserve"><value>パラメータパネル</value></data>
+  <data name="Desktop.EditExpressionLane" xml:space="preserve"><value>パラメータパネルで表情を編集</value></data>
+  <data name="DependencyManager.SortByName" xml:space="preserve"><value>名前で並べ替え</value></data>
+  <data name="DependencyManager.SortByDeveloper" xml:space="preserve"><value>開発者で並べ替え</value></data>
+  <data name="DependencyManager.LatestVersion" xml:space="preserve"><value>最新バージョン</value></data>
+  <data name="DependencyManager.InstalledVersion" xml:space="preserve"><value>インストール済みバージョン</value></data>
+  <data name="DependencyManager.EmptyAvailable" xml:space="preserve"><value>利用可能なパッケージはありません。</value></data>
+  <data name="DependencyManager.EmptyInstalled" xml:space="preserve"><value>インストール済みパッケージはありません。</value></data>
+  <data name="DependencyManager.NoResults" xml:space="preserve"><value>検索結果がありません。</value></data>
+  <data name="Desktop.Window" xml:space="preserve"><value>OUM</value></data>
+  <data name="Desktop.SurfaceUnavailable" xml:space="preserve"><value>このデスクトップ画面はまだ利用できません。</value></data>
+  <data name="Desktop.Favorite" xml:space="preserve"><value>お気に入り</value></data>
+  <data name="Home.Action.OpenTemplate" xml:space="preserve"><value>選択したテンプレートから作成</value></data>
+  <data name="Desktop.NavigationHint" xml:space="preserve"><value>中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
+  <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>ドラッグ: ピッチを消去 · 中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
+  <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>更新するノート数：{0}</value></data>
+  <data name="Editor.Selection.Copied" xml:space="preserve">
+    <value>{0} 個のパートをコピー</value>
+  </data>
+  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
+    <value>{0} 個のノートをコピー</value>
   </data>
 </root>

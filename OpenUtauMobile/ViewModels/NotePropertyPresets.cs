@@ -19,6 +19,7 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
     private readonly Action<IReadOnlyList<object>> commit;
     private object? selected;
     private bool modified;
+    public bool IsApplying { get; private set; }
     public ObservableCollection<object> Items { get; }
     [Reactive] public string Name { get; set; } = string.Empty;
     [Reactive] public string Error { get; private set; } = string.Empty;
@@ -33,11 +34,15 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
             {
                 return;
             }
-            this.RaiseAndSetIfChanged(ref selected, value);
+            selected = value;
             if (value != null)
             {
-                select(value);
+                IsApplying = true;
+                try { select(value); }
+                finally { IsApplying = false; }
             }
+            // 先填充草稿，再通知选择器；桌面即时提交不能早于套用预设。
+            this.RaisePropertyChanged(nameof(Selected));
         }
     }
 
@@ -92,6 +97,7 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
             return false;
         }
         commit(Items.ToArray());
+        modified = false;
         return true;
     }
 

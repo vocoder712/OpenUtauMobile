@@ -763,18 +763,6 @@
   <data name="Editor.Toast.SyncTempo" xml:space="preserve">
     <value>没有同步曲速，TODO</value>
   </data>
-  <data name="Editor.Selection.Copied" xml:space="preserve">
-    <value>已复制 {0} 个分片</value>
-  </data>
-  <data name="Editor.Selection.Cut" xml:space="preserve">
-    <value>已剪切 {0} 个分片</value>
-  </data>
-  <data name="Editor.Selection.Pasted" xml:space="preserve">
-    <value>已粘贴 {0} 个分片</value>
-  </data>
-  <data name="Editor.Selection.AllSelected" xml:space="preserve">
-    <value>已全选 {0} 个分片</value>
-  </data>
   <data name="PianoRoll.DragSelect" xml:space="preserve">
     <value>拖拽/选择</value>
   </data>
@@ -874,47 +862,14 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>颤音预设</value>
   </data>
-  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
-    <value>颤音模式</value>
-  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>音高曲线橡皮擦模式</value>
-  </data>
-  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
-    <value>音高曲线画笔模式</value>
-  </data>
-  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
-    <value>音高锚点编辑模式</value>
-  </data>
-  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
-    <value>拖拽模式</value>
-  </data>
-  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
-    <value>多选模式</value>
-  </data>
-  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
-    <value>音符模式</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>颤音模式暂未上线</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>按"|◀"结束选区</value>
-  </data>
-  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
-    <value>已选中 {0} 个音符</value>
-  </data>
-  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
-    <value>已全选 {0} 个音符</value>
-  </data>
-  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
-    <value>已复制 {0} 个音符</value>
-  </data>
-  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
-    <value>已剪切 {0} 个音符</value>
-  </data>
-  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
-    <value>已粘贴 {0} 个音符</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>音符属性编辑窗尚未实现</value>
@@ -981,9 +936,6 @@
   </data>
   <data name="DependencyManager.Installing" xml:space="preserve">
     <value>正在安装...</value>
-  </data>
-  <data name="DependencyManager.Toast.Loaded" xml:space="preserve">
-    <value>已加载 {0} 个可用依赖包</value>
   </data>
   <data name="DependencyManager.Toast.LoadFailed" xml:space="preserve">
     <value>加载失败: {0}</value>
@@ -1615,15 +1567,6 @@
   <data name="BatchEdit.Status.Progress" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
-  <data name="BatchEdit.Status.Completed" xml:space="preserve">
-    <value>“{0}”执行完成。</value>
-  </data>
-  <data name="BatchEdit.Status.Cancelled" xml:space="preserve">
-    <value>操作已取消。</value>
-  </data>
-  <data name="BatchEdit.Status.Failed" xml:space="preserve">
-    <value>“{0}”执行失败。</value>
-  </data>
   <data name="BatchEdit.Action.RomajiToHiragana" xml:space="preserve">
     <value>罗马字转平假名</value>
   </data>
@@ -1757,18 +1700,6 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>参数擦除模式</value>
   </data>
-  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
-    <value>简易音素模式</value>
-  </data>
-  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
-    <value>高级音素模式</value>
-  </data>
-  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
-    <value>参数绘制模式</value>
-  </data>
-  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
-    <value>参数擦除模式</value>
-  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>主编辑参数</value>
   </data>
@@ -1878,10 +1809,6 @@
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>启用效果器 / 旁路（亮起时启用）</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>已启用</value></data>
   <data name="EditorMore.EditTab" xml:space="preserve"><value>编辑</value></data>
-  <data name="History.NoUndo" xml:space="preserve"><value>没有可撤销的操作</value></data>
-  <data name="History.NoRedo" xml:space="preserve"><value>没有可重做的操作</value></data>
-  <data name="History.Undone" xml:space="preserve"><value>已撤销：{0}</value></data>
-  <data name="History.Redone" xml:space="preserve"><value>已重做：{0}</value></data>
   <data name="History.Edit" xml:space="preserve"><value>编辑操作</value></data>
   <data name="Mixer.MidFrequency" xml:space="preserve"><value>中频中心频率 (Hz)</value></data>
   <data name="Mixer.Makeup" xml:space="preserve"><value>补偿增益 (dB)</value></data>
@@ -2335,5 +2262,94 @@
   </data>
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>取消删除标记失败</value>
+  </data>
+  <data name="Desktop.Workspace" xml:space="preserve"><value>工作区</value></data>
+  <data name="Desktop.Arrangement" xml:space="preserve"><value>编曲</value></data>
+  <data name="Desktop.PianoRoll" xml:space="preserve"><value>钢琴卷帘</value></data>
+  <data name="Desktop.TuningMode" xml:space="preserve"><value>调音</value></data>
+  <data name="Desktop.ArrangementAndPianoRoll" xml:space="preserve"><value>编曲 + 钢琴卷帘</value></data>
+  <data name="Desktop.ArrangementHint" xml:space="preserve"><value>单击：选择 · Ctrl＋单击：切换选择 · Shift＋单击：扩展选择 · 空白处拖动：框选 · 双击：创建/编辑 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
+  <data name="Desktop.InputHint" xml:space="preserve"><value>单击：选择 · Shift/Ctrl：扩展选择 · 空白处拖动：框选 · 双击：创建/编辑歌词 · 中键拖动：平移 · Ctrl/Cmd + 滚轮：缩放</value></data>
+  <data name="Desktop.Tools" xml:space="preserve"><value>外部工具</value></data>
+  <data name="Desktop.File" xml:space="preserve"><value>文件</value></data>
+  <data name="Desktop.Edit" xml:space="preserve"><value>编辑</value></data>
+  <data name="Desktop.View" xml:space="preserve"><value>视图</value></data>
+  <data name="Desktop.Project" xml:space="preserve"><value>工程</value></data>
+  <data name="Desktop.Transport" xml:space="preserve"><value>播放控制</value></data>
+  <data name="Desktop.Help" xml:space="preserve"><value>帮助</value></data>
+  <data name="Desktop.CloseProject" xml:space="preserve"><value>关闭工程</value></data>
+  <data name="Desktop.NoteProperties" xml:space="preserve"><value>音符属性</value></data>
+  <data name="Desktop.Inspector" xml:space="preserve"><value>属性面板</value></data>
+  <data name="Desktop.ResetLayout" xml:space="preserve"><value>重置布局</value></data>
+  <data name="Desktop.DropOneProject" xml:space="preserve"><value>每次只能拖入一个工程；可同时拖入多个音频文件。</value></data>
+  <data name="Desktop.Templates" xml:space="preserve"><value>模板</value></data>
+  <data name="Desktop.NoTemplates" xml:space="preserve"><value>已保存的工程模板将显示在此处。</value></data>
+  <data name="Desktop.Search" xml:space="preserve"><value>搜索</value></data>
+  <data name="Desktop.Refresh" xml:space="preserve"><value>刷新</value></data>
+  <data name="Desktop.Install" xml:space="preserve"><value>安装</value></data>
+  <data name="Desktop.Uninstall" xml:space="preserve"><value>卸载</value></data>
+  <data name="Desktop.InstallFile" xml:space="preserve"><value>安装工具文件</value></data>
+  <data name="Desktop.InstallFolder" xml:space="preserve"><value>安装工具目录</value></data>
+  <data name="Desktop.OpenFolder" xml:space="preserve"><value>打开目录</value></data>
+  <data name="Desktop.Resamplers" xml:space="preserve"><value>重采样器</value></data>
+  <data name="Desktop.Wavtools" xml:space="preserve"><value>拼接工具</value></data>
+  <data name="Desktop.WinePath" xml:space="preserve"><value>Wine 可执行文件</value></data>
+  <data name="Desktop.Builtin" xml:space="preserve"><value>内置</value></data>
+  <data name="Desktop.Discovered" xml:space="preserve"><value>已发现</value></data>
+  <data name="Desktop.Unavailable" xml:space="preserve"><value>当前平台不可用或缺少运行环境</value></data>
+  <data name="Desktop.ExperimentalWine" xml:space="preserve"><value>实验性 · 需要 Wine</value></data>
+  <data name="Desktop.NativeWavtoolUnavailable" xml:space="preserve"><value>当前批处理引擎不支持原生 Unix 拼接工具</value></data>
+  <data name="Desktop.ToolChangesQueued" xml:space="preserve"><value>已排队。关闭工程后将安全应用工具更改。</value></data>
+  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>工具必须匹配操作系统和 CPU 架构。安装文件不代表合成已验证；文件安装会同时复制同目录的依赖文件。</value></data>
+  <data name="Desktop.InvalidToolFolder" xml:space="preserve"><value>请选择托管工具目录之外的普通工具目录；不支持链接目录。</value></data>
+  <data name="Desktop.ReplaceTool" xml:space="preserve"><value>替换已安装的工具文件？</value></data>
+  <data name="Desktop.Replace" xml:space="preserve"><value>替换</value></data>
+  <data name="Desktop.ToolInUse" xml:space="preserve"><value>此工具正在被当前工程使用，无法卸载。</value></data>
+  <data name="Desktop.Track" xml:space="preserve"><value>轨道</value></data>
+  <data name="Desktop.Notes" xml:space="preserve"><value>音符</value></data>
+  <data name="Desktop.Phoneme" xml:space="preserve"><value>音素</value></data>
+  <data name="Desktop.NoNotes" xml:space="preserve"><value>选择音符以编辑其属性。</value></data>
+  <data name="Desktop.NoTrack" xml:space="preserve"><value>添加或选择轨道。</value></data>
+  <data name="Desktop.NoPhoneme" xml:space="preserve"><value>选择已生成音素的音符。</value></data>
+  <data name="Desktop.Color" xml:space="preserve"><value>轨道颜色</value></data>
+  <data name="Desktop.Singer" xml:space="preserve"><value>歌手</value></data>
+  <data name="Desktop.Phonemizer" xml:space="preserve"><value>音素器</value></data>
+  <data name="Desktop.Renderer" xml:space="preserve"><value>渲染器</value></data>
+  <data name="Desktop.UseDefault" xml:space="preserve"><value>设为默认</value></data>
+  <data name="Desktop.Alias" xml:space="preserve"><value>音素别名</value></data>
+  <data name="Desktop.Offset" xml:space="preserve"><value>偏移（tick）</value></data>
+  <data name="Desktop.Preutter" xml:space="preserve"><value>预发声偏移（毫秒）</value></data>
+  <data name="Desktop.Overlap" xml:space="preserve"><value>重叠偏移（毫秒）</value></data>
+  <data name="Desktop.Attack" xml:space="preserve"><value>起音偏移（毫秒）</value></data>
+  <data name="Desktop.Release" xml:space="preserve"><value>收音偏移（毫秒）</value></data>
+  <data name="Desktop.ToolChangesApplied" xml:space="preserve"><value>工具更改已应用。</value></data>
+  <data name="Desktop.NotExecutable" xml:space="preserve"><value>没有执行权限</value></data>
+  <data name="Desktop.NoteTool" xml:space="preserve"><value>音符 · 选择、移动、调整长度与创建</value></data>
+  <data name="Desktop.TuningTool" xml:space="preserve"><value>调音 · 音高锚点与颤音</value></data>
+  <data name="Desktop.TuningHint" xml:space="preserve"><value>拖动：移动音高锚点／颤音控制柄 · 单击曲线：添加锚点 · 双击颤音：切换 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>拖动：绘制音高 · Shift＋右键拖动：擦除 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
+  <data name="Desktop.AllLanguages" xml:space="preserve"><value>所有语言</value></data>
+  <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>请每次拖入一个安装文件。</value></data>
+  <data name="Desktop.Parameters" xml:space="preserve"><value>参数面板</value></data>
+  <data name="Desktop.EditExpressionLane" xml:space="preserve"><value>在参数面板中编辑表情</value></data>
+  <data name="DependencyManager.SortByName" xml:space="preserve"><value>按名称排序</value></data>
+  <data name="DependencyManager.SortByDeveloper" xml:space="preserve"><value>按开发者排序</value></data>
+  <data name="DependencyManager.LatestVersion" xml:space="preserve"><value>最新版本</value></data>
+  <data name="DependencyManager.InstalledVersion" xml:space="preserve"><value>已安装版本</value></data>
+  <data name="DependencyManager.EmptyAvailable" xml:space="preserve"><value>没有可用的软件包。</value></data>
+  <data name="DependencyManager.EmptyInstalled" xml:space="preserve"><value>尚未安装软件包。</value></data>
+  <data name="DependencyManager.NoResults" xml:space="preserve"><value>没有符合搜索条件的结果。</value></data>
+  <data name="Desktop.Window" xml:space="preserve"><value>OUM</value></data>
+  <data name="Desktop.SurfaceUnavailable" xml:space="preserve"><value>此桌面界面暂不可用。</value></data>
+  <data name="Desktop.Favorite" xml:space="preserve"><value>收藏</value></data>
+  <data name="Home.Action.OpenTemplate" xml:space="preserve"><value>使用所选模板创建</value></data>
+  <data name="Desktop.NavigationHint" xml:space="preserve"><value>中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
+  <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>拖动：擦除音高 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
+  <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>将更新的音符数：{0}</value></data>
+  <data name="Editor.Selection.Copied" xml:space="preserve">
+    <value>已复制 {0} 个分片</value>
+  </data>
+  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
+    <value>已复制 {0} 个音符</value>
   </data>
 </root>

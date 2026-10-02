@@ -51,8 +51,8 @@ public partial class PianoRollViewModel
 
     public void ZoomViewport(double scaleX, double scaleY, Point anchor)
     {
-        // 横向固定在播放标记处，纵向沿用指针锚点，并保留亚 tick 精度。
-        double anchorX = PlayMarkerScreenX;
+        // 桌面固定在鼠标处，移动端横向仍固定在播放标记处。
+        double anchorX = UseDesktopMouseInput ? anchor.X : PlayMarkerScreenX;
         double tick = TickOffset + anchorX / TickWidth;
         double key = KeyOffset + anchor.Y / KeyHeight;
         TickWidth = Math.Clamp(TickWidth * scaleX, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax);

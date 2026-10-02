@@ -1,0 +1,105 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+    xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+    xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+    x:Class="OpenUtauMobile.Controls.SingerSetupResult"
+    x:DataType="vm:ClassicSingerSetupViewModel">
+    <Panel>
+        <Panel
+            x:Name="ProgressState"
+            IsVisible="{Binding ShowProgressState}"
+            Background="{DynamicResource Sem.Color.Surface}"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch">
+            <StackPanel
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Spacing="{x:Static foundation:LayoutTokens.SpaceL}"
+                MaxWidth="360">
+                <ProgressBar
+                    Value="{Binding InstallProgress}"
+                    Height="6"
+                    CornerRadius="3"
+                    IsIndeterminate="False"
+                    Background="{DynamicResource Sem.Color.SurfaceContainerLow}"/>
+                <TextBlock
+                    Text="{Binding InstallMessage}"
+                    TextAlignment="Center"
+                    FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"/>
+            </StackPanel>
+        </Panel>
+        <Panel
+            x:Name="SuccessState"
+            IsVisible="{Binding ShowSuccessState}"
+            Background="{DynamicResource Sem.Color.Surface}"
+            VerticalAlignment="Stretch"
+            HorizontalAlignment="Stretch">
+            <StackPanel
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Spacing="{x:Static foundation:LayoutTokens.SpaceM}"
+                MaxWidth="360">
+                <TextBlock
+                    Text="✓"
+                    FontSize="72"
+                    HorizontalAlignment="Center"
+                    Foreground="{DynamicResource Sem.Color.Success}"
+                    FontWeight="Bold"/>
+                <TextBlock
+                    Text="{DynamicResource SingerSetup.Success}"
+                    TextAlignment="Center"
+                    FontSize="18"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource Sem.Color.OnSurface}"/>
+                <TextBlock
+                    Text="{DynamicResource SingerSetup.Success.Desc}"
+                    TextAlignment="Center"
+                    FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"/>
+                <Button
+                    Classes="Secondary"
+                    Content="{DynamicResource Common.Back}"
+                    Command="{Binding ExitCommand}"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,16,0,0"/>
+            </StackPanel>
+        </Panel>
+        <Grid
+            x:Name="ErrorState"
+            IsVisible="{Binding ShowErrorState}"
+            RowDefinitions="*,Auto"
+            RowSpacing="16"
+            Background="{DynamicResource Sem.Color.Surface}">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <Border Padding="20" CornerRadius="16" VerticalAlignment="Top" Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
+                    <StackPanel Spacing="16">
+                        <TextBlock
+                            Text="{DynamicResource SingerSetup.Failed}"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Sem.Color.Error}"/>
+                        <SelectableTextBlock
+                            Text="{Binding ErrorMessage}"
+                            TextWrapping="Wrap"
+                            Foreground="{DynamicResource Sem.Color.Error}"/>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+            <Button
+                Grid.Row="1"
+                Classes="Secondary"
+                Content="{DynamicResource Common.Back}"
+                Command="{Binding ExitCommand}"
+                HorizontalAlignment="Right"/>
+        </Grid>
+    </Panel>
+</UserControl>

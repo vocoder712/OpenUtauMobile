@@ -1,0 +1,146 @@
+<UserControl xmlns:shared="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile" xmlns="https://github.com/avaloniaui"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;assembly=OpenUtauMobile"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens;assembly=OpenUtauMobile"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels;assembly=OpenUtauMobile"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;assembly=OpenUtauMobile"
+             mc:Ignorable="d"
+             x:Class="OpenUtauMobile.DesktopUI.Views.DesktopSingerDetailPage"
+             x:DataType="vm:SingerDetailViewModel">
+
+    <UserControl.Resources>
+        <StreamGeometry x:Key="IconWeb">M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z</StreamGeometry>
+        <StreamGeometry x:Key="IconFavorite">M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z</StreamGeometry>
+        <StreamGeometry x:Key="IconFavoriteOutline">M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z</StreamGeometry>
+        <StreamGeometry x:Key="IconPerson">M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z</StreamGeometry>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <Style Selector="Border.InfoCard">
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        </Style>
+        <Style Selector="TextBlock.InfoLabel">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        </Style>
+        <Style Selector=":is(TextBlock).InfoValue">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="Border.InfoCard">
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="CornerRadius" Value="16" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <Border Padding="0,0,8,0">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                        <Border Classes="InfoCard" Padding="20">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                <Border Grid.Column="0"
+                                        Width="80" Height="80"
+                                        CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+                                        ClipToBounds="True"
+                                        Background="{DynamicResource Sem.Color.SurfaceContainer}">
+                                    <Panel>
+                                        <Path Width="32" Height="32"
+                                              Stretch="Uniform"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                              Data="{StaticResource IconPerson}"
+                                              IsVisible="{Binding !HasAvatar}" />
+                                        <Image Source="{Binding AvatarBitmap}"
+                                               Stretch="UniformToFill"
+                                               IsVisible="{Binding HasAvatar}" />
+                                    </Panel>
+                                </Border>
+                                <StackPanel Grid.Column="1" Spacing="{x:Static foundation:LayoutTokens.SpaceS}" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding SingerName}" ToolTip.Tip="{Binding SingerName}"
+                                               FontSize="{x:Static semantic:TypographyTokens.TitleLSize}"
+                                               FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <Border Background="{DynamicResource Sem.Color.Primary}"
+                                                CornerRadius="{x:Static foundation:ShapeTokens.CornerM}" Padding="8,4">
+                                            <TextBlock Text="{Binding SingerType}"
+                                                       FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Sem.Color.OnPrimary}" />
+                                        </Border>
+                                        <Border Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                                                CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
+                                                IsVisible="{Binding HasVersion}" Padding="8,4">
+                                            <TextBlock Text="{Binding Version}"
+                                                       FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </Border>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding SingerId}" ToolTip.Tip="{Binding SingerId}"
+                                               FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+
+                                               TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <ToggleButton x:Name="SingerFavoriteToggle" Grid.Column="2" Width="32" Height="32" MinHeight="32" MinWidth="32" Padding="6" CornerRadius="16"
+                                              VerticalAlignment="Top" IsChecked="{Binding IsFavorite, Mode=TwoWay}"
+                                              Background="Transparent" BorderThickness="0"
+                                              ToolTip.Tip="{DynamicResource Desktop.Favorite}" AutomationProperties.Name="{DynamicResource Desktop.Favorite}">
+                                    <Panel>
+                                        <Path Width="18" Height="18" Stretch="Uniform" Fill="{DynamicResource Sem.Color.Error}"
+                                              Data="{StaticResource IconFavorite}" IsVisible="{Binding IsFavorite}" />
+                                        <Path Width="18" Height="18" Stretch="Uniform" Fill="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                              Data="{StaticResource IconFavoriteOutline}" IsVisible="{Binding !IsFavorite}" />
+                                    </Panel>
+                                </ToggleButton>
+                            </Grid>
+                        </Border>
+                        <Grid ColumnDefinitions="*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                            <Button Grid.Column="0"
+                                    Classes="tonal" HorizontalAlignment="Stretch"
+
+                                    Command="{Binding OpenWebCommand}"
+                                    IsVisible="{Binding HasWeb}">
+                                <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                    <Path Width="{x:Static semantic:IconTokens.Compact}" Height="{x:Static semantic:IconTokens.Compact}"
+                                          Stretch="Uniform"
+                                          Fill="{Binding $parent[Button].Foreground}"
+                                          Data="{StaticResource IconWeb}" />
+                                    <TextBlock Text="{DynamicResource SingerDetail.OpenWeb}"
+                                               VerticalAlignment="Center"
+                                               FontSize="{x:Static semantic:TypographyTokens.BodyMSize}" />
+                                </StackPanel>
+                            </Button>
+
+                        </Grid>
+                        <shared:SingerDetailInfo />
+                        <Border Classes="InfoCard" Margin="0,12,0,0">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <TextBlock Text="{DynamicResource SingerDetail.DangerZone}"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource Sem.Color.Error}" />
+                                <TextBlock Text="{DynamicResource SingerDetail.DeleteWarning}"
+                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                           TextWrapping="Wrap" />
+                                <Button Classes="DesktopAction destructive" HorizontalAlignment="Stretch" Command="{Binding DeleteCommand}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <iconPacks:PackIconPhosphorIcons Kind="Trash" Width="16" Height="16" VerticalAlignment="Center" />
+                                        <TextBlock Text="{DynamicResource Common.Uninstall}" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+    </Grid>
+</UserControl>

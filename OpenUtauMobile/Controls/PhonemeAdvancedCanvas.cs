@@ -1,11 +1,11 @@
 using System;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
-using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
@@ -77,7 +77,6 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private AdvancedHandleType _activeHandleType = AdvancedHandleType.None;
     private UPhoneme? _activePhoneme;
     private UPhoneme? _animatingTimingPhoneme;
-    private bool _isResetTargetActive;
     private double _dragStartPointerX;
     private double _dragStartHandleTick;
     private float _initialDelta;
@@ -88,13 +87,6 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private double _animStartProgress;
     private double _animTargetProgress;
     private DateTime _animStartTime;
-
-    // 重置目标动效状态
-    private DispatcherTimer? _resetTargetAnimTimer;
-    private double _resetTargetAnimProgress;
-    private double _resetTargetAnimStartProgress;
-    private double _resetTargetAnimTargetProgress;
-    private DateTime _resetTargetAnimStartTime;
 
     // 双击检测
     private DateTime _lastClickTime = DateTime.MinValue;
@@ -108,23 +100,21 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private const double BottomMargin = 8.0;    // 底部留白
 
     private readonly Geometry _handleGeometry = new EllipseGeometry(new Rect(-3.5, -3.5, 7.0, 7.0));
-    private readonly Geometry _resetIconGeometry;
-    private readonly SolidColorBrush _resetTargetBackgroundBrush = new(Colors.Transparent);
-    private readonly SolidColorBrush _resetTargetIconBrush = new(Colors.Transparent);
-    private Color _resetTargetIdleBackgroundColor;
-    private Color _resetTargetActiveBackgroundColor;
-    private Color _resetTargetIdleIconColor;
-    private Color _resetTargetActiveIconColor;
+    private readonly PhonemeResetTarget _resetTarget;
+    private IPointer? _editingPointer;
 
     public PhonemeAdvancedCanvas()
     {
         ClipToBounds = true;
-        PackIconPhosphorIcons resetIcon = new()
-        {
-            Kind = PackIconPhosphorIconsKind.ArrowCounterClockwise
-        };
-        _resetIconGeometry = resetIcon.Data
-            ?? throw new InvalidOperationException("Phosphor Trash icon geometry was not initialized.");
+        PhonemeCanvasActions.Attach(this, () => Part, point => Part?.phonemes.FirstOrDefault(p => GetAliasLabelBounds(p).Contains(point)) ?? FindPhonemeAtTick(point.X / TickWidth + TickOffset - (Part?.position ?? 0)));
+        _resetTarget = new PhonemeResetTarget(this);
+    }
+
+    public Rect GetAliasLabelBounds(UPhoneme phoneme)
+    {
+        string text = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
+        TextLayout layout = TextLayoutCache.Get(text, ThemeResources.GetBrush("Sem.Color.OnSurface"), 11, phoneme.phoneme != phoneme.rawPhoneme);
+        return new Rect(((Part?.position ?? 0) + phoneme.position - TickOffset) * TickWidth + 2, TopMargin + 2, layout.Width + 8, layout.Height + 2);
     }
 
     private void StartDragAnimation(double target)
@@ -162,42 +152,9 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         }
     }
 
-    private void StartResetTargetAnimation(double target)
-    {
-        _resetTargetAnimStartProgress = _resetTargetAnimProgress;
-        _resetTargetAnimTargetProgress = target;
-        _resetTargetAnimStartTime = DateTime.UtcNow;
-
-        if (_resetTargetAnimTimer == null)
-        {
-            _resetTargetAnimTimer = new DispatcherTimer
-            {
-                Interval = PhonemeCanvasTokens.FrameInterval
-            };
-            _resetTargetAnimTimer.Tick += OnResetTargetAnimTimerTick;
-        }
-        _resetTargetAnimTimer.Start();
-    }
-
-    private void OnResetTargetAnimTimerTick(object? sender, EventArgs e)
-    {
-        double elapsed = (DateTime.UtcNow - _resetTargetAnimStartTime).TotalMilliseconds;
-        double duration = PhonemeCanvasTokens.ResetAnimationDuration.TotalMilliseconds;
-        double t = Math.Clamp(elapsed / duration, 0.0, 1.0);
-        double eased = 1.0 - Math.Pow(1.0 - t, 3);
-        _resetTargetAnimProgress = _resetTargetAnimStartProgress
-            + (_resetTargetAnimTargetProgress - _resetTargetAnimStartProgress) * eased;
-        InvalidateVisual();
-
-        if (t >= 1.0)
-        {
-            _resetTargetAnimProgress = _resetTargetAnimTargetProgress;
-            _resetTargetAnimTimer?.Stop();
-        }
-    }
-
     protected override void OnDataContextChanged(EventArgs e)
     {
+        _editingPointer?.Capture(null);
         base.OnDataContextChanged(e);
         if (_viewModel != null)
         {
@@ -229,10 +186,11 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _editingPointer?.Capture(null);
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
         _animTimer?.Stop();
-        _resetTargetAnimTimer?.Stop();
+        _resetTarget.End();
         if (_viewModel != null)
         {
             _viewModel.RequestInvalidateVisual -= InvalidateVisual;
@@ -243,6 +201,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
+        if (change.Property == PartProperty) _editingPointer?.Capture(null);
         if (change.Property == PartProperty ||
             change.Property == TickWidthProperty ||
             change.Property == TickOffsetProperty)
@@ -300,7 +259,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                 continue;
             }
 
-            bool isSelected = ViewModel?.SelectedNotes.Contains(phoneme.Parent) ?? false;
+            bool isSelected = ViewModel?.IsNoteSelected(phoneme.Parent) ?? false;
             IPen pen = isSelected ? selectedPen : defaultPen;
             IBrush fill = isSelected ? selectedBrush : defaultBrush;
 
@@ -420,99 +379,17 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
         }
 
-        if (_activeHandleType != AdvancedHandleType.None)
+        if (_activeHandleType != AdvancedHandleType.None && ViewModel?.UseDesktopMouseInput != true)
         {
-            RenderResetTarget(context);
+            _resetTarget.Render(context);
         }
-    }
-
-    private void RenderResetTarget(DrawingContext context)
-    {
-        double progress = _resetTargetAnimProgress;
-        double targetSize = Interpolate(
-            PhonemeCanvasTokens.ResetTargetSize,
-            PhonemeCanvasTokens.ResetTargetActiveSize,
-            progress);
-        double iconSize = Interpolate(
-            PhonemeCanvasTokens.ResetTargetIconSize,
-            PhonemeCanvasTokens.ResetTargetIconActiveSize,
-            progress);
-        Point center = GetResetTargetCenter();
-
-        _resetTargetBackgroundBrush.Color = InterpolateColor(
-            _resetTargetIdleBackgroundColor,
-            _resetTargetActiveBackgroundColor,
-            progress);
-        _resetTargetIconBrush.Color = InterpolateColor(
-            _resetTargetIdleIconColor,
-            _resetTargetActiveIconColor,
-            progress);
-        context.DrawEllipse(
-            _resetTargetBackgroundBrush,
-            null,
-            center,
-            targetSize * 0.5,
-            targetSize * 0.5);
-
-        Rect iconBounds = _resetIconGeometry.Bounds;
-        double iconScale = iconSize / Math.Max(iconBounds.Width, iconBounds.Height);
-        Matrix iconTransform = Matrix.CreateTranslation(-iconBounds.Center.X, -iconBounds.Center.Y)
-            * Matrix.CreateScale(iconScale, iconScale)
-            * Matrix.CreateTranslation(center.X, center.Y);
-        using (context.PushTransform(iconTransform))
-        {
-            context.DrawGeometry(_resetTargetIconBrush, null, _resetIconGeometry);
-        }
-    }
-
-    private static double Interpolate(double from, double to, double progress)
-    {
-        return from + (to - from) * progress;
-    }
-
-    private static Color InterpolateColor(Color from, Color to, double progress)
-    {
-        byte alpha = (byte)Math.Round(Interpolate(from.A, to.A, progress));
-        byte red = (byte)Math.Round(Interpolate(from.R, to.R, progress));
-        byte green = (byte)Math.Round(Interpolate(from.G, to.G, progress));
-        byte blue = (byte)Math.Round(Interpolate(from.B, to.B, progress));
-        return Color.FromArgb(alpha, red, green, blue);
-    }
-
-    private void CacheResetTargetColors()
-    {
-        _resetTargetIdleBackgroundColor = ThemeResources.GetColor("Sem.Color.ErrorContainer");
-        _resetTargetActiveBackgroundColor = ThemeResources.GetColor("Sem.Color.Error");
-        _resetTargetIdleIconColor = ThemeResources.GetColor("Sem.Color.OnErrorContainer");
-        _resetTargetActiveIconColor = ThemeResources.GetColor("Sem.Color.OnError");
-    }
-
-    private Point GetResetTargetCenter()
-    {
-        double halfHitSize = PhonemeCanvasTokens.ResetTargetHitSize * 0.5;
-        double targetInset = PhonemeCanvasTokens.ResetTargetOuterInset;
-        return new Point(
-            targetInset + halfHitSize,
-            targetInset + halfHitSize);
-    }
-
-    private bool IsInsideResetTarget(Point point)
-    {
-        double hitSize = PhonemeCanvasTokens.ResetTargetHitSize;
-        Point center = GetResetTargetCenter();
-        Rect hitRect = new(
-            center.X - hitSize * 0.5,
-            center.Y - hitSize * 0.5,
-            hitSize,
-            hitSize);
-        return hitRect.Contains(point);
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
         if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed) return;
-        if (Part == null || DocManager.Inst.Project == null)
+        if (Part == null || DocManager.Inst.Project == null || DocManager.Inst.HasOpenUndoGroup)
         {
             return;
         }
@@ -522,15 +399,16 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         double currentTick = pos.X / TickWidth + TickOffset - partPos;
 
         // 1. 测试是否击中控制手柄
-        (AdvancedHandleType hitType, UPhoneme? hitPhoneme) = HitTestHandle(pos);
+        UPhoneme? labelPhoneme = Part.phonemes.FirstOrDefault(p => GetAliasLabelBounds(p).Contains(pos));
+        UPhoneme? selectedPhoneme = labelPhoneme ?? FindPhonemeAtTick(currentTick);
+        if (selectedPhoneme?.Parent is { } selectedNote && ViewModel is { } vm && !vm.IsNoteSelected(selectedNote))
+        { vm.SelectedNotes.Clear(); vm.SelectedNotes.Add(selectedNote); }
+        (AdvancedHandleType hitType, UPhoneme? hitPhoneme) = labelPhoneme != null ? (AdvancedHandleType.None, null) : HitTestHandle(pos, e.Pointer.Type == PointerType.Mouse);
         if (hitType != AdvancedHandleType.None && hitPhoneme != null)
         {
-            CacheResetTargetColors();
+            _resetTarget.Begin();
             _activeHandleType = hitType;
             _activePhoneme = hitPhoneme;
-            _isResetTargetActive = false;
-            _resetTargetAnimProgress = 0.0;
-            _resetTargetAnimTimer?.Stop();
             if (hitType == AdvancedHandleType.TimingLine)
             {
                 _animatingTimingPhoneme = hitPhoneme;
@@ -563,6 +441,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                 _ => 0
             };
 
+            _editingPointer = e.Pointer;
             e.Pointer.Capture(this);
             e.Handled = true;
             DocManager.Inst.StartUndoGroup();
@@ -590,7 +469,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
         if (elapsedMs < DoubleClickMaxTimeMs && dist < DoubleClickMaxDistance)
         {
-            UPhoneme? clickedPhoneme = FindPhonemeAtTick(currentTick);
+            UPhoneme? clickedPhoneme = labelPhoneme ?? FindPhonemeAtTick(currentTick);
             if (clickedPhoneme != null && clickedPhoneme.Parent != null)
             {
                 ViewModel?.RaiseRequestEditPhoneme(Part, clickedPhoneme.Parent, clickedPhoneme.index);
@@ -614,15 +493,9 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         }
 
         Point pos = e.GetPosition(this); // 手指坐标
-        bool isInsideResetTarget = IsInsideResetTarget(pos);
-        // 重置意图
-        if (_isResetTargetActive != isInsideResetTarget)
-        {
-            _isResetTargetActive = isInsideResetTarget;
-            StartResetTargetAnimation(_isResetTargetActive ? 1.0 : 0.0);
-        }
+        _resetTarget.IsActive = ViewModel?.UseDesktopMouseInput != true && _resetTarget.Contains(pos);
 
-        if (_isResetTargetActive)
+        if (_resetTarget.IsActive)
         {
             if (ViewModel != null)
             {
@@ -695,8 +568,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonReleased) return;
         if (_activeHandleType != AdvancedHandleType.None)
         {
-            _isResetTargetActive = IsInsideResetTarget(e.GetPosition(this));
-            if (_isResetTargetActive)
+            _resetTarget.IsActive = ViewModel?.UseDesktopMouseInput != true && _resetTarget.Contains(e.GetPosition(this));
+            if (_resetTarget.IsActive)
             {
                 ResetActiveParameter();
             }
@@ -706,10 +579,9 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
-            _isResetTargetActive = false;
-            _resetTargetAnimProgress = 0.0;
-            _resetTargetAnimTimer?.Stop();
+            _resetTarget.End();
             DocManager.Inst.EndUndoGroup();
+            _editingPointer = null;
             e.Pointer.Capture(null);
             if (ViewModel != null)
             {
@@ -723,6 +595,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        _editingPointer = null;
         if (_activeHandleType != AdvancedHandleType.None)
         {
             if (_activeHandleType == AdvancedHandleType.TimingLine)
@@ -731,10 +604,12 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
             _activeHandleType = AdvancedHandleType.None;
             _activePhoneme = null;
-            _isResetTargetActive = false;
-            _resetTargetAnimProgress = 0.0;
-            _resetTargetAnimTimer?.Stop();
-            DocManager.Inst.EndUndoGroup();
+            _resetTarget.End();
+            if (DocManager.Inst.HasOpenUndoGroup)
+            {
+                DocManager.Inst.RollBackUndoGroup();
+                DocManager.Inst.EndUndoGroup();
+            }
             if (ViewModel != null)
             {
                 ViewModel.EditingTip = string.Empty;
@@ -782,13 +657,14 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             && phoneme.Next.position == phoneme.End && phoneme.Next.Prev == phoneme;
     }
 
-    private (AdvancedHandleType, UPhoneme?) HitTestHandle(Point pointerPos)
+    private (AdvancedHandleType, UPhoneme?) HitTestHandle(Point pointerPos, bool mouse)
     {
         if (Part == null || DocManager.Inst.Project == null)
         {
             return (AdvancedHandleType.None, null);
         }
 
+        double hitRadius = mouse && ViewModel?.UseDesktopMouseInput == true ? 7 : HandleHitRadius;
         double totalHeight = Bounds.Height;
         double envelopeTopY = TopMargin + LabelHeight + 4.0;
         double envelopeHeight = Math.Max(20.0, totalHeight - envelopeTopY - BottomMargin);
@@ -831,7 +707,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             // 位置基准线
             double posX = (Part.position + phoneme.position - TickOffset) * TickWidth;
             double distance = Math.Abs(pointerPos.X - posX);
-            if (distance <= HandleHitRadius * 0.75 && distance < nearestDistance
+            if (distance <= hitRadius * 0.75 && distance < nearestDistance
                 && pointerPos.Y >= TopMargin && pointerPos.Y <= envelopeTopY + envelopeHeight + 6)
             {
                 nearest = (AdvancedHandleType.TimingLine, phoneme);
@@ -848,7 +724,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             double dx = pointerPos.X - x;
             double dy = pointerPos.Y - y;
             double distance = dx * dx + dy * dy;
-            if (Math.Abs(dx) <= HandleHitRadius && Math.Abs(dy) <= HandleHitRadius && distance < nearestDistance)
+            if (Math.Abs(dx) <= hitRadius && Math.Abs(dy) <= hitRadius && distance < nearestDistance)
             {
                 nearest = (type, target);
                 nearestDistance = distance;
