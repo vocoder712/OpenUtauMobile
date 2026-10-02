@@ -66,8 +66,15 @@
                 CurrentMode="{Binding PhonemePanelMode, Mode=TwoWay}" />
         </Panel>
         <!-- 提示浮于画布底部，命中测试穿透到下方曲线。 -->
-        <Panel Grid.Column="1" VerticalAlignment="Bottom" IsHitTestVisible="False"
+        <StackPanel Grid.Column="1" VerticalAlignment="Bottom" IsHitTestVisible="False"
                IsVisible="{Binding IsParameterMode}" Opacity="0.85">
+            <Border x:Name="GraphCalculatedValuesNotice" IsVisible="{Binding #ParameterCurveCanvas.HasDrivenValues}"
+                    HorizontalAlignment="Left" Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                    Padding="{x:Static foundation:LayoutTokens.InsetS}">
+                <TextBlock Text="{DynamicResource Expressions.GraphCalculatedValues}"
+                           TextWrapping="Wrap" FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            </Border>
             <Border x:Name="ExpressionSupportNotice" IsVisible="{Binding HasUnsupportedExpression}"
                     Background="{DynamicResource Sem.Color.SecondaryContainer}"
                     Padding="{x:Static foundation:LayoutTokens.InsetS}">
@@ -84,6 +91,6 @@
                     </StackPanel>
                 </Grid>
             </Border>
-        </Panel>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
+using Avalonia.Threading;
 using OpenUtau.Core;
+using OpenUtau.Core.ExpressionGraph;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
@@ -40,6 +44,31 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
     public static readonly StyledProperty<bool> IsEraseModeProperty =
         AvaloniaProperty.Register<ParameterCanvas, bool>(nameof(IsEraseMode));
+
+    public static readonly DirectProperty<ParameterCanvas, bool> HasDrivenValuesProperty =
+        AvaloniaProperty.RegisterDirect<ParameterCanvas, bool>(nameof(HasDrivenValues), canvas => canvas.HasDrivenValues);
+
+    private bool _hasDrivenValues;
+    private bool _pendingDrivenValues;
+    private bool _drivenNoticeUpdateQueued;
+    public bool HasDrivenValues
+    {
+        get => _hasDrivenValues;
+        private set => SetAndRaise(HasDrivenValuesProperty, ref _hasDrivenValues, value);
+    }
+
+    private void UpdateDrivenNotice(bool value)
+    {
+        _pendingDrivenValues = value;
+        if (_drivenNoticeUpdateQueued || value == HasDrivenValues) return;
+        _drivenNoticeUpdateQueued = true;
+        // 图例绑定会触发布局；合并到绘制结束后发布，不能在 Render 中改变布局。
+        Dispatcher.UIThread.Post(() =>
+        {
+            _drivenNoticeUpdateQueued = false;
+            HasDrivenValues = _pendingDrivenValues;
+        });
+    }
 
     public UVoicePart? Part
     {
@@ -95,6 +124,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
     private readonly Geometry _circleGeometry = new EllipseGeometry(new Rect(-4.0, -4.0, 8.0, 8.0));
 
     private PianoRollViewModel? _viewModel;
+    private IDisposable? _renderViewSubscription;
     private PianoRollViewModel? ViewModel => _viewModel ?? (DataContext as PianoRollViewModel);
 
     public ParameterCanvas()
@@ -123,6 +153,11 @@ public class ParameterCanvas : Control, ICmdSubscriber
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        _renderViewSubscription?.Dispose();
+        _renderViewSubscription = RenderView.Inst.Observe(projection =>
+        {
+            if (ReferenceEquals(projection.Part, Part)) InvalidateVisual();
+        });
         if (DataContext is PianoRollViewModel vm)
         {
             if (_viewModel != null)
@@ -139,6 +174,9 @@ public class ParameterCanvas : Control, ICmdSubscriber
         EndStroke();
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
+        _renderViewSubscription?.Dispose();
+        _renderViewSubscription = null;
+        UpdateDrivenNotice(false);
         if (_viewModel != null)
         {
             _viewModel.RequestInvalidateVisual -= InvalidateVisual;
@@ -166,6 +204,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
         base.Render(context);
         if (Part == null || Bounds.Width <= 0 || Bounds.Height <= 0 || DocManager.Inst.Project == null)
         {
+            UpdateDrivenNotice(false);
             return;
         }
 
@@ -177,10 +216,14 @@ public class ParameterCanvas : Control, ICmdSubscriber
         UProject project = DocManager.Inst.Project;
         if (Part.trackNo < 0 || Part.trackNo >= project.tracks.Count)
         {
+            UpdateDrivenNotice(false);
             return;
         }
 
         UTrack track = project.tracks[Part.trackNo];
+        // 与音高画布共用结果发布通知；不缓存或自行计算图输出。
+        _ = RenderView.Inst.Current(Part);
+        bool hasDrivenValues = false;
 
         // 1. 绘制背景次要参数（低不透明度）
         if (!string.IsNullOrEmpty(SecondaryKey) && SecondaryKey != PrimaryKey)
@@ -190,6 +233,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
                 using (context.PushOpacity(0.28))
                 {
                     RenderExpression(context, project, track, secDesc, false);
+                    hasDrivenValues |= RenderDrivenExpression(context, secDesc, false);
                 }
             }
         }
@@ -200,8 +244,11 @@ public class ParameterCanvas : Control, ICmdSubscriber
             if (track.TryGetExpDescriptor(project, PrimaryKey, out UExpressionDescriptor? priDesc))
             {
                 RenderExpression(context, project, track, priDesc, true);
+                hasDrivenValues |= RenderDrivenExpression(context, priDesc, true);
             }
         }
+
+        UpdateDrivenNotice(hasDrivenValues);
 
         // 3. 绘制触点光标
         if (_isDrawing && _drawingPointer.HasValue)
@@ -425,6 +472,71 @@ public class ParameterCanvas : Control, ICmdSubscriber
                 }
             }
         }
+    }
+
+    private bool RenderDrivenExpression(DrawingContext context, UExpressionDescriptor descriptor, bool isPrimary)
+    {
+        if (Part == null || TickWidth <= 0 || descriptor.max <= descriptor.min
+            || descriptor.type is not (UExpressionType.Curve or UExpressionType.Numerical)) return false;
+
+        double clipLeft = Math.Clamp((Part.position - TickOffset) * TickWidth, 0, Bounds.Width);
+        double clipRight = Math.Clamp((Part.End - TickOffset) * TickWidth, 0, Bounds.Width);
+        if (clipRight <= clipLeft) return false;
+        using IDisposable clip = context.PushClip(new Rect(clipLeft, 0, clipRight - clipLeft, Bounds.Height));
+        double leftTick = TickOffset - Part.position;
+        double rightTick = leftTick + Bounds.Width / TickWidth;
+        double usableHeight = Math.Max(16.0, Bounds.Height - TopMargin - BottomMargin);
+        double Y(float value) => TopMargin + usableHeight * (1 - (value - descriptor.min) / (descriptor.max - descriptor.min));
+        double X(double tick) => (Part.position + tick - TickOffset) * TickWidth;
+        Pen pen = new(ThemeResources.GetBrush(isPrimary ? "Sem.Color.Tertiary" : "Sem.Color.Secondary"),
+            1.5, new DashStyle(new double[] { 3, 2 }, 0));
+        bool drawn = false;
+        lock (Part)
+        {
+            if (descriptor.type == UExpressionType.Curve)
+            {
+                foreach (RenderPhrase phrase in Part.renderPhrases)
+                {
+                    if (phrase.drivenCurves == null || !phrase.drivenCurves.TryGetValue(descriptor.abbr, out float[]? values)
+                        || values.Length == 0 || phrase.position - Part.position > rightTick
+                        || phrase.end - Part.position < leftTick) continue;
+                    int start = phrase.position - phrase.leading - Part.position;
+                    int first = (int)Math.Clamp(Math.Floor((leftTick - start) / 5), 0, values.Length);
+                    int last = (int)Math.Clamp(Math.Ceiling((rightTick - start) / 5) + 1, 0, values.Length);
+                    if (first >= last) continue;
+                    // 每个乐句独立成线，不能跨越乐句之间的空白。
+                    StreamGeometry geometry = new();
+                    using (StreamGeometryContext path = geometry.Open())
+                    {
+                        path.BeginFigure(new Point(X(start + first * 5), Y(values[first])), false);
+                        for (int i = first + 1; i < last; i++) path.LineTo(new Point(X(start + i * 5), Y(values[i])));
+                        path.EndFigure(false);
+                    }
+                    context.DrawGeometry(null, pen, geometry);
+                    drawn = true;
+                }
+            }
+            else
+            {
+                // 与桌面一致，按分片内音素位置匹配图计算结果和可编辑音素。
+                Dictionary<int, float> values = [];
+                foreach (RenderPhrase phrase in Part.renderPhrases)
+                foreach (RenderPhone phone in phrase.phones)
+                {
+                    if (phone.drivenExpressions != null && phone.drivenExpressions.TryGetValue(descriptor.abbr, out float value))
+                        values[phrase.position - Part.position + phone.position] = value;
+                }
+                foreach (UPhoneme phoneme in Part.phonemes)
+                {
+                    if (phoneme.Parent == null || phoneme.Error || phoneme.End < leftTick || phoneme.position > rightTick
+                        || !values.TryGetValue(phoneme.position, out float value)) continue;
+                    double y = Y(value);
+                    context.DrawLine(pen, new Point(X(phoneme.position), y), new Point(X(phoneme.End), y));
+                    drawn = true;
+                }
+            }
+        }
+        return drawn;
     }
 
     private void RenderMaskedCurve(DrawingContext context, UExpressionDescriptor descriptor, double usableHeight, bool isPrimary)
@@ -841,6 +953,9 @@ public class ParameterCanvas : Control, ICmdSubscriber
             case NoteCommand:
             case PartCommand:
             case SetCurveCommand:
+            case SetExpressionGraphsCommand:
+            case TrackCommand:
+            case LoadProjectNotification:
             case ExpCommand:
             case PhonemizedNotification:
                 InvalidateVisual();

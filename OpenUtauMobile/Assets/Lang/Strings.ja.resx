@@ -2153,4 +2153,5 @@
   <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>描画した値を消去</value></data>
   <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>パート「{0}」：マスク付きカーブの5 tickグリッドを維持し、ノートの途中を避けるため、分割位置をパート先頭から{1} tickの位置から{2} tickの位置に移動します。続行しますか？</value></data>
   <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>パート「{0}」はここで分割できません。パートの終端までに有効な分割位置がありません。</value></data>
+  <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>破線：グラフの計算値</value></data>
 </root>

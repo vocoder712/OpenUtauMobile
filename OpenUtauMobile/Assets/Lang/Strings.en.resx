@@ -2160,4 +2160,5 @@
   <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>Clear drawn values</value></data>
   <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>Part “{0}”: To preserve masked curves on their 5-tick grid and avoid splitting notes, move the split from {1} to {2} ticks after the part start. Continue?</value></data>
   <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>Part “{0}” cannot be split here: there is no valid split position before its end.</value></data>
+  <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>Dashed line: graph-calculated values</value></data>
 </root>

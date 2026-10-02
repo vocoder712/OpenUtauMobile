@@ -2115,4 +2115,5 @@
   <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>Очистити намальовані значення</value></data>
   <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>Партія «{0}»: щоб зберегти сітку кривих із маскою з кроком 5 тіків і не розрізати ноти, позицію поділу буде перенесено з {1} на {2} тіків від початку партії. Продовжити?</value></data>
   <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>Неможливо розділити партію «{0}» тут: до її кінця немає допустимої позиції поділу.</value></data>
+  <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>Пунктир: значення, обчислені графом</value></data>
 </root>
