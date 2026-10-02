@@ -1,8 +1,6 @@
-using OpenUtauMobile.Services.Dialogs;
-using System.Collections.Generic;
-using Avalonia;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
 
 namespace OpenUtauMobile.Services;
 
@@ -16,41 +14,11 @@ public static class UndoRedoService
     {
         DocManager manager = DocManager.Inst;
         if (manager.HasOpenUndoGroup) return;
-        string? name;
-        bool available = redo ? manager.GetRedoState(out name) : manager.GetUndoState(out name);
-        if (!available)
-        {
-            ToastService.Enqueue(L.S(redo ? "History.NoRedo" : "History.NoUndo"));
-            return;
-        }
-        CommandDescriptions descriptions = new();
-        manager.AddSubscriber(descriptions);
-        try
-        {
-            if (redo) manager.Redo();
-            else manager.Undo();
-        }
-        finally { manager.RemoveSubscriber(descriptions); }
-        string description = !string.IsNullOrWhiteSpace(name) ? ResolveName(name)
-            : descriptions.Items.Count > 0 ? string.Join(" / ", descriptions.Items) : L.S("History.Edit");
-        ToastService.Enqueue(string.Format(L.S(redo ? "History.Redone" : "History.Undone"), description));
-    }
-
-    private static string ResolveName(string name)
-    {
-        // 历史组既可能使用资源键，也可能直接使用中文名称。
-        return Application.Current != null && Application.Current.TryGetResource(name, null, out object? value) && value is string text
-            ? text : name;
-    }
-
-    private sealed class CommandDescriptions : ICmdSubscriber
-    {
-        public List<string> Items { get; } = [];
-        public void OnNext(UCommand cmd, bool isUndo)
-        {
-            if (cmd is UNotification) return;
-            string description = cmd.ToString();
-            if (!string.IsNullOrWhiteSpace(description) && !Items.Contains(description)) Items.Add(description);
-        }
+        bool available = redo ? manager.GetRedoState(out _) : manager.GetUndoState(out _);
+        if (!available) return;
+        if (redo) manager.Redo();
+        else manager.Undo();
+        if (ServiceHub.DesktopWindowFactory == null)
+            ToastService.Enqueue(L.S(redo ? "Editor.Redone" : "Editor.Undone"), 1000);
     }
 }

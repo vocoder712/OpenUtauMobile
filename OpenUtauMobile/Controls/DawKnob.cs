@@ -2,6 +2,9 @@
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls;
+using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Platform;
 using Avalonia.Input;
 
 namespace OpenUtauMobile.Controls;
@@ -66,6 +69,9 @@ public class DawKnob : RangeBase
     private double _startValue;
     private bool _isDragging;
     private int _activePointerId;
+    private IDesktopPointerDrag? _desktopDrag;
+    private IPointer? _pointer;
+    private Window? _window;
 
     public event EventHandler<DawKnobAdjustEventArgs>? AdjustStarted;
     public event EventHandler<DawKnobAdjustEventArgs>? AdjustChanged;
@@ -132,7 +138,8 @@ public class DawKnob : RangeBase
             // 双击重置为默认值
             if (e.ClickCount == 2)
             {
-                Value = DefaultValue;
+                RaiseAdjustEvent(AdjustStarted, e, false);
+                SetCurrentValue(ValueProperty, DefaultValue);
                 RaiseAdjustEvent(AdjustCompleted, e, false);
                 e.Handled = true;
                 return;
@@ -144,7 +151,13 @@ public class DawKnob : RangeBase
             _isDragging = true;
             _activePointerId = e.Pointer.Id;
 
+            _pointer = e.Pointer;
             e.Pointer.Capture(this); // 捕获鼠标
+            if (e.Pointer.Type == PointerType.Mouse && ServiceHub.DesktopPointerDragFactory is { } factory)
+            {
+                _desktopDrag = factory(this);
+                _desktopDrag?.Move(_startPosition);
+            }
             RaiseAdjustEvent(AdjustStarted, e, false);
             e.Handled = true;
         }
@@ -171,8 +184,14 @@ public class DawKnob : RangeBase
             }
 
             // 计算新值并限制在 Min 和 Max 之间
-            double newValue = _startValue + (deltaY * sensitivity);
-            Value = Math.Clamp(newValue, Minimum, Maximum);
+            double newValue;
+            if (_desktopDrag != null)
+            {
+                Vector delta = _desktopDrag.Move(currentPos);
+                newValue = Value + (delta.X - delta.Y) * sensitivity * 3;
+            }
+            else newValue = _startValue + (deltaY * sensitivity);
+            SetCurrentValue(ValueProperty, Math.Clamp(newValue, Minimum, Maximum));
             RaiseAdjustEvent(AdjustChanged, e, isFineAdjust);
 
             e.Handled = true;
@@ -185,6 +204,7 @@ public class DawKnob : RangeBase
         if (_isDragging)
         {
             _isDragging = false;
+            ReleaseDesktopDrag();
             RaiseAdjustEvent(AdjustCompleted, e, e.KeyModifiers.HasFlag(KeyModifiers.Shift));
             e.Pointer.Capture(null); // 释放鼠标
             _activePointerId = 0;
@@ -198,8 +218,43 @@ public class DawKnob : RangeBase
         if (_isDragging)
         {
             _isDragging = false;
+            ReleaseDesktopDrag();
             RaiseAdjustEvent(AdjustCancelled, null, false);
             _activePointerId = 0;
+        }
+    }
+
+    private void ReleaseDesktopDrag()
+    {
+        _desktopDrag?.Dispose();
+        _desktopDrag = null;
+        _pointer = null;
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _window = TopLevel.GetTopLevel(this) as Window;
+        if (_window != null) _window.Deactivated += CancelDrag;
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        CancelDrag(this, EventArgs.Empty);
+        if (_window != null) _window.Deactivated -= CancelDrag;
+        _window = null;
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void CancelDrag(object? sender, EventArgs e)
+    {
+        if (!_isDragging) return;
+        _pointer?.Capture(null);
+        if (_isDragging)
+        {
+            _isDragging = false;
+            ReleaseDesktopDrag();
+            RaiseAdjustEvent(AdjustCancelled, null, false);
         }
     }
 

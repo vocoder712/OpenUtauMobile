@@ -1,4 +1,4 @@
-﻿using OpenUtauMobile.Services.Platform;
+using OpenUtauMobile.Services.Platform;
 using System;
 using System.Threading.Tasks;
 using OpenUtauMobile.Services.Graphics;
@@ -14,6 +14,16 @@ namespace OpenUtauMobile.Services;
 /// </summary>
 public static class ServiceHub
 {
+    public static Func<ViewModels.MainViewModel, Avalonia.Controls.Window>? DesktopWindowFactory { get; set; }
+    public static IDesktopWindowContext? DesktopWindowContext { get; set; }
+    public static Func<Controls.PopupDialogWidthPreset, Avalonia.Size, Avalonia.Size>? DesktopPopupSizeProvider { get; set; }
+    public static Func<System.Threading.Tasks.Task<OpenUtau.Core.Ustx.USinger?>>? DesktopSingerPicker { get; set; }
+    public static Func<string, System.Threading.Tasks.Task<string?>>? DesktopTrackNamePicker { get; set; }
+    public static Func<string[], System.Threading.Tasks.Task<string?>>? DesktopRendererPicker { get; set; }
+    public static Func<System.Threading.Tasks.Task<OpenUtau.Api.Phonemizer?>>? DesktopPhonemizerPicker { get; set; }
+    public static Func<Avalonia.Controls.Control, Platform.IDesktopPointerDrag?>? DesktopPointerDragFactory { get; set; }
+    public static bool UseDesktopFileWorkflows { get; set; }
+    public static Func<System.Threading.Tasks.Task>? BeforeDesktopProjectOpenAsync { get; set; }
     public static IGraphicsBackendService? GraphicsBackendService { get; set; }
     public static Controls.Gestures.IViewportInputPlatform? ViewportInputPlatform { get; set; }
     public static Action? InitAudioOutput { get; set; }

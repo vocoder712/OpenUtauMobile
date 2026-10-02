@@ -1,0 +1,314 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+    xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+    xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+    xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+    x:Class="OpenUtauMobile.Controls.AboutContent"
+    x:DataType="vm:AboutViewModel">
+    <StackPanel>
+        <StackPanel
+            HorizontalAlignment="Center"
+            Classes="AboutHero"
+            Margin="0,32,0,24"
+            Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+            <Border
+                Width="72"
+                Height="72"
+                CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+                ClipToBounds="True"
+                HorizontalAlignment="Center">
+                <Image Source="avares://OpenUtauMobile/Assets/openutau.ico" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Svg
+                Path="avares://OpenUtauMobile/Assets/logotype.svg"
+                HorizontalAlignment="Center"
+                Css="{DynamicResource SvgCss}"
+                Margin="0,12,0,0"
+                Width="300"/>
+            <TextBlock
+                FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                TextWrapping="WrapWithOverflow">
+                <Run Text="{DynamicResource About.Version}"/>
+                <Run Text="{Binding Version}"/>
+            </TextBlock>
+            <TextBlock
+                FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                TextAlignment="Center"
+                HorizontalAlignment="Center">
+                <Run Text="{DynamicResource About.CoreVersion}"/>
+                <Run Text="{Binding CoreVersion}"/>
+            </TextBlock>
+            <TextBlock
+                FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                TextAlignment="Center"
+                HorizontalAlignment="Center">
+                <Run Text="{DynamicResource About.BuildNumber}"/>
+                <Run Text="{Binding BuildNumber}"/>
+            </TextBlock>
+            <TextBlock
+                FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                TextAlignment="Center"
+                HorizontalAlignment="Center">
+                <Run Text="{DynamicResource About.BuildTime}"/>
+                <Run Text="{Binding BuildTimestamp}"/>
+            </TextBlock>
+            <TextBlock
+                FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                TextAlignment="Center"
+                HorizontalAlignment="Center">
+                <Run Text="{DynamicResource About.BuildMachine}"/>
+                <Run Text="{Binding BuildMachine}"/>
+            </TextBlock>
+            <TextBlock
+                FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                TextAlignment="Center"
+                HorizontalAlignment="Center">
+                <Run Text="{DynamicResource About.CommitId}"/>
+                <Run Text="{Binding SourceCommit}"/>
+            </TextBlock>
+            <TextBlock
+                FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                TextAlignment="Center"
+                HorizontalAlignment="Center">
+                <Run Text="{DynamicResource About.ActionId}"/>
+                <Run Text="{Binding ActionRunId}"/>
+            </TextBlock>
+        </StackPanel>
+        <Border
+            CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+            Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+            ClipToBounds="True">
+            <StackPanel>
+                <Button Classes="OptionEntry" Command="{Binding OpenHomepageCommand}">
+                    <Border Padding="0">
+                        <Grid
+                            ColumnDefinitions="44,*,Auto"
+                            ColumnSpacing="12"
+                            MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
+                            <Panel
+                                Grid.Column="0"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <Border
+                                    Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                    Background="{DynamicResource Sem.Color.PrimaryContainer}"/>
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="{x:Static semantic:IconTokens.Compact}"
+                                    Height="{x:Static semantic:IconTokens.Compact}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.Primary}"
+                                    Kind="GlobeSimple"/>
+                            </Panel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                <TextBlock
+                                    Text="{DynamicResource About.ProjectHome}"
+                                    FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                    FontWeight="SemiBold"
+                                    TextTrimming="CharacterEllipsis"/>
+                                <TextBlock
+                                    Text="github.com/vocoder712/OpenUtauMobile"
+                                    FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <Panel
+                                Grid.Column="2"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="14"
+                                    Height="14"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    Kind="ArrowSquareOut"/>
+                            </Panel>
+                        </Grid>
+                    </Border>
+                </Button>
+                <Border Height="1" Opacity="0.08" Margin="72,0,16,0" Background="{DynamicResource Sem.Color.OnSurfaceVariant}"/>
+                <Button Classes="OptionEntry" Command="{Binding OpenLicenseCommand}">
+                    <Border Padding="0">
+                        <Grid
+                            ColumnDefinitions="44,*,Auto"
+                            ColumnSpacing="12"
+                            MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
+                            <Panel
+                                Grid.Column="0"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <Border
+                                    Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                    Background="{DynamicResource Sem.Color.PrimaryContainer}"/>
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="{x:Static semantic:IconTokens.Compact}"
+                                    Height="{x:Static semantic:IconTokens.Compact}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.Primary}"
+                                    Kind="Scales"/>
+                            </Panel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                <TextBlock
+                                    Text="{DynamicResource About.License}"
+                                    FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                    FontWeight="SemiBold"
+                                    TextTrimming="CharacterEllipsis"/>
+                                <TextBlock
+                                    Text="Apache-2.0"
+                                    FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <Panel
+                                Grid.Column="2"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="14"
+                                    Height="14"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    Kind="ArrowSquareOut"/>
+                            </Panel>
+                        </Grid>
+                    </Border>
+                </Button>
+                <Border Height="1" Opacity="0.08" Margin="72,0,16,0" Background="{DynamicResource Sem.Color.OnSurfaceVariant}"/>
+                <Button Classes="OptionEntry" Command="{Binding OpenCreditsCommand}">
+                    <Border Padding="0">
+                        <Grid
+                            ColumnDefinitions="44,*,Auto"
+                            ColumnSpacing="12"
+                            MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
+                            <Panel
+                                Grid.Column="0"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <Border
+                                    Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                    Background="{DynamicResource Sem.Color.PrimaryContainer}"/>
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="{x:Static semantic:IconTokens.Compact}"
+                                    Height="{x:Static semantic:IconTokens.Compact}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.Primary}"
+                                    Kind="Heart"/>
+                            </Panel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                <TextBlock
+                                    Text="{DynamicResource About.Credits}"
+                                    FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                    FontWeight="SemiBold"
+                                    TextTrimming="CharacterEllipsis"/>
+                                <TextBlock
+                                    Text="{DynamicResource About.Credits.Desc}"
+                                    FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <Panel
+                                Grid.Column="2"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="14"
+                                    Height="14"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    Kind="ArrowSquareOut"/>
+                            </Panel>
+                        </Grid>
+                    </Border>
+                </Button>
+                <Border Height="1" Opacity="0.08" Margin="72,0,16,0" Background="{DynamicResource Sem.Color.OnSurfaceVariant}"/>
+                <Button Classes="OptionEntry" Command="{Binding OpenFeedbackCommand}">
+                    <Border Padding="0">
+                        <Grid
+                            ColumnDefinitions="44,*,Auto"
+                            ColumnSpacing="12"
+                            MinHeight="{x:Static components:OptionEntryTokens.MinHeight}">
+                            <Panel
+                                Grid.Column="0"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <Border
+                                    Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                    Background="{DynamicResource Sem.Color.PrimaryContainer}"/>
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="{x:Static semantic:IconTokens.Compact}"
+                                    Height="{x:Static semantic:IconTokens.Compact}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.Primary}"
+                                    Kind="BracketsCurly"/>
+                            </Panel>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                <TextBlock
+                                    Text="{DynamicResource About.Contribute}"
+                                    FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                    FontWeight="SemiBold"
+                                    TextTrimming="CharacterEllipsis"/>
+                                <TextBlock
+                                    Text="{DynamicResource About.Contribute.Desc}"
+                                    FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                            <Panel
+                                Grid.Column="2"
+                                Width="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                Height="{x:Static components:OptionEntryTokens.IconContainerSize}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <iconPacks:PackIconPhosphorIcons
+                                    Width="14"
+                                    Height="14"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                    Kind="ArrowSquareOut"/>
+                            </Panel>
+                        </Grid>
+                    </Border>
+                </Button>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

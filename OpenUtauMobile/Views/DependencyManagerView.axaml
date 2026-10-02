@@ -95,11 +95,16 @@
                                     </TextBox>
 
                                     <!-- 排序 -->
-                                    <!-- TODO: Implement sort dropdown -->
                                     <Button Grid.Column="1"
                                             Classes="icon outlined"
                                             ToolTip.Tip="{DynamicResource DependencyManager.Sort}"
                                             AutomationProperties.Name="{DynamicResource DependencyManager.Sort}">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuItem Header="{DynamicResource DependencyManager.SortByName}" Command="{Binding SetSortModeCommand}" CommandParameter="0" />
+                                                <MenuItem Header="{DynamicResource DependencyManager.SortByDeveloper}" Command="{Binding SetSortModeCommand}" CommandParameter="1" />
+                                            </MenuFlyout>
+                                        </Button.Flyout>
                                         <iconPacks:PackIconPhosphorIcons Kind="SortAscending"
                                             Width="{x:Static semantic:IconTokens.Standard}"
                                             Height="{x:Static semantic:IconTokens.Standard}" />
@@ -126,7 +131,7 @@
                                     <Border.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="IsLoadingRegistry" Converter="{x:Static BoolConverters.Not}" />
-                                            <Binding Path="AvailablePackages.Count"
+                                            <Binding Path="FilteredAvailablePackages.Count"
                                                      Converter="{x:Static ObjectConverters.Equal}" ConverterParameter="0" />
                                         </MultiBinding>
                                     </Border.IsVisible>
@@ -142,7 +147,7 @@
                                 </Border>
 
                                 <!-- 可用包列表 -->
-                                <ItemsControl ItemsSource="{Binding AvailablePackages}">
+                                <ItemsControl ItemsSource="{Binding FilteredAvailablePackages}">
                                     <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="vm:DependencyItemViewModel">
@@ -333,7 +338,7 @@
                                     <Border.IsVisible>
                                         <MultiBinding Converter="{x:Static BoolConverters.And}">
                                             <Binding Path="IsLoadingInstalled" Converter="{x:Static BoolConverters.Not}" />
-                                            <Binding Path="InstalledPackages.Count"
+                                            <Binding Path="FilteredInstalledPackages.Count"
                                                      Converter="{x:Static ObjectConverters.Equal}" ConverterParameter="0" />
                                         </MultiBinding>
                                     </Border.IsVisible>
@@ -345,7 +350,8 @@
                                 </Border>
 
                                 <!-- 已安装包列表-->
-                                <ItemsControl ItemsSource="{Binding InstalledPackages}">
+                                <TextBox Text="{Binding SearchText, Mode=TwoWay}" PlaceholderText="{DynamicResource Desktop.Search}" />
+                                <ItemsControl ItemsSource="{Binding FilteredInstalledPackages}">
                                     <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}" /></ItemsPanelTemplate></ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="vm:InstalledDependencyViewModel">

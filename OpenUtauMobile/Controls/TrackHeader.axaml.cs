@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
 using OpenUtau.Core;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
@@ -42,6 +43,7 @@ public partial class TrackHeader : UserControl, IDisposable
     public TrackHeader(TrackHeaderViewModel viewModel)
     {
         InitializeComponent();
+        if (ServiceHub.DesktopWindowFactory != null) Classes.Add("DesktopTrackHeader");
         ViewModel = viewModel;
         DataContext = viewModel;
 
@@ -114,6 +116,11 @@ public partial class TrackHeader : UserControl, IDisposable
     private void ShowHud()
     {
         _hideHudTimer.Stop();
+        if (ServiceHub.DesktopPointerDragFactory != null)
+        {
+            DesktopKnobReadout.IsVisible = true;
+            return;
+        }
         if (HudOverlay == null)
             return;
         HudOverlay.IsVisible = true;
@@ -138,6 +145,11 @@ public partial class TrackHeader : UserControl, IDisposable
 
     private void UpdateHud(DawKnob.DawKnobAdjustEventArgs e)
     {
+        if (ServiceHub.DesktopPointerDragFactory != null)
+        {
+            DesktopKnobValue.Text = FormatHudValue(e);
+            return;
+        }
         HudValue?.Text = FormatHudValue(e);
 
         bool isVolume = e.Role == DawKnob.DawKnobSemanticRole.Volume;
@@ -218,6 +230,7 @@ public partial class TrackHeader : UserControl, IDisposable
         _hideHudTimer.Stop();
         if (HudOverlay == null)
             return;
+        DesktopKnobReadout.IsVisible = false;
         HudOverlay.Opacity = 0;
         HudOverlay.IsVisible = false;
         BackgroundLayer.Effect = null;

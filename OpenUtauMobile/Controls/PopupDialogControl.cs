@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.VisualTree;
 using DialogHostAvalonia;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 namespace OpenUtauMobile.Controls;
@@ -33,6 +34,7 @@ public abstract class PopupDialogControl : UserControl
     }
 
     protected virtual PopupDialogWidthPreset WidthPreset => PopupDialogWidthPreset.Regular;
+    public PopupDialogWidthPreset DialogWidthPreset => WidthPreset;
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
@@ -89,11 +91,23 @@ public abstract class PopupDialogControl : UserControl
     /// <summary>更新响应式宽度与有效限高，不覆盖原始高度配置。</summary>
     protected virtual void UpdateResponsiveSize(TopLevel host)
     {
+        if (ServiceHub.DesktopWindowContext != null && _dialogHost == null)
+        {
+            // 独立桌面窗口由宿主限制尺寸，内容铺满客户区。
+            _availableHeight = host is Window { SizeToContent: SizeToContent.Height or SizeToContent.WidthAndHeight } window
+                ? window.MaxHeight : host.ClientSize.Height;
+            CoerceValue(MaxHeightProperty);
+            Width = double.NaN;
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
+            return;
+        }
         double viewportHeight = _dialogHost?.Bounds.Height ?? host.ClientSize.Height;
         Thickness inset = _dialogHost?.DialogMargin ?? DialogTokens.ViewportMargin;
         _availableHeight = double.IsFinite(viewportHeight)
             ? Math.Max(0d, viewportHeight - inset.Top - inset.Bottom)
             : double.PositiveInfinity;
+        if (ServiceHub.DesktopPopupSizeProvider is { } desktopSize)
+            _availableHeight = desktopSize(WidthPreset, new Size(host.ClientSize.Width, _availableHeight)).Height;
         CoerceValue(MaxHeightProperty);
 
         double viewportWidth = host.ClientSize.Width;
@@ -114,6 +128,8 @@ public abstract class PopupDialogControl : UserControl
         };
         // 窄窗口优先保留视口留白，不用最小宽度反向撑破宿主约束。
         double width = Math.Clamp(viewportWidth - horizontalMargin * 2d, 0d, maxWidth);
+        if (ServiceHub.DesktopPopupSizeProvider is { } desktopWidth)
+            width = desktopWidth(WidthPreset, new Size(Math.Max(0, viewportWidth - horizontalMargin * 2d), _availableHeight)).Width;
         Width = width;
         HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center;
     }

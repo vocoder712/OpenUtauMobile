@@ -763,18 +763,6 @@
   <data name="Editor.Toast.SyncTempo" xml:space="preserve">
     <value>Syncing tempo not implemented yet</value>
   </data>
-  <data name="Editor.Selection.Copied" xml:space="preserve">
-    <value>{0} parts copied</value>
-  </data>
-  <data name="Editor.Selection.Cut" xml:space="preserve">
-    <value>{0} parts cut</value>
-  </data>
-  <data name="Editor.Selection.Pasted" xml:space="preserve">
-    <value>{0} parts pasted</value>
-  </data>
-  <data name="Editor.Selection.AllSelected" xml:space="preserve">
-    <value>All {0} parts selected</value>
-  </data>
   <data name="PianoRoll.DragSelect" xml:space="preserve">
     <value>Drag/Select</value>
   </data>
@@ -874,47 +862,14 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>Vibrato Preset</value>
   </data>
-  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
-    <value>Vibrato mode</value>
-  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>Pitch Eraser mode</value>
-  </data>
-  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
-    <value>Pitch Pen mode</value>
-  </data>
-  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
-    <value>Pitch Anchor edit mode</value>
-  </data>
-  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
-    <value>Drag mode</value>
-  </data>
-  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
-    <value>Multi-select mode</value>
-  </data>
-  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
-    <value>Note mode</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>Vibrato mode not available yet</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>Press "|◀" to end selection</value>
-  </data>
-  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
-    <value>{0} notes selected</value>
-  </data>
-  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
-    <value>All {0} notes selected</value>
-  </data>
-  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
-    <value>{0} notes copied</value>
-  </data>
-  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
-    <value>{0} notes cut</value>
-  </data>
-  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
-    <value>{0} notes pasted</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>Note properties editor not implemented yet</value>
@@ -981,9 +936,6 @@
   </data>
   <data name="DependencyManager.Installing" xml:space="preserve">
     <value>Installing...</value>
-  </data>
-  <data name="DependencyManager.Toast.Loaded" xml:space="preserve">
-    <value>Loaded {0} available packages</value>
   </data>
   <data name="DependencyManager.Toast.LoadFailed" xml:space="preserve">
     <value>Failed to load: {0}</value>
@@ -1615,15 +1567,6 @@
   <data name="BatchEdit.Status.Progress" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
-  <data name="BatchEdit.Status.Completed" xml:space="preserve">
-    <value>Completed {0}.</value>
-  </data>
-  <data name="BatchEdit.Status.Cancelled" xml:space="preserve">
-    <value>Operation cancelled.</value>
-  </data>
-  <data name="BatchEdit.Status.Failed" xml:space="preserve">
-    <value>{0} failed.</value>
-  </data>
   <data name="BatchEdit.Action.RomajiToHiragana" xml:space="preserve">
     <value>Romaji to Hiragana</value>
   </data>
@@ -1757,18 +1700,6 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>Parameter erase mode</value>
   </data>
-  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
-    <value>Simple phoneme mode</value>
-  </data>
-  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
-    <value>Advanced phoneme mode</value>
-  </data>
-  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
-    <value>Parameter draw mode</value>
-  </data>
-  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
-    <value>Parameter erase mode</value>
-  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>Primary parameter</value>
   </data>
@@ -1878,10 +1809,6 @@
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Enable effects / bypass (lit when enabled)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Enabled</value></data>
   <data name="EditorMore.EditTab" xml:space="preserve"><value>Edit</value></data>
-  <data name="History.NoUndo" xml:space="preserve"><value>Nothing to undo</value></data>
-  <data name="History.NoRedo" xml:space="preserve"><value>Nothing to redo</value></data>
-  <data name="History.Undone" xml:space="preserve"><value>Undid: {0}</value></data>
-  <data name="History.Redone" xml:space="preserve"><value>Redid: {0}</value></data>
   <data name="History.Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="Mixer.MidFrequency" xml:space="preserve"><value>Mid-band center (Hz)</value></data>
   <data name="Mixer.Makeup" xml:space="preserve"><value>Makeup gain (dB)</value></data>
@@ -2155,5 +2082,94 @@
   </data>
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>Enter a valid file name without directory separators.</value>
+  </data>
+  <data name="Desktop.Workspace" xml:space="preserve"><value>Workspace</value></data>
+  <data name="Desktop.Arrangement" xml:space="preserve"><value>Arrangement</value></data>
+  <data name="Desktop.PianoRoll" xml:space="preserve"><value>Piano roll</value></data>
+  <data name="Desktop.TuningMode" xml:space="preserve"><value>Tuning</value></data>
+  <data name="Desktop.ArrangementAndPianoRoll" xml:space="preserve"><value>Arrangement + Piano roll</value></data>
+  <data name="Desktop.ArrangementHint" xml:space="preserve"><value>Click: select · Ctrl-click: toggle selection · Shift-click: extend selection · Empty drag: box select · Double-click: create / edit · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.InputHint" xml:space="preserve"><value>Click: select · Shift/Ctrl: extend selection · Empty drag: box select · Double-click: create / edit lyric · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.Tools" xml:space="preserve"><value>External tools</value></data>
+  <data name="Desktop.File" xml:space="preserve"><value>File</value></data>
+  <data name="Desktop.Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Desktop.View" xml:space="preserve"><value>View</value></data>
+  <data name="Desktop.Project" xml:space="preserve"><value>Project</value></data>
+  <data name="Desktop.Transport" xml:space="preserve"><value>Transport</value></data>
+  <data name="Desktop.Help" xml:space="preserve"><value>Help</value></data>
+  <data name="Desktop.CloseProject" xml:space="preserve"><value>Close project</value></data>
+  <data name="Desktop.NoteProperties" xml:space="preserve"><value>Note properties</value></data>
+  <data name="Desktop.Inspector" xml:space="preserve"><value>Inspector</value></data>
+  <data name="Desktop.ResetLayout" xml:space="preserve"><value>Reset layout</value></data>
+  <data name="Desktop.DropOneProject" xml:space="preserve"><value>Drop one project at a time. Audio files can be dropped together.</value></data>
+  <data name="Desktop.Templates" xml:space="preserve"><value>Templates</value></data>
+  <data name="Desktop.NoTemplates" xml:space="preserve"><value>Saved project templates appear here.</value></data>
+  <data name="Desktop.Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Desktop.Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="Desktop.Install" xml:space="preserve"><value>Install</value></data>
+  <data name="Desktop.Uninstall" xml:space="preserve"><value>Uninstall</value></data>
+  <data name="Desktop.InstallFile" xml:space="preserve"><value>Install tool file</value></data>
+  <data name="Desktop.InstallFolder" xml:space="preserve"><value>Install tool folder</value></data>
+  <data name="Desktop.OpenFolder" xml:space="preserve"><value>Open folder</value></data>
+  <data name="Desktop.Resamplers" xml:space="preserve"><value>Resamplers</value></data>
+  <data name="Desktop.Wavtools" xml:space="preserve"><value>Wavtools</value></data>
+  <data name="Desktop.WinePath" xml:space="preserve"><value>Wine executable</value></data>
+  <data name="Desktop.Builtin" xml:space="preserve"><value>Built in</value></data>
+  <data name="Desktop.Discovered" xml:space="preserve"><value>Discovered</value></data>
+  <data name="Desktop.Unavailable" xml:space="preserve"><value>Unavailable on this platform or runtime missing</value></data>
+  <data name="Desktop.ExperimentalWine" xml:space="preserve"><value>Experimental · requires Wine</value></data>
+  <data name="Desktop.NativeWavtoolUnavailable" xml:space="preserve"><value>Native Unix wavtools are unavailable in the current batch-script engine</value></data>
+  <data name="Desktop.ToolChangesQueued" xml:space="preserve"><value>Queued. Close the project to apply tool changes safely.</value></data>
+  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>Tools must match your OS and CPU architecture. Installing a file does not verify rendering. File installation also copies companion files from its folder.</value></data>
+  <data name="Desktop.InvalidToolFolder" xml:space="preserve"><value>Choose a normal tool folder outside the managed tool directory. Linked folders are not supported.</value></data>
+  <data name="Desktop.ReplaceTool" xml:space="preserve"><value>Replace installed tool files?</value></data>
+  <data name="Desktop.Replace" xml:space="preserve"><value>Replace</value></data>
+  <data name="Desktop.ToolInUse" xml:space="preserve"><value>This tool is used by the active project and cannot be removed.</value></data>
+  <data name="Desktop.Track" xml:space="preserve"><value>Track</value></data>
+  <data name="Desktop.Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Desktop.Phoneme" xml:space="preserve"><value>Phoneme</value></data>
+  <data name="Desktop.NoNotes" xml:space="preserve"><value>Select notes to edit their properties.</value></data>
+  <data name="Desktop.NoTrack" xml:space="preserve"><value>Add or select a track.</value></data>
+  <data name="Desktop.NoPhoneme" xml:space="preserve"><value>Select notes with generated phonemes.</value></data>
+  <data name="Desktop.Color" xml:space="preserve"><value>Track color</value></data>
+  <data name="Desktop.Singer" xml:space="preserve"><value>Singer</value></data>
+  <data name="Desktop.Phonemizer" xml:space="preserve"><value>Phonemizer</value></data>
+  <data name="Desktop.Renderer" xml:space="preserve"><value>Renderer</value></data>
+  <data name="Desktop.UseDefault" xml:space="preserve"><value>Use as default</value></data>
+  <data name="Desktop.Alias" xml:space="preserve"><value>Alias</value></data>
+  <data name="Desktop.Offset" xml:space="preserve"><value>Offset (ticks)</value></data>
+  <data name="Desktop.Preutter" xml:space="preserve"><value>Preutterance delta (ms)</value></data>
+  <data name="Desktop.Overlap" xml:space="preserve"><value>Overlap delta (ms)</value></data>
+  <data name="Desktop.Attack" xml:space="preserve"><value>Attack delta (ms)</value></data>
+  <data name="Desktop.Release" xml:space="preserve"><value>Release delta (ms)</value></data>
+  <data name="Desktop.ToolChangesApplied" xml:space="preserve"><value>Tool changes applied.</value></data>
+  <data name="Desktop.NotExecutable" xml:space="preserve"><value>No execute permission</value></data>
+  <data name="Desktop.NoteTool" xml:space="preserve"><value>Notes · select, move, resize and create</value></data>
+  <data name="Desktop.TuningTool" xml:space="preserve"><value>Tuning · pitch anchors and vibrato</value></data>
+  <data name="Desktop.TuningHint" xml:space="preserve"><value>Drag: move pitch anchors / vibrato handles · Click curve: add anchor · Double-click vibrato: toggle · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>Drag: draw pitch · Shift + right drag: erase · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.AllLanguages" xml:space="preserve"><value>All languages</value></data>
+  <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>Drop one installer at a time.</value></data>
+  <data name="Desktop.Parameters" xml:space="preserve"><value>Parameter panel</value></data>
+  <data name="Desktop.EditExpressionLane" xml:space="preserve"><value>Edit expression in parameter panel</value></data>
+  <data name="DependencyManager.SortByName" xml:space="preserve"><value>Sort by name</value></data>
+  <data name="DependencyManager.SortByDeveloper" xml:space="preserve"><value>Sort by developer</value></data>
+  <data name="DependencyManager.LatestVersion" xml:space="preserve"><value>Latest version</value></data>
+  <data name="DependencyManager.InstalledVersion" xml:space="preserve"><value>Installed version</value></data>
+  <data name="DependencyManager.EmptyAvailable" xml:space="preserve"><value>No packages are available.</value></data>
+  <data name="DependencyManager.EmptyInstalled" xml:space="preserve"><value>No packages are installed.</value></data>
+  <data name="DependencyManager.NoResults" xml:space="preserve"><value>No results match your search.</value></data>
+  <data name="Desktop.Window" xml:space="preserve"><value>OUM</value></data>
+  <data name="Desktop.SurfaceUnavailable" xml:space="preserve"><value>This desktop screen is not available yet.</value></data>
+  <data name="Desktop.Favorite" xml:space="preserve"><value>Favorite</value></data>
+  <data name="Home.Action.OpenTemplate" xml:space="preserve"><value>Create from selected template</value></data>
+  <data name="Desktop.NavigationHint" xml:space="preserve"><value>Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>Drag: erase pitch · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Notes to update: {0}</value></data>
+  <data name="Editor.Selection.Copied" xml:space="preserve">
+    <value>{0} parts copied</value>
+  </data>
+  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
+    <value>{0} notes copied</value>
   </data>
 </root>

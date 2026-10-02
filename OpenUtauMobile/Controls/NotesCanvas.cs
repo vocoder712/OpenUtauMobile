@@ -158,6 +158,7 @@ public class NotesCanvas : Control, ICmdSubscriber
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        EndDesktopPointer(true);
         EndRightErase();
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
@@ -196,7 +197,7 @@ public class NotesCanvas : Control, ICmdSubscriber
 
             RenderNoteBody(note, context, brush); // 主体
         }
-        
+
         // ———— 绘制边框和调整音符长度手柄 ————
         foreach (UNote note in Part.notes)
         {
@@ -210,7 +211,7 @@ public class NotesCanvas : Control, ICmdSubscriber
                 continue; // 音符在左侧不可见，跳过
             }
 
-            bool isSelected = ViewModel.SelectedNotes.Contains(note);
+            bool isSelected = ViewModel.IsNoteSelected(note);
             // 定位
             Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
             Size size = ViewModel.TickToneToSize(note.duration, 1);
@@ -223,7 +224,7 @@ public class NotesCanvas : Control, ICmdSubscriber
                 ? ThemeResources.GetPen("Sem.Color.Primary", 1.5)
                 : ThemeResources.GetPen("Sem.Color.OutlineVariant", 0.5);
             context.DrawRectangle(null, borderPen, roundedRect);
-            
+
             if ((ViewModel.EditMode != PianoRollEditMode.MultiSelect &&
                  ViewModel.EditMode != PianoRollEditMode.Note) ||
                  !isSelected) // 仅在可直接移动或缩放音符的模式中显示 resize 手柄。
@@ -231,7 +232,7 @@ public class NotesCanvas : Control, ICmdSubscriber
                 continue;
             }
 
-            DrawNoteResizeHandle(context, rect);
+            if (!ViewModel.UseDesktopMouseInput) DrawNoteResizeHandle(context, rect);
         }
 
         // ———— 绘制最终音高线 ————
@@ -261,8 +262,25 @@ public class NotesCanvas : Control, ICmdSubscriber
             }
         }
 
+        if (ViewModel.IsDesktopTuning)
+        {
+            foreach (UNote note in Part.notes)
+            {
+                Rect toggle = ViewModel.DesktopVibratoToggleRect(note);
+                if (!toggle.Intersects(new Rect(Bounds.Size))) continue;
+                bool enabled = note.vibrato.length > 0;
+                IPen pen = ThemeResources.GetPen(enabled ? "Sem.Color.Primary" : "Sem.Color.OnSurface", 1.5);
+                Point previous = new(toggle.Left + 2, toggle.Center.Y);
+                for (int i = 1; i <= 16; i++)
+                {
+                    Point next = new(toggle.Left + 2 + i, toggle.Center.Y - Math.Sin(i * Math.PI / 8) * 4);
+                    context.DrawLine(pen, previous, next); previous = next;
+                }
+            }
+        }
+
         // ———— 绘制颤音控件 ————
-        if (ViewModel.EditMode == PianoRollEditMode.Vibrato &&
+        if ((ViewModel.EditMode == PianoRollEditMode.Vibrato || ViewModel.IsDesktopTuning) &&
             ViewModel.GetActiveVibratoOverlayLayout() is { } vibratoLayout)
         {
             RenderVibratoOverlay(vibratoLayout, context);
@@ -288,6 +306,11 @@ public class NotesCanvas : Control, ICmdSubscriber
         {
             RenderSelectingRangeOverlay(context);
         }
+        if (ViewModel.DesktopSelectionRect is { } selection)
+        {
+            using (context.PushOpacity(.18)) context.FillRectangle(ThemeResources.GetBrush("Sem.Color.Primary"), selection);
+            context.DrawRectangle(null, ThemeResources.GetPen("Sem.Color.Primary", 1), selection);
+        }
 
         // ———— 绘制画笔指示器 ————
         RenderPitchDrawIndicator(context);
@@ -302,11 +325,11 @@ public class NotesCanvas : Control, ICmdSubscriber
     private void RenderNoteBody(UNote note, DrawingContext context, SolidColorBrush brush)
     {
         if (ViewModel == null || Part == null) return;
-        
+
         Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
         Size size = ViewModel.TickToneToSize(note.duration, 1);
         Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
-        
+
         // 圆角矩形
         Rect rect = new(leftTop, rightBottom);
         RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
@@ -326,7 +349,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         }
 
         string displayLyric = note.lyric;
-        int textSize = 12;
+        int textSize = ViewModel.UseDesktopMouseInput ? 11 : 12;
         TextLayout textLayout =
             TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), textSize);
         if (textSize > size.Height)
@@ -334,7 +357,7 @@ public class NotesCanvas : Control, ICmdSubscriber
             return; // 空间太小，无法显示歌词
         }
 
-        if (textLayout.Height + 5 < size.Height)
+        if (!ViewModel.UseDesktopMouseInput && textLayout.Height + 5 < size.Height)
         {
             textSize = (int)(12 * (size.Height / textLayout.Height));
             textLayout = TextLayoutCache.Get(displayLyric, ThemeResources.GetBrush("Sem.Color.OnSurface"), textSize);
@@ -351,7 +374,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         }
 
         Point textPosition = leftTop.WithX(leftTop.X + 5)
-            .WithY(Math.Round(leftTop.Y - KeyHeight + (size.Height - textLayout.Height) / 2));
+            .WithY(Math.Round(leftTop.Y - (ViewModel.UseDesktopMouseInput ? 0 : KeyHeight) + (size.Height - textLayout.Height) / 2));
         using (context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y)))
         {
             textLayout.Draw(context, new Point());
@@ -869,6 +892,21 @@ public class NotesCanvas : Control, ICmdSubscriber
 
     private IPointer? _rightErasePointer;
     private PianoRollViewModel? _rightEraseOwner;
+    private IPointer? _desktopPointer;
+    private PianoRollViewModel? _desktopOwner;
+    private StandardCursorType? _desktopCursorKind;
+    private bool _lastDesktopPressWasLeft;
+
+    private void EndDesktopPointer(bool cancel, Point point = default, ulong timestamp = 0)
+    {
+        IPointer? pointer = _desktopPointer;
+        _desktopPointer = null;
+        PianoRollViewModel? owner = _desktopOwner;
+        _desktopOwner = null;
+        if (cancel || owner?.IsDesktopMouseDragging == true) _lastDesktopPressWasLeft = false;
+        owner?.EndDesktopMouse(point, timestamp, cancel);
+        pointer?.Capture(null);
+    }
 
     private void EndRightErase()
     {
@@ -885,8 +923,27 @@ public class NotesCanvas : Control, ICmdSubscriber
         base.OnPointerPressed(e);
         if (_rightErasePointer != null) { e.Handled = true; return; }
         PointerPointProperties properties = e.GetCurrentPoint(this).Properties;
+        if (e.Pointer.Type == PointerType.Mouse && ViewModel is { UseDesktopMouseInput: true } desktop
+            && properties.PointerUpdateKind is PointerUpdateKind.LeftButtonPressed or PointerUpdateKind.MiddleButtonPressed)
+        {
+            if (_desktopPointer != null) { e.Handled = true; return; }
+            bool left = properties.PointerUpdateKind == PointerUpdateKind.LeftButtonPressed;
+            int clicks = left && e.KeyModifiers == KeyModifiers.None && _lastDesktopPressWasLeft && e.ClickCount > 1 ? 2 : 1;
+            _lastDesktopPressWasLeft = left && e.KeyModifiers == KeyModifiers.None && clicks == 1;
+            if (desktop.BeginDesktopMouse(e.GetPosition(this), e.KeyModifiers, clicks, !left))
+            {
+                _desktopPointer = e.Pointer;
+                _desktopOwner = desktop;
+                e.Pointer.Capture(this);
+            }
+            e.Handled = true;
+            return;
+        }
         if (e.Pointer.Type == PointerType.Mouse && properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed)
         {
+            _lastDesktopPressWasLeft = false;
+            // 桌面右键留给上下文菜单；Shift 保留临时擦除手势。
+            if (ContextMenu != null && !e.KeyModifiers.HasFlag(KeyModifiers.Shift)) return;
             if (!properties.IsLeftButtonPressed && ViewModel is { Gesture.HasActivePointers: false } &&
                 ViewModel.BeginTemporaryPitchErase(e.GetPosition(this)))
             {
@@ -903,6 +960,17 @@ public class NotesCanvas : Control, ICmdSubscriber
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
+        if (_desktopPointer == e.Pointer)
+        {
+            _desktopOwner?.UpdateDesktopMouse(e.GetPosition(this), e.Timestamp);
+            e.Handled = true;
+            return;
+        }
+        if (e.Pointer.Type == PointerType.Mouse && ViewModel is { UseDesktopMouseInput: true } desktop)
+        {
+            StandardCursorType kind = desktop.DesktopCursorAt(e.GetPosition(this));
+            if (kind != _desktopCursorKind) { Cursor = new Cursor(kind); _desktopCursorKind = kind; }
+        }
         if (_rightErasePointer == e.Pointer)
         {
             if (_rightEraseOwner != ViewModel || _rightEraseOwner?.EditMode != PianoRollEditMode.PitchPen) EndRightErase();
@@ -916,6 +984,12 @@ public class NotesCanvas : Control, ICmdSubscriber
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+        if (_desktopPointer == e.Pointer)
+        {
+            EndDesktopPointer(false, e.GetPosition(this), e.Timestamp);
+            e.Handled = true;
+            return;
+        }
         if (_rightErasePointer == e.Pointer)
         {
             if (e.GetCurrentPoint(this).Properties.PointerUpdateKind == PointerUpdateKind.RightButtonReleased) EndRightErase();
@@ -928,6 +1002,7 @@ public class NotesCanvas : Control, ICmdSubscriber
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        if (_desktopPointer == e.Pointer) EndDesktopPointer(true);
         if (_rightErasePointer == e.Pointer) EndRightErase();
         ViewModel?.Gesture.OnPointerCancelled(e, this);
     }
