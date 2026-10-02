@@ -2112,4 +2112,5 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>Введіть припустиме ім’я файлу без роздільників каталогів.</value>
   </data>
+  <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>Очистити намальовані значення</value></data>
 </root>

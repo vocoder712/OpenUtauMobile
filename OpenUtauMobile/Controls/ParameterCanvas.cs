@@ -7,13 +7,14 @@ using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
 
 /// <summary>
-/// 参数曲线与表情画布：支持多音轨/声部的曲线绘制（Curve）以及逐音素表情参数（Numerical / Options）的绘制与擦除。
+/// 参数曲线与表情画布：支持普通曲线、掩码曲线以及逐音素表情参数的绘制与擦除。
 /// 顶部留有安全边距避开上方分割手柄。
 /// </summary>
 public class ParameterCanvas : Control, ICmdSubscriber
@@ -87,7 +88,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
     private bool EffectiveErase => _isDrawing ? _strokeErase : IsEraseMode;
     private bool _isMagnifierOpen;
     private int _lastTick;
-    private int _lastValue;
+    private float _lastValue;
     private Point? _drawingPointer;
 
     private readonly Geometry _pointGeometry = new EllipseGeometry(new Rect(-3.0, -3.0, 6.0, 6.0));
@@ -103,6 +104,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
     protected override void OnDataContextChanged(EventArgs e)
     {
+        EndStroke();
         base.OnDataContextChanged(e);
         if (_viewModel != null)
         {
@@ -249,6 +251,12 @@ public class ParameterCanvas : Control, ICmdSubscriber
         IPen faintPen = ThemeResources.GetPen("Sem.Color.OutlineVariant"); // 参考线
         IBrush fillBrush = isPrimary ? 
             ThemeResources.GetBrush("Sem.Color.Primary") : ThemeResources.GetBrush("Sem.Color.Secondary");
+
+        if (descriptor.type == UExpressionType.MaskedCurve)
+        {
+            RenderMaskedCurve(context, descriptor, usableHeight, isPrimary);
+            return;
+        }
 
         // ── 曲线类型 ─────────────────────────────────────────────────────────
         if (descriptor.type == UExpressionType.Curve)
@@ -419,6 +427,32 @@ public class ParameterCanvas : Control, ICmdSubscriber
         }
     }
 
+    private void RenderMaskedCurve(DrawingContext context, UExpressionDescriptor descriptor, double usableHeight, bool isPrimary)
+    {
+        UMaskedCurve? curve = Part?.maskedCurves.FirstOrDefault(c => c.abbr == descriptor.abbr);
+        if (curve == null || Part == null) return;
+
+        double leftTick = TickOffset - Part.position;
+        double rightTick = leftTick + Bounds.Width / TickWidth;
+        IPen pen = ThemeResources.GetPen(isPrimary ? "Sem.Color.Primary" : "Sem.Color.Secondary", 2.0);
+        foreach (UMaskedRun run in curve.runs)
+        {
+            if (run.ys.Length == 0 || run.End < leftTick || run.x > rightTick) continue;
+            int first = (int)Math.Clamp(Math.Floor((leftTick - run.x) / UMaskedCurve.interval), 0, run.ys.Length - 1);
+            int last = (int)Math.Clamp(Math.Ceiling((rightTick - run.x) / UMaskedCurve.interval), 0, run.ys.Length - 1);
+            Points points = new();
+            for (int i = first; i <= last; i++)
+            {
+                double x = (Part.position + run.x + i * UMaskedCurve.interval - TickOffset) * TickWidth;
+                double y = TopMargin + usableHeight * (1 - (run.ys[i] - descriptor.min) / (descriptor.max - descriptor.min));
+                points.Add(new Point(x, y));
+            }
+            // 与桌面端一致，单个采样点也可见；每段单独绘制，不跨空白连线。
+            if (points.Count == 1) points.Add(points[0] + new Vector(1, 0));
+            context.DrawGeometry(null, pen, new PolylineGeometry(points, false));
+        }
+    }
+
     private void RenderRealCurve(DrawingContext context, UCurve curve, double usableHeight, bool isPrimary)
     {
         if (Part == null || curve.realXs.Count < 2 || curve.realXs.Count != curve.realYs.Count)
@@ -521,12 +555,12 @@ public class ParameterCanvas : Control, ICmdSubscriber
         e.Pointer.Capture(this);
         DocManager.Inst.StartUndoGroup();
 
-        int value = CalculateValueFromY(pos.Y, descriptor);
+        float value = CalculateValueFromY(pos.Y, descriptor);
 
         _lastTick = tick;
         _lastValue = value;
 
-        if (descriptor.type == UExpressionType.Curve)
+        if (descriptor.type is UExpressionType.Curve or UExpressionType.MaskedCurve)
         {
             _isMagnifierOpen = true;
             RequestMagnifierOpen?.Invoke(pos);
@@ -570,7 +604,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
             return;
         }
 
-        int value = CalculateValueFromY(pos.Y, descriptor);
+        float value = CalculateValueFromY(pos.Y, descriptor);
 
         ApplyEditAt(project, track, descriptor, tick, value, _lastTick, _lastValue);
         UpdateEditingTip(descriptor, tick, value);
@@ -624,10 +658,16 @@ public class ParameterCanvas : Control, ICmdSubscriber
         RequestMagnifierClose?.Invoke();
     }
 
-    private void UpdateEditingTip(UExpressionDescriptor descriptor, int tick, int value)
+    private void UpdateEditingTip(UExpressionDescriptor descriptor, int tick, float value)
     {
         if (ViewModel == null)
         {
+            return;
+        }
+
+        if (descriptor.type == UExpressionType.MaskedCurve)
+        {
+            ViewModel.EditingTip = $"{descriptor.name}: {(EffectiveErase ? L.S("PhonemePanel.Param.ClearValue") : value.ToString("0.##"))}";
             return;
         }
 
@@ -663,7 +703,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
         else if (descriptor.type == UExpressionType.Options)
         {
             string optName = (descriptor.options != null && value >= 0 && value < descriptor.options.Length)
-                ? descriptor.options[value]
+                ? descriptor.options[(int)value]
                 : value.ToString();
             if (EffectiveErase)
             {
@@ -695,7 +735,7 @@ public class ParameterCanvas : Control, ICmdSubscriber
         return null;
     }
 
-    private int CalculateValueFromY(double y, UExpressionDescriptor descriptor)
+    private float CalculateValueFromY(double y, UExpressionDescriptor descriptor)
     {
         double usableHeight = Math.Max(16.0, Bounds.Height - TopMargin - BottomMargin);
         if (descriptor.type == UExpressionType.Options && descriptor.options != null && descriptor.options.Length > 0)
@@ -707,6 +747,8 @@ public class ParameterCanvas : Control, ICmdSubscriber
 
         double ratio = Math.Clamp(1.0 - (y - TopMargin) / usableHeight, 0.0, 1.0);
         float val = descriptor.min + (float)(ratio * (descriptor.max - descriptor.min));
+        // 掩码曲线保存浮点值；擦除时由清除命令删除取值，不写默认值。
+        if (descriptor.type == UExpressionType.MaskedCurve) return val;
         if (EffectiveErase)
         {
             return (int)descriptor.defaultValue;
@@ -737,19 +779,29 @@ public class ParameterCanvas : Control, ICmdSubscriber
         UTrack track,
         UExpressionDescriptor descriptor,
         int tick,
-        int value,
+        float value,
         int lastTick,
-        int lastValue)
+        float lastValue)
     {
         if (Part == null)
         {
             return;
         }
 
+        if (descriptor.type == UExpressionType.MaskedCurve)
+        {
+            int partTick = tick - Part.position;
+            int lastPartTick = lastTick - Part.position;
+            DocManager.Inst.ExecuteCmd(EffectiveErase
+                ? new ClearMaskedCurveCommand(Part, descriptor.abbr, lastPartTick, partTick)
+                : new SetMaskedCurveCommand(Part, descriptor.abbr, lastPartTick, lastValue, partTick, value));
+            return;
+        }
+
         if (descriptor.type == UExpressionType.Curve)
         {
-            int targetVal = EffectiveErase ? (int)descriptor.defaultValue : value;
-            int targetLastVal = EffectiveErase ? (int)descriptor.defaultValue : lastValue;
+            int targetVal = EffectiveErase ? (int)descriptor.defaultValue : (int)value;
+            int targetLastVal = EffectiveErase ? (int)descriptor.defaultValue : (int)lastValue;
             int partTick = Math.Clamp(tick - Part.position, 0, Part.duration);
             int lastPartTick = Math.Clamp(lastTick - Part.position, 0, Part.duration);
             DocManager.Inst.ExecuteCmd(new SetCurveCommand(
@@ -780,6 +832,10 @@ public class ParameterCanvas : Control, ICmdSubscriber
     {
         switch (cmd)
         {
+            case ConfigureExpressionsCommand:
+                EndStroke();
+                InvalidateVisual();
+                break;
             case RealCurvesUpdatedNotification updated when updated.part == Part:
             case RealCurveCoverageNotification coverage when coverage.part == Part:
             case NoteCommand:

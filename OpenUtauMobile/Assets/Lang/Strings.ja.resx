@@ -2150,4 +2150,5 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>ディレクトリ区切りを含まない有効なファイル名を入力してください。</value>
   </data>
+  <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>描画した値を消去</value></data>
 </root>

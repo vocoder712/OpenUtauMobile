@@ -2157,4 +2157,5 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>请输入有效文件名，不要包含目录分隔符。</value>
   </data>
+  <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>清除已绘制值</value></data>
 </root>

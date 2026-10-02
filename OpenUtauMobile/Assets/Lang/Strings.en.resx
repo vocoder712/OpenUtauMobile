@@ -2157,4 +2157,5 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>Enter a valid file name without directory separators.</value>
   </data>
+  <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>Clear drawn values</value></data>
 </root>
