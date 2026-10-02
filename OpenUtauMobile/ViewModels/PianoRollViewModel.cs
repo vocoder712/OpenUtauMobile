@@ -355,7 +355,9 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         // 与桌面端一致：优先使用轨道解析后的定义，未知表情不误报。
         if (track.TryGetExpDescriptor(project, key, out UExpressionDescriptor? descriptor))
         {
-            return track.RendererSettings.Renderer.SupportsExpression(descriptor);
+            // 与桌面端一致：掩码曲线由表达式图读取，不依赖渲染器直接支持。
+            return descriptor.type == UExpressionType.MaskedCurve
+                || track.RendererSettings.Renderer.SupportsExpression(descriptor);
         }
         return track.VoiceColorExp?.abbr != key
             || track.RendererSettings.Renderer.SupportsExpression(track.VoiceColorExp);
