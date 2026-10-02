@@ -47,6 +47,7 @@ namespace OpenUtau.Core.Neutrino
 
         public USingerType SingerType => USingerType.Neutrino;
         public bool SupportsRenderPitch => true;
+        public bool SupportsPhonemeEnvelope => false;
 
         private sealed class NeutrinoTimingContext
         {
