@@ -41,6 +41,7 @@ namespace OpenUtau.Core.Render {
             CLASSIC,
             WORLDLINE_R,
             WORLDLINE_R2,
+            WORLDLINE_R11,
             ENUNU,
             VOGEN,
             DIFFSINGER,
