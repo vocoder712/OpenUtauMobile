@@ -1931,6 +1931,7 @@
   <data name="Expressions.Numerical" xml:space="preserve"><value>数値</value></data>
   <data name="Expressions.Options" xml:space="preserve"><value>カスタム</value></data>
   <data name="Expressions.Curve" xml:space="preserve"><value>カーブ</value></data>
+  <data name="Expressions.MaskedCurve" xml:space="preserve"><value>マスク付きカーブ</value></data>
   <data name="Expressions.IsFlag" xml:space="preserve"><value>エンジン内フラグ</value></data>
   <data name="Expressions.Flag" xml:space="preserve"><value>フラグ</value></data>
   <data name="Expressions.Min" xml:space="preserve"><value>最小</value></data>

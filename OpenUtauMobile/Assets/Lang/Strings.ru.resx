@@ -1893,6 +1893,7 @@
   <data name="Expressions.Numerical" xml:space="preserve"><value>Числовой</value></data>
   <data name="Expressions.Options" xml:space="preserve"><value>Параметры</value></data>
   <data name="Expressions.Curve" xml:space="preserve"><value>Кривая</value></data>
+  <data name="Expressions.MaskedCurve" xml:space="preserve"><value>Кривая с маской</value></data>
   <data name="Expressions.IsFlag" xml:space="preserve"><value>Является флагом ресамплера</value></data>
   <data name="Expressions.Flag" xml:space="preserve"><value>Флаг ресамплера</value></data>
   <data name="Expressions.Min" xml:space="preserve"><value>Мин.</value></data>

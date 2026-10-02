@@ -1938,6 +1938,7 @@
   <data name="Expressions.Numerical" xml:space="preserve"><value>Numerical</value></data>
   <data name="Expressions.Options" xml:space="preserve"><value>Options</value></data>
   <data name="Expressions.Curve" xml:space="preserve"><value>Curve</value></data>
+  <data name="Expressions.MaskedCurve" xml:space="preserve"><value>Masked curve</value></data>
   <data name="Expressions.IsFlag" xml:space="preserve"><value>Is Resampler Flag</value></data>
   <data name="Expressions.Flag" xml:space="preserve"><value>Resampler Flag</value></data>
   <data name="Expressions.Min" xml:space="preserve"><value>Min</value></data>

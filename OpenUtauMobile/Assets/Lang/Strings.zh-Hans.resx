@@ -1938,6 +1938,7 @@
   <data name="Expressions.Numerical" xml:space="preserve"><value>数值</value></data>
   <data name="Expressions.Options" xml:space="preserve"><value>选项</value></data>
   <data name="Expressions.Curve" xml:space="preserve"><value>曲线</value></data>
+  <data name="Expressions.MaskedCurve" xml:space="preserve"><value>掩码曲线</value></data>
   <data name="Expressions.IsFlag" xml:space="preserve"><value>是否为 Resampler flag</value></data>
   <data name="Expressions.Flag" xml:space="preserve"><value>Resampler flag</value></data>
   <data name="Expressions.Min" xml:space="preserve"><value>最小值</value></data>
