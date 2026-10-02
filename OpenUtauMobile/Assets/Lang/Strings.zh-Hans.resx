@@ -2161,4 +2161,10 @@
   <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>分片“{0}”：为保留掩码曲线的 5-tick 网格并避开音符，切割位置将由相对分片起点的 {1} tick 调整为 {2} tick。是否继续？</value></data>
   <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>无法在此切割分片“{0}”：分片结束前没有可用的切割位置。</value></data>
   <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>虚线：图计算值</value></data>
+  <data name="EditorMore.MergeNearbyPhrases" xml:space="preserve">
+    <value>合并 DiffSinger 邻近乐句</value>
+  </data>
+  <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
+    <value>默认关闭。开启后，短停顿两侧的乐句可能一起合成，可能改变唱法。此设置对所有 DiffSinger 轨道生效，更改后会重新分句。</value>
+  </data>
 </root>

@@ -2116,4 +2116,10 @@
   <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>Партия «{0}»: чтобы сохранить сетку кривых с маской с шагом 5 тиков и не разрезать ноты, позиция разделения будет перенесена с {1} на {2} тиков от начала партии. Продолжить?</value></data>
   <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>Невозможно разделить партию «{0}» здесь: до её конца нет допустимой позиции разделения.</value></data>
   <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>Пунктир: значения, вычисленные графом</value></data>
+  <data name="EditorMore.MergeNearbyPhrases" xml:space="preserve">
+    <value>Объединять фразы DiffSinger</value>
+  </data>
+  <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
+    <value>По умолчанию выключено. Фразы по обе стороны короткой паузы могут синтезироваться вместе, что может изменить пение. Применяется ко всем дорожкам DiffSinger; при изменении фразы группируются заново.</value>
+  </data>
 </root>

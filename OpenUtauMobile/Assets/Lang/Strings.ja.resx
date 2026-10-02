@@ -2154,4 +2154,10 @@
   <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>パート「{0}」：マスク付きカーブの5 tickグリッドを維持し、ノートの途中を避けるため、分割位置をパート先頭から{1} tickの位置から{2} tickの位置に移動します。続行しますか？</value></data>
   <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>パート「{0}」はここで分割できません。パートの終端までに有効な分割位置がありません。</value></data>
   <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>破線：グラフの計算値</value></data>
+  <data name="EditorMore.MergeNearbyPhrases" xml:space="preserve">
+    <value>DiffSinger の近接フレーズを結合</value>
+  </data>
+  <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
+    <value>既定ではオフです。有効にすると、短い休符の前後をまとめて合成するため、歌い方が変わる場合があります。すべての DiffSinger トラックに適用され、変更時にフレーズを再分割します。</value>
+  </data>
 </root>

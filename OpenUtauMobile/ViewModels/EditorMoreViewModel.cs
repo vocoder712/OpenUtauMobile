@@ -1,6 +1,7 @@
 ﻿using System.Reactive;
 using ReactiveUI;
 using OpenUtau.Core;
+using OpenUtau.Core.Util;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -20,6 +21,30 @@ public class EditorMoreViewModel : PopupViewModelBase
 {
     public bool CanUndo => !DocManager.Inst.HasOpenUndoGroup && DocManager.Inst.GetUndoState(out _);
     public bool CanRedo => !DocManager.Inst.HasOpenUndoGroup && DocManager.Inst.GetRedoState(out _);
+
+    private bool _mergeNearbyPhrases = Preferences.Default.DiffSingerMergeNearbyPhrases;
+
+    public bool MergeNearbyPhrases
+    {
+        get => _mergeNearbyPhrases;
+        set
+        {
+            if (_mergeNearbyPhrases == value)
+            {
+                return;
+            }
+            this.RaiseAndSetIfChanged(ref _mergeNearbyPhrases, value);
+            if (Preferences.Default.DiffSingerMergeNearbyPhrases == value)
+            {
+                return;
+            }
+            // 与桌面一致：先重新分句，再让预渲染读取新乐句的缓存键。
+            Preferences.Default.DiffSingerMergeNearbyPhrases = value;
+            Preferences.Save();
+            DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
+            DocManager.Inst.ExecuteCmd(new PreRenderNotification());
+        }
+    }
 
     public ReactiveCommand<EditorMoreAction, Unit> ConfirmCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
