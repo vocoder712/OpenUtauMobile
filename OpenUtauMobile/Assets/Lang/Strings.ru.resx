@@ -2113,4 +2113,6 @@
     <value>Введите допустимое имя файла без разделителей каталогов.</value>
   </data>
   <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>Очистить нарисованные значения</value></data>
+  <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>Партия «{0}»: чтобы сохранить сетку кривых с маской с шагом 5 тиков и не разрезать ноты, позиция разделения будет перенесена с {1} на {2} тиков от начала партии. Продолжить?</value></data>
+  <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>Невозможно разделить партию «{0}» здесь: до её конца нет допустимой позиции разделения.</value></data>
 </root>
