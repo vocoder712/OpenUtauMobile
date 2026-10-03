@@ -1,7 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using OpenUtau.Core;
+using Serilog;
 
 namespace OpenUtau.Api {
     public class PhonemizerFactory {
@@ -57,5 +60,101 @@ namespace OpenUtau.Api {
         }
 
         public static PhonemizerFactory[] GetAll() => orderedFactories;
+
+        private static bool resolverRegistered = false;
+        private static readonly object loadLock = new();
+
+        /// <summary>
+        /// 扫描程序集里所有带 [Phonemizer] 特性的类，注册到 factories。
+        /// 返回注册的音素器数量。
+        /// </summary>
+        public static int RegisterFromAssembly(Assembly assembly) {
+            Type baseType = typeof(Phonemizer);
+            int registered = 0;
+            foreach (Type type in assembly.GetTypes()) {
+                try {
+                    if (type.IsAbstract || type.IsInterface || !baseType.IsAssignableFrom(type)) {
+                        continue;
+                    }
+                    if (Get(type) != null) {
+                        registered++;
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to inspect type {Type}", type.FullName);
+                }
+            }
+            if (registered > 0) {
+                BuildList();
+                Log.Information("Registered {Count} phonemizer(s) from {Assembly}",
+                    registered, assembly.GetName().Name);
+            }
+            return registered;
+        }
+
+        public static void LoadPluginDll(string dllPath) {
+            if (!File.Exists(dllPath)) {
+                throw new FileNotFoundException("Plugin DLL not found.", dllPath);
+            }
+            string pluginDir = Path.GetDirectoryName(dllPath);
+
+            EnsureResolver(pluginDir);
+
+            Assembly assembly = Assembly.LoadFrom(dllPath);
+            RegisterFromAssembly(assembly);
+        }
+
+        public static void LoadAllFromPluginsDirectory() {
+            string pluginsPath;
+            try {
+                pluginsPath = PathManager.Inst.PluginsPath;
+            } catch (Exception e) {
+                Log.Warning(e, "Cannot resolve PluginsPath when loading plugins.");
+                return;
+            }
+            if (!Directory.Exists(pluginsPath)) {
+                return;
+            }
+            foreach (string dllPath in Directory.GetFiles(pluginsPath, "*.dll")) {
+                try {
+                    LoadPluginDll(dllPath);
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to load plugin {Path}", dllPath);
+                }
+            }
+        }
+
+        private static void EnsureResolver(string pluginDir) {
+            lock (loadLock) {
+                if (resolverRegistered) {
+                    return;
+                }
+                resolverRegistered = true;
+                AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+                    try {
+                        string asmFileName = new AssemblyName(args.Name).Name + ".dll";
+
+                        try {
+                            string pluginsPath = PathManager.Inst.PluginsPath;
+                            string candidate = Path.Combine(pluginsPath, asmFileName);
+                            if (File.Exists(candidate)) {
+                                return Assembly.LoadFrom(candidate);
+                            }
+                        } catch {
+                            // PathManager 可能尚未初始化；忽略并继续
+                        }
+
+                        if (!string.IsNullOrEmpty(pluginDir)) {
+                            string localCandidate = Path.Combine(pluginDir, asmFileName);
+                            if (File.Exists(localCandidate)) {
+                                return Assembly.LoadFrom(localCandidate);
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.Warning(e, "AssemblyResolve failed for {Name}", args.Name);
+                    }
+                    return null;
+                };
+            }
+        }
     }
 }

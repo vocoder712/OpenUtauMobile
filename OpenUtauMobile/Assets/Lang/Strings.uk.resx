@@ -2111,4 +2111,63 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>Введіть припустиме ім’я файлу без роздільників каталогів.</value>
   </data>
+
+  <data name="Settings.File.ImportPhonemizer" xml:space="preserve">
+    <value>Імпорт фонемайзера</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Desc" xml:space="preserve">
+    <value>Імпортуйте скомпільований DLL фонемайзера (та сама версія .NET).</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Button" xml:space="preserve">
+    <value>Обрати DLL…</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Success" xml:space="preserve">
+    <value>Фонемайзер встановлено.</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Failed" xml:space="preserve">
+    <value>Не вдалося завантажити фонемайзер. Див. логи.</value>
+  </data>
+
+  <data name="Settings.File.Plugins.Title" xml:space="preserve">
+    <value>Плагіни</value>
+  </data>
+  <data name="Settings.File.Plugins.Desc" xml:space="preserve">
+    <value>Керування DLL-плагінами (фонемайзери тощо) у каталозі Plugins. Для повного застосування після видалення перезапустіть застосунок.</value>
+  </data>
+  <data name="Settings.File.Plugins.Import" xml:space="preserve">
+    <value>Імпорт DLL</value>
+  </data>
+  <data name="Settings.File.Plugins.Empty" xml:space="preserve">
+    <value>Плагіни не встановлено</value>
+  </data>
+  <data name="Settings.File.Plugins.ImportSuccess" xml:space="preserve">
+    <value>Імпортовано: {0}</value>
+  </data>
+  <data name="Settings.File.Plugins.ImportFailed" xml:space="preserve">
+    <value>Помилка імпорту, див. логи</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallConfirmTitle" xml:space="preserve">
+    <value>Видалити плагін</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallConfirmMessage" xml:space="preserve">
+    <value>Видалити {0}? Якщо плагін уже завантажено, перезапустіть застосунок.</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallSuccess" xml:space="preserve">
+    <value>Видалено: {0}</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallFailed" xml:space="preserve">
+    <value>Помилка видалення</value>
+  </data>
+  <data name="Settings.File.Plugins.PhonemizerCount" xml:space="preserve">
+    <value>Містить фонемайзерів: {0}</value>
+  </data>
+  <data name="Settings.File.Plugins.NoRecognizedTypes" xml:space="preserve">
+    <value>Відомі типи плагінів не знайдено</value>
+  </data>
+  <data name="Settings.File.Plugins.NotLoaded" xml:space="preserve">
+    <value>Не завантажено</value>
+  </data>
+  <data name="Settings.File.Plugins.LoadFailed" xml:space="preserve">
+    <value>Помилка завантаження</value>
+  </data>
 </root>

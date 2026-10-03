@@ -590,6 +590,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     public GraphicsBackendSettingsViewModel GraphicsBackendSettings { get; } = new(ServiceHub.GraphicsBackendService);
 
+    public PluginManagementViewModel PluginManagement { get; } = new();
+
     /// <summary>防止开关回拨时再次触发 async 订阅的标志。</summary>
     private bool _suppressToggle;
 
@@ -1214,6 +1216,12 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// </summary>
     private static List<OnnxRunnerOption> GetAvailableOnnxRunners()
     {
+        // ONNX_SKIP_BROWSER_RUNNERS
+        if (OperatingSystem.IsBrowser() || OperatingSystem.IsIOS())
+        {
+            return new List<OnnxRunnerOption> { new("CPU", "CPU") };
+        }
+
         List<string> runners = Onnx.getRunnerOptions();
         if (runners.Count == 0)
         {
@@ -1228,6 +1236,12 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// </summary>
     private static List<OnnxDeviceOption> GetAvailableOnnxDevices()
     {
+        // ONNX_SKIP_BROWSER_DEVICES
+        if (OperatingSystem.IsBrowser() || OperatingSystem.IsIOS())
+        {
+            return new List<OnnxDeviceOption>();
+        }
+
         try
         {
             return Onnx.getGpuInfo()
