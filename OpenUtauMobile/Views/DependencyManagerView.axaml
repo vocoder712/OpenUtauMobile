@@ -101,8 +101,12 @@
                                             AutomationProperties.Name="{DynamicResource DependencyManager.Sort}">
                                         <Button.Flyout>
                                             <MenuFlyout>
-                                                <MenuItem Header="{DynamicResource DependencyManager.SortByName}" Command="{Binding SetSortModeCommand}" CommandParameter="0" />
-                                                <MenuItem Header="{DynamicResource DependencyManager.SortByDeveloper}" Command="{Binding SetSortModeCommand}" CommandParameter="1" />
+                                                <MenuItem Header="{DynamicResource DependencyManager.SortByName}" Command="{Binding SetSortModeCommand}">
+                                                    <MenuItem.CommandParameter><x:Int32>0</x:Int32></MenuItem.CommandParameter>
+                                                </MenuItem>
+                                                <MenuItem Header="{DynamicResource DependencyManager.SortByDeveloper}" Command="{Binding SetSortModeCommand}">
+                                                    <MenuItem.CommandParameter><x:Int32>1</x:Int32></MenuItem.CommandParameter>
+                                                </MenuItem>
                                             </MenuFlyout>
                                         </Button.Flyout>
                                         <iconPacks:PackIconPhosphorIcons Kind="SortAscending"

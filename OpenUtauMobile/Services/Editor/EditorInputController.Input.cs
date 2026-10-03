@@ -31,6 +31,7 @@ public sealed partial class EditorInputController
     {
         _owner.Focusable = true;
         _owner.AddHandler(PointerPressedEvent, OnEditorPress, RoutingStrategies.Tunnel, true);
+        _owner.AddHandler(PointerPressedEvent, OnEditorPressCompleted, RoutingStrategies.Bubble, true);
         _owner.AttachedToVisualTree += (_, _) => AttachEditorInput();
         _owner.DetachedFromVisualTree += (_, _) => DetachEditorInput();
         _owner.DataContextChanged += (_, _) => { if (_inputRoot != null) AttachEditorInput(); };
@@ -106,9 +107,15 @@ public sealed partial class EditorInputController
         _viewportInput.Cancel();
         UpdateActiveEditArea(e.Source as Visual);
         if (e.Source is not Visual visual || !TryGetSurface(visual, out bool piano, out _)) return;
-        _editorPointers.Add(e.Pointer);
         _activeEditArea = piano ? EditArea.PianoRoll : EditArea.Tracks;
         _owner.Focus();
+    }
+
+    private void OnEditorPressCompleted(object? sender, PointerPressedEventArgs e)
+    {
+        // 画布选择分片时会同步取消旧输入，须在处理完成后登记本次指针。
+        if (e.Source is Visual visual && TryGetSurface(visual, out _, out _))
+            _editorPointers.Add(e.Pointer);
     }
 
     private void OnEditorWheel(object? sender, PointerWheelEventArgs e)
