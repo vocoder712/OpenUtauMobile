@@ -66,6 +66,9 @@ public partial class MixerViewModel : ViewModelBase
             nameof(channel.Mute) => new ChangeMixMuteCommand(_project, channel.Track, channel.Mute),
             nameof(channel.Solo) when channel.Track != null => new ChangeMixSoloCommand(_project, channel.Track, channel.Solo),
             nameof(channel.FxEnabled) => ChangeFx(channel, fx => fx.Enabled = channel.FxEnabled),
+            nameof(channel.EqEnabled) => ChangeFx(channel, fx => fx.EqEnabled = channel.EqEnabled),
+            nameof(channel.CompEnabled) => ChangeFx(channel, fx => fx.CompEnabled = channel.CompEnabled),
+            nameof(channel.ReverbEnabled) => ChangeFx(channel, fx => fx.ReverbEnabled = channel.ReverbEnabled),
             nameof(channel.LowDb) when double.IsFinite(channel.LowDb) => ChangeFx(channel, fx => fx.EqLowDb = channel.LowDb),
             nameof(channel.MidFrequency) when double.IsFinite(channel.MidFrequency) => ChangeFx(channel, fx => fx.EqMidFreq = Math.Clamp(channel.MidFrequency, 20, 20000)),
             nameof(channel.MidDb) when double.IsFinite(channel.MidDb) => ChangeFx(channel, fx => fx.EqMidDb = channel.MidDb),
@@ -155,6 +158,9 @@ public class MixerChannelViewModel : ViewModelBase
     [Reactive] public bool Mute { get; set; }
     [Reactive] public bool Solo { get; set; }
     [Reactive] public bool FxEnabled { get; set; }
+    [Reactive] public bool EqEnabled { get; set; }
+    [Reactive] public bool CompEnabled { get; set; }
+    [Reactive] public bool ReverbEnabled { get; set; }
     [Reactive] public int FxRevision { get; set; }
     [Reactive] public double LowDb { get; set; }
     [Reactive] public double MidFrequency { get; set; }
@@ -178,6 +184,9 @@ public class MixerChannelViewModel : ViewModelBase
         Solo = track?.Solo ?? false;
         UMixFx fx = track?.MixFx ?? new UMixFx();
         FxEnabled = fx.Enabled;
+        EqEnabled = fx.EqEnabled;
+        CompEnabled = fx.CompEnabled;
+        ReverbEnabled = fx.ReverbEnabled;
         MidFrequency = fx.EqMidFreq;
         LowDb = fx.EqLowDb;
         MidDb = fx.EqMidDb;
@@ -199,6 +208,9 @@ public class MixerChannelViewModel : ViewModelBase
         Solo = Track?.Solo ?? false;
         UMixFx fx = Track?.MixFx ?? new UMixFx();
         FxEnabled = fx.Enabled;
+        EqEnabled = fx.EqEnabled;
+        CompEnabled = fx.CompEnabled;
+        ReverbEnabled = fx.ReverbEnabled;
         MidFrequency = fx.EqMidFreq;
         LowDb = fx.EqLowDb; MidDb = fx.EqMidDb; HighDb = fx.EqHighDb;
         ThresholdDb = fx.CompThresholdDb; Ratio = fx.CompRatio;

@@ -187,10 +187,25 @@
                                         <Button Grid.Column="2" Content="{DynamicResource Common.Delete}" Click="OnDeleteUserPreset" IsEnabled="{Binding HasUserPreset}" HorizontalAlignment="Stretch" />
                                     </Grid>
                                 </StackPanel>
-                                <TabControl IsEnabled="{Binding SelectedChannel.FxEnabled}">
+                                <TextBlock Classes="MixerHint" IsVisible="{Binding !SelectedChannel.FxEnabled}" Text="{DynamicResource Mixer.FxBypassed}" TextWrapping="Wrap" />
+                                <TabControl>
                                     <!-- 均衡器 -->
                                     <TabItem Header="EQ">
                                         <StackPanel Spacing="8" DataContext="{Binding SelectedChannel}" x:DataType="vm:MixerChannelViewModel">
+                                            <ToggleButton x:Name="EqEnabledRow" MinHeight="56" Padding="0" CornerRadius="0"
+                                                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                                          Background="Transparent" Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                                          AutomationProperties.Name="{DynamicResource Mixer.EnableEffect}"
+                                                          IsChecked="{Binding EqEnabled, Mode=TwoWay}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                    <TextBlock Text="{DynamicResource Mixer.EnableEffect}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                    <ToggleSwitch Grid.Column="1" x:Name="EqEnabledToggle" VerticalAlignment="Center"
+                                                                  IsChecked="{Binding EqEnabled, Mode=OneWay}" OnContent="" OffContent=""
+                                                                  IsHitTestVisible="False" Focusable="False" />
+                                                </Grid>
+                                            </ToggleButton>
+                                            <TextBlock Classes="MixerHint" IsVisible="{Binding !EqEnabled}"
+                                                       Text="{DynamicResource Mixer.ModuleBypassed}" TextWrapping="Wrap" />
                                             <Button Content="{DynamicResource Mixer.LoadPreset}" Tag="Eq" Click="OnLoadEffectPreset" HorizontalAlignment="Stretch" />
                                             <Border CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
                                                 <c:MixerFxGraph Kind="Equalizer" Height="280" XAxisTitle="{DynamicResource Mixer.Axis.Frequency}" YAxisTitle="{DynamicResource Mixer.Axis.Gain}" />
@@ -221,6 +236,20 @@
                                     <!-- 压缩器 -->
                                     <TabItem Header="{DynamicResource Mixer.Compressor}">
                                         <StackPanel Spacing="8" DataContext="{Binding SelectedChannel}" x:DataType="vm:MixerChannelViewModel">
+                                            <ToggleButton x:Name="CompEnabledRow" MinHeight="56" Padding="0" CornerRadius="0"
+                                                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                                          Background="Transparent" Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                                          AutomationProperties.Name="{DynamicResource Mixer.EnableEffect}"
+                                                          IsChecked="{Binding CompEnabled, Mode=TwoWay}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                    <TextBlock Text="{DynamicResource Mixer.EnableEffect}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                    <ToggleSwitch Grid.Column="1" x:Name="CompEnabledToggle" VerticalAlignment="Center"
+                                                                  IsChecked="{Binding CompEnabled, Mode=OneWay}" OnContent="" OffContent=""
+                                                                  IsHitTestVisible="False" Focusable="False" />
+                                                </Grid>
+                                            </ToggleButton>
+                                            <TextBlock Classes="MixerHint" IsVisible="{Binding !CompEnabled}"
+                                                       Text="{DynamicResource Mixer.ModuleBypassed}" TextWrapping="Wrap" />
                                             <Button Content="{DynamicResource Mixer.LoadPreset}" Tag="Comp" Click="OnLoadEffectPreset" HorizontalAlignment="Stretch" />
                                             <Border CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
                                                 <c:MixerFxGraph Kind="Compressor" XAxisTitle="{DynamicResource Mixer.Axis.Input}" YAxisTitle="{DynamicResource Mixer.Axis.Output}" />
@@ -246,6 +275,20 @@
                                     <!-- 混响 -->
                                     <TabItem Header="{DynamicResource Mixer.Reverb}">
                                         <StackPanel Spacing="8" DataContext="{Binding SelectedChannel}" x:DataType="vm:MixerChannelViewModel">
+                                            <ToggleButton x:Name="ReverbEnabledRow" MinHeight="56" Padding="0" CornerRadius="0"
+                                                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                                          Background="Transparent" Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                                          AutomationProperties.Name="{DynamicResource Mixer.EnableEffect}"
+                                                          IsChecked="{Binding ReverbEnabled, Mode=TwoWay}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                    <TextBlock Text="{DynamicResource Mixer.EnableEffect}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                                                    <ToggleSwitch Grid.Column="1" x:Name="ReverbEnabledToggle" VerticalAlignment="Center"
+                                                                  IsChecked="{Binding ReverbEnabled, Mode=OneWay}" OnContent="" OffContent=""
+                                                                  IsHitTestVisible="False" Focusable="False" />
+                                                </Grid>
+                                            </ToggleButton>
+                                            <TextBlock Classes="MixerHint" IsVisible="{Binding !ReverbEnabled}"
+                                                       Text="{DynamicResource Mixer.ModuleBypassed}" TextWrapping="Wrap" />
                                             <Button Content="{DynamicResource Mixer.LoadPreset}" Tag="Reverb" Click="OnLoadEffectPreset" HorizontalAlignment="Stretch" />
                                             <Border CornerRadius="8" Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
                                                 <c:MixerFxGraph Kind="Reverb" XAxisTitle="{DynamicResource Mixer.Axis.Time}" YAxisTitle="{DynamicResource Mixer.Axis.WetPeak}" />

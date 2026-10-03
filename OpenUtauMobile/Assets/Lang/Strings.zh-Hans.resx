@@ -2167,4 +2167,7 @@
   <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
     <value>默认关闭。开启后，短停顿两侧的乐句可能一起合成，可能改变唱法。此设置对所有 DiffSinger 轨道生效，更改后会重新分句。</value>
   </data>
+  <data name="Mixer.EnableEffect" xml:space="preserve"><value>启用该效果</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>总 FX 已旁路</value></data>
+  <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>该效果已旁路</value></data>
 </root>

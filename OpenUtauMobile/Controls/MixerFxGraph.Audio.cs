@@ -23,6 +23,14 @@ public sealed partial class MixerFxGraph
     private long _lastAudioTick;
     private double _age;
 
+    private bool EffectActive => _channel?.FxEnabled == true && (Kind switch
+    {
+        MixerFxGraphKind.Equalizer => _channel.EqEnabled,
+        MixerFxGraphKind.Compressor => _channel.CompEnabled,
+        MixerFxGraphKind.Reverb => _channel.ReverbEnabled,
+        _ => false
+    });
+
     private static double[] CreateSpectrum()
     {
         double[] levels = new double[MixerAudioAnalysis.BandCount];
@@ -32,7 +40,7 @@ public sealed partial class MixerFxGraph
 
     private bool AudioVisible()
     {
-        if (!_attached || !IsEffectivelyVisible || _channel?.FxEnabled != true) return false;
+        if (!_attached || !IsEffectivelyVisible || !EffectActive) return false;
         foreach (Visual ancestor in this.GetVisualAncestors())
         {
             if (ancestor is ScrollViewer scroll && this.TranslatePoint(default, scroll) is Point point &&

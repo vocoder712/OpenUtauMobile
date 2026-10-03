@@ -2167,4 +2167,7 @@
   <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
     <value>Off by default. When enabled, phrases around short pauses may be synthesized together, which can change the singing. Applies to all DiffSinger tracks; changing it rebuilds phrase groups.</value>
   </data>
+  <data name="Mixer.EnableEffect" xml:space="preserve"><value>Enable this effect</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>All FX bypassed</value></data>
+  <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>Effect bypassed</value></data>
 </root>

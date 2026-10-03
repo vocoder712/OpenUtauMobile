@@ -2122,4 +2122,7 @@
   <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
     <value>По умолчанию выключено. Фразы по обе стороны короткой паузы могут синтезироваться вместе, что может изменить пение. Применяется ко всем дорожкам DiffSinger; при изменении фразы группируются заново.</value>
   </data>
+  <data name="Mixer.EnableEffect" xml:space="preserve"><value>Включить эффект</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>Все эффекты в обходе</value></data>
+  <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>Эффект в обходе</value></data>
 </root>

@@ -2122,4 +2122,7 @@
   <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
     <value>Типово вимкнено. Фрази обабіч короткої паузи можуть синтезуватися разом, що може змінити спів. Діє для всіх доріжок DiffSinger; після зміни фрази групуються заново.</value>
   </data>
+  <data name="Mixer.EnableEffect" xml:space="preserve"><value>Увімкнути ефект</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>Усі ефекти в обхідному режимі</value></data>
+  <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>Ефект в обхідному режимі</value></data>
 </root>

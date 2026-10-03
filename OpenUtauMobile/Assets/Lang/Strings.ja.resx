@@ -2160,4 +2160,7 @@
   <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
     <value>既定ではオフです。有効にすると、短い休符の前後をまとめて合成するため、歌い方が変わる場合があります。すべての DiffSinger トラックに適用され、変更時にフレーズを再分割します。</value>
   </data>
+  <data name="Mixer.EnableEffect" xml:space="preserve"><value>このエフェクトを有効化</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>FX 全体をバイパス中</value></data>
+  <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>このエフェクトをバイパス中</value></data>
 </root>

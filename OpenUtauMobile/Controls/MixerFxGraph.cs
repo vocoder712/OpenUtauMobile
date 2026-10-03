@@ -88,6 +88,7 @@ public sealed partial class MixerFxGraph : Control
     {
         if (e.PropertyName is nameof(MixerChannelViewModel.LeftDb) or nameof(MixerChannelViewModel.RightDb)
             or nameof(MixerChannelViewModel.Volume) or nameof(MixerChannelViewModel.Pan) or nameof(MixerChannelViewModel.PanText)) return;
+        if (!EffectActive) ReleaseAudio();
         RefreshPreview();
     }
 
@@ -163,13 +164,13 @@ public sealed partial class MixerFxGraph : Control
         {
             if (Kind == MixerFxGraphKind.Equalizer)
             {
-                DrawSpectrum(context);
+                if (EffectActive) DrawSpectrum(context);
                 Func<double, double> response = MixerFxResponse.Equalizer(_channel.LowDb, _channel.MidFrequency, _channel.MidDb, _channel.HighDb);
                 Curve(context, t => new Point(X(t), Y(response(20 * Math.Pow(1000, t)))), CurveBrush);
             }
             else if (Kind == MixerFxGraphKind.Compressor)
             {
-                DrawCompressorLevel(context);
+                if (EffectActive) DrawCompressorLevel(context);
                 context.DrawLine(grid, new Point(InputX(-60), Y(-60)), new Point(InputX(12), Y(12)));
                 Curve(context, t => new Point(X(t), Y(MixerFxResponse.Compressor(-60 + 72 * t, _channel.ThresholdDb, _channel.Ratio, Makeup))), CurveBrush);
             }
@@ -224,7 +225,8 @@ public sealed partial class MixerFxGraph : Control
         if (insidePlot) e.PreventGestureRecognition();
         if (_pointer != null || _channel == null
             || (e.Pointer.Type == PointerType.Mouse && !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)) return;
-        if (_channel.FxEnabled && Kind != MixerFxGraphKind.Reverb)
+        // 旁路只影响声音和动态显示，仍允许预调静态曲线参数。
+        if (Kind != MixerFxGraphKind.Reverb)
         {
             Point[] handles = Handles();
             double nearest = 36;
