@@ -14,7 +14,7 @@ using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
 
-public class SingerDetailViewModel : NavigateViewModelBase
+public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
 {
     private const string CancelUninstallOption = "cancel";
     private const string ConfirmUninstallOption = "uninstall";
@@ -24,6 +24,7 @@ public class SingerDetailViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> OpenWebCommand { get; }
 
     private readonly USinger _singer;
+    private readonly IDisposable _favoriteSubscription;
 
     // ── Basic Info ──
     public string SingerName => _singer.LocalizedName;
@@ -70,10 +71,17 @@ public class SingerDetailViewModel : NavigateViewModelBase
         LoadAvatar();
 
         // Sync favorite state back to singer
-        this.WhenAnyValue(x => x.IsFavorite)
+        _favoriteSubscription = this.WhenAnyValue(x => x.IsFavorite)
             .Subscribe(fav => _singer.IsFavourite = fav);
     }
 
+    public void Dispose()
+    {
+        _favoriteSubscription.Dispose();
+        AvatarBitmap?.Dispose();
+        AvatarBitmap = null;
+        BackCommand.Dispose(); DeleteCommand.Dispose(); OpenWebCommand.Dispose();
+    }
     private void LoadAvatar()
     {
         try

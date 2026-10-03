@@ -1,4 +1,4 @@
-﻿using OpenUtauMobile.Helpers.Audio;
+using OpenUtauMobile.Helpers.Audio;
 using System;
 using System.Collections.Generic;
 using NAudio.Wave;
@@ -77,7 +77,6 @@ public class NAudioOutput : IAudioOutput, IAudioLatencySource
             waveOutEvent = new WaveOutEvent
             {
                 DeviceNumber = deviceNumber,
-                // 三个 20 ms 缓冲块，降低默认长缓冲带来的交互延迟。
                 DesiredLatency = 60,
                 NumberOfBuffers = 3,
             };

@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
@@ -37,9 +37,10 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
+            MainViewModel main = new();
+            desktop.MainWindow = ServiceHub.DesktopWindowFactory?.Invoke(main) ?? new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = main
             };
         }
         else if (ApplicationLifetime is IActivityApplicationLifetime activityPlatform)

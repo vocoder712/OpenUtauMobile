@@ -26,7 +26,7 @@
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <Border Classes="DialogBodyBorder">
-                <Grid RowDefinitions="*,Auto" RowSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                <Grid RowDefinitions="*,Auto,Auto" RowSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                     <TextBox
                         x:Name="LyricsInput"
                         Grid.Row="0"
@@ -44,6 +44,7 @@
                         Content="{DynamicResource BulkLyricEdit.SelectedOnly}"
                         IsChecked="{Binding ApplyToSelectedNotesOnly, Mode=TwoWay}"
                         IsEnabled="{Binding HasSelectedNotes}" />
+                    <TextBlock Grid.Row="2" Text="{Binding TargetSummary}" TextWrapping="Wrap" />
                 </Grid>
             </Border>
         </DockPanel>

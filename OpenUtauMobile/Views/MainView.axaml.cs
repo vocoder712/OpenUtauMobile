@@ -1,4 +1,4 @@
-﻿using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Dialogs;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -16,6 +16,11 @@ public partial class MainView : UserControl
         InitializeComponent();
     }
 
+    public MainView(Avalonia.Controls.Templates.IDataTemplate pageTemplate) : this()
+    {
+        PageHost.ContentTemplate = pageTemplate;
+    }
+
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
@@ -23,6 +28,7 @@ public partial class MainView : UserControl
         App.RefreshSystemThemeColor();
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested += OnBackRequested;
+        ToastOverlay.IsVisible = ServiceHub.DesktopWindowContext == null;
         ToastService.Register(ToastOverlay.ConsumeAsync);
         ErrorDialogService.Register(async vm => { await PopupService.Show<object>(new ErrorDialogPopup(), vm); });
     }

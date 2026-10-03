@@ -1,0 +1,320 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile">
+    <Style Selector="Button.DesktopPicker">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="7,4" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup TextBox, :is(controls|PopupDialogControl).DesktopPopup ComboBox, :is(controls|PopupDialogControl).DesktopPopup NumericUpDown">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="7,4" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup TabItem">
+        <Setter Property="MinHeight" Value="32" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Button.icon">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="MinWidth" Value="32" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="6" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Button.icon /template/ Border#PART_Chrome, :is(controls|PopupDialogControl).DesktopPopup Button.icon /template/ Border#PART_StateLayer">
+        <Setter Property="Margin" Value="1" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup CheckBox.PropertyToggle, :is(controls|PopupDialogControl).DesktopPopup Button.PresetAction, :is(controls|PopupDialogControl).DesktopPopup Button.PropertyToggle">
+        <Setter Property="MinHeight" Value="28" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.BatchEditScope">
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="Margin" Value="16,16,16,0" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.BatchEditItem">
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.BatchEditItemIcon">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Grid.RowSpan" Value="1" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Grid.BatchEditItemLayout">
+        <Setter Property="RowSpacing" Value="4" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup StackPanel.BatchEditItemActions">
+        <Setter Property="Grid.Row" Value="0" />
+        <Setter Property="Grid.Column" Value="2" />
+        <Setter Property="Grid.ColumnSpan" Value="1" />
+        <Setter Property="Spacing" Value="4" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup TextBlock.BatchEditItemTitle">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.PropertySummary">
+        <Setter Property="Padding" Value="16,16,16,0" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.PropertyContent">
+        <Setter Property="Padding" Value="0,6,10,6" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.PropertyContent TextBox, :is(controls|PopupDialogControl).DesktopPopup Border.PropertyContent NumericUpDown, :is(controls|PopupDialogControl).DesktopPopup Border.PropertyContent ComboBox">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="6,3" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Slider">
+        <Setter Property="MinHeight" Value="28" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.MixerPresetChoices">
+        <Setter Property="Padding" Value="16" />
+    </Style>
+    <Style Selector="Button.DesktopAction">
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.DesktopToolbarButton">
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector="Border.DesktopToolbar Button.DesktopToolbarButton">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+    </Style>
+    <Style Selector=".DesktopRoot MenuItem">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBox, .DesktopRoot NumericUpDown, .DesktopRoot ComboBox">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector=".DesktopRoot Button.TopBarBtn, .DesktopRoot Button.icon">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="MinWidth" Value="32" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="6" />
+    </Style>
+    <Style Selector=".DesktopRoot Button.DesktopToolbarButton">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    <Style Selector=".DesktopRoot Button.DesktopProjectValue">
+        <Setter Property="Height" Value="20" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="MinWidth" Value="56" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector=".DesktopRoot Button.DesktopPicker">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="7,4" />
+    </Style>
+    <Style Selector=".DesktopRoot .DesktopInspector ComboBox.DesktopTrackChoice">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="6,3" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=".DesktopRoot .DesktopInspector Button.DesktopTrackChoice">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="6,3" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=".DesktopRoot .DesktopInspector Button.DesktopInspectorReset">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector=".DesktopRoot Border.DesktopStatusBar">
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+    </Style>
+    <Style Selector=".DesktopRoot .DesktopInspector TextBox, .DesktopRoot .DesktopInspector NumericUpDown, .DesktopRoot .DesktopInspector ComboBox">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="6,3" />
+    </Style>
+    <Style Selector=".DesktopRoot CheckBox">
+        <Setter Property="MinHeight" Value="28" />
+    </Style>
+    <Style Selector=".DesktopUtility ListBox, .DesktopHome ListBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="8" />
+    </Style>
+    <Style Selector=".DesktopUtility ListBoxItem, .DesktopHome ListBoxItem">
+        <Setter Property="MinHeight" Value="44" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector=".DesktopRoot GridSplitter">
+        <Setter Property="MinWidth" Value="6" />
+        <Setter Property="MinHeight" Value="6" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+    </Style>
+    <Style Selector=".DesktopRoot TabItem">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+    <Style Selector=".DesktopRoot Slider">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+    <Style Selector=".DesktopRoot Border.PropertyContent TextBox, .DesktopRoot Border.PropertyContent NumericUpDown, .DesktopRoot Border.PropertyContent ComboBox">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="6,3" />
+    </Style>
+    <Style Selector=".DesktopRoot Border.DesktopPanel">
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.DesktopPageTitle">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.DesktopContentTitle">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.DesktopSecondary">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.DesktopMetadata">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+    </Style>
+    <Style Selector=".DesktopRoot Border.DesktopToolbar">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="16,6" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+    <Style Selector="Border.DesktopPanel">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=".DesktopUtility Border.DesktopPanel, .DesktopHome Border.DesktopPanel">
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector=".DesktopSettings Border.TopBar, .DesktopSettings Button.NavToggle, .DesktopSettings Button.DesktopBack">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector=".DesktopSettings Border.SettingCard">
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="CornerRadius" Value="12" />
+    </Style>
+    <Style Selector=".DesktopSettings TextBlock.CategoryTitle">
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+    <Style Selector=".DesktopSettings TextBlock.SettingValue">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="MinHeight" Value="28" />
+    </Style>
+    <Style Selector=".DesktopSettings Slider.SettingSlider">
+        <Setter Property="Margin" Value="0,24,0,0" />
+    </Style>
+    <Style Selector=".DesktopSettings Button.NavItem">
+        <Setter Property="MinHeight" Value="48" />
+    </Style>
+    <Style Selector=".DesktopSettings Grid.SettingsNavItemLayout">
+        <Setter Property="MinHeight" Value="48" />
+    </Style>
+    <Style Selector=".DesktopMixer ToggleButton.MixerState">
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=".DesktopMixer Button.MixerSplit">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=".DesktopMixer ToggleButton.MixerAction">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    <Style Selector=".DesktopMixer TabItem">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+    <Style Selector=".DesktopMixer Slider">
+        <Setter Property="MinHeight" Value="24" />
+    </Style>
+    <Style Selector=".DesktopMixer TextBlock.MixerMobileReadout">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector=".DesktopMixer NumericUpDown.DesktopMixerReadout">
+        <Setter Property="IsVisible" Value="True" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+    <Style Selector=".DesktopMixer TextBlock.DesktopMixerReadoutUnit">
+        <Setter Property="IsVisible" Value="True" />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+    <Style Selector=".DesktopMixer TextBlock.MixerValue">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector=".DesktopMixer Border.MixerChannelStrip">
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector=".DesktopMixer GridSplitter.DesktopMixerSplitter">
+        <Setter Property="Width" Value="6" />
+        <Setter Property="MinWidth" Value="6" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+    </Style>
+    <Style Selector="Border.DesktopSetupStep">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+        <Setter Property="CornerRadius" Value="12" />
+    </Style>
+    <Style Selector="Border.DesktopSetupStep.active">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+    </Style>
+    <Style Selector=".DesktopRoot Button.DesktopTransportControl, .DesktopRoot ComboBox.DesktopTransportControl, .DesktopRoot TextBox.DesktopTransportControl">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="8,2" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector=".DesktopRoot Button.DesktopTransportIcon">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBox.DesktopTransportControl">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBox.DesktopProjectTempo">
+        <Setter Property="Height" Value="20" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+</Styles>

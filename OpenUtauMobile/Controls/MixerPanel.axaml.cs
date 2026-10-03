@@ -10,6 +10,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using OpenUtau.Core;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
@@ -26,6 +27,8 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
     private readonly DispatcherTimer _meterTimer = new() { Interval = TimeSpan.FromMilliseconds(34) };
     private PlaybackMeters? _meters;
     private double _lastMeterFrame;
+    private double _detailPaneWidth = 288;
+    private bool _desktopFxWidthLoaded;
 
     public MixerPanel()
     {
@@ -38,6 +41,7 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
     {
         base.OnAttachedToVisualTree(e);
         ViewModel.Refresh(DocManager.Inst.Project);
+        if (Classes.Contains("DesktopMixer") && ViewModel.SelectedChannel != null) ViewModel.IsDetailOpen = true;
         ViewModel.Activate();
         UpdateLayoutMode();
         DocManager.Inst.AddSubscriber(this);
@@ -113,19 +117,46 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
     {
         base.OnSizeChanged(e);
         // 按混音面板实际可用宽度响应，横屏手机不强制挤出详情列。
-        ViewModel.IsWide = e.NewSize.Width >= 760;
-        ViewModel.ChannelHeight = Math.Max(480, e.NewSize.Height - 68); // 最小高度 480，留出标题栏和底部按钮栏的空间。
+        bool desktop = Classes.Contains("DesktopMixer");
+        ViewModel.IsWide = e.NewSize.Width >= (desktop ? 600 : 760);
+        ViewModel.ChannelHeight = desktop ? Math.Max(360, e.NewSize.Height - 24) : Math.Max(480, e.NewSize.Height - 68);
         UpdateLayoutMode();
     }
 
     private void UpdateLayoutMode()
     {
+        if (!_desktopFxWidthLoaded && Classes.Contains("DesktopMixer") &&
+            Resources.TryGetValue("MixerDetailPaneWidth", out object? storedWidth) && storedWidth is double width)
+        {
+            _detailPaneWidth = Math.Clamp(width, 220, 1200);
+            _desktopFxWidthLoaded = true;
+        }
+        if (BodyGrid.ColumnDefinitions.Count > 2 && BodyGrid.ColumnDefinitions[2].Width.IsAbsolute && BodyGrid.ColumnDefinitions[2].Width.Value > 0)
+            _detailPaneWidth = BodyGrid.ColumnDefinitions[2].Width.Value;
         bool detail = ViewModel.IsDetailOpen && ViewModel.SelectedChannel != null;
+        bool splitDetail = ViewModel.IsWide && detail;
         ChannelsScroll.IsVisible = ViewModel.IsWide || !detail;
         OverviewScroll.IsVisible = ViewModel.IsWide || !detail;
         DetailBorder.IsVisible = detail;
-        BodyGrid.ColumnDefinitions[1].Width = new GridLength(ViewModel.IsWide && detail ? 320 : 0);
-        Grid.SetColumn(DetailBorder, ViewModel.IsWide ? 1 : 0);
+        DetailSplitter.IsVisible = splitDetail && Classes.Contains("DesktopMixer");
+        BodyGrid.ColumnDefinitions[1].Width = new GridLength(DetailSplitter.IsVisible ? 6 : 0);
+        bool desktop = Classes.Contains("DesktopMixer");
+        double maximumPane = Math.Max(220, BodyGrid.Bounds.Width - 180);
+        BodyGrid.ColumnDefinitions[0].MinWidth = desktop && splitDetail ? 180 : 0;
+        BodyGrid.ColumnDefinitions[2].MinWidth = desktop && splitDetail ? 220 : 0;
+        BodyGrid.ColumnDefinitions[2].MaxWidth = desktop && splitDetail ? maximumPane : double.PositiveInfinity;
+        BodyGrid.ColumnDefinitions[2].Width = new GridLength(splitDetail ? (desktop ? Math.Clamp(_detailPaneWidth, 220, maximumPane) : 320) : 0);
+        Grid.SetColumn(DetailBorder, splitDetail ? 2 : 0);
+    }
+
+    public void ResetDesktopFxPaneWidth(double width)
+    {
+        if (!Classes.Contains("DesktopMixer")) return;
+        _detailPaneWidth = Math.Clamp(width, 220, 1200);
+        Resources["MixerDetailPaneWidth"] = _detailPaneWidth;
+        if (BodyGrid.ColumnDefinitions.Count > 2 && DetailBorder.IsVisible)
+            BodyGrid.ColumnDefinitions[2].Width = new GridLength(_detailPaneWidth);
+        UpdateLayoutMode();
     }
 
     private void OnFxClick(object? sender, RoutedEventArgs e)

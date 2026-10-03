@@ -24,6 +24,18 @@ public partial class PhonemePanelModeSwitcher : UserControl
         set => SetValue(CurrentModeProperty, value);
     }
 
+    /// <summary>是否展示独立的擦除模式；桌面端使用右键擦除，无需单独模式。</summary>
+    public static readonly StyledProperty<bool> ShowEraseModeProperty =
+        AvaloniaProperty.Register<PhonemePanelModeSwitcher, bool>(
+            nameof(ShowEraseMode),
+            defaultValue: true);
+
+    public bool ShowEraseMode
+    {
+        get => GetValue(ShowEraseModeProperty);
+        set => SetValue(ShowEraseModeProperty, value);
+    }
+
     private bool _isExpand;
 
     public PhonemePanelModeSwitcher()
@@ -72,11 +84,18 @@ public partial class PhonemePanelModeSwitcher : UserControl
                 };
                 break;
             case PhonemePanelMode.ParameterErase:
-                ParameterEraseButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
+                if (ParameterEraseButton.IsVisible)
                 {
-                    Kind = PackIconPhosphorIconsKind.Eraser
-                };
+                    ParameterEraseButton.Background = selectedBrush;
+                    SwitchButton.Content = new PackIconPhosphorIcons
+                    {
+                        Kind = PackIconPhosphorIconsKind.Eraser
+                    };
+                }
+                else
+                {
+                    goto case PhonemePanelMode.ParameterDraw;
+                }
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -117,7 +136,10 @@ public partial class PhonemePanelModeSwitcher : UserControl
         PhonemeSimpleButton.Background = backgroundBrush;
         PhonemeAdvancedButton.Background = backgroundBrush;
         ParameterDrawButton.Background = backgroundBrush;
-        ParameterEraseButton.Background = backgroundBrush;
+        if (ParameterEraseButton.IsVisible)
+        {
+            ParameterEraseButton.Background = backgroundBrush;
+        }
     }
 
     private void UpdateExpandVisualState()

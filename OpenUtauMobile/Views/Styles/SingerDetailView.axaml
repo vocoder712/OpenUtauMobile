@@ -17,7 +17,7 @@
     </Style>
 
     <!-- Info row value -->
-    <Style Selector="TextBlock.InfoValue">
+    <Style Selector=":is(TextBlock).InfoValue">
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>

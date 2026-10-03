@@ -28,11 +28,13 @@ public class TrackHeaderService : ITrackHeaderService
 
     public async Task<USinger?> PickSingerAsync()
     {
+        if (ServiceHub.DesktopSingerPicker != null) return await ServiceHub.DesktopSingerPicker();
         return await PopupService.Show<USinger?>(new SingerPickerPopup(), new SingerPickerViewModel());
     }
 
     public async Task<Phonemizer?> PickPhonemizerAsync()
     {
+        if (ServiceHub.DesktopPhonemizerPicker != null) return await ServiceHub.DesktopPhonemizerPicker();
         return await Dispatcher.UIThread.InvokeAsync(static () =>
             PopupService.Show<Phonemizer?>(new PhonemizerPickerPopup(), new PhonemizerPickerViewModel())
         );
@@ -40,12 +42,14 @@ public class TrackHeaderService : ITrackHeaderService
 
     public async Task<string?> PickRendererAsync(string[] supportedRenderers)
     {
+        if (ServiceHub.DesktopRendererPicker != null) return await ServiceHub.DesktopRendererPicker(supportedRenderers);
         return await Dispatcher.UIThread.InvokeAsync(() =>
             PopupService.Show<string?>(new RendererPickerPopup(), new RendererPickerViewModel(supportedRenderers)));
     }
 
     public async Task<string?> PickTrackNameAsync(string currentName)
     {
+        if (ServiceHub.DesktopTrackNamePicker != null) return await ServiceHub.DesktopTrackNamePicker(currentName);
         return await Dispatcher.UIThread.InvokeAsync(() =>
             TextInputPopupService.ShowAsync(L.S("Picker.TrackRename.Title"), string.Empty,
                 L.S("Picker.TrackRename.Placeholder"), currentName,

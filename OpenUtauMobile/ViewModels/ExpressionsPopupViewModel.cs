@@ -5,6 +5,7 @@ using System.Reactive;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -132,7 +133,9 @@ public class ExpressionsPopupViewModel : PopupViewModelBase
                 if (suggestions == null) continue;
                 foreach (UExpressionDescriptor suggestion in suggestions)
                 {
-                    if (!projectExpressions.Any(existing => existing.Abbr == suggestion.abbr))
+                    if (ExpressionCatalog.IsIncluded(source, suggestion) &&
+                        !projectExpressions.Any(existing => existing.Abbr == suggestion.abbr ||
+                            !string.IsNullOrEmpty(suggestion.flag) && existing.Flag == suggestion.flag))
                         projectExpressions.Add(new ExpressionBuilder(suggestion));
                 }
             }

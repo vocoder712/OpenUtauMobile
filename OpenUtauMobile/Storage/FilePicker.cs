@@ -1,4 +1,4 @@
-﻿using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,11 +42,12 @@ public static class FilePicker
         ];
     }
 
-    private static readonly bool UseInternalPicker = OperatingSystem.IsBrowser() || OperatingSystem.IsAndroid()
+    private static bool UseInternalPicker => OperatingSystem.IsBrowser() ||
+        (!ServiceHub.UseDesktopFileWorkflows && (OperatingSystem.IsAndroid()
 #if DEBUG
                                                      || OperatingSystem.IsWindows()
 #endif
-        ;
+        ));
     /// <summary>
     /// 权限检查
     /// </summary>

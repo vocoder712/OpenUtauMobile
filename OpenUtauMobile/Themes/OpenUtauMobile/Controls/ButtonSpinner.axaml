@@ -3,6 +3,7 @@
                     xmlns:sys="using:System"
                     xmlns:converters="using:Avalonia.Controls.Converters"
                     x:CompileBindings="False">
+  <x:Double x:Key="ButtonSpinnerButtonMinWidth">34</x:Double>
 
   <converters:MarginMultiplierConverter x:Key="ButtonSpinnerLeftThickness" Indent="1" Left="True" />
   <converters:MarginMultiplierConverter x:Key="ButtonSpinnerRightThickness" Indent="1" Right="True" />
@@ -11,6 +12,7 @@
 
   <ControlTheme x:Key="OpumButtonSpinnerRepeatButton" TargetType="RepeatButton" BasedOn="{StaticResource {x:Type Button}}">
     <Setter Property="MinWidth" Value="34" />
+    <Setter Property="MinHeight" Value="0" />
     <Setter Property="Padding" Value="0" />
     <Setter Property="CornerRadius" Value="0" />
   </ControlTheme>
@@ -33,7 +35,7 @@
           <Border Background="{TemplateBinding Background}"
                   BorderBrush="{TemplateBinding BorderBrush}"
                   BorderThickness="{TemplateBinding BorderThickness}"
-                  CornerRadius="{TemplateBinding CornerRadius}"
+                  CornerRadius="{TemplateBinding CornerRadius}" ClipToBounds="True"
                   MinHeight="{TemplateBinding MinHeight}">
             <DockPanel>
               <StackPanel Name="PART_SpinnerPanel"
@@ -50,7 +52,7 @@
                               VerticalAlignment="Stretch"
                               VerticalContentAlignment="Center"
                               Foreground="{TemplateBinding Foreground}"
-                              MinWidth="34">
+                              MinWidth="{DynamicResource ButtonSpinnerButtonMinWidth}">
                   <PathIcon Width="16"
                             Height="8"
                             Data="{StaticResource ButtonSpinnerIncreaseButtonIcon}" />
@@ -65,7 +67,7 @@
                               VerticalAlignment="Stretch"
                               VerticalContentAlignment="Center"
                               Foreground="{TemplateBinding Foreground}"
-                              MinWidth="34">
+                              MinWidth="{DynamicResource ButtonSpinnerButtonMinWidth}">
                   <PathIcon Width="16"
                             Height="8"
                             Data="{StaticResource ButtonSpinnerDecreaseButtonIcon}" />
@@ -85,7 +87,16 @@
         </DataValidationErrors>
       </ControlTemplate>
     </Setter>
+    <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+      <Setter Property="CornerRadius" Value="{TemplateBinding CornerRadius, Converter={StaticResource RightCornerRadiusFilterConverter}}" />
+    </Style>
     <Style Selector="^:left">
+      <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+        <Setter Property="CornerRadius" Value="0" />
+      </Style>
+      <Style Selector="^ /template/ RepeatButton#PART_IncreaseButton">
+        <Setter Property="CornerRadius" Value="{TemplateBinding CornerRadius, Converter={StaticResource LeftCornerRadiusFilterConverter}}" />
+      </Style>
       <Style Selector="^ /template/ StackPanel#PART_SpinnerPanel">
         <Setter Property="DockPanel.Dock" Value="Left"/>
       </Style>

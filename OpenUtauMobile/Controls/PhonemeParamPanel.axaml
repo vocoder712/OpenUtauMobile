@@ -25,22 +25,27 @@
                 Background="{DynamicResource Sem.Color.SurfaceContainer}"
                 BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                 BorderThickness="0,0,1,0">
-            <c:ParameterPanelToolbar IsVisible="{Binding IsParameterMode}"
-                                     HorizontalAlignment="Stretch"
-                                     VerticalAlignment="Stretch" />
+            <Grid>
+                <c:ParameterPanelToolbar IsVisible="{Binding IsParameterMode}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Panel IsVisible="{Binding !UseDesktopMouseInput}">
+                    <Button x:Name="ResetPhonemesButton" Classes="TopBarBtn" IsVisible="{Binding !IsParameterMode}" Click="OnResetPhonemes"
+                        HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,0"
+                        Content="{icons:PhosphorIcons ArrowCounterClockwise}" ToolTip.Tip="{DynamicResource BatchEdit.Action.ClearTimings}" />
+                </Panel>
+            </Grid>
         </Border>
 
         <!-- 右侧画布区 -->
         <Panel Grid.Column="1" ClipToBounds="True">
             <!-- 简易音素画布 -->
-            <c:PhonemeSimpleCanvas
+            <c:PhonemeSimpleCanvas x:Name="SimplePhonemes"
                 IsVisible="{Binding IsPhonemeSimpleMode}"
                 Part="{Binding EditingVoicePart}"
                 TickWidth="{Binding TickWidth}"
                 TickOffset="{Binding TickOffset}" />
 
             <!-- 高级音素画布 -->
-            <c:PhonemeAdvancedCanvas
+            <c:PhonemeAdvancedCanvas x:Name="AdvancedPhonemes"
                 IsVisible="{Binding IsPhonemeAdvancedMode}"
                 Part="{Binding EditingVoicePart}"
                 TickWidth="{Binding TickWidth}"
@@ -57,12 +62,14 @@
                 SecondaryKey="{Binding SecondaryExpressionKey}"
                 IsEraseMode="{Binding IsParameterEraseMode}" />
 
-            <!-- 右上角悬浮模式切换胶囊（留有顶部安全边距避开上方分割手柄） -->
+            <!-- 右上角悬浮模式切换胶囊（留有顶部安全边距避开上方分割手柄）；
+                 桌面端鼠标绘制/擦除由左键与右键区分，不再提供独立擦除模式 -->
             <c:PhonemePanelModeSwitcher
                 ZIndex="10"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,16,10,0"
+                ShowEraseMode="{Binding !UseDesktopMouseInput}"
                 CurrentMode="{Binding PhonemePanelMode, Mode=TwoWay}" />
         </Panel>
         <!-- 提示浮于画布底部，命中测试穿透到下方曲线。 -->

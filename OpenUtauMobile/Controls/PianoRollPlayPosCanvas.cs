@@ -15,8 +15,7 @@ namespace OpenUtauMobile.Controls;
 /// 钢琴卷帘专用播放位置竖线画布。
 /// <para>
 ///     竖线的屏幕 X 坐标由 ViewModel 直接提供（PlayMarkerScreenX），
-///     不依赖 TickOffset/PlayPosTick 计算，因此外观位置始终静止，
-///     仅当屏幕尺寸改变时（OnNoteAreaSizeChanged）才随之更新。
+///     移动端位置固定；桌面随播放位置和视口变化更新。
 ///     不接收任何输入事件（IsHitTestVisible = false）。
 /// </para>
 /// </summary>
@@ -26,7 +25,7 @@ public class PianoRollPlayPosCanvas : Control
 
     /// <summary>
     /// 播放标记的屏幕 X 坐标（像素）。由 PianoRollViewModel.PlayMarkerScreenX 绑定。
-    /// 仅在画布宽度变化时更新，其他时刻保持静止。
+    /// 移动端固定于画布，桌面反映时间轴中的播放位置。
     /// </summary>
     public static readonly StyledProperty<double> PlayMarkerScreenXProperty =
         AvaloniaProperty.Register<PianoRollPlayPosCanvas, double>(nameof(PlayMarkerScreenX));

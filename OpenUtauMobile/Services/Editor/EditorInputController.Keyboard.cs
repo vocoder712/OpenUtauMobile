@@ -1,8 +1,8 @@
+using static Avalonia.Input.InputElement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -14,21 +14,22 @@ using OpenUtau.Core;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Views;
+namespace OpenUtauMobile.Services.Editor;
 
-public partial class EditorView
+public sealed partial class EditorInputController
 {
-    private enum EditArea { Tracks, PianoRoll, Mixer }
-    private EditArea _activeEditArea;
+    public enum EditArea { Tracks, PianoRoll, Mixer }
+    public EditArea ActiveArea { get; set; }
+    private EditArea _activeEditArea { get => ActiveArea; set => ActiveArea = value; }
     private readonly HashSet<Key> _pressedKeys = [];
     private readonly Dictionary<Popup, Control?> _inputPopups = [];
     private IDisposable? _popupSubscription;
     private bool _focusRestoreQueued;
     private bool HasInputPopup => _inputPopups.Count != 0;
 
-    private bool IsEditorInputActive => _inputRoot != null && TopLevel.GetTopLevel(this) == _inputRoot &&
-        IsEffectivelyVisible && IsEffectivelyEnabled && !IsModalOpen && !HasInputPopup &&
-        DataContext is EditorViewModel { IsLoadingProject: false };
+    private bool IsEditorInputActive => _inputRoot != null && TopLevel.GetTopLevel(_owner) == _inputRoot &&
+        _owner.IsEffectivelyVisible && _owner.IsEffectivelyEnabled && !IsModalOpen && !HasInputPopup &&
+        _owner.DataContext is EditorViewModel { IsLoadingProject: false };
 
     private static bool IsWithin(Visual? source, Visual parent) =>
         source != null && source.GetSelfAndVisualAncestors().Contains(parent);
@@ -103,10 +104,10 @@ public partial class EditorView
 
     private void OnEditorLostFocus(object? sender, RoutedEventArgs e)
     {
-        if (IsWithin(e.Source as Visual, this)) QueueEditorFocusRepair();
+        if (IsWithin(e.Source as Visual, _owner)) QueueEditorFocusRepair();
     }
 
-    private void QueueEditorFocusRepair()
+    public void QueueEditorFocusRepair()
     {
         if (_focusRestoreQueued) return;
         _focusRestoreQueued = true;
@@ -117,14 +118,14 @@ public partial class EditorView
             // 保留有效控件的焦点，仅修复隐藏、移除控件后留下的空焦点。
             if (_inputRoot!.FocusManager.GetFocusedElement() is InputElement focused &&
                 focused.IsAttachedToVisualTree() && focused.IsEffectivelyVisible && focused.IsEffectivelyEnabled) return;
-            Focus();
+            _owner.Focus();
         }, DispatcherPriority.Loaded);
     }
 
     private void UpdateActiveEditArea(Visual? source)
     {
-        if (source == null || !IsWithin(source, this)) return;
-        if (IsMixerOpen && _mixerPanel != null && IsWithin(source, _mixerPanel)) _activeEditArea = EditArea.Mixer;
+        if (source == null || !IsWithin(source, _owner)) return;
+        if (_mixerPanel != null && IsWithin(source, _mixerPanel)) _activeEditArea = EditArea.Mixer;
         else if (!IsMixerOpen && IsWithin(source, PianoRollAreaGrid)) _activeEditArea = EditArea.PianoRoll;
         else if (source.GetSelfAndVisualAncestors().Any(node => node is TrackHeader or TrackHeaderCanvas) ||
                  TryGetSurface(source, out bool piano, out _) && !piano) _activeEditArea = EditArea.Tracks;
@@ -139,10 +140,10 @@ public partial class EditorView
     private async void OnEditorKeyDown(object? sender, KeyEventArgs e)
     {
         if (_pressedKeys.Contains(e.Key)) { e.Handled = true; return; }
-        if (e.Handled || !IsEditorInputActive || DataContext is not EditorViewModel vm) return;
+        if (e.Handled || !IsEditorInputActive || _owner.DataContext is not EditorViewModel vm) return;
         Visual? focused = _inputRoot!.FocusManager.GetFocusedElement() as Visual;
         if (focused != null && focused != _inputRoot && focused.IsAttachedToVisualTree() &&
-            !IsWithin(focused, this) && !IsWithin(this, focused)) return;
+            !IsWithin(focused, _owner) && !IsWithin(_owner, focused)) return;
         Visual? source = focused ?? e.Source as Visual;
         if (DialogKeyboard.IsComposing(source)) return;
         // 保存
@@ -152,69 +153,45 @@ public partial class EditorView
         {
             e.Handled = true;
             if (!_pressedKeys.Add(e.Key)) return;
+            if (_prepareSave?.Invoke() == false) return;
+            if (vm.UseDesktopInput) CancelEditorInput();
             await vm.SaveFromInputAsync(e.KeyModifiers.HasFlag(KeyModifiers.Shift));
             return;
         }
-        if (source?.GetSelfAndVisualAncestors().Any(v => v is TextBox) == true) return;
-        bool pianoInputActive = _activeEditArea == EditArea.PianoRoll && !IsMixerOpen;
-        bool commandModifier = e.KeyModifiers == KeyModifiers.Control ||
-            OperatingSystem.IsMacOS() && e.KeyModifiers == KeyModifiers.Meta;
+        if (EditorShortcuts.IsTextInput(source)) return;
+        if (e.Key == Key.Escape && vm.UseDesktopInput && _activeEditArea != EditArea.Mixer)
+        {
+            CancelEditorInput();
+            e.Handled = true;
+            return;
+        }
+        bool commandModifier = EditorShortcuts.IsCommandModifier(e.KeyModifiers, OperatingSystem.IsMacOS());
+        if (EditorShortcuts.GetAction(vm, e.Key, e.KeyModifiers, OperatingSystem.IsMacOS()) is { } action)
+        {
+            e.Handled = true;
+            if (_pressedKeys.Add(e.Key) && _editorPointers.Count == 0 && !DocManager.Inst.HasOpenUndoGroup && action.CanExecute(null)) action.Execute(null);
+            return;
+        }
         if (commandModifier)
         {
             // 复制、剪切、粘贴
-            if (e.Key is Key.C or Key.V or Key.X && _activeEditArea != EditArea.Mixer)
+            if (e.Key is Key.C or Key.V or Key.X or Key.A && _activeEditArea != EditArea.Mixer)
             {
                 e.Handled = true;
-                if (!_pressedKeys.Add(e.Key) || _editorPointers.Count != 0 || DocManager.Inst.HasOpenUndoGroup) return;
-                if (pianoInputActive)
-                {
-                    if (!vm.PianoRollViewModel.CanNavigateViewport || vm.PianoRollViewModel.EditingVoicePart == null) return;
-                }
-                else if (!vm.CanNavigateViewport) return;
-                Action action = (pianoInputActive, e.Key) switch
-                {
-                    (true, Key.C) => vm.PianoRollViewModel.CopySelectedNotes, // 复制音符
-                    (true, Key.X) => vm.PianoRollViewModel.CutSelectedNotes, // 剪切音符
-                    (true, Key.V) => vm.PianoRollViewModel.PasteNotes, // 粘贴音符
-                    (false, Key.C) => vm.CopySelectedParts, // 复制分片
-                    (false, Key.X) => vm.CutSelectedParts, // 剪切分片
-                    (false, Key.V) => vm.PasteParts, // 粘贴分片
-                    _ => () => { } // 无效组合
-                };
-                action();
-            }
-            // 撤销、重做
-            else if (e.Key is Key.Z or Key.Y)
-            {
-                e.Handled = true;
-                if (!_pressedKeys.Add(e.Key) || _editorPointers.Count != 0) return;
-                ICommand command = e.Key == Key.Z ? vm.UndoCommand : vm.RedoCommand;
-                if (command.CanExecute(null)) command.Execute(null);
-            }
-            // 全选音符
-            else if (e.Key == Key.A && pianoInputActive && _editorPointers.Count == 0 &&
-                     vm.PianoRollViewModel.CanNavigateViewport && vm.PianoRollViewModel.EditingVoicePart != null)
-            {
-                e.Handled = true;
-                if (_pressedKeys.Add(e.Key)) vm.PianoRollViewModel.SelectAllNotes();
+                if (_pressedKeys.Add(e.Key)) ExecuteSelectionAction(e.Key);
             }
             return;
         }
         // 跳过其它组合键，避免与系统快捷键冲突。
         if (e.KeyModifiers != KeyModifiers.None) return;
-        // 空格播放／暂停
-        if (e.Key == Key.Space)
+        // 删除当前编辑区域的选区。
+        if (e.Key == Key.Delete && _activeEditArea != EditArea.Mixer)
         {
             e.Handled = true;
-            if (_pressedKeys.Add(e.Key) && ((ICommand)vm.PlayPauseCommand).CanExecute(null))
-                ((ICommand)vm.PlayPauseCommand).Execute(null);
-        }
-        // 删除音符
-        else if (e.Key == Key.Delete && pianoInputActive && _editorPointers.Count == 0 &&
-                 vm.PianoRollViewModel.CanNavigateViewport && vm.PianoRollViewModel.SelectedNotes.Count > 0)
-        {
-            e.Handled = true;
-            if (_pressedKeys.Add(e.Key)) vm.PianoRollViewModel.DeleteSelectedNotes();
+            if (_pressedKeys.Add(e.Key))
+            {
+                ExecuteSelectionAction(Key.Delete);
+            }
         }
     }
 }

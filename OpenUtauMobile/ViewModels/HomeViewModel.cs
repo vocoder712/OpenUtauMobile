@@ -2,6 +2,7 @@ using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using DynamicData.Binding;
@@ -35,6 +36,8 @@ public class HomeViewModel : NavigateViewModelBase
     /// </summary>
     [Reactive]
     public ObservableCollectionExtended<string> RecentProjects { get; set; } = [];
+
+    public ObservableCollectionExtended<string> Templates { get; } = [];
 
     /// <summary>
     /// 是否有异常退出且恢复文件
@@ -196,6 +199,7 @@ public class HomeViewModel : NavigateViewModelBase
         }
 
         await RefreshRecentProjectsAsync();
+        await RefreshTemplatesAsync();
 
         if (!Preferences.Default.SetupWizardCompleted)
         {
@@ -205,7 +209,22 @@ public class HomeViewModel : NavigateViewModelBase
 
     private async Task RefreshRecentProjectsAsync()
     {
-        RecentProjects.Load(await Task.Run(() => Preferences.Default.RecentFiles));
+        string[] recent = await Task.Run(() => Preferences.Default.RecentFiles.ToArray());
+        if (!RecentProjects.SequenceEqual(recent)) RecentProjects.Load(recent);
+    }
+
+    private async Task RefreshTemplatesAsync()
+    {
+        try
+        {
+            string[] templates = await Task.Run(() => Directory.Exists(PathManager.Inst.TemplatesPath)
+                ? Directory.GetFiles(PathManager.Inst.TemplatesPath, "*.ustx").OrderBy(Path.GetFileName).ToArray() : []);
+            if (!Templates.SequenceEqual(templates)) Templates.Load(templates);
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "Failed to refresh project templates");
+        }
     }
 
     private async Task ShowSetupWizardAsync()
@@ -216,6 +235,11 @@ public class HomeViewModel : NavigateViewModelBase
 
     public override void OnBackRequested()
     {
+        if (Services.ServiceHub.UseDesktopFileWorkflows && Navigator.ActiveEditor != null)
+        {
+            Navigator.NavigateBack(this);
+            return;
+        }
         DateTime now = DateTime.UtcNow;
         if (_lastBackPressedTime.HasValue && (now - _lastBackPressedTime.Value) <= backPressInterval)
         {

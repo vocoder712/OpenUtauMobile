@@ -9,6 +9,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Editor;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 using ReactiveUI;
@@ -17,6 +18,12 @@ namespace OpenUtauMobile.Views;
 
 public partial class EditorView : UserControl
 {
+    private readonly EditorInputController _input;
+    private Grid TrackAreaGrid => Arrangement.LayoutGrid;
+    private Control PianoRollAreaGrid => PianoSurface;
+    private Grid PART_PianoRollGrid => PianoSurface.LayoutGrid;
+    private PhonemeParamPanel PhonemeParamPanel => PianoSurface.ParameterPanel;
+
     // ── 分割拖拽状态 ──
     private bool _splitPointerDown;
     private bool _splitDragging;
@@ -38,15 +45,15 @@ public partial class EditorView : UserControl
     public void OpenMixer()
     {
         if (IsMixerOpen || DataContext is not EditorViewModel vm) return;
-        CancelEditorInput();
+        _input.CancelEditorInput();
         _mixerPanel ??= CreateMixerPanel();
         OnMagnifierClose();
         vm.PianoRollViewModel.SetPresentationSuspended(true);
         // 移除整个控件树，参数面板、模式按钮和上下文菜单一同停止绘制与命中。
         DetailAreaHost.Children.Remove(PianoRollAreaGrid);
         DetailAreaHost.Children.Add(_mixerPanel);
-        _activeEditArea = EditArea.Mixer;
-        QueueEditorFocusRepair();
+        _input.ActiveArea = EditorInputController.EditArea.Mixer;
+        _input.QueueEditorFocusRepair();
     }
 
     private MixerPanel CreateMixerPanel()
@@ -61,8 +68,8 @@ public partial class EditorView : UserControl
         if (!IsMixerOpen) return;
         DetailAreaHost.Children.Remove(_mixerPanel!);
         DetailAreaHost.Children.Add(PianoRollAreaGrid);
-        _activeEditArea = EditArea.PianoRoll;
-        QueueEditorFocusRepair();
+        _input.ActiveArea = EditorInputController.EditArea.PianoRoll;
+        _input.QueueEditorFocusRepair();
         if (DataContext is EditorViewModel vm)
         {
             vm.PianoRollViewModel.SetPresentationSuspended(false);
@@ -81,17 +88,14 @@ public partial class EditorView : UserControl
     public EditorView()
     {
         InitializeComponent();
-        InitializeEditorInput();
+        _input = new EditorInputController(this, Arrangement, PianoSurface,
+            () => IsMixerOpen, () => _mixerPanel);
 
         SplitDragHandle.PointerPressed += OnSplitHandlePointerPressed;
         SplitDragHandle.PointerMoved += OnSplitHandlePointerMoved;
         SplitDragHandle.PointerReleased += OnSplitHandlePointerReleased;
         SplitDragHandle.PointerCaptureLost += OnSplitHandlePointerCaptureLost;
 
-        PhonemeSplitHandlePill.PointerPressed += OnPhonemeSplitHandlePointerPressed;
-        PhonemeSplitHandlePill.PointerMoved += OnPhonemeSplitHandlePointerMoved;
-        PhonemeSplitHandlePill.PointerReleased += OnPhonemeSplitHandlePointerReleased;
-        PhonemeSplitHandlePill.PointerCaptureLost += OnPhonemeSplitHandlePointerCaptureLost;
         PhonemeParamPanel.RequestMagnifierOpen += OnParameterMagnifierOpen;
         PhonemeParamPanel.RequestMagnifierUpdate += OnParameterMagnifierUpdate;
         PhonemeParamPanel.RequestMagnifierClose += OnMagnifierClose;
@@ -275,10 +279,10 @@ public partial class EditorView : UserControl
         EditorGrid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
         EditorGrid.ColumnDefinitions[1].Width = new GridLength(0, GridUnitType.Pixel);
 
-        Grid.SetRow(TrackAreaGrid, 0);
-        Grid.SetColumn(TrackAreaGrid, 0);
-        Grid.SetRowSpan(TrackAreaGrid, 1);
-        Grid.SetColumnSpan(TrackAreaGrid, 2);
+        Grid.SetRow(Arrangement, 0);
+        Grid.SetColumn(Arrangement, 0);
+        Grid.SetRowSpan(Arrangement, 1);
+        Grid.SetColumnSpan(Arrangement, 2);
 
         Grid.SetRow(DetailAreaHost, 1);
         Grid.SetColumn(DetailAreaHost, 0);
@@ -299,10 +303,10 @@ public partial class EditorView : UserControl
         EditorGrid.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
         EditorGrid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
 
-        Grid.SetRow(TrackAreaGrid, 0);
-        Grid.SetColumn(TrackAreaGrid, 0);
-        Grid.SetRowSpan(TrackAreaGrid, 2);
-        Grid.SetColumnSpan(TrackAreaGrid, 1);
+        Grid.SetRow(Arrangement, 0);
+        Grid.SetColumn(Arrangement, 0);
+        Grid.SetRowSpan(Arrangement, 2);
+        Grid.SetColumnSpan(Arrangement, 1);
 
         Grid.SetRow(DetailAreaHost, 0);
         Grid.SetColumn(DetailAreaHost, 1);
@@ -613,83 +617,4 @@ public partial class EditorView : UserControl
 
     #endregion
 
-    #region 音素与参数面板分割手势
-
-    private bool _phonemeSplitDragging;
-    private double _phonemeSplitPressX;
-    private double _phonemeSplitPressY;
-    private double _phonemeSplitPressHeight;
-    private double _phonemeHandleXOffset;
-    private double _phonemeSplitPressXOffset;
-
-    private void OnPhonemeSplitHandlePointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (DataContext is not EditorViewModel vm || !e.GetCurrentPoint(PhonemeSplitHandlePill).Properties.IsLeftButtonPressed)
-        {
-            return;
-        }
-
-        Point pos = e.GetPosition(this);
-
-        _phonemeSplitDragging = true;
-        _phonemeSplitPressX = pos.X;
-        _phonemeSplitPressY = pos.Y;
-        _phonemeSplitPressHeight = vm.PianoRollViewModel.PhonemePanelHeight;
-        _phonemeSplitPressXOffset = _phonemeHandleXOffset;
-        e.Pointer.Capture(PhonemeSplitHandlePill);
-        e.Handled = true;
-    }
-
-    private void OnPhonemeSplitHandlePointerMoved(object? sender, PointerEventArgs e)
-    {
-        if (!_phonemeSplitDragging || DataContext is not EditorViewModel vm)
-        {
-            return;
-        }
-
-        if (!e.GetCurrentPoint(null).Properties.IsLeftButtonPressed)
-        {
-            e.Pointer.Capture(null);
-            _phonemeSplitDragging = false;
-            return;
-        }
-
-        Point currentPoint = e.GetPosition(this);
-        double deltaY = _phonemeSplitPressY - currentPoint.Y;
-
-        double availableHeight = PART_PianoRollGrid.Bounds.Height > 0 ? PART_PianoRollGrid.Bounds.Height : Bounds.Height;
-        double maxPanelHeight = Math.Max(0, availableHeight - ViewConstants.PianoRollTickRulerHeight);
-        if (maxPanelHeight <= 0)
-        {
-            maxPanelHeight = 2000.0;
-        }
-
-        double newHeight = Math.Clamp(_phonemeSplitPressHeight + deltaY, 0.0, maxPanelHeight);
-        vm.PianoRollViewModel.PhonemePanelHeight = newHeight;
-
-        // 水平滑动药丸手柄位置
-        double deltaX = currentPoint.X - _phonemeSplitPressX;
-        double maxOffset = Math.Max(10.0, (Bounds.Width - ViewConstants.EditorSplitHandleWidth) * 0.5 - 50.0);
-        _phonemeHandleXOffset = Math.Clamp(_phonemeSplitPressXOffset + deltaX, -maxOffset, maxOffset);
-        PhonemeSplitHandlePill.RenderTransform = new TranslateTransform(_phonemeHandleXOffset, 0);
-
-        e.Handled = true;
-    }
-
-    private void OnPhonemeSplitHandlePointerReleased(object? sender, PointerReleasedEventArgs e)
-    {
-        if (_phonemeSplitDragging)
-        {
-            _phonemeSplitDragging = false;
-            e.Pointer.Capture(null);
-            e.Handled = true;
-        }
-    }
-
-    private void OnPhonemeSplitHandlePointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
-    {
-        _phonemeSplitDragging = false;
-    }
-
-    #endregion
 }
