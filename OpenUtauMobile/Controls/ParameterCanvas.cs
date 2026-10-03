@@ -99,6 +99,14 @@ public class ParameterCanvas : Control, ICmdSubscriber
     public ParameterCanvas()
     {
         ClipToBounds = true;
+        // 桌面端右键即擦除（ParameterCanvas 按下即处理右键），需屏蔽气泡到谱面网格的右键菜单。
+        ContextRequested += (_, e) =>
+        {
+            if (ViewModel?.UseDesktopMouseInput == true)
+            {
+                e.Handled = true;
+            }
+        };
     }
 
     protected override void OnDataContextChanged(EventArgs e)

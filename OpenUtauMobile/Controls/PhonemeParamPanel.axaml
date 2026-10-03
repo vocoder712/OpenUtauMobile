@@ -62,12 +62,14 @@
                 SecondaryKey="{Binding SecondaryExpressionKey}"
                 IsEraseMode="{Binding IsParameterEraseMode}" />
 
-            <!-- 右上角悬浮模式切换胶囊（留有顶部安全边距避开上方分割手柄） -->
+            <!-- 右上角悬浮模式切换胶囊（留有顶部安全边距避开上方分割手柄）；
+                 桌面端鼠标绘制/擦除由左键与右键区分，不再提供独立擦除模式 -->
             <c:PhonemePanelModeSwitcher
                 ZIndex="10"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="0,16,10,0"
+                ShowEraseMode="{Binding !UseDesktopMouseInput}"
                 CurrentMode="{Binding PhonemePanelMode, Mode=TwoWay}" />
         </Panel>
         <!-- 提示浮于画布底部，命中测试穿透到下方曲线。 -->

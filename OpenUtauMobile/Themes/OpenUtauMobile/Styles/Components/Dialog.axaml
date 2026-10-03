@@ -178,6 +178,10 @@
     <Style Selector="controls|DialogShell[IsWindowHosted=True] controls|DialogActionRows">
         <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
+    <!-- 窗口宿主下 DesktopInline 行组合并为单行（多行改横排）；触屏端保持纵向堆叠。 -->
+    <Style Selector="controls|DialogShell[IsWindowHosted=True] controls|DialogActionRows.DesktopInline">
+        <Setter Property="Orientation" Value="Horizontal" />
+    </Style>
     <Style Selector="controls|DialogShell[IsWindowHosted=True] :is(controls|DialogActionRow)">
         <Setter Property="Compact" Value="True" />
         <Setter Property="HorizontalAlignment" Value="Right" />

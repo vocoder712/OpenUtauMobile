@@ -6,7 +6,8 @@
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
         x:Class="OpenUtauMobile.Controls.PhonemePanelModeSwitcher"
-             HorizontalAlignment="Right">
+         x:Name="SwitcherRoot"
+         HorizontalAlignment="Right">
     <UserControl.Styles>
         <StyleInclude Source="/Controls/Styles/EditModeSwitcher.axaml" />
     </UserControl.Styles>
@@ -50,9 +51,11 @@
                             x:Name="ParameterDrawButton"
                             ToolTip.Tip="{DynamicResource PhonemePanel.Mode.Draw}"
                             Click="OnModeButtonClick" />
+                    <!-- 移动端专属擦除模式；桌面通过鼠标右键擦除，不展示该按钮 -->
                     <Button Content="{iconPacks:PhosphorIcons Eraser}"
                             Classes="EditModeBtn"
                             x:Name="ParameterEraseButton"
+                            IsVisible="{Binding #SwitcherRoot.ShowEraseMode}"
                             ToolTip.Tip="{DynamicResource PhonemePanel.Mode.Erase}"
                             Click="OnModeButtonClick" />
                     <!-- 分隔线 -->
