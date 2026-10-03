@@ -63,16 +63,6 @@ public class PluginManagementViewModel : ReactiveObject, IDisposable {
 
     [Reactive] public bool IsEmpty { get; private set; }
 
-    /// <summary>
-    /// 当前平台是否支持动态加载 DLL 插件。
-    /// iOS 使用 Mono AOT，Browser 是 WASM，二者均不支持 Assembly.LoadFrom。
-    /// </summary>
-    public bool IsSupported { get; } =
-        OperatingSystem.IsAndroid() ||
-        OperatingSystem.IsWindows() ||
-        OperatingSystem.IsLinux() ||
-        OperatingSystem.IsMacOS();
-
     public PluginManagementViewModel() {
         ImportCommand = ReactiveCommand.CreateFromTask(ImportAsync);
         RefreshCommand = ReactiveCommand.Create(Refresh);

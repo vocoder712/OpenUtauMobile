@@ -1083,6 +1083,74 @@
                                                 HorizontalAlignment="Left" />
                                     </StackPanel>
                                 </Border>
+
+                                <!-- 插件管理 -->
+                                <Border Classes="SettingCard"
+                                        IsVisible="{Binding PluginManagement.IsSupported}">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.File.Plugins.Title}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.File.Plugins.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+
+                                        <Grid ColumnDefinitions="Auto,*,Auto"
+                                              ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                            <Button Grid.Column="0"
+                                                    Classes="filled"
+                                                    Content="{DynamicResource Settings.File.Plugins.Import}"
+                                                    Command="{Binding PluginManagement.ImportCommand}" />
+                                            <Button Grid.Column="2"
+                                                    Classes="tonal"
+                                                    Content="{DynamicResource Common.Refresh}"
+                                                    Command="{Binding PluginManagement.RefreshCommand}" />
+                                        </Grid>
+
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.File.Plugins.Empty}"
+                                                   IsVisible="{Binding PluginManagement.IsEmpty}" />
+
+                                        <ItemsControl ItemsSource="{Binding PluginManagement.InstalledPlugins}"
+                                                      IsVisible="{Binding !PluginManagement.IsEmpty}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:PluginEntryViewModel">
+                                                    <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                                                            CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
+                                                            Padding="12,10">
+                                                        <Grid ColumnDefinitions="*,Auto"
+                                                              ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                                            <StackPanel Grid.Column="0" Spacing="2">
+                                                                <TextBlock Text="{Binding FileName}"
+                                                                           FontWeight="SemiBold"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock FontSize="11"
+                                                                           Opacity="0.7"
+                                                                           Text="{Binding DetailsText}"
+                                                                           TextWrapping="Wrap" />
+                                                                <TextBlock FontSize="11"
+                                                                           Opacity="0.5"
+                                                                           Text="{Binding SizeText}" />
+                                                            </StackPanel>
+                                                            <Button Grid.Column="1"
+                                                                    Classes="destructive"
+                                                                    VerticalAlignment="Center"
+                                                                    Command="{Binding UninstallCommand}"
+                                                                    Content="{DynamicResource Common.Uninstall}" />
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+
                             </StackPanel>
 
                             <!-- ══════════════════════════════════════════

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net10.0-android36.0</TargetFramework>
@@ -11,22 +11,31 @@
         <!-- 大堆内存 -->
         <AndroidMaxHeapSize>2G</AndroidMaxHeapSize>
         <TieredPGO>true</TieredPGO>
+        <!-- 关闭链接器裁剪，保证运行时 DLL 反射注册可用 -->
+        <IsTrimmable>False</IsTrimmable>
+        <PublishTrimmed>False</PublishTrimmed>
+        <AndroidLinkMode>None</AndroidLinkMode>
     </PropertyGroup>
     <!-- 调试模式 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <ApplicationId>$(BaseApplicationId).debug</ApplicationId>
-        <IsTrimmable>True</IsTrimmable>
+        <IsTrimmable>False</IsTrimmable>
         <!-- 避免 Fast Deployment 在启动期逐个加载程序集导致 ANR -->
         <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     </PropertyGroup>
     <!-- 发布模式 -->
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <IsTrimmable>True</IsTrimmable>
+        <IsTrimmable>False</IsTrimmable>
         <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
         <!-- 分包 -->
         <!-- 在命令行中单独制定需要哪些分包 -->
         <!-- <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers> -->
     </PropertyGroup>
+    <!-- Mono GC nursery 大小；缓解移动端 UI 卡顿与内存不足（Release 生效） -->
+    <ItemGroup>
+        <AndroidEnvironment Include="MONO_GC_PARAMS=nursery-size=128m"
+                            Condition="'$(Configuration)' == 'Release'" />
+    </ItemGroup>
     <!-- 静态资源 -->
     <ItemGroup>
         <AndroidResource Include="Resources\drawable\Icon.png"/>

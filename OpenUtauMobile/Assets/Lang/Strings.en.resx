@@ -2156,4 +2156,63 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>Enter a valid file name without directory separators.</value>
   </data>
+
+  <data name="Settings.File.ImportPhonemizer" xml:space="preserve">
+    <value>Import Phonemizer</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Desc" xml:space="preserve">
+    <value>Import a compiled phonemizer DLL (must target the same .NET version). It will be loaded immediately and appear in the phonemizer picker.</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Button" xml:space="preserve">
+    <value>Choose DLL…</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Success" xml:space="preserve">
+    <value>Phonemizer installed.</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Failed" xml:space="preserve">
+    <value>Failed to load phonemizer. See logs for details.</value>
+  </data>
+
+  <data name="Settings.File.Plugins.Title" xml:space="preserve">
+    <value>Plugins</value>
+  </data>
+  <data name="Settings.File.Plugins.Desc" xml:space="preserve">
+    <value>Manage DLL plugins (phonemizers etc.) under the Plugins directory. Restart the app for full effect after uninstall.</value>
+  </data>
+  <data name="Settings.File.Plugins.Import" xml:space="preserve">
+    <value>Import DLL</value>
+  </data>
+  <data name="Settings.File.Plugins.Empty" xml:space="preserve">
+    <value>No plugins installed</value>
+  </data>
+  <data name="Settings.File.Plugins.ImportSuccess" xml:space="preserve">
+    <value>Imported {0}</value>
+  </data>
+  <data name="Settings.File.Plugins.ImportFailed" xml:space="preserve">
+    <value>Import failed, see logs</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallConfirmTitle" xml:space="preserve">
+    <value>Uninstall plugin</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallConfirmMessage" xml:space="preserve">
+    <value>Uninstall {0}? Restart the app if the plugin is already loaded.</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallSuccess" xml:space="preserve">
+    <value>Uninstalled {0}</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallFailed" xml:space="preserve">
+    <value>Uninstall failed</value>
+  </data>
+  <data name="Settings.File.Plugins.PhonemizerCount" xml:space="preserve">
+    <value>Contains {0} phonemizer(s)</value>
+  </data>
+  <data name="Settings.File.Plugins.NoRecognizedTypes" xml:space="preserve">
+    <value>No recognized plugin types</value>
+  </data>
+  <data name="Settings.File.Plugins.NotLoaded" xml:space="preserve">
+    <value>Not loaded</value>
+  </data>
+  <data name="Settings.File.Plugins.LoadFailed" xml:space="preserve">
+    <value>Load failed</value>
+  </data>
 </root>

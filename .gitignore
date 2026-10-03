@@ -460,3 +460,7 @@ analysis/
 /tests/
 # Agent 计划
 /plans/
+# Local development tools (not part of the PR)
+build.ps1
+clean_for_pr.py
+collected_files/
