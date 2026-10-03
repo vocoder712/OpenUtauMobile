@@ -464,3 +464,8 @@ analysis/
 build.ps1
 clean_for_pr.py
 collected_files/
+
+# Local backups and logs
+*.bak
+*.bak_onnx
+build-log.txt
