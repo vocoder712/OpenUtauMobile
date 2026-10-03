@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
 
 namespace OpenUtauMobile.Controls;
 
@@ -169,7 +170,7 @@ public class DialogActionRow : Panel
     }
 }
 
-/// <summary>纵向排列业务视图指定的操作行，也可用作二维列表的外层项目面板。</summary>
+/// <summary>排列业务视图指定的操作行；默认纵向堆叠，窗口宿主可经 DesktopInline 样式切为横向单行。</summary>
 public class DialogActionRows : StackPanel
 {
     private readonly List<Control> visibleRows = [];
@@ -179,13 +180,15 @@ public class DialogActionRows : StackPanel
         visibleRows.Clear();
         double width = 0;
         double height = 0;
+        // 横向模式仅供窗口宿主的 DesktopInline 行组使用，触屏端保持纵向堆叠。
+        bool horizontal = Orientation == Orientation.Horizontal;
         foreach (Control child in Children)
         {
             if (!child.IsVisible)
             {
                 continue;
             }
-            child.Measure(new Size(availableSize.Width, double.PositiveInfinity));
+            child.Measure(horizontal ? Size.Infinity : new Size(availableSize.Width, double.PositiveInfinity));
             // 动态操作行外面可能还有 ContentPresenter；空行不占用行间隔。
             if (child.DesiredSize.Height <= 0)
             {
@@ -193,17 +196,42 @@ public class DialogActionRows : StackPanel
             }
             if (visibleRows.Count > 0)
             {
-                height += Spacing;
+                if (horizontal)
+                {
+                    width += Spacing;
+                }
+                else
+                {
+                    height += Spacing;
+                }
             }
             visibleRows.Add(child);
-            width = Math.Max(width, child.DesiredSize.Width);
-            height += child.DesiredSize.Height;
+            if (horizontal)
+            {
+                width += child.DesiredSize.Width;
+                height = Math.Max(height, child.DesiredSize.Height);
+            }
+            else
+            {
+                width = Math.Max(width, child.DesiredSize.Width);
+                height += child.DesiredSize.Height;
+            }
         }
         return new Size(width, height);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
+        if (Orientation == Orientation.Horizontal)
+        {
+            double x = 0;
+            foreach (Control child in visibleRows)
+            {
+                child.Arrange(new Rect(x, 0, child.DesiredSize.Width, finalSize.Height));
+                x += child.DesiredSize.Width + Spacing;
+            }
+            return finalSize;
+        }
         double y = 0;
         foreach (Control child in visibleRows)
         {

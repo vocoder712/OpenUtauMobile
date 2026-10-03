@@ -201,9 +201,9 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
         Preferences.Default.RecentPhonemizers.Remove(name);
         Preferences.Default.RecentPhonemizers.Insert(0, name);
-        while (Preferences.Default.RecentPhonemizers.Count > 8)
+        while (Preferences.Default.RecentPhonemizers.Count > 10)
         {
-            Preferences.Default.RecentPhonemizers.RemoveRange(8, Preferences.Default.RecentPhonemizers.Count - 8);
+            Preferences.Default.RecentPhonemizers.RemoveRange(10, Preferences.Default.RecentPhonemizers.Count - 10);
         }
 
         Preferences.Save();
