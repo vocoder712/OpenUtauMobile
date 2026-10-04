@@ -54,9 +54,14 @@ namespace OpenUtauMobile.DesktopUI.Views
         private StackPanel? _noteControls;
         private string? _noteSchema;
         private readonly List<Action<NotePropertyEditor>> _noteRebind = [];
+        private readonly List<DesktopExpressionSlider> _expressionSliders = [];
         private bool _attached;
         private bool _disposed;
         private bool _committing;
+        private bool _ownsExpressionUndoGroup;
+        private NotePropertyEditor? _liveExpressionDraft;
+        private NotePropertyField? _liveExpressionField;
+        private decimal? _liveExpressionValue;
         private IDisposable? _languageSubscription;
 
         public DesktopInspector(EditorViewModel editor, DesktopLayoutStore layout)
@@ -117,7 +122,9 @@ namespace OpenUtauMobile.DesktopUI.Views
         }
         public bool CommitPendingInput()
         {
-            CommitCurrentDraft();
+            foreach (DesktopExpressionSlider slider in _expressionSliders.ToArray())
+                if (!slider.CommitPendingEdit()) return false;
+            if (_draft != null && !CommitCurrentDraft()) return false;
             return string.IsNullOrEmpty(_draft?.Error) && !this.GetVisualDescendants().OfType<Control>().Any(DataValidationErrors.GetHasErrors);
         }
         public void SelectNotes()
@@ -155,6 +162,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         private void Detach()
         {
             if (!_attached) return;
+            CancelExpressionSliderPreviews();
             _attached = false;
             foreach (IDisposable subscription in _paletteSubscriptions) subscription.Dispose();
             _paletteSubscriptions.Clear();
@@ -169,15 +177,34 @@ namespace OpenUtauMobile.DesktopUI.Views
         }
         private void OnEditorChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName is nameof(PianoRollViewModel.EditingVoicePart) or nameof(PianoRollViewModel.EditingWavePart)) QueueRefresh();
+            if (e.PropertyName is nameof(PianoRollViewModel.EditingVoicePart) or nameof(PianoRollViewModel.EditingWavePart))
+            {
+                CancelExpressionSliderPreviews();
+                QueueRefresh();
+            }
         }
         private void OnToolsChanged() { _renderSettingsKey = null; QueueRefresh(); }
-        private void OnSelectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => QueueRefresh();
+        private void OnSelectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            CancelExpressionSliderPreviews();
+            QueueRefresh();
+        }
+        private void CancelExpressionSliderPreviews()
+        {
+            foreach (DesktopExpressionSlider slider in _expressionSliders) slider.CancelPendingEdit();
+        }
         public void OnNext(UCommand cmd, bool isUndo)
         {
             if (cmd is SetPlayPosTickNotification or SeekPlayPosTickNotification or ProgressBarNotification) return;
             if (cmd is MixCommand) { _trackVm?.RefreshMix(); return; }
-            if (!_committing && cmd is not UNotification) _notesChangedExternally = true;
+            if (!_committing && (cmd is not UNotification || cmd is LoadProjectNotification))
+            {
+                _notesChangedExternally = true;
+                CancelExpressionSliderPreviews();
+            }
+            // 音素生成结果也会改变继承的表达式值，不能只刷新音素面板。
+            if (cmd is PhonemizedNotification phonemized && phonemized.part == _part)
+                _notesChangedExternally = true;
             if (cmd is NoteCommand or PartCommand or PhonemizedNotification or TrackCommand or LoadProjectNotification) _phonemesChanged = true;
             if (cmd is not UNotification || cmd is LoadProjectNotification or PhonemizedNotification or PreRenderNotification) QueueRefresh();
         }
@@ -206,6 +233,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         private bool SelectionMatches() => _part == _editor.PianoRollViewModel.EditingVoicePart && _notes.SequenceEqual(_editor.PianoRollViewModel.SelectedNotes.OrderBy(n => n.position).ThenBy(n => n.tone));
         private void RefreshNotes()
         {
+            foreach (DesktopExpressionSlider slider in _expressionSliders) slider.CancelPendingEdit();
             _notesChangedExternally = false;
             _refreshingNotes = true;
             NotePropertyEditor? old = _draft;
@@ -214,10 +242,10 @@ namespace OpenUtauMobile.DesktopUI.Views
                 _part = _editor.PianoRollViewModel.EditingVoicePart;
                 _notes = _editor.PianoRollViewModel.SelectedNotes.OrderBy(n => n.position).ThenBy(n => n.tone).ToArray();
                 _draft = _part == null || _notes.Length == 0 ? null : new NotePropertyEditor(_part, _notes);
-                if (_draft == null) { _notesHost.Content = DesktopUi.Label("Desktop.NoNotes"); return; }
+                if (_draft == null) { _expressionSliders.Clear(); _noteControls = null; _noteSchema = null; _notesHost.Content = DesktopUi.Label("Desktop.NoNotes"); return; }
                 NotePropertyEditor draft = _draft;
                 string schema = string.Join("|", draft.Groups.Select(group => $"{group.Key}:{group.Title}:{group.EmptyMessage}:{group.Vibrato != null}:{group.Presets != null}:" +
-                    string.Join(",", group.Fields.Select(field => $"{field.Label}:{field.IsNumber}:{field.IsChoice}:{field.CanReset}"))));
+                    string.Join(",", group.Fields.Select(field => $"{field.Label}:{field.IsNumber}:{field.IsChoice}:{field.CanReset}:{group.Key == "Expressions" && field.IsNumber}"))));
                 // 选择改变时复用控件和模板，只替换草稿绑定，避免大量分配打断音频回调。
                 if (_noteControls != null && _noteSchema == schema)
                 {
@@ -227,6 +255,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                 }
                 _noteSchema = schema;
                 _noteRebind.Clear();
+                _expressionSliders.Clear();
                 StackPanel sections = new() { Spacing = 6, DataContext = draft };
                 _noteControls = sections;
                 _noteRebind.Add(next => sections.DataContext = next);
@@ -259,7 +288,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                     for (int fieldIndex = 0; fieldIndex < group.Fields.Count; fieldIndex++)
                     {
                         int currentField = fieldIndex;
-                        body.Children.Add(CreateField(group.Fields[fieldIndex], next => next.Groups[groupIndex].Fields[currentField]));
+                        body.Children.Add(CreateField(group.Fields[fieldIndex], next => next.Groups[groupIndex].Fields[currentField], group.Key == "Expressions"));
                     }
                     if (group.Key == "Expressions")
                     {
@@ -318,16 +347,27 @@ namespace OpenUtauMobile.DesktopUI.Views
             }
             finally { old?.Dispose(); _refreshingNotes = false; }
         }
-        private void CommitCurrentDraft()
+        private bool CommitCurrentDraft()
         {
-            if (!_refreshingNotes && _draft is { } draft) CommitDraft(draft);
+            return !_refreshingNotes && _draft is { } draft ? CommitDraft(draft) : false;
         }
-        private Control CreateField(NotePropertyField field, Func<NotePropertyEditor, NotePropertyField> select)
+        private Control CreateField(NotePropertyField field, Func<NotePropertyEditor, NotePropertyField> select, bool addExpressionSlider = false)
         {
-            Grid row = new() { ColumnDefinitions = new ColumnDefinitions("100,*"), ColumnSpacing = 6, DataContext = field };
-            _noteRebind.Add(next => { field = select(next); row.DataContext = field; });
+            Grid row = new()
+            {
+                ColumnDefinitions = new ColumnDefinitions(addExpressionSlider ? "*,Auto" : "100,*"),
+                RowDefinitions = new RowDefinitions(addExpressionSlider ? "Auto,Auto" : "Auto"),
+                ColumnSpacing = 6,
+                RowSpacing = addExpressionSlider ? 2 : 0,
+                DataContext = field
+            };
+            DesktopExpressionSlider? expressionSlider = null;
+            _noteRebind.Add(next => { field = select(next); row.DataContext = field; expressionSlider?.Rebind(field); });
             row.Bind(IsEnabledProperty, new Binding("IsEnabled"));
-            row.Bind(ToolTip.TipProperty, new Binding("Hint"));
+            row.Bind(ToolTip.TipProperty, new Binding("Hint")
+            {
+                Converter = new Avalonia.Data.Converters.FuncValueConverter<string?, string?>(hint => string.IsNullOrWhiteSpace(hint) ? null : hint)
+            });
             ToolTip.SetShowOnDisabled(row, true);
             row.Children.Add(new TextBlock { Text = field.Label, FontSize = 12, TextWrapping = Avalonia.Media.TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center });
             Control input;
@@ -342,13 +382,28 @@ namespace OpenUtauMobile.DesktopUI.Views
             }
             else if (field.IsNumber)
             {
-                NumericUpDown number = new() { Increment = field.Increment };
-                number.Bind(NumericUpDown.MinimumProperty, new Binding("Minimum"));
-                number.Bind(NumericUpDown.MaximumProperty, new Binding("Maximum"));
-                number.Bind(NumericUpDown.ValueProperty, new Binding("Number") { Mode = BindingMode.TwoWay });
-                number.Bind(NumericUpDown.TextProperty, new Binding("NumberText") { Mode = BindingMode.TwoWay });
-                number.Bind(NumericUpDown.PlaceholderTextProperty, number.GetResourceObservable("NoteProperties.Mixed"));
-                input = number;
+                if (addExpressionSlider)
+                {
+                    TextBox number = new();
+                    number.Bind(TextBox.PlaceholderTextProperty, number.GetResourceObservable("NoteProperties.Mixed"));
+                    input = number;
+                    expressionSlider = new DesktopExpressionSlider(field, number,
+                        CommitExpressionSlider,
+                        () => IsExpressionDraftCurrent(field),
+                        PreviewExpressionSlider);
+                    _expressionSliders.Add(expressionSlider);
+                }
+                else
+                {
+                    NumericUpDown number = new() { Increment = field.Increment };
+                    number.Bind(NumericUpDown.IncrementProperty, new Binding("Increment"));
+                    number.Bind(NumericUpDown.MinimumProperty, new Binding("Minimum"));
+                    number.Bind(NumericUpDown.MaximumProperty, new Binding("Maximum"));
+                    number.Bind(NumericUpDown.ValueProperty, new Binding("Number") { Mode = BindingMode.TwoWay });
+                    number.Bind(NumericUpDown.TextProperty, new Binding("NumberText") { Mode = BindingMode.TwoWay });
+                    number.Bind(NumericUpDown.PlaceholderTextProperty, number.GetResourceObservable("NoteProperties.Mixed"));
+                    input = number;
+                }
             }
             else
             {
@@ -357,7 +412,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                 text.Bind(TextBox.PlaceholderTextProperty, text.GetResourceObservable("NoteProperties.Mixed"));
                 input = text;
             }
-            input.LostFocus += (_, _) => { if (field.IsEdited || field.HasInvalidInput) CommitCurrentDraft(); };
+            input.LostFocus += (_, _) => { if (!_expressionSliders.Any(slider => slider.IsEditing) && (field.IsEdited || field.HasInvalidInput)) CommitCurrentDraft(); };
             input.AddHandler(KeyDownEvent, (_, e) =>
             {
                 if (EditorInputController.IsComposing(e.Source as Visual)) return;
@@ -365,28 +420,148 @@ namespace OpenUtauMobile.DesktopUI.Views
                 else if (e.Key == Key.Enter) { e.Handled = true; CommitCurrentDraft(); }
             }, RoutingStrategies.Bubble);
             StackPanel inputs = new() { Spacing = 2 };
-            Grid.SetColumn(inputs, 1); inputs.Children.Add(input); row.Children.Add(inputs);
+            if (addExpressionSlider)
+            {
+                Grid.SetRow(inputs, 1);
+                Grid.SetColumnSpan(inputs, 2);
+            }
+            else Grid.SetColumn(inputs, 1);
+            inputs.Children.Add(expressionSlider ?? input);
+            row.Children.Add(inputs);
             if (field.CanReset)
             {
                 Button reset = DesktopUi.Action("NoteProperties.Reset", () =>
                 {
                     if (_refreshingNotes || !SelectionMatches()) return;
-                    field.ResetCommand.Execute().Subscribe(); CommitCurrentDraft();
+                    NotePropertyEditor? resetDraft = _draft;
+                    field.ResetCommand.Execute().Subscribe(_ =>
+                    {
+                        if (resetDraft == null || resetDraft != _draft || !SelectionMatches()) return;
+                        // 重置完成后立即读取实际值，不能依赖可能被输入保护跳过的延迟刷新。
+                        if (CommitDraft(resetDraft)) RefreshNotes();
+                    });
                 });
                 reset.Classes.Add("DesktopInspectorReset");
-                reset.HorizontalAlignment = HorizontalAlignment.Stretch;
-                reset.HorizontalContentAlignment = HorizontalAlignment.Center;
-                inputs.Children.Add(reset);
+                if (addExpressionSlider)
+                {
+                    reset.Content = new PackIconPhosphorIcons { Kind = PackIconPhosphorIconsKind.ArrowCounterClockwise, Width = 14, Height = 14 };
+                    reset.Width = 28;
+                    reset.Padding = new Thickness(4);
+                    reset.HorizontalAlignment = HorizontalAlignment.Right;
+                    reset.Bind(ToolTip.TipProperty, reset.GetResourceObservable("NoteProperties.Reset"));
+                    reset.Bind(AutomationProperties.NameProperty, reset.GetResourceObservable("NoteProperties.Reset"));
+                    Grid.SetColumn(reset, 1);
+                    row.Children.Add(reset);
+                }
+                else
+                {
+                    reset.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    reset.HorizontalContentAlignment = HorizontalAlignment.Center;
+                    inputs.Children.Add(reset);
+                }
             }
             return row;
         }
-        private void CommitDraft(NotePropertyEditor draft)
+        private bool CommitExpressionSlider(NotePropertyField field, decimal value)
         {
-            if (_refreshingNotes || _committing || draft != _draft || draft.Groups.Any(group => group.Presets?.IsApplying == true) || !SelectionMatches() || DocManager.Inst.HasOpenUndoGroup) return;
+            if (!PreviewExpressionSlider(field, value))
+            {
+                FinishLiveExpressionEdit(false);
+                return false;
+            }
+            return FinishLiveExpressionEdit(true);
+        }
+        private bool IsExpressionDraftCurrent(NotePropertyField field)
+        {
+            return !_refreshingNotes && _draft is { } draft && _part is { } part && SelectionMatches() &&
+                draft.MatchesCurrentSelection(DocManager.Inst.Project, part, _editor.PianoRollViewModel.SelectedNotes) &&
+                draft.Groups.SelectMany(group => group.Fields).Contains(field) &&
+                (!DocManager.Inst.HasOpenUndoGroup || _ownsExpressionUndoGroup && _liveExpressionDraft == draft && _liveExpressionField == field);
+        }
+        private bool PreviewExpressionSlider(NotePropertyField field, decimal? value)
+        {
+            PianoRollViewModel pianoRoll = _editor.PianoRollViewModel;
+            if (!value.HasValue)
+            {
+                return !_ownsExpressionUndoGroup || FinishLiveExpressionEdit(false);
+            }
+            if (!IsExpressionDraftCurrent(field) || _draft is not { } draft || field.ExpressionKey == null) return false;
+            if (!_ownsExpressionUndoGroup && HasPendingDraftInput() && !CommitDraft(draft)) return false;
+            if (!_ownsExpressionUndoGroup && field.Number == value)
+            {
+                pianoRoll.RefreshExpressionDisplay();
+                return true;
+            }
+            if (_ownsExpressionUndoGroup && _liveExpressionValue == value) return true;
+            UCommand? command = draft.CreateExpressionEditCommand(field, value.Value);
+            if (command == null) return false;
             _committing = true;
             try
             {
-                draft.Commit(accept: true);
+                if (!_ownsExpressionUndoGroup)
+                {
+                    DocManager.Inst.StartUndoGroup(deferValidate: true);
+                    _ownsExpressionUndoGroup = true;
+                    _liveExpressionDraft = draft;
+                    _liveExpressionField = field;
+                }
+                DocManager.Inst.ExecuteCmd(command);
+                _liveExpressionValue = value;
+                pianoRoll.RefreshExpressionDisplay();
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Serilog.Log.Error(exception, "Failed to update expression during inspector slider drag");
+                FinishLiveExpressionEdit(false);
+                return false;
+            }
+            finally { _committing = false; }
+        }
+        private bool FinishLiveExpressionEdit(bool apply)
+        {
+            if (!_ownsExpressionUndoGroup) return true;
+            bool wasCommitting = _committing;
+            _committing = true;
+            bool completed = false;
+            try
+            {
+                if (DocManager.Inst.HasOpenUndoGroup)
+                {
+                    if (!apply) DocManager.Inst.RollBackUndoGroup();
+                    DocManager.Inst.EndUndoGroup();
+                    completed = true;
+                }
+            }
+            catch (Exception exception)
+            {
+                Serilog.Log.Error(exception, "Failed to finish inspector expression drag");
+            }
+            finally
+            {
+                _ownsExpressionUndoGroup = false;
+                _liveExpressionDraft = null;
+                _liveExpressionField = null;
+                _liveExpressionValue = null;
+                _committing = wasCommitting;
+                _editor.PianoRollViewModel.RefreshExpressionDisplay();
+            }
+            if (completed && apply) RefreshNotes();
+            return completed;
+        }
+        private bool CommitDraft(NotePropertyEditor draft)
+        {
+            if (_refreshingNotes || _committing || draft != _draft || draft.Groups.Any(group => group.Presets?.IsApplying == true) || !SelectionMatches() || DocManager.Inst.HasOpenUndoGroup) return false;
+            _committing = true;
+            try
+            {
+                bool committed = draft.Commit(accept: true);
+                if (committed)
+                {
+                    _notesChangedExternally = true;
+                    QueueRefresh();
+                }
+                return committed;
             }
             finally { _committing = false; }
         }
@@ -602,6 +777,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         public void Dispose()
         {
             if (_disposed) return;
+            CancelExpressionSliderPreviews();
             _disposed = true; Detach(); _draft?.Dispose(); _trackVm?.Dispose();
         }
     }

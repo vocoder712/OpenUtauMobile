@@ -277,15 +277,23 @@ namespace OpenUtauMobile.ViewModels
                 decimal[] values = notes.SelectMany(n =>
                 {
                     List<Tuple<float, bool>> values = n.GetExpression(project, track, descriptor.abbr);
-                    return values.Count == 0
-                        ? n.phonemeExpressions.Where(e => e.abbr == descriptor.abbr).Select(e => (decimal)e.value)
-                            .DefaultIfEmpty((decimal)effective.CustomDefaultValue).ToArray()
-                        : values.Select(v => (decimal)v.Item1).ToArray();
+                    if (values.Count > 0)
+                    {
+                        // 只读取音符实际拥有的音素索引，索引间隙的默认值不能造成虚假的混合值。
+                        return n.phonemeIndexes.Distinct().Where(index => index >= 0 && index < values.Count)
+                            // 重新生成期间保留显式覆盖；旧音素生成器的继承值已过期，暂用轨道默认值。
+                            .Select(index => (decimal)(part.PhonemesUpToDate || values[index].Item2
+                                ? values[index].Item1 : effective.CustomDefaultValue))
+                            .DefaultIfEmpty((decimal)effective.CustomDefaultValue).ToArray();
+                    }
+                    return n.phonemeExpressions.Where(e => e.abbr == descriptor.abbr).Select(e => (decimal)e.value)
+                        .DefaultIfEmpty((decimal)effective.CustomDefaultValue).ToArray();
                 }).ToArray();
                 NotePropertyField field = effective.type == UExpressionType.Options
                     ? new NotePropertyField(effective.ToString(), effective.options, values.Select(v => (int)v))
                     : new NotePropertyField(effective.ToString(), (decimal)effective.min, (decimal)effective.max, values, 1);
                 field.CanReset = true;
+                field.ExpressionKey = descriptor.abbr;
                 expressions.Fields.Add(field);
                 edits.Add(commands =>
                 {
@@ -297,9 +305,8 @@ namespace OpenUtauMobile.ViewModels
                     else if (field.IsEdited && (field.IsChoice ? field.SelectedIndex >= 0 : field.Number.HasValue))
                     {
                         float value = field.IsChoice ? field.SelectedIndex : (float)field.Number!.Value;
-                        float defaultValue = field.IsChoice ? effective.defaultValue : effective.CustomDefaultValue;
-                        commands.Add(new NotePropertiesExpressionCommand(project, track, part, notes, descriptor.abbr,
-                            value == defaultValue ? null : value));
+                        // 显式输入覆盖所有选中值，只有重置才清除覆盖并恢复各自的继承值。
+                        commands.Add(new NotePropertiesExpressionCommand(project, track, part, notes, descriptor.abbr, value));
                     }
                 });
             }
@@ -332,6 +339,29 @@ namespace OpenUtauMobile.ViewModels
                     commands.AddRange(notes.Where(n => get(n) != (float)field.Number.Value).Select(n => command(n, (float)field.Number.Value)));
                 }
             });
+        }
+
+        public bool MatchesCurrentSelection(UProject activeProject, UVoicePart activePart, IEnumerable<UNote> activeNotes)
+        {
+            if (!ReferenceEquals(project, activeProject) || !ReferenceEquals(part, activePart) || !project.parts.Contains(part))
+            {
+                return false;
+            }
+            UNote[] current = activeNotes.OrderBy(note => note.position).ThenBy(note => note.tone).ToArray();
+            return notes.All(note => part.notes.Contains(note)) &&
+                notes.OrderBy(note => note.position).ThenBy(note => note.tone).SequenceEqual(current);
+        }
+
+        public UCommand? CreateExpressionEditCommand(NotePropertyField field, decimal value)
+        {
+            if (DocManager.Inst.Project != project || !project.parts.Contains(part) || notes.Any(note => !part.notes.Contains(note)) ||
+                !Groups.Any(group => group.Fields.Contains(field)) || field.ExpressionKey is not { } key ||
+                part.trackNo < 0 || part.trackNo >= project.tracks.Count) return null;
+            UTrack track = project.tracks[part.trackNo];
+            if (!track.TryGetExpDescriptor(project, key, out UExpressionDescriptor descriptor) || descriptor.type != UExpressionType.Numerical)
+                return null;
+            float candidate = (float)value;
+            return new NotePropertiesExpressionCommand(project, track, part, notes, key, candidate);
         }
 
         public bool Commit(bool accept = false)
@@ -487,6 +517,7 @@ namespace OpenUtauMobile.ViewModels
         public decimal Increment { get; } = 0.1m;
         public string[] Options { get; } = [];
         public bool CanReset { get; set; }
+        public string? ExpressionKey { get; set; }
         public bool IsEdited { get; private set; }
         [Reactive] public bool ResetRequested { get; private set; }
         private decimal? number;

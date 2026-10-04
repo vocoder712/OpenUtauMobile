@@ -2345,4 +2345,28 @@
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>{0} 個のノートをコピー</value>
   </data>
+  <data name="TrackSettings.Title" xml:space="preserve"><value>トラック設定</value></data>
+  <data name="TrackSettings.HoldHint" xml:space="preserve"><value>トラック名または背景を長押しして設定を開きます</value></data>
+  <data name="TrackSettings.Singer" xml:space="preserve"><value>歌手</value></data>
+  <data name="TrackSettings.ChooseSinger" xml:space="preserve"><value>歌手を選択</value></data>
+  <data name="TrackSettings.Phonemizer" xml:space="preserve"><value>音素変換器</value></data>
+  <data name="TrackSettings.ChoosePhonemizer" xml:space="preserve"><value>音素変換器を選択</value></data>
+  <data name="TrackSettings.Renderer" xml:space="preserve"><value>レンダラー</value></data>
+  <data name="TrackSettings.Resampler" xml:space="preserve"><value>リサンプラー</value></data>
+  <data name="TrackSettings.Wavtool" xml:space="preserve"><value>Wavtool</value></data>
+  <data name="TrackSettings.Expressions" xml:space="preserve"><value>表情の既定値…</value></data>
+  <data name="TrackSettings.Done" xml:space="preserve"><value>完了</value></data>
+  <data name="TrackSettings.Apply" xml:space="preserve"><value>適用</value></data>
+  <data name="TrackSettings.NoSinger" xml:space="preserve"><value>歌手が選択されていません</value></data>
+  <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>この歌手に対応するレンダラーはありません。</value></data>
+  <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>レンダリング設定には歌手を選択してください。</value></data>
+  <data name="TrackSettings.NoCompatibleTools" xml:space="preserve"><value>互換性のあるリサンプラーとWavtoolがありません。</value></data>
+  <data name="TrackSettings.Error.Stale" xml:space="preserve"><value>設定を開いている間にトラックが変更されました。設定を閉じて開き直してください。</value></data>
+  <data name="TrackSettings.Error.Busy" xml:space="preserve"><value>別の編集が進行中です。トラック設定を適用する前に終了してください。</value></data>
+  <data name="TrackSettings.Error.MissingSinger" xml:space="preserve"><value>レンダリング設定を変更する前に、インストール済みの歌手を選択してください。</value></data>
+  <data name="TrackSettings.Error.SingerUnavailable" xml:space="preserve"><value>選択した歌手は利用できません。もう一度選択してください。</value></data>
+  <data name="TrackSettings.Error.PhonemizerUnavailable" xml:space="preserve"><value>選択した音素変換器は利用できません。もう一度選択してください。</value></data>
+  <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>この歌手が使用できるレンダラーを選択してください。</value></data>
+  <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>互換性のあるリサンプラーとWavtoolを選択してください。</value></data>
+  <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>トラック設定を適用できませんでした。</value></data>
 </root>

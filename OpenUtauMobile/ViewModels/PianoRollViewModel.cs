@@ -278,6 +278,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// 正在编辑的表情
     /// </summary>
     [Reactive] public string PrimaryExpressionKey { get; set; } = "vel";
+
+    public void RefreshExpressionDisplay() => RequestInvalidateVisual?.Invoke();
     /// <summary>
     /// 背景表情
     /// </summary>

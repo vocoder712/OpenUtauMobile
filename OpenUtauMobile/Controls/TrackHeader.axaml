@@ -8,6 +8,8 @@
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:Class="OpenUtauMobile.Controls.TrackHeader"
+             ToolTip.Tip="{DynamicResource TrackSettings.HoldHint}"
+             AutomationProperties.HelpText="{DynamicResource TrackSettings.HoldHint}"
              x:DataType="vm:TrackHeaderViewModel">
     <UserControl.Styles>
         <StyleInclude Source="/Controls/Styles/TrackHeader.axaml" />
@@ -120,7 +122,7 @@
                                     Command="{Binding ChangeColorCommand}"
                                     ToolTip.Tip="{DynamicResource TrackHeader.ChangeColor}"
                                     Width="16" Height="16" />
-                            <Button Grid.Column="1" Grid.Row="0" Padding="0"
+                            <Button Name="TrackNameSettingsButton" Grid.Column="1" Grid.Row="0" Padding="0"
                                     Foreground="{DynamicResource TrackHeaderForegroundBrush}"
                                     Command="{Binding RenameCommand}"
                                     ToolTip.Tip="{DynamicResource TrackHeader.Rename}"

@@ -2307,4 +2307,28 @@
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>Скопійовано нот: {0}</value>
   </data>
+  <data name="TrackSettings.Title" xml:space="preserve"><value>Налаштування доріжки</value></data>
+  <data name="TrackSettings.HoldHint" xml:space="preserve"><value>Натисніть і утримуйте назву або тло доріжки, щоб відкрити налаштування</value></data>
+  <data name="TrackSettings.Singer" xml:space="preserve"><value>Голос</value></data>
+  <data name="TrackSettings.ChooseSinger" xml:space="preserve"><value>Вибрати голос</value></data>
+  <data name="TrackSettings.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
+  <data name="TrackSettings.ChoosePhonemizer" xml:space="preserve"><value>Вибрати фонемайзер</value></data>
+  <data name="TrackSettings.Renderer" xml:space="preserve"><value>Рендерер</value></data>
+  <data name="TrackSettings.Resampler" xml:space="preserve"><value>Ресемплер</value></data>
+  <data name="TrackSettings.Wavtool" xml:space="preserve"><value>Wavtool</value></data>
+  <data name="TrackSettings.Expressions" xml:space="preserve"><value>Значення параметрів…</value></data>
+  <data name="TrackSettings.Done" xml:space="preserve"><value>Готово</value></data>
+  <data name="TrackSettings.Apply" xml:space="preserve"><value>Застосувати</value></data>
+  <data name="TrackSettings.NoSinger" xml:space="preserve"><value>Голос не вибрано</value></data>
+  <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>Для цього голосу немає підтримуваних рендерерів.</value></data>
+  <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>Виберіть голос, щоб налаштувати рендеринг.</value></data>
+  <data name="TrackSettings.NoCompatibleTools" xml:space="preserve"><value>Немає сумісної пари ресемплера та wavtool.</value></data>
+  <data name="TrackSettings.Error.Stale" xml:space="preserve"><value>Доріжка змінилася, поки були відкриті налаштування. Закрийте й відкрийте їх знову.</value></data>
+  <data name="TrackSettings.Error.Busy" xml:space="preserve"><value>Виконується інше редагування. Завершіть його перед застосуванням налаштувань доріжки.</value></data>
+  <data name="TrackSettings.Error.MissingSinger" xml:space="preserve"><value>Виберіть встановлений голос перед зміною налаштувань рендерингу.</value></data>
+  <data name="TrackSettings.Error.SingerUnavailable" xml:space="preserve"><value>Вибраний голос більше недоступний. Виберіть його знову.</value></data>
+  <data name="TrackSettings.Error.PhonemizerUnavailable" xml:space="preserve"><value>Вибраний фонемайзер більше недоступний. Виберіть його знову.</value></data>
+  <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>Виберіть рендерер, сумісний із цим голосом.</value></data>
+  <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>Виберіть сумісні ресемплер і wavtool.</value></data>
+  <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>Не вдалося застосувати налаштування доріжки.</value></data>
 </root>

@@ -2352,4 +2352,28 @@
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>{0} notes copied</value>
   </data>
+  <data name="TrackSettings.Title" xml:space="preserve"><value>Track settings</value></data>
+  <data name="TrackSettings.HoldHint" xml:space="preserve"><value>Hold the track name or background to open track settings</value></data>
+  <data name="TrackSettings.Singer" xml:space="preserve"><value>Singer</value></data>
+  <data name="TrackSettings.ChooseSinger" xml:space="preserve"><value>Choose singer</value></data>
+  <data name="TrackSettings.Phonemizer" xml:space="preserve"><value>Phonemizer</value></data>
+  <data name="TrackSettings.ChoosePhonemizer" xml:space="preserve"><value>Choose phonemizer</value></data>
+  <data name="TrackSettings.Renderer" xml:space="preserve"><value>Renderer</value></data>
+  <data name="TrackSettings.Resampler" xml:space="preserve"><value>Resampler</value></data>
+  <data name="TrackSettings.Wavtool" xml:space="preserve"><value>Wavtool</value></data>
+  <data name="TrackSettings.Expressions" xml:space="preserve"><value>Expression defaults…</value></data>
+  <data name="TrackSettings.Done" xml:space="preserve"><value>Done</value></data>
+  <data name="TrackSettings.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="TrackSettings.NoSinger" xml:space="preserve"><value>No singer selected</value></data>
+  <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>This singer has no supported renderers.</value></data>
+  <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>Choose a singer to configure rendering.</value></data>
+  <data name="TrackSettings.NoCompatibleTools" xml:space="preserve"><value>No compatible resampler and wavtool are available.</value></data>
+  <data name="TrackSettings.Error.Stale" xml:space="preserve"><value>This track changed while settings were open. Close and reopen track settings.</value></data>
+  <data name="TrackSettings.Error.Busy" xml:space="preserve"><value>Another edit is in progress. Close it before applying track settings.</value></data>
+  <data name="TrackSettings.Error.MissingSinger" xml:space="preserve"><value>Select an installed singer before changing rendering settings.</value></data>
+  <data name="TrackSettings.Error.SingerUnavailable" xml:space="preserve"><value>The selected singer is no longer available. Choose it again.</value></data>
+  <data name="TrackSettings.Error.PhonemizerUnavailable" xml:space="preserve"><value>The selected phonemizer is no longer available. Choose it again.</value></data>
+  <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>Select a renderer supported by this singer.</value></data>
+  <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>Select a compatible resampler and wavtool.</value></data>
+  <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>Track settings could not be applied.</value></data>
 </root>

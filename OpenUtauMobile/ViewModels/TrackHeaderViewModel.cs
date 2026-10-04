@@ -63,6 +63,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> SelectSingerCommand { get; }
     public ReactiveCommand<Unit, Unit> SelectPhonemizerCommand { get; }
     public ReactiveCommand<Unit, Unit> SelectRendererCommand { get; }
+    public ReactiveCommand<Unit, Unit> ShowSettingsCommand { get; }
     public ReactiveCommand<Unit, Unit> RemoveTrackCommand { get; }
     public ReactiveCommand<Unit, Unit> MoveUpCommand { get; }
     public ReactiveCommand<Unit, Unit> MoveDownCommand { get; }
@@ -102,6 +103,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         SelectPhonemizerCommand = ReactiveCommand.CreateFromTask(SelectPhonemizer).DisposeWith(_disposable);
         // 选择渲染器命令
         SelectRendererCommand = ReactiveCommand.CreateFromTask(SelectRenderer).DisposeWith(_disposable);
+        ShowSettingsCommand = ReactiveCommand.CreateFromTask(() => TrackHeaderService.Inst.ShowTrackSettingsAsync(_track)).DisposeWith(_disposable);
         // 删除命令
         RemoveTrackCommand = ReactiveCommand.Create(RemoveTrack).DisposeWith(_disposable);
         // 上移命令

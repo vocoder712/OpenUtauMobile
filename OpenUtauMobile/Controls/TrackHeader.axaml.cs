@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Linq;
+using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using OpenUtau.Core;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.ViewModels;
@@ -17,8 +24,18 @@ public partial class TrackHeader : UserControl, IDisposable
     private const int HudReleaseDelayMs = 1000;
     private const double HudVolumeWidth = 144;
     private const double HudPanWidth = 144;
+    private const int SettingsHoldDurationMs = 600;
+    private const double SettingsHoldMovementLimit = 8;
 
     private readonly DispatcherTimer _hideHudTimer = new();
+    private readonly DispatcherTimer _settingsHoldTimer = new();
+    private readonly System.Collections.Generic.HashSet<int> _settingsPointersDown = [];
+    private TopLevel? _settingsHoldRoot;
+    private IPointer? _settingsHoldPointer;
+    private Point _settingsHoldOrigin;
+    private bool _mobileSettingsGesture;
+    private bool _settingsGestureFired;
+    private bool _settingsGestureCancelled;
 
     public static readonly StyledProperty<bool> IsExpandedProperty =
         AvaloniaProperty.Register<TrackHeader, bool>(nameof(IsExpanded));
@@ -43,15 +60,157 @@ public partial class TrackHeader : UserControl, IDisposable
     public TrackHeader(TrackHeaderViewModel viewModel)
     {
         InitializeComponent();
-        if (ServiceHub.DesktopWindowFactory != null) Classes.Add("DesktopTrackHeader");
+        _mobileSettingsGesture = ServiceHub.DesktopWindowFactory == null;
+        Focusable = _mobileSettingsGesture;
+        if (!_mobileSettingsGesture)
+        {
+            ToolTip.SetTip(this, null);
+            AutomationProperties.SetHelpText(this, null);
+        }
+        else
+        {
+            ToolTip.SetTip(TrackNameSettingsButton, OpenUtauMobile.Helpers.L.S("TrackSettings.HoldHint"));
+            AutomationProperties.SetHelpText(TrackNameSettingsButton, OpenUtauMobile.Helpers.L.S("TrackSettings.HoldHint"));
+        }
+        if (!_mobileSettingsGesture) Classes.Add("DesktopTrackHeader");
         ViewModel = viewModel;
         DataContext = viewModel;
 
         _hideHudTimer.Interval = TimeSpan.FromMilliseconds(HudReleaseDelayMs);
         _hideHudTimer.Tick += OnHideHudTimerTick;
+        _settingsHoldTimer.Interval = TimeSpan.FromMilliseconds(SettingsHoldDurationMs);
+        _settingsHoldTimer.Tick += OnSettingsHoldTimerTick;
+        AddHandler(PointerPressedEvent, OnSettingsPointerPressed, RoutingStrategies.Tunnel, true);
+        AddHandler(PointerReleasedEvent, OnSettingsPointerReleased, RoutingStrategies.Tunnel, true);
+        AddHandler(KeyDownEvent, OnSettingsKeyDown, RoutingStrategies.Tunnel, true);
 
         SubscribeKnobEvents(VolumeKnob);
         SubscribeKnobEvents(PanKnob);
+    }
+
+    private void OnSettingsPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!_mobileSettingsGesture || _settingsGestureFired) return;
+        if (_settingsGestureCancelled) return;
+        if (_settingsHoldPointer != null || _settingsPointersDown.Count > 0)
+        {
+            _settingsPointersDown.Add(e.Pointer.Id);
+            _settingsGestureCancelled = true;
+            CancelSettingsHoldRecognition();
+            return;
+        }
+        if (e.Pointer.Type == PointerType.Mouse && !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
+        if (e.Source is not Visual source || !source.GetSelfAndVisualAncestors().Contains(this)) return;
+        if (source.GetSelfAndVisualAncestors().TakeWhile(visual => visual != this)
+            .Any(visual => visual is Button button && button != TrackNameSettingsButton ||
+                visual is ToggleButton or RangeBase or DawKnob or TextBox or ComboBox)) return;
+
+        _settingsHoldPointer = e.Pointer;
+        _settingsPointersDown.Add(e.Pointer.Id);
+        _settingsHoldOrigin = e.GetPosition(this);
+        _settingsHoldRoot = TopLevel.GetTopLevel(this);
+        if (_settingsHoldRoot != null)
+        {
+            _settingsHoldRoot.AddHandler(PointerPressedEvent, OnSettingsAdditionalPointerPressed, RoutingStrategies.Tunnel, true);
+            _settingsHoldRoot.AddHandler(PointerMovedEvent, OnSettingsPointerMoved, RoutingStrategies.Tunnel, true);
+            _settingsHoldRoot.AddHandler(PointerReleasedEvent, OnSettingsPointerReleased, RoutingStrategies.Tunnel, true);
+            _settingsHoldRoot.AddHandler(PointerCaptureLostEvent, OnSettingsPointerCaptureLost, RoutingStrategies.Tunnel, true);
+        }
+        _settingsHoldTimer.Start();
+    }
+
+    private void OnSettingsAdditionalPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_settingsPointersDown.Count > 0 && !_settingsPointersDown.Contains(e.Pointer.Id))
+        {
+            _settingsPointersDown.Add(e.Pointer.Id);
+            _settingsGestureCancelled = true;
+            CancelSettingsHoldRecognition();
+        }
+    }
+
+    private void OnSettingsPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (_settingsHoldPointer?.Id != e.Pointer.Id) return;
+        Point position = e.GetPosition(this);
+        Vector delta = new(position.X - _settingsHoldOrigin.X, position.Y - _settingsHoldOrigin.Y);
+        if (delta.Length > SettingsHoldMovementLimit)
+        {
+            _settingsGestureCancelled = true;
+            CancelSettingsHoldRecognition();
+        }
+    }
+
+    private void OnSettingsPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        FinishSettingsPointer(e.Pointer.Id);
+    }
+
+    private void OnSettingsPointerCaptureLost(object? sender, PointerCaptureLostEventArgs e)
+    {
+        FinishSettingsPointer(e.Pointer.Id);
+    }
+
+    private void OnSettingsHoldTimerTick(object? sender, EventArgs e)
+    {
+        _settingsHoldTimer.Stop();
+        _settingsGestureFired = true;
+        _settingsPointersDown.Clear();
+        _settingsGestureCancelled = false;
+        _settingsHoldPointer = null;
+        DetachSettingsHoldHandlers();
+        OpenSettings();
+    }
+
+    private void OnSettingsKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (!_mobileSettingsGesture || e.Key != Key.Apps && !(e.Key == Key.F10 && e.KeyModifiers.HasFlag(KeyModifiers.Shift))) return;
+        e.Handled = true;
+        OpenSettings();
+    }
+
+    private void OpenSettings()
+    {
+        ViewModel.ShowSettingsCommand.Execute().Subscribe(
+            _ => _settingsGestureFired = false,
+            () => _settingsGestureFired = false);
+    }
+
+    private void StopSettingsHold()
+    {
+        _settingsHoldTimer.Stop();
+        _settingsHoldPointer = null;
+        _settingsPointersDown.Clear();
+        _settingsGestureCancelled = false;
+        DetachSettingsHoldHandlers();
+    }
+
+    private void CancelSettingsHoldRecognition()
+    {
+        _settingsHoldTimer.Stop();
+        _settingsHoldPointer = null;
+        if (_settingsPointersDown.Count == 0) DetachSettingsHoldHandlers();
+    }
+
+    private void FinishSettingsPointer(int pointerId)
+    {
+        _settingsPointersDown.Remove(pointerId);
+        if (_settingsHoldPointer?.Id == pointerId) CancelSettingsHoldRecognition();
+        if (_settingsPointersDown.Count == 0)
+        {
+            _settingsGestureCancelled = false;
+            DetachSettingsHoldHandlers();
+        }
+    }
+
+    private void DetachSettingsHoldHandlers()
+    {
+        if (_settingsHoldRoot is not { } root) return;
+        root.RemoveHandler(PointerPressedEvent, OnSettingsAdditionalPointerPressed);
+        root.RemoveHandler(PointerMovedEvent, OnSettingsPointerMoved);
+        root.RemoveHandler(PointerReleasedEvent, OnSettingsPointerReleased);
+        root.RemoveHandler(PointerCaptureLostEvent, OnSettingsPointerCaptureLost);
+        _settingsHoldRoot = null;
     }
 
     private void SubscribeKnobEvents(DawKnob? knob)
@@ -238,6 +397,7 @@ public partial class TrackHeader : UserControl, IDisposable
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        StopSettingsHold();
         EndMixEdit();
         base.OnDetachedFromVisualTree(e);
         ForceHideHud();
@@ -248,6 +408,11 @@ public partial class TrackHeader : UserControl, IDisposable
         EndMixEdit();
         _hideHudTimer.Stop();
         _hideHudTimer.Tick -= OnHideHudTimerTick;
+        StopSettingsHold();
+        _settingsHoldTimer.Tick -= OnSettingsHoldTimerTick;
+        RemoveHandler(PointerPressedEvent, OnSettingsPointerPressed);
+        RemoveHandler(PointerReleasedEvent, OnSettingsPointerReleased);
+        RemoveHandler(KeyDownEvent, OnSettingsKeyDown);
         UnsubscribeKnobEvents(VolumeKnob);
         UnsubscribeKnobEvents(PanKnob);
         ViewModel.Dispose();

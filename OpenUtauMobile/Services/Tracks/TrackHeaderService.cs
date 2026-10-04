@@ -64,4 +64,6 @@ public class TrackHeaderService : ITrackHeaderService
             PopupService.Show<string?>(new TrackColorPickerPopup(),
                 new TrackColorPickerPopupViewModel(currentColorName)));
     }
+
+    public Task ShowTrackSettingsAsync(UTrack track) => TrackSettingsService.Inst.ShowAsync(track);
 }

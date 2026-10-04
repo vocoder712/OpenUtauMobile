@@ -2352,4 +2352,28 @@
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>已复制 {0} 个音符</value>
   </data>
+  <data name="TrackSettings.Title" xml:space="preserve"><value>轨道设置</value></data>
+  <data name="TrackSettings.HoldHint" xml:space="preserve"><value>长按轨道名称或背景以打开轨道设置</value></data>
+  <data name="TrackSettings.Singer" xml:space="preserve"><value>歌手</value></data>
+  <data name="TrackSettings.ChooseSinger" xml:space="preserve"><value>选择歌手</value></data>
+  <data name="TrackSettings.Phonemizer" xml:space="preserve"><value>音素器</value></data>
+  <data name="TrackSettings.ChoosePhonemizer" xml:space="preserve"><value>选择音素器</value></data>
+  <data name="TrackSettings.Renderer" xml:space="preserve"><value>渲染器</value></data>
+  <data name="TrackSettings.Resampler" xml:space="preserve"><value>重采样器</value></data>
+  <data name="TrackSettings.Wavtool" xml:space="preserve"><value>Wavtool</value></data>
+  <data name="TrackSettings.Expressions" xml:space="preserve"><value>表达式默认值…</value></data>
+  <data name="TrackSettings.Done" xml:space="preserve"><value>完成</value></data>
+  <data name="TrackSettings.Apply" xml:space="preserve"><value>应用</value></data>
+  <data name="TrackSettings.NoSinger" xml:space="preserve"><value>未选择歌手</value></data>
+  <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>此歌手没有受支持的渲染器。</value></data>
+  <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>选择歌手后才能配置渲染设置。</value></data>
+  <data name="TrackSettings.NoCompatibleTools" xml:space="preserve"><value>没有可用的兼容重采样器和 wavtool。</value></data>
+  <data name="TrackSettings.Error.Stale" xml:space="preserve"><value>设置打开期间轨道已发生变化。请关闭并重新打开轨道设置。</value></data>
+  <data name="TrackSettings.Error.Busy" xml:space="preserve"><value>另一个编辑操作正在进行。请先结束该操作，再应用轨道设置。</value></data>
+  <data name="TrackSettings.Error.MissingSinger" xml:space="preserve"><value>更改渲染设置前，请选择已安装的歌手。</value></data>
+  <data name="TrackSettings.Error.SingerUnavailable" xml:space="preserve"><value>所选歌手已不可用，请重新选择。</value></data>
+  <data name="TrackSettings.Error.PhonemizerUnavailable" xml:space="preserve"><value>所选音素器已不可用，请重新选择。</value></data>
+  <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>请选择此歌手支持的渲染器。</value></data>
+  <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>请选择兼容的重采样器和 wavtool。</value></data>
+  <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>无法应用轨道设置。</value></data>
 </root>
