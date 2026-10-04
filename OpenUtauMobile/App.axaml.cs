@@ -35,6 +35,16 @@ public partial class App : Application
         ThemeManagerV2.Initialize();
         ThemeManagerV2.ApplyConfiguredTheme(ServiceHub.SystemAccentColorProvider, out _, out _);
 
+        // [OPENUTAU_PHONEMIZER_PLUGIN] 扫描已安装的 DLL
+        try
+        {
+            OpenUtau.Core.Plugins.PluginManager.Inst.LoadAll();
+        }
+        catch (System.Exception ex)
+        {
+            Serilog.Log.Error(ex, "Failed to scan phonemizer plugins at startup");
+        }
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow

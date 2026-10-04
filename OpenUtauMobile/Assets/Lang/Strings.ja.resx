@@ -2149,4 +2149,63 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>ディレクトリ区切りを含まない有効なファイル名を入力してください。</value>
   </data>
+
+  <data name="Settings.File.ImportPhonemizer" xml:space="preserve">
+    <value>音素器をインポート</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Desc" xml:space="preserve">
+    <value>コンパイル済みの音素器 DLL をインポートします（同じ .NET バージョンでビルドされている必要があります）。</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Button" xml:space="preserve">
+    <value>DLL を選択…</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Success" xml:space="preserve">
+    <value>音素器をインストールしました。</value>
+  </data>
+  <data name="Settings.File.ImportPhonemizer.Failed" xml:space="preserve">
+    <value>音素器の読み込みに失敗しました。ログを確認してください。</value>
+  </data>
+
+  <data name="Settings.File.Plugins.Title" xml:space="preserve">
+    <value>プラグイン管理</value>
+  </data>
+  <data name="Settings.File.Plugins.Desc" xml:space="preserve">
+    <value>Plugins ディレクトリの DLL プラグイン（音素器など）を管理します。アンインストール後、完全に反映するにはアプリを再起動してください。</value>
+  </data>
+  <data name="Settings.File.Plugins.Import" xml:space="preserve">
+    <value>DLL をインポート</value>
+  </data>
+  <data name="Settings.File.Plugins.Empty" xml:space="preserve">
+    <value>プラグインがインストールされていません</value>
+  </data>
+  <data name="Settings.File.Plugins.ImportSuccess" xml:space="preserve">
+    <value>{0} をインポートしました</value>
+  </data>
+  <data name="Settings.File.Plugins.ImportFailed" xml:space="preserve">
+    <value>インポートに失敗しました。ログを確認してください</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallConfirmTitle" xml:space="preserve">
+    <value>プラグインをアンインストール</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallConfirmMessage" xml:space="preserve">
+    <value>{0} をアンインストールしますか？プラグインが既に読み込まれている場合、完全に反映するにはアプリを再起動してください。</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallSuccess" xml:space="preserve">
+    <value>{0} をアンインストールしました</value>
+  </data>
+  <data name="Settings.File.Plugins.UninstallFailed" xml:space="preserve">
+    <value>アンインストールに失敗しました</value>
+  </data>
+  <data name="Settings.File.Plugins.PhonemizerCount" xml:space="preserve">
+    <value>{0} 個の音素器を含む</value>
+  </data>
+  <data name="Settings.File.Plugins.NoRecognizedTypes" xml:space="preserve">
+    <value>既知のプラグインタイプは検出されませんでした</value>
+  </data>
+  <data name="Settings.File.Plugins.NotLoaded" xml:space="preserve">
+    <value>未読み込み</value>
+  </data>
+  <data name="Settings.File.Plugins.LoadFailed" xml:space="preserve">
+    <value>読み込み失敗</value>
+  </data>
 </root>
