@@ -161,6 +161,7 @@ public sealed partial class EditorInputController
         if (EditorShortcuts.IsTextInput(source)) return;
         if (e.Key == Key.Escape && vm.UseDesktopInput && _activeEditArea != EditArea.Mixer)
         {
+            _piano.NotesCanvas.CancelTemporaryPitchErase();
             CancelEditorInput();
             e.Handled = true;
             return;

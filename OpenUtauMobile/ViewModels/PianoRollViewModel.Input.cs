@@ -1,5 +1,6 @@
 using System;
 using Avalonia;
+using OpenUtau.Core;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -14,18 +15,27 @@ public partial class PianoRollViewModel
 
     public bool BeginTemporaryPitchErase(Point point)
     {
-        if (EditMode != PianoRollEditMode.PitchPen || EditingVoicePart == null || !CanNavigateViewport) return false;
+        if (EditMode != PianoRollEditMode.PitchPen || EditingVoicePart == null || !CanNavigateViewport || DocManager.Inst.HasOpenUndoGroup) return false;
         IsTemporaryPitchErase = true;
         OnGestureDragBegin(point);
         OnGestureDragUpdate(point, default, default, point, 0);
         return true;
     }
 
-    public void EndTemporaryPitchErase()
+    public void EndTemporaryPitchErase(bool cancel = false)
     {
         if (!IsTemporaryPitchErase) return;
-        OnGestureDragEnd(default, 0);
+        if (cancel && DocManager.Inst.HasOpenUndoGroup)
+        {
+            DocManager.Inst.RollBackUndoGroup();
+            _lastPitch = null;
+            _inputState = PianoRollInputState.Idle;
+            ResetPitchDrawPointerState();
+            RequestMagnifierClose?.Invoke();
+        }
+        else OnGestureDragEnd(default, 0);
         IsTemporaryPitchErase = false;
+        RequestInvalidateVisual?.Invoke();
     }
     /// <summary>
     /// 是否可以平移视口

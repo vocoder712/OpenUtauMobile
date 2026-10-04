@@ -2282,7 +2282,7 @@
   <data name="Desktop.NoteTool" xml:space="preserve"><value>Ноти · виділення, переміщення, розмір і створення</value></data>
   <data name="Desktop.TuningTool" xml:space="preserve"><value>Налаштування · якорі висоти та вібрато</value></data>
   <data name="Desktop.TuningHint" xml:space="preserve"><value>Перетягування: якорі висоти / ручки вібрато · Клацання кривої: додати якір · Подвійне клацання вібрато: перемкнути · Середня кнопка: прокрутка · Ctrl/Cmd + коліщатко: масштаб</value></data>
-  <data name="Desktop.PitchHint" xml:space="preserve"><value>Перетягування: малювати висоту · Shift + права кнопка: стерти · Середня кнопка: прокрутка · Ctrl/Cmd + коліщатко: масштаб</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>Перетягування: малювати висоту · Перетягування правою кнопкою: стерти · Середня кнопка: прокрутка · Ctrl/Cmd + коліщатко: масштаб</value></data>
   <data name="Desktop.AllLanguages" xml:space="preserve"><value>Усі мови</value></data>
   <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>Перетягуйте по одному інсталяційному файлу.</value></data>
   <data name="Desktop.Parameters" xml:space="preserve"><value>Панель параметрів</value></data>

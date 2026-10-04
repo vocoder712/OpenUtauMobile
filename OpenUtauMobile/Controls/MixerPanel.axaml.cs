@@ -227,9 +227,9 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
 
     private bool _presetDialogOpen;
 
-    private async void OnLoadEffectPreset(object? sender, RoutedEventArgs e)
+    private void OnLoadEffectPreset(object? sender, RoutedEventArgs e)
     {
-        if (_presetDialogOpen || sender is not Button { Tag: string effect } || ViewModel.SelectedChannel?.Track == null) return;
+        if (_presetDialogOpen || sender is not Button { Tag: string effect } button || ViewModel.SelectedChannel?.Track == null) return;
         string[] names = effect switch
         {
             "Eq" => FxPresets.EqPresetNames,
@@ -241,15 +241,19 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         UProject project = DocManager.Inst.Project;
         UTrack track = ViewModel.SelectedChannel.Track;
         _presetDialogOpen = true;
-        try
+        MenuFlyout flyout = new();
+        foreach (string key in names)
         {
-            OptionConfirmPopupViewModel picker = new(L.S("Mixer.LoadPreset"), string.Empty,
-                names.Select(key => new[] { new OptionConfirmOption(L.S("Mixer.Preset." + key), key) }));
-            string? key = await PopupService.Show<string>(new MixerPresetPopup(), picker);
-            if (key != null && DocManager.Inst.Project == project && project.tracks.Contains(track) && ViewModel.SelectedChannel?.Track == track)
-                ViewModel.ApplyEffectPreset(effect, key);
+            MenuItem item = new() { Header = L.S("Mixer.Preset." + key) };
+            item.Click += (_, _) =>
+            {
+                if (DocManager.Inst.Project == project && project.tracks.Contains(track) && ViewModel.SelectedChannel?.Track == track)
+                    ViewModel.ApplyEffectPreset(effect, key);
+            };
+            flyout.Items.Add(item);
         }
-        finally { _presetDialogOpen = false; }
+        flyout.Closed += (_, _) => _presetDialogOpen = false;
+        flyout.ShowAt(button);
     }
 
     private async void OnAddUserPreset(object? sender, RoutedEventArgs e)

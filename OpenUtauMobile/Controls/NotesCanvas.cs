@@ -996,13 +996,19 @@ public class NotesCanvas : Control, ICmdSubscriber
         pointer?.Capture(null);
     }
 
-    private void EndRightErase()
+    public void CancelTemporaryPitchErase()
+    {
+        if (_rightErasePointer == null) return;
+        EndRightErase(true);
+    }
+
+    private void EndRightErase(bool cancel = false)
     {
         IPointer? pointer = _rightErasePointer;
         _rightErasePointer = null;
         PianoRollViewModel? owner = _rightEraseOwner;
         _rightEraseOwner = null;
-        owner?.EndTemporaryPitchErase();
+        owner?.EndTemporaryPitchErase(cancel);
         pointer?.Capture(null);
     }
 
@@ -1011,6 +1017,19 @@ public class NotesCanvas : Control, ICmdSubscriber
         base.OnPointerPressed(e);
         if (_rightErasePointer != null) { e.Handled = true; return; }
         PointerPointProperties properties = e.GetCurrentPoint(this).Properties;
+        if (e.Pointer.Type == PointerType.Mouse && properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed &&
+            ViewModel is { UseDesktopMouseInput: true, EditMode: PianoRollEditMode.PitchPen } pitchPen)
+        {
+            _lastDesktopPressWasLeft = false;
+            if (pitchPen.BeginTemporaryPitchErase(e.GetPosition(this)))
+            {
+                _rightErasePointer = e.Pointer;
+                _rightEraseOwner = pitchPen;
+                e.Pointer.Capture(this);
+            }
+            e.Handled = true;
+            return;
+        }
         if (e.Pointer.Type == PointerType.Mouse && ViewModel is { UseDesktopMouseInput: true } desktop
             && properties.PointerUpdateKind is PointerUpdateKind.LeftButtonPressed or PointerUpdateKind.MiddleButtonPressed)
         {
@@ -1030,7 +1049,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         if (e.Pointer.Type == PointerType.Mouse && properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed)
         {
             _lastDesktopPressWasLeft = false;
-            // 桌面右键留给上下文菜单；Shift 保留临时擦除手势。
+            // 移动端保留 Shift 临时擦除手势。
             if (ContextMenu != null && !e.KeyModifiers.HasFlag(KeyModifiers.Shift)) return;
             if (!properties.IsLeftButtonPressed && ViewModel is { Gesture.HasActivePointers: false } &&
                 ViewModel.BeginTemporaryPitchErase(e.GetPosition(this)))

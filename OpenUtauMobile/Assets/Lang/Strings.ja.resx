@@ -2320,7 +2320,7 @@
   <data name="Desktop.NoteTool" xml:space="preserve"><value>ノート · 選択、移動、長さ変更、作成</value></data>
   <data name="Desktop.TuningTool" xml:space="preserve"><value>調声 · ピッチアンカーとビブラート</value></data>
   <data name="Desktop.TuningHint" xml:space="preserve"><value>ドラッグ: ピッチ点／ビブラートハンドルを移動 · 曲線をクリック: 点を追加 · ビブラートをダブルクリック: 切替 · 中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
-  <data name="Desktop.PitchHint" xml:space="preserve"><value>ドラッグ: ピッチを描画 · Shift＋右ドラッグ: 消去 · 中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>ドラッグ: ピッチを描画 · 右クリックドラッグ: 消去 · 中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
   <data name="Desktop.AllLanguages" xml:space="preserve"><value>すべての言語</value></data>
   <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>インストールファイルは一度に1つドロップしてください。</value></data>
   <data name="Desktop.Parameters" xml:space="preserve"><value>パラメータパネル</value></data>

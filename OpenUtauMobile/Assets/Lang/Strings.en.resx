@@ -2327,7 +2327,7 @@
   <data name="Desktop.NoteTool" xml:space="preserve"><value>Notes · select, move, resize and create</value></data>
   <data name="Desktop.TuningTool" xml:space="preserve"><value>Tuning · pitch anchors and vibrato</value></data>
   <data name="Desktop.TuningHint" xml:space="preserve"><value>Drag: move pitch anchors / vibrato handles · Click curve: add anchor · Double-click vibrato: toggle · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
-  <data name="Desktop.PitchHint" xml:space="preserve"><value>Drag: draw pitch · Shift + right drag: erase · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>Drag: draw pitch · Right-click and drag: erase · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
   <data name="Desktop.AllLanguages" xml:space="preserve"><value>All languages</value></data>
   <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>Drop one installer at a time.</value></data>
   <data name="Desktop.Parameters" xml:space="preserve"><value>Parameter panel</value></data>

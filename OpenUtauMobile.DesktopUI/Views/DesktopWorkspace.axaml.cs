@@ -39,6 +39,8 @@ namespace OpenUtauMobile.DesktopUI.Views
         private readonly DesktopInlineEditor _inline;
         private Window? _mixerWindow;
         private readonly List<(ToggleButton Button, PianoRollEditMode Mode)> _pianoModes = [];
+        private ContextMenu? _pianoNotesContextMenu;
+        private ContextMenu? _pianoLayoutContextMenu;
         private IDisposable? _hintBinding;
         private string? _hintSignature;
         private DesktopEditorHint? _currentEditorHint;
@@ -89,8 +91,10 @@ namespace OpenUtauMobile.DesktopUI.Views
             ContextMenu trackMenu = new();
             trackMenu.Opening += (_, _) => trackMenu.ItemsSource = contextTrack?.RendererSettings.renderer == Renderers.CLASSIC ? CreateClassicToolMenus(contextTrack) : [];
             header.ContextMenu = trackMenu;
-            Piano.NotesCanvas.ContextMenu = CreateContextMenu(true);
-            Piano.LayoutGrid.ContextMenu = CreateContextMenu(true);
+            _pianoNotesContextMenu = CreateContextMenu(true);
+            _pianoLayoutContextMenu = CreateContextMenu(true);
+            Piano.NotesCanvas.ContextMenu = _pianoNotesContextMenu;
+            Piano.LayoutGrid.ContextMenu = _pianoLayoutContextMenu;
             Arrangement.PartsCanvas.AddHandler(PointerPressedEvent, (_, e) =>
             {
                 if (e.GetCurrentPoint(Arrangement.PartsCanvas).Properties.PointerUpdateKind != PointerUpdateKind.RightButtonPressed) return;
@@ -101,6 +105,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             Piano.NotesCanvas.AddHandler(PointerPressedEvent, (_, e) =>
             {
                 if (e.GetCurrentPoint(Piano.NotesCanvas).Properties.PointerUpdateKind != PointerUpdateKind.RightButtonPressed) return;
+                if (_editor.PianoRollViewModel.EditMode == PianoRollEditMode.PitchPen) return;
                 if (_editor.PianoRollViewModel.HitTestNote(e.GetPosition(Piano.NotesCanvas)) is { } note && !_editor.PianoRollViewModel.SelectedNotes.Contains(note))
                 { _editor.PianoRollViewModel.SelectedNotes.Clear(); _editor.PianoRollViewModel.SelectedNotes.Add(note); }
             }, RoutingStrategies.Tunnel);
@@ -135,6 +140,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (_attached || _disposed) return;
                 _attached = true;
+                PianoRollViewModel.BatchEditRunningChanged += OnBatchEditRunningChanged;
+                OnBatchEditRunningChanged(PianoRollViewModel.IsBatchEditRunning);
                 _editor.PropertyChanged += OnEditorChanged;
                 _editor.PianoRollViewModel.PropertyChanged += OnEditorChanged;
                 DocManager.Inst.AddSubscriber(this);
@@ -150,6 +157,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             DetachedFromVisualTree += (_, _) =>
             {
                 SavePanels();
+                PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
                 _editor.PropertyChanged -= OnEditorChanged;
                 _editor.PianoRollViewModel.PropertyChanged -= OnEditorChanged;
                 DocManager.Inst.RemoveSubscriber(this);
@@ -164,6 +172,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         public void CancelInput() { foreach (DesktopTimelineInput timeline in _timelines) timeline.Cancel(); _inline.Close(false); _input.CancelEditorInput(); }
         public bool PrepareFileAction()
         {
+            if (PianoRollViewModel.IsBatchEditRunning) return false;
             if (EditorInputController.IsComposing(TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() as Visual)) return false;
             foreach (DesktopTimelineInput timeline in _timelines) timeline.Cancel();
             _input.CancelEditorInput();
@@ -217,6 +226,9 @@ namespace OpenUtauMobile.DesktopUI.Views
         private void NotifyShortcutContextChanged() => ShortcutContextChanged?.Invoke(_currentEditorHint);
         private void UpdateModes()
         {
+            bool pitchPen = _editor.PianoRollViewModel.EditMode == PianoRollEditMode.PitchPen;
+            Piano.NotesCanvas.ContextMenu = pitchPen ? null : _pianoNotesContextMenu;
+            Piano.LayoutGrid.ContextMenu = pitchPen ? null : _pianoLayoutContextMenu;
             foreach ((ToggleButton Button, PianoRollEditMode Mode) item in _pianoModes) item.Button.IsChecked = item.Mode == _editor.PianoRollViewModel.EditMode;
             List<IObservable<string>> hints = [];
             List<string> signature = [];
@@ -327,7 +339,10 @@ namespace OpenUtauMobile.DesktopUI.Views
                 if (piano) _editor.PianoRollViewModel.IsContextMenuExpanded = true;
                 else _editor.IsContextMenuExpanded = true;
                 IReadOnlyList<ContextActionItem> actions = piano ? _editor.PianoRollViewModel.PianoRollContextActions : _editor.TrackContextActions;
-                List<MenuItem> items = actions.Select(action => new MenuItem { Header = action.Tip, Command = action.Command }).ToList();
+                List<MenuItem> items = actions.Where(action => action.Id != "batch-edits")
+                    .Select(action => new MenuItem { Header = action.Tip, Command = action.Command }).ToList();
+                if (actions.Any(action => action.Id == "batch-edits"))
+                    items.Add(DesktopBatchEditMenu.Create(() => _editor.PianoRollViewModel, () => !_editor.IsLoadingProject));
                 UPart? target = targetPart?.Invoke();
                 int index = target != null && DocManager.Inst.Project.parts.Contains(target) ? target.trackNo : -1;
                 if (!piano && index >= 0 && index < DocManager.Inst.Project.tracks.Count && DocManager.Inst.Project.tracks[index].RendererSettings.renderer == Renderers.CLASSIC)
@@ -414,7 +429,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             DesktopPageLocator.RestoreGeometry(window, profile, owner, _layout.State.MixerWindow);
             window.Bind(Window.TitleProperty, window.GetResourceObservable("Mixer.Title"));
             DesktopUi.Paint(window, Window.BackgroundProperty, "Sem.Color.Surface");
-            DialogHostAvalonia.DialogHost host = new() { Identifier = "DesktopMixer-" + Guid.NewGuid(), Content = mixer, IsMultipleDialogsEnabled = true };
+            DialogHostAvalonia.DialogHost host = new() { Identifier = "DesktopMixer-" + Guid.NewGuid(), Content = mixer, IsMultipleDialogsEnabled = true, IsEnabled = !PianoRollViewModel.IsBatchEditRunning };
             window.Content = host;
             _mixerWindow = window;
             window.Closing += (_, e) =>
@@ -434,7 +449,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             window.AddHandler(KeyDownEvent, (_, e) =>
             {
                 Visual? source = window.FocusManager?.GetFocusedElement() as Visual ?? e.Source as Visual;
-                if (e.Handled || host.IsOpen || EditorInputController.IsComposing(source) || EditorShortcuts.IsTextInput(source)) return;
+                if (e.Handled || host.IsOpen || PianoRollViewModel.IsBatchEditRunning || EditorInputController.IsComposing(source) || EditorShortcuts.IsTextInput(source)) return;
                 bool command = EditorShortcuts.IsCommandModifier(e.KeyModifiers, OperatingSystem.IsMacOS());
                 if (e.Key == Key.Escape || command && e.Key == Key.W) { e.Handled = true; window.Close(); return; }
                 ICommand? action = EditorShortcuts.GetAction(_editor, e.Key, e.KeyModifiers, OperatingSystem.IsMacOS());
@@ -538,6 +553,11 @@ namespace OpenUtauMobile.DesktopUI.Views
             if (e.PropertyName == nameof(EditorViewModel.IsTrackHeaderExpanded))
                 Arrangement.SetHeaderExpanded(_editor.IsTrackHeaderExpanded);
         }
+        private void OnBatchEditRunningChanged(bool running)
+        {
+            IsEnabled = !running;
+            if (_mixerWindow?.Content is DialogHostAvalonia.DialogHost host) host.IsEnabled = !running;
+        }
         private void UpdateTime()
         {
             double ms = DocManager.Inst.Project.timeAxis.TickPosToMsPos(_editor.PlayPosTick);
@@ -547,6 +567,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         {
             if (_disposed) return;
             _disposed = true;
+            PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
             _inspector.RequestShowParameters -= ShowParameters;
             _mixerWindow?.Close();
             SavePanels();

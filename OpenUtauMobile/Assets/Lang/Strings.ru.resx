@@ -2282,7 +2282,7 @@
   <data name="Desktop.NoteTool" xml:space="preserve"><value>Ноты · выделение, перемещение, размер и создание</value></data>
   <data name="Desktop.TuningTool" xml:space="preserve"><value>Настройка · якоря питча и вибрато</value></data>
   <data name="Desktop.TuningHint" xml:space="preserve"><value>Перетаскивание: якоря питча / ручки вибрато · Щелчок кривой: добавить якорь · Двойной щелчок вибрато: переключить · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
-  <data name="Desktop.PitchHint" xml:space="preserve"><value>Перетаскивание: рисовать питч · Shift + правая кнопка: стереть · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>Перетаскивание: рисовать питч · Правая кнопка и перетаскивание: стереть · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
   <data name="Desktop.AllLanguages" xml:space="preserve"><value>Все языки</value></data>
   <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>Перетаскивайте по одному установочному файлу.</value></data>
   <data name="Desktop.Parameters" xml:space="preserve"><value>Панель параметров</value></data>

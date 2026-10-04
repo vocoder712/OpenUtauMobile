@@ -112,7 +112,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             AddHandler(DragDrop.DropEvent, OnDrop);
             UpdateNavigation();
         }
-        private bool Ready => !_fileAction && _main.CurrentViewModel is not (SplashScreenViewModel or ClassicSingerSetupViewModel { IsInstalling: true }) && !_pages.IsUtilityModalOpen && !DialogHost.IsDialogOpen("MainDialogHost") && _main.ActiveEditor is not { IsLoadingProject: true };
+        private bool Ready => !_fileAction && !PianoRollViewModel.IsBatchEditRunning && _main.CurrentViewModel is not (SplashScreenViewModel or ClassicSingerSetupViewModel { IsInstalling: true }) && !_pages.IsUtilityModalOpen && !DialogHost.IsDialogOpen("MainDialogHost") && _main.ActiveEditor is not { IsLoadingProject: true };
         public void CancelInput() => _pages.Workspace?.CancelInput();
         private void OnWindowActivated(object? sender, EventArgs e) => _pages.InitializeWindowProviders();
         public bool PrepareFileAction() => _pages.Workspace?.PrepareFileAction() != false;
@@ -171,17 +171,23 @@ namespace OpenUtauMobile.DesktopUI.Views
                 templates.IsEnabled = files.Length > 0;
                 recovery.IsVisible = !string.IsNullOrWhiteSpace(Preferences.Default.RecoveryPath) && File.Exists(Preferences.Default.RecoveryPath);
             };
+            MenuItem batchEdits = DesktopBatchEditMenu.Create(() => _main.ActiveEditor?.PianoRollViewModel, () => Ready);
+            MenuItem edit = Menu("Desktop.Edit", Item("Editor.Undo", () => _main.ActiveEditor?.UndoCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.UndoCommand), Gesture(Key.Z)),
+                Item("Editor.Redo", () => _main.ActiveEditor?.RedoCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.RedoCommand), Gesture(OperatingSystem.IsMacOS() ? Key.Z : Key.Y, OperatingSystem.IsMacOS())),
+                SelectionItem("Common.Cut", Key.X), SelectionItem("Common.Copy", Key.C), SelectionItem("Common.Paste", Key.V),
+                SelectionItem("Common.SelectAll", Key.A), SelectionItem("Common.Delete", Key.Delete),
+                Item("Editor.Action.Merge", () => _main.ActiveEditor?.MergeSelectedParts(), () => _main.ActiveEditor?.CanMergeSelectedParts == true),
+                batchEdits,
+                Item("BulkLyricEdit.Title", () => _main.ActiveEditor?.PianoRollViewModel.ShowBulkLyricEditPopupAsync() ?? Task.CompletedTask, () => HasNotes),
+                Item("Desktop.NoteProperties", () => _pages.Workspace?.ShowNotes(), () => HasNotes));
+            edit.SubmenuOpened += (_, e) =>
+            {
+                if (e.Source == edit) DesktopBatchEditMenu.Refresh(batchEdits, _main.ActiveEditor?.PianoRollViewModel, () => Ready);
+            };
             _menu.ItemsSource = new[]
             {
                 file,
-                Menu("Desktop.Edit", Item("Editor.Undo", () => _main.ActiveEditor?.UndoCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.UndoCommand), Gesture(Key.Z)),
-                    Item("Editor.Redo", () => _main.ActiveEditor?.RedoCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.RedoCommand), Gesture(OperatingSystem.IsMacOS() ? Key.Z : Key.Y, OperatingSystem.IsMacOS())),
-                    SelectionItem("Common.Cut", Key.X), SelectionItem("Common.Copy", Key.C), SelectionItem("Common.Paste", Key.V),
-                    SelectionItem("Common.SelectAll", Key.A), SelectionItem("Common.Delete", Key.Delete),
-                    Item("Editor.Action.Merge", () => _main.ActiveEditor?.MergeSelectedParts(), () => _main.ActiveEditor?.CanMergeSelectedParts == true),
-                    Item("BatchEdit.Title", () => _main.ActiveEditor?.PianoRollViewModel.ShowBatchEditPopupAsync() ?? Task.CompletedTask, () => HasNotes),
-                    Item("BulkLyricEdit.Title", () => _main.ActiveEditor?.PianoRollViewModel.ShowBulkLyricEditPopupAsync() ?? Task.CompletedTask, () => HasNotes),
-                    Item("Desktop.NoteProperties", () => _pages.Workspace?.ShowNotes(), () => HasNotes)),
+                edit,
                 Menu("Desktop.View",
                     PanelItem("Desktop.Arrangement", w => w.ToggleArrangement(), w => w.IsArrangementVisible),
                     PanelItem("Desktop.PianoRoll", w => w.TogglePianoRoll(), w => w.IsPianoRollVisible),

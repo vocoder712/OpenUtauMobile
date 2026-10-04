@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.DesktopUI.Services"
+             xmlns:dialogs="using:OpenUtauMobile.Controls"
+             x:Class="OpenUtauMobile.DesktopUI.Services.DesktopBatchEditCommandPopup"
+             x:DataType="vm:DesktopBatchEditDialogViewModel"
+             Classes="PopupDialogRoot DialogHeightCompact">
+    <dialogs:DialogShell Header="{Binding Title}" CloseCommand="{Binding CancelCommand}">
+        <dialogs:DialogShell.Footer>
+            <dialogs:DialogActionRow>
+                <Button Classes="DialogAction" Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                <Button dialogs:DialogShell.IsDefaultAction="True" Classes="DialogAction DialogPrimary" Content="{Binding RunLabel}" Command="{Binding RunCommand}" />
+            </dialogs:DialogActionRow>
+        </dialogs:DialogShell.Footer>
+        <Border Classes="DialogBodyBorder">
+            <StackPanel Spacing="10">
+                <TextBlock Text="{Binding ParameterLabel}" />
+                <TextBox Text="{Binding ParameterValue, Mode=TwoWay}" />
+                <TextBlock Text="{Binding ValidationMessage}" IsVisible="{Binding ValidationMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+    </dialogs:DialogShell>
+</UserControl>

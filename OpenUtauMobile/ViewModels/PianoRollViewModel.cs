@@ -16,6 +16,7 @@ using DynamicData;
 using DynamicData.Binding;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core;
+using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Audio;
@@ -2602,6 +2603,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     {
         return new ContextActionItem
         {
+            Id = "batch-edits",
             Icon = PackIconPhosphorIconsKind.ListChecks,
             Tip = L.S("BatchEdit.Title"),
             Command = ReactiveCommand.CreateFromTask(ShowBatchEditPopupAsync),
@@ -2611,13 +2613,14 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     public async Task ShowBatchEditPopupAsync()
     {
         UVoicePart? part = EditingVoicePart;
-        if (part == null)
+        if (part == null || IsBatchEditRunning || DocManager.Inst.HasOpenUndoGroup)
         {
             return;
         }
 
         List<UNote> selectedNotes = SelectedNotes.ToList();
-        BatchEditViewModel viewModel = new(DocManager.Inst.Project, part, selectedNotes);
+        UProject project = DocManager.Inst.Project;
+        BatchEditViewModel viewModel = new(project, part, selectedNotes);
         BatchEditExecutionRequest? request = await PopupService.Show<BatchEditExecutionRequest>(
             new BatchEditPopup(),
             viewModel);
@@ -2626,13 +2629,131 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             return;
         }
 
-        await ExecuteBatchEditAsync(part, request);
+        await ExecuteBatchEditAsync(project, part, request);
+    }
+
+    public Task ExecuteDesktopBatchEditAsync(UProject project, UVoicePart part, BatchEditExecutionRequest request)
+    {
+        return ExecuteBatchEditAsync(project, part, request, showProgress: false);
+    }
+
+    private static int _batchEditRunning;
+    public static bool IsBatchEditRunning => Volatile.Read(ref _batchEditRunning) != 0;
+    public static event Action<bool>? BatchEditRunningChanged;
+
+    private static bool IsBatchEditContextValid(UProject project, UVoicePart part, BatchEditExecutionRequest request) =>
+        ReferenceEquals(project, DocManager.Inst.Project) && project.parts.Contains(part) &&
+        (!request.RequiresNotes || request.TargetNotes.Count > 0) &&
+        request.TargetNotes.All(part.notes.Contains) && !DocManager.Inst.HasOpenUndoGroup;
+
+    private static void ResetBatchOperationSafely(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager, bool resetNotes)
+    {
+        List<UNote> notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+        docManager.StartUndoGroup("command.batch.reset", true);
+        try
+        {
+            foreach (UNote note in notes)
+            {
+                if (resetNotes)
+                {
+                    docManager.ExecuteCmd(new ResetPitchPointsCommand(part, note));
+                    if (note.vibrato.length > 0)
+                    {
+                        docManager.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
+                    }
+                    if (note.phonemeOverrides.Any(item => item.offset != null || item.preutterDelta != null || item.overlapDelta != null))
+                    {
+                        docManager.ExecuteCmd(new ClearPhonemeTimingCommand(part, note));
+                    }
+                    foreach (UPhonemeOverride phonemeOverride in note.phonemeOverrides)
+                    {
+                        if (phonemeOverride.phoneme != null)
+                        {
+                            docManager.ExecuteCmd(new ChangePhonemeAliasCommand(part, note, phonemeOverride.index, null));
+                        }
+                    }
+                }
+                if (note.phonemeExpressions.Count > 0)
+                {
+                    docManager.ExecuteCmd(new ResetExpressionsCommand(part, note));
+                }
+            }
+
+            bool allNotes = notes.Count == part.notes.Count;
+            List<(int Start, int End)> ranges = allNotes ? [] : GetSelectedTickRanges(part, notes);
+            foreach (UCurve curve in part.curves.ToArray())
+            {
+                if (allNotes)
+                {
+                    docManager.ExecuteCmd(new ClearCurveCommand(part, curve.abbr));
+                    continue;
+                }
+
+                if (curve.descriptor == null)
+                {
+                    continue;
+                }
+                int defaultValue = (int)curve.descriptor.defaultValue;
+                foreach ((int start, int end) in ranges)
+                {
+                    docManager.ExecuteCmd(new PasteCurveCommand(project, part, curve.abbr,
+                        start, defaultValue, end, defaultValue));
+                }
+            }
+        }
+        finally
+        {
+            docManager.EndUndoGroup();
+        }
+    }
+
+    private static List<(int Start, int End)> GetSelectedTickRanges(UVoicePart part, List<UNote> notes)
+    {
+        Dictionary<UNote, int> firstPhonemePositions = [];
+        foreach (UPhoneme phoneme in part.phonemes)
+        {
+            if (phoneme.Parent != null) firstPhonemePositions.TryAdd(phoneme.Parent, phoneme.position);
+        }
+
+        List<(int Start, int End)> ranges = notes.Select(note =>
+        {
+            int start = note.position;
+            if (note.Prev is { } previous && previous.End < note.position &&
+                firstPhonemePositions.TryGetValue(note, out int phonemePosition))
+            {
+                start = Math.Min(start, phonemePosition);
+            }
+            return (start - 1, note.End + 1);
+        }).OrderBy(range => range.Item1).ToList();
+
+        List<(int Start, int End)> merged = [];
+        foreach ((int start, int end) in ranges)
+        {
+            if (merged.Count == 0 || start > merged[^1].End)
+            {
+                merged.Add((start, end));
+            }
+            else
+            {
+                (int previousStart, int previousEnd) = merged[^1];
+                merged[^1] = (previousStart, Math.Max(previousEnd, end));
+            }
+        }
+        return merged;
     }
 
     private static async Task ExecuteBatchEditAsync(
+        UProject project,
         UVoicePart part,
-        BatchEditExecutionRequest request)
+        BatchEditExecutionRequest request,
+        bool showProgress = true)
     {
+        if (!IsBatchEditContextValid(project, part, request))
+        {
+            ToastService.Enqueue(L.S("BatchEdit.Validation.SelectionUnavailable"));
+            return;
+        }
+        if (Interlocked.CompareExchange(ref _batchEditRunning, 1, 0) != 0) return;
         string runningMessage = string.Format(
             CultureInfo.CurrentCulture,
             L.S("BatchEdit.Status.Running"),
@@ -2640,6 +2761,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
         try
         {
+            BatchEditRunningChanged?.Invoke(true);
             if (request.Operation.IsAsync)
             {
                 if (request.SupportsCancellation)
@@ -2648,6 +2770,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         runningMessage,
                         0d,
                         (loading, cancellationToken) => RunAsyncBatchBackend(
+                            project,
                             part,
                             request,
                             loading,
@@ -2659,6 +2782,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         runningMessage,
                         0d,
                         loading => RunAsyncBatchBackend(
+                            project,
                             part,
                             request,
                             loading,
@@ -2667,9 +2791,11 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             }
             else
             {
-                await LoadingPopupService.RunAsync(
-                    runningMessage,
-                    _ => RunSynchronousBatchBackend(part, request));
+                // 剪贴板回调会等待 UI 线程，必须保留后台执行及阻止交互的加载窗口。
+                if (showProgress || request.Operation is CommonnoteCopy or CommonnotePaste)
+                    await LoadingPopupService.RunAsync(runningMessage, _ => RunSynchronousBatchBackend(project, part, request));
+                else
+                    RunSynchronousBatchOperation(project, part, request);
             }
 
         }
@@ -2681,20 +2807,27 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         {
             ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
         }
+        finally
+        {
+            Interlocked.Exchange(ref _batchEditRunning, 0);
+            BatchEditRunningChanged?.Invoke(false);
+        }
     }
 
     private static async Task RunAsyncBatchBackend(
+        UProject project,
         UVoicePart part,
         BatchEditExecutionRequest request,
         LoadingPopupViewModel loading,
         CancellationToken cancellationToken)
     {
+        if (!IsBatchEditContextValid(project, part, request)) throw new OperationCanceledException();
         try
         {
             await Task.Run(() =>
             {
                 request.Operation.RunAsync(
-                    DocManager.Inst.Project,
+                    project,
                     part,
                     request.TargetNotes.ToList(),
                     DocManager.Inst,
@@ -2722,20 +2855,35 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     }
 
     private static Task RunSynchronousBatchBackend(
+        UProject project,
         UVoicePart part,
         BatchEditExecutionRequest request)
     {
-        return Task.Run(() =>
+        if (!IsBatchEditContextValid(project, part, request)) throw new OperationCanceledException();
+        return Task.Run(() => DocManager.Inst.RunWithSynchronousMainThreadDispatch(
+            () => RunSynchronousBatchOperation(project, part, request)));
+    }
+
+    private static void RunSynchronousBatchOperation(UProject project, UVoicePart part, BatchEditExecutionRequest request)
+    {
+        if (!IsBatchEditContextValid(project, part, request)) throw new OperationCanceledException();
+        try
         {
-            DocManager.Inst.RunWithSynchronousMainThreadDispatch(() =>
+            if (request.Operation is ResetAllExpressions or ResetAll)
             {
-                request.Operation.Run(
-                    DocManager.Inst.Project,
-                    part,
-                    request.TargetNotes.ToList(),
-                    DocManager.Inst);
-            });
-        });
+                ResetBatchOperationSafely(project, part, request.TargetNotes.ToList(), DocManager.Inst,
+                    request.Operation is ResetAll);
+            }
+            else
+            {
+                request.Operation.Run(project, part, request.TargetNotes.ToList(), DocManager.Inst);
+            }
+        }
+        finally
+        {
+            // 上游操作抛错时也结束本次 Undo 组，避免后续编辑一直被禁用。
+            if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup();
+        }
     }
 
     // ── 操作方法存根 ──────────────────────────────────────────────────

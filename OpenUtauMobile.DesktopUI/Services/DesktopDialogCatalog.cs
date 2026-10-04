@@ -18,6 +18,7 @@ namespace OpenUtauMobile.DesktopUI.Services
             typeof(NotePropertiesPopup), typeof(ExitEditorConfirmPopup), typeof(ExportAudioPopup),
             typeof(OptionConfirmPopup), typeof(LoadingPopup), typeof(NoteExtractionPopup),
             typeof(BatchEditPopup), typeof(BulkLyricEditPopup), typeof(ExpressionsPopup),
+            typeof(DesktopBatchEditCommandPopup),
             typeof(ThemeColorPickerDialog), typeof(TrackColorPickerPopup), typeof(SingerPickerPopup),
             typeof(PhonemizerPickerPopup), typeof(RendererPickerPopup), typeof(TextInputPopup),
             typeof(MixerPresetPopup), typeof(VoiceColorMappingPopup), typeof(SetupWizardPopup),

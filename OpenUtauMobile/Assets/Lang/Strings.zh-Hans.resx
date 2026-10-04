@@ -2327,7 +2327,7 @@
   <data name="Desktop.NoteTool" xml:space="preserve"><value>音符 · 选择、移动、调整长度与创建</value></data>
   <data name="Desktop.TuningTool" xml:space="preserve"><value>调音 · 音高锚点与颤音</value></data>
   <data name="Desktop.TuningHint" xml:space="preserve"><value>拖动：移动音高锚点／颤音控制柄 · 单击曲线：添加锚点 · 双击颤音：切换 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
-  <data name="Desktop.PitchHint" xml:space="preserve"><value>拖动：绘制音高 · Shift＋右键拖动：擦除 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>拖动：绘制音高 · 右键拖动：擦除 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
   <data name="Desktop.AllLanguages" xml:space="preserve"><value>所有语言</value></data>
   <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>请每次拖入一个安装文件。</value></data>
   <data name="Desktop.Parameters" xml:space="preserve"><value>参数面板</value></data>
