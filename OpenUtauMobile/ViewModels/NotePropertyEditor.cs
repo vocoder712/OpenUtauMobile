@@ -24,6 +24,8 @@ namespace OpenUtauMobile.ViewModels
         private readonly List<Action<List<UCommand>>> edits = [];
         private readonly List<Action> acceptChanges = [];
         private NotePropertyField? tone;
+        private bool disposed;
+        public NotePropertyField? PhonemizerField { get; }
         public List<NotePropertyGroup> Groups { get; } = [];
         public string Summary { get; }
         [Reactive] public int SelectedTabIndex { get; set; }
@@ -71,26 +73,27 @@ namespace OpenUtauMobile.ViewModels
             });
             AddNumber(basic, "Tuning", -100, 100, n => n.tuning, (n, v) => new ChangeNoteTuningCommand(part, n, (int)v), 1);
 
-            PhonemizerFactory[] factories = PhonemizerFactory.GetAll();
-            List<string?> ids = [null, .. factories.Select(f => f.type.FullName)];
             UTrack currentTrack = project.tracks[part.trackNo];
-            List<string> names = [$"{L.S("NoteProperties.TrackDefault")} ({currentTrack.Phonemizer.GetType().Name})", .. factories.Select(f => f.ToString())];
-            foreach (string id in notes.Select(n => n.PhonemizerOverride).OfType<string>().Where(id => !ids.Contains(id)).Distinct())
-            {
-                ids.Add(id);
-                names.Add(id);
-            }
-            NotePropertyField phonemizer = AddChoice(basic, "Phonemizer", names.ToArray(), notes.Select(n => ids.IndexOf(n.PhonemizerOverride)));
             string DraftLyric(UNote note) => lyric.IsEdited ? lyric.Text ?? note.lyric : note.lyric;
+            string trackDefaultLabel = $"{L.S("NoteProperties.TrackDefault")} ({PhonemizerFactory.Get(currentTrack.Phonemizer.GetType())?.ToString() ?? currentTrack.Phonemizer.Name})";
+            NotePropertyField phonemizer = PhonemizerField = NotePropertyField.CreatePhonemizer(
+                L.S("NoteProperties.Phonemizer"), trackDefaultLabel,
+                notes.Where(n => !DraftLyric(n).StartsWith("+", StringComparison.Ordinal)).Select(n => n.PhonemizerOverride));
+            basic.Fields.Add(phonemizer);
             phonemizer.Hint = L.S("NoteProperties.PhonemizerHint");
             phonemizer.IsEnabled = notes.Any(n => !n.lyric.StartsWith("+", StringComparison.Ordinal));
-            lyric.TextChanged = () => phonemizer.IsEnabled = notes.Any(n => !DraftLyric(n).StartsWith("+", StringComparison.Ordinal));
+            lyric.TextChanged = () =>
+            {
+                phonemizer.IsEnabled = notes.Any(n => !DraftLyric(n).StartsWith("+", StringComparison.Ordinal));
+                if (!phonemizer.IsEdited)
+                    phonemizer.LoadPhonemizer(notes.Where(n => !DraftLyric(n).StartsWith("+", StringComparison.Ordinal)).Select(n => n.PhonemizerOverride));
+            };
             edits.Add(commands =>
             {
-                if (phonemizer.IsEdited && phonemizer.SelectedIndex >= 0)
+                if (phonemizer.IsEdited && phonemizer.IsEnabled)
                 {
-                    commands.AddRange(notes.Where(n => !DraftLyric(n).StartsWith("+", StringComparison.Ordinal) && n.PhonemizerOverride != ids[phonemizer.SelectedIndex])
-                        .Select(n => new ChangeNotePhonemizerCommand(part, n, ids[phonemizer.SelectedIndex])));
+                    commands.AddRange(notes.Where(n => !DraftLyric(n).StartsWith("+", StringComparison.Ordinal) && n.PhonemizerOverride != phonemizer.PhonemizerValue)
+                        .Select(n => new ChangeNotePhonemizerCommand(part, n, phonemizer.PhonemizerValue)));
                 }
             });
 
@@ -343,7 +346,7 @@ namespace OpenUtauMobile.ViewModels
 
         public bool MatchesCurrentSelection(UProject activeProject, UVoicePart activePart, IEnumerable<UNote> activeNotes)
         {
-            if (!ReferenceEquals(project, activeProject) || !ReferenceEquals(part, activePart) || !project.parts.Contains(part))
+            if (disposed || !ReferenceEquals(project, activeProject) || !ReferenceEquals(part, activePart) || !project.parts.Contains(part))
             {
                 return false;
             }
@@ -366,7 +369,7 @@ namespace OpenUtauMobile.ViewModels
 
         public bool Commit(bool accept = false)
         {
-            if (DocManager.Inst.Project != project || !project.parts.Contains(part) || notes.Any(n => !part.notes.Contains(n)))
+            if (disposed || DocManager.Inst.Project != project || !project.parts.Contains(part) || notes.Any(n => !part.notes.Contains(n)))
             {
                 Error = L.S("NoteProperties.Stale");
                 return false;
@@ -455,6 +458,7 @@ namespace OpenUtauMobile.ViewModels
 
         public void Dispose()
         {
+            disposed = true;
             foreach (NotePropertyGroup group in Groups)
             {
                 group.Presets?.Dispose();
@@ -485,7 +489,13 @@ namespace OpenUtauMobile.ViewModels
         public string Label { get; }
         public bool IsNumber { get; }
         public bool IsChoice { get; }
-        public bool IsText => !IsNumber && !IsChoice;
+        public bool IsPhonemizerPicker { get; private init; }
+        public bool IsText => !IsNumber && !IsChoice && !IsPhonemizerPicker;
+        public string? PhonemizerValue { get; private set; }
+        public bool IsPhonemizerMixed { get; private set; }
+        public string TrackDefaultLabel { get; private init; } = string.Empty;
+        public string PhonemizerDisplay => IsPhonemizerMixed ? L.S("NoteProperties.Mixed")
+            : NotePhonemizerResolver.Display(PhonemizerValue, TrackDefaultLabel);
         public decimal Minimum { get; init; }
         public decimal Maximum { get; init; }
         public double SliderMinimum { get; }
@@ -501,7 +511,7 @@ namespace OpenUtauMobile.ViewModels
         public bool IsValid => ResetRequested || !HasInvalidInput && (!IsEdited ||
             (IsNumber ? Number.HasValue && Number >= Minimum && Number <= Maximum
                 && (!RequireInteger || Number == decimal.Truncate(Number.Value))
-            : IsText ? !string.IsNullOrWhiteSpace(Text) : SelectedIndex >= 0 && SelectedIndex < Options.Length));
+            : IsPhonemizerPicker || (IsText ? !string.IsNullOrWhiteSpace(Text) : SelectedIndex >= 0 && SelectedIndex < Options.Length)));
         public double SliderValue
         {
             get => Math.Clamp((double)(Number ?? 0), SliderMinimum, SliderMaximum);
@@ -581,6 +591,32 @@ namespace OpenUtauMobile.ViewModels
                 ResetRequested = !ResetRequested;
             });
         }
+
+        public static NotePropertyField CreatePhonemizer(string label, string trackDefaultLabel, IEnumerable<string?> values)
+        {
+            NotePropertyField field = new(label) { IsPhonemizerPicker = true, TrackDefaultLabel = trackDefaultLabel };
+            field.LoadPhonemizer(values);
+            return field;
+        }
+
+        public void LoadPhonemizer(IEnumerable<string?> values)
+        {
+            string?[] distinct = values.Distinct().Select(value => NotePhonemizerResolver.Resolve(value)?.name ?? value).Distinct().Take(2).ToArray();
+            IsPhonemizerMixed = distinct.Length > 1;
+            PhonemizerValue = distinct.Length == 1 ? distinct[0] : null;
+            this.RaisePropertyChanged(nameof(PhonemizerDisplay));
+        }
+
+        public void SetPhonemizer(PhonemizerPickerResult result)
+        {
+            if (!IsPhonemizerPicker || !IsEnabled) return;
+            string? value = result.Factory?.name;
+            if (!IsPhonemizerMixed && PhonemizerValue == value) return;
+            PhonemizerValue = value;
+            IsPhonemizerMixed = false;
+            MarkEdited();
+            this.RaisePropertyChanged(nameof(PhonemizerDisplay));
+        }
         public NotePropertyField(string label, decimal min, decimal max, IEnumerable<decimal> values, decimal increment = 0.1m) : this(label)
         {
             IsNumber = true;
@@ -627,6 +663,14 @@ namespace OpenUtauMobile.ViewModels
             {
                 Number = value;
             }
+        }
+
+        internal void RestoreNumberInput(decimal? value, string? input, bool edited)
+        {
+            this.RaiseAndSetIfChanged(ref number, value, nameof(Number));
+            NumberText = input;
+            IsEdited = edited;
+            this.RaisePropertyChanged(nameof(SliderValue));
         }
 
         internal void AcceptChanges()

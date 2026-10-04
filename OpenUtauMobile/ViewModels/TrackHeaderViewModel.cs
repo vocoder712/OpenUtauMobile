@@ -178,7 +178,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectPhonemizer()
     {
-        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync();
+        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(_track.Phonemizer?.Name);
         if (phonemizer != null) SetPhonemizer(phonemizer);
     }
 

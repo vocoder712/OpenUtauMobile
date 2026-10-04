@@ -21,7 +21,7 @@ public static class ServiceHub
     public static Func<System.Threading.Tasks.Task<OpenUtau.Core.Ustx.USinger?>>? DesktopSingerPicker { get; set; }
     public static Func<string, System.Threading.Tasks.Task<string?>>? DesktopTrackNamePicker { get; set; }
     public static Func<string[], System.Threading.Tasks.Task<string?>>? DesktopRendererPicker { get; set; }
-    public static Func<System.Threading.Tasks.Task<OpenUtau.Api.Phonemizer?>>? DesktopPhonemizerPicker { get; set; }
+    public static Func<PhonemizerPickerRequest, Task<PhonemizerPickerResult?>>? DesktopPhonemizerPicker { get; set; }
     public static Func<Avalonia.Controls.Control, Platform.IDesktopPointerDrag?>? DesktopPointerDragFactory { get; set; }
     public static bool UseDesktopFileWorkflows { get; set; }
     public static Func<System.Threading.Tasks.Task>? BeforeDesktopProjectOpenAsync { get; set; }

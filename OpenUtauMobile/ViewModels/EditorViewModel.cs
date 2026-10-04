@@ -548,7 +548,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 default:
                     break;
             }
+            bool repairedPhonemizers = NotePhonemizerResolver.Normalize(project);
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+            if (repairedPhonemizers) DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
             _projectLoaded = true;

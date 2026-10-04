@@ -2376,4 +2376,6 @@
   <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>请选择此歌手支持的渲染器。</value></data>
   <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>请选择兼容的重采样器和 wavtool。</value></data>
   <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>无法应用轨道设置。</value></data>
+  <data name="NoteProperties.PhonemizerUnavailable" xml:space="preserve"><value>音素器不可用：{0}</value></data>
+  <data name="Picker.Phonemizer.Empty" xml:space="preserve"><value>没有可用的音素器。</value></data>
 </root>

@@ -79,10 +79,11 @@ namespace OpenUtauMobile.DesktopUI.Views
             flyout.ShowAt(anchor);
             return result.Task;
         }
-        public static Task<Phonemizer?> PickPhonemizerAsync()
+        public static Task<PhonemizerPickerResult?> PickPhonemizerAsync(PhonemizerPickerRequest request)
         {
-            if (Anchor is not { } anchor) return Task.FromResult<Phonemizer?>(null);
-            TaskCompletionSource<Phonemizer?> result = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            if ((request.Anchor ?? Anchor) is not { } anchor || request.CancellationToken.IsCancellationRequested)
+                return Task.FromResult<PhonemizerPickerResult?>(null);
+            TaskCompletionSource<PhonemizerPickerResult?> result = new(TaskCreationOptions.RunContinuationsAsynchronously);
             PhonemizerFactory[] factories = PhonemizerFactory.GetAll();
             TextBox search = new() { Name = "DesktopPhonemizerSearch", MinWidth = 280 };
             search.Bind(TextBox.PlaceholderTextProperty, search.GetResourceObservable("Desktop.Search"));
@@ -99,22 +100,36 @@ namespace OpenUtauMobile.DesktopUI.Views
                 }
                 return new TextBlock { Text = (item as PhonemizerFactory)?.ToString() ?? "", TextWrapping = Avalonia.Media.TextWrapping.Wrap };
             });
-            Flyout flyout = new() { Content = new StackPanel { Width = 360, Spacing = 8, Children = { search, language, list } }, Placement = PlacementMode.BottomEdgeAlignedLeft };
+            StackPanel body = new() { Width = 360, Spacing = 8 };
+            Button inherit = new() { Name = "PhonemizerTrackDefault", Content = new TextBlock { Text = request.TrackDefaultLabel ?? OpenUtauMobile.Helpers.L.S("NoteProperties.TrackDefault"), TextWrapping = Avalonia.Media.TextWrapping.Wrap }, HorizontalAlignment = HorizontalAlignment.Stretch };
+            if (request.AllowTrackDefault) body.Children.Add(inherit);
+            if (request.CurrentName != null)
+                body.Children.Add(new TextBlock { Text = NotePhonemizerResolver.Display(request.CurrentName, request.TrackDefaultLabel ?? ""), TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+            body.Children.Add(search);
+            body.Children.Add(language);
+            body.Children.Add(list);
+            if (factories.Length == 0)
+                body.Children.Add(new TextBlock { Text = OpenUtauMobile.Helpers.L.S("Picker.Phonemizer.Empty"), TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+            Flyout flyout = new() { Content = body, Placement = PlacementMode.BottomEdgeAlignedLeft };
+            inherit.Click += (_, _) => { result.TrySetResult(new(null)); flyout.Hide(); };
+            bool refreshing = false;
             void Refresh()
             {
                 string query = search.Text ?? "";
-                // 与移动端大面板一致：最近使用置顶（上限 10），其余按语言（及名称）排序；
-                // 两组之间以一条分隔线区分。
+                // 最近使用按记录顺序置顶，其余按语言与名称排序。
                 IOrderedEnumerable<PhonemizerFactory> ordered = factories.Where(f => (language.SelectedIndex == 0 || (f.language ?? "") == language.SelectedItem as string) &&
                     (f.name + " " + f.language + " " + f.ToString()).Contains(query, StringComparison.CurrentCultureIgnoreCase))
-                    .OrderByDescending(f => RecentRank(f))
+                    .OrderBy(f => RecentRank(f))
                     .ThenBy(f => f.language)
                     .ThenBy(f => f.name);
                 PhonemizerFactory[] recent = ordered.TakeWhile(f => RecentRank(f) < 10).ToArray();
                 List<object> items = [.. recent];
-                if (recent.Length > 0) items.Add(new PhonemizerSeparator());
-                items.AddRange(ordered.Skip(recent.Length));
-                list.ItemsSource = items;
+                PhonemizerFactory[] remaining = ordered.Skip(recent.Length).ToArray();
+                if (recent.Length > 0 && remaining.Length > 0) items.Add(new PhonemizerSeparator());
+                items.AddRange(remaining);
+                refreshing = true;
+                try { list.ItemsSource = items; list.SelectedItem = null; }
+                finally { refreshing = false; }
             }
             static int RecentRank(PhonemizerFactory factory)
             {
@@ -124,12 +139,18 @@ namespace OpenUtauMobile.DesktopUI.Views
             search.TextChanged += (_, _) => Refresh(); language.SelectionChanged += (_, _) => Refresh();
             list.SelectionChanged += (_, _) =>
             {
-                if (list.SelectedItem is not PhonemizerFactory factory) return;
-                try { result.TrySetResult(factory.Create()); }
-                catch (Exception error) { result.TrySetException(error); }
+                if (refreshing || list.SelectedItem is not PhonemizerFactory factory) return;
+                result.TrySetResult(new(factory));
                 flyout.Hide();
             };
-            flyout.Closed += (_, _) => result.TrySetResult(null);
+            System.Threading.CancellationTokenRegistration cancellation = request.CancellationToken.Register(() =>
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => { result.TrySetResult(null); flyout.Hide(); }));
+            flyout.Closed += (_, _) => { cancellation.Dispose(); result.TrySetResult(null); };
+            body.AddHandler(InputElement.KeyDownEvent, (_, e) =>
+            {
+                if (e.Key == Key.Escape && !OpenUtauMobile.Services.Editor.EditorInputController.IsComposing(e.Source as Visual))
+                { e.Handled = true; flyout.Hide(); }
+            }, Avalonia.Interactivity.RoutingStrategies.Tunnel);
             flyout.Opened += (_, _) => search.Focus();
             Refresh();
             FlyoutBase.GetAttachedFlyout(anchor)?.Hide();

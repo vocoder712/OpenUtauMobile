@@ -2906,14 +2906,38 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         SelectedNotes.Clear();
     }
 
+    private bool editingNoteProperties;
+    private bool notePropertiesDisposed;
+    private CancellationTokenSource? notePropertiesCancellation;
+
     private async Task EditNotePropertiesAsync()
     {
-        if (EditingVoicePart == null || SelectedNotes.Count == 0)
+        if (notePropertiesDisposed || editingNoteProperties || EditingVoicePart == null || SelectedNotes.Count == 0)
         {
             return;
         }
-        using NotePropertiesViewModel viewModel = new(EditingVoicePart, SelectedNotes);
-        await PopupService.Show<object>(new NotePropertiesPopup(), viewModel);
+        editingNoteProperties = true;
+        using CancellationTokenSource cancellation = new();
+        notePropertiesCancellation = cancellation;
+        try
+        {
+            using NotePropertiesViewModel viewModel = new(EditingVoicePart, SelectedNotes);
+            // 复用输入控件，避免重新绑定数值时覆盖尚未解析的文本。
+            NotePropertiesPopup propertiesPopup = new();
+            using CancellationTokenRegistration registration = cancellation.Token.Register(() => Dispatcher.UIThread.Post(viewModel.RequestBack));
+            while (!cancellation.IsCancellationRequested && EditingVoicePart is { } part && viewModel.Editor.MatchesCurrentSelection(DocManager.Inst.Project, part, SelectedNotes))
+            {
+                NotePropertyField? field = await PopupService.Show<NotePropertyField>(propertiesPopup, viewModel);
+                if (field == null) break;
+                if (cancellation.IsCancellationRequested || EditingVoicePart != part || !viewModel.Editor.MatchesCurrentSelection(DocManager.Inst.Project, part, SelectedNotes)) break;
+                PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(
+                    AllowTrackDefault: true, CurrentName: field.PhonemizerValue, TrackDefaultLabel: field.TrackDefaultLabel,
+                    CancellationToken: cancellation.Token));
+                if (cancellation.IsCancellationRequested || EditingVoicePart != part || !viewModel.Editor.MatchesCurrentSelection(DocManager.Inst.Project, part, SelectedNotes)) break;
+                if (result != null) field.SetPhonemizer(result);
+            }
+        }
+        finally { notePropertiesCancellation = null; editingNoteProperties = false; }
     }
 
     private void BeginSelection()
@@ -3883,6 +3907,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     public void Dispose()
     {
         EndPitchStroke();
+        notePropertiesDisposed = true;
+        notePropertiesCancellation?.Cancel();
         StopPreviewTone();
         _panMotion.Dispose();
         DocManager.Inst.RemoveSubscriber(this);

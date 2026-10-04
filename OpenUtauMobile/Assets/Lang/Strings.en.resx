@@ -2376,4 +2376,6 @@
   <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>Select a renderer supported by this singer.</value></data>
   <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>Select a compatible resampler and wavtool.</value></data>
   <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>Track settings could not be applied.</value></data>
+  <data name="NoteProperties.PhonemizerUnavailable" xml:space="preserve"><value>Unavailable phonemizer: {0}</value></data>
+  <data name="Picker.Phonemizer.Empty" xml:space="preserve"><value>No phonemizers are available.</value></data>
 </root>

@@ -37,6 +37,10 @@
         <Style Selector="Button.PresetAction">
             <Setter Property="MinHeight" Value="{DynamicResource NotePropertiesChoiceMinHeight}" />
         </Style>
+        <Style Selector="Button.NotePhonemizerPicker">
+            <Setter Property="MinHeight" Value="{DynamicResource NotePropertiesChoiceMinHeight}" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
     </UserControl.Styles>
     <controls:DialogShell Header="{DynamicResource NoteProperties.Title}" CloseCommand="{Binding CancelCommand}">
         <controls:DialogShell.Footer>
@@ -123,6 +127,11 @@
                                                         <ComboBox IsVisible="{Binding IsChoice}" ItemsSource="{Binding Options}" IsEnabled="{Binding IsEnabled}"
                                                                   SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                                                                   PlaceholderText="{DynamicResource NoteProperties.Choose}" AutomationProperties.Name="{Binding Label}" />
+                                                        <Button IsVisible="{Binding IsPhonemizerPicker}" IsEnabled="{Binding IsEnabled}"
+                                                                Click="OnPickPhonemizer" Classes="NotePhonemizerPicker"
+                                                                AutomationProperties.Name="{Binding Label}">
+                                                            <TextBlock Text="{Binding PhonemizerDisplay}" TextWrapping="Wrap" />
+                                                        </Button>
                                                         <TextBlock Text="{Binding Hint}" IsVisible="{Binding Hint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                                    Classes="DialogSubtitle" TextWrapping="Wrap" />
                                                         <CheckBox IsVisible="{Binding CanReset}" IsEnabled="{Binding IsEnabled}" IsChecked="{Binding ResetRequested, Mode=OneWay}"

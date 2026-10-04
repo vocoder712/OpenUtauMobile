@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Globalization;
 using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using ReactiveUI;
 using Avalonia;
 using Avalonia.Automation;
@@ -24,6 +26,7 @@ using OpenUtauMobile.DesktopUI.Services;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services.Editor;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.DesktopUI.Views
@@ -58,6 +61,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         private bool _attached;
         private bool _disposed;
         private bool _committing;
+        private CancellationTokenSource? _notePhonemizerPicker;
         private bool _ownsExpressionUndoGroup;
         private NotePropertyEditor? _liveExpressionDraft;
         private NotePropertyField? _liveExpressionField;
@@ -161,6 +165,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         }
         private void Detach()
         {
+            _notePhonemizerPicker?.Cancel();
             if (!_attached) return;
             CancelExpressionSliderPreviews();
             _attached = false;
@@ -186,6 +191,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         private void OnToolsChanged() { _renderSettingsKey = null; QueueRefresh(); }
         private void OnSelectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
+            _notePhonemizerPicker?.Cancel();
             CancelExpressionSliderPreviews();
             QueueRefresh();
         }
@@ -219,12 +225,13 @@ namespace OpenUtauMobile.DesktopUI.Views
                 RefreshTrack();
                 // 输入中的草稿保留；选择改变则立即失效，不能写入下一次选择。
                 bool same = SelectionMatches();
-                if (!same || _notesChangedExternally && !HasOpenPicker(_notesHost) && !HasPendingDraftInput()) RefreshNotes();
+                if (!same) _notePhonemizerPicker?.Cancel();
+                if (!same || _notesChangedExternally && _notePhonemizerPicker == null && !HasOpenPicker(_notesHost) && !HasPendingDraftInput()) RefreshNotes();
                 if (!same) _phonemesChanged = true;
                 if (_phonemesChanged && !HasPhonemeInputFocus()) RefreshPhonemes();
             }, DispatcherPriority.Background);
         }
-        private bool HasDraftInputFocus() => HasOpenPicker(_notesHost) || TopLevel.GetTopLevel(this)?.FocusManager.GetFocusedElement() is Visual visual && visual.GetSelfAndVisualAncestors().Contains(_notesHost);
+        private bool HasDraftInputFocus() => _notePhonemizerPicker != null || HasOpenPicker(_notesHost) || TopLevel.GetTopLevel(this)?.FocusManager.GetFocusedElement() is Visual visual && visual.GetSelfAndVisualAncestors().Contains(_notesHost);
         private bool HasPhonemeInputFocus() => HasOpenPicker(_phonemeHost) || TopLevel.GetTopLevel(this)?.FocusManager.GetFocusedElement() is Visual visual && visual.GetSelfAndVisualAncestors().Contains(_phonemeHost);
         private bool HasTrackInputFocus() => TopLevel.GetTopLevel(this)?.FocusManager.GetFocusedElement() is Visual visual && visual.GetSelfAndVisualAncestors().Contains(_trackHost) && (visual.GetSelfAndVisualAncestors().Any(v => v is TextBox) || EditorInputController.IsComposing(visual));
         private static bool HasOpenPicker(Control host) => host.GetVisualDescendants().OfType<ComboBox>().Any(picker => picker.IsDropDownOpen);
@@ -245,7 +252,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                 if (_draft == null) { _expressionSliders.Clear(); _noteControls = null; _noteSchema = null; _notesHost.Content = DesktopUi.Label("Desktop.NoNotes"); return; }
                 NotePropertyEditor draft = _draft;
                 string schema = string.Join("|", draft.Groups.Select(group => $"{group.Key}:{group.Title}:{group.EmptyMessage}:{group.Vibrato != null}:{group.Presets != null}:" +
-                    string.Join(",", group.Fields.Select(field => $"{field.Label}:{field.IsNumber}:{field.IsChoice}:{field.CanReset}:{group.Key == "Expressions" && field.IsNumber}"))));
+                    string.Join(",", group.Fields.Select(field => $"{field.Label}:{field.IsNumber}:{field.IsChoice}:{field.IsPhonemizerPicker}:{field.CanReset}:{group.Key == "Expressions" && field.IsNumber}"))));
                 // 选择改变时复用控件和模板，只替换草稿绑定，避免大量分配打断音频回调。
                 if (_noteControls != null && _noteSchema == schema)
                 {
@@ -347,6 +354,34 @@ namespace OpenUtauMobile.DesktopUI.Views
             }
             finally { old?.Dispose(); _refreshingNotes = false; }
         }
+        private async Task PickNotePhonemizerAsync(Button anchor, NotePropertyField field)
+        {
+            if (_notePhonemizerPicker != null || _refreshingNotes || _disposed || !_attached ||
+                !SelectionMatches() || _draft is not { } draft || !field.IsEnabled || DocManager.Inst.HasOpenUndoGroup) return;
+            using CancellationTokenSource cancellation = new();
+            _notePhonemizerPicker = cancellation;
+            try
+            {
+                PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(
+                    AllowTrackDefault: true, CurrentName: field.PhonemizerValue, TrackDefaultLabel: field.TrackDefaultLabel,
+                    Anchor: anchor, CancellationToken: cancellation.Token));
+                if (result == null || cancellation.IsCancellationRequested || _disposed || !_attached || draft != _draft ||
+                    !SelectionMatches() || _part == null || !draft.MatchesCurrentSelection(DocManager.Inst.Project, _part, _notes)) return;
+                field.SetPhonemizer(result);
+                if (field.IsEdited) CommitDraft(draft);
+            }
+            catch (Exception exception)
+            {
+                Serilog.Log.Error(exception, "Failed to pick note phonemizer");
+                OpenUtauMobile.Services.Dialogs.ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+            }
+            finally
+            {
+                _notePhonemizerPicker = null;
+                QueueRefresh();
+            }
+        }
+
         private bool CommitCurrentDraft()
         {
             return !_refreshingNotes && _draft is { } draft ? CommitDraft(draft) : false;
@@ -371,7 +406,17 @@ namespace OpenUtauMobile.DesktopUI.Views
             ToolTip.SetShowOnDisabled(row, true);
             row.Children.Add(new TextBlock { Text = field.Label, FontSize = 12, TextWrapping = Avalonia.Media.TextWrapping.Wrap, VerticalAlignment = VerticalAlignment.Center });
             Control input;
-            if (field.IsChoice)
+            if (field.IsPhonemizerPicker)
+            {
+                Button picker = new() { Name = "NotePhonemizerPicker", HorizontalAlignment = HorizontalAlignment.Stretch };
+                TextBlock label = new() { TextWrapping = Avalonia.Media.TextWrapping.Wrap };
+                label.Bind(TextBlock.TextProperty, new Binding("PhonemizerDisplay"));
+                picker.Content = label;
+                picker.Bind(AutomationProperties.NameProperty, new Binding("Label"));
+                picker.Click += async (_, _) => await PickNotePhonemizerAsync(picker, field);
+                input = picker;
+            }
+            else if (field.IsChoice)
             {
                 ComboBox choice = new() { HorizontalAlignment = HorizontalAlignment.Stretch };
                 choice.Bind(ItemsControl.ItemsSourceProperty, new Binding("Options"));
@@ -417,7 +462,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (EditorInputController.IsComposing(e.Source as Visual)) return;
                 if (e.Key == Key.Escape) { e.Handled = true; RefreshNotes(); }
-                else if (e.Key == Key.Enter) { e.Handled = true; CommitCurrentDraft(); }
+                else if (e.Key == Key.Enter && !field.IsPhonemizerPicker) { e.Handled = true; CommitCurrentDraft(); }
             }, RoutingStrategies.Bubble);
             StackPanel inputs = new() { Spacing = 2 };
             if (addExpressionSlider)

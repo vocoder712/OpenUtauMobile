@@ -2331,4 +2331,6 @@
   <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>Выберите рендерер, совместимый с этим голосом.</value></data>
   <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>Выберите совместимые ресемплер и wavtool.</value></data>
   <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>Не удалось применить настройки дорожки.</value></data>
+  <data name="NoteProperties.PhonemizerUnavailable" xml:space="preserve"><value>Фонемайзер «{0}» недоступен.</value></data>
+  <data name="Picker.Phonemizer.Empty" xml:space="preserve"><value>Нет доступных фонемайзеров.</value></data>
 </root>

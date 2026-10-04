@@ -32,12 +32,21 @@ public class TrackHeaderService : ITrackHeaderService
         return await PopupService.Show<USinger?>(new SingerPickerPopup(), new SingerPickerViewModel());
     }
 
-    public async Task<Phonemizer?> PickPhonemizerAsync()
+    public Task<Phonemizer?> PickPhonemizerAsync() => PickPhonemizerAsync(null);
+
+    public async Task<Phonemizer?> PickPhonemizerAsync(string? currentName)
     {
-        if (ServiceHub.DesktopPhonemizerPicker != null) return await ServiceHub.DesktopPhonemizerPicker();
-        return await Dispatcher.UIThread.InvokeAsync(static () =>
-            PopupService.Show<Phonemizer?>(new PhonemizerPickerPopup(), new PhonemizerPickerViewModel())
-        );
+        try
+        {
+            PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(CurrentName: currentName));
+            return result?.Factory?.Create();
+        }
+        catch (System.Exception exception)
+        {
+            Serilog.Log.Error(exception, "Failed to create selected phonemizer");
+            ErrorDialogService.Show(new ErrorDialogViewModel(new OpenUtau.Core.ErrorMessageNotification(exception)));
+            return null;
+        }
     }
 
     public async Task<RendererSettingsSelection?> PickRendererAsync(UProject project, UTrack track)

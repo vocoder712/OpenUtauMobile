@@ -42,7 +42,7 @@ public sealed class TrackSettingsService
                     }
                     case TrackSettingsAction.PickPhonemizer:
                     {
-                        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync();
+                        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(viewModel.DraftPhonemizerIdentifier);
                         if (phonemizer != null) viewModel.SetPhonemizer(phonemizer);
                         break;
                     }

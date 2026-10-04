@@ -74,6 +74,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     public UProject Project => project;
     public UTrack Track => track;
     public Type OriginalPhonemizerType => originalPhonemizer.GetType();
+    public string DraftPhonemizerIdentifier => draftPhonemizer.Name;
     public IReadOnlyList<UExpressionDescriptor> DraftTrackExpressions { get; private set; }
     public bool IsStale => !ReferenceEquals(DocManager.Inst.Project, project) || !project.tracks.Contains(track) ||
         !ReferenceEquals(track.Singer, originalSinger) || track.Phonemizer?.GetType() != originalPhonemizer.GetType() ||
