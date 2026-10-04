@@ -1,0 +1,51 @@
+<Project>
+    <Import Project="../AndroidNativeToolchain.targets" Condition="'$(_OpumAndroidNativeToolchainImported)' != 'true'" />
+    <PropertyGroup>
+        <_WorldlineRid>$(RuntimeIdentifier)</_WorldlineRid>
+        <_WorldlineRid Condition="'$(_WorldlineRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</_WorldlineRid>
+        <_WorldlineRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'x86' and $([MSBuild]::IsOSPlatform('Windows'))">win-x86</_WorldlineRid>
+        <_WorldlineRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'ARM64' and $([MSBuild]::IsOSPlatform('Windows'))">win-arm64</_WorldlineRid>
+        <WorldlineNativeRoot Condition="'$(WorldlineNativeRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/worldline-native</WorldlineNativeRoot>
+        <WorldlineBuildRoot Condition="'$(WorldlineBuildRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/worldline-build</WorldlineBuildRoot>
+        <WorldlinePythonExecutable Condition="'$(WorldlinePythonExecutable)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">python</WorldlinePythonExecutable>
+        <WorldlinePythonExecutable Condition="'$(WorldlinePythonExecutable)' == ''">python3</WorldlinePythonExecutable>
+        <WorldlineBazelExecutable Condition="'$(WorldlineBazelExecutable)' == ''">bazel</WorldlineBazelExecutable>
+        <_WorldlineResolveToolchainDependsOn Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">ResolveOpumAndroidNativeToolchain</_WorldlineResolveToolchainDependsOn>
+        <_WorldlineNativeName Condition="$([System.String]::Copy('$(_WorldlineRid)').StartsWith('win-'))">worldline.dll</_WorldlineNativeName>
+        <_WorldlineNativeName Condition="$([System.String]::Copy('$(_WorldlineRid)').StartsWith('linux-')) or $([System.String]::Copy('$(_WorldlineRid)').StartsWith('android-'))">libworldline.so</_WorldlineNativeName>
+        <_WorldlineNativeName Condition="$([System.String]::Copy('$(_WorldlineRid)').StartsWith('osx-'))">libworldline.dylib</_WorldlineNativeName>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-arm64'">arm64-v8a</_WorldlineAbi>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-arm'">armeabi-v7a</_WorldlineAbi>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-x64'">x86_64</_WorldlineAbi>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-x86'">x86</_WorldlineAbi>
+        <_WorldlineRuntimeDirectory>$(WorldlineNativeRoot)/$(_WorldlineRid)</_WorldlineRuntimeDirectory>
+    </PropertyGroup>
+    <!-- 每次让 Bazel 检查依赖图；不得以已有二进制代替源码构建。 -->
+    <Target Name="BuildWorldlineNative" BeforeTargets="PrepareForBuild"
+            DependsOnTargets="$(_WorldlineResolveToolchainDependsOn)"
+            Condition="'$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true'">
+        <Error Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(_WorldlineAbi)' == ''"
+               Text="Worldline Android build requires an Android RuntimeIdentifier." />
+        <Error Condition="'$(_WorldlineNativeName)' == ''" Text="Unsupported Worldline RID: $(_WorldlineRid)." />
+        <PropertyGroup>
+            <_WorldlineNdkArgument Condition="'$(_WorldlineAbi)' != ''">--ndk &quot;$(_OpumAndroidNdkDirectory)&quot;</_WorldlineNdkArgument>
+        </PropertyGroup>
+        <Exec Command="&quot;$(WorldlinePythonExecutable)&quot; &quot;$(MSBuildThisFileDirectory)build.py&quot; --rid &quot;$(_WorldlineRid)&quot; --build-root &quot;$(WorldlineBuildRoot)&quot; --install-root &quot;$(WorldlineNativeRoot)&quot; --bazel &quot;$(WorldlineBazelExecutable)&quot; $(_WorldlineNdkArgument)" />
+        <Error Condition="!Exists('$(_WorldlineRuntimeDirectory)/$(_WorldlineNativeName)')" Text="Worldline build did not produce $(_WorldlineNativeName)." />
+        <!-- 在构建成功后收集，首次构建没有 artifacts 时也能正确打包。 -->
+        <ItemGroup>
+            <_WorldlineLibrary Include="$(_WorldlineRuntimeDirectory)/$(_WorldlineNativeName)" />
+            <_WorldlineMetadata Include="$(_WorldlineRuntimeDirectory)/LICENSE.*.txt;$(_WorldlineRuntimeDirectory)/worldline-build.json" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_WorldlineAbi)' != ''">
+            <AndroidNativeLibrary Include="@(_WorldlineLibrary)" Abi="$(_WorldlineAbi)" />
+            <AndroidAsset Include="@(_WorldlineMetadata)" Link="WorldlineLicenses/%(_WorldlineMetadata.Filename)%(_WorldlineMetadata.Extension)" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_WorldlineAbi)' == ''">
+            <Content Include="@(_WorldlineLibrary)" Link="%(_WorldlineLibrary.Filename)%(_WorldlineLibrary.Extension)"
+                     CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+            <Content Include="@(_WorldlineMetadata)" Link="WorldlineLicenses/%(_WorldlineMetadata.Filename)%(_WorldlineMetadata.Extension)"
+                     CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+        </ItemGroup>
+    </Target>
+</Project>

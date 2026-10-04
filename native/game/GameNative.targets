@@ -1,4 +1,5 @@
 <Project>
+    <Import Project="../AndroidNativeToolchain.targets" Condition="'$(_OpumAndroidNativeToolchainImported)' != 'true'" />
     <PropertyGroup>
         <EnableGameGgml Condition="'$(EnableGameGgml)' == ''">true</EnableGameGgml>
         <!-- 不改变应用的 RID 和输出目录；默认调试使用 SDK 所在平台的原生库。 -->
@@ -9,7 +10,7 @@
         <GameNativeRoot Condition="'$(GameNativeRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/game-native</GameNativeRoot>
         <GameBuildRoot Condition="'$(GameBuildRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/game-build</GameBuildRoot>
         <GameCMakeExecutable Condition="'$(GameCMakeExecutable)' == ''">cmake</GameCMakeExecutable>
-        <_GameResolveToolchainDependsOn Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">_ResolveSdks</_GameResolveToolchainDependsOn>
+        <_GameResolveToolchainDependsOn Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">ResolveOpumAndroidNativeToolchain</_GameResolveToolchainDependsOn>
         <_GameNativeName Condition="$([System.String]::Copy('$(_GameRid)').StartsWith('win-'))">opum_game.dll</_GameNativeName>
         <_GameNativeName Condition="$([System.String]::Copy('$(_GameRid)').StartsWith('linux-')) or $([System.String]::Copy('$(_GameRid)').StartsWith('android-'))">libopum_game.so</_GameNativeName>
         <_GameNativeName Condition="$([System.String]::Copy('$(_GameRid)').StartsWith('osx-'))">libopum_game.dylib</_GameNativeName>
@@ -26,10 +27,8 @@
         <Error Condition="'$(_GameNativeName)' == ''" Text="Unsupported GAME native RID: $(_GameRid). Specify a supported RuntimeIdentifier." />
         <!-- 使用 Android 工作负载解析后的路径，支持 IDE 将 SDK 和 NDK 配置在不同目录。 -->
         <PropertyGroup>
-            <_GameAndroidNdk>$(_AndroidNdkDirectory)</_GameAndroidNdk>
-            <_GameAndroidNdk Condition="'$(_GameAndroidNdk)' == ''">$(AndroidNdkDirectory)</_GameAndroidNdk>
-            <_GameAndroidNdk>$([System.String]::Copy('$(_GameAndroidNdk)').Replace('\', '/'))</_GameAndroidNdk>
-            <_GameAndroidSdk>$([System.String]::Copy('$(AndroidSdkDirectory)').Replace('\', '/'))</_GameAndroidSdk>
+            <_GameAndroidNdk>$(_OpumAndroidNdkDirectory)</_GameAndroidNdk>
+            <_GameAndroidSdk>$(_OpumAndroidSdkDirectory)</_GameAndroidSdk>
         </PropertyGroup>
         <Exec Command="&quot;$(GameCMakeExecutable)&quot; -DOPUM_RID=&quot;$(_GameRid)&quot; -DOPUM_BUILD_ROOT=&quot;$(GameBuildRoot)&quot; -DOPUM_INSTALL_ROOT=&quot;$(GameNativeRoot)&quot; -DOPUM_GENERATOR=&quot;$(GameCMakeGenerator)&quot; -DOPUM_ANDROID_SDK=&quot;$(_GameAndroidSdk)&quot; -DOPUM_ANDROID_NDK=&quot;$(_GameAndroidNdk)&quot; -P &quot;$(MSBuildThisFileDirectory)Build.cmake&quot;" />
         <Error Condition="!Exists('$(_GameRuntimeDirectory)/$(_GameNativeName)')" Text="GAME build did not produce $(_GameNativeName) for $(_GameRid)." />

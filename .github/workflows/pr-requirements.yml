@@ -9,6 +9,81 @@ permissions:
   contents: read
 
 jobs:
+  worldline-desktop:
+    name: Worldline ${{ matrix.rid }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { rid: win-x64, runner: windows-latest, arch: x64 }
+          - { rid: win-arm64, runner: windows-11-arm, arch: arm64 }
+          - { rid: linux-x64, runner: ubuntu-24.04, arch: x64 }
+          - { rid: linux-arm64, runner: ubuntu-24.04-arm, arch: arm64 }
+          - { rid: osx-x64, runner: macos-15-intel, arch: x64 }
+          - { rid: osx-arm64, runner: macos-15, arch: arm64 }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ matrix.arch }}
+      - name: Build and run upstream tests
+        shell: bash
+        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
+      - name: Verify native ABI
+        shell: bash
+        run: |
+          case "${{ matrix.rid }}" in
+            win-*) LIBRARY=worldline.dll ;;
+            osx-*) LIBRARY=libworldline.dylib ;;
+            *) LIBRARY=libworldline.so ;;
+          esac
+          python native/worldline/verify.py "artifacts/worldline-native/${{ matrix.rid }}/$LIBRARY" "${{ matrix.rid }}" --run
+          case "${{ matrix.rid }}" in
+            linux-*) readelf --version-info "artifacts/worldline-native/${{ matrix.rid }}/$LIBRARY" > "artifacts/worldline-native/${{ matrix.rid }}/symbol-versions.txt" ;;
+            osx-*) otool -L "artifacts/worldline-native/${{ matrix.rid }}/$LIBRARY" > "artifacts/worldline-native/${{ matrix.rid }}/dylib-dependencies.txt"
+                   otool -l "artifacts/worldline-native/${{ matrix.rid }}/$LIBRARY" > "artifacts/worldline-native/${{ matrix.rid }}/load-commands.txt" ;;
+          esac
+      - name: Upload native verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldline-${{ matrix.rid }}
+          path: |
+            artifacts/worldline-native/${{ matrix.rid }}/
+            artifacts/worldline-build/${{ matrix.rid }}/workspace/bazel-testlogs/**/test.log
+
+  worldline-android:
+    name: Worldline ${{ matrix.rid }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rid: [android-arm64, android-arm, android-x64, android-x86]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-worldline
+      - uses: android-actions/setup-android@v3
+        with:
+          log-accepted-android-sdk-licenses: false
+      - name: Build with pinned NDK and verify ELF
+        shell: bash
+        run: |
+          set -euo pipefail
+          NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
+          sdkmanager "ndk;$NDK_VERSION"
+          python native/worldline/build.py --rid "${{ matrix.rid }}"
+      - name: Upload native verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldline-${{ matrix.rid }}
+          path: artifacts/worldline-native/${{ matrix.rid }}/
+          if-no-files-found: error
+
   android-build:
     name: PR build test for Android ARM64
     env:
@@ -42,7 +117,10 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android
 
-      - name: Install GAME Android toolchain
+      - name: Setup Worldline build tools
+        uses: ./.github/actions/setup-worldline
+
+      - name: Install Android native toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -51,7 +129,7 @@ jobs:
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
           test -f "$SDK_ROOT/ndk/$NDK_VERSION/build/cmake/android.toolchain.cmake"
-          echo "GAME_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
+          echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
           cmake --version
           ninja --version
 
@@ -65,11 +143,8 @@ jobs:
             -f net10.0-android36.0 \
             --no-restore \
             -p:RuntimeIdentifier=android-arm64 \
-            -p:AndroidNdkDirectory="$GAME_ANDROID_NDK"
+            -p:AndroidNdkDirectory="$OPUM_ANDROID_NDK"
 
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
       - name: Verify Android native packaging
         shell: bash
         run: |

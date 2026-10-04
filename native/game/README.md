@@ -15,20 +15,26 @@ Core 与 USTX 数据结构不需要改动。
 
 `GameNative.targets` 在正常 Build / Publish 中调用同一个 `Build.cmake`：
 
-1. 按 RID 选择工具链，在 `artifacts/game-build/<rid>` 配置 CMake。
+1. 按 RID 选择工具链，在 `artifacts/game-build/<rid>` 配置 CMake；Android 按实际 NDK 版本使用 `ndk-<版本>` 子目录，升级 NDK 后重新编译。
 2. 构建原生库并安装到 `artifacts/game-native/<rid>`；后续构建由 CMake 增量检查源码。
 3. 构建完成后收集文件，确保首次构建也能把库和许可证放入应用。
 
-桌面端 worldline 由 `DesktopNative.targets` 在 Build 和 Publish 中按架构复制到程序目录。
-macOS 使用仓库已有的通用 worldline 库。不会将多个架构的同名 DLL 依次覆盖到同一个路径。
+Worldline 由 [WorldlineNative.targets](../worldline/WorldlineNative.targets) 在 Build / Publish 中
+调用 Bazel 从冻结源码构建，按当前 RID 收集产物；macOS 两种架构分别构建。
+它和 GAME 共用固定 Android NDK，构建细节见 [Worldline 文档](../worldline/README.md)。
 
 CMake 固定 game.cpp 提交 `97f92770704c154e1af4a9b3066b7701041dbc38`；
 上游固定 ggml 版本及 SHA256、pocketfft 和 dr_libs 提交。所有下载、缓存和二进制位于 Git 忽略目录。
 缺少工具链或下载失败会使构建明确失败，不会生成缺少 GGML 运行库的“成功”构建。
 
-Android 目标先执行工作负载的 `_ResolveSdks`，再将解析出的 NDK 路径传入
-`Build.cmake` 的 `OPUM_ANDROID_NDK`。SDK 与 NDK 可以分开安装；未提供 NDK 时，脚本才从
-SDK 的 `ndk/<固定版本>` 查找。Windows 路径传给 CMake 前转换为正斜杠，避免末尾反斜杠影响引号。
+Android 目标先执行工作负载的 `_ResolveSdks`，再由 `AndroidNativeToolchain.targets`
+选择原生工具链：显式设置的 `AndroidNdkDirectory` 优先，否则从已解析 SDK 的
+`ndk/<固定版本>` 查找，不使用工作负载自动选中的旧 NDK。SDK 与 NDK 可以分开安装。
+路径传入 `Build.cmake` 的 `OPUM_ANDROID_NDK`，Windows 反斜杠会转换为正斜杠。
+同一路径也提供给 .NET 的原生资产收集，避免工作负载自动发现不识别新版 NDK 时留下空路径。
+
+默认 NDK 为 r30 LTS（`30.0.16248370`），由 `android-ndk-version.txt` 统一锁定。
+本地升级后应同时更新 IDE 的 NDK 路径；构建缓存按版本隔离，不复用 r28 的对象文件。
 
 Windows x64/x86 默认使用注册的 Visual Studio C++ 工具链；Windows ARM64 使用 Visual Studio
 ARM64 生成器和 ClangCL 工具集，因为 ggml 不支持 MSVC ARM。已配置的 MSVC 终端或 MinGW
@@ -52,12 +58,12 @@ Linux 需要本机 C/C++ 工具链；macOS 需要 Xcode Command Line Tools。And
 ## CI 验证
 
 CI 只准备工具链，原生编译和打包走项目自身的 Build / Publish 规则。
-PR 检查包含不传 RID、不传 GGML 开关的桌面构建，以及实际加载 worldline / GGML 的检查。
+PR 检查包含 Worldline 桌面六个 RID 的上游测试与实际 ABI 调用，以及 Android 四 ABI 的源码构建。
 发布流程也检查发布目录的原生库加载。Android PR 与发布共用 `native/verify-android-runtime.py`，
-检查 APK 的 ABI、worldline / ONNX / GAME 原生库及 ELF 架构、GAME 的 16 KB 对齐和许可证；
+检查 APK 的 ABI、worldline / ONNX / GAME 原生库及 ELF 架构、Worldline ABI、Worldline / GAME 的 16 KB 对齐和许可证；
 发布另外检查这些库不含 Linux/glibc 依赖。CI 显式传入刚安装的固定 NDK 路径，避免工作负载选到 runner 的其他版本。
 
-本地可用 Python 3 执行同一检查（仅验证时需要 Python，不参与应用构建）：
+本地可用 Python 3 执行同一检查；Worldline 源码构建也需要 Python：
 
 ```sh
 python native/verify-runtime.py OpenUtauMobile.Windows/bin/Debug/net10.0-windows

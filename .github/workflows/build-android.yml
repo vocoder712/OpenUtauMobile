@@ -78,7 +78,10 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android
 
-      - name: Install GAME Android toolchain
+      - name: Setup Worldline build tools
+        uses: ./.github/actions/setup-worldline
+
+      - name: Install Android native toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -87,7 +90,7 @@ jobs:
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
           test -f "$SDK_ROOT/ndk/$NDK_VERSION/build/cmake/android.toolchain.cmake"
-          echo "GAME_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
+          echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
           cmake --version
           ninja --version
 
@@ -145,18 +148,13 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:AndroidNdkDirectory="$GAME_ANDROID_NDK" \
+            -p:AndroidNdkDirectory="$OPUM_ANDROID_NDK" \
             -p:AndroidPackageFormat=apk \
             -p:AndroidKeyStore=true \
             -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
             -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
             -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
             -p:AndroidSigningKeyPass="$KEY_PASSWORD"
-
-      - name: Setup APK verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
 
       - name: Verify and prepare Android artifact
         shell: bash
@@ -253,7 +251,7 @@ jobs:
           package_format=apk
           restore=explicit-rid
           publish=no-restore
-          android_ndk=$GAME_ANDROID_NDK
+          android_ndk=$OPUM_ANDROID_NDK
           product_version=${{ inputs.version }}
           build_number=${{ inputs.build_number }}
           source_commit=${{ inputs.source_sha }}

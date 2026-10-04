@@ -84,7 +84,7 @@ jobs:
         include:
           - arch: x64
             rid: linux-x64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
 
           - arch: arm64
             rid: linux-arm64
@@ -98,6 +98,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+
+      - name: Setup Worldline build tools
+        uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ matrix.arch }}
+
+      - name: Build and test Worldline
+        shell: bash
+        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
 
       - name: Collect Build Metadata
         shell: bash
@@ -122,12 +131,6 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
-
-      - name: Setup native verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          architecture: ${{ matrix.arch }}
 
       - name: Verify native runtime loading
         shell: bash
@@ -185,6 +188,15 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Setup Worldline build tools
+        uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ matrix.arch }}
+
+      - name: Build and test Worldline
+        shell: bash
+        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
+
       - name: Collect Build Metadata
         shell: pwsh
         run: |
@@ -213,12 +225,6 @@ jobs:
             -p:BuildMachine="$env:BUILD_MACHINE" `
             -p:SourceCommit=${{ inputs.source_sha }} `
             -p:ActionRunId=${{ inputs.action_run_id }}
-
-      - name: Setup native verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          architecture: ${{ matrix.arch }}
 
       - name: Verify native runtime loading
         shell: bash
@@ -278,6 +284,15 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Setup Worldline build tools
+        uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ matrix.arch }}
+
+      - name: Build and test Worldline
+        shell: bash
+        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
+
       - name: Collect Build Metadata
         shell: bash
         run: |
@@ -301,12 +316,6 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
-
-      - name: Setup native verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          architecture: ${{ matrix.arch }}
 
       - name: Verify native runtime loading
         shell: bash

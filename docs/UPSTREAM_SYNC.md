@@ -505,7 +505,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Android build failed.' }
 
 本地缺少 SDK/JDK/workload 时明确记录未验证的目标，由 PR CI 补齐。所有必需云检查通过之前，不宣称同步验证完成，也不合并 PR。
 
-CPP 验证：在 `native/upstream_cpp` 中按其 `README.md` 使用 Bazel/Bazelisk 构建 `//worldline`，有可用工具链时运行其已有测试。Windows 按上游说明省略目标开头的 `//`。缺少编译器或依赖下载失败时明确记录，不能把 tree 校验当作 native 构建通过。
+CPP 验证：通过 `native/worldline/build.py --rid <当前平台 RID> --test` 使用固定 Bazel/Bazelisk 构建 Worldline，并运行上游已有测试。构建副本、Bazel 9 适配和锁文件位于 subtree 外，不在冻结源码中生成文件。同步后须核对 `native/worldline` 的依赖、补丁、许可证及 `upstream-revision.txt` 是否对应同一冻结提交，详见其 README。Android 交叉构建不加 `--test`，随后验证 APK 内容；设备加载另行验收。缺少编译器或依赖下载失败时明确记录，不能把 tree 校验当作 native 构建通过。
 
 终检：
 

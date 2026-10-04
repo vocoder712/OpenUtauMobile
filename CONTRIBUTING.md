@@ -38,6 +38,7 @@ OpenUtau Mobile 目前仍处于活跃开发阶段，项目架构、API 和平台
 所有 PowerShell 命令都在仓库根目录执行；`<你的用户名>` 等占位符需替换。
 功能、架构和硬件加速的支持情况见 [README 特性矩阵](README.md#feature-matrix)，
 GAME 原生构建的维护细节见 [native/game/README.md](native/game/README.md)。
+Worldline 原生构建见 [native/worldline/README.md](native/worldline/README.md)。
 
 ### 1. 安装基础工具
 
@@ -47,10 +48,12 @@ GAME 原生构建的维护细节见 [native/game/README.md](native/game/README.m
 | [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 安装 **SDK x64**，仅安装 Runtime 不够。版本以 [global.json](global.json) 为准，当前是 `10.0.400`，允许同一功能带内更新补丁。 |
 | [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio) | 在安装器中选择“使用 C++ 的桌面开发”，包含 MSVC x64/x86 编译工具和 Windows SDK。即使使用 Rider，也需要 C++ 编译器来构建 GGML。 |
 | [CMake](https://cmake.org/download/) | 安装 3.24 或更新版本，将其 `bin` 目录加入 PATH。安装器提供 PATH 选项；只在 IDE 内可用的 CMake 不一定能被项目构建找到。 |
+| [Bazelisk](https://github.com/bazelbuild/bazelisk/releases/tag/v1.29.0) | 安装 1.29.0，将可执行文件命名为 `bazel.exe` 并加入 PATH；Worldline 构建入口自动选择固定的 Bazel 9.2.0。 |
+| [Python](https://www.python.org/downloads/) | 安装 Python 3.10 或更新版本并加入 PATH；用于 Worldline 构建适配和原生 ABI 验证。CI 使用 3.13。 |
 | [Rider](https://www.jetbrains.com/rider/download/) | 使用支持本仓库 .NET SDK 的版本。Rider 是编辑器和调试器，不代替以上工具链。 |
 
 安装或修改 PATH 后，关闭并重新打开 PowerShell 和 Rider。首次构建需要连接 NuGet 和 GitHub，
-会下载并编译 GAME 依赖，耗时比后续增量构建长。模型不用提前下载，也不用手动复制 DLL。
+会下载并编译 Worldline 和 GAME 依赖，耗时比后续增量构建长。模型不用提前下载，也不用手动复制 DLL。
 
 ### 2. Fork、克隆并创建开发分支
 
@@ -74,7 +77,8 @@ git switch -c feature/你的功能名
 git --version
 dotnet --version
 cmake --version
-Get-Command git,dotnet,cmake
+python --version
+Get-Command git,dotnet,cmake,bazel,python
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
 ```
 
@@ -120,7 +124,7 @@ Windows 已能启动后，再安装以下 Android 专用工具。Android 的 C++
 | JDK | 建议安装 [Microsoft OpenJDK 21](https://learn.microsoft.com/java/openjdk/download)。填写 JDK 根目录，不是 `bin`；Android Studio 自带 JBR 只有版本兼容时才可复用。 |
 | [Android Studio](https://developer.android.com/studio) | 用它的 SDK Manager 安装和管理 SDK，也可用 Device Manager 创建模拟器；C# 代码仍在 Rider 调试。 |
 | Android SDK | SDK Manager 中安装 Android API 36、Build-Tools 36.0.0、Platform-Tools、Command-line Tools (latest)。具体目标以 [Android 项目](OpenUtauMobile.Android/OpenUtauMobile.Android.csproj) 和安装的 .NET Android 工作负载为准。 |
-| Android NDK | 在 SDK Tools 中勾选 Show Package Details，安装 [android-ndk-version.txt](native/game/android-ndk-version.txt) 指定的版本，当前 `28.2.13676358`。 |
+| Android NDK | 在 SDK Tools 中勾选 Show Package Details，安装 [android-ndk-version.txt](native/game/android-ndk-version.txt) 指定的版本，当前为 r30 LTS `30.0.16248370`。 |
 | [Ninja](https://github.com/ninja-build/ninja/releases) | 下载 Windows 版本，将 `ninja.exe` 所在目录加入 PATH，确认 `ninja --version` 成功。CMake 也必须在 PATH 中。 |
 
 安装方法也可参考微软的 [.NET Android 依赖说明](https://learn.microsoft.com/dotnet/android/getting-started/installation/dependencies)。

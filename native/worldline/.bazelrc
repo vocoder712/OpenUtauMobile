@@ -1,0 +1,6 @@
+build --compilation_mode=opt
+build --jobs=2
+build --verbose_failures
+build --incompatible_strict_action_env
+build --define=absl=1
+test --test_output=errors
