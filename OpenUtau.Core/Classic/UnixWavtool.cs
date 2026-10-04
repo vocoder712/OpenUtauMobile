@@ -33,7 +33,7 @@ namespace OpenUtau.Classic {
                         item.resampler.DoResamplerReturnsFile(item, Log.Logger);
                     }
                 }
-                
+
                 string parameters = GenerateParameters(item, tempPath);
 
                 ProcessRunner.Run(filePath, parameters, Log.Logger, workDir: PathManager.Inst.CachePath, timeoutMs: 5 * 60 * 1000);
@@ -73,7 +73,7 @@ namespace OpenUtau.Classic {
             if (item.phone.direct) {
                 return $"\"{tempPath}\" \"{item.outputFile}\" {item.offset} {item.phone.durationMs:F1} {envelope}";
             }
-            
+
             return $"\"{tempPath}\" \"{item.outputFile}\" {item.skipOver} {dur} {envelope}";
         }
 

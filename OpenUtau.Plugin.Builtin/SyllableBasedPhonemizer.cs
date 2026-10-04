@@ -266,7 +266,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 bool isSlurNote = i < notes.Length && IsSyllableVowelExtensionNote(notes[i]);
 
-                // If it's a slur and the vowel is identical to the previous note, 
+                // If it's a slur and the vowel is identical to the previous note,
                 // bypass boundary replacements so YAML does not insert split consonants/glides!
                 var modifiedSyllable = (isSlurNote && syllable.prevV == syllable.v)
                     ? syllable
@@ -325,12 +325,12 @@ namespace OpenUtau.Plugin.Builtin {
 
             foreach (var bucket in syllablePhonemeBuckets) {
                 var madePhonemes = MakePhonemes(
-                    bucket.symbols, 
-                    bucket.duration, 
-                    bucket.position, 
-                    bucket.isEnding, 
-                    bucket.tone, 
-                    workingAttributes.ToArray(), 
+                    bucket.symbols,
+                    bucket.duration,
+                    bucket.position,
+                    bucket.isEnding,
+                    bucket.tone,
+                    workingAttributes.ToArray(),
                     globalPhonemeIndex
                 ).Where(p => p.phoneme != null).ToList();
 

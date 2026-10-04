@@ -94,7 +94,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 }
                                 // Prepends the Kana value to the very top of the priority list
                                 if (!WanaKanaDictionary[key].Contains(value)) {
-                                    WanaKanaDictionary[key].Insert(0, value); 
+                                    WanaKanaDictionary[key].Insert(0, value);
                                 }
                                 // Keeps the Romaji (key) as a fallback at the very end of the candidates
                                 if (!WanaKanaDictionary[key].Contains(key)) {
@@ -433,21 +433,21 @@ namespace OpenUtau.Plugin.Builtin {
                 else if (HasOto(ValidateAlias(dashCv, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(dashCv, syllable.vowelTone); }
                 else if (HasOto(dashCvNoSpace, syllable.vowelTone)) { finalAlias = dashCvNoSpace; }
                 else if (HasOto(ValidateAlias(dashCvNoSpace, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(dashCvNoSpace, syllable.vowelTone); }
-                
+
                 // PRIORITY 2: Base Kana (No Dash)
                 else if (HasOto(hiraganaCv, syllable.vowelTone)) { finalAlias = hiraganaCv; }
                 else if (HasOto(ValidateAlias(hiraganaCv, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(hiraganaCv, syllable.vowelTone); }
-                
+
                 // PRIORITY 3: Romaji with Dash
                 else if (HasOto(dashRomaji, syllable.vowelTone)) { finalAlias = dashRomaji; }
                 else if (HasOto(ValidateAlias(dashRomaji, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(dashRomaji, syllable.vowelTone); }
                 else if (HasOto(dashRomajiNoSpace, syllable.vowelTone)) { finalAlias = dashRomajiNoSpace; }
                 else if (HasOto(ValidateAlias(dashRomajiNoSpace, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(dashRomajiNoSpace, syllable.vowelTone); }
-                
+
                 // PRIORITY 4: Base Romaji (No Dash)
                 else if (HasOto(cv, syllable.vowelTone)) { finalAlias = cv; }
                 else if (HasOto(ValidateAlias(cv, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(cv, syllable.vowelTone); }
-                
+
                 // PRIORITY 5: Complex Romaji Fallback (crv like "ky o")
                 else if (HasOto(crv, syllable.vowelTone)) { finalAlias = crv; }
                 else if (HasOto(ValidateAlias(crv, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(crv, syllable.vowelTone); }
@@ -463,7 +463,7 @@ namespace OpenUtau.Plugin.Builtin {
                     else if (HasOto(ValidateAlias(dashCv, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(dashCv, syllable.vowelTone); }
                     else if (HasOto(dashCvNoSpace, syllable.vowelTone)) { finalAlias = dashCvNoSpace; }
                     else if (HasOto(ValidateAlias(dashCvNoSpace, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(dashCvNoSpace, syllable.vowelTone); }
-                    
+
                     // Final rescue fallback to Romaji for mid-phrase notes
                     else if (HasOto(cv, syllable.vowelTone)) { finalAlias = cv; }
                     else if (HasOto(ValidateAlias(cv, syllable.vowelTone), syllable.vowelTone)) { finalAlias = ValidateAlias(cv, syllable.vowelTone); }

@@ -89,6 +89,31 @@ namespace OpenUtau.Core.Neutrino
             return SupportedExpressions.Contains(descriptor.abbr);
         }
 
+        /// <summary>补充本地时序输入，同时区分磁盘音频和播放 PCM 缓存。</summary>
+        internal void WriteCacheInputs(BinaryWriter writer, RenderPhrase phrase)
+        {
+            writer.Write("neutrino-input");
+            writer.Write(CacheVersion);
+            writer.Write(phrase.notes.Length);
+            foreach (RenderNote note in phrase.notes)
+            {
+                writer.Write(note.position);
+                writer.Write(note.duration);
+                writer.Write(note.lyric ?? string.Empty);
+                writer.Write(note.tone);
+                writer.Write(note.tuning);
+                writer.Write(note.positionMs - phrase.positionMs);
+                writer.Write(note.endMs - phrase.positionMs);
+            }
+            writer.Write(phrase.phones.Length);
+            foreach (RenderPhone phone in phrase.phones)
+            {
+                writer.Write(phone.noteIndex);
+                writer.Write(phone.positionOverridden);
+                writer.Write(phone.positionMs - phrase.positionMs);
+            }
+        }
+
         public RenderResult Layout(RenderPhrase phrase)
         {
             double headMs = phrase.positionMs

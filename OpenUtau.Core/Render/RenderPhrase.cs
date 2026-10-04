@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using K4os.Hash.xxHash;
 using OpenUtau.Classic;
+using OpenUtau.Core.Neutrino;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -593,9 +594,17 @@ namespace OpenUtau.Core.Render {
                     writer.Write(renderer?.ToString() ?? "");
                     writer.Write(wavtool ?? "");
                     writer.Write(timeAxis.Timestamp);
-                    writer.Write(availableLeadingMs);
+                    // R1.1 用乐句哈希作为噪声种子，输入须与桌面一致。
+                    if (renderer?.ToString() != Renderers.WORLDLINE_R11)
+                    {
+                        writer.Write(availableLeadingMs);
+                    }
                     foreach (var phone in phones) {
                         writer.Write(phone.hash);
+                    }
+                    if (renderer is NeutrinoRenderer neutrinoRenderer)
+                    {
+                        neutrinoRenderer.WriteCacheInputs(writer, this);
                     }
                     if (postEffect) {
                         foreach (var array in new float[][] { pitches, dynamics, gender, breathiness, toneShift, tension, voicing, xsy }) {

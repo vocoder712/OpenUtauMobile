@@ -11,17 +11,17 @@ namespace OpenUtau.Core {
 
         public PresampWatcher(string path, Action reloadCallback) {
             this.reloadCallback = reloadCallback;
-            
+
             watcher = new FileSystemWatcher(path);
             watcher.Changed += OnFileChanged;
             watcher.Created += OnFileChanged;
             watcher.Deleted += OnFileChanged;
             watcher.Renamed += OnFileChanged;
             watcher.Error += OnError;
-            
-            watcher.Filter = "presamp.ini"; 
+
+            watcher.Filter = "presamp.ini";
             // Set to false since presamp.ini is always at the root of the voicebank
-            watcher.IncludeSubdirectories = false; 
+            watcher.IncludeSubdirectories = false;
             watcher.EnableRaisingEvents = true;
         }
 

@@ -11,16 +11,16 @@ namespace OpenUtau.Core {
 
         public YamlWatcher(string path, Action reloadCallback) {
             this.reloadCallback = reloadCallback;
-            
+
             watcher = new FileSystemWatcher(path);
             watcher.Changed += OnFileChanged;
             watcher.Created += OnFileChanged;
             watcher.Deleted += OnFileChanged;
             watcher.Renamed += OnFileChanged;
             watcher.Error += OnError;
-            
-            // Filters specifically for .yaml. 
-            watcher.Filter = "*.yaml"; 
+
+            // Filters specifically for .yaml.
+            watcher.Filter = "*.yaml";
             watcher.IncludeSubdirectories = true;
             watcher.EnableRaisingEvents = true;
         }
@@ -30,7 +30,7 @@ namespace OpenUtau.Core {
                 return;
             }
             Log.Information($"YAML File \"{e.FullPath}\" {e.ChangeType}");
-            
+
             // Execute the refresh logic passed in during initialization
             reloadCallback?.Invoke();
         }

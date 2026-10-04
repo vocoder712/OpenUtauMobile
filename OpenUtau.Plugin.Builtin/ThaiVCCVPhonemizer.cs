@@ -46,7 +46,7 @@ namespace OpenUtau.Plugin.Builtin {
             {'ม', "m"}, {'น', "n"}, {'ณ', "n"}, {'ร', "r"}, {'ล', "l"}, {'ฤ', "r"},
             {'ส', "s"}, {'ศ', "s"}, {'ษ', "s"}, {'ซ', "s"},
             {'ง', "g"}, {'ย', "y"}, {'ญ', "y"}, {'ว', "w"}, {'ฬ', "r"},
-            {'อ', "-"} 
+            {'อ', "-"}
         };
 
         private readonly Dictionary<char, string> XMapping = new Dictionary<char, string> {
@@ -279,7 +279,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (!Regex.IsMatch(input, "[ก-ฮ]")) {
                 return input;
             }
-            
+
             // [DELTA SYNTH] Optimized regex matching. Utilizes pre-compiled regex objects safely.
             foreach (var mapping in _compiledVowelMappings) {
                 var match = mapping.pattern.Match(input);
@@ -318,7 +318,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string ConvertC(string input) {
             if (string.IsNullOrEmpty(input)) return "";
-            
+
             // Silent Leading Consonant Handle (ห นำ, อ นำ)
             if (input.Length >= 2 && (input.StartsWith("ห") || input.StartsWith("อ"))) {
                 input = input.Substring(1);
@@ -326,7 +326,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             char firstChar = input[0];
             char? secondChar = input.Length > 1 ? input[1] : (char?)null;
-            
+
             if (CMapping.ContainsKey(firstChar)) {
                 string firstCharConverted = CMapping[firstChar];
                 if (secondChar != null && CMapping.ContainsKey((char)secondChar)) {
