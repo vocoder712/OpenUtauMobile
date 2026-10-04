@@ -2170,4 +2170,7 @@
   <data name="Mixer.EnableEffect" xml:space="preserve"><value>Enable this effect</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>All FX bypassed</value></data>
   <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>Effect bypassed</value></data>
+  <data name="ErrorDialog.MissingPackage" xml:space="preserve">
+    <value>Missing dependency package: {0}</value>
+  </data>
 </root>

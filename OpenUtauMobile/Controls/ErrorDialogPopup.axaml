@@ -20,24 +20,32 @@
 
     <dialogs:DialogShell CloseCommand="{Binding CloseCommand}" Header="{Binding Title}">
         <dialogs:DialogShell.Footer>
-            <dialogs:DialogActions>
-                <Button Classes="DialogAction" Command="{Binding CopyCommand}">
-                    <StackPanel
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                        <iconPacks:PackIconPhosphorIcons
-                            Kind="Copy"
-                            Width="{x:Static semantic:IconTokens.Compact}"
-                            Height="{x:Static semantic:IconTokens.Compact}" />
-                        <TextBlock Text="{DynamicResource Common.Copy}" VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
-                <Button dialogs:DialogShell.IsDefaultAction="True"
-                    Classes="DialogAction DialogPrimary"
-                    Content="{DynamicResource Common.Confirm}"
-                    Command="{Binding CloseCommand}" />
-            </dialogs:DialogActions>
+            <dialogs:DialogActionRows>
+                <dialogs:DialogActionRow IsVisible="{Binding HasMissingPackage}">
+                    <Button Classes="DialogAction DialogPrimary"
+                        Content="{DynamicResource DependencyManager.Title}"
+                        Command="{Binding OpenDependencyManagerCommand}" />
+                </dialogs:DialogActionRow>
+                <dialogs:DialogActionRow>
+                    <Button Classes="DialogAction" Command="{Binding CopyCommand}">
+                        <StackPanel
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <iconPacks:PackIconPhosphorIcons
+                                Kind="Copy"
+                                Width="{x:Static semantic:IconTokens.Compact}"
+                                Height="{x:Static semantic:IconTokens.Compact}" />
+                            <TextBlock Text="{DynamicResource Common.Copy}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button dialogs:DialogShell.IsDefaultAction="True"
+                        Classes="DialogAction"
+                        Classes.DialogPrimary="{Binding !HasMissingPackage}"
+                        Content="{DynamicResource Common.Confirm}"
+                        Command="{Binding CloseCommand}" />
+                </dialogs:DialogActionRow>
+            </dialogs:DialogActionRows>
         </dialogs:DialogShell.Footer>
         <Border Classes="DialogBodyBorder">
             <Grid RowDefinitions="Auto,Auto,*">

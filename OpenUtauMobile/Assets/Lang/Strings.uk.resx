@@ -2125,4 +2125,7 @@
   <data name="Mixer.EnableEffect" xml:space="preserve"><value>Увімкнути ефект</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>Усі ефекти в обхідному режимі</value></data>
   <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>Ефект в обхідному режимі</value></data>
+  <data name="ErrorDialog.MissingPackage" xml:space="preserve">
+    <value>Відсутній пакет залежностей: {0}</value>
+  </data>
 </root>

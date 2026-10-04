@@ -2163,4 +2163,7 @@
   <data name="Mixer.EnableEffect" xml:space="preserve"><value>このエフェクトを有効化</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>FX 全体をバイパス中</value></data>
   <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>このエフェクトをバイパス中</value></data>
+  <data name="ErrorDialog.MissingPackage" xml:space="preserve">
+    <value>依存パッケージが見つかりません：{0}</value>
+  </data>
 </root>

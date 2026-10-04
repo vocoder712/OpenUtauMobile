@@ -2170,4 +2170,7 @@
   <data name="Mixer.EnableEffect" xml:space="preserve"><value>启用该效果</value></data>
   <data name="Mixer.FxBypassed" xml:space="preserve"><value>总 FX 已旁路</value></data>
   <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>该效果已旁路</value></data>
+  <data name="ErrorDialog.MissingPackage" xml:space="preserve">
+    <value>缺少依赖包：{0}</value>
+  </data>
 </root>
