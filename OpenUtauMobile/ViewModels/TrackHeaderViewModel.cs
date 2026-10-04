@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using OpenUtau.Api;
@@ -61,7 +62,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> MuteCommand { get; }
     public ReactiveCommand<Unit, Unit> SoloCommand { get; }
     public ReactiveCommand<Unit, Unit> SelectSingerCommand { get; }
-    public ReactiveCommand<Unit, Unit> SelectPhonemizerCommand { get; }
+    public ReactiveCommand<Control?, Unit> SelectPhonemizerCommand { get; }
     public ReactiveCommand<Unit, Unit> SelectRendererCommand { get; }
     public ReactiveCommand<Unit, Unit> ShowSettingsCommand { get; }
     public ReactiveCommand<Unit, Unit> RemoveTrackCommand { get; }
@@ -100,7 +101,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         // 选择歌手命令
         SelectSingerCommand = ReactiveCommand.CreateFromTask(SelectSinger).DisposeWith(_disposable);
         // 选择音素器命令
-        SelectPhonemizerCommand = ReactiveCommand.CreateFromTask(SelectPhonemizer).DisposeWith(_disposable);
+        SelectPhonemizerCommand = ReactiveCommand.CreateFromTask<Control?>(SelectPhonemizer).DisposeWith(_disposable);
         // 选择渲染器命令
         SelectRendererCommand = ReactiveCommand.CreateFromTask(SelectRenderer).DisposeWith(_disposable);
         ShowSettingsCommand = ReactiveCommand.CreateFromTask(() => TrackHeaderService.Inst.ShowTrackSettingsAsync(_track)).DisposeWith(_disposable);
@@ -176,9 +177,9 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         Refresh();
     }
 
-    private async Task SelectPhonemizer()
+    private async Task SelectPhonemizer(Control? anchor)
     {
-        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(_track.Phonemizer?.Name);
+        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(_track.Phonemizer?.Name, anchor);
         if (phonemizer != null) SetPhonemizer(phonemizer);
     }
 

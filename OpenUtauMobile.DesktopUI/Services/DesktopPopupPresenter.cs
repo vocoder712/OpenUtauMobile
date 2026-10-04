@@ -82,8 +82,8 @@ namespace OpenUtauMobile.DesktopUI.Services
                 view.Measure(new Size(window.Width, Math.Min(screen.Height, 600)));
             }
             if (profile.Scrolls)
-                window.MinHeight = Math.Min(safeHeight, Math.Min(360, Math.Max(160, view.DesiredSize.Height)));
-            window.Height = profile.Scrolls ? Math.Clamp(view.DesiredSize.Height, window.MinHeight, Math.Min(safeHeight, profile.MaxHeight))
+                window.MinHeight = Math.Min(safeHeight, profile.PreferredHeight.HasValue ? 480 : Math.Min(360, Math.Max(160, view.DesiredSize.Height)));
+            window.Height = profile.Scrolls ? Math.Clamp(profile.PreferredHeight ?? view.DesiredSize.Height, window.MinHeight, Math.Min(safeHeight, profile.MaxHeight))
                 : Math.Min(screen.Height, Math.Clamp(view.DesiredSize.Height, Math.Min(80, window.MaxHeight), window.MaxHeight));
             if (!profile.Scrolls) window.MinHeight = window.Height;
             bool acceptedClose = false;

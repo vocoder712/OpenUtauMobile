@@ -395,9 +395,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             if (_layout.State.InspectorWidth < 260) _layout.State.InspectorWidth = 320;
             UpdateInspectorVisibility();
             if (InspectorHost.IsVisible) { _inspector.SelectNotes(); return; }
-            if (_editor.PianoRollViewModel.EditingVoicePart is not { } part || _editor.PianoRollViewModel.SelectedNotes.Count == 0) return;
-            using NotePropertiesViewModel properties = new(part, _editor.PianoRollViewModel.SelectedNotes);
-            try { await PopupService.Show<object>(new NotePropertiesPopup(), properties); }
+            if (_editor.PianoRollViewModel.EditingVoicePart == null || _editor.PianoRollViewModel.SelectedNotes.Count == 0) return;
+            try { await _editor.PianoRollViewModel.EditNotePropertiesAsync(); }
             catch (Exception error) { ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(error))); }
         }
         public void ToggleMixer()

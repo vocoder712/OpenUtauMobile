@@ -1,5 +1,6 @@
 using OpenUtauMobile.Services.Dialogs;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
@@ -34,11 +35,11 @@ public class TrackHeaderService : ITrackHeaderService
 
     public Task<Phonemizer?> PickPhonemizerAsync() => PickPhonemizerAsync(null);
 
-    public async Task<Phonemizer?> PickPhonemizerAsync(string? currentName)
+    public async Task<Phonemizer?> PickPhonemizerAsync(string? currentName, Control? anchor = null)
     {
         try
         {
-            PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(CurrentName: currentName));
+            PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(CurrentName: currentName, Anchor: anchor));
             return result?.Factory?.Create();
         }
         catch (System.Exception exception)

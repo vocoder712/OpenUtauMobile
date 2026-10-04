@@ -244,6 +244,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             _notesChangedExternally = false;
             _refreshingNotes = true;
             NotePropertyEditor? old = _draft;
+            bool preservePresetSession = SelectionMatches();
             try
             {
                 _part = _editor.PianoRollViewModel.EditingVoicePart;
@@ -251,6 +252,14 @@ namespace OpenUtauMobile.DesktopUI.Views
                 _draft = _part == null || _notes.Length == 0 ? null : new NotePropertyEditor(_part, _notes);
                 if (_draft == null) { _expressionSliders.Clear(); _noteControls = null; _noteSchema = null; _notesHost.Content = DesktopUi.Label("Desktop.NoNotes"); return; }
                 NotePropertyEditor draft = _draft;
+                if (preservePresetSession && old != null)
+                {
+                    foreach (NotePropertyGroup group in draft.Groups)
+                    {
+                        if (group.Presets != null && old.Groups.FirstOrDefault(previous => previous.Key == group.Key)?.Presets is { } previousPresets)
+                            group.Presets.RestoreSessionState(previousPresets);
+                    }
+                }
                 string schema = string.Join("|", draft.Groups.Select(group => $"{group.Key}:{group.Title}:{group.EmptyMessage}:{group.Vibrato != null}:{group.Presets != null}:" +
                     string.Join(",", group.Fields.Select(field => $"{field.Label}:{field.IsNumber}:{field.IsChoice}:{field.IsPhonemizerPicker}:{field.CanReset}:{group.Key == "Expressions" && field.IsNumber}"))));
                 // 选择改变时复用控件和模板，只替换草稿绑定，避免大量分配打断音频回调。
@@ -408,10 +417,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             Control input;
             if (field.IsPhonemizerPicker)
             {
-                Button picker = new() { Name = "NotePhonemizerPicker", HorizontalAlignment = HorizontalAlignment.Stretch };
-                TextBlock label = new() { TextWrapping = Avalonia.Media.TextWrapping.Wrap };
-                label.Bind(TextBlock.TextProperty, new Binding("PhonemizerDisplay"));
-                picker.Content = label;
+                Button picker = DesktopTrackPickers.CreatePhonemizerButton("NotePhonemizerPicker", "PhonemizerButtonLabel", "PhonemizerDisplay");
                 picker.Bind(AutomationProperties.NameProperty, new Binding("Label"));
                 picker.Click += async (_, _) => await PickNotePhonemizerAsync(picker, field);
                 input = picker;
@@ -658,14 +664,10 @@ namespace OpenUtauMobile.DesktopUI.Views
             singer.SelectionChanged += (_, _) => { if (singerVm == _trackVm && singer.SelectedItem is USinger chosen) singerVm.SetSinger(chosen); };
             ToolTip.SetTip(singer, DesktopUi.Label("Desktop.Singer"));
             body.Children.Add(singer);
-            Grid phonemizerContent = new() { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 8 };
-            phonemizerContent.Children.Add(BoundText("PhonemizerTag"));
-            IconPacks.Avalonia.PhosphorIcons.PackIconPhosphorIcons chevron = new IconPacks.Avalonia.PhosphorIcons.PackIconPhosphorIcons { Kind = IconPacks.Avalonia.PhosphorIcons.PackIconPhosphorIconsKind.CaretDown, Width = 12, Height = 12, VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(chevron, 1); phonemizerContent.Children.Add(chevron);
-            Button phonemizer = new() { Name = "TrackPhonemizerPicker", Content = phonemizerContent, HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Stretch };
-            phonemizer.Classes.Add("DesktopPicker");
+            Button phonemizer = DesktopTrackPickers.CreatePhonemizerButton("TrackPhonemizerPicker", "PhonemizerTag");
             phonemizer.Classes.Add("DesktopTrackChoice");
             phonemizer.Bind(Button.CommandProperty, new Binding("SelectPhonemizerCommand"));
+            phonemizer.CommandParameter = phonemizer;
             body.Children.Add(FieldRow(DesktopUi.Label("Desktop.Phonemizer"), phonemizer));
             TrackHeaderViewModel rendererVm = _trackVm;
             string[] renderers = track.Singer is { Found: true } singerModel ? Renderers.GetSupportedRenderers(singerModel.SingerType) : [];
@@ -701,7 +703,6 @@ namespace OpenUtauMobile.DesktopUI.Views
             row.Children.Add(label); Grid.SetColumn(input, 1); row.Children.Add(input);
             return row;
         }
-        private static TextBlock BoundText(string path) { TextBlock text = new(); text.Bind(TextBlock.TextProperty, new Binding(path)); return text; }
         private Control ToolPicker(UTrack track, DesktopToolKind kind)
         {
             StackPanel body = new() { Spacing = 4 };

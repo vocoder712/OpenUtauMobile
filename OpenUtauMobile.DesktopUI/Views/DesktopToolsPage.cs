@@ -51,7 +51,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             toolPanel.Name = "ToolsListPanel";
             Grid.SetRow(toolPanel, 2);
             root.Children.Add(toolPanel);
-            StackPanel wine = new() { Orientation = Orientation.Horizontal, Spacing = 8, IsVisible = !OperatingSystem.IsWindows() };
+            WrapPanel wine = new() { Orientation = Orientation.Horizontal, ItemSpacing = 8, LineSpacing = 8, IsVisible = !OperatingSystem.IsWindows() };
             wine.Children.Add(DesktopUi.Label("Desktop.WinePath"));
             TextBox pathBox = new() { Width = 360 }; pathBox.Bind(TextBox.TextProperty, new Binding("WinePath") { Mode = BindingMode.TwoWay }); wine.Children.Add(pathBox);
             wine.Children.Add(DesktopUi.Command("NoteProperties.Apply", "WineCommand"));

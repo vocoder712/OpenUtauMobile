@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Layout;
 using OpenUtau.Api;
@@ -19,7 +20,26 @@ namespace OpenUtauMobile.DesktopUI.Views
     {
         /// <summary>音素器列表中“最近使用”与“按语言排序”两段的分隔标记。</summary>
         private sealed record PhonemizerSeparator;
+        private sealed record PhonemizerTrackDefault;
         private static Control? Anchor => AppService.GetTopLevel()?.FocusManager?.GetFocusedElement() as Control ?? AppService.GetTopLevel();
+        public static Button CreatePhonemizerButton(string name, string valueBinding, string? detailBinding = null)
+        {
+            TextBlock label = new() { TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center };
+            label.Bind(TextBlock.TextProperty, new Binding(valueBinding));
+            Grid content = new() { ColumnDefinitions = new ColumnDefinitions("*,Auto"), ColumnSpacing = 8 };
+            content.Children.Add(label);
+            IconPacks.Avalonia.PhosphorIcons.PackIconPhosphorIcons chevron = new()
+            {
+                Kind = IconPacks.Avalonia.PhosphorIcons.PackIconPhosphorIconsKind.CaretDown,
+                Width = 12, Height = 12, VerticalAlignment = VerticalAlignment.Center
+            };
+            Grid.SetColumn(chevron, 1);
+            content.Children.Add(chevron);
+            Button button = new() { Name = name, Content = content, HorizontalAlignment = HorizontalAlignment.Stretch, HorizontalContentAlignment = HorizontalAlignment.Stretch };
+            button.Classes.Add("DesktopPicker");
+            button.Bind(ToolTip.TipProperty, new Binding(detailBinding ?? valueBinding));
+            return button;
+        }
         public static Task<string?> PickTrackNameAsync(string currentName)
         {
             if (Anchor is not { } anchor) return Task.FromResult<string?>(null);
@@ -81,7 +101,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         }
         public static Task<PhonemizerPickerResult?> PickPhonemizerAsync(PhonemizerPickerRequest request)
         {
-            if ((request.Anchor ?? Anchor) is not { } anchor || request.CancellationToken.IsCancellationRequested)
+            if (request.Anchor is not { } anchor || TopLevel.GetTopLevel(anchor) == null || request.CancellationToken.IsCancellationRequested)
                 return Task.FromResult<PhonemizerPickerResult?>(null);
             TaskCompletionSource<PhonemizerPickerResult?> result = new(TaskCreationOptions.RunContinuationsAsynchronously);
             PhonemizerFactory[] factories = PhonemizerFactory.GetAll();
@@ -89,6 +109,13 @@ namespace OpenUtauMobile.DesktopUI.Views
             search.Bind(TextBox.PlaceholderTextProperty, search.GetResourceObservable("Desktop.Search"));
             ComboBox language = new() { ItemsSource = new[] { OpenUtauMobile.Helpers.L.S("Desktop.AllLanguages") }.Concat(factories.Select(f => f.language ?? "").Distinct().OrderBy(s => s)).ToArray(), SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Stretch };
             ListBox list = new() { Name = "DesktopPhonemizerList", Height = 300 };
+            list.Classes.Add("DesktopPhonemizerList");
+            list.ContainerPrepared += (_, e) =>
+            {
+                bool separator = list.Items[e.Index] is PhonemizerSeparator;
+                e.Container.Classes.Set("PhonemizerSeparator", separator);
+                e.Container.IsEnabled = !separator;
+            };
             list.ItemTemplate = new FuncDataTemplate<object>((item, _) =>
             {
                 if (item is PhonemizerSeparator)
@@ -98,20 +125,32 @@ namespace OpenUtauMobile.DesktopUI.Views
                     divider.Bind(Border.BackgroundProperty, divider.GetResourceObservable("Sem.Color.OutlineVariant"));
                     return divider;
                 }
-                return new TextBlock { Text = (item as PhonemizerFactory)?.ToString() ?? "", TextWrapping = Avalonia.Media.TextWrapping.Wrap };
+                TextBlock label = new()
+                {
+                    Text = item is PhonemizerTrackDefault ? OpenUtauMobile.Helpers.L.S("NoteProperties.TrackDefault") : (item as PhonemizerFactory)?.ToString() ?? "",
+                    TextTrimming = Avalonia.Media.TextTrimming.CharacterEllipsis,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                ToolTip.SetTip(label, item is PhonemizerTrackDefault ? request.TrackDefaultLabel : label.Text);
+                return label;
             });
             StackPanel body = new() { Width = 360, Spacing = 8 };
-            Button inherit = new() { Name = "PhonemizerTrackDefault", Content = new TextBlock { Text = request.TrackDefaultLabel ?? OpenUtauMobile.Helpers.L.S("NoteProperties.TrackDefault"), TextWrapping = Avalonia.Media.TextWrapping.Wrap }, HorizontalAlignment = HorizontalAlignment.Stretch };
-            if (request.AllowTrackDefault) body.Children.Add(inherit);
-            if (request.CurrentName != null)
-                body.Children.Add(new TextBlock { Text = NotePhonemizerResolver.Display(request.CurrentName, request.TrackDefaultLabel ?? ""), TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+            DesktopDensity.Apply(body);
+            body.Styles.Add(new Avalonia.Markup.Xaml.Styling.StyleInclude(new Uri("avares://OpenUtauMobile.DesktopUI/"))
+            {
+                Source = new Uri("avares://OpenUtauMobile.DesktopUI/Views/DesktopStyles.axaml")
+            });
             body.Children.Add(search);
             body.Children.Add(language);
             body.Children.Add(list);
             if (factories.Length == 0)
                 body.Children.Add(new TextBlock { Text = OpenUtauMobile.Helpers.L.S("Picker.Phonemizer.Empty"), TextWrapping = Avalonia.Media.TextWrapping.Wrap });
-            Flyout flyout = new() { Content = body, Placement = PlacementMode.BottomEdgeAlignedLeft };
-            inherit.Click += (_, _) => { result.TrySetResult(new(null)); flyout.Hide(); };
+            Flyout flyout = new()
+            {
+                Content = body,
+                Placement = PlacementMode.BottomEdgeAlignedLeft,
+                FlyoutPresenterTheme = (Avalonia.Styling.ControlTheme)body.FindResource("DesktopPhonemizerFlyoutTheme")!
+            };
             bool refreshing = false;
             void Refresh()
             {
@@ -123,7 +162,13 @@ namespace OpenUtauMobile.DesktopUI.Views
                     .ThenBy(f => f.language)
                     .ThenBy(f => f.name);
                 PhonemizerFactory[] recent = ordered.TakeWhile(f => RecentRank(f) < 10).ToArray();
-                List<object> items = [.. recent];
+                List<object> items = [];
+                if (request.AllowTrackDefault)
+                {
+                    items.Add(new PhonemizerTrackDefault());
+                    if (ordered.Any()) items.Add(new PhonemizerSeparator());
+                }
+                items.AddRange(recent);
                 PhonemizerFactory[] remaining = ordered.Skip(recent.Length).ToArray();
                 if (recent.Length > 0 && remaining.Length > 0) items.Add(new PhonemizerSeparator());
                 items.AddRange(remaining);
@@ -139,13 +184,22 @@ namespace OpenUtauMobile.DesktopUI.Views
             search.TextChanged += (_, _) => Refresh(); language.SelectionChanged += (_, _) => Refresh();
             list.SelectionChanged += (_, _) =>
             {
-                if (refreshing || list.SelectedItem is not PhonemizerFactory factory) return;
-                result.TrySetResult(new(factory));
+                if (refreshing) return;
+                if (list.SelectedItem is PhonemizerFactory factory) result.TrySetResult(new(factory));
+                else if (list.SelectedItem is PhonemizerTrackDefault) result.TrySetResult(new(null));
+                else return;
                 flyout.Hide();
             };
             System.Threading.CancellationTokenRegistration cancellation = request.CancellationToken.Register(() =>
                 Avalonia.Threading.Dispatcher.UIThread.Post(() => { result.TrySetResult(null); flyout.Hide(); }));
-            flyout.Closed += (_, _) => { cancellation.Dispose(); result.TrySetResult(null); };
+            void OnAnchorDetached(object? sender, VisualTreeAttachmentEventArgs e) => flyout.Hide();
+            anchor.DetachedFromVisualTree += OnAnchorDetached;
+            flyout.Closed += (_, _) =>
+            {
+                anchor.DetachedFromVisualTree -= OnAnchorDetached;
+                cancellation.Dispose();
+                result.TrySetResult(null);
+            };
             body.AddHandler(InputElement.KeyDownEvent, (_, e) =>
             {
                 if (e.Key == Key.Escape && !OpenUtauMobile.Services.Editor.EditorInputController.IsComposing(e.Source as Visual))

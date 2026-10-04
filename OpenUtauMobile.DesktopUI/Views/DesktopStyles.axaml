@@ -1,4 +1,11 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile">
+    <Styles.Resources>
+        <ControlTheme x:Key="DesktopPhonemizerFlyoutTheme" TargetType="FlyoutPresenter" BasedOn="{StaticResource {x:Type FlyoutPresenter}}">
+            <Setter Property="Background" Value="{DynamicResource ComboBoxDropDownBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxDropDownBorderBrush}" />
+            <Setter Property="Padding" Value="8" />
+        </ControlTheme>
+    </Styles.Resources>
     <Style Selector="Button.DesktopPicker">
         <Setter Property="MinHeight" Value="28" />
         <Setter Property="Padding" Value="7,4" />
@@ -6,6 +13,28 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.Outline}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.Surface}" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Button.DesktopPicker">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="6,3" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=".DesktopRoot ListBox.DesktopPhonemizerList">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector=".DesktopRoot ListBox.DesktopPhonemizerList ListBoxItem">
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector=".DesktopRoot ListBox.DesktopPhonemizerList ListBoxItem.PhonemizerSeparator">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+    </Style>
+    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Button.DesktopPicker TextBlock">
+        <Setter Property="TextWrapping" Value="NoWrap" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
     <Style Selector=":is(controls|PopupDialogControl).DesktopPopup TextBox, :is(controls|PopupDialogControl).DesktopPopup ComboBox, :is(controls|PopupDialogControl).DesktopPopup NumericUpDown">
         <Setter Property="MinHeight" Value="32" />
@@ -127,7 +156,7 @@
         <Setter Property="Padding" Value="6,3" />
         <Setter Property="CornerRadius" Value="4" />
     </Style>
-    <Style Selector=".DesktopRoot .DesktopInspector Button.DesktopTrackChoice">
+    <Style Selector=".DesktopRoot .DesktopInspector Button.DesktopTrackChoice, .DesktopRoot .DesktopInspector Button.DesktopPicker">
         <Setter Property="MinHeight" Value="28" />
         <Setter Property="Padding" Value="6,3" />
         <Setter Property="CornerRadius" Value="4" />

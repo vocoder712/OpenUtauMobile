@@ -31,8 +31,12 @@ public static class PhonemizerPickerService
         return await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             if (request.CancellationToken.IsCancellationRequested) return null;
-            if (ServiceHub.DesktopPhonemizerPicker is { } desktopPicker)
+            if (ServiceHub.DesktopPhonemizerPicker is { } desktopPicker && request.Anchor is { } anchor)
+            {
+                // 桌面下拉只锚定实际入口；已关闭的对话框不能再作为锚点。
+                if (TopLevel.GetTopLevel(anchor) == null) return null;
                 return await desktopPicker(request);
+            }
             using PhonemizerPickerViewModel viewModel = new(request);
             using CancellationTokenRegistration cancellation = request.CancellationToken.Register(() =>
                 Dispatcher.UIThread.Post(viewModel.RequestBack));

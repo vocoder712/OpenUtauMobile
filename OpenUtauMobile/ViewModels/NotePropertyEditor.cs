@@ -496,6 +496,8 @@ namespace OpenUtauMobile.ViewModels
         public string TrackDefaultLabel { get; private init; } = string.Empty;
         public string PhonemizerDisplay => IsPhonemizerMixed ? L.S("NoteProperties.Mixed")
             : NotePhonemizerResolver.Display(PhonemizerValue, TrackDefaultLabel);
+        public string PhonemizerButtonLabel => !IsPhonemizerMixed && string.IsNullOrEmpty(PhonemizerValue)
+            ? L.S("NoteProperties.TrackDefault") : PhonemizerDisplay;
         public decimal Minimum { get; init; }
         public decimal Maximum { get; init; }
         public double SliderMinimum { get; }
@@ -605,6 +607,7 @@ namespace OpenUtauMobile.ViewModels
             IsPhonemizerMixed = distinct.Length > 1;
             PhonemizerValue = distinct.Length == 1 ? distinct[0] : null;
             this.RaisePropertyChanged(nameof(PhonemizerDisplay));
+            this.RaisePropertyChanged(nameof(PhonemizerButtonLabel));
         }
 
         public void SetPhonemizer(PhonemizerPickerResult result)
@@ -616,6 +619,7 @@ namespace OpenUtauMobile.ViewModels
             IsPhonemizerMixed = false;
             MarkEdited();
             this.RaisePropertyChanged(nameof(PhonemizerDisplay));
+            this.RaisePropertyChanged(nameof(PhonemizerButtonLabel));
         }
         public NotePropertyField(string label, decimal min, decimal max, IEnumerable<decimal> values, decimal increment = 0.1m) : this(label)
         {

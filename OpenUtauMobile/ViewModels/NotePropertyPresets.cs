@@ -57,6 +57,14 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
         RemoveCommand = ReactiveCommand.Create(Remove, this.WhenAnyValue(vm => vm.Selected).Select(value => value != null));
     }
 
+    public void RestoreSessionState(NotePropertyPresets previous)
+    {
+        Name = previous.Name;
+        Error = previous.Error;
+        // 刷新草稿只恢复界面状态，不能重新套用预设覆盖撤销后的实际值。
+        this.RaiseAndSetIfChanged(ref selected, previous.Selected != null && Items.Contains(previous.Selected) ? previous.Selected : null, nameof(Selected));
+    }
+
     private void Save()
     {
         string name = Name?.Trim() ?? string.Empty;

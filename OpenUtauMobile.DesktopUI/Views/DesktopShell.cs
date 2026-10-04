@@ -36,6 +36,7 @@ namespace OpenUtauMobile.DesktopUI.Views
     {
         private readonly MainViewModel _main;
         private readonly DesktopPageLocator _pages;
+        private readonly DialogHost _dialogHost;
         private readonly Menu _menu = new();
         private readonly DesktopStatusBar _status = new();
         private readonly Action<string, double> _showStatus;
@@ -59,7 +60,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             Styles.Add(new StyleInclude(new Uri("avares://OpenUtauMobile.DesktopUI/")) { Source = new Uri("avares://OpenUtauMobile.DesktopUI/Views/DesktopStyles.axaml") });
             DesktopUi.Paint(this, BackgroundProperty, "Sem.Color.Surface");
             MainView host = new(_pages) { DataContext = main };
-            _pages.PopupTemplate = host.GetLogicalDescendants().OfType<DialogHost>().Single().PopupTemplate;
+            _dialogHost = host.GetLogicalDescendants().OfType<DialogHost>().Single();
+            _pages.PopupTemplate = _dialogHost.PopupTemplate;
             Grid root = new() { RowDefinitions = new RowDefinitions("Auto,*,Auto") };
             Grid menuBar = new() { Height = 36, Background = Avalonia.Media.Brushes.Transparent };
             WindowDecorationProperties.SetElementRole(menuBar, WindowDecorationsElementRole.TitleBar);
@@ -112,7 +114,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             AddHandler(DragDrop.DropEvent, OnDrop);
             UpdateNavigation();
         }
-        private bool Ready => !_fileAction && !PianoRollViewModel.IsBatchEditRunning && _main.CurrentViewModel is not (SplashScreenViewModel or ClassicSingerSetupViewModel { IsInstalling: true }) && !_pages.IsUtilityModalOpen && !DialogHost.IsDialogOpen("MainDialogHost") && _main.ActiveEditor is not { IsLoadingProject: true };
+        private bool Ready => !_fileAction && !PianoRollViewModel.IsBatchEditRunning && _main.CurrentViewModel is not (SplashScreenViewModel or ClassicSingerSetupViewModel { IsInstalling: true }) && !_pages.IsUtilityModalOpen && !_dialogHost.IsOpen && _main.ActiveEditor is not { IsLoadingProject: true };
         public void CancelInput() => _pages.Workspace?.CancelInput();
         private void OnWindowActivated(object? sender, EventArgs e) => _pages.InitializeWindowProviders();
         public bool PrepareFileAction() => _pages.Workspace?.PrepareFileAction() != false;

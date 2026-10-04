@@ -2910,7 +2910,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     private bool notePropertiesDisposed;
     private CancellationTokenSource? notePropertiesCancellation;
 
-    private async Task EditNotePropertiesAsync()
+    public async Task EditNotePropertiesAsync()
     {
         if (notePropertiesDisposed || editingNoteProperties || EditingVoicePart == null || SelectedNotes.Count == 0)
         {

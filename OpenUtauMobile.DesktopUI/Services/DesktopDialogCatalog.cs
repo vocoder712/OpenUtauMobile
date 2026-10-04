@@ -4,7 +4,7 @@ using OpenUtauMobile.Controls;
 
 namespace OpenUtauMobile.DesktopUI.Services
 {
-    internal readonly record struct DesktopDialogProfile(double Width, double MinWidth, double MaxHeight, bool Scrolls, bool DenseFields = false)
+    internal readonly record struct DesktopDialogProfile(double Width, double MinWidth, double MaxHeight, bool Scrolls, bool DenseFields = false, double? PreferredHeight = null)
     {
         public static DesktopDialogProfile Standard => new(560, 400, 640, false);
     }
@@ -39,6 +39,8 @@ namespace OpenUtauMobile.DesktopUI.Services
         public static DesktopDialogProfile For(PopupDialogControl popup, Type viewType)
         {
             if (!TryGet(viewType, out _)) return DesktopDialogProfile.Standard;
+            // 向导的后续页面比欢迎页高，不能按首屏内容把整个窗口压缩。
+            if (popup is SetupWizardPopup) return new(800, 560, 720, true, PreferredHeight: 640);
             double width = popup.DialogWidthPreset switch
             {
                 PopupDialogWidthPreset.Compact => 360,
