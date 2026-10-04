@@ -13,12 +13,6 @@ public partial class TrackSettingsPopup : PopupDialogControl
         InitializeComponent();
     }
 
-    private void OnRendererSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (DataContext is TrackSettingsPopupViewModel viewModel && sender is ComboBox { SelectedItem: string renderer })
-            viewModel.SetRenderer(renderer);
-    }
-
     private void OnResamplerSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (DataContext is TrackSettingsPopupViewModel viewModel && sender is ComboBox { SelectedItem: TrackSettingsToolOption resampler })

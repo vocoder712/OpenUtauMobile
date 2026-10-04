@@ -22,6 +22,7 @@ public enum TrackSettingsAction
     Cancel,
     PickSinger,
     PickPhonemizer,
+    PickRenderer,
     EditExpressions,
     Apply,
 }
@@ -64,9 +65,10 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     public ObservableCollection<TrackSettingsToolOption> Resamplers { get; } = [];
     public ObservableCollection<TrackSettingsToolOption> Wavtools { get; } = [];
     public string TrackName => track.TrackName;
-    public string ApplyLabel => L.S("TrackSettings.Apply");
+    public string ApplyLabel => L.S("Common.Apply");
     public ReactiveCommand<Unit, Unit> PickSingerCommand { get; }
     public ReactiveCommand<Unit, Unit> PickPhonemizerCommand { get; }
+    public ReactiveCommand<Unit, Unit> PickRendererCommand { get; }
     public ReactiveCommand<Unit, Unit> EditExpressionsCommand { get; }
     public ReactiveCommand<Unit, Unit> ApplyCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
@@ -101,6 +103,8 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
         DraftWavtool = draftRenderSettings.wavtool ?? string.Empty;
         PickSingerCommand = ReactiveCommand.Create(() => RaiseClose(TrackSettingsAction.PickSinger));
         PickPhonemizerCommand = ReactiveCommand.Create(() => RaiseClose(TrackSettingsAction.PickPhonemizer));
+        PickRendererCommand = ReactiveCommand.Create(() => RaiseClose(TrackSettingsAction.PickRenderer),
+            this.WhenAnyValue(viewModel => viewModel.IsRendererEnabled));
         EditExpressionsCommand = ReactiveCommand.Create(() => RaiseClose(TrackSettingsAction.EditExpressions));
         ApplyCommand = ReactiveCommand.Create(() => RaiseClose(TrackSettingsAction.Apply));
         CancelCommand = ReactiveCommand.Create(() => RaiseClose(TrackSettingsAction.Cancel));
@@ -448,6 +452,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     {
         PickSingerCommand.Dispose();
         PickPhonemizerCommand.Dispose();
+        PickRendererCommand.Dispose();
         EditExpressionsCommand.Dispose();
         ApplyCommand.Dispose();
         CancelCommand.Dispose();

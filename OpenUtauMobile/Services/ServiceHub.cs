@@ -18,7 +18,7 @@ public static class ServiceHub
     public static Func<ViewModels.MainViewModel, Avalonia.Controls.Window>? DesktopWindowFactory { get; set; }
     public static IDesktopWindowContext? DesktopWindowContext { get; set; }
     public static Func<Controls.PopupDialogWidthPreset, Avalonia.Size, Avalonia.Size>? DesktopPopupSizeProvider { get; set; }
-    public static Func<System.Threading.Tasks.Task<OpenUtau.Core.Ustx.USinger?>>? DesktopSingerPicker { get; set; }
+    public static Func<OpenUtau.Core.Ustx.USinger?, System.Threading.Tasks.Task<OpenUtau.Core.Ustx.USinger?>>? DesktopSingerPicker { get; set; }
     public static Func<string, System.Threading.Tasks.Task<string?>>? DesktopTrackNamePicker { get; set; }
     public static Func<string[], System.Threading.Tasks.Task<string?>>? DesktopRendererPicker { get; set; }
     public static Func<PhonemizerPickerRequest, Task<PhonemizerPickerResult?>>? DesktopPhonemizerPicker { get; set; }

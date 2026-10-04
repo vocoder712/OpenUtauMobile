@@ -32,12 +32,11 @@ namespace OpenUtauMobile.DesktopUI.Views
     public partial class DesktopWorkspace : UserControl, ICmdSubscriber, IDisposable
     {
         private readonly EditorViewModel _editor;
-        private readonly DesktopLayoutStore _layout;
         private readonly EditorInputController _input;
         private readonly DesktopInspector _inspector;
-        private bool _applyingLayout;
+        private readonly DesktopWorkspaceLayoutController _layoutController;
         private readonly DesktopInlineEditor _inline;
-        private Window? _mixerWindow;
+        private readonly DesktopMixerWindow _mixer;
         private readonly List<(ToggleButton Button, PianoRollEditMode Mode)> _pianoModes = [];
         private ContextMenu? _pianoNotesContextMenu;
         private ContextMenu? _pianoLayoutContextMenu;
@@ -52,7 +51,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         public DesktopWorkspace(EditorViewModel editor, DesktopLayoutStore layout)
         {
             _editor = editor;
-            _layout = layout;
+            _mixer = new DesktopMixerWindow(editor, layout, () => _disposed);
             InitializeComponent();
             DataContext = editor;
             editor.IsTrackHeaderExpanded = true;
@@ -115,6 +114,9 @@ namespace OpenUtauMobile.DesktopUI.Views
             InspectorHost.SizeChanged += (_, _) =>
                 _inspector.Width = Math.Max(_inspector.MinWidth, InspectorHost.Bounds.Width - InspectorHost.BorderThickness.Left - InspectorHost.BorderThickness.Right - InspectorHost.Padding.Left - InspectorHost.Padding.Right);
             _input = new EditorInputController(this, Arrangement, Piano, () => !IsPianoRollVisible, () => null, PrepareFileAction);
+            _layoutController = new DesktopWorkspaceLayoutController(editor, layout, WorkspaceGrid, EditingGrid,
+                ArrangementPane, PianoPane, ArrangementSplitter, InspectorHost, InspectorSplitter, _inspector,
+                _mixer, () => _attached, () => Bounds.Size, CancelInput);
             Arrangement.AddHandler(PointerPressedEvent, (_, _) => SetActiveArea(EditorInputController.EditArea.Tracks), RoutingStrategies.Tunnel, true);
             Piano.AddHandler(PointerPressedEvent, (_, _) => SetActiveArea(EditorInputController.EditArea.PianoRoll), RoutingStrategies.Tunnel, true);
             Arrangement.AddHandler(GotFocusEvent, (_, _) => SetActiveArea(EditorInputController.EditArea.Tracks), RoutingStrategies.Bubble, true);
@@ -131,9 +133,6 @@ namespace OpenUtauMobile.DesktopUI.Views
             _inline = new DesktopInlineEditor(editor.PianoRollViewModel, Piano);
             _timelines.Add(new DesktopTimelineInput(Piano.Ruler, Piano.NotesCanvas, x => _editor.PianoRollViewModel.PointXToTick(x), _input, _editor.PianoRollViewModel));
             _timelines.Add(new DesktopTimelineInput(Arrangement.Ruler, Arrangement.PartsCanvas, x => (int)_editor.CanvasXToTick(x), _input, _editor));
-            EditingGrid.RowDefinitions[0].MinHeight = 0;
-            EditingGrid.RowDefinitions[2].MinHeight = 0;
-            WorkspaceGrid.ColumnDefinitions[0].MinWidth = 600;
             foreach (GridSplitter splitter in new[] { ArrangementSplitter, InspectorSplitter })
                 splitter.AddHandler(PointerReleasedEvent, (_, _) => SavePanels(), RoutingStrategies.Bubble, true);
             AttachedToVisualTree += (_, _) =>
@@ -164,7 +163,6 @@ namespace OpenUtauMobile.DesktopUI.Views
                 _editor.SelectedParts.CollectionChanged -= OnSelectionChanged;
                 _editor.PianoRollViewModel.SelectedNotes.CollectionChanged -= OnSelectionChanged;
                 _editor.PianoRollViewModel.SelectedAnchors.CollectionChanged -= OnSelectionChanged;
-                ServiceHub.DesktopWindowContext?.SetHint(string.Empty);
                 _attached = false;
             };
             SizeChanged += (_, _) => UpdateInspectorVisibility();
@@ -355,22 +353,14 @@ namespace OpenUtauMobile.DesktopUI.Views
         {
             return new[] { DesktopToolKind.Resampler, DesktopToolKind.Wavtool }.Select(kind =>
             {
-                string[] compatible = kind == DesktopToolKind.Resampler
-                    ? Renderers.GetSupportedResamplers(track.RendererSettings.Wavtool).Select(t => t.ToString()!).ToArray()
-                    : Renderers.GetSupportedWavtools(track.RendererSettings.Resampler).Select(t => t.ToString()!).ToArray();
                 MenuItem parent = new() { Header = DesktopUi.Label(kind == DesktopToolKind.Resampler ? "Desktop.Resamplers" : "Desktop.Wavtools") };
-                parent.ItemsSource = DesktopToolsService.GetTools(kind).Where(t => t.Available && compatible.Contains(t.Name)).Select(tool =>
+                parent.ItemsSource = DesktopTrackToolActions.GetCompatibleTools(track, kind).Select(tool =>
                 {
                     string? selected = kind == DesktopToolKind.Resampler ? track.RendererSettings.resampler : track.RendererSettings.wavtool;
                     MenuItem item = new() { Header = tool.Name, ToggleType = MenuItemToggleType.Radio, IsChecked = selected == tool.Name };
                     item.Click += (_, _) =>
                     {
-                        if (DocManager.Inst.HasOpenUndoGroup || !DocManager.Inst.Project.tracks.Contains(track)) return;
-                        URenderSettings settings = track.RendererSettings.Clone();
-                        if (kind == DesktopToolKind.Resampler) settings.resampler = tool.Name; else settings.wavtool = tool.Name;
-                        DocManager.Inst.StartUndoGroup();
-                        try { DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings)); }
-                        finally { DocManager.Inst.EndUndoGroup(); }
+                        DesktopTrackToolActions.TryApply(track, tool);
                     };
                     return item;
                 }).ToArray();
@@ -383,170 +373,31 @@ namespace OpenUtauMobile.DesktopUI.Views
         }
         public bool CanClipboardAction(Key key) => _input.CanExecuteSelectionAction(key);
         public void ToggleInspector()
-        {
-            _layout.State.InspectorVisible = !_layout.State.InspectorVisible;
-            if (_layout.State.InspectorVisible && _layout.State.InspectorWidth < 1) _layout.State.InspectorWidth = 320;
-            UpdateInspectorVisibility();
-            _layout.Save();
-        }
+            => _layoutController.ToggleInspector();
         public async void ShowNotes()
         {
-            _layout.State.InspectorVisible = true;
-            if (_layout.State.InspectorWidth < 260) _layout.State.InspectorWidth = 320;
-            UpdateInspectorVisibility();
+            _layoutController.ShowInspector();
             if (InspectorHost.IsVisible) { _inspector.SelectNotes(); return; }
             if (_editor.PianoRollViewModel.EditingVoicePart == null || _editor.PianoRollViewModel.SelectedNotes.Count == 0) return;
             try { await _editor.PianoRollViewModel.EditNotePropertiesAsync(); }
             catch (Exception error) { ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(error))); }
         }
-        public void ToggleMixer()
-        {
-            if (_mixerWindow != null) { _mixerWindow.Close(); return; }
-            if (TopLevel.GetTopLevel(this) is not Window owner) return;
-            MixerPanel mixer = new();
-            DesktopDensity.ApplyMixer(mixer, _layout.State.MixerFxPaneWidth);
-            mixer.Styles.Add(new StyleInclude(new Uri("avares://OpenUtauMobile.DesktopUI/"))
-            { Source = new Uri("avares://OpenUtauMobile.DesktopUI/Views/DesktopStyles.axaml") });
-            mixer.FindControl<Grid>("MixerHeader")!.IsVisible = false;
-            Border detailBorder = mixer.FindControl<Border>("DetailBorder")!;
-            DispatcherTimer paneSaveTimer = new() { Interval = TimeSpan.FromMilliseconds(300) };
-            paneSaveTimer.Tick += (_, _) => { paneSaveTimer.Stop(); if (!_disposed) _layout.Save(); };
-            detailBorder.SizeChanged += (_, e) =>
-            {
-                if (e.NewSize.Width < 220 || Math.Abs(_layout.State.MixerFxPaneWidth - e.NewSize.Width) < 1) return;
-                _layout.State.MixerFxPaneWidth = e.NewSize.Width;
-                paneSaveTimer.Stop();
-                paneSaveTimer.Start();
-            };
-            DesktopWindowProfile profile = DesktopWindowProfile.Mixer;
-            Size available = owner.Screens.ScreenFromWindow(owner) is { } screen
-                ? new Size(screen.WorkingArea.Width / screen.Scaling, screen.WorkingArea.Height / screen.Scaling)
-                : owner.ClientSize;
-            double width = Math.Min(profile.Width, Math.Max(1, available.Width - 24));
-            double height = Math.Min(profile.Height, Math.Max(1, available.Height - 24));
-            Window window = new() { Width = width, Height = height, MinWidth = Math.Min(profile.MinWidth, width), MinHeight = Math.Min(profile.MinHeight, height), WindowStartupLocation = WindowStartupLocation.CenterScreen };
-            DesktopPageLocator.RestoreGeometry(window, profile, owner, _layout.State.MixerWindow);
-            window.Bind(Window.TitleProperty, window.GetResourceObservable("Mixer.Title"));
-            DesktopUi.Paint(window, Window.BackgroundProperty, "Sem.Color.Surface");
-            DialogHostAvalonia.DialogHost host = new() { Identifier = "DesktopMixer-" + Guid.NewGuid(), Content = mixer, IsMultipleDialogsEnabled = true, IsEnabled = !PianoRollViewModel.IsBatchEditRunning };
-            window.Content = host;
-            _mixerWindow = window;
-            window.Closing += (_, e) =>
-            {
-                if (window.WindowState == WindowState.Normal)
-                {
-                    _layout.State.MixerWindow = DesktopPageLocator.CaptureGeometry(window);
-                    _layout.Save();
-                }
-                if (!host.IsOpen) return;
-                if (_disposed) { DialogHostAvalonia.DialogHost.Close(host.Identifier, null); return; }
-                e.Cancel = true;
-                object? content = DialogHostAvalonia.DialogHost.GetDialogSession(host.Identifier)?.Content;
-                (content is ContentControl control ? control.DataContext as IPopupContext : content as IPopupContext)?.RequestBack();
-            };
-            HashSet<Key> pressed = [];
-            window.AddHandler(KeyDownEvent, (_, e) =>
-            {
-                Visual? source = window.FocusManager?.GetFocusedElement() as Visual ?? e.Source as Visual;
-                if (e.Handled || host.IsOpen || PianoRollViewModel.IsBatchEditRunning || EditorInputController.IsComposing(source) || EditorShortcuts.IsTextInput(source)) return;
-                bool command = EditorShortcuts.IsCommandModifier(e.KeyModifiers, OperatingSystem.IsMacOS());
-                if (e.Key == Key.Escape || command && e.Key == Key.W) { e.Handled = true; window.Close(); return; }
-                ICommand? action = EditorShortcuts.GetAction(_editor, e.Key, e.KeyModifiers, OperatingSystem.IsMacOS());
-                if (action == null) return;
-                e.Handled = true;
-                if (pressed.Add(e.Key) && !DocManager.Inst.HasOpenUndoGroup && action.CanExecute(null)) action.Execute(null);
-            }, RoutingStrategies.Tunnel);
-            window.KeyUp += (_, e) => pressed.Remove(e.Key);
-            window.Deactivated += (_, _) => pressed.Clear();
-            window.Closed += (_, _) => { paneSaveTimer.Stop(); window.Content = null; _mixerWindow = null; };
-            window.Show(owner);
-        }
-        public bool IsArrangementVisible => _layout.State.ArrangementVisible && _layout.State.ArrangementRatio > 0;
-        public bool IsPianoRollVisible => _layout.State.PianoRollVisible && _layout.State.ArrangementRatio < 1;
-        public bool IsParametersVisible => _layout.State.ParametersVisible && _editor.PianoRollViewModel.PhonemePanelHeight > 0;
-        public bool IsInspectorVisible => _layout.State.InspectorVisible;
-        public void ToggleArrangement()
-        {
-            CancelInput(); _layout.State.ArrangementVisible = !IsArrangementVisible;
-            if (_layout.State.ArrangementVisible && _layout.State.ArrangementRatio == 0) _layout.State.ArrangementRatio = .28;
-            ApplyLayout(); _layout.Save();
-        }
-        public void TogglePianoRoll()
-        {
-            CancelInput(); _layout.State.PianoRollVisible = !IsPianoRollVisible;
-            if (_layout.State.PianoRollVisible && _layout.State.ArrangementRatio == 1) _layout.State.ArrangementRatio = .28;
-            ApplyLayout(); _layout.Save();
-        }
-        public void ToggleParameters()
-        {
-            CancelInput(); _layout.State.ParametersVisible = !IsParametersVisible;
-            ApplyLayout(); _layout.Save();
-        }
-        private void ShowParameters()
-        {
-            _layout.State.PianoRollVisible = _layout.State.ParametersVisible = true;
-            if (_layout.State.ArrangementRatio == 1) _layout.State.ArrangementRatio = .28;
-            ApplyLayout(); _layout.Save();
-        }
-        public void ResetLayout()
-        {
-            _layout.Reset();
-            _inspector.ResetSections();
-            if (_mixerWindow is { IsVisible: true } mixer && TopLevel.GetTopLevel(this) is Window owner)
-            {
-                mixer.GetVisualDescendants().OfType<MixerPanel>().FirstOrDefault()?.ResetDesktopFxPaneWidth(288);
-                DesktopWindowProfile profile = DesktopWindowProfile.Mixer;
-                Size available = owner.Screens.ScreenFromWindow(owner) is { } screen
-                    ? new Size(screen.WorkingArea.Width / screen.Scaling, screen.WorkingArea.Height / screen.Scaling)
-                    : owner.ClientSize;
-                mixer.Width = Math.Min(profile.Width, Math.Max(1, available.Width - 24));
-                mixer.Height = Math.Min(profile.Height, Math.Max(1, available.Height - 24));
-                DesktopPageLocator.CenterOnOwnerScreen(mixer, owner);
-            }
-            ApplyLayout();
-        }
-        private void ApplyLayout()
-        {
-            _applyingLayout = true;
-            try
-            {
-                bool tracks = IsArrangementVisible, piano = IsPianoRollVisible;
-                ArrangementPane.IsVisible = tracks; PianoPane.IsVisible = piano;
-                ArrangementSplitter.IsVisible = tracks && piano;
-                EditingGrid.RowDefinitions[0].Height = new GridLength(tracks ? piano ? _layout.State.ArrangementRatio : 1 : 0, GridUnitType.Star);
-                EditingGrid.RowDefinitions[1].Height = new GridLength(tracks && piano ? 6 : 0);
-                EditingGrid.RowDefinitions[2].Height = new GridLength(piano ? tracks ? 1 - _layout.State.ArrangementRatio : 1 : 0, GridUnitType.Star);
-                _editor.PianoRollViewModel.PhonemePanelHeight = _layout.State.ParametersVisible ? _layout.State.ParameterHeight : 0;
-                WorkspaceGrid.ColumnDefinitions[2].Width = new GridLength(_layout.State.InspectorWidth);
-                UpdateInspectorVisibility();
-            }
-            finally { _applyingLayout = false; }
-        }
-        private void UpdateInspectorVisibility()
-        {
-            bool visible = _layout.State.InspectorVisible && Bounds.Width >= 960;
-            InspectorHost.IsVisible = InspectorSplitter.IsVisible = visible;
-            WorkspaceGrid.ColumnDefinitions[2].MinWidth = 0;
-            WorkspaceGrid.ColumnDefinitions[1].Width = new GridLength(visible ? 6 : 0);
-            WorkspaceGrid.ColumnDefinitions[2].Width = new GridLength(visible ? Math.Min(_layout.State.InspectorWidth, Math.Max(0, Bounds.Width - 640)) : 0);
-        }
-        private void SavePanels()
-        {
-            if (!_attached || Bounds.Height <= 0) return;
-            double tracks = EditingGrid.RowDefinitions[0].ActualHeight;
-            double piano = EditingGrid.RowDefinitions[2].ActualHeight;
-            if (_layout.State.ArrangementVisible && _layout.State.PianoRollVisible && tracks + piano > 0) _layout.State.ArrangementRatio = Math.Clamp(tracks / (tracks + piano), 0, 1);
-            if (InspectorHost.IsVisible) _layout.State.InspectorWidth = Math.Clamp(InspectorHost.Bounds.Width, 0, Math.Max(0, Bounds.Width - 640));
-            _layout.Save();
-        }
+        public void ToggleMixer() => _mixer.Toggle(this);
+        public bool IsArrangementVisible => _layoutController.IsArrangementVisible;
+        public bool IsPianoRollVisible => _layoutController.IsPianoRollVisible;
+        public bool IsParametersVisible => _layoutController.IsParametersVisible;
+        public bool IsInspectorRequested => _layoutController.IsInspectorRequested;
+        public void ToggleArrangement() => _layoutController.ToggleArrangement();
+        public void TogglePianoRoll() => _layoutController.TogglePianoRoll();
+        public void ToggleParameters() => _layoutController.ToggleParameters();
+        private void ShowParameters() => _layoutController.ShowParameters();
+        public void ResetLayout() => _layoutController.ResetLayout(this);
+        private void ApplyLayout() => _layoutController.ApplyLayout();
+        private void UpdateInspectorVisibility() => _layoutController.UpdateInspectorVisibility();
+        private void SavePanels() => _layoutController.SavePanels();
         private void OnEditorChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (!_applyingLayout && e.PropertyName == nameof(PianoRollViewModel.PhonemePanelHeight))
-            {
-                double height = _editor.PianoRollViewModel.PhonemePanelHeight;
-                _layout.State.ParametersVisible = height > 0;
-                if (height > 0) _layout.State.ParameterHeight = height;
-            }
+            _layoutController.OnEditorChanged(e);
             if (e.PropertyName is nameof(EditorViewModel.TrackEditMode) or nameof(EditorViewModel.IsLoadingProject) or nameof(EditorViewModel.IsPlaying) or nameof(PianoRollViewModel.EditMode) or nameof(PianoRollViewModel.IsPitchEraserMode) or nameof(PianoRollViewModel.EditingTip) or nameof(PianoRollViewModel.EditingVoicePart)) UpdateModes();
             if (e.PropertyName == nameof(EditorViewModel.PlayPosTick)) UpdateTime();
             if (e.PropertyName == nameof(EditorViewModel.IsTrackHeaderExpanded))
@@ -555,7 +406,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         private void OnBatchEditRunningChanged(bool running)
         {
             IsEnabled = !running;
-            if (_mixerWindow?.Content is DialogHostAvalonia.DialogHost host) host.IsEnabled = !running;
+            _mixer.SetBatchEditRunning(running);
         }
         private void UpdateTime()
         {
@@ -568,7 +419,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             _disposed = true;
             PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
             _inspector.RequestShowParameters -= ShowParameters;
-            _mixerWindow?.Close();
+            _mixer.Dispose();
             SavePanels();
             _editor.PropertyChanged -= OnEditorChanged;
             _editor.PianoRollViewModel.PropertyChanged -= OnEditorChanged;

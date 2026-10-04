@@ -36,7 +36,7 @@ public sealed class TrackSettingsService
                 {
                     case TrackSettingsAction.PickSinger:
                     {
-                        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync();
+                        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync(viewModel.DraftSinger);
                         if (singer != null) viewModel.SetSinger(singer);
                         break;
                     }
@@ -44,6 +44,12 @@ public sealed class TrackSettingsService
                     {
                         Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(viewModel.DraftPhonemizerIdentifier);
                         if (phonemizer != null) viewModel.SetPhonemizer(phonemizer);
+                        break;
+                    }
+                    case TrackSettingsAction.PickRenderer:
+                    {
+                        string? renderer = await TrackHeaderService.Inst.PickRendererAsync(viewModel.Renderers.ToArray());
+                        if (renderer != null) viewModel.SetRenderer(renderer);
                         break;
                     }
                     case TrackSettingsAction.EditExpressions:

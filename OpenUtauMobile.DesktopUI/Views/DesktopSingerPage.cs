@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
+using Avalonia.Threading;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Views;
@@ -27,8 +28,11 @@ namespace OpenUtauMobile.DesktopUI.Views
             installLabel.Children.Add(DesktopUi.Label("SingerManagement.Install"));
             install.Content = installLabel;
             install.Classes.Add("tonal");
-            Grid.SetColumn(install, 1);
-            toolbar.Children.Add(install);
+            TextBlock uninstallStatus = new() { IsVisible = false, VerticalAlignment = VerticalAlignment.Center, TextWrapping = Avalonia.Media.TextWrapping.Wrap };
+            DesktopUi.Paint(uninstallStatus, TextBlock.ForegroundProperty, "Sem.Color.Success");
+            StackPanel actions = new() { Orientation = Orientation.Horizontal, Spacing = 12, VerticalAlignment = VerticalAlignment.Center, Children = { uninstallStatus, install } };
+            Grid.SetColumn(actions, 1);
+            toolbar.Children.Add(actions);
             root.Children.Add(toolbar);
             Grid columns = new() { ColumnDefinitions = new ColumnDefinitions("260,*"), ColumnSpacing = 20 };
             columns.SizeChanged += (_, e) => columns.ColumnDefinitions[0].Width = new GridLength(e.NewSize.Width < 700 ? 180 : 260);
@@ -44,9 +48,20 @@ namespace OpenUtauMobile.DesktopUI.Views
                 USinger? selected = list.SelectedItem as USinger;
                 if (selected == selectedSinger) return;
                 selectedSinger = selected;
+                if (detailModel != null) detailModel.SingerUninstalled -= OnSingerUninstalled;
                 detailModel?.Dispose();
                 detailModel = selected == null ? null : new SingerDetailViewModel(main, selected);
+                if (detailModel != null) detailModel.SingerUninstalled += OnSingerUninstalled;
                 details.Content = detailModel == null ? null : new DesktopSingerDetailPage(detailModel);
+            }
+            void OnSingerUninstalled(USinger singer)
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    uninstallStatus.Text = string.Format(OpenUtauMobile.Helpers.L.S("SingerDetail.UninstallSucceeded"), singer.LocalizedName);
+                    uninstallStatus.IsVisible = true;
+                    singers.Singers.Remove(singer);
+                });
             }
             void Refresh()
             {
@@ -60,7 +75,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             search.TextChanged += (_, _) => Refresh();
             NotifyCollectionChangedEventHandler changed = (_, _) => Refresh();
             AttachedToVisualTree += (_, _) => { singers.Singers.CollectionChanged += changed; Refresh(); };
-            DetachedFromVisualTree += (_, _) => { singers.Singers.CollectionChanged -= changed; detailModel?.Dispose(); detailModel = null; selectedSinger = null; details.Content = null; };
+            DetachedFromVisualTree += (_, _) => { singers.Singers.CollectionChanged -= changed; if (detailModel != null) detailModel.SingerUninstalled -= OnSingerUninstalled; detailModel?.Dispose(); detailModel = null; selectedSinger = null; details.Content = null; };
             list.SelectionChanged += (_, _) => { if (!refreshing) ShowDetail(); };
             columns.Children.Add(DesktopUi.Panel(list, false));
             Grid.SetColumn(details, 1); columns.Children.Add(details);

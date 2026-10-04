@@ -24,7 +24,6 @@ public sealed class PhonemizerPickerViewModel : PopupViewModelBase, IDisposable
     public bool AllowTrackDefault { get; }
     public bool HasNoFactories => Groups.Count == 0;
     public string TrackDefaultLabel { get; }
-    public string CurrentLabel { get; }
     public ReactiveCommand<Unit, Unit> UseTrackDefaultCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
 
@@ -34,7 +33,6 @@ public sealed class PhonemizerPickerViewModel : PopupViewModelBase, IDisposable
     {
         AllowTrackDefault = request.AllowTrackDefault;
         TrackDefaultLabel = request.TrackDefaultLabel ?? L.S("NoteProperties.TrackDefault");
-        CurrentLabel = request.CurrentName == null ? string.Empty : NotePhonemizerResolver.Display(request.CurrentName, TrackDefaultLabel);
         CancelCommand = ReactiveCommand.Create(RequestBack);
         UseTrackDefaultCommand = ReactiveCommand.Create(() =>
         {
@@ -56,7 +54,7 @@ public sealed class PhonemizerPickerViewModel : PopupViewModelBase, IDisposable
             foreach (PhonemizerFactory factory in group.Key.OrderBy(f => f.name))
                 PhonemizerFactories.Add(new(factory, factory.ToString()));
         }).DisposeWith(subscriptions);
-        // 只显示当前选择；列表选中保持为空，避免初始绑定关闭弹窗。
+        // 列表选中保持为空，避免初始绑定关闭弹窗。
         this.WhenAnyValue(x => x.SelectedFactoryPair).Where(pair => pair.HasValue).Subscribe(pair =>
             RaiseClose(new PhonemizerPickerResult(pair!.Value.Key))).DisposeWith(subscriptions);
     }

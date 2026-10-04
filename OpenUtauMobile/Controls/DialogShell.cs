@@ -174,6 +174,7 @@ public class DialogActionRow : Panel
 public class DialogActionRows : StackPanel
 {
     private readonly List<Control> visibleRows = [];
+    private bool horizontalLayout;
 
     protected override Size MeasureOverride(Size availableSize)
     {
@@ -188,7 +189,9 @@ public class DialogActionRows : StackPanel
             {
                 continue;
             }
-            child.Measure(horizontal ? Size.Infinity : new Size(availableSize.Width, double.PositiveInfinity));
+            child.Measure(horizontal && double.IsPositiveInfinity(availableSize.Width)
+                ? Size.Infinity
+                : new Size(availableSize.Width, double.PositiveInfinity));
             // 动态操作行外面可能还有 ContentPresenter；空行不占用行间隔。
             if (child.DesiredSize.Height <= 0)
             {
@@ -217,12 +220,35 @@ public class DialogActionRows : StackPanel
                 height += child.DesiredSize.Height;
             }
         }
+        horizontalLayout = horizontal && (double.IsPositiveInfinity(availableSize.Width) || width <= availableSize.Width);
+        if (horizontal && !horizontalLayout)
+        {
+            width = 0;
+            height = 0;
+            foreach (Control child in visibleRows)
+            {
+                child.Measure(new Size(availableSize.Width, double.PositiveInfinity));
+                width = Math.Max(width, child.DesiredSize.Width);
+                height += child.DesiredSize.Height;
+            }
+            height += Spacing * Math.Max(0, visibleRows.Count - 1);
+        }
         return new Size(width, height);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
-        if (Orientation == Orientation.Horizontal)
+        if (horizontalLayout)
+        {
+            double requiredWidth = visibleRows.Count > 1 ? Spacing * (visibleRows.Count - 1) : 0;
+            foreach (Control child in visibleRows) requiredWidth += child.DesiredSize.Width;
+            if (requiredWidth > finalSize.Width)
+            {
+                horizontalLayout = false;
+                foreach (Control child in visibleRows) child.Measure(new Size(finalSize.Width, double.PositiveInfinity));
+            }
+        }
+        if (horizontalLayout)
         {
             double x = 0;
             foreach (Control child in visibleRows)
@@ -235,6 +261,10 @@ public class DialogActionRows : StackPanel
         double y = 0;
         foreach (Control child in visibleRows)
         {
+            if (child.DesiredSize.Width > finalSize.Width)
+            {
+                child.Measure(new Size(finalSize.Width, double.PositiveInfinity));
+            }
             child.Arrange(new Rect(0, y, finalSize.Width, child.DesiredSize.Height));
             y += child.DesiredSize.Height + Spacing;
         }

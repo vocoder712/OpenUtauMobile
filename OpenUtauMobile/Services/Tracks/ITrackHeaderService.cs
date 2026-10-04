@@ -6,7 +6,7 @@ namespace OpenUtauMobile.Services.Tracks;
 
 public interface ITrackHeaderService
 {
-    Task<USinger?> PickSingerAsync();
+    Task<USinger?> PickSingerAsync(USinger? currentSinger = null);
     Task<Phonemizer?> PickPhonemizerAsync();
     Task<RendererSettingsSelection?> PickRendererAsync(UProject project, UTrack track);
     Task<string?> PickTrackNameAsync(string currentName);

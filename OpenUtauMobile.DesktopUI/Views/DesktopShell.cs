@@ -40,7 +40,6 @@ namespace OpenUtauMobile.DesktopUI.Views
         private readonly Menu _menu = new();
         private readonly DesktopStatusBar _status = new();
         private readonly Action<string, double> _showStatus;
-        private readonly Action<string> _showHint;
         private bool _fileAction;
         private IDisposable? _chromeSubscription;
         private IDisposable? _titleSubscription;
@@ -54,8 +53,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             _main = main;
             _status.MessageVisibilityChanged += UpdateStatusVisibility;
             DesktopDensity.Apply(this);
-            _showStatus = _status.ShowMessage; _showHint = _ => { };
-            _pages = new DesktopPageLocator(main, layout, () => TopLevel.GetTopLevel(this) as Window, _showStatus, _showHint);
+            _showStatus = _status.ShowMessage;
+            _pages = new DesktopPageLocator(main, layout, () => TopLevel.GetTopLevel(this) as Window, _showStatus);
             _pages.WorkspaceChanged += OnWorkspaceChanged;
             Styles.Add(new StyleInclude(new Uri("avares://OpenUtauMobile.DesktopUI/")) { Source = new Uri("avares://OpenUtauMobile.DesktopUI/Views/DesktopStyles.axaml") });
             DesktopUi.Paint(this, BackgroundProperty, "Sem.Color.Surface");
@@ -159,7 +158,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             MenuItem recent = Menu("Home.Recent.Title");
             MenuItem templates = Menu("Desktop.Templates");
             MenuItem recovery = Item("Home.Recovery.OpenAction", () => OpenAsync(new(Preferences.Default.RecoveryPath, ProjectOpenKind.ExternalCopy)));
-            MenuItem file = Menu("Desktop.File", Item("Home.Action.New", NewProjectAsync, gesture: Gesture(Key.N)), Item("Home.Action.Open", PickProjectAsync, gesture: Gesture(Key.O)), recent, templates, recovery,
+            MenuItem file = Menu("Common.File", Item("Home.Action.New", NewProjectAsync, gesture: Gesture(Key.N)), Item("Home.Action.Open", PickProjectAsync, gesture: Gesture(Key.O)), recent, templates, recovery,
                 Item("Editor.Save", () => SaveAsync(false), () => HasEditor, Gesture(Key.S)), Item("EditorMore.SaveAs", () => SaveAsync(true), () => HasEditor, Gesture(Key.S, true)),
                 Item("EditorMore.ImportAudio", () => EditorAction(EditorMoreAction.ImportAudio), () => HasEditor), Item("EditorMore.ImportTrack", () => EditorAction(EditorMoreAction.ImportTrack), () => HasEditor),
                 Item("EditorMore.ExportAudio", () => EditorAction(EditorMoreAction.ExportAudio), () => HasEditor), Item("Desktop.CloseProject", CloseProjectAsync, () => HasEditor, Gesture(Key.W)));
@@ -174,7 +173,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                 recovery.IsVisible = !string.IsNullOrWhiteSpace(Preferences.Default.RecoveryPath) && File.Exists(Preferences.Default.RecoveryPath);
             };
             MenuItem batchEdits = DesktopBatchEditMenu.Create(() => _main.ActiveEditor?.PianoRollViewModel, () => Ready);
-            MenuItem edit = Menu("Desktop.Edit", Item("Editor.Undo", () => _main.ActiveEditor?.UndoCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.UndoCommand), Gesture(Key.Z)),
+            MenuItem edit = Menu("Common.Edit", Item("Editor.Undo", () => _main.ActiveEditor?.UndoCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.UndoCommand), Gesture(Key.Z)),
                 Item("Editor.Redo", () => _main.ActiveEditor?.RedoCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.RedoCommand), Gesture(OperatingSystem.IsMacOS() ? Key.Z : Key.Y, OperatingSystem.IsMacOS())),
                 SelectionItem("Common.Cut", Key.X), SelectionItem("Common.Copy", Key.C), SelectionItem("Common.Paste", Key.V),
                 SelectionItem("Common.SelectAll", Key.A), SelectionItem("Common.Delete", Key.Delete),
@@ -194,7 +193,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                     PanelItem("Desktop.Arrangement", w => w.ToggleArrangement(), w => w.IsArrangementVisible),
                     PanelItem("Desktop.PianoRoll", w => w.TogglePianoRoll(), w => w.IsPianoRollVisible),
                     PanelItem("Desktop.Parameters", w => w.ToggleParameters(), w => w.IsParametersVisible),
-                    PanelItem("Desktop.Inspector", w => w.ToggleInspector(), w => w.IsInspectorVisible),
+                    PanelItem("Desktop.Inspector", w => w.ToggleInspector(), w => w.IsInspectorRequested),
                     Item("Mixer.Title", () => _pages.Workspace?.ToggleMixer(), () => HasEditor), Item("Desktop.ResetLayout", () => _pages.Workspace?.ResetLayout(), () => HasEditor)),
                 Menu("Desktop.Project", Item("TrackAdder.AddTrack", () => _main.ActiveEditor?.AddTrackCommand.Execute().Subscribe(), () => HasEditor),
                     Item("EditorMore.SaveAsTemplate", () => EditorAction(EditorMoreAction.SaveAsTemplate), () => HasEditor)),

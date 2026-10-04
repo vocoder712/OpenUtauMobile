@@ -67,7 +67,7 @@ namespace OpenUtauMobile.DesktopUI.Services
             catch { _release?.Invoke(); throw; }
             _nativeAvailable = _get != null && _warp != null;
             _cursor = control.Cursor;
-            control.SetCurrentValue(InputElement.CursorProperty, new Cursor(StandardCursorType.None));
+            if (_nativeAvailable) control.SetCurrentValue(InputElement.CursorProperty, new Cursor(StandardCursorType.None));
         }
 
         public Vector Move(Point position)
@@ -90,6 +90,7 @@ namespace OpenUtauMobile.DesktopUI.Services
                 {
                     Log.Debug(ex, "光标复位失败，继续使用捕获拖动");
                     _nativeAvailable = false;
+                    _control.SetCurrentValue(InputElement.CursorProperty, _cursor);
                 }
             }
             return captured;

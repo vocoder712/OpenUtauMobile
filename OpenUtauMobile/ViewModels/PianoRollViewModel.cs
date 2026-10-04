@@ -380,6 +380,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     #region 内部字段
     private readonly CompositeDisposable _disposables = new();
     private readonly ViewportMotionController _panMotion = new();
+    private bool _hasSkippedFirstPianoRollEditModeChange;
 
     private double _noteAreaWidth;
     private double _noteAreaHeight;
@@ -916,6 +917,23 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             })
             .DisposeWith(_disposables);
 
+        this.WhenAnyValue(x => x.PhonemePanelMode)
+            .Skip(1)
+            .Subscribe(mode =>
+            {
+                if (UseDesktopMouseInput) return;
+                string? key = mode switch
+                {
+                    PhonemePanelMode.PhonemeSimple => "PhonemePanel.Toast.Simple",
+                    PhonemePanelMode.PhonemeAdvanced => "PhonemePanel.Toast.Advanced",
+                    PhonemePanelMode.ParameterDraw => "PhonemePanel.Toast.Draw",
+                    PhonemePanelMode.ParameterErase => "PhonemePanel.Toast.Erase",
+                    _ => null,
+                };
+                if (key != null) ToastService.Enqueue(L.S(key));
+            })
+            .DisposeWith(_disposables);
+
         // 参数选择变更监听
         this.WhenAnyValue(x => x.PrimaryExpressionKey, x => x.SecondaryExpressionKey)
             .Subscribe(_ =>
@@ -949,7 +967,23 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 RebuildPianoRollContextActions();
                 RequestInvalidateVisual?.Invoke();
                 EditingTip = string.Empty;
-
+                if (UseDesktopMouseInput) return;
+                if (!_hasSkippedFirstPianoRollEditModeChange)
+                {
+                    _hasSkippedFirstPianoRollEditModeChange = true;
+                    return;
+                }
+                string? key = EditMode switch
+                {
+                    PianoRollEditMode.Vibrato => "PianoRoll.Toast.Vibrato",
+                    PianoRollEditMode.PitchPen => IsPitchEraserMode ? "PianoRoll.Toast.PitchEraser" : "PianoRoll.Toast.PitchPen",
+                    PianoRollEditMode.Anchor => "PianoRoll.Toast.AnchorEdit",
+                    PianoRollEditMode.Hand => "PianoRoll.Toast.DragMode",
+                    PianoRollEditMode.MultiSelect => "PianoRoll.Toast.MultiSelectMode",
+                    PianoRollEditMode.Note => "PianoRoll.Toast.NoteMode",
+                    _ => null,
+                };
+                if (key != null) ToastService.Enqueue(L.S(key));
             })
             .DisposeWith(_disposables);
 
@@ -1911,7 +1945,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 // 开启放大镜
                 RequestMagnifierOpen?.Invoke(point);
 
-                DocManager.Inst.StartUndoGroup();
+                // 连续笔画只在结束时校验工程；曲线命令仍即时更新画布。
+                DocManager.Inst.StartUndoGroup(deferValidate: true);
                 RequestInvalidateVisual?.Invoke();
                 break;
             case PianoRollEditMode.Anchor:
@@ -3003,6 +3038,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         EditingTip = string.Empty;
         IsSelecting = false;
         ReplaceSelectedNotes(notes);
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Selected"), SelectedNotes.Count));
     }
 
     public void SelectAllNotes()
@@ -3014,6 +3050,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         }
 
         ReplaceSelectedNotes(EditingVoicePart.notes);
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.AllSelected"), SelectedNotes.Count));
     }
 
     private void ReplaceSelectedNotes(IEnumerable<UNote> notes)
@@ -3066,6 +3103,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         finally { DocManager.Inst.EndUndoGroup(); }
 
         SelectedNotes.Clear();
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Cut"), selected.Length));
     }
 
     private ContextActionItem CreateSplitNotesAction()
@@ -3204,6 +3242,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         DocManager.Inst.EndUndoGroup();
 
         ReplaceSelectedNotes(notes);
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Pasted"), notes.Count));
     }
 
     private void TogglePitchEraser()

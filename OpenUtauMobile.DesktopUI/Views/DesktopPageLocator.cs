@@ -20,7 +20,7 @@ using OpenUtauMobile.Views;
 namespace OpenUtauMobile.DesktopUI.Views
 {
     internal sealed class DesktopPageLocator(MainViewModel main, DesktopLayoutStore layout, Func<Window?> owner,
-        Action<string, double> showMessage, Action<string> setHint) : IDataTemplate, IDisposable, IDesktopWindowContext
+        Action<string, double> showMessage) : IDataTemplate, IDisposable, IDesktopWindowContext
     {
         private EditorViewModel? _editor;
         private Window? _utility;
@@ -44,12 +44,6 @@ namespace OpenUtauMobile.DesktopUI.Views
             if (!Dispatcher.UIThread.CheckAccess()) { Dispatcher.UIThread.Post(() => ShowMessage(message, durationMilliseconds)); return; }
             if (_disposed) return;
             showMessage(message, durationMilliseconds);
-        }
-        public void SetHint(string hint)
-        {
-            if (!Dispatcher.UIThread.CheckAccess()) { Dispatcher.UIThread.Post(() => SetHint(hint)); return; }
-            if (_disposed) return;
-            setHint(hint);
         }
         public void InitializeWindowProviders() => RegisterWindowProviders();
         public IControlTemplate? PopupTemplate { get; set; }

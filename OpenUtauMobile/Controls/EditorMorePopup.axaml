@@ -20,7 +20,7 @@
             <!-- Tab 区域 -->
             <Border Classes="DialogBodyBorder">
                 <TabControl>
-                    <TabItem Header="{DynamicResource EditorMore.EditTab}">
+                    <TabItem Header="{DynamicResource Common.Edit}">
                         <Border Padding="0,16,0,0">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button Classes="tonal" HorizontalAlignment="Stretch"
@@ -56,7 +56,7 @@
                         </Border>
                     </TabItem>
                     <!-- 导出 -->
-                    <TabItem Header="{DynamicResource EditorMore.FileTab}">
+                    <TabItem Header="{DynamicResource Common.File}">
                         <Border Padding="0,16,0,0">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <Button

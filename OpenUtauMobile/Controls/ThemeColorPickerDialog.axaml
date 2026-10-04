@@ -92,7 +92,7 @@
                         <Button
                             Grid.Column="1"
                             Classes="filled"
-                            Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
+                            Content="{DynamicResource Common.Apply}"
                             Command="{Binding ApplyHexCommand}" />
                     </Grid>
                     <TextBlock

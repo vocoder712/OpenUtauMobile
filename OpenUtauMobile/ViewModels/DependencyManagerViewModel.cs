@@ -29,6 +29,7 @@ public class DependencyManagerViewModel : NavigateViewModelBase, IDisposable
     private ObservableCollection<DependencyItemViewModel>? _observedAvailable;
     private ObservableCollection<InstalledDependencyViewModel>? _observedInstalled;
     private bool _disposed;
+    private bool _packageRefreshScheduled;
     [Reactive] public IReadOnlyList<DependencyItemViewModel> FilteredAvailablePackages { get; private set; } = [];
     [Reactive] public IReadOnlyList<InstalledDependencyViewModel> FilteredInstalledPackages { get; private set; } = [];
     // ═══════════════════════════════════════════════════
@@ -114,7 +115,16 @@ public class DependencyManagerViewModel : NavigateViewModelBase, IDisposable
         _ = LoadAvailablePackagesAsync();
 
     }
-    private void OnPackagesChanged(object? sender, NotifyCollectionChangedEventArgs e) => ApplyFilterAndSort();
+    private void OnPackagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (_disposed || _packageRefreshScheduled) return;
+        _packageRefreshScheduled = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _packageRefreshScheduled = false;
+            ApplyFilterAndSort();
+        });
+    }
     private void ApplyFilterAndSort()
     {
         if (_disposed) return;

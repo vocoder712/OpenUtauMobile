@@ -88,6 +88,15 @@
   <data name="Common.Delete" xml:space="preserve">
     <value>Удалить</value>
   </data>
+  <data name="Common.Apply" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="Common.File" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>Правка</value>
+  </data>
   <data name="Common.Copy" xml:space="preserve">
     <value>Копировать</value>
   </data>
@@ -144,9 +153,6 @@
   </data>
   <data name="Settings.Nav.AppearanceAndLanguage.Sub" xml:space="preserve">
     <value>Тема, язык, портрет банка…</value>
-  </data>
-  <data name="Settings.Edit.CategoryTitle" xml:space="preserve">
-    <value>Редактирование и поведение</value>
   </data>
   <data name="Settings.Edit.PianoKeyBehavior" xml:space="preserve">
     <value>Поведение клавиш пианино</value>
@@ -272,9 +278,6 @@
   <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
     <value>Всегда к 0</value>
   </data>
-  <data name="Settings.Render.CategoryTitle" xml:space="preserve">
-    <value>Рендеринг и производительность</value>
-  </data>
   <data name="Settings.Render.DiffSingerParams" xml:space="preserve">
     <value>Параметры инференса DiffSinger</value>
   </data>
@@ -353,9 +356,6 @@
   <data name="Settings.Audio.Device" xml:space="preserve">
     <value>Устройство {0}</value>
   </data>
-  <data name="Settings.File.CategoryTitle" xml:space="preserve">
-    <value>Файлы и хранилище</value>
-  </data>
   <data name="Settings.File.AdditionalSingerPath" xml:space="preserve">
     <value>Дополнительный путь к банкам</value>
   </data>
@@ -377,9 +377,6 @@
   <data name="Settings.File.Cache.Size" xml:space="preserve">
     <value>Текущий размер кэша</value>
   </data>
-  <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
-    <value>Внешний вид и язык</value>
-  </data>
   <data name="Settings.Appearance.Theme" xml:space="preserve">
     <value>Тема</value>
   </data>
@@ -394,9 +391,6 @@
   </data>
   <data name="Settings.Appearance.ThemeColor.Mode.Custom" xml:space="preserve">
     <value>Пользовательский</value>
-  </data>
-  <data name="Settings.Appearance.ThemeColor.ApplyHex" xml:space="preserve">
-    <value>Применить</value>
   </data>
   <data name="Settings.Appearance.ThemeColor.OpenPicker" xml:space="preserve">
     <value>Выбрать цвет</value>
@@ -451,9 +445,6 @@
   </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>Перейти в родительскую папку</value>
-  </data>
-  <data name="FilePicker.Close" xml:space="preserve">
-    <value>Закрыть</value>
   </data>
   <data name="FilePicker.SelectFolder" xml:space="preserve">
     <value>Выбрать эту папку</value>
@@ -641,20 +632,8 @@
   <data name="Editor.ProjectLoaded" xml:space="preserve">
     <value>Проект загружен</value>
   </data>
-  <data name="Editor.Action.Delete" xml:space="preserve">
-    <value>Удалить</value>
-  </data>
   <data name="Editor.Action.Rename" xml:space="preserve">
     <value>Переименовать</value>
-  </data>
-  <data name="Editor.Action.Copy" xml:space="preserve">
-    <value>Копировать</value>
-  </data>
-  <data name="Editor.Action.Cut" xml:space="preserve">
-    <value>Вырезать</value>
-  </data>
-  <data name="Editor.Action.Paste" xml:space="preserve">
-    <value>Вставить</value>
   </data>
   <data name="Editor.Action.Split" xml:space="preserve">
     <value>Разделить</value>
@@ -683,9 +662,6 @@
   <data name="Editor.Action.DeleteTempo" xml:space="preserve">
     <value>Удалить метку темпа</value>
   </data>
-  <data name="Editor.Toast.SyncTempo" xml:space="preserve">
-    <value>Синхронизация темпа ещё не реализована</value>
-  </data>
   <data name="PianoRoll.DragSelect" xml:space="preserve">
     <value>Перетаскивание/выбор</value>
   </data>
@@ -704,9 +680,6 @@
   <data name="PianoRoll.Vibrato" xml:space="preserve">
     <value>Вибрато</value>
   </data>
-  <data name="PianoRoll.Action.Delete" xml:space="preserve">
-    <value>Удалить</value>
-  </data>
   <data name="PianoRoll.Action.Properties" xml:space="preserve">
     <value>Свойства</value>
   </data>
@@ -715,18 +688,6 @@
   </data>
   <data name="PianoRoll.Action.SelectionEnd" xml:space="preserve">
     <value>Завершить выделение</value>
-  </data>
-  <data name="PianoRoll.Action.SelectAll" xml:space="preserve">
-    <value>Выбрать все</value>
-  </data>
-  <data name="PianoRoll.Action.Copy" xml:space="preserve">
-    <value>Копировать</value>
-  </data>
-  <data name="PianoRoll.Action.Cut" xml:space="preserve">
-    <value>Вырезать</value>
-  </data>
-  <data name="PianoRoll.Action.Paste" xml:space="preserve">
-    <value>Вставить</value>
   </data>
   <data name="PianoRoll.Action.Split" xml:space="preserve">
     <value>Разделить ноты</value>
@@ -805,9 +766,6 @@
   </data>
   <data name="PianoRoll.Redone" xml:space="preserve">
     <value>Повторено</value>
-  </data>
-  <data name="PianoRoll.PortraitLoadError" xml:space="preserve">
-    <value>Не удалось загрузить портрет</value>
   </data>
   <data name="SingerManagement.Title" xml:space="preserve">
     <value>Управление банками</value>
@@ -1001,9 +959,6 @@
   <data name="EditorMore.Title" xml:space="preserve">
     <value>Дополнительные действия</value>
   </data>
-  <data name="EditorMore.FileTab" xml:space="preserve">
-    <value>Файл</value>
-  </data>
   <data name="EditorMore.SaveAs" xml:space="preserve">
     <value>Сохранить как</value>
   </data>
@@ -1101,7 +1056,7 @@
     <value>Это последняя нота</value>
   </data>
   <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>Фонетика</value></data>
-  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>Вокалист не назначен или не загружен</value></data>
+  <data name="LyricEdit.NoSinger" xml:space="preserve"><value>Банк не назначен или не загружен</value></data>
   <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>Подходящих вариантов нет</value></data>
   <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>Помощник для текста</value></data>
   <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>Преобразует введённый текст в кану, романизацию или фонемы.</value></data>
@@ -1235,9 +1190,6 @@
   <data name="SingerSetup.Step2.Desc" xml:space="preserve">
     <value>Выберите правильную кодировку текстовых файлов. Проверьте отображение в предпросмотре</value>
   </data>
-  <data name="SingerSetup.Step2.TextEncoding" xml:space="preserve">
-    <value>Кодировка текстовых файлов</value>
-  </data>
   <data name="SingerSetup.Step2.Preview" xml:space="preserve">
     <value>Предпросмотр текстового файла:</value>
   </data>
@@ -1252,9 +1204,6 @@
   </data>
   <data name="SingerSetup.Step3.AutoDesc" xml:space="preserve">
     <value>Информация о банке определена автоматически. Подтвердите, чтобы продолжить</value>
-  </data>
-  <data name="SingerSetup.Step3.TypeLabel" xml:space="preserve">
-    <value>Тип банка</value>
   </data>
   <data name="SingerSetup.Step3.TypeHelp" xml:space="preserve">
     <value>Справка по типам банков</value>
@@ -1291,9 +1240,6 @@
   </data>
   <data name="SingerSetup.Step4.TextEncoding" xml:space="preserve">
     <value>Кодировка текстовых файлов: </value>
-  </data>
-  <data name="SingerSetup.Step4.SingerType" xml:space="preserve">
-    <value>Тип банка</value>
   </data>
   <data name="SingerSetup.Step4.Type" xml:space="preserve">
     <value>Тип: </value>
@@ -1351,9 +1297,6 @@
   </data>
   <data name="ProjectEdit.BpmRange" xml:space="preserve">
     <value>BPM должен быть в диапазоне от 10 до 1000</value>
-  </data>
-  <data name="Editor.SyncTempoTodo" xml:space="preserve">
-    <value>Синхронизация темпа недоступна, ещё не реализовано</value>
   </data>
   <data name="PianoRoll.PortraitLoadFailed" xml:space="preserve">
     <value>Не удалось загрузить портрет</value>
@@ -1700,11 +1643,7 @@
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>Применить только к выбранным нотам</value>
   </data>
-  <data name="BulkLyricEdit.Apply" xml:space="preserve">
-    <value>Применить</value>
-  </data>
   <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>Выбрано файлов: {0}</value></data>
-  <data name="ImportTracks.Next" xml:space="preserve"><value>Далее</value></data>
   <data name="ImportTracks.ImportCount" xml:space="preserve"><value>Импортировать дорожки: {0}</value></data>
   <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>Дорожек: {0}</value></data>
   <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>Вокальных частей: {0} · Аудиочастей: {1}</value></data>
@@ -1734,7 +1673,6 @@
   <data name="VoiceMapping.Hint" xml:space="preserve"><value>Сопоставьте исходные тембры с текущим банком. Пропуск сохраняет импортированные дорожки.</value></data>
   <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>Сопоставьте кривые вокальных режимов с тембрами DiffSinger. По умолчанию преобразование пропускается; существующие кривые сохраняются.</value></data>
   <data name="VoiceMapping.Default" xml:space="preserve"><value>По умолчанию</value></data>
-  <data name="VoiceMapping.Skip" xml:space="preserve"><value>Пропустить</value></data>
   <data name="VoiceMapping.Apply" xml:space="preserve"><value>Применить</value></data>
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>На дорожке нет нот или тембров для сопоставления.</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>Сопоставление тембров</value></data>
@@ -1763,7 +1701,6 @@
   <data name="Mixer.ResetHint" xml:space="preserve"><value>Двойное нажатие восстанавливает значение по умолчанию</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Включить эффекты / обход (подсвечено — включены)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Включены</value></data>
-  <data name="EditorMore.EditTab" xml:space="preserve"><value>Правка</value></data>
   <data name="History.Edit" xml:space="preserve"><value>Редактирование</value></data>
   <data name="Mixer.MidFrequency" xml:space="preserve"><value>Центр средней полосы (Гц)</value></data>
   <data name="Mixer.Makeup" xml:space="preserve"><value>Выходное усиление (дБ)</value></data>
@@ -1776,7 +1713,6 @@
   <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Время с → / Пик эффекта дБ ↑</value></data>
   <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Спад импульса L/R за 4 с, только эффект. Не живой сигнал; хвост может быть длиннее окна.</value></data>
   <data name="Mixer.Preset" xml:space="preserve"><value>Пресет эффекта</value></data>
-  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>Применить</value></data>
   <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>Применить пресет эффекта</value></data>
   <data name="Mixer.PresetLibrary" xml:space="preserve"><value>Пресеты цепочки эффектов</value></data>
   <data name="Mixer.DefaultPreset" xml:space="preserve"><value>Применить стандартную цепочку</value></data>
@@ -1857,7 +1793,6 @@
   <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>Установите пакет GAME GGML (game-ggml-medium), содержащий ровно одну модель GGUF.</value></data>
   <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>Эта сборка не содержит совместимой библиотеки GAME GGML. Используйте сборку с поддержкой GGML или выберите ONNX.</value></data>
   <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}: {2}</value></data>
-  <data name="NoteExtraction.Installed" xml:space="preserve"><value>Установлено</value></data>
   <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>Отсутствует или неполный пакет</value></data>
   <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>Язык не поддерживается</value></data>
   <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe: установлено</value></data>
@@ -1876,7 +1811,6 @@
   <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>Извлечь: GGML</value></data>
   <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>Извлечение кривой высоты…</value></data>
   <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>Введите допустимые значения; радиус и число фрагментов должны быть целыми.</value></data>
-  <data name="NoteProperties.Apply" xml:space="preserve"><value>Применить</value></data>
   <data name="NoteProperties.Summary" xml:space="preserve"><value>Выбрано нот: {0}</value></data>
   <data name="NoteProperties.Hint" xml:space="preserve"><value>Применяются только изменённые поля. Пустые поля означают разные значения.</value></data>
   <data name="NoteProperties.Mixed" xml:space="preserve"><value>Разные значения</value></data>
@@ -2226,8 +2160,6 @@
   <data name="Desktop.ArrangementHint" xml:space="preserve"><value>Щелчок: выбрать · Ctrl + щелчок: переключить выделение · Shift + щелчок: расширить выделение · Перетаскивание пустого места: рамка · Двойной щелчок: создать / изменить · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
   <data name="Desktop.InputHint" xml:space="preserve"><value>Щелчок: выделение · Shift/Ctrl: дополнить выделение · Перетаскивание пустого места: рамка · Двойной щелчок: создать / изменить текст · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
   <data name="Desktop.Tools" xml:space="preserve"><value>Внешние инструменты</value></data>
-  <data name="Desktop.File" xml:space="preserve"><value>Файл</value></data>
-  <data name="Desktop.Edit" xml:space="preserve"><value>Правка</value></data>
   <data name="Desktop.View" xml:space="preserve"><value>Вид</value></data>
   <data name="Desktop.Project" xml:space="preserve"><value>Проект</value></data>
   <data name="Desktop.Transport" xml:space="preserve"><value>Транспорт</value></data>
@@ -2240,9 +2172,6 @@
   <data name="Desktop.Templates" xml:space="preserve"><value>Шаблоны</value></data>
   <data name="Desktop.NoTemplates" xml:space="preserve"><value>Здесь появятся сохранённые шаблоны.</value></data>
   <data name="Desktop.Search" xml:space="preserve"><value>Поиск</value></data>
-  <data name="Desktop.Refresh" xml:space="preserve"><value>Обновить</value></data>
-  <data name="Desktop.Install" xml:space="preserve"><value>Установить</value></data>
-  <data name="Desktop.Uninstall" xml:space="preserve"><value>Удалить</value></data>
   <data name="Desktop.InstallFile" xml:space="preserve"><value>Установить файл инструмента</value></data>
   <data name="Desktop.InstallFolder" xml:space="preserve"><value>Установить папку инструмента</value></data>
   <data name="Desktop.OpenFolder" xml:space="preserve"><value>Открыть папку</value></data>
@@ -2255,8 +2184,9 @@
   <data name="Desktop.ExperimentalWine" xml:space="preserve"><value>Экспериментально · требуется Wine</value></data>
   <data name="Desktop.NativeWavtoolUnavailable" xml:space="preserve"><value>Текущий движок пакетных скриптов не поддерживает нативные Unix wavtool</value></data>
   <data name="Desktop.ToolChangesQueued" xml:space="preserve"><value>В очереди. Закройте проект для применения изменений.</value></data>
-  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>Инструменты должны соответствовать ОС и архитектуре CPU. Установка не подтверждает работу. Соседние файлы также копируются.</value></data>
+  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>Инструменты должны соответствовать ОС и архитектуре CPU. Установка не подтверждает работу. При установке одного файла копируются только его YAML-манифест и moreconfig.txt для MoReSampler; для зависимостей установите папку.</value></data>
   <data name="Desktop.InvalidToolFolder" xml:space="preserve"><value>Выберите обычную папку вне каталога инструментов. Ссылки не поддерживаются.</value></data>
+  <data name="Desktop.InvalidToolFile" xml:space="preserve"><value>Выберите поддерживаемый исполняемый файл или скрипт инструмента.</value></data>
   <data name="Desktop.ReplaceTool" xml:space="preserve"><value>Заменить установленные файлы?</value></data>
   <data name="Desktop.Replace" xml:space="preserve"><value>Заменить</value></data>
   <data name="Desktop.ToolInUse" xml:space="preserve"><value>Инструмент используется проектом и не может быть удалён.</value></data>
@@ -2267,9 +2197,6 @@
   <data name="Desktop.NoTrack" xml:space="preserve"><value>Добавьте или выберите дорожку.</value></data>
   <data name="Desktop.NoPhoneme" xml:space="preserve"><value>Выберите ноты с фонемами.</value></data>
   <data name="Desktop.Color" xml:space="preserve"><value>Цвет дорожки</value></data>
-  <data name="Desktop.Singer" xml:space="preserve"><value>Банк</value></data>
-  <data name="Desktop.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
-  <data name="Desktop.Renderer" xml:space="preserve"><value>Рендерер</value></data>
   <data name="Desktop.UseDefault" xml:space="preserve"><value>Использовать по умолчанию</value></data>
   <data name="Desktop.Alias" xml:space="preserve"><value>Алиас</value></data>
   <data name="Desktop.Offset" xml:space="preserve"><value>Смещение (тики)</value></data>
@@ -2309,8 +2236,8 @@
   </data>
   <data name="TrackSettings.Title" xml:space="preserve"><value>Настройки дорожки</value></data>
   <data name="TrackSettings.HoldHint" xml:space="preserve"><value>Нажмите и удерживайте название или фон дорожки, чтобы открыть настройки</value></data>
-  <data name="TrackSettings.Singer" xml:space="preserve"><value>Голос</value></data>
-  <data name="TrackSettings.ChooseSinger" xml:space="preserve"><value>Выбрать голос</value></data>
+  <data name="TrackSettings.Singer" xml:space="preserve"><value>Банк</value></data>
+  <data name="TrackSettings.ChooseSinger" xml:space="preserve"><value>Выбрать банк</value></data>
   <data name="TrackSettings.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
   <data name="TrackSettings.ChoosePhonemizer" xml:space="preserve"><value>Выбрать фонемайзер</value></data>
   <data name="TrackSettings.Renderer" xml:space="preserve"><value>Рендерер</value></data>
@@ -2318,19 +2245,19 @@
   <data name="TrackSettings.Wavtool" xml:space="preserve"><value>Wavtool</value></data>
   <data name="TrackSettings.Expressions" xml:space="preserve"><value>Значения выражений…</value></data>
   <data name="TrackSettings.Done" xml:space="preserve"><value>Готово</value></data>
-  <data name="TrackSettings.Apply" xml:space="preserve"><value>Применить</value></data>
-  <data name="TrackSettings.NoSinger" xml:space="preserve"><value>Голос не выбран</value></data>
-  <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>Для этого голоса нет поддерживаемых рендереров.</value></data>
-  <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>Выберите голос для настройки рендеринга.</value></data>
+  <data name="TrackSettings.NoSinger" xml:space="preserve"><value>Банк не выбран</value></data>
+  <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>Для этого банка нет поддерживаемых рендереров.</value></data>
+  <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>Выберите банк для настройки рендеринга.</value></data>
   <data name="TrackSettings.NoCompatibleTools" xml:space="preserve"><value>Нет совместимой пары ресемплера и wavtool.</value></data>
   <data name="TrackSettings.Error.Stale" xml:space="preserve"><value>Дорожка изменилась, пока были открыты настройки. Закройте и откройте настройки снова.</value></data>
   <data name="TrackSettings.Error.Busy" xml:space="preserve"><value>Выполняется другое изменение. Завершите его перед применением настроек дорожки.</value></data>
-  <data name="TrackSettings.Error.MissingSinger" xml:space="preserve"><value>Выберите установленный голос перед изменением настроек рендеринга.</value></data>
-  <data name="TrackSettings.Error.SingerUnavailable" xml:space="preserve"><value>Выбранный голос больше недоступен. Выберите его снова.</value></data>
+  <data name="TrackSettings.Error.MissingSinger" xml:space="preserve"><value>Выберите установленный банк перед изменением настроек рендеринга.</value></data>
+  <data name="TrackSettings.Error.SingerUnavailable" xml:space="preserve"><value>Выбранный банк больше недоступен. Выберите его снова.</value></data>
   <data name="TrackSettings.Error.PhonemizerUnavailable" xml:space="preserve"><value>Выбранный фонемайзер больше недоступен. Выберите его снова.</value></data>
-  <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>Выберите рендерер, совместимый с этим голосом.</value></data>
+  <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>Выберите рендерер, совместимый с этим банком.</value></data>
   <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>Выберите совместимые ресемплер и wavtool.</value></data>
   <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>Не удалось применить настройки дорожки.</value></data>
   <data name="NoteProperties.PhonemizerUnavailable" xml:space="preserve"><value>Фонемайзер «{0}» недоступен.</value></data>
   <data name="Picker.Phonemizer.Empty" xml:space="preserve"><value>Нет доступных фонемайзеров.</value></data>
+  <data name="SingerManagement.NoResults" xml:space="preserve"><value>Нет банков, соответствующих запросу.</value></data>
 </root>

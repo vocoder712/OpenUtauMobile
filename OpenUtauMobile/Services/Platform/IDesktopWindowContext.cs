@@ -12,6 +12,5 @@ namespace OpenUtauMobile.Services.Platform
         bool IsModalOpen { get; }
         Task<object?> ShowPopupAsync(Control view, PopupViewModelBase model);
         void ShowMessage(string message, double durationMilliseconds);
-        void SetHint(string hint);
     }
 }

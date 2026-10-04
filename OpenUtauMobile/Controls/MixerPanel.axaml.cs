@@ -227,7 +227,7 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
 
     private bool _presetDialogOpen;
 
-    private void OnLoadEffectPreset(object? sender, RoutedEventArgs e)
+    private async void OnLoadEffectPreset(object? sender, RoutedEventArgs e)
     {
         if (_presetDialogOpen || sender is not Button { Tag: string effect } button || ViewModel.SelectedChannel?.Track == null) return;
         string[] names = effect switch
@@ -241,6 +241,19 @@ public partial class MixerPanel : UserControl, ICmdSubscriber
         UProject project = DocManager.Inst.Project;
         UTrack track = ViewModel.SelectedChannel.Track;
         _presetDialogOpen = true;
+        if (!Classes.Contains("DesktopMixer"))
+        {
+            try
+            {
+                OptionConfirmPopupViewModel picker = new(L.S("Mixer.LoadPreset"), string.Empty,
+                    names.Select(key => new[] { new OptionConfirmOption(L.S("Mixer.Preset." + key), key) }));
+                string? key = await PopupService.Show<string>(new MixerPresetPopup(), picker);
+                if (key != null && DocManager.Inst.Project == project && project.tracks.Contains(track) && ViewModel.SelectedChannel?.Track == track)
+                    ViewModel.ApplyEffectPreset(effect, key);
+            }
+            finally { _presetDialogOpen = false; }
+            return;
+        }
         MenuFlyout flyout = new();
         foreach (string key in names)
         {

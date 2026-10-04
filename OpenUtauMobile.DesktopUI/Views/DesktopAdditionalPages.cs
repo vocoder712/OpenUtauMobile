@@ -112,6 +112,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             states.Children.Add(_emptyState);
             _error = new TextBlock();
             _error.Bind(TextBlock.TextProperty, new Binding(nameof(model.ErrorMessage)));
+            DesktopUi.Paint(_error, TextBlock.ForegroundProperty, "Sem.Color.Error");
             states.Children.Add(_error);
             Grid.SetRow(states, 1);
             root.Children.Add(states);

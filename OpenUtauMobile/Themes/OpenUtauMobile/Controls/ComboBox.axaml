@@ -126,6 +126,7 @@
                       BorderThickness="{DynamicResource ComboBoxDropdownBorderThickness}"
                       Padding="{DynamicResource ComboBoxDropdownBorderPadding}"
                       HorizontalAlignment="Stretch"
+                      ClipToBounds="True"
                       CornerRadius="{DynamicResource OverlayCornerRadius}">
                 <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                               IsScrollChainingEnabled="False"

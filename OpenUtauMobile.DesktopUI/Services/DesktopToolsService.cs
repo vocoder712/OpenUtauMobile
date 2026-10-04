@@ -12,6 +12,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
+using Serilog;
 
 namespace OpenUtauMobile.DesktopUI.Services
 {
@@ -108,7 +109,7 @@ namespace OpenUtauMobile.DesktopUI.Services
             }
             return false;
         }
-        public async Task ApplyAsync(MainViewModel main, Func<Task> action, CancellationToken cancellation)
+        public async Task<bool> ApplyAsync(MainViewModel main, Func<CancellationToken, Task<bool>> action, CancellationToken cancellation)
         {
             await _gate.WaitAsync(cancellation);
             try
@@ -116,16 +117,19 @@ namespace OpenUtauMobile.DesktopUI.Services
                 Pending = main.ActiveEditor != null;
                 Changed?.Invoke();
                 while (main.ActiveEditor != null) await Task.Delay(200, cancellation);
-                await action();
+                cancellation.ThrowIfCancellationRequested();
+                bool changed = await action(cancellation);
+                if (!changed) return false;
                 // 不并行搜索两个列表，避免渲染器读到半更新的映射。
-                ToolsManager.Inst.Initialize();
-                Pending = false;
-                Changed?.Invoke();
+                await Task.Run(() => ToolsManager.Inst.Initialize());
+                return true;
             }
             finally { Pending = false; _gate.Release(); Changed?.Invoke(); }
         }
-        public static async Task InstallAsync(string source, DesktopToolKind kind, bool folder)
+        public static async Task<bool> InstallAsync(string source, DesktopToolKind kind, bool folder, CancellationToken cancellation)
         {
+            if (folder ? !Directory.Exists(source) : !File.Exists(source) || !IsToolFile(source))
+                throw new IOException(L.S(folder ? "Desktop.InvalidToolFolder" : "Desktop.InvalidToolFile"));
             string root = Path.GetFullPath(Folder(kind));
             Directory.CreateDirectory(root);
             string sourceRoot = Path.GetFullPath(folder ? source : Path.GetDirectoryName(source)!);
@@ -133,35 +137,130 @@ namespace OpenUtauMobile.DesktopUI.Services
             EnsureChild(root, destination, allowRoot: true);
             if (folder && (destination.Equals(sourceRoot, StringComparison.OrdinalIgnoreCase) || destination.StartsWith(sourceRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)))
                 throw new IOException(L.S("Desktop.InvalidToolFolder"));
-            // 单文件安装同时复制同目录的运行依赖，避免只复制 EXE 后缺少 DLL 或配置。
+            // 单文件安装只复制所选程序和引擎识别的旁置配置；完整依赖包请用目录安装。
             if ((File.GetAttributes(sourceRoot) & FileAttributes.ReparsePoint) != 0) throw new IOException(L.S("Desktop.InvalidToolFolder"));
-            string basename = Path.GetFileNameWithoutExtension(source);
-            string[] files = EnumeratePackageFiles(sourceRoot, folder).Where(file => folder || file == Path.GetFullPath(source)
-                || Path.GetExtension(file).ToLowerInvariant() is ".dll" or ".so" or ".dylib" or ".ini" or ".cfg" or ".conf" or ".config" or ".json" or ".toml"
-                || Path.GetFileNameWithoutExtension(file).Equals(basename, StringComparison.OrdinalIgnoreCase)
-                || basename.Equals("moresampler", StringComparison.OrdinalIgnoreCase) && Path.GetFileName(file) == "moreconfig.txt").ToArray();
-            List<string> collisions = [];
-            foreach (string file in files)
+            (string[] files, string[] collisions) = await Task.Run(() =>
             {
-                if ((File.GetAttributes(file) & FileAttributes.ReparsePoint) != 0) throw new IOException(L.S("Desktop.InvalidToolFolder"));
-                string target = Path.GetFullPath(Path.Combine(destination, Path.GetRelativePath(sourceRoot, file)));
-                EnsureChild(root, target);
-                if (File.Exists(target)) collisions.Add(target);
-            }
-            if (collisions.Count > 0)
+                cancellation.ThrowIfCancellationRequested();
+                StringComparison pathComparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                string sourcePath = Path.GetFullPath(source);
+                string basename = Path.GetFileNameWithoutExtension(source);
+                string manifestPath = Path.ChangeExtension(sourcePath, ".yaml");
+                string moreConfigPath = Path.Combine(sourceRoot, "moreconfig.txt");
+                string[] packageFiles = EnumeratePackageFiles(sourceRoot, folder, cancellation).Where(file => folder
+                    || Path.GetFullPath(file).Equals(sourcePath, pathComparison)
+                    || Path.GetFullPath(file).Equals(manifestPath, pathComparison)
+                    || basename.Equals("moresampler", StringComparison.OrdinalIgnoreCase) && Path.GetFullPath(file).Equals(moreConfigPath, pathComparison)).ToArray();
+                packageFiles = packageFiles.Where(file => !Path.GetFullPath(Path.Combine(destination, Path.GetRelativePath(sourceRoot, file)))
+                    .Equals(Path.GetFullPath(file), pathComparison)).ToArray();
+                List<string> existingFiles = [];
+                foreach (string file in packageFiles)
+                {
+                    cancellation.ThrowIfCancellationRequested();
+                    if ((File.GetAttributes(file) & FileAttributes.ReparsePoint) != 0) throw new IOException(L.S("Desktop.InvalidToolFolder"));
+                    string target = Path.GetFullPath(Path.Combine(destination, Path.GetRelativePath(sourceRoot, file)));
+                    EnsureChild(root, target);
+                    if (File.Exists(target)) existingFiles.Add(target);
+                }
+                return (packageFiles, existingFiles.ToArray());
+            }, cancellation);
+            if (files.Length == 0) return false;
+            if (collisions.Length > 0)
             {
                 string? choice = await OptionConfirmPopupService.ShowAsync(L.S("Desktop.ReplaceTool"), string.Join(Environment.NewLine, collisions),
                     new[] { new OptionConfirmOption(L.S("Common.Cancel"), "cancel", isDefault: true), new OptionConfirmOption(L.S("Desktop.Replace"), "replace", isDestructive: true) });
-                if (choice != "replace") return;
+                if (choice != "replace") return false;
             }
-            foreach (string file in files)
+            cancellation.ThrowIfCancellationRequested();
+            string stagingParent = Path.GetDirectoryName(root) ?? root;
+            string staging = Path.Combine(stagingParent, ".tool-install-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(staging);
+            try
             {
-                string target = Path.GetFullPath(Path.Combine(destination, Path.GetRelativePath(sourceRoot, file)));
-                EnsureChild(root, target);
-                if (file.Equals(target, StringComparison.OrdinalIgnoreCase)) continue;
-                Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-                File.Copy(file, target, true);
-                if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(target, File.GetUnixFileMode(file));
+                await Task.Run(() =>
+                {
+                    byte[] buffer = new byte[128 * 1024];
+                    foreach (string file in files)
+                    {
+                        cancellation.ThrowIfCancellationRequested();
+                        string staged = Path.Combine(staging, Path.GetRelativePath(sourceRoot, file));
+                        Directory.CreateDirectory(Path.GetDirectoryName(staged)!);
+                        using (FileStream input = new(file, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length, FileOptions.SequentialScan))
+                        using (FileStream output = new(staged, FileMode.CreateNew, FileAccess.Write, FileShare.None, buffer.Length, FileOptions.SequentialScan))
+                        {
+                            int read;
+                            while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+                                cancellation.ThrowIfCancellationRequested();
+                                output.Write(buffer, 0, read);
+                            }
+                        }
+                        if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(staged, File.GetUnixFileMode(file));
+                    }
+                }, cancellation);
+                cancellation.ThrowIfCancellationRequested();
+                await Task.Run(() =>
+                {
+                    foreach (string file in files)
+                    {
+                        cancellation.ThrowIfCancellationRequested();
+                        string target = Path.GetFullPath(Path.Combine(destination, Path.GetRelativePath(sourceRoot, file)));
+                        EnsureChild(root, target);
+                        if (Directory.Exists(target)) throw new IOException($"A directory already occupies the tool file path: {target}");
+                        if (File.Exists(target))
+                        {
+                            if (File.GetAttributes(target).HasFlag(FileAttributes.ReadOnly)) throw new UnauthorizedAccessException($"The tool file is read-only: {target}");
+                            using FileStream _ = File.Open(target, FileMode.Open, FileAccess.Write, FileShare.None);
+                        }
+                        Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                    }
+                    cancellation.ThrowIfCancellationRequested();
+
+                    List<(string target, string? backup)> published = [];
+                    try
+                    {
+                        foreach (string file in files)
+                        {
+                            string target = Path.GetFullPath(Path.Combine(destination, Path.GetRelativePath(sourceRoot, file)));
+                            StringComparison pathComparison = OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                            if (file.Equals(target, pathComparison)) continue;
+                            string staged = Path.Combine(staging, Path.GetRelativePath(sourceRoot, file));
+                            string? backup = null;
+                            if (File.Exists(target))
+                            {
+                                backup = Path.Combine(staging, ".previous", Path.GetRelativePath(destination, target));
+                                Directory.CreateDirectory(Path.GetDirectoryName(backup)!);
+                                File.Move(target, backup);
+                            }
+                            published.Add((target, backup));
+                            File.Move(staged, target, true);
+                        }
+                    }
+                    catch
+                    {
+                        for (int index = published.Count - 1; index >= 0; index--)
+                        {
+                            (string target, string? backup) = published[index];
+                            try
+                            {
+                                if (File.Exists(target)) File.Delete(target);
+                                if (backup != null && File.Exists(backup)) File.Move(backup, target);
+                            }
+                            catch (Exception rollbackError) when (rollbackError is IOException or UnauthorizedAccessException)
+                            {
+                                Log.Error(rollbackError, "Failed to restore tool file {Path} after an incomplete install", target);
+                            }
+                        }
+                        throw;
+                    }
+                });
+                return true;
+            }
+            finally
+            {
+                try { if (Directory.Exists(staging)) Directory.Delete(staging, true); }
+                catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+                { Log.Warning(exception, "Failed to remove staged tool package {Path}", staging); }
             }
         }
         public static void Uninstall(DesktopTool tool)
@@ -182,14 +281,15 @@ namespace OpenUtauMobile.DesktopUI.Services
             for (string? current = Path.GetDirectoryName(full); current != null && current.Length >= root.Length; current = Path.GetDirectoryName(current))
                 if (Directory.Exists(current) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) throw new IOException(L.S("Desktop.InvalidToolFolder"));
         }
-        private static IEnumerable<string> EnumeratePackageFiles(string root, bool recursive)
+        private static IEnumerable<string> EnumeratePackageFiles(string root, bool recursive, CancellationToken cancellation)
         {
             foreach (string entry in Directory.EnumerateFileSystemEntries(root))
             {
+                cancellation.ThrowIfCancellationRequested();
                 FileAttributes attributes = File.GetAttributes(entry);
                 if ((attributes & FileAttributes.ReparsePoint) != 0) throw new IOException(L.S("Desktop.InvalidToolFolder"));
                 if ((attributes & FileAttributes.Directory) == 0) yield return entry;
-                else if (recursive) foreach (string file in EnumeratePackageFiles(entry, true)) yield return file;
+                else if (recursive) foreach (string file in EnumeratePackageFiles(entry, true, cancellation)) yield return file;
             }
         }
     }

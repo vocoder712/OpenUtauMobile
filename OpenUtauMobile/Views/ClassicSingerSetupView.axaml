@@ -150,10 +150,6 @@
                         <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
                                 Padding="{x:Static foundation:LayoutTokens.InsetM}" Margin="0">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <TextBlock Text="{DynamicResource SingerSetup.Step2.TextEncoding}"
-                                           FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
-                                           FontWeight="SemiBold"
-                                           Foreground="{DynamicResource Sem.Color.OnSurface}" />
                                 <ComboBox ItemsSource="{Binding Encodings}"
                                           SelectedItem="{Binding TextEncoding}"
                                           Width="300"

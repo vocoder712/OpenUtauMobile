@@ -147,6 +147,15 @@
   <data name="Common.Delete" xml:space="preserve">
     <value>删除</value>
   </data>
+  <data name="Common.Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="Common.File" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
   <data name="Common.Copy" xml:space="preserve">
     <value>复制</value>
   </data>
@@ -203,9 +212,6 @@
   </data>
   <data name="Settings.Nav.AppearanceAndLanguage.Sub" xml:space="preserve">
     <value>主题、语言、立绘…</value>
-  </data>
-  <data name="Settings.Edit.CategoryTitle" xml:space="preserve">
-    <value>编辑与行为</value>
   </data>
   <data name="Settings.Edit.PianoKeyBehavior" xml:space="preserve">
     <value>钢琴键行为</value>
@@ -331,9 +337,6 @@
   <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
     <value>始终跳转到 0</value>
   </data>
-  <data name="Settings.Render.CategoryTitle" xml:space="preserve">
-    <value>渲染与性能</value>
-  </data>
   <data name="Settings.Render.DiffSingerParams" xml:space="preserve">
     <value>DiffSinger 推理参数</value>
   </data>
@@ -412,9 +415,6 @@
   <data name="Settings.Audio.Device" xml:space="preserve">
     <value>设备 {0}</value>
   </data>
-  <data name="Settings.File.CategoryTitle" xml:space="preserve">
-    <value>文件与存储</value>
-  </data>
   <data name="Settings.File.AdditionalSingerPath" xml:space="preserve">
     <value>额外歌手路径</value>
   </data>
@@ -435,9 +435,6 @@
   </data>
   <data name="Settings.File.Cache.Size" xml:space="preserve">
     <value>当前缓存大小</value>
-  </data>
-  <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
-    <value>外观与语言</value>
   </data>
   <data name="Settings.Appearance.Theme" xml:space="preserve">
     <value>主题</value>
@@ -465,9 +462,6 @@
   </data>
   <data name="Settings.Appearance.ThemeColor.Mode.Custom" xml:space="preserve">
     <value>自定义</value>
-  </data>
-  <data name="Settings.Appearance.ThemeColor.ApplyHex" xml:space="preserve">
-    <value>应用</value>
   </data>
   <data name="Settings.Appearance.ThemeColor.OpenPicker" xml:space="preserve">
     <value>取色器</value>
@@ -522,9 +516,6 @@
   </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>返回上级目录</value>
-  </data>
-  <data name="FilePicker.Close" xml:space="preserve">
-    <value>关闭</value>
   </data>
   <data name="FilePicker.SelectFolder" xml:space="preserve">
     <value>选择此文件夹</value>
@@ -718,20 +709,8 @@
   <data name="Editor.ProjectLoaded" xml:space="preserve">
     <value>项目加载完成</value>
   </data>
-  <data name="Editor.Action.Delete" xml:space="preserve">
-    <value>删除</value>
-  </data>
   <data name="Editor.Action.Rename" xml:space="preserve">
     <value>重命名</value>
-  </data>
-  <data name="Editor.Action.Copy" xml:space="preserve">
-    <value>复制</value>
-  </data>
-  <data name="Editor.Action.Cut" xml:space="preserve">
-    <value>剪切</value>
-  </data>
-  <data name="Editor.Action.Paste" xml:space="preserve">
-    <value>粘贴</value>
   </data>
   <data name="Editor.Action.Split" xml:space="preserve">
     <value>分割</value>
@@ -760,9 +739,6 @@
   <data name="Editor.Action.DeleteTempo" xml:space="preserve">
     <value>删除曲速标签</value>
   </data>
-  <data name="Editor.Toast.SyncTempo" xml:space="preserve">
-    <value>没有同步曲速，TODO</value>
-  </data>
   <data name="PianoRoll.DragSelect" xml:space="preserve">
     <value>拖拽/选择</value>
   </data>
@@ -781,9 +757,6 @@
   <data name="PianoRoll.Vibrato" xml:space="preserve">
     <value>颤音</value>
   </data>
-  <data name="PianoRoll.Action.Delete" xml:space="preserve">
-    <value>删除</value>
-  </data>
   <data name="PianoRoll.Action.Properties" xml:space="preserve">
     <value>属性</value>
   </data>
@@ -792,18 +765,6 @@
   </data>
   <data name="PianoRoll.Action.SelectionEnd" xml:space="preserve">
     <value>结束选区</value>
-  </data>
-  <data name="PianoRoll.Action.SelectAll" xml:space="preserve">
-    <value>全选</value>
-  </data>
-  <data name="PianoRoll.Action.Copy" xml:space="preserve">
-    <value>复制</value>
-  </data>
-  <data name="PianoRoll.Action.Cut" xml:space="preserve">
-    <value>剪切</value>
-  </data>
-  <data name="PianoRoll.Action.Paste" xml:space="preserve">
-    <value>粘贴</value>
   </data>
   <data name="PianoRoll.Action.Split" xml:space="preserve">
     <value>分割音符</value>
@@ -882,9 +843,6 @@
   </data>
   <data name="PianoRoll.Redone" xml:space="preserve">
     <value>已重做</value>
-  </data>
-  <data name="PianoRoll.PortraitLoadError" xml:space="preserve">
-    <value>无法加载立绘</value>
   </data>
   <data name="SingerManagement.Title" xml:space="preserve">
     <value>歌手管理</value>
@@ -1077,9 +1035,6 @@
   </data>
   <data name="EditorMore.Title" xml:space="preserve">
     <value>更多操作</value>
-  </data>
-  <data name="EditorMore.FileTab" xml:space="preserve">
-    <value>文件</value>
   </data>
   <data name="EditorMore.SaveAs" xml:space="preserve">
     <value>另存为</value>
@@ -1312,9 +1267,6 @@
   <data name="SingerSetup.Step2.Desc" xml:space="preserve">
     <value>选择文本文件的正确编码，预览内容以确保显示正确</value>
   </data>
-  <data name="SingerSetup.Step2.TextEncoding" xml:space="preserve">
-    <value>文本文件编码</value>
-  </data>
   <data name="SingerSetup.Step2.Preview" xml:space="preserve">
     <value>文本文件预览:</value>
   </data>
@@ -1329,9 +1281,6 @@
   </data>
   <data name="SingerSetup.Step3.AutoDesc" xml:space="preserve">
     <value>已自动检测到歌手信息，确认继续</value>
-  </data>
-  <data name="SingerSetup.Step3.TypeLabel" xml:space="preserve">
-    <value>歌手类型</value>
   </data>
   <data name="SingerSetup.Step3.TypeHelp" xml:space="preserve">
     <value>歌手类型说明</value>
@@ -1369,9 +1318,6 @@
   <data name="SingerSetup.Step4.TextEncoding" xml:space="preserve">
     <value>文本文件编码: </value>
   </data>
-  <data name="SingerSetup.Step4.SingerType" xml:space="preserve">
-    <value>歌手类型</value>
-  </data>
   <data name="SingerSetup.Step4.Type" xml:space="preserve">
     <value>类型: </value>
   </data>
@@ -1406,13 +1352,13 @@
     <value>文档管理器初始化中</value>
   </data>
   <data name="Splash.Phonemizer" xml:space="preserve">
-    <value>加载插件中</value>
+    <value>正在加载音素器插件</value>
   </data>
   <data name="Splash.ToolManager" xml:space="preserve">
     <value>工具管理器初始化中</value>
   </data>
   <data name="Splash.SingerManager" xml:space="preserve">
-    <value>歌手初始化中</value>
+    <value>正在初始化歌手管理器</value>
   </data>
   <data name="Splash.AudioBackend" xml:space="preserve">
     <value>音频后端初始化中</value>
@@ -1428,9 +1374,6 @@
   </data>
   <data name="ProjectEdit.BpmRange" xml:space="preserve">
     <value>BPM 须为 10 ~ 1000 之间的数值</value>
-  </data>
-  <data name="Editor.SyncTempoTodo" xml:space="preserve">
-    <value>没有同步曲速，TODO</value>
   </data>
   <data name="PianoRoll.PortraitLoadFailed" xml:space="preserve">
     <value>无法加载立绘</value>
@@ -1745,11 +1688,7 @@
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>仅应用到选中的音符</value>
   </data>
-  <data name="BulkLyricEdit.Apply" xml:space="preserve">
-    <value>应用</value>
-  </data>
   <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>已选择 {0} 个文件</value></data>
-  <data name="ImportTracks.Next" xml:space="preserve"><value>下一步</value></data>
   <data name="ImportTracks.ImportCount" xml:space="preserve"><value>导入 {0} 条轨道</value></data>
   <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>{0} 条轨道</value></data>
   <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>{0} 个演唱片段 · {1} 个音频片段</value></data>
@@ -1779,7 +1718,6 @@
   <data name="VoiceMapping.Hint" xml:space="preserve"><value>将原音色映射到当前歌手的音色。跳过仅取消本次映射，已导入的轨道将保留。</value></data>
   <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>将导入的人声模式曲线映射到 DiffSinger 音色。选择默认表示不转换该模式；已有目标曲线保持不变。</value></data>
   <data name="VoiceMapping.Default" xml:space="preserve"><value>默认</value></data>
-  <data name="VoiceMapping.Skip" xml:space="preserve"><value>跳过</value></data>
   <data name="VoiceMapping.Apply" xml:space="preserve"><value>应用映射</value></data>
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>该轨道没有可映射的音符或音色。</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>音色映射</value></data>
@@ -1808,7 +1746,6 @@
   <data name="Mixer.ResetHint" xml:space="preserve"><value>双击滑块恢复默认值</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>启用效果器 / 旁路（亮起时启用）</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>已启用</value></data>
-  <data name="EditorMore.EditTab" xml:space="preserve"><value>编辑</value></data>
   <data name="History.Edit" xml:space="preserve"><value>编辑操作</value></data>
   <data name="Mixer.MidFrequency" xml:space="preserve"><value>中频中心频率 (Hz)</value></data>
   <data name="Mixer.Makeup" xml:space="preserve"><value>补偿增益 (dB)</value></data>
@@ -1821,7 +1758,6 @@
   <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · 时间 s → / 湿声峰值 dB ↑</value></data>
   <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>左右声道单位脉冲衰减预览（4 秒），不含干声，非实时电平；长尾可能超出窗口。</value></data>
   <data name="Mixer.Preset" xml:space="preserve"><value>效果器预设</value></data>
-  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>应用</value></data>
   <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>应用效果器预设</value></data>
   <data name="Mixer.PresetLibrary" xml:space="preserve"><value>整链用户预设</value></data>
   <data name="Mixer.DefaultPreset" xml:space="preserve"><value>应用默认整链</value></data>
@@ -1902,7 +1838,6 @@
   <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>请安装 GAME GGML 模型包（game-ggml-medium），包中应恰有一个 GGUF 模型。</value></data>
   <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>此应用构建未包含可用的 GAME GGML 运行库。请使用支持 GGML 的安装包，或选择 ONNX。</value></data>
   <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}：{2}</value></data>
-  <data name="NoteExtraction.Installed" xml:space="preserve"><value>已安装</value></data>
   <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>未安装或文件不完整</value></data>
   <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>不支持所选语言</value></data>
   <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe：已安装</value></data>
@@ -1921,7 +1856,6 @@
   <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>GGML 提取</value></data>
   <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>正在提取音高曲线…</value></data>
   <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>请填写有效数值；检测半径与片段数需为整数。</value></data>
-  <data name="NoteProperties.Apply" xml:space="preserve"><value>应用</value></data>
   <data name="NoteProperties.Summary" xml:space="preserve"><value>已选择 {0} 个音符</value></data>
   <data name="NoteProperties.Hint" xml:space="preserve"><value>只应用修改过的字段，空白表示多个不同值。</value></data>
   <data name="NoteProperties.Mixed" xml:space="preserve"><value>多个不同值</value></data>
@@ -2271,8 +2205,6 @@
   <data name="Desktop.ArrangementHint" xml:space="preserve"><value>单击：选择 · Ctrl＋单击：切换选择 · Shift＋单击：扩展选择 · 空白处拖动：框选 · 双击：创建/编辑 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
   <data name="Desktop.InputHint" xml:space="preserve"><value>单击：选择 · Shift/Ctrl：扩展选择 · 空白处拖动：框选 · 双击：创建/编辑歌词 · 中键拖动：平移 · Ctrl/Cmd + 滚轮：缩放</value></data>
   <data name="Desktop.Tools" xml:space="preserve"><value>外部工具</value></data>
-  <data name="Desktop.File" xml:space="preserve"><value>文件</value></data>
-  <data name="Desktop.Edit" xml:space="preserve"><value>编辑</value></data>
   <data name="Desktop.View" xml:space="preserve"><value>视图</value></data>
   <data name="Desktop.Project" xml:space="preserve"><value>工程</value></data>
   <data name="Desktop.Transport" xml:space="preserve"><value>播放控制</value></data>
@@ -2285,9 +2217,6 @@
   <data name="Desktop.Templates" xml:space="preserve"><value>模板</value></data>
   <data name="Desktop.NoTemplates" xml:space="preserve"><value>已保存的工程模板将显示在此处。</value></data>
   <data name="Desktop.Search" xml:space="preserve"><value>搜索</value></data>
-  <data name="Desktop.Refresh" xml:space="preserve"><value>刷新</value></data>
-  <data name="Desktop.Install" xml:space="preserve"><value>安装</value></data>
-  <data name="Desktop.Uninstall" xml:space="preserve"><value>卸载</value></data>
   <data name="Desktop.InstallFile" xml:space="preserve"><value>安装工具文件</value></data>
   <data name="Desktop.InstallFolder" xml:space="preserve"><value>安装工具目录</value></data>
   <data name="Desktop.OpenFolder" xml:space="preserve"><value>打开目录</value></data>
@@ -2300,8 +2229,9 @@
   <data name="Desktop.ExperimentalWine" xml:space="preserve"><value>实验性 · 需要 Wine</value></data>
   <data name="Desktop.NativeWavtoolUnavailable" xml:space="preserve"><value>当前批处理引擎不支持原生 Unix 拼接工具</value></data>
   <data name="Desktop.ToolChangesQueued" xml:space="preserve"><value>已排队。关闭工程后将安全应用工具更改。</value></data>
-  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>工具必须匹配操作系统和 CPU 架构。安装文件不代表合成已验证；文件安装会同时复制同目录的依赖文件。</value></data>
+  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>工具必须匹配操作系统和 CPU 架构。安装不代表合成已验证。单文件安装仅复制程序、其 YAML 清单，以及 MoReSampler 的 moreconfig.txt；安装依赖包请选文件夹。</value></data>
   <data name="Desktop.InvalidToolFolder" xml:space="preserve"><value>请选择托管工具目录之外的普通工具目录；不支持链接目录。</value></data>
+  <data name="Desktop.InvalidToolFile" xml:space="preserve"><value>请选择受支持的工具可执行文件或脚本。</value></data>
   <data name="Desktop.ReplaceTool" xml:space="preserve"><value>替换已安装的工具文件？</value></data>
   <data name="Desktop.Replace" xml:space="preserve"><value>替换</value></data>
   <data name="Desktop.ToolInUse" xml:space="preserve"><value>此工具正在被当前工程使用，无法卸载。</value></data>
@@ -2312,9 +2242,6 @@
   <data name="Desktop.NoTrack" xml:space="preserve"><value>添加或选择轨道。</value></data>
   <data name="Desktop.NoPhoneme" xml:space="preserve"><value>选择已生成音素的音符。</value></data>
   <data name="Desktop.Color" xml:space="preserve"><value>轨道颜色</value></data>
-  <data name="Desktop.Singer" xml:space="preserve"><value>歌手</value></data>
-  <data name="Desktop.Phonemizer" xml:space="preserve"><value>音素器</value></data>
-  <data name="Desktop.Renderer" xml:space="preserve"><value>渲染器</value></data>
   <data name="Desktop.UseDefault" xml:space="preserve"><value>设为默认</value></data>
   <data name="Desktop.Alias" xml:space="preserve"><value>音素别名</value></data>
   <data name="Desktop.Offset" xml:space="preserve"><value>偏移（tick）</value></data>
@@ -2363,7 +2290,6 @@
   <data name="TrackSettings.Wavtool" xml:space="preserve"><value>Wavtool</value></data>
   <data name="TrackSettings.Expressions" xml:space="preserve"><value>表达式默认值…</value></data>
   <data name="TrackSettings.Done" xml:space="preserve"><value>完成</value></data>
-  <data name="TrackSettings.Apply" xml:space="preserve"><value>应用</value></data>
   <data name="TrackSettings.NoSinger" xml:space="preserve"><value>未选择歌手</value></data>
   <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>此歌手没有受支持的渲染器。</value></data>
   <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>选择歌手后才能配置渲染设置。</value></data>
@@ -2378,4 +2304,5 @@
   <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>无法应用轨道设置。</value></data>
   <data name="NoteProperties.PhonemizerUnavailable" xml:space="preserve"><value>音素器不可用：{0}</value></data>
   <data name="Picker.Phonemizer.Empty" xml:space="preserve"><value>没有可用的音素器。</value></data>
+  <data name="SingerManagement.NoResults" xml:space="preserve"><value>没有匹配的歌手。</value></data>
 </root>

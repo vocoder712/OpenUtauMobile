@@ -27,8 +27,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             sort.Items.Add(new ComboBoxItem { Content = DesktopUi.Label("DependencyManager.SortByDeveloper") });
             sort.Bind(SelectingItemsControl.SelectedIndexProperty, new Binding("SortMode") { Mode = BindingMode.TwoWay });
             ToolTip.SetTip(sort, DesktopUi.Label("DependencyManager.Sort")); header.Children.Add(sort);
-            Button refreshAvailable = DesktopUi.Command("Desktop.Refresh", "RefreshRegistryCommand");
-            Button refreshInstalled = DesktopUi.Command("Desktop.Refresh", "RefreshInstalledCommand");
+            Button refreshAvailable = DesktopUi.Command("Common.Refresh", "RefreshRegistryCommand");
+            Button refreshInstalled = DesktopUi.Command("Common.Refresh", "RefreshInstalledCommand");
             refreshInstalled.IsVisible = false;
             header.Children.Add(refreshAvailable);
             header.Children.Add(refreshInstalled);
@@ -63,17 +63,22 @@ namespace OpenUtauMobile.DesktopUI.Views
             TextBlock availableEmpty = DesktopUi.Label("DependencyManager.EmptyAvailable");
             TextBlock availableNoResults = DesktopUi.Label("DependencyManager.NoResults");
             TextBlock availableError = new() { TextWrapping = Avalonia.Media.TextWrapping.Wrap };
+            availableError.Classes.Add("DesktopError");
+            DesktopUi.Paint(availableError, TextBlock.ForegroundProperty, "Sem.Color.Error");
             Grid availablePanel = StatePanel(available, availableLoading, availableEmpty, availableNoResults, availableError);
             TextBlock installedLoading = DesktopUi.Label("DependencyManager.LoadingInstalled");
             TextBlock installedEmpty = DesktopUi.Label("DependencyManager.EmptyInstalled");
             TextBlock installedNoResults = DesktopUi.Label("DependencyManager.NoResults");
             TextBlock installedError = new() { TextWrapping = Avalonia.Media.TextWrapping.Wrap };
+            installedError.Classes.Add("DesktopError");
+            DesktopUi.Paint(installedError, TextBlock.ForegroundProperty, "Sem.Color.Error");
             Grid installedPanel = StatePanel(installed, installedLoading, installedEmpty, installedNoResults, installedError);
             tabs.ItemsSource = new[] { new TabItem { Header = DesktopUi.Label("DependencyManager.Available"), Content = availablePanel }, new TabItem { Header = DesktopUi.Label("DependencyManager.InstalledTab"), Content = installedPanel } };
             columns.ColumnDefinitions[0].MinWidth = 180;
             columns.ColumnDefinitions[2].MinWidth = 200;
             ContentControl details = new() { ClipToBounds = true, Margin = new Thickness(16, 0, 0, 0) };
             bool refreshing = false;
+            bool refreshScheduled = false;
             void Refresh()
             {
                 string? availableId = (available.SelectedItem as DependencyItemViewModel)?.Id;
@@ -98,7 +103,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                     if (field is "LatestVersion" or "Version") panel.Children.Add(DesktopUi.Label(field == "LatestVersion" ? "DependencyManager.LatestVersion" : "DependencyManager.InstalledVersion"));
                     TextBlock text = new() { TextWrapping = Avalonia.Media.TextWrapping.Wrap }; text.Bind(TextBlock.TextProperty, new Binding(field)); panel.Children.Add(text);
                 }
-                Button action = DesktopUi.Command(item is DependencyItemViewModel ? "Desktop.Install" : "Desktop.Uninstall", item is DependencyItemViewModel ? "InstallCommand" : "UninstallCommand");
+                Button action = DesktopUi.Command(item is DependencyItemViewModel ? "Common.Install" : "Common.Uninstall", item is DependencyItemViewModel ? "InstallCommand" : "UninstallCommand");
                 if (item is DependencyItemViewModel)
                 {
                     TextBlock state = new(); state.Bind(TextBlock.TextProperty, new Binding("ButtonText")); action.Content = state;
@@ -152,7 +157,18 @@ namespace OpenUtauMobile.DesktopUI.Views
                     nameof(dependencies.IsLoadingRegistry) or nameof(dependencies.IsLoadingInstalled) or nameof(dependencies.RegistryError) or
                     nameof(dependencies.InstalledError) or nameof(dependencies.SearchText))
                 {
-                    if (e.PropertyName is nameof(dependencies.FilteredAvailablePackages) or nameof(dependencies.FilteredInstalledPackages)) Refresh();
+                    if (e.PropertyName is nameof(dependencies.FilteredAvailablePackages) or nameof(dependencies.FilteredInstalledPackages))
+                    {
+                        if (!refreshScheduled)
+                        {
+                            refreshScheduled = true;
+                            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                            {
+                                refreshScheduled = false;
+                                Refresh();
+                            });
+                        }
+                    }
                     UpdateStates();
                 }
             };
@@ -174,7 +190,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             StackPanel stateContent = new() { Spacing = 8, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, MaxWidth = 420 };
             foreach (TextBlock state in states)
             {
-                state.Classes.Add("DesktopSecondary");
+                if (!state.Classes.Contains("DesktopError")) state.Classes.Add("DesktopSecondary");
                 state.TextWrapping = Avalonia.Media.TextWrapping.Wrap;
                 stateContent.Children.Add(state);
             }

@@ -21,23 +21,46 @@ public class MainViewModel : ViewModelBase
     private bool _desktopProjectOpening;
 
     public EditorViewModel? ActiveEditor => System.Linq.Enumerable.FirstOrDefault(System.Linq.Enumerable.OfType<EditorViewModel>(_navigationStack));
+    private bool HasActiveSingerInstallation
+    {
+        get
+        {
+            foreach (NavigateViewModelBase viewModel in _navigationStack)
+                if (viewModel is ClassicSingerSetupViewModel { IsInstalling: true }) return true;
+            return false;
+        }
+    }
 
     public async Task<bool> OpenDesktopProjectAsync(ProjectOpenOptions options)
     {
+        if (HasActiveSingerInstallation) return false;
         if (_desktopProjectOpening) return false;
         _desktopProjectOpening = true;
         try
         {
             EditorViewModel? editor = ActiveEditor;
+            EditorViewModel.PreparedProject preparedProject;
+            try
+            {
+                preparedProject = await EditorViewModel.PrepareProjectAsync(options);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Failed to prepare desktop project {Path}", options.Path);
+                ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+                return false;
+            }
+            if (editor != ActiveEditor) return false;
             if (editor != null && !await editor.ConfirmExitAsync()) return false;
             if (editor != ActiveEditor) return false;
+            if (HasActiveSingerInstallation) return false;
             while (_navigationStack.Count > 1 && (ActiveEditor != null || CurrentViewModel is not HomeViewModel))
             {
                 if (!TryRemoveCurrentViewModel(CurrentViewModel, false)) return false;
             }
             if (editor != null) DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Format.Ustx.Create()));
             if (ServiceHub.BeforeDesktopProjectOpenAsync != null) await ServiceHub.BeforeDesktopProjectOpenAsync();
-            EditorViewModel replacement = new(this, options);
+            EditorViewModel replacement = new(this, options, preparedProject);
             OnNavigate(replacement);
             await replacement.ProjectLoadCompletion;
             return ActiveEditor == replacement;
@@ -47,6 +70,11 @@ public class MainViewModel : ViewModelBase
 
     public void NavigateDesktopUtility(NavigateViewModelBase viewModel)
     {
+        if (HasActiveSingerInstallation)
+        {
+            (viewModel as IDisposable)?.Dispose();
+            return;
+        }
         if (CurrentViewModel.GetType() == viewModel.GetType())
         {
             (viewModel as IDisposable)?.Dispose();
@@ -62,6 +90,7 @@ public class MainViewModel : ViewModelBase
 
     public Task CloseDesktopProjectAsync(EditorViewModel editor)
     {
+        if (HasActiveSingerInstallation) return Task.CompletedTask;
         if (ActiveEditor != editor) return Task.CompletedTask;
         while (_navigationStack.Count > 1 && ActiveEditor != null)
         {
@@ -300,6 +329,7 @@ public class MainViewModel : ViewModelBase
     /// <returns>当前工程允许退出时返回 true。</returns>
     public async Task<bool> ConfirmCloseAsync()
     {
+        if (HasActiveSingerInstallation) return false;
         if (ActiveEditor is EditorViewModel editorViewModel)
         {
             return await editorViewModel.ConfirmExitAsync();

@@ -49,10 +49,13 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (e.GetCurrentPoint(_slider).Properties.IsLeftButtonPressed) { _pointer = e.Pointer; BeginEdit(); }
             }, RoutingStrategies.Tunnel, handledEventsToo: true);
-            _slider.AddHandler(PointerReleasedEvent, (_, _) => EndEdit(false), RoutingStrategies.Bubble, handledEventsToo: true);
-            _slider.PointerCaptureLost += (_, _) => EndEdit(false);
+            _slider.AddHandler(PointerReleasedEvent, (_, e) =>
+            {
+                if (_pointer?.Id == e.Pointer.Id && e.InitialPressMouseButton == MouseButton.Left) EndEdit(false);
+            }, RoutingStrategies.Tunnel, handledEventsToo: true);
+            _slider.PointerCaptureLost += (_, _) => EndEdit(true);
             AttachedToVisualTree += (_, _) => { _model.PropertyChanged += OnModelChanged; Restore(); };
-            DetachedFromVisualTree += (_, _) => { EndEdit(false); _model.PropertyChanged -= OnModelChanged; };
+            DetachedFromVisualTree += (_, _) => { EndEdit(true); _model.PropertyChanged -= OnModelChanged; };
             _slider.KeyUp += (_, e) => { if (e.Key is Key.Left or Key.Right or Key.Up or Key.Down or Key.Home or Key.End or Key.PageUp or Key.PageDown) CommitSlider(); };
             _slider.AddHandler(KeyDownEvent, (_, e) => { if (e.Key == Key.Escape) { IPointer? pointer = _pointer; EndEdit(true); pointer?.Capture(null); Restore(); e.Handled = true; } }, RoutingStrategies.Tunnel, handledEventsToo: true);
             _input.LostFocus += (_, _) => CommitText();
@@ -108,9 +111,16 @@ namespace OpenUtauMobile.DesktopUI.Views
         {
             _pointer = null;
             if (!_ownsEdit) return;
-            if (cancel && _isCurrent()) Commit(_start);
-            _ownsEdit = false;
-            if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup();
+            try
+            {
+                if (cancel && DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.RollBackUndoGroup();
+            }
+            finally
+            {
+                _ownsEdit = false;
+                if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup();
+                if (cancel) Restore();
+            }
         }
         private void OnModelChanged(object? sender, PropertyChangedEventArgs e)
         {

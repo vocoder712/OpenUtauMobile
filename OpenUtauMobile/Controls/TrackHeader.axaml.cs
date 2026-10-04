@@ -36,6 +36,7 @@ public partial class TrackHeader : UserControl, IDisposable
     private bool _mobileSettingsGesture;
     private bool _settingsGestureFired;
     private bool _settingsGestureCancelled;
+    private bool _settingsHoldIsRenameButton;
 
     public static readonly StyledProperty<bool> IsExpandedProperty =
         AvaloniaProperty.Register<TrackHeader, bool>(nameof(IsExpanded));
@@ -105,6 +106,7 @@ public partial class TrackHeader : UserControl, IDisposable
             .Any(visual => visual is Button button && button != TrackNameSettingsButton ||
                 visual is ToggleButton or RangeBase or DawKnob or TextBox or ComboBox)) return;
 
+        _settingsHoldIsRenameButton = source.GetSelfAndVisualAncestors().Contains(TrackNameSettingsButton);
         _settingsHoldPointer = e.Pointer;
         _settingsPointersDown.Add(e.Pointer.Id);
         _settingsHoldOrigin = e.GetPosition(this);
@@ -155,6 +157,7 @@ public partial class TrackHeader : UserControl, IDisposable
     {
         _settingsHoldTimer.Stop();
         _settingsGestureFired = true;
+        if (_settingsHoldIsRenameButton) TrackNameSettingsButton.IsEnabled = false;
         _settingsPointersDown.Clear();
         _settingsGestureCancelled = false;
         _settingsHoldPointer = null;
@@ -172,8 +175,16 @@ public partial class TrackHeader : UserControl, IDisposable
     private void OpenSettings()
     {
         ViewModel.ShowSettingsCommand.Execute().Subscribe(
-            _ => _settingsGestureFired = false,
-            () => _settingsGestureFired = false);
+            _ => CompleteSettingsGesture(),
+            _ => CompleteSettingsGesture(),
+            CompleteSettingsGesture);
+    }
+
+    private void CompleteSettingsGesture()
+    {
+        _settingsGestureFired = false;
+        if (_settingsHoldIsRenameButton) TrackNameSettingsButton.IsEnabled = true;
+        _settingsHoldIsRenameButton = false;
     }
 
     private void StopSettingsHold()

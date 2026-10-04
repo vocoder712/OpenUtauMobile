@@ -161,7 +161,7 @@ public class NotesCanvas : Control, ICmdSubscriber
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         EndDesktopPointer(true);
-        EndRightErase();
+        EndRightErase(cancel: true);
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
         _renderViewSubscription?.Dispose();
@@ -1080,7 +1080,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         }
         if (_rightErasePointer == e.Pointer)
         {
-            if (_rightEraseOwner != ViewModel || _rightEraseOwner?.EditMode != PianoRollEditMode.PitchPen) EndRightErase();
+            if (_rightEraseOwner != ViewModel || _rightEraseOwner?.EditMode != PianoRollEditMode.PitchPen) EndRightErase(cancel: true);
             else _rightEraseOwner.OnGestureDragUpdate(default, default, default, e.GetPosition(this), e.Timestamp);
             e.Handled = true;
             return;
@@ -1110,7 +1110,7 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         base.OnPointerCaptureLost(e);
         if (_desktopPointer == e.Pointer) EndDesktopPointer(true);
-        if (_rightErasePointer == e.Pointer) EndRightErase();
+        if (_rightErasePointer == e.Pointer) EndRightErase(cancel: true);
         ViewModel?.Gesture.OnPointerCancelled(e, this);
     }
 

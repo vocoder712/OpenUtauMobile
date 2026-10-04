@@ -16,7 +16,7 @@
             <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
-        <Style Selector="Button.TrackSettingsControl.DesktopPicker TextBlock">
+        <Style Selector="Button.TrackSettingsControl.TrackSettingsPicker TextBlock">
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
     </UserControl.Styles>
@@ -41,7 +41,7 @@
                     <StackPanel Spacing="4">
                         <TextBlock Text="{DynamicResource TrackSettings.Phonemizer}" Classes="TrackSettingsLabel" />
                         <Button Command="{Binding PickPhonemizerCommand}" HorizontalContentAlignment="Stretch"
-                                Classes="TrackSettingsControl DesktopPicker" ToolTip.Tip="{Binding DraftPhonemizerName}">
+                                Classes="TrackSettingsControl TrackSettingsPicker" ToolTip.Tip="{Binding DraftPhonemizerName}">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                                 <TextBlock Text="{Binding DraftPhonemizerName}" VerticalAlignment="Center" />
                                 <icons:PackIconPhosphorIcons Grid.Column="1" Kind="CaretDown" Width="12" Height="12" VerticalAlignment="Center" />
@@ -50,8 +50,13 @@
                     </StackPanel>
                     <StackPanel Spacing="4" IsEnabled="{Binding IsRendererEnabled}">
                         <TextBlock Text="{DynamicResource TrackSettings.Renderer}" Classes="TrackSettingsLabel" />
-                        <ComboBox ItemsSource="{Binding Renderers}" SelectedItem="{Binding DraftRenderer, Mode=OneWay}"
-                                  SelectionChanged="OnRendererSelectionChanged" Classes="TrackSettingsControl" />
+                        <Button Command="{Binding PickRendererCommand}" HorizontalContentAlignment="Stretch"
+                                Classes="TrackSettingsControl TrackSettingsPicker">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <TextBlock Text="{Binding DraftRenderer}" VerticalAlignment="Center" />
+                                <icons:PackIconPhosphorIcons Grid.Column="1" Kind="CaretDown" Width="12" Height="12" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
                     </StackPanel>
                     <TextBlock Text="{DynamicResource TrackSettings.MissingSinger}" IsVisible="{Binding !HasSinger}"
                                TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />

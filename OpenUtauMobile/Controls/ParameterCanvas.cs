@@ -674,7 +674,8 @@ public class ParameterCanvas : Control, ICmdSubscriber
         _strokeErase = right || IsEraseMode;
         _drawingPointer = pos;
         e.Pointer.Capture(this);
-        DocManager.Inst.StartUndoGroup();
+        // 连续绘制和擦除共享一次校验，避免每个指针采样都重建声部。
+        DocManager.Inst.StartUndoGroup(deferValidate: true);
 
         float value = CalculateValueFromY(pos.Y, descriptor);
 

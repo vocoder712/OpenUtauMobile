@@ -25,14 +25,7 @@
                 Background="{DynamicResource Sem.Color.SurfaceContainer}"
                 BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
                 BorderThickness="0,0,1,0">
-            <Grid>
-                <c:ParameterPanelToolbar IsVisible="{Binding IsParameterMode}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                <Panel IsVisible="{Binding !UseDesktopMouseInput}">
-                    <Button x:Name="ResetPhonemesButton" Classes="TopBarBtn" IsVisible="{Binding !IsParameterMode}" Click="OnResetPhonemes"
-                        HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,12,0,0"
-                        Content="{icons:PhosphorIcons ArrowCounterClockwise}" ToolTip.Tip="{DynamicResource BatchEdit.Action.ClearTimings}" />
-                </Panel>
-            </Grid>
+            <c:ParameterPanelToolbar IsVisible="{Binding IsParameterMode}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         </Border>
 
         <!-- 右侧画布区 -->

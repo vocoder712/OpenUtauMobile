@@ -87,15 +87,14 @@
                     </Border>
 
                     <Border Grid.Row="1" Background="{DynamicResource Sem.Color.SurfaceContainerLow}" Padding="20" CornerRadius="16" Margin="0,0,8,0">
-                        <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
-                            <TextBlock Text="{DynamicResource SingerSetup.Step2.TextEncoding}" FontWeight="SemiBold" />
-                            <ComboBox Grid.Row="1" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}" MaxWidth="300" HorizontalAlignment="Left">
+                        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
+                            <ComboBox Grid.Row="0" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}" MaxWidth="300" HorizontalAlignment="Left">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate><TextBlock Text="{Binding Converter={StaticResource EncodingNameConverter}, Mode=OneWay}" /></DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
-                            <TextBlock Grid.Row="2" Text="{DynamicResource SingerSetup.Step2.Preview}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" FontWeight="SemiBold" />
-                            <ListBox Grid.Row="3" ItemsSource="{Binding TextItems}" Background="{DynamicResource Sem.Color.Surface}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" Padding="8">
+                            <TextBlock Grid.Row="1" Text="{DynamicResource SingerSetup.Step2.Preview}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" FontWeight="SemiBold" />
+                            <ListBox Grid.Row="2" ItemsSource="{Binding TextItems}" Background="{DynamicResource Sem.Color.Surface}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" Padding="8">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate><TextBlock Text="{Binding}" FontSize="12" FontFamily="monospace" TextWrapping="Wrap" /></DataTemplate>
                                 </ListBox.ItemTemplate>

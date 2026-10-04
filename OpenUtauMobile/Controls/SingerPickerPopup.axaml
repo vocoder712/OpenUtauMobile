@@ -16,9 +16,7 @@
         <DockPanel>
             <!-- 标题栏 -->
             <!-- 歌手列表 -->
-            <ScrollViewer>
-                <c:SingerList Singers="{Binding Singers}" SelectSingerCommand="{Binding SelectSingerCommand}" />
-            </ScrollViewer>
+            <c:SingerList Singers="{Binding Singers}" SelectSingerCommand="{Binding SelectSingerCommand}" />
         </DockPanel>
     </c:DialogShell>
 </UserControl>

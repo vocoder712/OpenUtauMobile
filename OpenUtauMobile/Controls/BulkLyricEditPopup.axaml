@@ -21,7 +21,7 @@
                 <Button dialogs:DialogShell.IsDefaultAction="True"
                     Command="{Binding ApplyCommand}"
                     Classes="DialogAction DialogPrimary"
-                    Content="{DynamicResource BulkLyricEdit.Apply}" />
+                    Content="{DynamicResource Common.Apply}" />
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
         <DockPanel>

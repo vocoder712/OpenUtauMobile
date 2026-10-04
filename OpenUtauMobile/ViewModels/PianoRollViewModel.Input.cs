@@ -25,13 +25,20 @@ public partial class PianoRollViewModel
     public void EndTemporaryPitchErase(bool cancel = false)
     {
         if (!IsTemporaryPitchErase) return;
-        if (cancel && DocManager.Inst.HasOpenUndoGroup)
+        if (cancel)
         {
-            DocManager.Inst.RollBackUndoGroup();
-            _lastPitch = null;
-            _inputState = PianoRollInputState.Idle;
-            ResetPitchDrawPointerState();
-            RequestMagnifierClose?.Invoke();
+            try
+            {
+                if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.RollBackUndoGroup();
+            }
+            finally
+            {
+                if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup();
+                _lastPitch = null;
+                _inputState = PianoRollInputState.Idle;
+                ResetPitchDrawPointerState();
+                RequestMagnifierClose?.Invoke();
+            }
         }
         else OnGestureDragEnd(default, 0);
         IsTemporaryPitchErase = false;

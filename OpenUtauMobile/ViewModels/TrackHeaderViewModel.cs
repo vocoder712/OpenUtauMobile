@@ -119,7 +119,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectSinger()
     {
-        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync();
+        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync(_track.Singer);
         if (singer != null) SetSinger(singer);
     }
 

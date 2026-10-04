@@ -1,11 +1,22 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile">
     <Styles.Resources>
-        <ControlTheme x:Key="DesktopPhonemizerFlyoutTheme" TargetType="FlyoutPresenter" BasedOn="{StaticResource {x:Type FlyoutPresenter}}">
-            <Setter Property="Background" Value="{DynamicResource ComboBoxDropDownBackground}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxDropDownBorderBrush}" />
-            <Setter Property="Padding" Value="8" />
+        <ControlTheme x:Key="DesktopTrackPickerFlyoutTheme" TargetType="FlyoutPresenter" BasedOn="{StaticResource {x:Type FlyoutPresenter}}">
+            <Setter Property="Padding" Value="12" />
         </ControlTheme>
     </Styles.Resources>
+    <Style Selector="ListBox.DesktopSingerList">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <Style Selector="ListBox.DesktopSingerList ListBoxItem">
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="Margin" Value="0,0,0,8" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="ListBox.DesktopSingerList ListBoxItem:nth-last-child(1)">
+        <Setter Property="Margin" Value="0" />
+    </Style>
     <Style Selector="Button.DesktopPicker">
         <Setter Property="MinHeight" Value="28" />
         <Setter Property="Padding" Value="7,4" />
@@ -26,6 +37,7 @@
     <Style Selector=".DesktopRoot ListBox.DesktopPhonemizerList ListBoxItem">
         <Setter Property="Padding" Value="8,4" />
         <Setter Property="MinHeight" Value="28" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     </Style>
     <Style Selector=".DesktopRoot ListBox.DesktopPhonemizerList ListBoxItem.PhonemizerSeparator">
@@ -97,9 +109,6 @@
     </Style>
     <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Slider">
         <Setter Property="MinHeight" Value="28" />
-    </Style>
-    <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Border.MixerPresetChoices">
-        <Setter Property="Padding" Value="16" />
     </Style>
     <Style Selector="Button.DesktopAction">
         <Setter Property="Padding" Value="12,8" />
@@ -223,6 +232,26 @@
     <Style Selector=".DesktopRoot TextBlock.DesktopMetadata">
         <Setter Property="FontSize" Value="11" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.DesktopToolUnavailable">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.DesktopToolWarning">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Warning}" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.ToolsStatusMessage.status-info">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.ToolsStatusMessage.status-success">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Success}" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.ToolsStatusMessage.status-warning">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Warning}" />
+    </Style>
+    <Style Selector=".DesktopRoot TextBlock.ToolsStatusMessage.status-error">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
     </Style>
     <Style Selector=".DesktopRoot Border.DesktopToolbar">
         <Setter Property="MinHeight" Value="32" />

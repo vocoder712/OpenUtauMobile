@@ -31,7 +31,8 @@ namespace OpenUtauMobile.DesktopUI.Services
             DialogShell? shell = view.GetSelfAndVisualDescendants().OfType<DialogShell>().FirstOrDefault();
             shell ??= (view as ContentControl)?.Content as DialogShell;
             if (shell != null) shell.IsWindowHosted = true;
-            if (!DesktopDialogCatalog.TryGet(view.GetType(), out DesktopDialogProfile profile))
+            DesktopDialogProfile profile;
+            if (!DesktopDialogCatalog.IsRegistered(view.GetType()))
             {
                 Serilog.Log.Warning("No desktop dialog presentation registered for {Dialog}", view.GetType().FullName);
                 view = new DesktopUnavailablePage(view.GetType().Name, vm.RequestBack);
@@ -40,6 +41,10 @@ namespace OpenUtauMobile.DesktopUI.Services
             else if (view is PopupDialogControl popup)
             {
                 profile = DesktopDialogCatalog.For(popup, view.GetType());
+            }
+            else
+            {
+                profile = DesktopDialogProfile.Standard;
             }
             view.Classes.Add("DesktopPopup");
             DesktopDensity.Apply(view);
@@ -74,7 +79,6 @@ namespace OpenUtauMobile.DesktopUI.Services
             // 显示前按内容确定初始高度，使屏幕居中使用最终尺寸。
             window.Measure(new Size(window.Width, window.MaxHeight));
             view.Measure(new Size(window.Width, window.MaxHeight));
-            DesktopDensity.ApplyPopupGeometry(view);
             view.Measure(new Size(window.Width, window.MaxHeight));
             if (view is OptionConfirmPopup or ExitEditorConfirmPopup or LoadingPopup)
             {

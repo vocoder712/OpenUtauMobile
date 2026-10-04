@@ -65,6 +65,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     private readonly ProjectOpenOptions _projectOpenOptions;
     private bool _loadStarted;
     private bool _projectLoaded;
+    private PreparedProject? _preparedProject;
     private bool _disposed;
     private readonly TaskCompletionSource<bool> _projectLoadCompletion =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -258,9 +259,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘事件，供 PianoRollViewModel 调用，通知 PartsCanvas 刷新显示
 
-    public EditorViewModel(MainViewModel navigator, ProjectOpenOptions? projectOpenOptions = null) : base(navigator)
+    public EditorViewModel(MainViewModel navigator, ProjectOpenOptions? projectOpenOptions = null)
+        : this(navigator, projectOpenOptions, null)
+    {
+    }
+
+    internal EditorViewModel(MainViewModel navigator, ProjectOpenOptions? projectOpenOptions, PreparedProject? preparedProject) : base(navigator)
     {
         _projectOpenOptions = projectOpenOptions ?? new ProjectOpenOptions();
+        _preparedProject = preparedProject;
         DocManager.Inst.AddSubscriber(this); // 订阅事件
         // 命令初始化
         BackCommand = ReactiveCommand.CreateFromTask(OnBackAsync);
@@ -459,11 +466,12 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         this.WhenAnyValue(x => x.TrackEditMode)
             .Subscribe(_ => RebuildTrackContextActions())
             .DisposeWith(_disposables);
-        // 多选时继续编辑最后选中的分片，与属性面板保持一致。
         SelectedParts.ObserveCollectionChanges()
             .Subscribe(_ =>
             {
-                UPart? part = SelectedParts.LastOrDefault();
+                UPart? part = SelectedParts.Count == 1 || ServiceHub.UseDesktopFileWorkflows
+                    ? SelectedParts.LastOrDefault()
+                    : null;
                 EditingVoicePart = part as UVoicePart;
                 EditingWavePart = part as UWavePart;
                 RebuildTrackContextActions();
@@ -489,6 +497,28 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     }
 
     internal Task<bool> ProjectLoadCompletion => _projectLoadCompletion.Task;
+
+    internal sealed record PreparedProject(UProject Project, bool RepairedPhonemizers);
+
+    internal static async Task<PreparedProject> PrepareProjectAsync(ProjectOpenOptions openOptions)
+    {
+        UProject? project = await Task.Run(() => string.IsNullOrEmpty(openOptions.Path)
+            ? Ustx.Create()
+            : Formats.ReadProject([openOptions.Path]));
+        if (project == null)
+            throw new InvalidDataException($"Project reader returned no project: {openOptions.Path}");
+
+        switch (openOptions.Kind)
+        {
+            case ProjectOpenKind.Template:
+            case ProjectOpenKind.ExternalCopy:
+                project.FilePath = string.Empty;
+                project.Saved = false;
+                break;
+        }
+        bool repairedPhonemizers = NotePhonemizerResolver.Normalize(project);
+        return new PreparedProject(project, repairedPhonemizers);
+    }
 
     private static void AutoSaveProject()
     {
@@ -525,32 +555,12 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         try
         {
             // 后台只读取，回到 UI 线程并确认页面仍有效后才提交工程。
-            UProject? project = await Task.Run(() => string.IsNullOrEmpty(openOptions.Path)
-                ? Ustx.Create()
-                : Formats.ReadProject([openOptions.Path]));
+            PreparedProject prepared = _preparedProject ?? await PrepareProjectAsync(openOptions);
+            _preparedProject = null;
             if (_disposed || Navigator.CurrentViewModel != this) return;
-            if (project == null)
-                throw new InvalidDataException($"Project reader returned no project: {openOptions.Path}");
-
-            switch (openOptions.Kind)
-            {
-                case ProjectOpenKind.Template:
-                    // 模板文件已由模板保存流程裁剪；这里只移除模板文件身份。
-                    project.FilePath = string.Empty;
-                    project.Saved = false;
-                    break;
-                case ProjectOpenKind.ExternalCopy:
-                    // 外部副本保留完整工程内容，只移除来源文件身份。
-                    project.FilePath = string.Empty;
-                    project.Saved = false;
-                    break;
-                case ProjectOpenKind.Normal:
-                default:
-                    break;
-            }
-            bool repairedPhonemizers = NotePhonemizerResolver.Normalize(project);
+            UProject project = prepared.Project;
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
-            if (repairedPhonemizers) DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
+            if (prepared.RepairedPhonemizers) DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
             _projectLoaded = true;
@@ -2221,25 +2231,27 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 foreach (UVoicePart source in sources)
                 {
                     int offset = source.position - merged.position;
-                    UCurve previous = new(descriptor) { xs = points.Keys.ToList(), ys = points.Values.ToList() };
-                    int before = previous.Sample(offset - 1);
-                    int after = previous.Sample(offset + source.Duration);
-                    // 重叠区采用后一个分片的曲线；分片外恢复默认值，避免空白区被线性连接。
-                    foreach (int tick in points.Keys.Where(tick => tick >= offset && tick < offset + source.Duration).ToArray()) points.Remove(tick);
                     UCurve? curve = source.curves.FirstOrDefault(curve => curve.abbr == abbreviation);
-                    points[offset - 1] = before;
-                    points[offset] = curve?.Sample(0) ?? (int)descriptor.defaultValue;
-                    points[offset + source.Duration - 1] = curve?.Sample(source.Duration - 1) ?? (int)descriptor.defaultValue;
-                    points[offset + source.Duration] = after;
+                    int first = curve is { xs.Count: > 0 } ? curve.xs[0] : 0;
+                    int last = curve is { xs.Count: > 0 } ? curve.xs[^1] : source.Duration - 1;
+                    int start = offset + Math.Min(0, first);
+                    int end = offset + Math.Max(source.Duration - 1, last);
+                    UCurve previous = new(descriptor) { xs = points.Keys.ToList(), ys = points.Values.ToList() };
+                    int before = previous.Sample(start - 1);
+                    int after = previous.Sample(end + 1);
+                    // 重叠域采用后一个分片；边界覆盖完整曲线，避免插入默认锚点破坏分片外的前后插值。
+                    foreach (int tick in points.Keys.Where(tick => tick >= start && tick <= end).ToArray()) points.Remove(tick);
+                    points[start - 1] = before;
+                    points[start] = curve?.Sample(start - offset) ?? (int)descriptor.defaultValue;
+                    points[end] = curve?.Sample(end - offset) ?? (int)descriptor.defaultValue;
+                    points[end + 1] = after;
                     if (curve == null) continue;
                     foreach ((int x, int y) in curve.xs.Zip(curve.ys, (x, y) => (x, y)))
                     {
-                        if (x < 0 || x >= source.Duration) continue;
                         points[offset + x] = y;
                     }
                     if (curve.xs.Count > 0)
                     {
-                        int first = curve.xs[0], last = curve.xs[^1];
                         if (first > 0) points[offset + first - 1] = (int)descriptor.defaultValue;
                         if (last < source.Duration - 1) points[offset + last + 1] = (int)descriptor.defaultValue;
                     }

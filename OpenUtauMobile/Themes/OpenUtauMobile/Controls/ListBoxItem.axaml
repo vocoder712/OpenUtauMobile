@@ -27,7 +27,7 @@
 
     <!--  PointerOver State  -->
     <Style Selector="^:pointerover:not(:disabled) /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="{DynamicResource SystemControlHighlightListLowBrush}" />
+      <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHighest}" />
       <Setter Property="Foreground" Value="{DynamicResource SystemControlHighlightAltBaseHighBrush}" />
     </Style>
 

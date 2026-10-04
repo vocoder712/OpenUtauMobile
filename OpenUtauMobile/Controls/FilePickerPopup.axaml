@@ -35,7 +35,7 @@
                     <dialogs:DialogActionRow>
                         <Button Content="{DynamicResource Common.Cancel}"
                                 Command="{Binding CloseCommand}" />
-                        <Button dialogs:DialogShell.IsDefaultAction="True" Content="{DynamicResource ImportTracks.Next}"
+                        <Button dialogs:DialogShell.IsDefaultAction="True" Content="{DynamicResource Common.Next}"
                                 Command="{Binding ConfirmCommand}"
                                 Classes="DialogPrimary" />
                     </dialogs:DialogActionRow>

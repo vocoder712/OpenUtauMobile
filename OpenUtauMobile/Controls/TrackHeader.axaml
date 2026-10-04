@@ -236,6 +236,26 @@
                     <ToggleButton Name="TrackSoloToggle" Classes="TrackHeaderState TrackHeaderSolo" Content="S" Command="{Binding SoloCommand}"
                                   IsChecked="{Binding Solo, Mode=OneWay}" ToolTip.Tip="{DynamicResource Mixer.Solo}" AutomationProperties.Name="{DynamicResource Mixer.Solo}" />
                 </Grid>
+                <controls:ShapeHitTestButton Name="ColorBarButton"
+                        HitTestShape="TopLeftTriangle"
+                        Width="20" Height="20" MinWidth="0" MinHeight="0" CornerRadius="0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Padding="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ZIndex="10"
+                        IsVisible="{Binding IsExpanded, Converter={StaticResource BoolInvertConverter}}"
+                        ToolTip.Tip="{DynamicResource TrackHeader.Mute}"
+                        AutomationProperties.Name="{DynamicResource Mixer.Mute}"
+                        Command="{Binding MuteCommand}">
+                    <Polygon Name="ColorTriangle"
+                             IsHitTestVisible="False"
+                             Fill="{Binding TrackColorBrush}"
+                             Points="0,0 20,0 0,20"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Top" />
+                </controls:ShapeHitTestButton>
             </Grid>
 
         </Panel>

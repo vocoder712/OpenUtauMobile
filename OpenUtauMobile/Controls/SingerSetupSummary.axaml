@@ -74,7 +74,7 @@
             Padding="{x:Static foundation:LayoutTokens.InsetSM}">
             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                 <TextBlock
-                    Text="{DynamicResource SingerSetup.Step4.SingerType}"
+                    Text="{DynamicResource SingerSetup.Step3.SingerType}"
                     FontWeight="SemiBold"
                     FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                     Foreground="{DynamicResource Sem.Color.OnSurface}"/>
