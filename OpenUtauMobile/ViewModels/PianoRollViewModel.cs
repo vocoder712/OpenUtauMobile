@@ -279,7 +279,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// </summary>
     [Reactive] public string PrimaryExpressionKey { get; set; } = "vel";
 
-    public void RefreshExpressionDisplay() => RequestInvalidateVisual?.Invoke();
     /// <summary>
     /// 背景表情
     /// </summary>

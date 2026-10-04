@@ -480,7 +480,6 @@ namespace OpenUtauMobile.DesktopUI.Views
         }
         private bool PreviewExpressionSlider(NotePropertyField field, decimal? value)
         {
-            PianoRollViewModel pianoRoll = _editor.PianoRollViewModel;
             if (!value.HasValue)
             {
                 return !_ownsExpressionUndoGroup || FinishLiveExpressionEdit(false);
@@ -489,7 +488,6 @@ namespace OpenUtauMobile.DesktopUI.Views
             if (!_ownsExpressionUndoGroup && HasPendingDraftInput() && !CommitDraft(draft)) return false;
             if (!_ownsExpressionUndoGroup && field.Number == value)
             {
-                pianoRoll.RefreshExpressionDisplay();
                 return true;
             }
             if (_ownsExpressionUndoGroup && _liveExpressionValue == value) return true;
@@ -500,14 +498,13 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (!_ownsExpressionUndoGroup)
                 {
-                    DocManager.Inst.StartUndoGroup(deferValidate: true);
+                    DocManager.Inst.StartUndoGroup();
                     _ownsExpressionUndoGroup = true;
                     _liveExpressionDraft = draft;
                     _liveExpressionField = field;
                 }
                 DocManager.Inst.ExecuteCmd(command);
                 _liveExpressionValue = value;
-                pianoRoll.RefreshExpressionDisplay();
                 return true;
             }
             catch (Exception exception)
@@ -544,7 +541,6 @@ namespace OpenUtauMobile.DesktopUI.Views
                 _liveExpressionField = null;
                 _liveExpressionValue = null;
                 _committing = wasCommitting;
-                _editor.PianoRollViewModel.RefreshExpressionDisplay();
             }
             if (completed && apply) RefreshNotes();
             return completed;
