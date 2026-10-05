@@ -2173,4 +2173,7 @@
   <data name="ErrorDialog.MissingPackage" xml:space="preserve">
     <value>缺少依赖包：{0}</value>
   </data>
+  <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>编辑目标：跟随图（{0}）</value></data>
+  <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>编辑目标：偏移（PITD）</value></data>
+  <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>编辑目标：覆写（PITO）</value></data>
 </root>

@@ -14,6 +14,9 @@ public class ContextActionItem
     /// <summary>按钮的 ToolTip 说明文字</summary>
     public string Tip { get; init; } = string.Empty;
 
+    /// <summary>可选的短状态文字；设置后替代图标显示。</summary>
+    public string? Label { get; init; }
+
     /// <summary>按钮点击时执行的命令</summary>
     public ICommand Command { get; init; } = null!;
 

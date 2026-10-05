@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Avalonia;
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.ViewModels;
@@ -98,13 +100,19 @@ public partial class CollapsibleContextMenu : UserControl
             {
                 Classes = { "ContextActionBtn" },
                 Command = action.Command,
-                Content = new PackIconPhosphorIcons
+                Content = action.Label != null ? new TextBlock
+                {
+                    Text = action.Label,
+                    FontSize = 10,
+                    FontWeight = FontWeight.SemiBold,
+                } : new PackIconPhosphorIcons
                 {
                     Kind = action.Icon,
                 },
             };
 
             ToolTip.SetTip(button, action.Tip);
+            AutomationProperties.SetName(button, action.Tip);
             ActionsList.Children.Add(button);
         }
     }

@@ -35,6 +35,7 @@ public partial class PianoRollViewModel
 
     public void BeginViewportInput()
     {
+        EndPitchStroke();
         _panMotion.Cancel();
         _inputState = PianoRollInputState.Idle;
         _viewportInputActive = true;

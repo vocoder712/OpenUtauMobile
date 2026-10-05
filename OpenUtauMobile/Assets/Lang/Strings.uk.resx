@@ -2128,4 +2128,7 @@
   <data name="ErrorDialog.MissingPackage" xml:space="preserve">
     <value>Відсутній пакет залежностей: {0}</value>
   </data>
+  <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>Ціль малювання: за графом ({0})</value></data>
+  <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Ціль малювання: відхилення (PITD)</value></data>
+  <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Ціль малювання: перевизначення (PITO)</value></data>
 </root>

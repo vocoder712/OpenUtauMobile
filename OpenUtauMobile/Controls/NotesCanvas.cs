@@ -402,12 +402,16 @@ public class NotesCanvas : Control, ICmdSubscriber
         if (ViewModel == null || Part == null) return;
         // 注册当前分片，异步乐句构建完成后由上游投影通知触发重绘。
         _ = RenderView.Inst.Current(Part);
-        IPen pen = ViewModel.EditMode == PianoRollEditMode.PitchPen ? ThemeResources.GetPen("Sem.Color.Primary", 2) : ThemeResources.GetPen("Sem.Color.Outline");
-        StreamGeometry geometry = new();
-        bool hasVisibleSegment = false;
+        bool isPitchPen = ViewModel.EditMode == PianoRollEditMode.PitchPen;
+        StreamGeometry outlineGeometry = new();
+        StreamGeometry primaryGeometry = new();
+        bool hasOutline = false;
+        bool hasPrimary = false;
         lock (Part)
         {
-            using (StreamGeometryContext geometryContext = geometry.Open())
+            UMaskedCurve? pito = isPitchPen ? Part.maskedCurves.Find(curve => curve.abbr == "pito") : null;
+            using (StreamGeometryContext outlineContext = outlineGeometry.Open())
+            using (StreamGeometryContext primaryContext = primaryGeometry.Open())
             {
                 foreach (RenderPhrase phrase in Part.renderPhrases)
                 {
@@ -427,26 +431,63 @@ public class NotesCanvas : Control, ICmdSubscriber
                     }
 
                     int firstTick = pitchStart + startIdx * RenderPitchSampleInterval;
-                    float firstPitch = phrase.pitches[startIdx];
-                    Point firstPoint = ViewModel.TickPitchToPoint(firstTick, firstPitch / 100 - 0.5);
-                    geometryContext.BeginFigure(firstPoint, false);
-                    for (int i = startIdx + 1; i < endIdx; ++i)
+                    int lastTick = pitchStart + (endIdx - 1) * RenderPitchSampleInterval;
+                    int cursor = firstTick;
+                    if (pito != null)
                     {
-                        int tick = pitchStart + i * RenderPitchSampleInterval;
-                        float pitch = phrase.pitches[i];
-                        Point point = ViewModel.TickPitchToPoint(tick, pitch / 100 - 0.5);
-                        geometryContext.LineTo(point);
+                        foreach (UMaskedRun run in pito.runs)
+                        {
+                            if (run.ys.Length == 0) continue;
+                            // 掩码使用分片坐标，最终音高线使用工程坐标。
+                            int from = Math.Max(cursor, Part.position + run.x);
+                            int to = Math.Min(lastTick, Part.position + run.End);
+                            if (from >= lastTick) break;
+                            if (to <= from) continue;
+                            hasOutline |= AppendSegment(outlineContext, cursor, from);
+                            hasPrimary |= AppendSegment(primaryContext, from, to);
+                            cursor = to;
+                        }
                     }
 
-                    geometryContext.EndFigure(false);
-                    hasVisibleSegment = true;
+                    hasOutline |= AppendSegment(outlineContext, cursor, lastTick);
+                    
+                    bool AppendSegment(StreamGeometryContext target, int from, int to)
+                    {
+                        if (to <= from) return false;
+                        target.BeginFigure(SamplePoint(from), false);
+                        int nextIndex = (from - pitchStart) / RenderPitchSampleInterval + 1;
+                        for (int i = nextIndex; i < endIdx; ++i)
+                        {
+                            int tick = pitchStart + i * RenderPitchSampleInterval;
+                            if (tick >= to) break;
+                            target.LineTo(SamplePoint(tick));
+                        }
+                        target.LineTo(SamplePoint(to));
+                        target.EndFigure(false);
+                        return true;
+                    }
+
+                    Point SamplePoint(int tick)
+                    {
+                        // 在掩码边界插值，保持原采样折线，不扩大到相邻网格。
+                        double index = (tick - pitchStart) / (double)RenderPitchSampleInterval;
+                        int i = (int)index;
+                        double pitch = phrase.pitches[i];
+                        if (i + 1 < phrase.pitches.Length)
+                            pitch += (phrase.pitches[i + 1] - pitch) * (index - i);
+                        return ViewModel.TickPitchToPoint(tick, pitch / 100 - 0.5);
+                    }
                 }
             }
         }
 
-        if (hasVisibleSegment)
+        if (hasOutline)
         {
-            context.DrawGeometry(null, pen, geometry);
+            context.DrawGeometry(null, ThemeResources.GetPen("Sem.Color.Outline", isPitchPen ? 2 : 1), outlineGeometry);
+        }
+        if (hasPrimary)
+        {
+            context.DrawGeometry(null, ThemeResources.GetPen("Sem.Color.OnPrimaryContainer", 2), primaryGeometry);
         }
     }
 
@@ -941,6 +982,7 @@ public class NotesCanvas : Control, ICmdSubscriber
             case NoteCommand:
             case PartCommand:
             case SetCurveCommand:
+            case MaskedCurveCommand:
             case PhonemizedNotification:
             case PitchExpCommand: // 音高控制点增删改时刷新画布
                 InvalidateVisual();

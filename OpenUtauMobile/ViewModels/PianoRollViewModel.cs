@@ -859,6 +859,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         this.WhenAnyValue(x => x.EditingVoicePart)
             .Subscribe(_ =>
             {
+                if (_pitchStrokePart != EditingVoicePart) EndPitchStroke();
+                RebuildPianoRollContextActions();
                 this.RaisePropertyChanged(nameof(IsVoiceMode));
                 this.RaisePropertyChanged(nameof(IsPhonemePanelVisible));
                 RefreshAvailableExpressions();
@@ -935,6 +937,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         this.WhenAnyValue(x => x.EditMode, x => x.IsPitchEraserMode)
             .Subscribe(_ =>
             {
+                EndPitchStroke();
                 if (EditMode != PianoRollEditMode.PitchPen)
                 {
                     ResetPitchDrawPointerState();
@@ -1924,6 +1927,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 }
 
                 _inputState = PianoRollInputState.DrawingPitch;
+                BeginPitchStroke(point);
                 IsPitchDrawingActive = true;
                 PitchDrawPointer = point;
                 _lastTick = PointXToTick(point.X) - EditingVoicePart.position; // 记录初始 Tick（相对 EditingVoicePart）
@@ -2089,12 +2093,21 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// <param name="point"></param>
     private void UpdateDrawingPitch(Point point)
     {
-        if (EditingVoicePart == null)
+        if (_pitchStrokePart == null || _pitchStrokeProject == null)
         {
             return;
         }
 
-        int tick = PointXToTick(point.X) - EditingVoicePart.position; // 转换为分片内相对 Tick
+        int tick = PointXToTick(point.X) - _pitchStrokePart.position; // 转换为分片内相对 Tick
+        if (_pitchStrokeOverrides)
+        {
+            float cents = (float)(PointYToPitch(point.Y) * 100);
+            DocManager.Inst.ExecuteCmd(new SetMaskedCurveCommand(
+                _pitchStrokePart, OpenUtau.Core.Format.Ustx.PITO, _lastTick, _lastDrawnPitch, tick, cents));
+            _lastTick = tick;
+            _lastDrawnPitch = cents;
+            return;
+        }
         int sampleTick = (int)Math.Round(tick / 5f) * 5; // 以 5 Tick 为步进采样
         double drawingPitch = PointYToPitch(point.Y) * 100; // 绘制目标音高，单位为音分
         double? pitch = SamplePitchAtTick(sampleTick);
@@ -2105,8 +2118,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
         // Debug.WriteLine($"tick={tick}, sampleTick={sampleTick}, drawingPitch={drawingPitch}, pitch={pitch}");
         DocManager.Inst.ExecuteCmd(new SetCurveCommand(
-            DocManager.Inst.Project,
-            EditingVoicePart,
+            _pitchStrokeProject,
+            _pitchStrokePart,
             OpenUtau.Core.Format.Ustx.PITD,
             tick,
             (int)Math.Round(drawingPitch - pitch.Value),
@@ -2160,15 +2173,22 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// <param name="point"></param>
     private void UpdateErasingPitch(Point point)
     {
-        if (EditingVoicePart == null)
+        if (_pitchStrokePart == null || _pitchStrokeProject == null)
         {
             return;
         }
 
-        int tick = PointXToTick(point.X) - EditingVoicePart.position; // 转换为分片内相对 Tick
+        int tick = PointXToTick(point.X) - _pitchStrokePart.position; // 转换为分片内相对 Tick
+        if (_pitchStrokeOverrides)
+        {
+            DocManager.Inst.ExecuteCmd(new ClearMaskedCurveCommand(
+                _pitchStrokePart, OpenUtau.Core.Format.Ustx.PITO, _lastTick, tick));
+            _lastTick = tick;
+            return;
+        }
         DocManager.Inst.ExecuteCmd(new SetCurveCommand(
-            DocManager.Inst.Project,
-            EditingVoicePart,
+            _pitchStrokeProject,
+            _pitchStrokePart,
             OpenUtau.Core.Format.Ustx.PITD,
             tick,
             0,
@@ -2195,11 +2215,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 _panMotion.EndDirectManipulation(timestamp);
                 break;
             case PianoRollInputState.DrawingPitch:
-                DocManager.Inst.EndUndoGroup();
-                _lastPitch = null;
-                _inputState = PianoRollInputState.Idle;
-                // 关闭放大镜
-                RequestMagnifierClose?.Invoke();
+                EndPitchStroke();
                 break;
             case PianoRollInputState.MovingAnchors:
                 DocManager.Inst.EndUndoGroup();
@@ -2240,6 +2256,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public void OnGesturePinch(double scaleX, double scaleY, Point center, Vector panDelta)
     {
+        EndPitchStroke();
         InterruptPanMotionIfRunning();
 
         // X 轴：保持 center Tick 不变
@@ -2460,6 +2477,12 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 break;
 
             case PianoRollEditMode.PitchPen:
+                items.Add(new ContextActionItem
+                {
+                    Label = PitchTargetLabel,
+                    Tip = PitchTargetDescription,
+                    Command = ReactiveCommand.Create(CyclePitchTarget)
+                });
                 items.Add(new ContextActionItem
                 {
                     Icon = IsPitchEraserMode ? PackIconPhosphorIconsKind.Eraser : PackIconPhosphorIconsKind.Pencil,
@@ -3706,6 +3729,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public void Dispose()
     {
+        EndPitchStroke();
         StopPreviewTone();
         _panMotion.Dispose();
         DocManager.Inst.RemoveSubscriber(this);
@@ -3718,6 +3742,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         switch (cmd)
         {
             case LoadProjectNotification:
+                EndPitchStroke();
+                RebuildPianoRollContextActions();
                 ProjectKey = PianoKeyLabelFormatter.NormalizePitchClass(DocManager.Inst.Project.key);
                 RefreshAvailableExpressions();
                 RequestInvalidateVisual?.Invoke();
@@ -3727,8 +3753,15 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 RefreshAvailableExpressions();
                 RequestInvalidateVisual?.Invoke();
                 break;
-            case TrackChangeRenderSettingCommand:
+            case TrackChangeRenderSettingCommand renderSettingCommand:
+                EndPitchStroke();
+                PitchEditTargetState.Read(renderSettingCommand.project, renderSettingCommand.track);
+                RebuildPianoRollContextActions();
                 _expressionRefreshPending = true;
+                break;
+            case OpenUtau.Core.ExpressionGraph.SetExpressionGraphsCommand:
+                RebuildPianoRollContextActions();
+                RequestInvalidateVisual?.Invoke();
                 break;
             case PreRenderNotification when _expressionRefreshPending:
                 // 轨道命令先发布再校验，在命令组结束后读取重建的音色定义。

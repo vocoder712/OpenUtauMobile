@@ -2166,4 +2166,7 @@
   <data name="ErrorDialog.MissingPackage" xml:space="preserve">
     <value>依存パッケージが見つかりません：{0}</value>
   </data>
+  <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>編集対象：グラフに従う（{0}）</value></data>
+  <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>編集対象：音高偏差（PITD）</value></data>
+  <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>編集対象：音高上書き（PITO）</value></data>
 </root>
