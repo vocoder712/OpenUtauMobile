@@ -39,6 +39,17 @@ namespace OpenUtauMobile.DesktopUI.Views
             ListBox list = new();
             list.ItemTemplate = new FuncDataTemplate<USinger>((singer, _) => singer == null ? null : new DesktopSingerItem(singer, 48));
             columns.ColumnDefinitions[0].MinWidth = 180;
+            Grid singerList = new();
+            TextBlock noResults = DesktopUi.Label("SingerManagement.NoResults");
+            DesktopUi.Paint(noResults, TextBlock.ForegroundProperty, "Sem.Color.OnSurfaceVariant");
+            noResults.Margin = new Thickness(12);
+            noResults.HorizontalAlignment = HorizontalAlignment.Center;
+            noResults.VerticalAlignment = VerticalAlignment.Center;
+            noResults.TextWrapping = Avalonia.Media.TextWrapping.Wrap;
+            noResults.IsHitTestVisible = false;
+            noResults.IsVisible = false;
+            singerList.Children.Add(list);
+            singerList.Children.Add(noResults);
             ContentControl details = new() { ClipToBounds = true };
             SingerDetailViewModel? detailModel = null;
             USinger? selectedSinger = null;
@@ -67,6 +78,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 USinger? selected = list.SelectedItem as USinger;
                 USinger[] filtered = singers.Singers.Where(s => (s.LocalizedName + " " + s.Id + " " + s.Author).Contains(search.Text ?? "", StringComparison.CurrentCultureIgnoreCase)).ToArray();
+                noResults.IsVisible = filtered.Length == 0 && !string.IsNullOrWhiteSpace(search.Text);
                 refreshing = true;
                 try { list.ItemsSource = filtered; list.SelectedItem = selected != null && filtered.Contains(selected) ? selected : null; }
                 finally { refreshing = false; }
@@ -77,7 +89,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             AttachedToVisualTree += (_, _) => { singers.Singers.CollectionChanged += changed; Refresh(); };
             DetachedFromVisualTree += (_, _) => { singers.Singers.CollectionChanged -= changed; if (detailModel != null) detailModel.SingerUninstalled -= OnSingerUninstalled; detailModel?.Dispose(); detailModel = null; selectedSinger = null; details.Content = null; };
             list.SelectionChanged += (_, _) => { if (!refreshing) ShowDetail(); };
-            columns.Children.Add(DesktopUi.Panel(list, false));
+            columns.Children.Add(DesktopUi.Panel(singerList, false));
             Grid.SetColumn(details, 1); columns.Children.Add(details);
             Grid.SetRow(columns, 1); root.Children.Add(columns);
             Content = root;
