@@ -17,6 +17,8 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;

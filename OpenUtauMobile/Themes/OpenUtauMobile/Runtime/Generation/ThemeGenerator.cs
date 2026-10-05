@@ -4,7 +4,7 @@ using Avalonia.Styling;
 using MaterialColorUtilities.Palettes;
 using MaterialColorUtilities.Schemes;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 
 public static class ThemeGenerator
 {

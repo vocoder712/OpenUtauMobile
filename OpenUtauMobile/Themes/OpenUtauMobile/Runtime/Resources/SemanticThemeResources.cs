@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 

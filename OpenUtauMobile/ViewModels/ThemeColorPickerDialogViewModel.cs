@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using Avalonia.Media;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Platform;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

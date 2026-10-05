@@ -565,9 +565,21 @@
                                         <Border Height="1"
                                                 Margin="-20,0,-20,0"
                                                 Opacity="0.08"
-                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                Background="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                IsVisible="{Binding PitchPenCanvasDragEnabled}" />
 
-                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" IsEnabled="{Binding PitchPenCanvasDragEnabled}">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}"
+                                              IsVisible="{Binding PitchPenCanvasDragEnabled}">
+                                            <TextBlock Classes="SettingItemTitle" VerticalAlignment="Center"
+                                                       TextWrapping="Wrap"
+                                                       Text="{DynamicResource Settings.Edit.ShowPitchPenHitArea}" />
+                                            <ToggleSwitch x:Name="ShowPitchPenHitAreaToggle" Grid.Column="1"
+                                                          IsChecked="{Binding ShowPitchPenHitArea, Mode=TwoWay}"
+                                                          AutomationProperties.Name="{DynamicResource Settings.Edit.ShowPitchPenHitArea}"
+                                                          OffContent="" OnContent="" VerticalAlignment="Center" />
+                                        </Grid>
+
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" IsVisible="{Binding PitchPenCanvasDragEnabled}">
                                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                                 <TextBlock Classes="SettingItemTitle"
                                                            Text="{DynamicResource Settings.Edit.PitchPenHitTickExtension}" />

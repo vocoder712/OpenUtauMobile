@@ -2131,4 +2131,5 @@
   <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>Цель рисования: по графу ({0})</value></data>
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Цель рисования: отклонение (PITD)</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Цель рисования: переопределение (PITO)</value></data>
+  <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>Показывать область кисти высоты тона</value></data>
 </root>

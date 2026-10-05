@@ -11,6 +11,8 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
@@ -181,6 +183,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         int rightTick = (int)(leftTick + Bounds.Width / TickWidth);
         SolidColorBrush brush = TrackPalette.GetTrackColor(DocManager.Inst.Project.tracks[Part.trackNo].TrackColor)
             .AccentColor;
+        RenderPitchPenHitArea(context);
         // ———— 绘制主体 ————
         foreach (UNote note in Part.notes)
         {
@@ -291,6 +294,51 @@ public class NotesCanvas : Control, ICmdSubscriber
 
         // ———— 绘制画笔指示器 ————
         RenderPitchDrawIndicator(context);
+    }
+
+    /// <summary>
+    /// 淡色提示现有画笔起笔区域，不参与命中判断。
+    /// </summary>
+    private void RenderPitchPenHitArea(DrawingContext context)
+    {
+        if (Part == null || ViewModel?.EditMode != PianoRollEditMode.PitchPen ||
+            !ViewModel.IsPitchPenCanvasDragEnabled || !Preferences.Default.ShowPitchPenHitArea) return;
+
+        Rect viewport = new(Bounds.Size);
+        using (context.PushOpacity(0.15))
+        {
+            IBrush hintBrush = ThemeResources.GetBrush("Sem.Color.Primary");
+            StreamGeometry geometry = new();
+            bool hasArea = false;
+            using (StreamGeometryContext path = geometry.Open())
+            {
+                // 同方向轮廓按并集填充，音符区域重叠时不挖空或加深。
+                path.SetFillRule(FillRule.NonZero);
+                foreach (UNote note in Part.notes)
+                {
+                    int from = Math.Max(0, note.position - ViewModel.PitchPenNoteHitTickExtension);
+                    int to = note.End + ViewModel.PitchPenNoteHitTickExtension;
+                    int upperTone = note.tone + ViewModel.PitchPenNoteHitToneExtension;
+                    int lowerTone = note.tone - ViewModel.PitchPenNoteHitToneExtension;
+                    double left = ViewModel.TickToPointX(Part.position + from);
+                    if (left >= viewport.Right) break;
+                    double right = ViewModel.TickToPointX(Part.position + to);
+                    double top = ViewModel.TickPitchToPoint(0, upperTone).Y;
+                    // 命中使用整数音高行；PointYToPitch 在最低音以下钳制为零。
+                    double bottom = lowerTone <= 0 ? viewport.Bottom : ViewModel.TickPitchToPoint(0, lowerTone - 1).Y;
+                    if (right <= viewport.Left || bottom <= top) continue;
+                    Rect area = new Rect(left, top, right - left, bottom - top).Intersect(viewport);
+                    if (area.Width <= 0 || area.Height <= 0) continue;
+                    path.BeginFigure(area.TopLeft);
+                    path.LineTo(area.TopRight);
+                    path.LineTo(area.BottomRight);
+                    path.LineTo(area.BottomLeft);
+                    path.EndFigure(true);
+                    hasArea = true;
+                }
+            }
+            if (hasArea) context.DrawGeometry(hintBrush, null, geometry);
+        }
     }
 
     /// <summary>
@@ -410,73 +458,72 @@ public class NotesCanvas : Control, ICmdSubscriber
         lock (Part)
         {
             UMaskedCurve? pito = isPitchPen ? Part.maskedCurves.Find(curve => curve.abbr == "pito") : null;
-            using (StreamGeometryContext outlineContext = outlineGeometry.Open())
-            using (StreamGeometryContext primaryContext = primaryGeometry.Open())
+            using StreamGeometryContext outlineContext = outlineGeometry.Open();
+            using StreamGeometryContext primaryContext = primaryGeometry.Open();
+            foreach (RenderPhrase phrase in Part.renderPhrases)
             {
-                foreach (RenderPhrase phrase in Part.renderPhrases)
+                if (phrase.position > rightTick || phrase.end < leftTick)
                 {
-                    if (phrase.position > rightTick || phrase.end < leftTick)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    int pitchStart = phrase.position - phrase.leading;
-                    int startIdx = Math.Max(0, (leftTick - pitchStart) / RenderPitchSampleInterval);
-                    int endIdx = Math.Min(
-                        phrase.pitches.Length,
-                        (rightTick - pitchStart) / RenderPitchSampleInterval + 1);
-                    if (endIdx - startIdx < 2)
-                    {
-                        continue;
-                    }
+                int pitchStart = phrase.position - phrase.leading;
+                int startIdx = Math.Max(0, (leftTick - pitchStart) / RenderPitchSampleInterval);
+                int endIdx = Math.Min(
+                    phrase.pitches.Length,
+                    (rightTick - pitchStart) / RenderPitchSampleInterval + 1);
+                if (endIdx - startIdx < 2)
+                {
+                    continue;
+                }
 
-                    int firstTick = pitchStart + startIdx * RenderPitchSampleInterval;
-                    int lastTick = pitchStart + (endIdx - 1) * RenderPitchSampleInterval;
-                    int cursor = firstTick;
-                    if (pito != null)
+                int firstTick = pitchStart + startIdx * RenderPitchSampleInterval;
+                int lastTick = pitchStart + (endIdx - 1) * RenderPitchSampleInterval;
+                int cursor = firstTick;
+                if (pito != null)
+                {
+                    foreach (UMaskedRun run in pito.runs)
                     {
-                        foreach (UMaskedRun run in pito.runs)
-                        {
-                            if (run.ys.Length == 0) continue;
-                            // 掩码使用分片坐标，最终音高线使用工程坐标。
-                            int from = Math.Max(cursor, Part.position + run.x);
-                            int to = Math.Min(lastTick, Part.position + run.End);
-                            if (from >= lastTick) break;
-                            if (to <= from) continue;
-                            hasOutline |= AppendSegment(outlineContext, cursor, from);
-                            hasPrimary |= AppendSegment(primaryContext, from, to);
-                            cursor = to;
-                        }
+                        if (run.ys.Length == 0) continue;
+                        // 掩码使用分片坐标，最终音高线使用工程坐标。
+                        int from = Math.Max(cursor, Part.position + run.x);
+                        int to = Math.Min(lastTick, Part.position + run.End);
+                        if (from >= lastTick) break;
+                        if (to <= from) continue;
+                        hasOutline |= AppendSegment(outlineContext, cursor, from);
+                        hasPrimary |= AppendSegment(primaryContext, from, to);
+                        cursor = to;
                     }
+                }
 
-                    hasOutline |= AppendSegment(outlineContext, cursor, lastTick);
-                    
-                    bool AppendSegment(StreamGeometryContext target, int from, int to)
-                    {
-                        if (to <= from) return false;
-                        target.BeginFigure(SamplePoint(from), false);
-                        int nextIndex = (from - pitchStart) / RenderPitchSampleInterval + 1;
-                        for (int i = nextIndex; i < endIdx; ++i)
-                        {
-                            int tick = pitchStart + i * RenderPitchSampleInterval;
-                            if (tick >= to) break;
-                            target.LineTo(SamplePoint(tick));
-                        }
-                        target.LineTo(SamplePoint(to));
-                        target.EndFigure(false);
-                        return true;
-                    }
+                hasOutline |= AppendSegment(outlineContext, cursor, lastTick);
+                continue;
 
-                    Point SamplePoint(int tick)
+                bool AppendSegment(StreamGeometryContext target, int from, int to)
+                {
+                    if (to <= from) return false;
+                    target.BeginFigure(SamplePoint(from), false);
+                    int nextIndex = (from - pitchStart) / RenderPitchSampleInterval + 1;
+                    for (int i = nextIndex; i < endIdx; ++i)
                     {
-                        // 在掩码边界插值，保持原采样折线，不扩大到相邻网格。
-                        double index = (tick - pitchStart) / (double)RenderPitchSampleInterval;
-                        int i = (int)index;
-                        double pitch = phrase.pitches[i];
-                        if (i + 1 < phrase.pitches.Length)
-                            pitch += (phrase.pitches[i + 1] - pitch) * (index - i);
-                        return ViewModel.TickPitchToPoint(tick, pitch / 100 - 0.5);
+                        int tick = pitchStart + i * RenderPitchSampleInterval;
+                        if (tick >= to) break;
+                        target.LineTo(SamplePoint(tick));
                     }
+                    target.LineTo(SamplePoint(to));
+                    target.EndFigure(false);
+                    return true;
+                }
+
+                Point SamplePoint(int tick)
+                {
+                    // 在掩码边界插值，保持原采样折线，不扩大到相邻网格。
+                    double index = (tick - pitchStart) / (double)RenderPitchSampleInterval;
+                    int i = (int)index;
+                    double pitch = phrase.pitches[i];
+                    if (i + 1 < phrase.pitches.Length)
+                        pitch += (phrase.pitches[i + 1] - pitch) * (index - i);
+                    return ViewModel.TickPitchToPoint(tick, pitch / 100 - 0.5);
                 }
             }
         }

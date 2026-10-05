@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;
 using ReactiveUI;
 

@@ -826,6 +826,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             .Subscribe(message => PianoKeyLabelMode = message.Mode)
             .DisposeWith(_disposables);
 
+        MessageBus.Current.Listen<PitchPenHitAreaHintChangedEvent>()
+            .Subscribe(_ => RequestInvalidateVisual?.Invoke())
+            .DisposeWith(_disposables);
+
         PlayPosTick = DocManager.Inst.playPosTick;
 
         Gesture.Tap = OnGestureTap;

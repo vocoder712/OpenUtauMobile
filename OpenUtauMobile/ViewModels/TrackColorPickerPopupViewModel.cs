@@ -3,6 +3,7 @@ using System.Reactive;
 using Avalonia.Media;
 using DynamicData.Binding;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;

@@ -2176,4 +2176,5 @@
   <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>Pitch target: Follow graph ({0})</value></data>
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Pitch target: Deviation (PITD)</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Pitch target: Override (PITO)</value></data>
+  <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>Show pitch brush area</value></data>
 </root>

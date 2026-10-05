@@ -2169,4 +2169,5 @@
   <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>編集対象：グラフに従う（{0}）</value></data>
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>編集対象：音高偏差（PITD）</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>編集対象：音高上書き（PITO）</value></data>
+  <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>音高ブラシの範囲を表示</value></data>
 </root>

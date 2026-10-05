@@ -462,6 +462,9 @@ namespace OpenUtau.Core.Util {
             /// </summary>
             public bool PitchPenCanvasDragEnabled = true;
 
+            /// <summary>是否淡色提示音高画笔的音符扩展命中区域。</summary>
+            public bool ShowPitchPenHitArea = false;
+
             /// <summary>
             /// 音高线编辑模式下音符命中范围前后扩展的 Tick 数。
             /// </summary>
