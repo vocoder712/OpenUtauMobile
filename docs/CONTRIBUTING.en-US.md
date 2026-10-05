@@ -42,7 +42,8 @@ see the [Chinese guide](../CONTRIBUTING.md). Platform, renderer and accelerator 
   (currently `10.0.400`, with `latestPatch` roll-forward).
 - Visual Studio Build Tools: **Desktop development with C++**, including MSVC x64/x86 and Windows SDK.
   Rider does not replace the C++ compiler required by the default GGML build.
-- CMake 3.24+ on PATH.
+- Bazelisk 1.29.0 on PATH as `bazel`; both native entry points select Bazel 9.2.0.
+- Python 3.10+ on PATH for native builds and ABI checks.
 - Rider with support for the pinned .NET SDK.
 
 Restart terminals and Rider after installing tools or changing PATH. The first build downloads fixed native
@@ -67,7 +68,8 @@ Preserve local changes before switching branches or syncing. Run the following f
 ```powershell
 git --version
 dotnet --version
-cmake --version
+python --version
+Get-Command git,dotnet,bazel,python
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
 ```
 
@@ -95,7 +97,7 @@ Default output is `OpenUtauMobile.Windows/bin/Debug/net10.0-windows/`; an explic
 Install `dotnet workload install android` from the repository root (use an elevated terminal if requested).
 Install JDK 21 and use Android Studio's SDK Manager to install API 36, Build-Tools 36.0.0, Platform-Tools,
 Command-line Tools (latest), and the NDK from [android-ndk-version.txt](../native/game/android-ndk-version.txt).
-Install Ninja on PATH as well as CMake. Android uses the NDK's Clang compiler.
+Android uses the NDK's Clang compiler through the same Bazel entry points.
 The Android project and installed workload remain the source of truth for SDK requirements.
 Current CI uses JDK 17; local builds have also passed with JDK 21.
 
@@ -111,8 +113,7 @@ $env:ANDROID_HOME = $androidSdk
 & "$javaSdk/bin/java.exe" -version
 & "$androidSdk/cmdline-tools/latest/bin/sdkmanager.bat" --licenses
 & "$androidSdk/cmdline-tools/latest/bin/sdkmanager.bat" "ndk;$androidNdkVersion"
-ninja --version
-Test-Path "$androidNdk/build/cmake/android.toolchain.cmake"
+Test-Path "$androidNdk/source.properties"
 ```
 
 Read and accept required licenses. The final check should return `True`. If the NDK is installed separately,
@@ -148,8 +149,7 @@ Rider builds, installs, launches and attaches the debugger. No CI release-signin
 See [Rider's Android instructions](https://www.jetbrains.com/help/rider/Run_Debug_Configuration_Xamarin_Android.html).
 
 If compilation fails, inspect the first error and resolved SDK/NDK/JDK paths. A missing native library differs
-from a missing model; do not copy binaries from another RID. After changing CMake generators, use a fresh
-`GameBuildRoot`. Check the [known limitations](../README.md#verification-and-known-limits), including Android
+from a missing model; do not copy binaries from another RID. Use `GameBuildRoot` to isolate native build caches when needed. Check the [known limitations](../README.md#verification-and-known-limits), including Android
 16 KB alignment warnings in existing dependencies. See the Chinese guide for the full troubleshooting table.
 
 ---

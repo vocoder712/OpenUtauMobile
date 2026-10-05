@@ -8,6 +8,7 @@ import tempfile
 import zipfile
 
 from worldline.verify import verify_binary
+from game.verify import EXPORTS as GAME_EXPORTS
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('apk')
@@ -54,11 +55,14 @@ with zipfile.ZipFile(args.apk) as apk:
                           for i in range(count) if struct.unpack_from('<I', data, offset + i * size)[0] == 1]
             if not alignments or any(alignment < 16384 for alignment in alignments):
                 raise ValueError(f'{entry}: LOAD segments lack 16 KB alignment: {alignments}')
-        if library == 'libworldline.so':
+        if library in ('libworldline.so', 'libopum_game.so'):
             with tempfile.TemporaryDirectory() as temporary:
                 native = Path(temporary) / library
                 native.write_bytes(data)
-                verify_binary(native, args.rid)
+                if library == 'libopum_game.so':
+                    verify_binary(native, args.rid, GAME_EXPORTS)
+                else:
+                    verify_binary(native, args.rid)
     for license_name in ('game.cpp', 'ggml', 'pocketfft'):
         entry = f'assets/GameLicenses/LICENSE.{license_name}.txt'
         if names.count(entry) != 1 or not apk.read(entry).strip():
@@ -67,13 +71,16 @@ with zipfile.ZipFile(args.apk) as apk:
         entry = f'assets/WorldlineLicenses/LICENSE.{license_name}.txt'
         if names.count(entry) != 1 or not apk.read(entry).strip():
             raise ValueError(f'{entry}: missing, empty or duplicated license')
-    entry = 'assets/WorldlineLicenses/worldline-build.json'
-    if names.count(entry) != 1:
-        raise ValueError('Worldline provenance must occur exactly once')
-    provenance = json.loads(apk.read(entry))
-    if provenance['rid'] != args.rid or not provenance['source_sha256'] or not provenance['compiler_version']:
-        raise ValueError('Invalid Worldline provenance')
-    library_hash = hashlib.sha256(apk.read(f'lib/{abi}/libworldline.so')).hexdigest()
-    if library_hash != provenance['library_sha256']:
-        raise ValueError('Packaged Worldline library does not match its build provenance')
-print(f'PASS: {args.apk}: {abi}, required native libraries, Worldline ABI, 16 KB ELF alignment and licenses')
+    for kind, library in (('Worldline', 'libworldline.so'), ('Game', 'libopum_game.so')):
+        entry = f'assets/{kind}Licenses/{kind.lower()}-build.json'
+        if names.count(entry) != 1:
+            raise ValueError(f'{kind} provenance must occur exactly once')
+        provenance = json.loads(apk.read(entry))
+        if provenance['rid'] != args.rid or not provenance['compiler_version']:
+            raise ValueError(f'Invalid {kind} provenance')
+        if kind == 'Worldline' and not provenance['source_sha256']:
+            raise ValueError('Invalid Worldline source provenance')
+        library_hash = hashlib.sha256(apk.read(f'lib/{abi}/{library}')).hexdigest()
+        if library_hash != provenance['library_sha256']:
+            raise ValueError(f'Packaged {kind} library does not match its build provenance')
+print(f'PASS: {args.apk}: {abi}, native libraries, ABI, provenance, 16 KB alignment and licenses')

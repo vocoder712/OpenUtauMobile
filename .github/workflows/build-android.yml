@@ -78,7 +78,7 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android
 
-      - name: Setup Worldline build tools
+      - name: Setup native Bazel build tools
         uses: ./.github/actions/setup-worldline
 
       - name: Install Android native toolchain
@@ -89,10 +89,8 @@ jobs:
           NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
-          test -f "$SDK_ROOT/ndk/$NDK_VERSION/build/cmake/android.toolchain.cmake"
+          test -f "$SDK_ROOT/ndk/$NDK_VERSION/source.properties"
           echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
-          cmake --version
-          ninja --version
 
       - name: Create Swap Space
         shell: bash

@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  worldline-desktop:
-    name: Worldline ${{ matrix.rid }}
+  native-desktop:
+    name: Native ${{ matrix.rid }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
@@ -31,7 +31,10 @@ jobs:
           architecture: ${{ matrix.arch }}
       - name: Build and run upstream tests
         shell: bash
-        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
+        run: |
+          python native/worldline/build.py --rid ${{ matrix.rid }} --test
+          python native/game/build.py --rid ${{ matrix.rid }} --test
+          python native/game/verify.py artifacts/game-native/${{ matrix.rid }} ${{ matrix.rid }} --run
       - name: Verify native ABI
         shell: bash
         run: |
@@ -50,13 +53,15 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: worldline-${{ matrix.rid }}
+          name: native-${{ matrix.rid }}
           path: |
             artifacts/worldline-native/${{ matrix.rid }}/
+            artifacts/game-native/${{ matrix.rid }}/
+            artifacts/game-bazel-build/${{ matrix.rid }}/workspace/bazel-testlogs/**/test.log
             artifacts/worldline-build/${{ matrix.rid }}/workspace/bazel-testlogs/**/test.log
 
-  worldline-android:
-    name: Worldline ${{ matrix.rid }}
+  native-android:
+    name: Native ${{ matrix.rid }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -77,11 +82,14 @@ jobs:
           NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
           sdkmanager "ndk;$NDK_VERSION"
           python native/worldline/build.py --rid "${{ matrix.rid }}"
+          python native/game/build.py --rid "${{ matrix.rid }}"
       - name: Upload native verification evidence
         uses: actions/upload-artifact@v4
         with:
-          name: worldline-${{ matrix.rid }}
-          path: artifacts/worldline-native/${{ matrix.rid }}/
+          name: native-${{ matrix.rid }}
+          path: |
+            artifacts/worldline-native/${{ matrix.rid }}/
+            artifacts/game-native/${{ matrix.rid }}/
           if-no-files-found: error
 
   android-build:
@@ -117,7 +125,7 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android
 
-      - name: Setup Worldline build tools
+      - name: Setup native Bazel build tools
         uses: ./.github/actions/setup-worldline
 
       - name: Install Android native toolchain
@@ -128,10 +136,8 @@ jobs:
           NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
-          test -f "$SDK_ROOT/ndk/$NDK_VERSION/build/cmake/android.toolchain.cmake"
+          test -f "$SDK_ROOT/ndk/$NDK_VERSION/source.properties"
           echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
-          cmake --version
-          ninja --version
 
       - name: Restore
         run: dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -r android-arm64 -p:Configuration=Release

@@ -99,7 +99,7 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Setup Worldline build tools
+      - name: Setup native Bazel build tools
         uses: ./.github/actions/setup-worldline
         with:
           architecture: ${{ matrix.arch }}
@@ -188,7 +188,7 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Setup Worldline build tools
+      - name: Setup native Bazel build tools
         uses: ./.github/actions/setup-worldline
         with:
           architecture: ${{ matrix.arch }}
@@ -284,7 +284,7 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Setup Worldline build tools
+      - name: Setup native Bazel build tools
         uses: ./.github/actions/setup-worldline
         with:
           architecture: ${{ matrix.arch }}

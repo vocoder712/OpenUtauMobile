@@ -1,6 +1,5 @@
 """在独立构建副本中用固定 Bazel 编译冻结的 Worldline 源码。"""
 import argparse
-from contextlib import contextmanager
 import hashlib
 import json
 import locale
@@ -11,8 +10,9 @@ import re
 import shutil
 import subprocess
 import sys
-import time
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from bazel_common import build_lock, write_changed
 from verify import verify_binary
 
 HERE = Path(__file__).resolve().parent
@@ -21,45 +21,6 @@ SOURCE = HERE.parent / 'upstream_cpp'
 RIDS = ('win-x64', 'win-arm64', 'win-x86', 'linux-x64', 'linux-arm64',
         'osx-x64', 'osx-arm64', 'android-arm64', 'android-arm', 'android-x64', 'android-x86')
 LICENSES = ('world', 'libgvps', 'libnpy', 'libpyin', 'spline', 'miniaudio', 'xxhash')
-
-
-@contextmanager
-def build_lock(path):
-    """串行化同一 RID 的构建副本和安装，进程退出后由系统释放锁。"""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open('a+b') as lock:
-        if not lock.tell():
-            lock.write(b'0')
-            lock.flush()
-        deadline = time.monotonic() + 900
-        while True:
-            try:
-                if os.name == 'nt':
-                    import msvcrt
-                    lock.seek(0)
-                    msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
-                else:
-                    import fcntl
-                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                break
-            except OSError:
-                if time.monotonic() > deadline:
-                    raise TimeoutError(f'Another Worldline build holds {path}')
-                time.sleep(0.25)
-        try:
-            yield
-        finally:
-            if os.name == 'nt':
-                lock.seek(0)
-                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
-            else:
-                fcntl.flock(lock, fcntl.LOCK_UN)
-
-
-def write_changed(path, content):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    if not path.exists() or path.read_bytes() != content:
-        path.write_bytes(content)
 
 
 def stage_sources(destination):

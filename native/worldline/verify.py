@@ -20,7 +20,7 @@ EXPORTS = {
 }
 
 
-def verify_binary(path, rid):
+def verify_binary(path, rid, expected_exports=EXPORTS):
     data = Path(path).read_bytes()
     unpack = lambda fmt, offset: struct.unpack_from('<' + fmt, data, offset)
     text = lambda offset: data[offset:data.index(b'\0', offset)].decode('utf-8')
@@ -98,10 +98,10 @@ def verify_binary(path, rid):
             elif command in (0xc, 0x80000018, 0x8000001f):
                 dependencies.append(text(offset + unpack('I', offset + 8)[0]))
             offset += size
-    missing = EXPORTS - exports
+    missing = expected_exports - exports
     if missing:
-        raise ValueError(f'Missing Worldline ABI exports: {sorted(missing)}')
-    return {'dependencies': dependencies, 'verified_exports': sorted(EXPORTS)}
+        raise ValueError(f'Missing native ABI exports: {sorted(missing)}')
+    return {'dependencies': dependencies, 'verified_exports': sorted(expected_exports)}
 
 
 class AnalysisConfig(ctypes.Structure):

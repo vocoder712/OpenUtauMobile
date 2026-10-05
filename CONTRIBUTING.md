@@ -44,12 +44,11 @@ Worldline 原生构建见 [native/worldline/README.md](native/worldline/README.m
 
 | 工具 | 安装内容与用途 |
 | --- | --- |
-| [Git for Windows](https://git-scm.com/downloads/win) | 克隆仓库；CMake 也通过 Git 下载固定版本的原生依赖。安装时允许命令行使用 Git。 |
+| [Git for Windows](https://git-scm.com/downloads/win) | 克隆仓库；Git Bash 用于 Bazel 原生测试。安装时允许命令行使用 Git。 |
 | [.NET SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 安装 **SDK x64**，仅安装 Runtime 不够。版本以 [global.json](global.json) 为准，当前是 `10.0.400`，允许同一功能带内更新补丁。 |
 | [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio) | 在安装器中选择“使用 C++ 的桌面开发”，包含 MSVC x64/x86 编译工具和 Windows SDK。即使使用 Rider，也需要 C++ 编译器来构建 GGML。 |
-| [CMake](https://cmake.org/download/) | 安装 3.24 或更新版本，将其 `bin` 目录加入 PATH。安装器提供 PATH 选项；只在 IDE 内可用的 CMake 不一定能被项目构建找到。 |
-| [Bazelisk](https://github.com/bazelbuild/bazelisk/releases/tag/v1.29.0) | 安装 1.29.0，将可执行文件命名为 `bazel.exe` 并加入 PATH；Worldline 构建入口自动选择固定的 Bazel 9.2.0。 |
-| [Python](https://www.python.org/downloads/) | 安装 Python 3.10 或更新版本并加入 PATH；用于 Worldline 构建适配和原生 ABI 验证。CI 使用 3.13。 |
+| [Bazelisk](https://github.com/bazelbuild/bazelisk/releases/tag/v1.29.0) | 安装 1.29.0，将可执行文件命名为 `bazel.exe` 并加入 PATH；Worldline 和 GAME 构建入口自动选择固定的 Bazel 9.2.0。 |
+| [Python](https://www.python.org/downloads/) | 安装 Python 3.10 或更新版本并加入 PATH；用于 Worldline / GAME 构建适配和原生 ABI 验证。CI 使用 3.13。 |
 | [Rider](https://www.jetbrains.com/rider/download/) | 使用支持本仓库 .NET SDK 的版本。Rider 是编辑器和调试器，不代替以上工具链。 |
 
 安装或修改 PATH 后，关闭并重新打开 PowerShell 和 Rider。首次构建需要连接 NuGet 和 GitHub，
@@ -76,13 +75,12 @@ git switch -c feature/你的功能名
 ```powershell
 git --version
 dotnet --version
-cmake --version
 python --version
-Get-Command git,dotnet,cmake,bazel,python
+Get-Command git,dotnet,bazel,python
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
 ```
 
-`dotnet --version` 应匹配 `global.json`。C++ Build Tools 通常由 CMake 自动发现，普通终端里
+`dotnet --version` 应匹配 `global.json`。C++ Build Tools 通常由 Bazel 自动发现，普通终端里
 找不到 `cl.exe` 本身不代表安装失败。后续命令中的遥测变量只对当前 PowerShell 及其子进程有效；
 要让桌面快捷方式启动的 Rider 也继承它，可在 Windows“编辑账户的环境变量”中添加
 `AVALONIA_TELEMETRY_OPTOUT=1`，然后重启 Rider。
@@ -125,7 +123,6 @@ Windows 已能启动后，再安装以下 Android 专用工具。Android 的 C++
 | [Android Studio](https://developer.android.com/studio) | 用它的 SDK Manager 安装和管理 SDK，也可用 Device Manager 创建模拟器；C# 代码仍在 Rider 调试。 |
 | Android SDK | SDK Manager 中安装 Android API 36、Build-Tools 36.0.0、Platform-Tools、Command-line Tools (latest)。具体目标以 [Android 项目](OpenUtauMobile.Android/OpenUtauMobile.Android.csproj) 和安装的 .NET Android 工作负载为准。 |
 | Android NDK | 在 SDK Tools 中勾选 Show Package Details，安装 [android-ndk-version.txt](native/game/android-ndk-version.txt) 指定的版本，当前为 r30 LTS `30.0.16248370`。 |
-| [Ninja](https://github.com/ninja-build/ninja/releases) | 下载 Windows 版本，将 `ninja.exe` 所在目录加入 PATH，确认 `ninja --version` 成功。CMake 也必须在 PATH 中。 |
 
 安装方法也可参考微软的 [.NET Android 依赖说明](https://learn.microsoft.com/dotnet/android/getting-started/installation/dependencies)。
 项目当前 CI 使用 JDK 17，本地 JDK 21 已通过构建；不要直接使用未经当前工作负载支持的更高版本。
@@ -142,8 +139,7 @@ $env:ANDROID_HOME = $androidSdk
 & "$javaSdk/bin/java.exe" -version
 & "$androidSdk/cmdline-tools/latest/bin/sdkmanager.bat" --licenses
 & "$androidSdk/cmdline-tools/latest/bin/sdkmanager.bat" "ndk;$androidNdkVersion"
-ninja --version
-Test-Path "$androidNdk/build/cmake/android.toolchain.cmake"
+Test-Path "$androidNdk/source.properties"
 ```
 
 阅读并接受所需 SDK 许可；最后的路径检查应返回 `True`。若 SDK Manager 安装的命令行工具目录
@@ -201,11 +197,9 @@ Debug 使用独立应用 ID 和本地调试签名，无需配置 CI 的发布签
 | --- | --- |
 | 找不到匹配的 .NET SDK | 在仓库根目录运行 `dotnet --version`，按 `global.json` 安装 SDK；核对 Rider 的 .NET CLI 路径。 |
 | 要求安装 iOS 等无关 workload | 恢复、构建目标 `.csproj`，检查 Rider 是否将整个解决方案列为启动前构建任务。 |
-| `cmake` / `ninja` 找不到 | 在新 PowerShell 中运行 `Get-Command cmake,ninja`；修正 PATH 后重启 Rider。Windows MSVC 构建不要求 Ninja，Android 要求。 |
 | 找不到 C++ 编译器 | 检查 Build Tools 的 C++ 桌面开发组件和 Windows SDK；不要将只安装 Rider 视为已经安装编译器。 |
 | NDK toolchain not found | 对日志里的 NDK 路径执行 `Test-Path`；确认安装完成，并核对 Rider 的独立 NDK 配置。 |
 | Git / FetchContent / NuGet 下载失败 | 检查报错中的下载地址及网络、代理设置，修复后重试构建；IDE 和终端可能继承不同的代理环境。 |
-| CMake generator 与旧缓存不一致 | 切换编译器时使用新的 `GameBuildRoot`，例如附加 `-p:GameBuildRoot=artifacts/game-build-msvc`；`dotnet clean` 不清除这里的原生缓存。 |
 | `DllNotFoundException` / `BadImageFormatException` | 查看内部异常，核对运行目录和设备架构；重新构建当前目标，不要从另一个 RID 复制库。GGML 模型包不能替代应用原生库。 |
 | 运行后提示缺少 GAME 模型 | 安装对应 `.oudep` 模型包，见 [GAME 使用说明](README.md#game-note-extraction)。普通编辑器调试不需要这些模型。 |
 | Android 安装失败 | 检查 ADB 状态和 RID；签名冲突时先确认旧应用来源、备份应用数据，再决定是否卸载，勿直接清数据。 |

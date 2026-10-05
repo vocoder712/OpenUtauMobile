@@ -59,5 +59,5 @@ Windows-host setup, project-specific restore, and Windows/Android Rider debuggin
 are documented in [CONTRIBUTING.md](../CONTRIBUTING.md). Feature and accelerator
 status belong to the [global README](../README.md#feature-matrix).
 For Linux or macOS, build the corresponding host project on that OS with Git,
-CMake and its native C/C++ toolchain. Release RIDs and packaging are defined in the
+Python 3.10+, Bazelisk 1.29.0 and its native C/C++ toolchain. Release RIDs and packaging are defined in the
 [full-platform workflow](../.github/workflows/build-all-platforms.yml).
