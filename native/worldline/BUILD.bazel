@@ -1,3 +1,5 @@
+load("@rules_cc//cc:cc_static_library.bzl", "cc_static_library")
+
 package(default_visibility = ["//visibility:public"])
 exports_files(["adapt_build.py", "xxhash.BUILD"])
 
@@ -12,3 +14,17 @@ platform(name = "android-arm64", constraint_values = ["@platforms//os:android", 
 platform(name = "android-arm", constraint_values = ["@platforms//os:android", "@platforms//cpu:armv7"])
 platform(name = "android-x64", constraint_values = ["@platforms//os:android", "@platforms//cpu:x86_64"])
 platform(name = "android-x86", constraint_values = ["@platforms//os:android", "@platforms//cpu:x86_32"])
+
+constraint_setting(name = "ios_environment")
+constraint_value(name = "ios_device", constraint_setting = ":ios_environment")
+constraint_value(name = "ios_simulator", constraint_setting = ":ios_environment")
+platform(name = "ios-arm64", constraint_values = ["@platforms//os:ios", "@platforms//cpu:arm64", ":ios_device"])
+platform(name = "iossimulator-arm64", constraint_values = ["@platforms//os:ios", "@platforms//cpu:arm64", ":ios_simulator"])
+platform(name = "iossimulator-x64", constraint_values = ["@platforms//os:ios", "@platforms//cpu:x86_64", ":ios_simulator"])
+platform(name = "browser-wasm", constraint_values = ["@platforms//os:emscripten", "@platforms//cpu:wasm32"])
+
+# 归档传递依赖的全部对象，应用链接时不再依赖 Bazel 的中间产物。
+cc_static_library(
+    name = "worldline_static",
+    deps = ["//worldline:worldline_lib", "//worldline:audio_output_lib"],
+)

@@ -14,12 +14,14 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bazel_common import build_lock, write_changed
 from verify import verify_binary
+from static_platforms import STATIC_RIDS, configure
+from verify_static import verify_archive
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 SOURCE = HERE.parent / 'upstream_cpp'
 RIDS = ('win-x64', 'win-arm64', 'win-x86', 'linux-x64', 'linux-arm64',
-        'osx-x64', 'osx-arm64', 'android-arm64', 'android-arm', 'android-x64', 'android-x86')
+        'osx-x64', 'osx-arm64', 'android-arm64', 'android-arm', 'android-x64', 'android-x86') + STATIC_RIDS
 LICENSES = ('world', 'libgvps', 'libnpy', 'libpyin', 'spline', 'miniaudio', 'xxhash')
 
 
@@ -44,7 +46,7 @@ def stage_sources(destination):
                 content += ('\nfilegroup(name = "opum_license", srcs = glob(' + pattern + '))\n').encode()
         files[relative] = content
     for name in ('.bazelversion', '.bazelrc', 'MODULE.bazel', 'BUILD.bazel', 'MODULE.bazel.lock',
-                 'frozen_archive.bzl', 'adapt_build.py', 'xxhash.BUILD'):
+                 'frozen_archive.bzl', 'adapt_build.py', 'xxhash.BUILD', 'static_toolchain.bzl'):
         source = HERE / name
         if source.is_file():
             files[name] = source.read_bytes()
@@ -67,6 +69,13 @@ def main():
     parser.add_argument('--build-root', type=Path, default=ROOT / 'artifacts/worldline-build')
     parser.add_argument('--install-root', type=Path, default=ROOT / 'artifacts/worldline-native')
     parser.add_argument('--ndk', type=Path)
+    parser.add_argument('--emscripten', type=Path)
+    parser.add_argument('--emscripten-cache', type=Path)
+    parser.add_argument('--emscripten-node', type=Path)
+    parser.add_argument('--wasm-threads', choices=('true', 'false'), default='true')
+    parser.add_argument('--wasm-simd', choices=('true', 'false'), default='true')
+    parser.add_argument('--wasm-exceptions', choices=('true', 'false'), default='true')
+    parser.add_argument('--ios-minimum', default='15.0')
     parser.add_argument('--bazel', default='bazel')
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--update-lock', action='store_true')
@@ -83,14 +92,16 @@ def main():
 def build_native(args, parser, build):
     host_os = {'Windows': 'win', 'Linux': 'linux', 'Darwin': 'osx'}[platform.system()]
     host_arch = 'arm64' if platform.machine().lower() in ('aarch64', 'arm64') else 'x64'
-    if not args.rid.startswith('android-') and not args.rid.startswith(host_os + '-'):
+    is_static = args.rid in STATIC_RIDS
+    if not is_static and not args.rid.startswith('android-') and not args.rid.startswith(host_os + '-'):
         parser.error(f'Cannot build {args.rid} on {host_os}')
-    if host_os != 'win' and not args.rid.startswith('android-') and args.rid != f'{host_os}-{host_arch}':
+    if not is_static and host_os != 'win' and not args.rid.startswith('android-') and args.rid != f'{host_os}-{host_arch}':
         parser.error('Use a native runner for this architecture')
     if args.test and args.rid != f'{host_os}-{host_arch}':
         parser.error('Tests require a matching native host')
     stage = build / 'workspace'
     digest = stage_sources(stage)
+    static_sdk = configure(args, parser, stage) if is_static else None
     adapter_hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(HERE.iterdir())
                       if path.is_file() and (path.suffix in ('.py', '.bzl', '.bazel', '.BUILD') or path.name in ('.bazelrc', '.bazelversion'))}
     upstream_commit = (HERE / 'upstream-revision.txt').read_text().strip()
@@ -112,6 +123,8 @@ def build_native(args, parser, build):
     env['OPUM_WORLDLINE_PYTHON'] = sys.executable
     env.setdefault('BAZELISK_HOME', str(ROOT / 'artifacts/bazelisk'))
     options = [f'--platforms=//:{args.rid}', '--lockfile_mode=' + ('update' if args.update_lock else 'error')]
+    if is_static:
+        options += ['--extra_toolchains=//sdk_toolchain:toolchain']
     if args.rid.startswith('win-'):
         options += ['--cxxopt=/std:c++17', '--copt=/utf-8', '--features=static_link_msvcrt']
         if args.rid == 'win-x86':
@@ -148,12 +161,13 @@ def build_native(args, parser, build):
                               check=True, text=True, stdout=subprocess.PIPE if capture else None)
 
     try:
-        run('build', ['//worldline:worldline'])
+        target = '//:worldline_static' if is_static else '//worldline:worldline'
+        run('build', [target])
         if args.test:
             run('test', ['//worldline:worldline_test', '//worldline/model:effects_test', '//worldline/model:continuous_noise_test'])
-        paths = run('cquery', ['set(//worldline:worldline ' + ' '.join('@' + name + '//:opum_license' for name in LICENSES) + ')', '--output=files'], capture=True).stdout.splitlines()
+        paths = run('cquery', ['set(' + target + ' ' + ' '.join('@' + name + '//:opum_license' for name in LICENSES) + ')', '--output=files'], capture=True).stdout.splitlines()
         license_paths = [path for path in paths if path.startswith('external/')]
-        actions = json.loads(run('aquery', ['mnemonic("CppCompile", deps(//worldline:worldline))',
+        actions = json.loads(run('aquery', ['mnemonic("CppCompile", deps(' + target + '))',
                                          '--output=jsonproto', '--include_artifacts=false'], capture=True).stdout)
         execution_root = Path(run('info', ['execution_root'], capture=True).stdout.strip())
     finally:
@@ -161,11 +175,15 @@ def build_native(args, parser, build):
         if args.update_lock and generated_lock.is_file():
             write_changed(HERE / 'MODULE.bazel.lock', generated_lock.read_bytes())
     name = 'worldline.dll' if args.rid.startswith('win-') else ('libworldline.dylib' if args.rid.startswith('osx-') else 'libworldline.so')
+    if is_static:
+        name = 'libworldline_static.a'
     libraries = [stage / path for path in paths if Path(path).name == name]
     if len(libraries) != 1 or not libraries[0].is_file():
         raise RuntimeError(f'Expected exactly one {name}; cquery returned {paths}')
     destination = args.install_root.resolve() / args.rid
-    verification = verify_binary(libraries[0], args.rid)
+    verification = verify_archive(libraries[0], args.rid, static_sdk['nm']) if is_static else verify_binary(libraries[0], args.rid)
+    if is_static:
+        name = 'worldline.a' if args.rid == 'browser-wasm' else 'libworldline.a'
     licenses = {name: [] for name in LICENSES}
     for path in license_paths:
         repo = next((name for name in LICENSES if '+' + name + '/' in path), None)
@@ -190,6 +208,8 @@ def build_native(args, parser, build):
     compiler_result = subprocess.run([str(compiler_path), '/Bv' if compiler_path.name.lower() == 'cl.exe' else '--version'],
                                     cwd=execution_root, env=compiler_env, capture_output=True)
     compiler_info = (compiler_result.stdout + compiler_result.stderr).decode(locale.getpreferredencoding(False), errors='replace').strip()
+    if is_static:
+        compiler_info = static_sdk['compiler_version']
     if compiler_path.name.lower() == 'cl.exe':
         # cl /Bv 输出版本后因没有输入文件返回非零；保留首行版本与目标架构。
         compiler_info = compiler_info.splitlines()[0]
@@ -199,7 +219,7 @@ def build_native(args, parser, build):
         raise RuntimeError('Compiler did not report its version')
     provenance = {'rid': args.rid, 'bazel': version, 'source_sha256': digest,
                   'upstream_commit': upstream_commit,
-                  'compiler': compiler, 'compiler_version': compiler_info,
+                  'compiler': static_sdk['compiler'] if is_static else compiler, 'compiler_version': compiler_info,
                   'compiler_arguments': compiler_action['arguments'],
                   'build_options': options, 'binary': verification,
                   'module_sha256': hashlib.sha256((stage / 'MODULE.bazel').read_bytes()).hexdigest(),
@@ -210,6 +230,8 @@ def build_native(args, parser, build):
                   'library_sha256': hashlib.sha256(libraries[0].read_bytes()).hexdigest()}
     if args.rid.startswith('android-'):
         provenance['ndk'] = (ndk / 'source.properties').read_text().strip()
+    if is_static:
+        provenance['static_sdk'] = static_sdk
     write_changed(destination / 'worldline-build.json', (json.dumps(provenance, indent=2) + '\n').encode())
     print(f'Worldline {args.rid}: {destination / name}', flush=True)
 

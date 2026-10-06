@@ -1,8 +1,8 @@
 # Worldline 源码构建
 
-`WorldlineNative.targets` 在 Windows、Linux、macOS、Android 的正常 Build / Publish 中运行
+`WorldlineNative.targets` 在 Windows、Linux、macOS、Android、iOS、Browser 的正常 Build / Publish 中运行
 `build.py`，使用 Bazelisk 1.29.0 / Bazel 9.2.0 从 `native/upstream_cpp` 构建。
-没有预编译库回退。iOS / Browser 尚未接入。
+没有预编译库回退。iOS / Browser 使用同一入口构建静态库并链入宿主。
 
 ## 工具与平台
 
@@ -11,6 +11,10 @@
 - Linux 使用目标架构的本机 C/C++ 编译器；macOS 使用本机 Xcode Command Line Tools。两者在对应架构的 runner 构建。
 - Android 使用 `../game/android-ndk-version.txt` 固定的 NDK r30，最低 API 24，支持四 ABI。
   静态链接 libc++，要求 ELF LOAD 对齐至少 16 KB。`AndroidNdkDirectory` 显式路径优先，否则使用 SDK 中的固定版本。
+- iOS 必须在 macOS 上安装完整 Xcode，支持 `ios-arm64`、`iossimulator-arm64`、`iossimulator-x64`。
+  使用所选 Xcode 的 Clang、ar 和对应 SDK；部署版本跟随宿主的 `SupportedOSPlatformVersion`（直接调用默认 15.0）。
+- Browser 支持 `browser-wasm`，使用当前 .NET `wasm-tools` 工作负载中的 Emscripten、LLVM、Node 和 sysroot。
+  线程、SIMD 和异常模式由 MSBuild 传入，与最终 .NET WASM 链接配置一致，不额外安装独立 Emscripten。
 
 原生部分始终使用优化构建；应用 Debug / Release 不改变算法和浮点选项。不使用 `-march=native` 或额外的 fast-math。
 
@@ -48,6 +52,39 @@ F0 四种模式、MGC/BAP 解码、AnalysisConfig 初始化、普通/R1.1 分析
 `--run --report <path.json>` 可保存确定性输入输出，用于与实际 Core 托管调用比较。
 这些是小输入的 ABI 检查，不代替模型、真实音源渲染、内存压力或设备音频验收。
 Android ELF 检查不能替代设备上的渲染和音频播放验收。
+
+## iOS / Browser 静态链接
+
+```sh
+# macOS：真机和两种模拟器，分别生成 libworldline.a。
+python3 native/worldline/build.py --rid ios-arm64
+python3 native/worldline/build.py --rid iossimulator-arm64
+python3 native/worldline/build.py --rid iossimulator-x64
+
+# 通过 .NET 提供精确的 Emscripten 工具和编译配置，生成 worldline.a。
+dotnet msbuild OpenUtauMobile.Browser/OpenUtauMobile.Browser.csproj -t:BuildWorldlineNative
+python3 native/worldline/verify_browser.py artifacts/worldline-native/browser-wasm
+```
+
+`cc_static_library` 收集冻结上游的 Worldline、音频接口及传递依赖对象，生成独立归档。
+平台工具链只在新目标上注册，不改变桌面或 Android 工具链。归档检查包含每个对象的文件格式、
+iOS CPU 与真机/模拟器平台、全部 20 个 ABI 定义及重复定义；来源清单记录 SDK、目标三元组与选项。
+
+iOS 使用 `NativeReference`、C++ 运行库和系统音频框架。宿主模块初始化器将 Core 的
+`DllImport("worldline")` 解析到主程序；链接选项显式保留并导出这些函数。
+IPA 验证还检查最终可执行文件导出和 `WorldlineLicenses`，避免仅归档成功而发布时被裁掉。
+
+Browser 使用文件名 `worldline.a` 配合 `NativeFileReference`，让 .NET 生成静态 P/Invoke 表，
+不修改 Core。许可证和来源清单位于 `wwwroot/licenses/Worldline`。
+`verify_browser.py` 使用同一 SDK 链接全部 ABI，并在 Node 中运行四种 F0 模式、缓冲区哨兵、
+AnalysisConfig 布局和合成长度检查。此检查不创建音频设备，也不验证 ONNX、模型渲染或浏览器播放。
+
+本机 Windows 已验证 Browser 原生构建、Debug 应用链接、Release 发布与 Node 中的 WASM 调用；iOS 配置需在 Mac/CI 实测，
+不能将 CI 任务定义视为构建或设备验收通过。现有 Browser Dummy 音频后端及 ONNX 能力边界不因静态库接入改变。
+
+真实浏览器中也已通过 Core 的四种 F0 模式及配置初始化调用。接入时发现 .NET 10 的增量构建
+遗漏了 `runtime.c` 对 `wasm_m2n_invoke.g.h` 的依赖，可能复用缺少新 P/Invoke 签名的旧运行时对象。
+`TrackWorldlineWasmTrampolines` 在项目构建层补齐该依赖，无需修改 SDK 或定期手动清理 obj。
 
 可选 MSBuild 属性：`WorldlinePythonExecutable`、`WorldlineBazelExecutable`、`WorldlineBuildRoot`、
 `WorldlineNativeRoot`。DesignTimeBuild 不编译或下载。

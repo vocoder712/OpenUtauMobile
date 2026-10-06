@@ -47,6 +47,12 @@ Do not infer capability parity merely because hosts share App.
 - [iOS AppDelegate](../OpenUtauMobile.iOS/AppDelegate.cs) registers AVAudioEngine audio
   initialization (with a Dummy fallback) and probes ONNX Runtime at startup. It does
   not establish complete desktop/mobile feature parity.
+- iOS and Browser import the [Worldline native build](../native/worldline/README.md).
+  Bazel produces static archives: iOS links them through `NativeReference` and resolves
+  Core's `worldline` imports to explicitly retained main-program symbols; Browser uses
+  `NativeFileReference` with the .NET workload's Emscripten toolchain. This does not
+  provide GAME/ggml, ONNX support or a Browser audio output backend. iOS still requires
+  validation on macOS/Xcode and devices.
 - [Browser Program](../OpenUtauMobile.Browser/Program.cs)
   uses silent Dummy audio and injects PathManager through private fields instead of
   its normal constructor. Core singleton/property changes therefore need browser

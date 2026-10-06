@@ -357,3 +357,13 @@ jobs:
       source_sha: ${{ inputs.source_sha }}
       action_run_id: ${{ inputs.action_run_id }}
       version_lyrics: ${{ inputs.version_lyrics }}
+
+  browser:
+    name: Browser WASM
+    uses: ./.github/workflows/build-browser.yml
+    with:
+      version: ${{ inputs.version }}
+      build_number: ${{ inputs.build_number }}
+      source_sha: ${{ inputs.source_sha }}
+      action_run_id: ${{ inputs.action_run_id }}
+      version_lyrics: ${{ inputs.version_lyrics }}

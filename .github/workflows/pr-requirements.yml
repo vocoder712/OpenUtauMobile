@@ -9,6 +9,32 @@ permissions:
   contents: read
 
 jobs:
+  worldline-ios:
+    name: Worldline ${{ matrix.rid }}
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        rid: [ios-arm64, iossimulator-arm64, iossimulator-x64]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-worldline
+        with:
+          architecture: arm64
+      - name: Build and verify static archive
+        run: python native/worldline/build.py --rid ${{ matrix.rid }}
+      - name: Upload native verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldline-${{ matrix.rid }}
+          path: artifacts/worldline-native/${{ matrix.rid }}/
+          if-no-files-found: error
+
+  browser-build:
+    uses: ./.github/workflows/build-browser.yml
+
   native-desktop:
     name: Native ${{ matrix.rid }}
     runs-on: ${{ matrix.runner }}
