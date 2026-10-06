@@ -82,6 +82,9 @@ def configure(args, parser, stage):
             includes.append(Path(line.strip().removesuffix(' (framework directory)')).as_posix())
     if not includes:
         raise RuntimeError('Clang did not report system include directories')
+    if args.rid != 'browser-wasm':
+        # Xcode 27 将 SDKSettings.json 也写入依赖文件；限于选定 SDK，兼容 Xcode 路径符号链接。
+        includes += [sysroot.as_posix(), sysroot.resolve().as_posix()]
     compiler_version = output([str(compiler), '--version'])
     # SDK 原地升级时也使 Bazel 编译动作失效，不仅依靠安装路径区分版本。
     environment['OPUM_WORLDLINE_SDK_FINGERPRINT'] = hashlib.sha256((sdk_version + compiler_version).encode()).hexdigest()
