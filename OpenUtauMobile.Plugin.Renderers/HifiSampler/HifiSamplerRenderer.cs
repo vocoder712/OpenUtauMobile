@@ -651,6 +651,7 @@ namespace OpenUtauMobile.Plugin.Renderers.HifiSampler {
         }
 
         static float[] RunInference(InferenceSession session, List<NamedOnnxValue> inputs) {
+            using IDisposable dmlScope = Onnx.EnterDmlScope();
             using var results = session.Run(inputs);
             return results.First().AsTensor<float>().ToArray();
         }
