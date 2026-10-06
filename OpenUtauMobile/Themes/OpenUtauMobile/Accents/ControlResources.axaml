@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
                     x:CompileBindings="False">
   <ResourceDictionary.ThemeDictionaries>
     <ResourceDictionary x:Key="Default">
@@ -199,8 +200,8 @@
       <Thickness x:Key="MenuFlyoutItemChevronMargin">12,0,0,0</Thickness>
       <Thickness x:Key="MenuFlyoutSeparatorThemePadding">12,4,12,4</Thickness>
       <StaticResource x:Key="MenuFlyoutItemBackground" ResourceKey="SystemControlTransparentBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Hover}" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Pressed}" />
       <StaticResource x:Key="MenuFlyoutItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="MenuFlyoutItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
       <StaticResource x:Key="MenuFlyoutItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
@@ -970,8 +971,8 @@
       <Thickness x:Key="MenuFlyoutItemChevronMargin">12,0,0,0</Thickness>
       <Thickness x:Key="MenuFlyoutSeparatorThemePadding">12,4,12,4</Thickness>
       <StaticResource x:Key="MenuFlyoutItemBackground" ResourceKey="SystemControlTransparentBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Hover}" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Pressed}" />
       <StaticResource x:Key="MenuFlyoutItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="MenuFlyoutItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
       <StaticResource x:Key="MenuFlyoutItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />

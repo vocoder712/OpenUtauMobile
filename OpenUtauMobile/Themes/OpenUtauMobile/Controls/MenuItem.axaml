@@ -111,12 +111,12 @@
       <Setter Property="IsVisible" Value="True" />
     </Style>
     <Style Selector="^:pointerover:not(:disabled) /template/ Border#PART_LayoutRoot">
-      <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+      <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundPointerOver}" />
     </Style>
 
     <Style Selector="^:selected">
       <Style Selector="^ /template/ Border#PART_LayoutRoot">
-        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+        <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundPointerOver}" />
       </Style>
       <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
         <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundPointerOver}" />
