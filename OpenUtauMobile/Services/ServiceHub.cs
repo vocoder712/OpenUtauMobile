@@ -6,6 +6,7 @@ using Avalonia.Media;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Services.Performance;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Platform;
 
 namespace OpenUtauMobile.Services;
 

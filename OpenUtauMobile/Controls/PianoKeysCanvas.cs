@@ -8,6 +8,7 @@ using Avalonia.Media.TextFormatting;
 using OpenUtau.Core;
 using OpenUtauMobile.Audio;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 
 namespace OpenUtauMobile.Controls;
 

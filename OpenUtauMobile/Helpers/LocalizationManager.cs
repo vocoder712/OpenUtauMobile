@@ -8,6 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using Serilog;
 
 namespace OpenUtauMobile.Helpers;

@@ -54,20 +54,9 @@
 
     <!-- 原生库 -->
     <ItemGroup>
-        <!-- 避免默认项与显式项重复，先排除，再包含 -->
+        <!-- Worldline 由源码构建目标按当前 RID 添加。 -->
         <AndroidNativeLibrary Remove="Libs\**\*.so"/>
-        <AndroidNativeLibrary Include="Libs\armeabi-v7a\*">
-            <Abi>armeabi-v7a</Abi>
-        </AndroidNativeLibrary>
-        <AndroidNativeLibrary Include="Libs\arm64-v8a\*">
-            <Abi>arm64-v8a</Abi>
-        </AndroidNativeLibrary>
-        <AndroidNativeLibrary Include="Libs\x86\*">
-            <Abi>x86</Abi>
-        </AndroidNativeLibrary>
-        <AndroidNativeLibrary Include="Libs\x86_64\*">
-            <Abi>x86_64</Abi>
-        </AndroidNativeLibrary>
     </ItemGroup>
+    <Import Project="../native/worldline/WorldlineNative.targets" />
     <Import Project="../native/game/GameNative.targets" />
 </Project>

@@ -1893,6 +1893,7 @@
   <data name="Expressions.Numerical" xml:space="preserve"><value>Числовой</value></data>
   <data name="Expressions.Options" xml:space="preserve"><value>Параметры</value></data>
   <data name="Expressions.Curve" xml:space="preserve"><value>Кривая</value></data>
+  <data name="Expressions.MaskedCurve" xml:space="preserve"><value>Кривая с маской</value></data>
   <data name="Expressions.IsFlag" xml:space="preserve"><value>Является флагом ресамплера</value></data>
   <data name="Expressions.Flag" xml:space="preserve"><value>Флаг ресамплера</value></data>
   <data name="Expressions.Min" xml:space="preserve"><value>Мин.</value></data>
@@ -2111,4 +2112,24 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>Введите допустимое имя файла без разделителей каталогов.</value>
   </data>
+  <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>Очистить нарисованные значения</value></data>
+  <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>Партия «{0}»: чтобы сохранить сетку кривых с маской с шагом 5 тиков и не разрезать ноты, позиция разделения будет перенесена с {1} на {2} тиков от начала партии. Продолжить?</value></data>
+  <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>Невозможно разделить партию «{0}» здесь: до её конца нет допустимой позиции разделения.</value></data>
+  <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>Пунктир: значения, вычисленные графом</value></data>
+  <data name="EditorMore.MergeNearbyPhrases" xml:space="preserve">
+    <value>Объединять фразы DiffSinger</value>
+  </data>
+  <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
+    <value>По умолчанию выключено. Фразы по обе стороны короткой паузы могут синтезироваться вместе, что может изменить пение. Применяется ко всем дорожкам DiffSinger; при изменении фразы группируются заново.</value>
+  </data>
+  <data name="Mixer.EnableEffect" xml:space="preserve"><value>Включить эффект</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>Все эффекты в обходе</value></data>
+  <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>Эффект в обходе</value></data>
+  <data name="ErrorDialog.MissingPackage" xml:space="preserve">
+    <value>Отсутствует пакет зависимостей: {0}</value>
+  </data>
+  <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>Цель рисования: по графу ({0})</value></data>
+  <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Цель рисования: отклонение (PITD)</value></data>
+  <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Цель рисования: переопределение (PITO)</value></data>
+  <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>Показывать область кисти высоты тона</value></data>
 </root>

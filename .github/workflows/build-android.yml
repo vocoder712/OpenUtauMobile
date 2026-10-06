@@ -32,15 +32,19 @@ on:
         required: false
         default: ''
         type: string
+      release_signing:
+        description: Use the release Android keystore; PR validation uses debug signing
+        type: boolean
+        default: true
     secrets:
       ANDROID_KEYSTORE_BASE64:
-        required: true
+        required: false
       ANDROID_KEYSTORE_PASSWORD:
-        required: true
+        required: false
       ANDROID_KEY_ALIAS:
-        required: true
+        required: false
       ANDROID_KEY_PASSWORD:
-        required: true
+        required: false
 
 permissions:
   contents: read
@@ -78,7 +82,10 @@ jobs:
       - name: Install Android workload
         run: dotnet workload install android
 
-      - name: Install GAME Android toolchain
+      - name: Setup native Bazel build tools
+        uses: ./.github/actions/setup-worldline
+
+      - name: Install Android native toolchain
         shell: bash
         run: |
           set -euo pipefail
@@ -86,10 +93,8 @@ jobs:
           NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
-          test -f "$SDK_ROOT/ndk/$NDK_VERSION/build/cmake/android.toolchain.cmake"
-          echo "GAME_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
-          cmake --version
-          ninja --version
+          test -f "$SDK_ROOT/ndk/$NDK_VERSION/source.properties"
+          echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
 
       - name: Create Swap Space
         shell: bash
@@ -111,6 +116,7 @@ jobs:
           echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
 
       - name: Decode Android Keystore
+        if: inputs.release_signing
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -132,7 +138,19 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          RELEASE_SIGNING: ${{ inputs.release_signing }}
         run: |
+          set -euo pipefail
+          signing_args=(-p:AndroidKeyStore=false)
+          if [ "$RELEASE_SIGNING" = "true" ]; then
+            test -s signing.keystore
+            test -n "$KEYSTORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
+            signing_args=(-p:AndroidKeyStore=true
+              "-p:AndroidSigningKeyStore=$GITHUB_WORKSPACE/signing.keystore"
+              "-p:AndroidSigningStorePass=$KEYSTORE_PASSWORD"
+              "-p:AndroidSigningKeyAlias=$KEY_ALIAS"
+              "-p:AndroidSigningKeyPass=$KEY_PASSWORD")
+          fi
           dotnet publish OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
             --no-restore \
             -c Release \
@@ -145,18 +163,9 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:AndroidNdkDirectory="$GAME_ANDROID_NDK" \
+            -p:AndroidNdkDirectory="$OPUM_ANDROID_NDK" \
             -p:AndroidPackageFormat=apk \
-            -p:AndroidKeyStore=true \
-            -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
-            -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
-            -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
-            -p:AndroidSigningKeyPass="$KEY_PASSWORD"
-
-      - name: Setup APK verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
+            "${signing_args[@]}"
 
       - name: Verify and prepare Android artifact
         shell: bash
@@ -253,7 +262,7 @@ jobs:
           package_format=apk
           restore=explicit-rid
           publish=no-restore
-          android_ndk=$GAME_ANDROID_NDK
+          android_ndk=$OPUM_ANDROID_NDK
           product_version=${{ inputs.version }}
           build_number=${{ inputs.build_number }}
           source_commit=${{ inputs.source_sha }}

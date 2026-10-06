@@ -23,6 +23,7 @@ using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -2060,11 +2061,26 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         foreach (UVoicePart part in selection.OfType<UVoicePart>().ToArray())
         {
             if (!project.parts.Contains(part) || part.position >= playTick || part.End <= playTick) continue;
-            int tick = FindSplitTick(part, playTick);
-            if (tick != playTick)
+            int tick;
+            bool skip = false;
+            while (true)
             {
+                tick = FindSplitTick(part, playTick);
+                if (tick >= part.End)
+                {
+                    ToastService.Enqueue(string.Format(L.S("Editor.Split.NoValidPosition"), part.name));
+                    skip = true;
+                    break;
+                }
+                if (tick == playTick) break;
+
+                int proposedPosition = part.position;
+                string message = part.maskedCurves.Any(curve => !curve.IsEmpty)
+                    ? string.Format(L.S("Editor.Split.MaskedGridAdjustment"), part.name,
+                        playTick - proposedPosition, tick - proposedPosition)
+                    : L.S("Editor.Split.NotesInTheWay");
                 string? answer = await OptionConfirmPopupService.ShowAsync(
-                    L.S("Editor.Action.Split"), L.S("Editor.Split.NotesInTheWay"),
+                    L.S("Editor.Action.Split"), message,
                     new OptionConfirmOption[]
                     {
                         new(L.S("Common.Cancel"), "cancel"),
@@ -2072,9 +2088,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     });
                 // 弹窗期间可能切换工程或删除分片，不向失效对象提交命令。
                 if (DocManager.Inst.Project != project) return;
-                if (answer != "split" || !project.parts.Contains(part)) continue;
-                tick = FindSplitTick(part, playTick);
+                if (answer != "split" || !project.parts.Contains(part)
+                    || part.position >= playTick || part.End <= playTick)
+                {
+                    skip = true;
+                    break;
+                }
+                // 只能使用用户刚确认的切点；分片位置或避让结果变化后重新确认。
+                if (part.position == proposedPosition && tick < part.End && FindSplitTick(part, playTick) == tick) break;
             }
+            if (skip) continue;
 
             int relativeTick = tick - part.position;
             UVoicePart left = new()
@@ -2085,6 +2108,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 position = part.position,
                 notes = GetNotes(part.notes, relativeTick, after: false),
                 curves = GetCurves(part.curves, relativeTick, after: false),
+                maskedCurves = GetMaskedCurves(part.maskedCurves, relativeTick, after: false),
                 Duration = relativeTick,
             };
             UVoicePart right = new()
@@ -2095,6 +2119,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 position = tick,
                 notes = GetNotes(part.notes, relativeTick, after: true),
                 curves = GetCurves(part.curves, relativeTick, after: true),
+                maskedCurves = GetMaskedCurves(part.maskedCurves, relativeTick, after: true),
                 Duration = part.End - tick,
             };
             splits.Add((part, left, right));
@@ -2123,12 +2148,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         static int FindSplitTick(UVoicePart part, int playTick)
         {
-            int relativeTick = playTick - part.position;
-            // 音符按起点排序，一次扫描即可越过连续重叠的音符。
+            bool alignMaskedGrid = part.maskedCurves.Any(curve => !curve.IsEmpty);
+            int Align(int tick) => alignMaskedGrid
+                ? (int)Math.Min(part.duration, Math.Ceiling(tick / (double)UMaskedCurve.interval) * UMaskedCurve.interval)
+                : tick;
+            int relativeTick = Align(playTick - part.position);
+            // 每次避开音符后再次向后对齐，继续扫描可能被对齐位置命中的音符。
             foreach (UNote note in part.notes)
             {
                 if (note.position >= relativeTick) break;
-                relativeTick = Math.Max(relativeTick, note.End);
+                if (note.End > relativeTick) relativeTick = Align(note.End);
             }
             return part.position + relativeTick;
         }
@@ -2143,6 +2172,32 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     if (after) clone.position -= tick;
                     return clone;
                 }));
+        }
+
+        static List<UMaskedCurve> GetMaskedCurves(IEnumerable<UMaskedCurve> curves, int tick, bool after)
+        {
+            List<UMaskedCurve> result = [];
+            foreach (UMaskedCurve curve in curves)
+            {
+                UMaskedCurve split = new(curve.abbr);
+                foreach (UMaskedRun run in curve.runs)
+                {
+                    if (run.ys.Length == 0 || (after ? run.End < tick : run.x >= tick)) continue;
+
+                    // 保留跨切点线段的相邻采样点，避免边缘变成无值或改变插值。
+                    // 右侧只平移原始坐标；非网格切点不能重新吸附，否则会移动曲线。
+                    double index = (tick - (double)run.x) / UMaskedCurve.interval;
+                    int first = after ? (int)Math.Clamp(Math.Floor(index), 0, run.ys.Length - 1) : 0;
+                    int last = after ? run.ys.Length - 1 : (int)Math.Clamp(Math.Ceiling(index), 0, run.ys.Length - 1);
+                    split.runs.Add(new UMaskedRun
+                    {
+                        x = run.x + first * UMaskedCurve.interval - (after ? tick : 0),
+                        ys = run.ys[first..(last + 1)],
+                    });
+                }
+                if (!split.IsEmpty) result.Add(split);
+            }
+            return result;
         }
 
         static List<UCurve> GetCurves(IEnumerable<UCurve> curves, int tick, bool after)

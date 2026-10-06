@@ -1,0 +1,17 @@
+name: Setup native Bazel build tools
+description: Install Python and the pinned Bazelisk for source builds
+inputs:
+  architecture:
+    description: Python architecture for native ABI verification
+    default: x64
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v7
+      with:
+        python-version: '3.13'
+        architecture: ${{ inputs.architecture }}
+    - uses: bazel-contrib/setup-bazel@0.19.0
+      with:
+        bazelisk-version: '1.29.0'
+        module-root: native/worldline

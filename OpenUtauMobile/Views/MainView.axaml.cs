@@ -24,7 +24,15 @@ public partial class MainView : UserControl
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested += OnBackRequested;
         ToastService.Register(ToastOverlay.ConsumeAsync);
-        ErrorDialogService.Register(async vm => { await PopupService.Show<object>(new ErrorDialogPopup(), vm); });
+        ErrorDialogService.Register(
+            async vm => { await PopupService.Show<object>(new ErrorDialogPopup(), vm); },
+            () =>
+            {
+                if (DataContext is MainViewModel navigator)
+                {
+                    navigator.Navigate(new DependencyManagerViewModel(navigator));
+                }
+            });
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

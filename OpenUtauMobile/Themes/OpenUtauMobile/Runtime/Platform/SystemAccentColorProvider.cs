@@ -7,7 +7,7 @@ using Avalonia.Media;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Services;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Platform;
 
 public interface ISystemAccentColorProvider
 {

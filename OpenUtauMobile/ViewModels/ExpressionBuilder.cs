@@ -43,6 +43,7 @@ public class ExpressionBuilder : ReactiveObject
             this.RaisePropertyChanged(nameof(IsNumerical));
             this.RaisePropertyChanged(nameof(IsOptions));
             this.RaisePropertyChanged(nameof(IsCurve));
+            this.RaisePropertyChanged(nameof(IsMaskedCurve));
         }
     }
     public bool IsCustom => !OpenUtau.Core.Format.Ustx.required.Contains(Abbr);
@@ -50,6 +51,7 @@ public class ExpressionBuilder : ReactiveObject
     public bool IsNumerical => ExpressionType == (int)UExpressionType.Numerical;
     public bool IsOptions => ExpressionType == (int)UExpressionType.Options;
     public bool IsCurve => ExpressionType == (int)UExpressionType.Curve;
+    public bool IsMaskedCurve => ExpressionType == (int)UExpressionType.MaskedCurve;
     public string DisplayAbbr => Abbr.ToUpperInvariant();
     public string AddMenuLabel => string.IsNullOrEmpty(Abbr) ? Name : $"{Name}: {Abbr}";
 
@@ -77,7 +79,9 @@ public class ExpressionBuilder : ReactiveObject
     {
         if (string.IsNullOrWhiteSpace(Name)) return L.S("Expressions.Error.Name");
         if (string.IsNullOrWhiteSpace(Abbr)) return L.S("Expressions.Error.Abbr");
-        // 桌面端仅对数值型执行范围和默认值校验。
+        // 掩码曲线与桌面端一致，只校验范围；未设置区间没有默认值。
+        if (IsMaskedCurve && Min >= Max) return L.S("Expressions.Error.Range");
+        // 默认值校验只适用于数值型。
         if (IsNumerical)
         {
             if (Abbr.Trim().Length > 4) return L.S("Expressions.Error.AbbrLength");
@@ -100,6 +104,12 @@ public class ExpressionBuilder : ReactiveObject
                 DefaultValue)
             {
                 type = UExpressionType.Curve,
+            },
+            // Min 仅作为描述符构造的占位默认值，不填充未设置区间。
+            UExpressionType.MaskedCurve => new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max,
+                Min)
+            {
+                type = UExpressionType.MaskedCurve,
             },
             _ => throw new InvalidOperationException("Unexpected expression type")
         };

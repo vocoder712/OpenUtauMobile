@@ -13,58 +13,49 @@ Core 与 USTX 数据结构不需要改动。
 
 ## 构建约定
 
-`GameNative.targets` 在正常 Build / Publish 中调用同一个 `Build.cmake`：
+`GameNative.targets` 在正常 Build / Publish 中调用 `build.py`，以 Bazelisk 1.29.0 / Bazel 9.2.0 直接编译 C/C++ 源码。
 
-1. 按 RID 选择工具链，在 `artifacts/game-build/<rid>` 配置 CMake。
-2. 构建原生库并安装到 `artifacts/game-native/<rid>`；后续构建由 CMake 增量检查源码。
-3. 构建完成后收集文件，确保首次构建也能把库和许可证放入应用。
+1. 在 `artifacts/game-bazel-build/<rid>/workspace` 准备独立构建入口，按 RID 选择工具链。每次由 Bazel 检查依赖图，同 RID 的构建由进程锁串行化。
+2. `MODULE.bazel` 固定 game.cpp `97f92770704c154e1af4a9b3066b7701041dbc38`、ggml `v0.19.0` 和 pocketfft `32424d2067c2e8043dc646a4e49754b2b40cc549`，归档均带 SHA256。dr_libs 仅供上游 WAV/CLI 测试，不进入应用库依赖图。
+3. 检查二进制架构、四个 C ABI 导出、运行时依赖和 Android 16 KB 对齐；安装到 `artifacts/game-native/<rid>`，同时收集许可证及 `game-build.json` 来源记录。
+4. MSBuild 收集产物用于桌面输出或 Android 原生资产。缺少工具链、锁文件过时或下载失败会使构建失败。
 
-桌面端 worldline 由 `DesktopNative.targets` 在 Build 和 Publish 中按架构复制到程序目录。
-macOS 使用仓库已有的通用 worldline 库。不会将多个架构的同名 DLL 依次覆盖到同一个路径。
+Worldline 由 [WorldlineNative.targets](../worldline/WorldlineNative.targets) 使用同一版本的 Bazel 构建。
+两者共用 Python 3.10+、Git、Bazelisk 和固定 Android NDK，不需要额外原生构建生成器。
+用户与系统 `.bazelrc` 不参与构建；CPU 发布库不使用构建机的 AVX 指令集。
 
-CMake 固定 game.cpp 提交 `97f92770704c154e1af4a9b3066b7701041dbc38`；
-上游固定 ggml 版本及 SHA256、pocketfft 和 dr_libs 提交。所有下载、缓存和二进制位于 Git 忽略目录。
-缺少工具链或下载失败会使构建明确失败，不会生成缺少 GGML 运行库的“成功”构建。
+Windows x64/x86 使用 Visual Studio MSVC，ARM64 使用 ClangCL，因为 ggml 不支持 MSVC ARM。
+Windows ARM64 需要 ARM64 C++ 工具、Windows SDK 及 C++ Clang 编译器。
+Linux 使用本机 C/C++ 工具链；macOS 使用 Xcode Command Line Tools，CPU 后端保留 Accelerate。
+桌面 Linux/macOS 使用匹配目标架构的 runner。
 
-Android 目标先执行工作负载的 `_ResolveSdks`，再将解析出的 NDK 路径传入
-`Build.cmake` 的 `OPUM_ANDROID_NDK`。SDK 与 NDK 可以分开安装；未提供 NDK 时，脚本才从
-SDK 的 `ndk/<固定版本>` 查找。Windows 路径传给 CMake 前转换为正斜杠，避免末尾反斜杠影响引号。
+Android 先由 `AndroidNativeToolchain.targets` 解析工具链，显式 `AndroidNdkDirectory` 优先，
+否则使用 SDK 下 `android-ndk-version.txt` 指定的 r30 LTS（`30.0.16248370`）。
+NDK 路径通过 `--ndk` 传给脚本，并与 .NET 原生资产收集共用；Bazel 使用 NDK Clang，静态链接 libc++。
+ARMv7 关闭不兼容的 llamafile，其他架构保留。工具链发生变化时 Bazel 重新编译受影响的目标。
 
-Windows x64/x86 默认使用注册的 Visual Studio C++ 工具链；Windows ARM64 使用 Visual Studio
-ARM64 生成器和 ClangCL 工具集，因为 ggml 不支持 MSVC ARM。已配置的 MSVC 终端或 MinGW
-也可用于 x64/x86。
-Windows ARM64 需在 Visual Studio Installer 中安装 C++ ARM64 工具、Windows SDK、
-C++ Clang 编译器和 MSBuild 的 LLVM（ClangCL）工具集支持；不要求 `clang-cl` 位于 PATH。
-脚本在首次配置时检查 VS 组件，CMake 在下载依赖前核对实际 C/C++ 编译器。
-若旧的 `artifacts/game-build/win-arm64` 缓存使用 MSVC，请通过
-`-p:GameBuildRoot=artifacts/game-build-clang` 使用新的构建目录；脚本不会修改旧缓存的工具集。
-Linux 需要本机 C/C++ 工具链；macOS 需要 Xcode Command Line Tools。Android 使用 NDK Clang 和 Ninja。
-所有平台均需 Git 和 CMake 3.24+。原生部分固定构建 Release，应用的 Debug 配置仍可调试 C#。
-当前自动化覆盖正常 Build / Publish，不将 `publish --no-build` 作为原生文件收集的验证路径。
+可选 MSBuild 属性：`GamePythonExecutable`、`GameBazelExecutable`、`GameBuildRoot`、`GameNativeRoot`。
+`EnableGameGgml=false` 可跳过构建和打包，但不会隐藏 UI 选项或删除旧输出；验证这种包时使用独立输出目录。
+正常 Build / Publish 均包含原生构建，不将 `publish --no-build` 作为验证入口。
 
-可选构建属性：
+## CI 与本地验证
 
-- `GameCMakeExecutable`：CMake 可执行文件路径。
-- `GameCMakeGenerator`：需要显式选择编译器时设置，如 `MinGW Makefiles`。变更生成器应使用新的 `GameBuildRoot`。
-- `GameBuildRoot`、`GameNativeRoot`：原生缓存、产物根目录，可用于隔离验证。
-- `EnableGameGgml=false`：跳过原生构建与打包；此时应使用 ONNX。当前选项不会隐藏 UI 中的 GGML 选项，也不会清除输出目录里的旧库；验证这种包时应使用独立输出目录。
-
-## CI 验证
-
-CI 只准备工具链，原生编译和打包走项目自身的 Build / Publish 规则。
-PR 检查包含不传 RID、不传 GGML 开关的桌面构建，以及实际加载 worldline / GGML 的检查。
-发布流程也检查发布目录的原生库加载。Android PR 与发布共用 `native/verify-android-runtime.py`，
-检查 APK 的 ABI、worldline / ONNX / GAME 原生库及 ELF 架构、GAME 的 16 KB 对齐和许可证；
-发布另外检查这些库不含 Linux/glibc 依赖。CI 显式传入刚安装的固定 NDK 路径，避免工作负载选到 runner 的其他版本。
-
-本地可用 Python 3 执行同一检查（仅验证时需要 Python，不参与应用构建）：
+PR 矩阵包含桌面六个 RID、Android 四 ABI 的 Worldline 和 GAME 源码构建。
+匹配宿主的桌面任务运行上游已有测试及无模型 ABI 检查；GAME 编译上游完整测试源文件，
+`--test` 明确选择 19 项无需模型/参考数据的既有用例。其余 18 项数值对照/模型用例未验收：
+其中 11 项在辅助函数中调用 `GTEST_SKIP` 后仍继续读缺失文件，不能当作自动跳过。
+完整目标 `@game_cpp//:core_tests` 仍可在准备好上游参考数据后单独运行。Linux/macOS 真正执行结果以 CI 验收为准。
+发布流程通过项目自身的 Build / Publish 规则收集库，验证发布目录加载及 Android APK 资产。
 
 ```sh
+python native/game/build.py --rid win-x64 --test
+python native/game/verify.py artifacts/game-native/win-x64 win-x64 --run
 python native/verify-runtime.py OpenUtauMobile.Windows/bin/Debug/net10.0-windows
 ```
 
-它会实际加载两个库，验证 GAME 导出接口及错误返回，不需要模型或用户工程。
-这不能代替各平台真机、GPU 和实际歌声识别质量测试。
+`--test` 和 `--run` 只能用于匹配宿主及 Python 架构的平台。交叉构建自动检查文件格式与导出，但不执行目标库。
+更新依赖时显式传入 `--update-lock`，审查并提交 `MODULE.bazel.lock`；普通构建要求锁文件匹配。
+这些检查不能代替真机加载、真实模型推理与识别质量验证。
 
 ## 生命周期与限制
 
@@ -81,5 +72,4 @@ python native/verify-runtime.py OpenUtauMobile.Windows/bin/Debug/net10.0-windows
 - 语言选项来自各自模型旁的 `config.json`。GGUF 没有配置文件时只提供通用语言；选择模型未声明的语言时禁用该后端按钮。
 - 可选 RMVPE 需要 `rmvpe/rmvpe.onnx`。GAME 模型释放后分段提取音高，将 MIDI 音高转换为音符对应的 PITD 曲线。
   Mobile 直接修改尚未加入工程的结果，不调用 Core 中会提交全局撤销命令的 `ApplyToPart`。
-- 发布流程默认 CPU。GGML 不使用 ONNX 的硬件加速设置。CMake 允许显式启用上游 Vulkan/CUDA/Metal，
-  但加速器 SDK、运行时与附加资源的交付需要单独验证；本功能不承诺这些构建已通过设备测试。
+- 本构建入口支持 CPU。GGML 不使用 ONNX 的硬件加速设置；Vulkan/CUDA/Metal 不在此构建图中，接入需另行实现和验证。

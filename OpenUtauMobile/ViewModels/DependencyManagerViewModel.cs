@@ -82,12 +82,9 @@ public class DependencyManagerViewModel : NavigateViewModelBase
             OnInstallFromFileAsync,
             canInstallFromFile);
 
-        // 自动加载数据
-        Task.Run(async () =>
-        {
-            await LoadAvailablePackagesAsync();
-            await LoadInstalledPackagesAsync();
-        });
+        // 独立加载，离线索引超时不阻塞本地列表；延续 UI 上下文更新绑定集合。
+        _ = LoadInstalledPackagesAsync();
+        _ = LoadAvailablePackagesAsync();
 
         // TODO: 实现搜索和排序功能
         // 监听 SearchText 和 SortMode 变化，自动过滤和排序列表

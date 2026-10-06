@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Avalonia.Media;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 
 public sealed class ThemeScheme
 {

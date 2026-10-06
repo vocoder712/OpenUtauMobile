@@ -12,6 +12,9 @@ dotnet run --project OpenUtauMobile.Browser/OpenUtauMobile.Browser.csproj -c Deb
 
 ## 构建配置
 
+- Worldline 在 Build / Publish 中通过 Bazel 源码构建为静态 WASM 归档，随后由 .NET 链入运行时。
+  除 `wasm-tools` 外需要 Python 3.10+、Git 和 Bazelisk；Emscripten 使用工作负载配套版本。
+  详见 [Worldline 构建说明](../native/worldline/README.md)。这不包含 ONNX 后端或浏览器音频播放接入。
 - 启用 `WasmEnableThreads`，保留音素化与短语构建后台线程。SDK 开发服务器会自动附加跨源隔离响应头。
 - Debug 的原生编译使用 `-Oz`，原生链接使用 `-O2`。本机 .NET 10.0.12 的 `-O0` 多线程原生构建在运行时初始化时断言失败；这些设置保留 C# 的 Debug 配置和调试符号。相关上游记录：<https://github.com/dotnet/runtime/issues/112926>。
 - 浏览器发布关闭托管裁剪并启用 JSON 反射，保留现有序列化模型和通过反射发现的插件类型。代价是下载体积较大。

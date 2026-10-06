@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 
 public sealed class ThemeResourceBridge
 {

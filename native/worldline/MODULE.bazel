@@ -1,0 +1,93 @@
+module(name = "opum_worldline")
+
+bazel_dep(name = "rules_cc", version = "0.2.25")
+bazel_dep(name = "platforms", version = "1.1.0")
+bazel_dep(name = "rules_android_ndk", version = "0.1.5")
+bazel_dep(name = "bazel_skylib", version = "1.9.2")
+
+cc_configure = use_extension("@rules_cc//cc:extensions.bzl", "cc_configure_extension")
+use_repo(cc_configure, "local_config_cc")
+
+# 单独导入冻结源码，避免构建工具的传递依赖将这些版本自动抬升。
+frozen_archive = use_repo_rule("//:frozen_archive.bzl", "frozen_archive")
+frozen_archive(
+    name = "absl",
+    urls = ["https://github.com/abseil/abseil-cpp/releases/download/20240116.1/abseil-cpp-20240116.1.tar.gz"],
+    integrity = "sha256-PHQyBN94NmrS6vI21mMdg/a8ko0XBd0AALhy5Ttz3Go=",
+    strip_prefix = "abseil-cpp-20240116.1",
+)
+frozen_archive(
+    name = "gtest",
+    urls = ["https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz"],
+    integrity = "sha256-itWYxzrXluDYKAsILOvYKmMNc+c808cAV5OKZQG7pdc=",
+    strip_prefix = "googletest-1.14.0",
+)
+frozen_archive(
+    name = "re2",
+    urls = ["https://github.com/google/re2/releases/download/2023-09-01/re2-2023-09-01.zip"],
+    integrity = "sha256-IkuDUdxGM7EBLb2EdWTgYKRr5goioUY9S1uZP9S/Wcw=",
+    strip_prefix = "re2-2023-09-01",
+)
+frozen_archive(
+    name = "xxhash",
+    urls = ["https://github.com/Cyan4973/xxHash/archive/refs/tags/v0.8.2.tar.gz"],
+    integrity = "sha256-uu4Mav1PAxZd56TmeYjRbw8rJXtR0OPLkZCTAqJqecQ=",
+    strip_prefix = "xxHash-0.8.2",
+    build_file = "//:xxhash.BUILD",
+)
+
+android_ndk = use_extension("@rules_android_ndk//:extension.bzl", "android_ndk_repository_extension")
+android_ndk.configure(api_level = 24)
+use_repo(android_ndk, "androidndk")
+# 仅 Android 构建通过 --extra_toolchains 注册 NDK，桌面构建不要求安装 NDK。
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "libgvps",
+    build_file = "//third_party:libgvps.BUILD",
+    integrity = "sha256-6sxK57GyukEr6KZZEg937jfejQPlq2z5mQ4JnLU1H3w=",
+    strip_prefix = "libgvps-2f1b4106d72f8f8138dc447bf0123820c0772cbd",
+    urls = ["https://github.com/Sleepwalking/libgvps/archive/2f1b4106d72f8f8138dc447bf0123820c0772cbd.zip"],
+)
+http_archive(
+    name = "libnpy",
+    build_file = "//third_party:libnpy.BUILD",
+    integrity = "sha256-PJhkwb968IyI8gVkeKLG0lOWdGc7q5+bSgBCqEqFfxk=",
+    strip_prefix = "libnpy-1.0.1",
+    urls = ["https://github.com/llohse/libnpy/archive/refs/tags/v1.0.1.zip"],
+)
+http_archive(
+    name = "libpyin",
+    build_file = "//third_party:libpyin.BUILD",
+    integrity = "sha256-BRCmignOqiKCAiodLoTp031z6T4OdNjSiVai03D2Ugo=",
+    patch_args = ["-p1"],
+    patches = ["//third_party:libpyin.patch"],
+    strip_prefix = "libpyin-b38135390b335c3e8cea6ef35cf5093789b36dac",
+    urls = ["https://github.com/Sleepwalking/libpyin/archive/b38135390b335c3e8cea6ef35cf5093789b36dac.zip"],
+)
+http_archive(
+    name = "spline",
+    build_file = "//third_party:spline.BUILD",
+    integrity = "sha256-DUK3fQ85jJrStykFh7YlxJw5ojN/bPqItqeTAgfZGjM=",
+    patch_args = ["-p1"],
+    patches = ["//third_party:spline.patch"],
+    strip_prefix = "spline-5894beaf91e9adbfdbe5c6c9a1c60770e380e8e8",
+    urls = ["https://github.com/ttk592/spline/archive/5894beaf91e9adbfdbe5c6c9a1c60770e380e8e8.zip"],
+)
+http_archive(
+    name = "world",
+    build_file = "//third_party:world.BUILD",
+    integrity = "sha256-IFTxKolh7TkbCJxAHDkPmD9+9+MfY+q8sVoTVWMAHJU=",
+    patch_args = ["-p1"],
+    patches = ["//third_party:world.patch"],
+    strip_prefix = "World-f8dd5fb289db6a7f7f704497752bf32b258f9151",
+    urls = ["https://github.com/mmorise/World/archive/f8dd5fb289db6a7f7f704497752bf32b258f9151.zip"],
+)
+http_archive(
+    name = "miniaudio",
+    build_file = "//third_party:miniaudio.BUILD",
+    sha256 = "cbde908871e2619115fd216c74235265348060fe7d340f980cd14342e88d7f72",
+    strip_prefix = "miniaudio-0.11.21",
+    urls = ["https://github.com/mackron/miniaudio/archive/refs/tags/0.11.21.zip"],
+)

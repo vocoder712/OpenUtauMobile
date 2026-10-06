@@ -1,0 +1,75 @@
+name: Reusable Browser Build
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        default: ''
+      build_number:
+        type: number
+        default: 0
+      source_sha:
+        type: string
+        default: ''
+      action_run_id:
+        type: string
+        default: ''
+      version_lyrics:
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    env:
+      AVALONIA_TELEMETRY_OPTOUT: "1"
+      VersionLyrics: ${{ inputs.version_lyrics }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - uses: ./.github/actions/setup-worldline
+      - name: Install WebAssembly workload
+        run: dotnet workload install wasm-tools
+      - name: Publish Browser with Worldline
+        env:
+          PRODUCT_VERSION: ${{ inputs.version }}
+          BUILD_NUMBER: ${{ inputs.build_number }}
+          SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
+          ACTION_RUN_ID: ${{ inputs.action_run_id || github.run_id }}
+        run: |
+          args=()
+          if [ -n "$PRODUCT_VERSION" ]; then args+=("-p:Version=$PRODUCT_VERSION"); fi
+          dotnet publish OpenUtauMobile.Browser/OpenUtauMobile.Browser.csproj \
+            -c Release -o artifacts/publish/browser-wasm \
+            -p:BuildNumber="$BUILD_NUMBER" -p:SourceCommit="$SOURCE_SHA" \
+            -p:ActionRunId="$ACTION_RUN_ID" "${args[@]}"
+      - name: Verify Worldline WASM ABI
+        run: python native/worldline/verify_browser.py artifacts/worldline-native/browser-wasm
+      - name: Package Browser static files
+        run: |
+          test -f artifacts/publish/browser-wasm/wwwroot/licenses/Worldline/worldline-build.json
+          tar -C artifacts/publish/browser-wasm/wwwroot -czf artifacts/OpenUtauMobile-browser-wasm.tar.gz .
+          cd artifacts
+          sha256sum OpenUtauMobile-browser-wasm.tar.gz > OpenUtauMobile-browser-wasm.tar.gz.sha256
+      - name: Upload Browser package
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-browser-wasm
+          path: |
+            artifacts/OpenUtauMobile-browser-wasm.tar.gz
+            artifacts/OpenUtauMobile-browser-wasm.tar.gz.sha256
+          if-no-files-found: error
+      - name: Upload native verification evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldline-browser-wasm
+          path: artifacts/worldline-native/browser-wasm/
+          if-no-files-found: error

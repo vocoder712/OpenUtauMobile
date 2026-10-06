@@ -271,7 +271,8 @@ public sealed class NotePropertiesViewModel : PopupViewModelBase, IDisposable
 
         NotePropertyGroup expressions = AddGroup("Expressions");
         UTrack track = project.tracks[part.trackNo];
-        foreach (UExpressionDescriptor descriptor in track.GetSupportedExps(project).Where(d => d.type != UExpressionType.Curve))
+        foreach (UExpressionDescriptor descriptor in track.GetSupportedExps(project)
+                     .Where(d => d.type is UExpressionType.Numerical or UExpressionType.Options))
         {
             UExpressionDescriptor effective = descriptor.abbr == OpenUtau.Core.Format.Ustx.CLR && track.VoiceColorExp?.options.Length > 0 ? track.VoiceColorExp : descriptor;
             decimal[] values = notes.SelectMany(n =>

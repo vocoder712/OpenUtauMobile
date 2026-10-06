@@ -165,6 +165,13 @@ namespace OpenUtau.Core.Util {
                     Default.OnnxRunner = string.Empty;
                 }
             });
+            ValidatePreference("WinePath", () =>
+            {
+                if (OS.IsWindows())
+                {
+                    Default.WinePath = string.Empty;
+                }
+            });
             ValidatePreference("Theme", () => {
                 if (Default.Theme != null) {
                     Default.ThemeName = Default.Theme switch {
@@ -226,6 +233,12 @@ namespace OpenUtau.Core.Util {
             public bool DiffSingerTensorCache = true;
             public bool DiffSingerVarianceLocalPitchPatch = false;
             public bool DiffSingerLangCodeHide = false;
+            /// <summary>
+            /// Auto-merge nearby DiffSinger phrases (piano roll toggle). Off by
+            /// default: it changes how the model segments a passage and is still
+            /// being tuned.
+            /// </summary>
+            public bool DiffSingerMergeNearbyPhrases = false;
             public bool Metronome = false;
             public bool SkipRenderingMutedTracks = false;
             public string Language = "system";
@@ -448,6 +461,9 @@ namespace OpenUtau.Core.Util {
             /// 音高线编辑模式下是否允许从扩展音符命中范围外拖拽画布。
             /// </summary>
             public bool PitchPenCanvasDragEnabled = true;
+
+            /// <summary>是否淡色提示音高画笔的音符扩展命中区域。</summary>
+            public bool ShowPitchPenHitArea = false;
 
             /// <summary>
             /// 音高线编辑模式下音符命中范围前后扩展的 Tick 数。

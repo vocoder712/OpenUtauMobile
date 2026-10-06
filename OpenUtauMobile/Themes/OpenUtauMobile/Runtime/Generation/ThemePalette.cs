@@ -2,7 +2,7 @@ using Avalonia.Media;
 using Avalonia.Styling;
 using MaterialColorUtilities.Palettes;
 
-namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 
 public sealed class ThemePalette
 {

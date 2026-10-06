@@ -22,6 +22,7 @@ using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Performance;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Platform;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -495,6 +496,10 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public bool PitchPenCanvasDragEnabled { get; set; }
 
+    /// <summary>是否显示音高画笔命中区域。</summary>
+    [Reactive]
+    public bool ShowPitchPenHitArea { get; set; }
+
     /// <summary>扩展音符命中范围前后增加的 Tick 数。</summary>
     [Reactive]
     public int PitchPenNoteHitTickExtension { get; set; }
@@ -843,6 +848,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         ShowPortraitEnabled = Preferences.Default.ShowPortrait;
         UndoLimit = Math.Clamp(Preferences.Default.UndoLimit, 10, 100);
         PitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
+        ShowPitchPenHitArea = Preferences.Default.ShowPitchPenHitArea;
         MagnifierMagnificationFactor = MagnifierSettings.Normalize(Preferences.Default.MagnifierMagnificationFactor);
         MagnifierSliderValue = MagnifierSettings.Snap(MagnifierMagnificationFactor);
         this.WhenAnyValue(x => x.MagnifierSliderValue)
@@ -917,6 +923,16 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             {
                 Preferences.Default.PitchPenCanvasDragEnabled = enabled;
                 Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.ShowPitchPenHitArea)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.ShowPitchPenHitArea = enabled;
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new PitchPenHitAreaHintChangedEvent());
             })
             .DisposeWith(_disposables);
 

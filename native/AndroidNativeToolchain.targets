@@ -1,0 +1,26 @@
+<Project>
+    <PropertyGroup>
+        <_OpumAndroidNativeToolchainImported>true</_OpumAndroidNativeToolchainImported>
+    </PropertyGroup>
+    <Target Name="ResolveOpumAndroidNativeToolchain" DependsOnTargets="_ResolveSdks;SelectOpumAndroidNativeToolchain" />
+    <Target Name="SelectOpumAndroidNativeToolchain" AfterTargets="_ResolveSdks"
+            Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(DesignTimeBuild)' != 'true'">
+        <PropertyGroup>
+            <_OpumNdkVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)game/android-ndk-version.txt').Trim())</_OpumNdkVersion>
+            <_OpumAndroidSdkDirectory>$(_AndroidSdkDirectory)</_OpumAndroidSdkDirectory>
+            <_OpumAndroidSdkDirectory Condition="'$(_OpumAndroidSdkDirectory)' == ''">$(AndroidSdkDirectory)</_OpumAndroidSdkDirectory>
+            <!-- 显式路径支持 IDE 的独立 NDK；默认不采用工作负载自动选中的旧版本。 -->
+            <_OpumAndroidNdkDirectory>$(AndroidNdkDirectory)</_OpumAndroidNdkDirectory>
+            <_OpumAndroidNdkDirectory Condition="'$(_OpumAndroidNdkDirectory)' == ''">$(_OpumAndroidSdkDirectory)/ndk/$(_OpumNdkVersion)</_OpumAndroidNdkDirectory>
+            <_OpumAndroidSdkDirectory>$([System.String]::Copy('$(_OpumAndroidSdkDirectory)').Replace('\', '/'))</_OpumAndroidSdkDirectory>
+            <_OpumAndroidNdkDirectory>$([System.String]::Copy('$(_OpumAndroidNdkDirectory)').Replace('\', '/'))</_OpumAndroidNdkDirectory>
+        </PropertyGroup>
+        <Error Condition="!Exists('$(_OpumAndroidNdkDirectory)/source.properties')"
+               Text="Android NDK not found: $(_OpumAndroidNdkDirectory). Install ndk;$(_OpumNdkVersion) with sdkmanager or set AndroidNdkDirectory explicitly." />
+        <PropertyGroup>
+            <!-- 工作负载自动发现可能只识别旧 NDK；原生编译和 APK 收集必须共用已校验的路径。 -->
+            <AndroidNdkDirectory Condition="'$(AndroidNdkDirectory)' == ''">$(_OpumAndroidNdkDirectory)</AndroidNdkDirectory>
+            <_AndroidNdkDirectory>$(_OpumAndroidNdkDirectory)</_AndroidNdkDirectory>
+        </PropertyGroup>
+    </Target>
+</Project>

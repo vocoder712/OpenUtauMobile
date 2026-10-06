@@ -8,6 +8,7 @@ using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Platform;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Views;
 

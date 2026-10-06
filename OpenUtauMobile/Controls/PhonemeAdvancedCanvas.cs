@@ -11,12 +11,13 @@ using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Controls.Tokens;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
 
 /// <summary>
-/// 高级音素画布，完全对齐 OpenUtau 桌面端：包络梯形、先行发音（左下角）与重叠（左上角）两处交互控制点。
+/// 高级音素画布：包络梯形、先行发音、起音、收音及相邻音素重叠控制点。
 /// 顶部留有完整安全边距避开上方分割手柄，双击直接唤起音素别名编辑弹窗。
 /// </summary>
 public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
@@ -51,11 +52,25 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private PianoRollViewModel? _viewModel;
     private PianoRollViewModel? ViewModel => _viewModel ?? (DataContext as PianoRollViewModel);
 
+    private bool SupportsPhonemeEnvelope
+    {
+        get
+        {
+            UProject project = DocManager.Inst.Project;
+            return Part != null && project != null && Part.trackNo >= 0 && Part.trackNo < project.tracks.Count
+                && (project.tracks[Part.trackNo].RendererSettings.Renderer?.SupportsPhonemeEnvelope ?? true);
+        }
+    }
+
+    private bool CanEditActiveHandle => _activeHandleType == AdvancedHandleType.TimingLine || SupportsPhonemeEnvelope;
+
     private enum AdvancedHandleType
     {
         None,
         TimingLine,
         Preutter,
+        Attack,
+        Release,
         Overlap
     }
 
@@ -64,6 +79,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     private UPhoneme? _animatingTimingPhoneme;
     private bool _isResetTargetActive;
     private double _dragStartPointerX;
+    private double _dragStartHandleTick;
     private float _initialDelta;
 
     // 手柄展开动效状态
@@ -267,6 +283,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         double envelopeTopY = TopMargin + LabelHeight + 4.0;
         double envelopeHeight = Math.Max(20.0, totalHeight - envelopeTopY - BottomMargin);
 
+        bool supportsEnvelope = SupportsPhonemeEnvelope;
+
         foreach (UPhoneme phoneme in Part.phonemes)
         {
             if (phoneme.Parent == null || phoneme.Parent.OverlapError)
@@ -288,8 +306,18 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
             double posX = (phonemeAbsStart - TickOffset) * TickWidth;
 
+            // 不使用包络的渲染器显示音素时长条，位置线仍可拖动。
+            if (!phoneme.Error && !supportsEnvelope)
+            {
+                double endX = (phonemeAbsEnd - TickOffset) * TickWidth;
+                using (context.PushOpacity(0.40))
+                {
+                    context.DrawRectangle(fill, null,
+                        new Rect(posX, envelopeTopY, Math.Max(0, endX - posX), envelopeHeight));
+                }
+            }
             // 1. 绘制包络梯形（5点）
-            if (!phoneme.Error && phoneme.envelope.data.Count >= 5)
+            else if (!phoneme.Error && phoneme.envelope.data.Count >= 5)
             {
                 double posMs = phoneme.PositionMs;
                 TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
@@ -324,7 +352,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                     context.DrawGeometry(fill, pen, polyline);
                 }
 
-                // 2. 绘制控制手柄（对齐 OpenUtau 桌面端：左下角先行发音点 + 左上角重叠点）
+                // 2. 绘制桌面同义的四个包络手柄。
                 // 控制点 0：先行发音（Preutter - 左下角）
                 IBrush p0Brush = phoneme.preutterDelta.HasValue ? (pen.Brush ?? selectedBrush) : textBgBrush;
                 using (context.PushTransform(Matrix.CreateTranslation(x0, y0)))
@@ -332,11 +360,28 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                     context.DrawGeometry(p0Brush, pen, _handleGeometry);
                 }
 
-                // 控制点 1：重叠（Overlap - 左上角起振过渡点）
-                IBrush p1Brush = phoneme.overlapDelta.HasValue ? (pen.Brush ?? selectedBrush) : textBgBrush;
+                // 控制点 1：起音（Attack）。
+                IBrush p1Brush = phoneme.attackTimeDelta.HasValue ? (pen.Brush ?? selectedBrush) : textBgBrush;
                 using (context.PushTransform(Matrix.CreateTranslation(x1, y1)))
                 {
                     context.DrawGeometry(p1Brush, pen, _handleGeometry);
+                }
+
+                // 控制点 3：收音（Release）。
+                IBrush p3Brush = phoneme.releaseTimeDelta.HasValue ? (pen.Brush ?? selectedBrush) : textBgBrush;
+                using (context.PushTransform(Matrix.CreateTranslation(x3, y3)))
+                {
+                    context.DrawGeometry(p3Brush, pen, _handleGeometry);
+                }
+
+                // 控制点 4 的位置属于当前包络，但修改的是相邻下一音素的重叠。
+                if (HasOverlapHandle(phoneme))
+                {
+                    IBrush p4Brush = phoneme.Next.overlapDelta.HasValue ? (pen.Brush ?? selectedBrush) : textBgBrush;
+                    using (context.PushTransform(Matrix.CreateTranslation(x4, y4)))
+                    {
+                        context.DrawGeometry(p4Brush, pen, _handleGeometry);
+                    }
                 }
             }
 
@@ -492,12 +537,28 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                 StartDragAnimation(1.0);
             }
             _dragStartPointerX = pos.X;
-            UPhonemeOverride overrideData = hitPhoneme.Parent.GetPhonemeOverride(hitPhoneme.index);
+            // 用实际手柄所在时间计算毫秒位移，跨变速点时也不依赖音素起点的速度。
+            UPhoneme envelopeOwner = hitType == AdvancedHandleType.Overlap ? hitPhoneme.Prev : hitPhoneme;
+            int pointIndex = hitType switch
+            {
+                AdvancedHandleType.Attack => 1,
+                AdvancedHandleType.Release => 3,
+                AdvancedHandleType.Overlap => 4,
+                _ => 0
+            };
+            _dragStartHandleTick = hitType == AdvancedHandleType.TimingLine
+                ? Part.position + hitPhoneme.position
+                : DocManager.Inst.Project.timeAxis.MsPosToNonExactTickPos(
+                    envelopeOwner.PositionMs + envelopeOwner.envelope.data[pointIndex].X);
+            UNote leadingNote = hitPhoneme.Parent.Extends ?? hitPhoneme.Parent;
+            UPhonemeOverride overrideData = leadingNote.GetPhonemeOverride(hitPhoneme.index);
 
             _initialDelta = hitType switch
             {
                 AdvancedHandleType.TimingLine => overrideData.offset ?? 0,
                 AdvancedHandleType.Preutter => overrideData.preutterDelta ?? 0,
+                AdvancedHandleType.Attack => overrideData.attackTimeDelta ?? 0,
+                AdvancedHandleType.Release => overrideData.releaseTimeDelta ?? 0,
                 AdvancedHandleType.Overlap => overrideData.overlapDelta ?? 0,
                 _ => 0
             };
@@ -513,6 +574,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                 {
                     AdvancedHandleType.TimingLine => $"[{phonemeName}] Offset: {(int)_initialDelta:+0;-0;0} tick",
                     AdvancedHandleType.Preutter => $"[{phonemeName}] Preutter: {_initialDelta:+0.0;-0.0;0.0} ms",
+                    AdvancedHandleType.Attack => $"[{phonemeName}] Attack: {_initialDelta:+0.0;-0.0;0.0} ms",
+                    AdvancedHandleType.Release => $"[{phonemeName}] Release: {_initialDelta:+0.0;-0.0;0.0} ms",
                     AdvancedHandleType.Overlap => $"[{phonemeName}] Overlap: {_initialDelta:+0.0;-0.0;0.0} ms",
                     _ => string.Empty
                 };
@@ -544,7 +607,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-        if (_activeHandleType == AdvancedHandleType.None || _activePhoneme == null || Part == null || DocManager.Inst.Project == null)
+        if (_activeHandleType == AdvancedHandleType.None || _activePhoneme == null || Part == null || DocManager.Inst.Project == null
+            || !CanEditActiveHandle)
         {
             return;
         }
@@ -570,15 +634,16 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
         double deltaPx = pos.X - _dragStartPointerX; // X偏移量（屏幕坐标）
         double deltaTicks = deltaPx / TickWidth; // Tick偏移量
-        double deltaMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.position + (int)deltaTicks)
-                       - DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.position); //ms偏移量
+        double deltaMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(_dragStartHandleTick + deltaTicks)
+                       - DocManager.Inst.Project.timeAxis.TickPosToMsPos(_dragStartHandleTick);
+        UNote leadingNote = _activePhoneme.Parent.Extends ?? _activePhoneme.Parent;
 
         string phonemeName = !string.IsNullOrEmpty(_activePhoneme.phonemeMapped) ? _activePhoneme.phonemeMapped : _activePhoneme.phoneme;
         switch (_activeHandleType)
         {
             case AdvancedHandleType.TimingLine:
                 int newOffset = (int)(_initialDelta + deltaTicks);
-                DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(Part, _activePhoneme.Parent, _activePhoneme.index, newOffset));
+                DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(Part, leadingNote, _activePhoneme.index, newOffset));
                 double offsetMs = DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.rawPosition + newOffset)
                                 - DocManager.Inst.Project.timeAxis.TickPosToMsPos(Part.position + _activePhoneme.rawPosition);
                 if (ViewModel != null)
@@ -588,15 +653,31 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
                 break;
             case AdvancedHandleType.Preutter:
                 float newPreutter = (float)(_initialDelta - deltaMs);
-                DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(Part, _activePhoneme.Parent, _activePhoneme.index, _activePhoneme, newPreutter));
+                DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(Part, leadingNote, _activePhoneme.index, _activePhoneme, newPreutter));
                 if (ViewModel != null)
                 {
                     ViewModel.EditingTip = $"[{phonemeName}] Preutter: {newPreutter:+0.0;-0.0;0.0} ms";
                 }
                 break;
+            case AdvancedHandleType.Attack:
+                float newAttack = (float)(_initialDelta + deltaMs);
+                DocManager.Inst.ExecuteCmd(new PhonemeAttackTimeCommand(Part, leadingNote, _activePhoneme.index, _activePhoneme, newAttack));
+                if (ViewModel != null)
+                {
+                    ViewModel.EditingTip = $"[{phonemeName}] Attack: {leadingNote.GetPhonemeOverride(_activePhoneme.index).attackTimeDelta ?? 0:+0.0;-0.0;0.0} ms";
+                }
+                break;
+            case AdvancedHandleType.Release:
+                float newRelease = (float)(_initialDelta - deltaMs);
+                DocManager.Inst.ExecuteCmd(new PhonemeReleaseTimeCommand(Part, leadingNote, _activePhoneme.index, _activePhoneme, newRelease));
+                if (ViewModel != null)
+                {
+                    ViewModel.EditingTip = $"[{phonemeName}] Release: {leadingNote.GetPhonemeOverride(_activePhoneme.index).releaseTimeDelta ?? 0:+0.0;-0.0;0.0} ms";
+                }
+                break;
             case AdvancedHandleType.Overlap:
                 float newOverlap = (float)(_initialDelta + deltaMs);
-                DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(Part, _activePhoneme.Parent, _activePhoneme.index, _activePhoneme, newOverlap));
+                DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(Part, leadingNote, _activePhoneme.index, _activePhoneme, newOverlap));
                 if (ViewModel != null)
                 {
                     ViewModel.EditingTip = $"[{phonemeName}] Overlap: {newOverlap:+0.0;-0.0;0.0} ms";
@@ -664,26 +745,41 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
     private void ResetActiveParameter()
     {
-        if (Part == null || _activePhoneme?.Parent == null)
+        if (Part == null || _activePhoneme?.Parent == null || !CanEditActiveHandle)
         {
             return;
         }
 
+        UNote leadingNote = _activePhoneme.Parent.Extends ?? _activePhoneme.Parent;
         switch (_activeHandleType)
         {
             case AdvancedHandleType.TimingLine:
                 DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(
-                    Part, _activePhoneme.Parent, _activePhoneme.index, 0));
+                    Part, leadingNote, _activePhoneme.index, 0));
                 break;
             case AdvancedHandleType.Preutter:
                 DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(
-                    Part, _activePhoneme.Parent, _activePhoneme.index, _activePhoneme, 0));
+                    Part, leadingNote, _activePhoneme.index, _activePhoneme, 0));
+                break;
+            case AdvancedHandleType.Attack:
+                DocManager.Inst.ExecuteCmd(new PhonemeAttackTimeCommand(
+                    Part, leadingNote, _activePhoneme.index, _activePhoneme, 0));
+                break;
+            case AdvancedHandleType.Release:
+                DocManager.Inst.ExecuteCmd(new PhonemeReleaseTimeCommand(
+                    Part, leadingNote, _activePhoneme.index, _activePhoneme, 0));
                 break;
             case AdvancedHandleType.Overlap:
                 DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(
-                    Part, _activePhoneme.Parent, _activePhoneme.index, _activePhoneme, 0));
+                    Part, leadingNote, _activePhoneme.index, _activePhoneme, 0));
                 break;
         }
+    }
+
+    private static bool HasOverlapHandle(UPhoneme phoneme)
+    {
+        return phoneme.Next?.Parent != null && phoneme.Next.adjacent
+            && phoneme.Next.position == phoneme.End && phoneme.Next.Prev == phoneme;
     }
 
     private (AdvancedHandleType, UPhoneme?) HitTestHandle(Point pointerPos)
@@ -697,41 +793,67 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         double envelopeTopY = TopMargin + LabelHeight + 4.0;
         double envelopeHeight = Math.Max(20.0, totalHeight - envelopeTopY - BottomMargin);
         TimeAxis timeAxis = DocManager.Inst.Project.timeAxis;
+        bool supportsEnvelope = SupportsPhonemeEnvelope;
+        (AdvancedHandleType, UPhoneme?) nearest = (AdvancedHandleType.None, null);
+        double nearestDistance = double.PositiveInfinity;
 
+        // 先比较所有包络点的距离，避免相邻音素或短包络被遍历靠前的手柄抢占。
         foreach (UPhoneme phoneme in Part.phonemes)
         {
-            if (phoneme.Parent == null || phoneme.Error || phoneme.envelope.data.Count < 5)
+            if (phoneme.Parent == null || phoneme.Parent.OverlapError || phoneme.Error)
             {
                 continue;
             }
 
-            double posMs = phoneme.PositionMs;
-
-            // 点 0：Preutter (左下角)
-            double x0 = (timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[0].X) - TickOffset) * TickWidth;
-            double y0 = envelopeTopY + (1.0 - phoneme.envelope.data[0].Y / 100.0) * envelopeHeight;
-            if (Math.Abs(pointerPos.X - x0) <= HandleHitRadius && Math.Abs(pointerPos.Y - y0) <= HandleHitRadius)
+            if (supportsEnvelope && phoneme.envelope.data.Count >= 5)
             {
-                return (AdvancedHandleType.Preutter, phoneme);
-            }
-
-            // 点 1：Overlap (左上角起振点)
-            double x1 = (timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[1].X) - TickOffset) * TickWidth;
-            double y1 = envelopeTopY + (1.0 - phoneme.envelope.data[1].Y / 100.0) * envelopeHeight;
-            if (Math.Abs(pointerPos.X - x1) <= HandleHitRadius && Math.Abs(pointerPos.Y - y1) <= HandleHitRadius)
-            {
-                return (AdvancedHandleType.Overlap, phoneme);
-            }
-
-            // 位置基准线
-            double posX = (Part.position + phoneme.position - TickOffset) * TickWidth;
-            if (Math.Abs(pointerPos.X - posX) <= HandleHitRadius * 0.75 && pointerPos.Y >= TopMargin && pointerPos.Y <= envelopeTopY + envelopeHeight + 6)
-            {
-                return (AdvancedHandleType.TimingLine, phoneme);
+                Consider(phoneme, 0, AdvancedHandleType.Preutter, phoneme);
+                Consider(phoneme, 1, AdvancedHandleType.Attack, phoneme);
+                Consider(phoneme, 3, AdvancedHandleType.Release, phoneme);
+                if (HasOverlapHandle(phoneme))
+                {
+                    Consider(phoneme, 4, AdvancedHandleType.Overlap, phoneme.Next);
+                }
             }
         }
 
-        return (AdvancedHandleType.None, null);
+        if (nearest.Item1 != AdvancedHandleType.None)
+        {
+            return nearest;
+        }
+
+        foreach (UPhoneme phoneme in Part.phonemes)
+        {
+            if (phoneme.Parent == null || phoneme.Parent.OverlapError || phoneme.Error)
+            {
+                continue;
+            }
+            // 位置基准线
+            double posX = (Part.position + phoneme.position - TickOffset) * TickWidth;
+            double distance = Math.Abs(pointerPos.X - posX);
+            if (distance <= HandleHitRadius * 0.75 && distance < nearestDistance
+                && pointerPos.Y >= TopMargin && pointerPos.Y <= envelopeTopY + envelopeHeight + 6)
+            {
+                nearest = (AdvancedHandleType.TimingLine, phoneme);
+                nearestDistance = distance;
+            }
+        }
+
+        return nearest;
+
+        void Consider(UPhoneme owner, int index, AdvancedHandleType type, UPhoneme target)
+        {
+            double x = (timeAxis.MsPosToTickPos(owner.PositionMs + owner.envelope.data[index].X) - TickOffset) * TickWidth;
+            double y = envelopeTopY + (1.0 - owner.envelope.data[index].Y / 100.0) * envelopeHeight;
+            double dx = pointerPos.X - x;
+            double dy = pointerPos.Y - y;
+            double distance = dx * dx + dy * dy;
+            if (Math.Abs(dx) <= HandleHitRadius && Math.Abs(dy) <= HandleHitRadius && distance < nearestDistance)
+            {
+                nearest = (type, target);
+                nearestDistance = distance;
+            }
+        }
     }
 
     private UPhoneme? FindPhonemeAtTick(double partRelativeTick)
@@ -759,6 +881,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             case PartCommand:
             case PhonemizedNotification:
             case ExpCommand:
+            case TrackCommand:
+            case LoadProjectNotification:
                 InvalidateVisual();
                 break;
         }

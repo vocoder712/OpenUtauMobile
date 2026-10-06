@@ -1,0 +1,55 @@
+module(name = "opum_game")
+
+bazel_dep(name = "rules_cc", version = "0.2.25")
+bazel_dep(name = "platforms", version = "1.1.0")
+bazel_dep(name = "rules_android_ndk", version = "0.1.5")
+
+cc_configure = use_extension("@rules_cc//cc:extensions.bzl", "cc_configure_extension")
+use_repo(cc_configure, "local_config_cc")
+android_ndk = use_extension("@rules_android_ndk//:extension.bzl", "android_ndk_repository_extension")
+android_ndk.configure(api_level = 24)
+use_repo(android_ndk, "androidndk")
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+http_archive(
+    name = "game_cpp",
+    type = "tar.gz",
+    urls = ["https://codeload.github.com/KakaruHayate/game.cpp/tar.gz/97f92770704c154e1af4a9b3066b7701041dbc38"],
+    sha256 = "2745ee15f7c43d704bb392472d1a57bdfcc3da7b6dcd5dc78679a1d698181f2c",
+    strip_prefix = "game.cpp-97f92770704c154e1af4a9b3066b7701041dbc38",
+    build_file = "//:game.BUILD",
+)
+http_archive(
+    name = "ggml",
+    urls = ["https://github.com/ggerganov/ggml/archive/refs/tags/v0.19.0.tar.gz"],
+    sha256 = "cfb6512adda2853e6500a7c5b23f326987cb4c723e9f8f93c6c5a7e7e4861648",
+    strip_prefix = "ggml-0.19.0",
+    build_file = "//:ggml.BUILD",
+)
+http_archive(
+    name = "pocketfft",
+    type = "tar.gz",
+    urls = ["https://codeload.github.com/mreineck/pocketfft/tar.gz/32424d2067c2e8043dc646a4e49754b2b40cc549"],
+    sha256 = "bfd03c9f8199601bdd79f53f30790406d54a30c511a3c3d891ae2a0f7c3ea751",
+    strip_prefix = "pocketfft-32424d2067c2e8043dc646a4e49754b2b40cc549",
+    build_file = "//:pocketfft.BUILD",
+)
+
+# 测试依赖也保持上游的 v1.14.0，仅替换 Bazel 9 构建定义。
+http_archive(
+    name = "gtest",
+    urls = ["https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz"],
+    integrity = "sha256-itWYxzrXluDYKAsILOvYKmMNc+c808cAV5OKZQG7pdc=",
+    strip_prefix = "googletest-1.14.0",
+    build_file = "//:gtest.BUILD",
+)
+
+# 仅供上游 WAV/CLI 单元测试使用，不属于应用库依赖图。
+http_archive(
+    name = "dr_libs",
+    type = "tar.gz",
+    urls = ["https://codeload.github.com/mackron/dr_libs/tar.gz/243e26ffa08a24dc8ae2e7a8c57123d9e504690c"],
+    sha256 = "25814990f85000d0b00e05fe8a816dc1d802a45e4fcef65345e9eb688e5e26a7",
+    strip_prefix = "dr_libs-243e26ffa08a24dc8ae2e7a8c57123d9e504690c",
+    build_file = "//:dr_libs.BUILD",
+)

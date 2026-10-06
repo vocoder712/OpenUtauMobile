@@ -1931,6 +1931,7 @@
   <data name="Expressions.Numerical" xml:space="preserve"><value>数値</value></data>
   <data name="Expressions.Options" xml:space="preserve"><value>カスタム</value></data>
   <data name="Expressions.Curve" xml:space="preserve"><value>カーブ</value></data>
+  <data name="Expressions.MaskedCurve" xml:space="preserve"><value>マスク付きカーブ</value></data>
   <data name="Expressions.IsFlag" xml:space="preserve"><value>エンジン内フラグ</value></data>
   <data name="Expressions.Flag" xml:space="preserve"><value>フラグ</value></data>
   <data name="Expressions.Min" xml:space="preserve"><value>最小</value></data>
@@ -2149,4 +2150,24 @@
   <data name="FilePicker.InvalidFileName" xml:space="preserve">
     <value>ディレクトリ区切りを含まない有効なファイル名を入力してください。</value>
   </data>
+  <data name="PhonemePanel.Param.ClearValue" xml:space="preserve"><value>描画した値を消去</value></data>
+  <data name="Editor.Split.MaskedGridAdjustment" xml:space="preserve"><value>パート「{0}」：マスク付きカーブの5 tickグリッドを維持し、ノートの途中を避けるため、分割位置をパート先頭から{1} tickの位置から{2} tickの位置に移動します。続行しますか？</value></data>
+  <data name="Editor.Split.NoValidPosition" xml:space="preserve"><value>パート「{0}」はここで分割できません。パートの終端までに有効な分割位置がありません。</value></data>
+  <data name="Expressions.GraphCalculatedValues" xml:space="preserve"><value>破線：グラフの計算値</value></data>
+  <data name="EditorMore.MergeNearbyPhrases" xml:space="preserve">
+    <value>DiffSinger の近接フレーズを結合</value>
+  </data>
+  <data name="EditorMore.MergeNearbyPhrases.Desc" xml:space="preserve">
+    <value>既定ではオフです。有効にすると、短い休符の前後をまとめて合成するため、歌い方が変わる場合があります。すべての DiffSinger トラックに適用され、変更時にフレーズを再分割します。</value>
+  </data>
+  <data name="Mixer.EnableEffect" xml:space="preserve"><value>このエフェクトを有効化</value></data>
+  <data name="Mixer.FxBypassed" xml:space="preserve"><value>FX 全体をバイパス中</value></data>
+  <data name="Mixer.ModuleBypassed" xml:space="preserve"><value>このエフェクトをバイパス中</value></data>
+  <data name="ErrorDialog.MissingPackage" xml:space="preserve">
+    <value>依存パッケージが見つかりません：{0}</value>
+  </data>
+  <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>編集対象：グラフに従う（{0}）</value></data>
+  <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>編集対象：音高偏差（PITD）</value></data>
+  <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>編集対象：音高上書き（PITO）</value></data>
+  <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>音高ブラシの範囲を表示</value></data>
 </root>

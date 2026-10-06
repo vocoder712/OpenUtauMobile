@@ -26,7 +26,13 @@ public partial class MixerViewModel
             if (_selectedUserPreset == value) return;
             this.RaiseAndSetIfChanged(ref _selectedUserPreset, value);
             this.RaisePropertyChanged(nameof(HasUserPreset));
-            if (!_changingLibrary && value != null) ApplyPresetSnapshot(value.Fx.Clone());
+            if (!_changingLibrary && value != null)
+            {
+                UMixFx fx = value.Fx.Clone();
+                // 与桌面一致：加载整套预设时保留已经开启的总 FX，模块开关按预设恢复。
+                fx.Enabled |= SelectedChannel?.Track?.MixFx?.Enabled == true;
+                ApplyPresetSnapshot(fx);
+            }
         }
     }
     public bool HasUserPreset => SelectedUserPreset != null && SelectedUserPreset != _defaultPreset;

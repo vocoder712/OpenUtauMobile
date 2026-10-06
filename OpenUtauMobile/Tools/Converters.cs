@@ -9,6 +9,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Media.Imaging;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 
 namespace OpenUtauMobile.Tools;
 

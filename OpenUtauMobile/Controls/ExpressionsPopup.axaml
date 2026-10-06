@@ -70,6 +70,7 @@
                                     <ComboBoxItem Content="{DynamicResource Expressions.Numerical}" />
                                     <ComboBoxItem Content="{DynamicResource Expressions.Options}" />
                                     <ComboBoxItem Content="{DynamicResource Expressions.Curve}" />
+                                    <ComboBoxItem Content="{DynamicResource Expressions.MaskedCurve}" />
                                 </ComboBox>
                                 <CheckBox IsVisible="{Binding Expression.IsOptions}" IsEnabled="{Binding Expression.IsCustom}"
                                     IsChecked="{Binding Expression.IsFlag, Mode=TwoWay}">
@@ -86,7 +87,8 @@
                                     <NumericUpDown Value="{Binding Expression.Max, Mode=TwoWay}" IsEnabled="{Binding Expression.IsCustom}" />
                                     <TextBlock Text="{DynamicResource Expressions.Default}" IsVisible="{Binding Expression.IsCurve}" TextWrapping="Wrap" />
                                     <TextBlock Text="{DynamicResource Expressions.SystemDefault}" IsVisible="{Binding Expression.IsNumerical}" TextWrapping="Wrap" />
-                                    <NumericUpDown Value="{Binding Expression.DefaultValue, Mode=TwoWay}" />
+                                    <NumericUpDown Value="{Binding Expression.DefaultValue, Mode=TwoWay}"
+                                        IsVisible="{Binding !Expression.IsMaskedCurve}" />
                                 </StackPanel>
                                 <StackPanel IsVisible="{Binding Expression.IsNumerical}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                     <TextBlock Text="{Binding CustomDefaultLabel}" TextWrapping="Wrap" />

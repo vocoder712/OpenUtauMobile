@@ -103,6 +103,11 @@ jobs:
 
           dotnet workload --info
 
+      - name: Setup native Bazel build tools
+        uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ runner.arch == 'ARM64' && 'arm64' || 'x64' }}
+
       - name: Publish iOS ARM64 Mono AOT Unsigned IPA
         shell: bash
         run: |
@@ -166,6 +171,9 @@ jobs:
           BUILD_VERSION="$(plutil -extract CFBundleVersion raw "$INFO_PLIST")"
           PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
           ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
+          python native/worldline/verify_static.py \
+            artifacts/worldline-native/ios-arm64/libworldline.a ios-arm64 \
+            --nm "$(xcrun --find nm)" --app-bundle "$APP_DIR"
           EXPECTED_BUNDLE_ID="$(dotnet msbuild \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
             -nologo \

@@ -23,15 +23,19 @@ on:
         description: 版本歌词
         required: true
         type: string
+      release_signing:
+        description: Use the release Android keystore; PR validation uses debug signing
+        type: boolean
+        default: true
     secrets:
       ANDROID_KEYSTORE_BASE64:
-        required: true
+        required: false
       ANDROID_KEYSTORE_PASSWORD:
-        required: true
+        required: false
       ANDROID_KEY_ALIAS:
-        required: true
+        required: false
       ANDROID_KEY_PASSWORD:
-        required: true
+        required: false
 
 permissions:
   contents: read
@@ -67,6 +71,7 @@ jobs:
       action_run_id: ${{ inputs.action_run_id }}
       arch: ${{ matrix.arch }}
       rid: ${{ matrix.rid }}
+      release_signing: ${{ inputs.release_signing }}
       version_lyrics: ${{ inputs.version_lyrics }}
     secrets: inherit
 
@@ -84,7 +89,7 @@ jobs:
         include:
           - arch: x64
             rid: linux-x64
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
 
           - arch: arm64
             rid: linux-arm64
@@ -98,6 +103,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
+
+      - name: Setup native Bazel build tools
+        uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ matrix.arch }}
+
+      - name: Build and test Worldline
+        shell: bash
+        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
 
       - name: Collect Build Metadata
         shell: bash
@@ -122,12 +136,6 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
-
-      - name: Setup native verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          architecture: ${{ matrix.arch }}
 
       - name: Verify native runtime loading
         shell: bash
@@ -185,6 +193,15 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Setup native Bazel build tools
+        uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ matrix.arch }}
+
+      - name: Build and test Worldline
+        shell: bash
+        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
+
       - name: Collect Build Metadata
         shell: pwsh
         run: |
@@ -213,12 +230,6 @@ jobs:
             -p:BuildMachine="$env:BUILD_MACHINE" `
             -p:SourceCommit=${{ inputs.source_sha }} `
             -p:ActionRunId=${{ inputs.action_run_id }}
-
-      - name: Setup native verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          architecture: ${{ matrix.arch }}
 
       - name: Verify native runtime loading
         shell: bash
@@ -278,6 +289,15 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Setup native Bazel build tools
+        uses: ./.github/actions/setup-worldline
+        with:
+          architecture: ${{ matrix.arch }}
+
+      - name: Build and test Worldline
+        shell: bash
+        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
+
       - name: Collect Build Metadata
         shell: bash
         run: |
@@ -301,12 +321,6 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
-
-      - name: Setup native verification interpreter
-        uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          architecture: ${{ matrix.arch }}
 
       - name: Verify native runtime loading
         shell: bash
@@ -342,6 +356,16 @@ jobs:
   ios:
     name: iOS arm64 Mono AOT unsigned IPA
     uses: ./.github/workflows/build-ios.yml
+    with:
+      version: ${{ inputs.version }}
+      build_number: ${{ inputs.build_number }}
+      source_sha: ${{ inputs.source_sha }}
+      action_run_id: ${{ inputs.action_run_id }}
+      version_lyrics: ${{ inputs.version_lyrics }}
+
+  browser:
+    name: Browser WASM
+    uses: ./.github/workflows/build-browser.yml
     with:
       version: ${{ inputs.version }}
       build_number: ${{ inputs.build_number }}

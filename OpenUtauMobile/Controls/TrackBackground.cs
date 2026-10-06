@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtau.Core;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using ReactiveUI;
 
 namespace OpenUtauMobile.Controls;

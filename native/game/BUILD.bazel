@@ -1,0 +1,24 @@
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+package(default_visibility = ["//visibility:public"])
+exports_files(["game.BUILD", "ggml.BUILD", "pocketfft.BUILD", "gtest.BUILD", "dr_libs.BUILD"])
+cc_binary(
+    name = "opum_game",
+    srcs = ["game_bridge.cpp"],
+    deps = ["@game_cpp//:game"],
+    linkshared = True,
+    linkstatic = True,
+)
+
+platform(name = "win-x64", constraint_values = ["@platforms//os:windows", "@platforms//cpu:x86_64"])
+platform(name = "win-arm64", constraint_values = ["@platforms//os:windows", "@platforms//cpu:arm64"])
+platform(name = "win-x86", constraint_values = ["@platforms//os:windows", "@platforms//cpu:x86_32"])
+platform(name = "linux-x64", constraint_values = ["@platforms//os:linux", "@platforms//cpu:x86_64"])
+platform(name = "linux-arm64", constraint_values = ["@platforms//os:linux", "@platforms//cpu:arm64"])
+platform(name = "osx-x64", constraint_values = ["@platforms//os:macos", "@platforms//cpu:x86_64"])
+platform(name = "osx-arm64", constraint_values = ["@platforms//os:macos", "@platforms//cpu:arm64"])
+platform(name = "android-arm64", constraint_values = ["@platforms//os:android", "@platforms//cpu:arm64"])
+platform(name = "android-arm", constraint_values = ["@platforms//os:android", "@platforms//cpu:armv7"])
+platform(name = "android-x64", constraint_values = ["@platforms//os:android", "@platforms//cpu:x86_64"])
+platform(name = "android-x86", constraint_values = ["@platforms//os:android", "@platforms//cpu:x86_32"])
+platform(name = "win-x64-clang-host", constraint_values = ["@platforms//os:windows", "@platforms//cpu:x86_64", "@rules_cc//cc/private/toolchain:clang-cl"])
+platform(name = "win-arm64-clang-host", constraint_values = ["@platforms//os:windows", "@platforms//cpu:arm64", "@rules_cc//cc/private/toolchain:clang-cl"])

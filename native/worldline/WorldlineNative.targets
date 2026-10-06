@@ -1,0 +1,100 @@
+<Project>
+    <Import Project="../AndroidNativeToolchain.targets" Condition="'$(_OpumAndroidNativeToolchainImported)' != 'true'" />
+    <PropertyGroup>
+        <_WorldlineRid>$(RuntimeIdentifier)</_WorldlineRid>
+        <_WorldlineRid Condition="'$(_WorldlineRid)' == ''">$(NETCoreSdkRuntimeIdentifier)</_WorldlineRid>
+        <_WorldlineRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'x86' and $([MSBuild]::IsOSPlatform('Windows'))">win-x86</_WorldlineRid>
+        <_WorldlineRid Condition="'$(RuntimeIdentifier)' == '' and '$(PlatformTarget)' == 'ARM64' and $([MSBuild]::IsOSPlatform('Windows'))">win-arm64</_WorldlineRid>
+        <WorldlineNativeRoot Condition="'$(WorldlineNativeRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/worldline-native</WorldlineNativeRoot>
+        <WorldlineBuildRoot Condition="'$(WorldlineBuildRoot)' == ''">$(MSBuildThisFileDirectory)../../artifacts/worldline-build</WorldlineBuildRoot>
+        <WorldlinePythonExecutable Condition="'$(WorldlinePythonExecutable)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">python</WorldlinePythonExecutable>
+        <WorldlinePythonExecutable Condition="'$(WorldlinePythonExecutable)' == ''">python3</WorldlinePythonExecutable>
+        <WorldlineBazelExecutable Condition="'$(WorldlineBazelExecutable)' == ''">bazel</WorldlineBazelExecutable>
+        <_WorldlineResolveToolchainDependsOn Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">ResolveOpumAndroidNativeToolchain</_WorldlineResolveToolchainDependsOn>
+        <_WorldlineNativeName Condition="$([System.String]::Copy('$(_WorldlineRid)').StartsWith('win-'))">worldline.dll</_WorldlineNativeName>
+        <_WorldlineNativeName Condition="$([System.String]::Copy('$(_WorldlineRid)').StartsWith('linux-')) or $([System.String]::Copy('$(_WorldlineRid)').StartsWith('android-'))">libworldline.so</_WorldlineNativeName>
+        <_WorldlineNativeName Condition="$([System.String]::Copy('$(_WorldlineRid)').StartsWith('osx-'))">libworldline.dylib</_WorldlineNativeName>
+        <_WorldlineIsIos Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">true</_WorldlineIsIos>
+        <_WorldlineIsBrowser Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">true</_WorldlineIsBrowser>
+        <_WorldlineRid Condition="'$(_WorldlineIsBrowser)' == 'true'">browser-wasm</_WorldlineRid>
+        <_WorldlineNativeName Condition="'$(_WorldlineIsIos)' == 'true'">libworldline.a</_WorldlineNativeName>
+        <_WorldlineNativeName Condition="'$(_WorldlineIsBrowser)' == 'true'">worldline.a</_WorldlineNativeName>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-arm64'">arm64-v8a</_WorldlineAbi>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-arm'">armeabi-v7a</_WorldlineAbi>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-x64'">x86_64</_WorldlineAbi>
+        <_WorldlineAbi Condition="'$(_WorldlineRid)' == 'android-x86'">x86</_WorldlineAbi>
+        <_WorldlineRuntimeDirectory>$(WorldlineNativeRoot)/$(_WorldlineRid)</_WorldlineRuntimeDirectory>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(_WorldlineIsIos)' == 'true'">
+        <Compile Include="$(MSBuildThisFileDirectory)WorldlineIosResolver.cs" Link="Interop/WorldlineIosResolver.cs" />
+    </ItemGroup>
+    <!-- 每次让 Bazel 检查依赖图；不得以已有二进制代替源码构建。 -->
+    <Target Name="BuildWorldlineNative" BeforeTargets="PrepareForBuild"
+            DependsOnTargets="$(_WorldlineResolveToolchainDependsOn)"
+            Condition="'$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true'">
+        <PropertyGroup Condition="'$(_WorldlineIsIos)' == 'true'">
+            <!-- iOS SDK 可能在导入本文件之后推断模拟器 RID，执行时读取最终结果。 -->
+            <_WorldlineRid>$(RuntimeIdentifier)</_WorldlineRid>
+            <_WorldlineRuntimeDirectory>$(WorldlineNativeRoot)/$(_WorldlineRid)</_WorldlineRuntimeDirectory>
+        </PropertyGroup>
+        <Error Condition="'$(_WorldlineIsIos)' == 'true' and '$(_WorldlineRid)' == ''" Text="Worldline iOS build requires an iOS RuntimeIdentifier." />
+        <Error Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' and '$(_WorldlineAbi)' == ''"
+               Text="Worldline Android build requires an Android RuntimeIdentifier." />
+        <Error Condition="'$(_WorldlineNativeName)' == ''" Text="Unsupported Worldline RID: $(_WorldlineRid)." />
+        <PropertyGroup>
+            <_WorldlineNdkArgument Condition="'$(_WorldlineAbi)' != ''">--ndk &quot;$(_OpumAndroidNdkDirectory)&quot;</_WorldlineNdkArgument>
+            <_WorldlinePlatformArguments Condition="'$(_WorldlineIsIos)' == 'true'">--ios-minimum &quot;$(SupportedOSPlatformVersion)&quot;</_WorldlinePlatformArguments>
+            <_WorldlineWasmThreads Condition="'$(WasmEnableThreads)' == 'true'">true</_WorldlineWasmThreads>
+            <_WorldlineWasmThreads Condition="'$(_WorldlineWasmThreads)' == ''">false</_WorldlineWasmThreads>
+            <_WorldlineWasmSimd Condition="'$(WasmEnableSIMD)' == 'true'">true</_WorldlineWasmSimd>
+            <_WorldlineWasmSimd Condition="'$(_WorldlineWasmSimd)' == ''">false</_WorldlineWasmSimd>
+            <_WorldlineWasmExceptions Condition="'$(WasmEnableExceptionHandling)' == 'true'">true</_WorldlineWasmExceptions>
+            <_WorldlineWasmExceptions Condition="'$(_WorldlineWasmExceptions)' == ''">false</_WorldlineWasmExceptions>
+            <_WorldlineNodeName Condition="$([MSBuild]::IsOSPlatform('Windows'))">node.exe</_WorldlineNodeName>
+            <_WorldlineNodeName Condition="'$(_WorldlineNodeName)' == ''">node</_WorldlineNodeName>
+            <_WorldlinePlatformArguments Condition="'$(_WorldlineIsBrowser)' == 'true'">--emscripten &quot;$(EmscriptenSdkToolsPath).&quot; --emscripten-cache &quot;$(EmscriptenCacheSdkCacheDir).&quot; --emscripten-node &quot;$(EmscriptenNodeToolsPath)bin/$(_WorldlineNodeName)&quot; --wasm-threads $(_WorldlineWasmThreads) --wasm-simd $(_WorldlineWasmSimd) --wasm-exceptions $(_WorldlineWasmExceptions)</_WorldlinePlatformArguments>
+        </PropertyGroup>
+        <Error Condition="'$(_WorldlineIsBrowser)' == 'true' and ('$(EmscriptenSdkToolsPath)' == '' or '$(EmscriptenCacheSdkCacheDir)' == '')" Text="Worldline Browser requires the .NET wasm-tools workload (SDK and cache packs)." />
+        <Exec Command="&quot;$(WorldlinePythonExecutable)&quot; &quot;$(MSBuildThisFileDirectory)build.py&quot; --rid &quot;$(_WorldlineRid)&quot; --build-root &quot;$(WorldlineBuildRoot)&quot; --install-root &quot;$(WorldlineNativeRoot)&quot; --bazel &quot;$(WorldlineBazelExecutable)&quot; $(_WorldlineNdkArgument) $(_WorldlinePlatformArguments)" />
+        <Error Condition="!Exists('$(_WorldlineRuntimeDirectory)/$(_WorldlineNativeName)')" Text="Worldline build did not produce $(_WorldlineNativeName)." />
+        <!-- 在构建成功后收集，首次构建没有 artifacts 时也能正确打包。 -->
+        <ItemGroup>
+            <_WorldlineLibrary Include="$(_WorldlineRuntimeDirectory)/$(_WorldlineNativeName)" />
+            <_WorldlineMetadata Include="$(_WorldlineRuntimeDirectory)/LICENSE.*.txt;$(_WorldlineRuntimeDirectory)/worldline-build.json" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_WorldlineAbi)' != ''">
+            <AndroidNativeLibrary Include="@(_WorldlineLibrary)" Abi="$(_WorldlineAbi)" />
+            <AndroidAsset Include="@(_WorldlineMetadata)" Link="WorldlineLicenses/%(_WorldlineMetadata.Filename)%(_WorldlineMetadata.Extension)" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_WorldlineIsIos)' == 'true'">
+            <NativeReference Include="@(_WorldlineLibrary)" Kind="Static" ForceLoad="true" SmartLink="false" IsCxx="true"
+                             Frameworks="AudioToolbox AVFoundation CoreAudio CoreFoundation Foundation" />
+            <BundleResource Include="@(_WorldlineMetadata)" Link="WorldlineLicenses/%(_WorldlineMetadata.Filename)%(_WorldlineMetadata.Extension)" />
+            <!-- 通过 SDK 符号清单保留动态解析入口，同时覆盖原生链接和发布时的 strip。 -->
+            <_WorldlineExport Include="F0FrameCount;F0;DecodeMgc;DecodeBap;InitAnalysisConfig;WorldAnalysisF0In;WorldSynthesisSampleCount;WorldSynthesis;HnAnalysisF0In;WorldSynthesisContinuousNoise;ou_get_audio_device_infos;ou_free_audio_device_infos;ou_init_audio_device;ou_init_audio_device_auto;ou_get_audio_device_api;ou_get_audio_device_name;ou_free_audio_device;ou_audio_device_start;ou_audio_device_stop;ou_audio_get_error_message" />
+            <ReferenceNativeSymbol Include="@(_WorldlineExport)" SymbolType="Function" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_WorldlineIsBrowser)' == 'true'">
+            <!-- 文件名 worldline.a 使 SDK 将 DllImport("worldline") 收入静态 P/Invoke 表。 -->
+            <NativeFileReference Include="@(_WorldlineLibrary)" />
+            <Content Include="@(_WorldlineMetadata)" Link="wwwroot/licenses/Worldline/%(_WorldlineMetadata.Filename)%(_WorldlineMetadata.Extension)"
+                     CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+        </ItemGroup>
+        <ItemGroup Condition="'$(_WorldlineAbi)' == '' and '$(_WorldlineIsIos)' != 'true' and '$(_WorldlineIsBrowser)' != 'true'">
+            <Content Include="@(_WorldlineLibrary)" Link="%(_WorldlineLibrary.Filename)%(_WorldlineLibrary.Extension)"
+                     CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+            <Content Include="@(_WorldlineMetadata)" Link="WorldlineLicenses/%(_WorldlineMetadata.Filename)%(_WorldlineMetadata.Extension)"
+                     CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+        </ItemGroup>
+    </Target>
+    <Target Name="TrackWorldlineWasmTrampolines" BeforeTargets="_WasmCompileNativeSourceFiles"
+            Condition="'$(_WorldlineIsBrowser)' == 'true'">
+        <!-- .NET 10 的 runtime.c 包含跳板表，但 SDK 未将该表列入增量编译依赖。 -->
+        <ItemGroup>
+            <_WasmRuntimePackSrcFile Update="@(_WasmRuntimePackSrcFile)"
+                                     Condition="'%(_WasmRuntimePackSrcFile.Filename)' == 'runtime'">
+                <Dependencies>%(_WasmRuntimePackSrcFile.Dependencies);$(_WasmInterpToNativeTablePath)</Dependencies>
+            </_WasmRuntimePackSrcFile>
+        </ItemGroup>
+    </Target>
+</Project>

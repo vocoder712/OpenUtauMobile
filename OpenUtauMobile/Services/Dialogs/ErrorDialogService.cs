@@ -13,14 +13,16 @@ namespace OpenUtauMobile.Services.Dialogs;
 public static class ErrorDialogService
 {
     private static Func<ErrorDialogViewModel, Task>? _show;
+    private static Action? _openDependencyManager;
     private static int _isReady; // 0 = 未注册, 1 = 已注册
 
     /// <summary>
     /// 注册弹窗回调（由 MainView 在 OnAttachedToVisualTree 中调用）。
     /// </summary>
-    public static void Register(Func<ErrorDialogViewModel, Task> show)
+    public static void Register(Func<ErrorDialogViewModel, Task> show, Action? openDependencyManager = null)
     {
         _show = show;
+        _openDependencyManager = openDependencyManager;
         Interlocked.Exchange(ref _isReady, 1);
     }
 
@@ -30,6 +32,7 @@ public static class ErrorDialogService
     public static void Unregister()
     {
         _show = null;
+        _openDependencyManager = null;
         Interlocked.Exchange(ref _isReady, 0);
     }
 
@@ -41,5 +44,16 @@ public static class ErrorDialogService
         if (_show == null) return;
         Func<ErrorDialogViewModel, Task> capture = _show;
         Dispatcher.UIThread.Post(() => _ = capture(vm));
+    }
+
+    public static void OpenDependencyManager()
+    {
+        Action? navigate = _openDependencyManager;
+        if (navigate == null) return;
+        // 先处理弹窗关闭，再由仍在挂载的宿主导航；直接打开的错误弹窗也复用此入口。
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_openDependencyManager == navigate) navigate();
+        }, DispatcherPriority.Background);
     }
 }
