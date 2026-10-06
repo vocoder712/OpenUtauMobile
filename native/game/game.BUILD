@@ -31,6 +31,11 @@ cc_test(
         "src/cli/midi_writer.cpp", "src/cli/text_writer.cpp",
     ] + glob(["tests/support/*.h", "src/cli/*.h"]),
     includes = [".", "tests"],
+    # 上游测试使用 std::memcpy，不能依赖其他头文件间接引入声明。
+    copts = select({
+        "@platforms//os:windows": ["/FIcstring"],
+        "//conditions:default": ["-include", "cstring"],
+    }),
     deps = [":game", "@gtest//:gtest_main", "@dr_libs//:dr_wav"],
 )
 filegroup(name = "license", srcs = ["LICENSE"])

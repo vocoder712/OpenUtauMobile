@@ -32,8 +32,16 @@ jobs:
           path: artifacts/worldline-native/${{ matrix.rid }}/
           if-no-files-found: error
 
-  browser-build:
-    uses: ./.github/workflows/build-browser.yml
+  # 本轮同步的临时全平台验收入口；全部通过后恢复 Android 最小检查。
+  full-platforms:
+    uses: ./.github/workflows/build-all-platforms.yml
+    with:
+      version: '0.0.0'
+      build_number: ${{ fromJSON(github.run_number) }}
+      source_sha: ${{ github.event.pull_request.head.sha }}
+      action_run_id: ${{ github.run_id }}
+      version_lyrics: ''
+      release_signing: false
 
   native-desktop:
     name: Native ${{ matrix.rid }}
@@ -100,6 +108,7 @@ jobs:
       - uses: ./.github/actions/setup-worldline
       - uses: android-actions/setup-android@v3
         with:
+          packages: 'platform-tools'
           log-accepted-android-sdk-licenses: false
       - name: Build with pinned NDK and verify ELF
         shell: bash

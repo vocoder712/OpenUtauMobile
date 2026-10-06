@@ -23,6 +23,7 @@ def _impl(ctx):
         feature(name = "no_legacy_features", enabled = True),
         feature(name = "archive_param_file", enabled = ctx.attr.archive_param_file),
         _flags("sdk", _COMPILE, ctx.attr.flags),
+        _flags("user_compile_flags", _COMPILE, ["%{user_compile_flags}"], iterate_over = "user_compile_flags"),
         _flags("source", _COMPILE, ["-c", "%{source_file}"]),
         _flags("output", _COMPILE, ["-o", "%{output_file}"]),
         _flags("dependency", _COMPILE, ["-MD", "-MF", "%{dependency_file}"], expand_if_available = "dependency_file"),
@@ -31,7 +32,6 @@ def _impl(ctx):
         _flags("quote_includes", _COMPILE, ["-iquote", "%{quote_include_paths}"], iterate_over = "quote_include_paths"),
         _flags("system_includes", _COMPILE, ["-isystem", "%{system_include_paths}"], iterate_over = "system_include_paths"),
         _flags("forced_includes", _COMPILE, ["-include", "%{includes}"], iterate_over = "includes"),
-        _flags("user_compile_flags", _COMPILE, ["%{user_compile_flags}"], iterate_over = "user_compile_flags"),
         _flags("archive", ["c++-link-static-library"], ["rcs", "%{output_execpath}"]),
     ]
     return cc_common.create_cc_toolchain_config_info(

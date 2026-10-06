@@ -1,7 +1,23 @@
 """原生 Bazel 构建共用的进程锁和增量文件写入。"""
 from contextlib import contextmanager
 import os
+from pathlib import Path
+import shutil
 import time
+
+
+def configure_windows_bash(environment):
+    """兼容 Git cmd、bin 和 mingw64/bin 入口，避免误用 WSL 的 bash。"""
+    if environment.get('BAZEL_SH'):
+        return
+    git = shutil.which('git')
+    if git:
+        for parent in Path(git).resolve().parents[:3]:
+            for relative in ('bin/bash.exe', 'usr/bin/bash.exe'):
+                candidate = parent / relative
+                if candidate.is_file():
+                    environment['BAZEL_SH'] = str(candidate)
+                    return
 
 @contextmanager
 def build_lock(path):

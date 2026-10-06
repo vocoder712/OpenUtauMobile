@@ -12,7 +12,7 @@ import subprocess
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from bazel_common import build_lock, write_changed
+from bazel_common import build_lock, configure_windows_bash, write_changed
 from verify import verify_binary
 from static_platforms import STATIC_RIDS, configure
 from verify_static import verify_archive
@@ -112,19 +112,21 @@ def build_native(args, parser, build):
         path = os.environ.get('PATH', '')
         env = {key: value for key, value in env.items() if key.upper() != 'PATH'}
         env['Path'] = path
-        if not env.get('BAZEL_SH'):
-            git = shutil.which('git')
-            bash = Path(git).resolve().parent.parent / 'bin/bash.exe' if git else None
-            if bash and bash.is_file():
-                env['BAZEL_SH'] = str(bash)
-            elif args.test:
-                parser.error('Bazel tests require Git Bash. Set BAZEL_SH to bash.exe.')
+        configure_windows_bash(env)
+        if args.test and not env.get('BAZEL_SH'):
+            parser.error('Bazel tests require Git Bash. Set BAZEL_SH to bash.exe.')
+    if host_os == 'osx':
+        # Bazel 的 Apple 编译器包装器在独立版本探测时也需要 SDK 环境。
+        env.setdefault('DEVELOPER_DIR', subprocess.run(['xcode-select', '-p'], check=True, capture_output=True, text=True).stdout.strip())
+        env.setdefault('SDKROOT', subprocess.run(['xcrun', '--sdk', 'macosx', '--show-sdk-path'], check=True, capture_output=True, text=True).stdout.strip())
     env['USE_BAZEL_VERSION'] = version
     env['OPUM_WORLDLINE_PYTHON'] = sys.executable
     env.setdefault('BAZELISK_HOME', str(ROOT / 'artifacts/bazelisk'))
     options = [f'--platforms=//:{args.rid}', '--lockfile_mode=' + ('update' if args.update_lock else 'error')]
     if is_static:
         options += ['--extra_toolchains=//sdk_toolchain:toolchain']
+        if args.rid != 'browser-wasm':
+            options += ['--per_file_copt=worldline/audio_output[.]cc@-x,objective-c++']
     if args.rid.startswith('win-'):
         options += ['--cxxopt=/std:c++17', '--copt=/utf-8', '--features=static_link_msvcrt']
         if args.rid == 'win-x86':

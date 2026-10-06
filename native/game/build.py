@@ -13,7 +13,7 @@ import sys
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE.parent))
-from bazel_common import build_lock, write_changed
+from bazel_common import build_lock, configure_windows_bash, write_changed
 from worldline.verify import verify_binary
 
 EXPORTS = {'opum_game_open', 'opum_game_close', 'opum_game_infer', 'opum_game_error'}
@@ -59,13 +59,13 @@ def build_native(args, parser, build):
     if os.name == 'nt':
         env = {key: value for key, value in env.items() if key.upper() != 'PATH'}
         env['Path'] = os.environ.get('PATH', '')
-        if not env.get('BAZEL_SH'):
-            git = shutil.which('git')
-            bash = Path(git).resolve().parent.parent / 'bin/bash.exe' if git else None
-            if bash and bash.is_file():
-                env['BAZEL_SH'] = str(bash)
-            elif args.test:
-                parser.error('Bazel tests require Git Bash. Set BAZEL_SH to bash.exe.')
+        configure_windows_bash(env)
+        if args.test and not env.get('BAZEL_SH'):
+            parser.error('Bazel tests require Git Bash. Set BAZEL_SH to bash.exe.')
+    if host_os == 'osx':
+        # Bazel 的 Apple 编译器包装器在独立版本探测时也需要 SDK 环境。
+        env.setdefault('DEVELOPER_DIR', subprocess.run(['xcode-select', '-p'], check=True, capture_output=True, text=True).stdout.strip())
+        env.setdefault('SDKROOT', subprocess.run(['xcrun', '--sdk', 'macosx', '--show-sdk-path'], check=True, capture_output=True, text=True).stdout.strip())
     env['USE_BAZEL_VERSION'] = version
     env.setdefault('BAZELISK_HOME', str(ROOT / 'artifacts/bazelisk'))
     options = [f'--platforms=//:{args.rid}', '--lockfile_mode=' + ('update' if args.update_lock else 'error')]

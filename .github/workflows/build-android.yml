@@ -32,15 +32,19 @@ on:
         required: false
         default: ''
         type: string
+      release_signing:
+        description: Use the release Android keystore; PR validation uses debug signing
+        type: boolean
+        default: true
     secrets:
       ANDROID_KEYSTORE_BASE64:
-        required: true
+        required: false
       ANDROID_KEYSTORE_PASSWORD:
-        required: true
+        required: false
       ANDROID_KEY_ALIAS:
-        required: true
+        required: false
       ANDROID_KEY_PASSWORD:
-        required: true
+        required: false
 
 permissions:
   contents: read
@@ -112,6 +116,7 @@ jobs:
           echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
 
       - name: Decode Android Keystore
+        if: inputs.release_signing
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -133,7 +138,19 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          RELEASE_SIGNING: ${{ inputs.release_signing }}
         run: |
+          set -euo pipefail
+          signing_args=(-p:AndroidKeyStore=false)
+          if [ "$RELEASE_SIGNING" = "true" ]; then
+            test -s signing.keystore
+            test -n "$KEYSTORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
+            signing_args=(-p:AndroidKeyStore=true
+              "-p:AndroidSigningKeyStore=$GITHUB_WORKSPACE/signing.keystore"
+              "-p:AndroidSigningStorePass=$KEYSTORE_PASSWORD"
+              "-p:AndroidSigningKeyAlias=$KEY_ALIAS"
+              "-p:AndroidSigningKeyPass=$KEY_PASSWORD")
+          fi
           dotnet publish OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
             --no-restore \
             -c Release \
@@ -148,11 +165,7 @@ jobs:
             -p:ActionRunId=${{ inputs.action_run_id }} \
             -p:AndroidNdkDirectory="$OPUM_ANDROID_NDK" \
             -p:AndroidPackageFormat=apk \
-            -p:AndroidKeyStore=true \
-            -p:AndroidSigningKeyStore="${{ github.workspace }}/signing.keystore" \
-            -p:AndroidSigningStorePass="$KEYSTORE_PASSWORD" \
-            -p:AndroidSigningKeyAlias="$KEY_ALIAS" \
-            -p:AndroidSigningKeyPass="$KEY_PASSWORD"
+            "${signing_args[@]}"
 
       - name: Verify and prepare Android artifact
         shell: bash

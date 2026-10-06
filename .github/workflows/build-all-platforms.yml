@@ -23,15 +23,19 @@ on:
         description: 版本歌词
         required: true
         type: string
+      release_signing:
+        description: Use the release Android keystore; PR validation uses debug signing
+        type: boolean
+        default: true
     secrets:
       ANDROID_KEYSTORE_BASE64:
-        required: true
+        required: false
       ANDROID_KEYSTORE_PASSWORD:
-        required: true
+        required: false
       ANDROID_KEY_ALIAS:
-        required: true
+        required: false
       ANDROID_KEY_PASSWORD:
-        required: true
+        required: false
 
 permissions:
   contents: read
@@ -67,6 +71,7 @@ jobs:
       action_run_id: ${{ inputs.action_run_id }}
       arch: ${{ matrix.arch }}
       rid: ${{ matrix.rid }}
+      release_signing: ${{ inputs.release_signing }}
       version_lyrics: ${{ inputs.version_lyrics }}
     secrets: inherit
 
