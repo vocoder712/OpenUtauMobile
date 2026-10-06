@@ -70,9 +70,9 @@
             <NativeReference Include="@(_WorldlineLibrary)" Kind="Static" ForceLoad="true" SmartLink="false" IsCxx="true"
                              Frameworks="AudioToolbox AVFoundation CoreAudio CoreFoundation Foundation" />
             <BundleResource Include="@(_WorldlineMetadata)" Link="WorldlineLicenses/%(_WorldlineMetadata.Filename)%(_WorldlineMetadata.Extension)" />
-            <!-- 动态解析静态符号时，必须显式保留并导出，避免裁剪后只留下库名。 -->
+            <!-- 通过 SDK 符号清单保留动态解析入口，同时覆盖原生链接和发布时的 strip。 -->
             <_WorldlineExport Include="F0FrameCount;F0;DecodeMgc;DecodeBap;InitAnalysisConfig;WorldAnalysisF0In;WorldSynthesisSampleCount;WorldSynthesis;HnAnalysisF0In;WorldSynthesisContinuousNoise;ou_get_audio_device_infos;ou_free_audio_device_infos;ou_init_audio_device;ou_init_audio_device_auto;ou_get_audio_device_api;ou_get_audio_device_name;ou_free_audio_device;ou_audio_device_start;ou_audio_device_stop;ou_audio_get_error_message" />
-            <LinkerArgument Include="@(_WorldlineExport->'-Wl,-u,_%(Identity),-exported_symbol,_%(Identity)')" />
+            <ReferenceNativeSymbol Include="@(_WorldlineExport)" SymbolType="Function" />
         </ItemGroup>
         <ItemGroup Condition="'$(_WorldlineIsBrowser)' == 'true'">
             <!-- 文件名 worldline.a 使 SDK 将 DllImport("worldline") 收入静态 P/Invoke 表。 -->
