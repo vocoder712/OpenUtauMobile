@@ -182,6 +182,7 @@ namespace OpenUtau.Core.Util {
             public int WorldlineR = 0;
             public string OnnxRunner = string.Empty;
             public int OnnxGpu = 0;
+            public float MergePhrasesSec = 0;
             /// <summary>
             /// GAME MIDI extractor backend preference: "onnx" (default) or "ggml".
             /// Affects which inference engine Game uses; see GameBackendFactory.
@@ -228,6 +229,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowIcon = true;
             public bool ShowGhostNotes = true;
             public bool NoteHoverGlow = true;
+            public bool ReduceAnimations = false;
             public bool ShowPlaybackNoteHighlight = true;
             public bool ShowPlaybackNoteBounce = false;
             public EditTool EditTool = new EditTool();

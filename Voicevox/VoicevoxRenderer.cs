@@ -361,7 +361,10 @@ namespace OpenUtau.Core.Voicevox {
 
                     var result = new RenderPitchResult {
                         tones = f0.Select(value => (float)MusicMath.FreqToTone(value)).ToArray(),
-                        ticks = new float[vvTotalFrames]
+                        ticks = new float[vvTotalFrames],
+                        // The pau padding before and after the phrase is silence; without this mask its
+                        // pitch would be written past the phrase end, over the next phrase.
+                        voiced = PaddingVoicedMask(vsParams.phonemes.Select(p => p.frame_length).ToList()),
                     };
                     var layout = Layout(phrase);
                     var t = layout.positionMs - layout.leadingMs;
@@ -375,6 +378,22 @@ namespace OpenUtau.Core.Voicevox {
                 throw new VoicevoxException("Failed to create pitch data.", e);
             }
             return null;
+        }
+
+        /// <summary>
+        /// Per-frame voiced flags for a phoneme list that starts and ends with a pau padding:
+        /// false for the frames of the first and the last phoneme, true for the rest.
+        /// </summary>
+        internal static bool[] PaddingVoicedMask(IReadOnlyList<int> phonemeFrameLengths) {
+            var mask = new bool[phonemeFrameLengths.Sum()];
+            int offset = 0;
+            for (int i = 0; i < phonemeFrameLengths.Count; i++) {
+                int length = phonemeFrameLengths[i];
+                bool padding = i == 0 || i == phonemeFrameLengths.Count - 1;
+                Array.Fill(mask, !padding, offset, length);
+                offset += length;
+            }
+            return mask;
         }
 
         ulong HashPhraseGroups(RenderPhrase phrase) {

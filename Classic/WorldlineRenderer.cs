@@ -156,17 +156,12 @@ namespace OpenUtau.Classic {
                         var session = Onnx.getInferenceSession(OpenUtau.Core.Classic.Data.Resources.mel, OnnxRunnerChoice.CPU);
                         using var results = session.Run(inputs);
                         var melOutput = results.First(r => r.Name == "mel").AsTensor<float>();
-                        const string vocoderPkg = "pc-nsf-hifigan";
+                        const string vocoderPkg = Hifisampler.HifiVocoder.PackageId;
                         string vocoderPath = PackageManager.Inst.GetInstalledPath(vocoderPkg) ?? "";
                         if (vocoderBytes == null) {
                             var configPath = Path.Combine(vocoderPath, "vocoder.yaml");
                             if (!File.Exists(configPath)) {
-                                throw new MessageCustomizableException(
-                                    $"Error loading package \"{vocoderPkg}\"",
-                                    $"<translate:packages.errors.missing>",
-                                    new Exception($"Error loading package \"{vocoderPkg}\""),
-                                true,
-                                    new string[] { vocoderPkg });
+                                throw new MissingPackageException(vocoderPkg);
                             }
                             var config = Yaml.DefaultDeserializer.Deserialize<Core.DiffSinger.DsVocoderConfig>(
                                 File.ReadAllText(configPath, System.Text.Encoding.UTF8));
@@ -177,6 +172,7 @@ namespace OpenUtau.Classic {
                             NamedOnnxValue.CreateFromTensor("mel", melOutput),
                             NamedOnnxValue.CreateFromTensor("f0", f0Tensor),
                         };
+                        using var dmlScope = Onnx.EnterDmlScope();
                         using var vocoderResults = vocoderSession.Run(vocoderInputs);
                         var audioOutput = vocoderResults.First().AsTensor<float>();
                         result.samples = audioOutput.ToArray();
@@ -243,8 +239,8 @@ namespace OpenUtau.Classic {
                         continue;
                     }
                     float[] samples = Wave.GetSamples(waveStream!.ToSampleProvider().ToMono(1, 0));
-                    int offset = (int)(item.phone.oto.Offset / 1000 * 44100);
-                    int cutoff = (int)(item.phone.oto.Cutoff / 1000 * 44100);
+                    int offset = (int)(item.offset / 1000 * 44100);
+                    int cutoff = (int)(item.cutoff / 1000 * 44100);
                     int length = cutoff >= 0 ? (samples.Length - offset - cutoff) : -cutoff;
                     samples = samples.Skip(offset).Take(length).ToArray();
                     item.ApplyEnvelope(samples);
