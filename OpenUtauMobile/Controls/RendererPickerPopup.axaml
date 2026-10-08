@@ -1,41 +1,80 @@
-<UserControl
-    xmlns="https://github.com/avaloniaui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
-    xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
-    mc:Ignorable="d"
-    x:Class="OpenUtauMobile.Controls.RendererPickerPopup"
-    d:DataContext="{d:DesignInstance Type=vm:RendererPickerViewModel, IsDesignTimeCreatable=False}"
-    x:DataType="vm:RendererPickerViewModel"
-    Classes="PopupDialogRoot DialogHeightList">
-    <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.Renderer.Title}">
-        <DockPanel>
-            <ItemsControl
-                x:Name="RendererList"
-                x:DataType="vm:RendererPickerViewModel"
-                ItemsSource="{Binding Renderers}"
-                Background="Transparent"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button
-                            Command="{Binding DataContext.SelectRendererCommand, ElementName=RendererList}"
-                            CommandParameter="{Binding .}"
-                            HorizontalContentAlignment="Center"
-                            HorizontalAlignment="Stretch"
-                            Background="Transparent"
-                            BorderThickness="0" Padding="12,8">
-                            <TextBlock
-                                Text="{Binding .}"
-                                FontSize="14"
-                                TextTrimming="CharacterEllipsis" />
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </DockPanel>
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             x:Class="OpenUtauMobile.Controls.RendererPickerPopup"
+             x:DataType="vm:RendererPickerViewModel"
+             Classes="PopupDialogRoot">
+    <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource RendererSettings.Title}">
+        <dialogs:DialogShell.Footer>
+            <dialogs:DialogActionRow>
+                <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                <Button Content="{DynamicResource RendererSettings.Apply}" Command="{Binding ApplyCommand}"
+                        Classes="DialogPrimary" dialogs:DialogShell.IsDefaultAction="True" />
+            </dialogs:DialogActionRow>
+        </dialogs:DialogShell.Footer>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <Border Padding="{x:Static foundation:LayoutTokens.InsetM}">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                        <TextBlock Text="{Binding TrackName}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding SingerName}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock Text="{DynamicResource RendererSettings.Renderer}" />
+                        <ComboBox x:Name="RendererSelector" ItemsSource="{Binding Renderers}"
+                                  SelectedItem="{Binding SelectedRenderer, Mode=TwoWay}"
+                                  HorizontalAlignment="Stretch"
+                                  AutomationProperties.Name="{DynamicResource RendererSettings.Renderer}" />
+                        <TextBlock Text="{DynamicResource RendererSettings.Warning.HifiSampler}"
+                                   IsVisible="{Binding ShowHifiSamplerWarning}"
+                                   Foreground="{DynamicResource Sem.Color.Warning}" TextWrapping="Wrap" />
+                        <TextBlock Text="{DynamicResource RendererSettings.Warning.WorldlineR2}"
+                                   IsVisible="{Binding ShowWorldlineR2Warning}"
+                                   Foreground="{DynamicResource Sem.Color.Warning}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding OriginalRenderer}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel IsVisible="{Binding IsClassic}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource RendererSettings.Resampler}" />
+                            <ComboBox x:Name="ResamplerSelector" ItemsSource="{Binding Resamplers}"
+                                      SelectedItem="{Binding SelectedResampler, Mode=TwoWay}" HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="{DynamicResource RendererSettings.Resampler}" />
+                            <TextBlock Text="{Binding ResamplerError}" TextWrapping="Wrap"
+                                       IsVisible="{Binding ResamplerError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                       Foreground="{DynamicResource Sem.Color.Error}" />
+                        </StackPanel>
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource RendererSettings.Wavtool}" />
+                            <ComboBox x:Name="WavtoolSelector" ItemsSource="{Binding Wavtools}"
+                                      SelectedItem="{Binding SelectedWavtool, Mode=TwoWay}" HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="{DynamicResource RendererSettings.Wavtool}" />
+                            <TextBlock Text="{Binding WavtoolError}" TextWrapping="Wrap"
+                                       IsVisible="{Binding WavtoolError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                       Foreground="{DynamicResource Sem.Color.Error}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock Text="{DynamicResource RendererSettings.Graph.Title}" />
+                        <ComboBox x:Name="GraphSelector" ItemsSource="{Binding Graphs}"
+                                  SelectedItem="{Binding SelectedGraph, Mode=TwoWay}" HorizontalAlignment="Stretch"
+                                  AutomationProperties.Name="{DynamicResource RendererSettings.Graph.Title}" />
+                        <TextBlock Text="{Binding GraphDescription}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <TextBlock Text="{DynamicResource RendererSettings.Graph.Empty}" TextWrapping="Wrap"
+                                   IsVisible="{Binding HasNoCompatibleGraphs}"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <TextBlock Text="{Binding GraphWarning}" TextWrapping="Wrap"
+                                   IsVisible="{Binding GraphWarning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   Foreground="{DynamicResource Sem.Color.Warning}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
     </dialogs:DialogShell>
 </UserControl>

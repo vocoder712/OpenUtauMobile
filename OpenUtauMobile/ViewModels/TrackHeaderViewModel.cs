@@ -12,6 +12,7 @@ using Avalonia.Media.Imaging;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
+using OpenUtau.Core.ExpressionGraph;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
@@ -195,29 +196,44 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectRenderer()
     {
-        if (_track.Singer is not { Found: true })
+        UProject project = DocManager.Inst.Project;
+        USinger? singer = _track.Singer;
+        URenderSettings original = _track.RendererSettings.Clone();
+        string? originalGraph = _track.ExpressionGraph;
+        RendererSettingsSelection? selection = await TrackHeaderService.Inst.PickRendererAsync(project, _track);
+        // 弹窗关闭后的异步间隙也可能切换工程、歌手或设置，提交前再次检查。
+        if (selection == null || !ReferenceEquals(project, DocManager.Inst.Project) || !project.tracks.Contains(_track)
+            || !ReferenceEquals(singer, _track.Singer) || _track.Singer is not { Found: true }
+            || original.renderer != _track.RendererSettings.renderer
+            || original.resampler != _track.RendererSettings.resampler || original.wavtool != _track.RendererSettings.wavtool
+            || originalGraph != _track.ExpressionGraph
+            || !RendererGraphOption.CanKeep(project, selection.Settings.renderer, selection.ExpressionGraph, original.renderer, originalGraph))
         {
             return;
         }
 
-        string[] supportedRenderers = Renderers.GetSupportedRenderers(_track.Singer.SingerType);
-        if (supportedRenderers.Length == 0)
+        URenderSettings settings = selection.Settings;
+        bool renderChanged = settings.renderer != original.renderer || settings.resampler != original.resampler || settings.wavtool != original.wavtool;
+        bool graphChanged = selection.ExpressionGraph != originalGraph;
+        if (!renderChanged && !graphChanged) return;
+        // 提交时从当前工程构建图草稿，保留其他轨道和图的最新修改。
+        SetExpressionGraphsCommand? graphCommand = null;
+        if (graphChanged)
         {
-            return;
+            ExpressionGraphEdits.Draft draft = new(project);
+            draft.TrackOverrides[project.tracks.IndexOf(_track)] = selection.ExpressionGraph;
+            graphCommand = new SetExpressionGraphsCommand(project, draft.ToState());
         }
-
-        string? renderer = await TrackHeaderService.Inst.PickRendererAsync(supportedRenderers);
-        if (string.IsNullOrEmpty(renderer))
-        {
-            return;
-        }
-
-        URenderSettings settings = _track.RendererSettings?.Clone() ?? new URenderSettings();
-        settings.renderer = renderer;
-
         DocManager.Inst.StartUndoGroup();
-        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
-        DocManager.Inst.EndUndoGroup();
+        try
+        {
+            if (renderChanged) DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(project, _track, settings));
+            if (graphCommand != null) DocManager.Inst.ExecuteCmd(graphCommand);
+        }
+        finally
+        {
+            DocManager.Inst.EndUndoGroup();
+        }
         Refresh();
     }
 

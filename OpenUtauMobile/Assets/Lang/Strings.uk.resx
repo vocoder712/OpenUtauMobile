@@ -2132,4 +2132,85 @@
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Ціль малювання: відхилення (PITD)</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Ціль малювання: перевизначення (PITO)</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>Показувати область пензля висоти тону</value></data>
+  <data name="RendererSettings.Title" xml:space="preserve">
+    <value>Налаштування рендерингу доріжки</value>
+  </data>
+  <data name="RendererSettings.Renderer" xml:space="preserve">
+    <value>Рендерер</value>
+  </data>
+  <data name="RendererSettings.Resampler" xml:space="preserve">
+    <value>Ресемплер</value>
+  </data>
+  <data name="RendererSettings.Wavtool" xml:space="preserve">
+    <value>Wavtool</value>
+  </data>
+  <data name="RendererSettings.Apply" xml:space="preserve">
+    <value>Застосувати</value>
+  </data>
+  <data name="RendererSettings.Graph.Title" xml:space="preserve">
+    <value>Граф виразів (Graph)</value>
+  </data>
+  <data name="RendererSettings.Graph.Default" xml:space="preserve">
+    <value>Типовий для проєкту</value>
+  </data>
+  <data name="RendererSettings.Graph.Off" xml:space="preserve">
+    <value>Вимкнути граф виразів</value>
+  </data>
+  <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
+    <value>Недоступний: {0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
+    <value>Граф виразів вимкнено.</value>
+  </data>
+  <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
+    <value>Немає активного графа виразів.</value>
+  </data>
+  <data name="RendererSettings.Graph.DefaultEffective" xml:space="preserve">
+    <value>Типовий для проєкту: {0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Effective" xml:space="preserve">
+    <value>Активний граф: {0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Empty" xml:space="preserve">
+    <value>У проєкті немає графів виразів, сумісних із цим рендерером.</value>
+  </data>
+  <data name="RendererSettings.Graph.Missing" xml:space="preserve">
+    <value>Граф виразів «{0}» не знайдено. Виберіть інший варіант.</value>
+  </data>
+  <data name="RendererSettings.Graph.Incompatible" xml:space="preserve">
+    <value>Граф виразів «{0}» несумісний із цим рендерером.</value>
+  </data>
+  <data name="RendererSettings.Graph.Invalid" xml:space="preserve">
+    <value>Неможливо виконати граф виразів «{0}»: {1}</value>
+  </data>
+  <data name="RendererSettings.Warning.HifiSampler" xml:space="preserve">
+    <value>Попередження: це вбудована реалізація HIFISAMPLER в OpenUtau Mobile. Рекомендуємо перейти на CLASSIC → hifisampler, щоб використовувати офіційну реалізацію.</value>
+  </data>
+  <data name="RendererSettings.Warning.WorldlineR2" xml:space="preserve">
+    <value>Попередження: розробку Worldline-R2 не завершено, і він застарів. Використання не рекомендовано.</value>
+  </data>
+  <data name="RendererSettings.Error.Renderer" xml:space="preserve">
+    <value>Поточний рендерер відсутній або несумісний. Виберіть сумісний рендерер.</value>
+  </data>
+  <data name="RendererSettings.Error.Resampler" xml:space="preserve">
+    <value>Виберіть сумісний ресемплер. Зовнішні Wavtool не підтримують ресемплер Worldline.</value>
+  </data>
+  <data name="RendererSettings.Error.Wavtool" xml:space="preserve">
+    <value>Виберіть Wavtool.</value>
+  </data>
+  <data name="RendererSettings.Error.NoResamplers" xml:space="preserve">
+    <value>Немає сумісних ресемплерів. Перевірте встановлені інструменти в налаштуваннях.</value>
+  </data>
+  <data name="RendererSettings.Error.NoWavtools" xml:space="preserve">
+    <value>Немає доступних Wavtool. Перевірте встановлені інструменти в налаштуваннях.</value>
+  </data>
+  <data name="RendererSettings.Error.Stale" xml:space="preserve">
+    <value>Доріжка, співак або налаштування змінилися. Закрийте та відкрийте це вікно знову.</value>
+  </data>
+  <data name="RendererSettings.Error.NoSinger" xml:space="preserve">
+    <value>Спочатку виберіть співака для доріжки.</value>
+  </data>
+  <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
+    <value>Співак відсутній. Виберіть доступного співака.</value>
+  </data>
 </root>

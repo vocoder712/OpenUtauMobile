@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
@@ -12,8 +12,8 @@ using Avalonia.Media.Imaging;
 using Avalonia.Media.TextFormatting;
 using Avalonia.Platform;
 using DynamicData.Binding;
-using NWaves.Signals;
 using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
@@ -571,12 +571,12 @@ public class PartsCanvas : Control, ICmdSubscriber
     /// </summary>
     private void RedrawWaveCache(WaveCache cache, UWavePart part, int peakColor)
     {
-        DiscreteSignal[] peaks = part.Peaks.Result;
+        WavePeaks peaks = part.Peaks.Result;
         WriteableBitmap bitmap = cache.Bitmap!;
         int[] data = cache.PixelData;
         int bmpW = bitmap.PixelSize.Width;
         int bmpH = bitmap.PixelSize.Height;
-        int channelCount = peaks.Length;
+        int channelCount = peaks.Channels;
 
         Array.Clear(data, 0, data.Length);
 
@@ -598,8 +598,8 @@ public class PartsCanvas : Control, ICmdSubscriber
         int posTick = (int)(TickOffset + x / TickWidth);
         double posMs = timeAxis.TickPosToMsPos(posTick);
         int sampleIndex = Math.Clamp(
-            (int)(part.peaksSampleRate * (skipMs + posMs - partStartMs) * 0.001),
-            0, peaks[0].Length);
+            (int)(peaks.SampleRate * (skipMs + posMs - partStartMs) * 0.001),
+            0, peaks.Frames);
 
         float[] lastSMin = new float[channelCount];
         float[] lastSMax = new float[channelCount];
@@ -614,34 +614,27 @@ public class PartsCanvas : Control, ICmdSubscriber
             int nextPosTick = (int)(TickOffset + (x + 1) / TickWidth);
             double nextPosMs = timeAxis.TickPosToMsPos(nextPosTick);
             int nextSampleIndex = Math.Clamp(
-                (int)(part.peaksSampleRate * (skipMs + nextPosMs - partStartMs) * 0.001),
-                0, peaks[0].Length);
+                (int)(peaks.SampleRate * (skipMs + nextPosMs - partStartMs) * 0.001),
+                0, peaks.Frames);
 
             if (nextSampleIndex > sampleIndex)
             {
                 hasPeak = true;
                 for (int ch = 0; ch < channelCount; ch++)
                 {
-                    float sMin = float.MaxValue, sMax = float.MinValue;
-                    float[] samples = peaks[ch].Samples;
-                    for (int k = sampleIndex; k < nextSampleIndex; k++)
-                    {
-                        float s = samples[k];
-                        if (s < sMin) sMin = s;
-                        if (s > sMax) sMax = s;
-                    }
-                    lastSMin[ch] = sMin;
-                    lastSMax[ch] = sMax;
+                    peaks.MinMax(ch, sampleIndex, nextSampleIndex, out float sMin, out float sMax);
+                    lastSMin[ch] = Math.Clamp(sMin, -1, 1);
+                    lastSMax[ch] = Math.Clamp(sMax, -1, 1);
                 }
             }
-            else if (!hasPeak && posTick >= part.position && sampleIndex < peaks[0].Length)
+            else if (!hasPeak && posTick >= part.position && sampleIndex < peaks.Frames)
             {
                 hasPeak = true;
                 for (int ch = 0; ch < channelCount; ch++)
                 {
-                    float s = peaks[ch].Samples[sampleIndex];
-                    lastSMin[ch] = s;
-                    lastSMax[ch] = s;
+                    peaks.MinMax(ch, sampleIndex, sampleIndex + 1, out float sMin, out float sMax);
+                    lastSMin[ch] = Math.Clamp(sMin, -1, 1);
+                    lastSMax[ch] = Math.Clamp(sMax, -1, 1);
                 }
             }
 

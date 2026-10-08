@@ -30,7 +30,7 @@ namespace OpenUtau.Core.Render {
         public const string VOICEVOX = "VOICEVOX";
         public const string NEUTRINO = "NEUTRINO";
 
-        static readonly string[] classicRenderers = new[] { WORLDLINE_R, WORLDLINE_R11, CLASSIC };
+        static readonly string[] classicRenderers = new[] { WORLDLINE_R, WORLDLINE_R11, WORLDLINE_R2, CLASSIC };
         static readonly string[] enunuRenderers = new[] { ENUNU };
         static readonly string[] vogenRenderers = new[] { VOGEN };
         static readonly string[] diffSingerRenderers = new[] { DIFFSINGER };

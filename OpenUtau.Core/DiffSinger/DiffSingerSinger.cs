@@ -186,6 +186,8 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public InferenceSession getAcousticSession() {
+            // DirectML session creation, Run and disposal must not overlap.
+            using var dmlScope = Onnx.EnterDmlScope();
             lock (SessionLock) {
                 if (acousticSession is null) {
                     var acousticPath = Path.Combine(Location, dsConfig.acoustic);
@@ -198,6 +200,8 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public DsVocoder getVocoder() {
+            // DirectML session creation, Run and disposal must not overlap.
+            using var dmlScope = Onnx.EnterDmlScope();
             lock (SessionLock) {
                 if(vocoder is null) {
                     if(File.Exists(Path.Join(Location, "dsvocoder", "vocoder.yaml"))) {
@@ -211,6 +215,8 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public DsPitch? getPitchPredictor(){
+            // DirectML session creation, Run and disposal must not overlap.
+            using var dmlScope = Onnx.EnterDmlScope();
             lock (SessionLock) {
                 if(pitchPredictor is null) {
                     if(HasPitchPredictor){
@@ -222,6 +228,7 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
+            using var dmlScope = Onnx.EnterDmlScope();
             lock (SessionLock) {
                 if(speakerEmbedManager is null) {
                     speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, Location);
@@ -231,6 +238,8 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public DsVariance? getVariancePredictor(){
+            // DirectML session creation, Run and disposal must not overlap.
+            using var dmlScope = Onnx.EnterDmlScope();
             lock (SessionLock) {
                 if(variancePredictor is null) {
                     if(HasVariancePredictor){
@@ -256,8 +265,10 @@ namespace OpenUtau.Core.DiffSinger {
 
         public override void FreeMemory(){
             Log.Information($"Freeing memory for singer {Id}");
-            // The same lock the getters take, so a render already inside one of these models
-            // finishes before it is disposed instead of being left holding a freed handle.
+            // SessionLock only covers session creation, while a render may be mid-inference on a
+            // session it already holds; the DirectML scope keeps this disposal from tearing down a
+            // session that another thread is creating, running or disposing.
+            using var dmlScope = Onnx.EnterDmlScope();
             lock (SessionLock) {
                 acousticSession?.Dispose();
                 acousticSession = null;

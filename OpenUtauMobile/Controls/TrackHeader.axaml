@@ -161,7 +161,7 @@
                                     BorderThickness="0"
                                     VerticalAlignment="Stretch"
                                     HorizontalAlignment="Stretch"
-                                    ToolTip.Tip="{DynamicResource TrackHeader.Renderer}">
+                                    ToolTip.Tip="{DynamicResource RendererSettings.Title}">
                                 <TextBlock Text="{Binding RendererName}"
                                            FontSize="9"
                                            Foreground="{DynamicResource TrackHeaderSingerNameBrush}"
