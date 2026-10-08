@@ -228,13 +228,21 @@ namespace OpenUtau.Core {
                 // Try with CoreML subgraphs enabled first, fallback to default if it fails
                 if (OS.IsMacOS() && Preferences.Default.OnnxRunner == "CoreML") {
                     try {
-                        return new InferenceSession(model, getOnnxSessionOptions(coremlEnableOnSubgraphs: true));
+                        using var subgraphOptions = getOnnxSessionOptions(coremlEnableOnSubgraphs: true);
+                        return new InferenceSession(model, subgraphOptions);
                     } catch (Exception e) {
                         Log.Warning(e, "Failed to create session with CoreML subgraphs enabled, falling back to default settings");
                     }
                 }
+                // The usings hold the SessionOptions alive across the native session creation: the
+                // binding passes options.Handle as a raw pointer and never looks at options again,
+                // so a GC could otherwise finalize the managed options and free the native ones
+                // while the native call is still running.
                 return createSession(
-                    () => new InferenceSession(model, getOnnxSessionOptions()),
+                    () => {
+                        using var options = getOnnxSessionOptions();
+                        return new InferenceSession(model, options);
+                    },
                     () => new InferenceSession(model));
             }
         }
@@ -247,13 +255,17 @@ namespace OpenUtau.Core {
                 // Try with CoreML subgraphs enabled first, fallback to default if it fails
                 if (OS.IsMacOS() && Preferences.Default.OnnxRunner == "CoreML") {
                     try {
-                        return new InferenceSession(modelPath, getOnnxSessionOptions(coremlEnableOnSubgraphs: true));
+                        using var subgraphOptions = getOnnxSessionOptions(coremlEnableOnSubgraphs: true);
+                        return new InferenceSession(modelPath, subgraphOptions);
                     } catch (Exception e) {
                         Log.Warning(e, "Failed to create session with CoreML subgraphs enabled, falling back to default settings");
                     }
                 }
                 return createSession(
-                    () => new InferenceSession(modelPath, getOnnxSessionOptions()),
+                    () => {
+                        using var options = getOnnxSessionOptions();
+                        return new InferenceSession(modelPath, options);
+                    },
                     () => new InferenceSession(modelPath));
             }
         }
