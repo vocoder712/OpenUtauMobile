@@ -38,12 +38,12 @@ public class TrackHeaderService : ITrackHeaderService
         );
     }
 
-    public async Task<URenderSettings?> PickRendererAsync(UProject project, UTrack track)
+    public async Task<RendererSettingsSelection?> PickRendererAsync(UProject project, UTrack track)
     {
         return await Dispatcher.UIThread.InvokeAsync(async () =>
         {
             using RendererPickerViewModel vm = new(project, track);
-            return await PopupService.Show<URenderSettings?>(new RendererPickerPopup(), vm);
+            return await PopupService.Show<RendererSettingsSelection?>(new RendererPickerPopup(), vm);
         });
     }
 

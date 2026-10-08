@@ -59,6 +59,20 @@
                                        Foreground="{DynamicResource Sem.Color.Error}" />
                         </StackPanel>
                     </StackPanel>
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock Text="{DynamicResource RendererSettings.Graph.Title}" />
+                        <ComboBox x:Name="GraphSelector" ItemsSource="{Binding Graphs}"
+                                  SelectedItem="{Binding SelectedGraph, Mode=TwoWay}" HorizontalAlignment="Stretch"
+                                  AutomationProperties.Name="{DynamicResource RendererSettings.Graph.Title}" />
+                        <TextBlock Text="{Binding GraphDescription}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <TextBlock Text="{DynamicResource RendererSettings.Graph.Empty}" TextWrapping="Wrap"
+                                   IsVisible="{Binding HasNoCompatibleGraphs}"
+                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <TextBlock Text="{Binding GraphWarning}" TextWrapping="Wrap"
+                                   IsVisible="{Binding GraphWarning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                   Foreground="{DynamicResource Sem.Color.Warning}" />
+                    </StackPanel>
                 </StackPanel>
             </Border>
         </ScrollViewer>

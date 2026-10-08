@@ -2192,6 +2192,42 @@
   <data name="RendererSettings.Apply" xml:space="preserve">
     <value>应用</value>
   </data>
+  <data name="RendererSettings.Graph.Title" xml:space="preserve">
+    <value>表情图（Graph）</value>
+  </data>
+  <data name="RendererSettings.Graph.Default" xml:space="preserve">
+    <value>跟随工程默认</value>
+  </data>
+  <data name="RendererSettings.Graph.Off" xml:space="preserve">
+    <value>关闭表情图</value>
+  </data>
+  <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
+    <value>不可用：{0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
+    <value>已关闭表情图。</value>
+  </data>
+  <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
+    <value>当前没有生效的表情图。</value>
+  </data>
+  <data name="RendererSettings.Graph.DefaultEffective" xml:space="preserve">
+    <value>工程默认：{0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Effective" xml:space="preserve">
+    <value>当前表情图：{0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Empty" xml:space="preserve">
+    <value>工程中没有与当前渲染器兼容的表情图。</value>
+  </data>
+  <data name="RendererSettings.Graph.Missing" xml:space="preserve">
+    <value>找不到表情图“{0}”，请重新选择。</value>
+  </data>
+  <data name="RendererSettings.Graph.Incompatible" xml:space="preserve">
+    <value>表情图“{0}”与当前渲染器不兼容。</value>
+  </data>
+  <data name="RendererSettings.Graph.Invalid" xml:space="preserve">
+    <value>表情图“{0}”无法运行：{1}</value>
+  </data>
   <data name="RendererSettings.Warning.HifiSampler" xml:space="preserve">
     <value>警告：这是 OpenUtau Mobile 内置的 HIFISAMPLER 实现，建议切换至 CLASSIC → hifisampler，使用官方实现。</value>
   </data>

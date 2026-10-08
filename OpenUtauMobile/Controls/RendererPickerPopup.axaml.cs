@@ -29,7 +29,7 @@ public partial class RendererPickerPopup : PopupDialogControl
     private bool CloseDropDown()
     {
         // 系统返回先收起选择列表，下一次返回才丢弃草稿。
-        foreach (ComboBox selector in new[] { RendererSelector, ResamplerSelector, WavtoolSelector })
+        foreach (ComboBox selector in new[] { RendererSelector, ResamplerSelector, WavtoolSelector, GraphSelector })
         {
             if (!selector.IsDropDownOpen) continue;
             selector.IsDropDownOpen = false;

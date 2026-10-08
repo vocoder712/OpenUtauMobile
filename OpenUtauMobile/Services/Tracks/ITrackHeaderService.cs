@@ -8,7 +8,7 @@ public interface ITrackHeaderService
 {
     Task<USinger?> PickSingerAsync();
     Task<Phonemizer?> PickPhonemizerAsync();
-    Task<URenderSettings?> PickRendererAsync(UProject project, UTrack track);
+    Task<RendererSettingsSelection?> PickRendererAsync(UProject project, UTrack track);
     Task<string?> PickTrackNameAsync(string currentName);
     Task<string?> PickTrackColorAsync(string currentColorName);
 }

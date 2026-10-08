@@ -2147,6 +2147,42 @@
   <data name="RendererSettings.Apply" xml:space="preserve">
     <value>Застосувати</value>
   </data>
+  <data name="RendererSettings.Graph.Title" xml:space="preserve">
+    <value>Граф виразів (Graph)</value>
+  </data>
+  <data name="RendererSettings.Graph.Default" xml:space="preserve">
+    <value>Типовий для проєкту</value>
+  </data>
+  <data name="RendererSettings.Graph.Off" xml:space="preserve">
+    <value>Вимкнути граф виразів</value>
+  </data>
+  <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
+    <value>Недоступний: {0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
+    <value>Граф виразів вимкнено.</value>
+  </data>
+  <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
+    <value>Немає активного графа виразів.</value>
+  </data>
+  <data name="RendererSettings.Graph.DefaultEffective" xml:space="preserve">
+    <value>Типовий для проєкту: {0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Effective" xml:space="preserve">
+    <value>Активний граф: {0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Empty" xml:space="preserve">
+    <value>У проєкті немає графів виразів, сумісних із цим рендерером.</value>
+  </data>
+  <data name="RendererSettings.Graph.Missing" xml:space="preserve">
+    <value>Граф виразів «{0}» не знайдено. Виберіть інший варіант.</value>
+  </data>
+  <data name="RendererSettings.Graph.Incompatible" xml:space="preserve">
+    <value>Граф виразів «{0}» несумісний із цим рендерером.</value>
+  </data>
+  <data name="RendererSettings.Graph.Invalid" xml:space="preserve">
+    <value>Неможливо виконати граф виразів «{0}»: {1}</value>
+  </data>
   <data name="RendererSettings.Warning.HifiSampler" xml:space="preserve">
     <value>Попередження: це вбудована реалізація HIFISAMPLER в OpenUtau Mobile. Рекомендуємо перейти на CLASSIC → hifisampler, щоб використовувати офіційну реалізацію.</value>
   </data>

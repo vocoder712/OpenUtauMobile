@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using DynamicData.Binding;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.ExpressionGraph;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Tracks;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using RendererRegistry = OpenUtau.Core.Render.Renderers;
@@ -22,6 +27,9 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
     private readonly UTrack _track;
     private readonly USinger? _singer;
     private readonly URenderSettings _original;
+    private readonly string? _originalGraph;
+    private readonly Dictionary<string, string?> _graphDrafts = [];
+    private string? _graphSlot;
     private readonly CompositeDisposable _disposables = [];
     private bool _refreshing;
     private bool _disposed;
@@ -32,6 +40,11 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
     public ObservableCollectionExtended<string> Renderers { get; } = [];
     public ObservableCollectionExtended<string> Resamplers { get; } = [];
     public ObservableCollectionExtended<string> Wavtools { get; } = [];
+    public ObservableCollectionExtended<RendererGraphOption> Graphs { get; } = [];
+    [Reactive] public RendererGraphOption? SelectedGraph { get; set; }
+    [Reactive] public string GraphDescription { get; private set; } = string.Empty;
+    [Reactive] public string GraphWarning { get; private set; } = string.Empty;
+    [Reactive] public bool HasNoCompatibleGraphs { get; private set; }
     [Reactive] public string? SelectedRenderer { get; set; }
     [Reactive] public string? SelectedResampler { get; set; }
     [Reactive] public string? SelectedWavtool { get; set; }
@@ -52,8 +65,11 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         _track = track;
         _singer = track.Singer;
         _original = track.RendererSettings.Clone();
+        _originalGraph = track.ExpressionGraph;
+        if (_original.renderer != null)
+            _graphDrafts[RendererRegistry.GetExpressionGraphSlot(_original.renderer)] = _originalGraph;
         if (_singer is { Found: true }) Renderers.Load(RendererRegistry.GetSupportedRenderers(_singer.SingerType));
-        SelectedRenderer = Renderers.Contains(_original.renderer) ? _original.renderer : null; // 初始选择原始渲染器，如果不再支持则置空。
+        SelectedRenderer = _original.renderer != null && Renderers.Contains(_original.renderer) ? _original.renderer : null; // 初始选择原始渲染器，如果不再支持则置空。
         SelectedResampler = _original.resampler;
         SelectedWavtool = _original.wavtool;
         LoadTools();
@@ -62,6 +78,10 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         CancelCommand = ReactiveCommand.Create(() => RaiseClose(null)).DisposeWith(_disposables);
         this.WhenAnyValue(vm => vm.SelectedRenderer, vm => vm.SelectedResampler, vm => vm.SelectedWavtool)
             .Subscribe(_ => Refresh()).DisposeWith(_disposables);
+        this.WhenAnyValue(vm => vm.SelectedGraph).Subscribe(_ => Refresh()).DisposeWith(_disposables);
+        if (Application.Current != null)
+            Application.Current.GetResourceObservable("RendererSettings.Graph.Default")
+                .Subscribe(_ => Dispatcher.UIThread.Post(Refresh)).DisposeWith(_disposables);
         DocManager.Inst.AddSubscriber(this);
     }
 
@@ -96,6 +116,7 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
             IsClassic = SelectedRenderer == RendererRegistry.CLASSIC;
             ShowHifiSamplerWarning = SelectedRenderer == "HIFISAMPLER";
             ShowWorldlineR2Warning = SelectedRenderer == RendererRegistry.WORLDLINE_R2;
+            RefreshGraphs();
             IWavtool? wavtool = ToolsManager.Inst.Wavtools.FirstOrDefault(tool => tool.ToString() == SelectedWavtool);
             string[] compatible = RendererRegistry.GetSupportedResamplers(wavtool).Select(tool => tool.ToString()!).ToArray();
             // 列表变化时保留仍然兼容的选择；失效的组合由用户重新选择。
@@ -113,9 +134,10 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
                 ? L.S(Resamplers.Count == 0 ? "RendererSettings.Error.NoResamplers" : "RendererSettings.Error.Resampler") : string.Empty;
             WavtoolError = IsClassic && SelectedWavtool == null
                 ? L.S(Wavtools.Count == 0 ? "RendererSettings.Error.NoWavtools" : "RendererSettings.Error.Wavtool") : string.Empty;
-            bool changed = SelectedRenderer != _original.renderer || (IsClassic &&
+            bool changed = SelectedGraph?.Id != _originalGraph || SelectedRenderer != _original.renderer || (IsClassic &&
                 (SelectedResampler != _original.resampler || SelectedWavtool != _original.wavtool));
-            CanApply = changed && Error.Length == 0 && ResamplerError.Length == 0 && WavtoolError.Length == 0;
+            CanApply = changed && SelectedGraph != null && Error.Length == 0 && ResamplerError.Length == 0 && WavtoolError.Length == 0
+                && RendererGraphOption.CanKeep(_project, SelectedRenderer, SelectedGraph.Id, _original.renderer, _originalGraph);
         }
         finally
         {
@@ -123,12 +145,50 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         }
     }
 
+    private void RefreshGraphs()
+    {
+        string? slot = SelectedRenderer == null ? null : RendererRegistry.GetExpressionGraphSlot(SelectedRenderer);
+        if (_graphSlot != null && SelectedGraph != null) _graphDrafts[_graphSlot] = SelectedGraph.Id;
+        string? id = slot == _graphSlot ? SelectedGraph?.Id
+            : slot != null && _graphDrafts.TryGetValue(slot, out string? saved) ? saved : null;
+        _graphSlot = slot;
+
+        UExpressionGraph[] compatible = _project.expressionGraphs?
+            .Where(graph => RendererGraphOption.IsCompatible(graph, SelectedRenderer)).ToArray() ?? [];
+        HasNoCompatibleGraphs = compatible.Length == 0;
+        List<RendererGraphOption> options =
+        [
+            new(null, L.S("RendererSettings.Graph.Default")),
+            new(string.Empty, L.S("RendererSettings.Graph.Off")),
+        ];
+        foreach (UExpressionGraph graph in compatible)
+        {
+            string name = RendererGraphOption.Name(graph);
+            if (compatible.Count(other => RendererGraphOption.Name(other) == name) > 1) name = $"{name} ({graph.id})";
+            options.Add(new RendererGraphOption(graph.id, name));
+        }
+        if (!options.Any(option => option.Id == id))
+            options.Add(new RendererGraphOption(id, string.Format(L.S("RendererSettings.Graph.Unavailable"), id)));
+        if (!Graphs.SequenceEqual(options)) Graphs.Load(options);
+        SelectedGraph = Graphs.First(option => option.Id == id);
+
+        string? effectiveId = id;
+        if (id == null && slot != null) _project.defaultExpressionGraphs?.TryGetValue(slot, out effectiveId);
+        GraphWarning = RendererGraphOption.Problem(_project, SelectedRenderer, effectiveId);
+        UExpressionGraph? effective = _project.expressionGraphs?.FirstOrDefault(graph => graph.id == effectiveId);
+        GraphDescription = id == string.Empty ? L.S("RendererSettings.Graph.Disabled")
+            : effective == null || GraphWarning.Length > 0 ? L.S("RendererSettings.Graph.NoEffective")
+            : string.Format(L.S(id == null ? "RendererSettings.Graph.DefaultEffective" : "RendererSettings.Graph.Effective"),
+                RendererGraphOption.Name(effective));
+    }
+
     private string GetContextError()
     {
         if (!ReferenceEquals(DocManager.Inst.Project, _project) || !_project.tracks.Contains(_track))
             return L.S("RendererSettings.Error.Stale");
         if (!ReferenceEquals(_track.Singer, _singer) || _track.RendererSettings.renderer != _original.renderer
-            || _track.RendererSettings.resampler != _original.resampler || _track.RendererSettings.wavtool != _original.wavtool)
+            || _track.RendererSettings.resampler != _original.resampler || _track.RendererSettings.wavtool != _original.wavtool
+            || _track.ExpressionGraph != _originalGraph)
             return L.S("RendererSettings.Error.Stale");
         if (_singer == null) return L.S("RendererSettings.Error.NoSinger");
         if (!_singer.Found) return L.S("RendererSettings.Error.MissingSinger");
@@ -147,7 +207,7 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
             settings.wavtool = SelectedWavtool!;
         }
         else settings.wavtool = null!;
-        RaiseClose(settings);
+        RaiseClose(new RendererSettingsSelection(settings, SelectedGraph!.Id));
     }
 
     public override void RequestBack()

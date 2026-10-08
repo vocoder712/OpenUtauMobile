@@ -2185,6 +2185,42 @@
   <data name="RendererSettings.Apply" xml:space="preserve">
     <value>適用</value>
   </data>
+  <data name="RendererSettings.Graph.Title" xml:space="preserve">
+    <value>表情グラフ（Graph）</value>
+  </data>
+  <data name="RendererSettings.Graph.Default" xml:space="preserve">
+    <value>プロジェクトの既定値を使用</value>
+  </data>
+  <data name="RendererSettings.Graph.Off" xml:space="preserve">
+    <value>表情グラフを無効化</value>
+  </data>
+  <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
+    <value>使用不可：{0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
+    <value>表情グラフは無効です。</value>
+  </data>
+  <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
+    <value>有効な表情グラフはありません。</value>
+  </data>
+  <data name="RendererSettings.Graph.DefaultEffective" xml:space="preserve">
+    <value>プロジェクトの既定値：{0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Effective" xml:space="preserve">
+    <value>現在のグラフ：{0}</value>
+  </data>
+  <data name="RendererSettings.Graph.Empty" xml:space="preserve">
+    <value>現在のレンダラーに対応する表情グラフがプロジェクトにありません。</value>
+  </data>
+  <data name="RendererSettings.Graph.Missing" xml:space="preserve">
+    <value>表情グラフ「{0}」が見つかりません。別の項目を選択してください。</value>
+  </data>
+  <data name="RendererSettings.Graph.Incompatible" xml:space="preserve">
+    <value>表情グラフ「{0}」は現在のレンダラーに対応していません。</value>
+  </data>
+  <data name="RendererSettings.Graph.Invalid" xml:space="preserve">
+    <value>表情グラフ「{0}」を実行できません：{1}</value>
+  </data>
   <data name="RendererSettings.Warning.HifiSampler" xml:space="preserve">
     <value>警告：これは OpenUtau Mobile 内蔵の HIFISAMPLER 実装です。公式実装を使用するには、CLASSIC → hifisampler への切り替えを推奨します。</value>
   </data>
