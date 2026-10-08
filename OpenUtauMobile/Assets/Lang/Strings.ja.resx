@@ -2170,4 +2170,49 @@
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>編集対象：音高偏差（PITD）</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>編集対象：音高上書き（PITO）</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>音高ブラシの範囲を表示</value></data>
+  <data name="RendererSettings.Title" xml:space="preserve">
+    <value>トラックのレンダリング設定</value>
+  </data>
+  <data name="RendererSettings.Renderer" xml:space="preserve">
+    <value>レンダラー</value>
+  </data>
+  <data name="RendererSettings.Resampler" xml:space="preserve">
+    <value>リサンプラー</value>
+  </data>
+  <data name="RendererSettings.Wavtool" xml:space="preserve">
+    <value>Wavtool</value>
+  </data>
+  <data name="RendererSettings.Apply" xml:space="preserve">
+    <value>適用</value>
+  </data>
+  <data name="RendererSettings.Warning.HifiSampler" xml:space="preserve">
+    <value>警告：これは OpenUtau Mobile 内蔵の HIFISAMPLER 実装です。公式実装を使用するには、CLASSIC → hifisampler への切り替えを推奨します。</value>
+  </data>
+  <data name="RendererSettings.Warning.WorldlineR2" xml:space="preserve">
+    <value>警告：Worldline-R2 は開発未完了のまま廃止されました。使用は推奨しません。</value>
+  </data>
+  <data name="RendererSettings.Error.Renderer" xml:space="preserve">
+    <value>現在のレンダラーが見つからないか、互換性がありません。互換性のあるものを選択してください。</value>
+  </data>
+  <data name="RendererSettings.Error.Resampler" xml:space="preserve">
+    <value>互換性のあるリサンプラーを選択してください。外部 Wavtool は Worldline リサンプラーに対応していません。</value>
+  </data>
+  <data name="RendererSettings.Error.Wavtool" xml:space="preserve">
+    <value>Wavtool を選択してください。</value>
+  </data>
+  <data name="RendererSettings.Error.NoResamplers" xml:space="preserve">
+    <value>互換性のあるリサンプラーがありません。設定画面でツールを確認してください。</value>
+  </data>
+  <data name="RendererSettings.Error.NoWavtools" xml:space="preserve">
+    <value>利用可能な Wavtool がありません。設定画面でツールを確認してください。</value>
+  </data>
+  <data name="RendererSettings.Error.Stale" xml:space="preserve">
+    <value>トラック、歌手、または設定が変更されました。この画面を開き直してください。</value>
+  </data>
+  <data name="RendererSettings.Error.NoSinger" xml:space="preserve">
+    <value>先にトラックの歌手を選択してください。</value>
+  </data>
+  <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
+    <value>歌手が見つかりません。利用可能な歌手を選択してください。</value>
+  </data>
 </root>

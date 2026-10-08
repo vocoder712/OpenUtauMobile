@@ -195,28 +195,21 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectRenderer()
     {
-        if (_track.Singer is not { Found: true })
+        UProject project = DocManager.Inst.Project;
+        USinger? singer = _track.Singer;
+        URenderSettings original = _track.RendererSettings.Clone();
+        URenderSettings? settings = await TrackHeaderService.Inst.PickRendererAsync(project, _track);
+        // 弹窗关闭后的异步间隙也可能切换工程、歌手或设置，提交前再次检查。
+        if (settings == null || !ReferenceEquals(project, DocManager.Inst.Project) || !project.tracks.Contains(_track)
+            || !ReferenceEquals(singer, _track.Singer) || _track.Singer is not { Found: true }
+            || original.renderer != _track.RendererSettings.renderer
+            || original.resampler != _track.RendererSettings.resampler || original.wavtool != _track.RendererSettings.wavtool)
         {
             return;
         }
-
-        string[] supportedRenderers = Renderers.GetSupportedRenderers(_track.Singer.SingerType);
-        if (supportedRenderers.Length == 0)
-        {
-            return;
-        }
-
-        string? renderer = await TrackHeaderService.Inst.PickRendererAsync(supportedRenderers);
-        if (string.IsNullOrEmpty(renderer))
-        {
-            return;
-        }
-
-        URenderSettings settings = _track.RendererSettings?.Clone() ?? new URenderSettings();
-        settings.renderer = renderer;
 
         DocManager.Inst.StartUndoGroup();
-        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
+        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(project, _track, settings));
         DocManager.Inst.EndUndoGroup();
         Refresh();
     }

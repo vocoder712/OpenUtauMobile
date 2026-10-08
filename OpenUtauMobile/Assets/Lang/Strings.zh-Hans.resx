@@ -2177,4 +2177,49 @@
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>编辑目标：偏移（PITD）</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>编辑目标：覆写（PITO）</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>显示音高画笔区域</value></data>
+  <data name="RendererSettings.Title" xml:space="preserve">
+    <value>轨道渲染设置</value>
+  </data>
+  <data name="RendererSettings.Renderer" xml:space="preserve">
+    <value>渲染器</value>
+  </data>
+  <data name="RendererSettings.Resampler" xml:space="preserve">
+    <value>重采样器</value>
+  </data>
+  <data name="RendererSettings.Wavtool" xml:space="preserve">
+    <value>拼接器</value>
+  </data>
+  <data name="RendererSettings.Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
+  <data name="RendererSettings.Warning.HifiSampler" xml:space="preserve">
+    <value>警告：这是 OpenUtau Mobile 内置的 HIFISAMPLER 实现，建议切换至 CLASSIC → hifisampler，使用官方实现。</value>
+  </data>
+  <data name="RendererSettings.Warning.WorldlineR2" xml:space="preserve">
+    <value>警告：Worldline-R2 尚未完成开发，已废弃，不建议使用。</value>
+  </data>
+  <data name="RendererSettings.Error.Renderer" xml:space="preserve">
+    <value>当前渲染器缺失或不兼容，请选择兼容的渲染器。</value>
+  </data>
+  <data name="RendererSettings.Error.Resampler" xml:space="preserve">
+    <value>请选择兼容的重采样器。外部拼接器不支持 Worldline 重采样器。</value>
+  </data>
+  <data name="RendererSettings.Error.Wavtool" xml:space="preserve">
+    <value>请选择拼接器。</value>
+  </data>
+  <data name="RendererSettings.Error.NoResamplers" xml:space="preserve">
+    <value>没有兼容的重采样器，请到设置页面检查工具安装。</value>
+  </data>
+  <data name="RendererSettings.Error.NoWavtools" xml:space="preserve">
+    <value>没有可用的拼接器，请到设置页面检查工具安装。</value>
+  </data>
+  <data name="RendererSettings.Error.Stale" xml:space="preserve">
+    <value>轨道、歌手或设置已变化，请关闭并重新打开此弹窗。</value>
+  </data>
+  <data name="RendererSettings.Error.NoSinger" xml:space="preserve">
+    <value>请先为轨道选择歌手。</value>
+  </data>
+  <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
+    <value>歌手缺失，请重新选择可用的歌手。</value>
+  </data>
 </root>

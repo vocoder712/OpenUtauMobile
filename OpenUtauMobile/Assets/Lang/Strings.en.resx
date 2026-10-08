@@ -2177,4 +2177,49 @@
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Pitch target: Deviation (PITD)</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Pitch target: Override (PITO)</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>Show pitch brush area</value></data>
+  <data name="RendererSettings.Title" xml:space="preserve">
+    <value>Track render settings</value>
+  </data>
+  <data name="RendererSettings.Renderer" xml:space="preserve">
+    <value>Renderer</value>
+  </data>
+  <data name="RendererSettings.Resampler" xml:space="preserve">
+    <value>Resampler</value>
+  </data>
+  <data name="RendererSettings.Wavtool" xml:space="preserve">
+    <value>Wavtool</value>
+  </data>
+  <data name="RendererSettings.Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="RendererSettings.Warning.HifiSampler" xml:space="preserve">
+    <value>Warning: This is OpenUtau Mobile’s built-in HIFISAMPLER implementation. We recommend switching to CLASSIC → hifisampler to use the official implementation.</value>
+  </data>
+  <data name="RendererSettings.Warning.WorldlineR2" xml:space="preserve">
+    <value>Warning: Worldline-R2 is unfinished and deprecated. Its use is not recommended.</value>
+  </data>
+  <data name="RendererSettings.Error.Renderer" xml:space="preserve">
+    <value>The current renderer is missing or incompatible. Select a compatible renderer.</value>
+  </data>
+  <data name="RendererSettings.Error.Resampler" xml:space="preserve">
+    <value>Select a compatible resampler. External wavtools do not support the Worldline resampler.</value>
+  </data>
+  <data name="RendererSettings.Error.Wavtool" xml:space="preserve">
+    <value>Select a wavtool.</value>
+  </data>
+  <data name="RendererSettings.Error.NoResamplers" xml:space="preserve">
+    <value>No compatible resamplers. Check the installed tools in Settings.</value>
+  </data>
+  <data name="RendererSettings.Error.NoWavtools" xml:space="preserve">
+    <value>No wavtools available. Check the installed tools in Settings.</value>
+  </data>
+  <data name="RendererSettings.Error.Stale" xml:space="preserve">
+    <value>The track, singer or settings have changed. Close and reopen this dialog.</value>
+  </data>
+  <data name="RendererSettings.Error.NoSinger" xml:space="preserve">
+    <value>Select a singer for this track first.</value>
+  </data>
+  <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
+    <value>The singer is missing. Select an available singer.</value>
+  </data>
 </root>
