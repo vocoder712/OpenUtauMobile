@@ -2258,4 +2258,82 @@
   <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
     <value>歌手缺失，请重新选择可用的歌手。</value>
   </data>
+  <data name="Options.PluginManager" xml:space="preserve">
+    <value>插件管理</value>
+  </data>
+  <data name="Options.PluginManager.Desc" xml:space="preserve">
+    <value>安装与删除 DLL 插件</value>
+  </data>
+  <data name="PluginManager.Title" xml:space="preserve">
+    <value>插件管理</value>
+  </data>
+  <data name="PluginManager.Install" xml:space="preserve">
+    <value>安装插件</value>
+  </data>
+  <data name="PluginManager.Empty" xml:space="preserve">
+    <value>尚未安装 DLL 插件，点击右下角加号添加。</value>
+  </data>
+  <data name="PluginManager.RefreshFailed" xml:space="preserve">
+    <value>无法读取插件列表：{0}</value>
+  </data>
+  <data name="PluginManager.SelectFile" xml:space="preserve">
+    <value>选择 DLL 插件</value>
+  </data>
+  <data name="PluginManager.Checking" xml:space="preserve">
+    <value>正在检查托管程序集…</value>
+  </data>
+  <data name="PluginManager.Copying" xml:space="preserve">
+    <value>正在安装插件…</value>
+  </data>
+  <data name="PluginManager.Completed" xml:space="preserve">
+    <value>安装完成</value>
+  </data>
+  <data name="PluginManager.InvalidAssembly" xml:space="preserve">
+    <value>所选文件不是有效的托管 DLL 程序集。</value>
+  </data>
+  <data name="PluginManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>内置插件由应用管理，不能在此安装。</value>
+  </data>
+  <data name="PluginManager.AlreadyExists" xml:space="preserve">
+    <value>同名插件已存在或正在等待删除。请先删除并重启程序后再安装。</value>
+  </data>
+  <data name="PluginManager.InstallFailed" xml:space="preserve">
+    <value>插件安装失败</value>
+  </data>
+  <data name="PluginManager.InstallSucceeded" xml:space="preserve">
+    <value>插件安装成功</value>
+  </data>
+  <data name="PluginManager.RestartToActivate" xml:space="preserve">
+    <value>插件安装成功，重启程序后生效。</value>
+  </data>
+  <data name="PluginManager.DeleteTitle" xml:space="preserve">
+    <value>删除插件</value>
+  </data>
+  <data name="PluginManager.DeleteMessage" xml:space="preserve">
+    <value>确定将“{0}”标记为删除吗？&#10;&#10;此 DLL 将在下次启动、插件加载前删除。完全移除已加载的功能需要重启程序。</value>
+  </data>
+  <data name="PluginManager.PendingDeletion" xml:space="preserve">
+    <value>待重启删除</value>
+  </data>
+  <data name="PluginManager.DeleteFailed" xml:space="preserve">
+    <value>插件删除失败</value>
+  </data>
+  <data name="PluginManager.PendingDeletionFailed" xml:space="preserve">
+    <value>部分插件未能删除，请到插件管理页检查。</value>
+  </data>
+  <data name="PluginManager.LoadFailedTitle" xml:space="preserve">
+    <value>插件加载失败</value>
+  </data>
+  <data name="PluginManager.LoadFailed" xml:space="preserve">
+    <value>以下 DLL 插件或插件目录加载失败：&#10;{0}&#10;&#10;请查看错误详情，检查依赖程序集及插件与当前程序的兼容性。</value>
+  </data>
+  <data name="PluginManager.CancelDeletion" xml:space="preserve">
+    <value>撤销删除</value>
+  </data>
+  <data name="PluginManager.DeletionCancelled" xml:space="preserve">
+    <value>已取消删除标记</value>
+  </data>
+  <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
+    <value>取消删除标记失败</value>
+  </data>
 </root>

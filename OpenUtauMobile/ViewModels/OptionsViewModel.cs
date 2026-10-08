@@ -10,6 +10,7 @@ public class OptionsViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenDependencyManagerCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenPluginManagerCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenHelpCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenExportLogsCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenAboutCommand { get; }
@@ -19,6 +20,7 @@ public class OptionsViewModel : NavigateViewModelBase
         BackCommand = ReactiveCommand.Create(OnBack);
         OpenSettingsCommand = ReactiveCommand.Create(OnOpenSettings);
         OpenDependencyManagerCommand = ReactiveCommand.Create(OnOpenDependencyManager);
+        OpenPluginManagerCommand = ReactiveCommand.Create(() => Navigator.Navigate(new PluginManagerViewModel(Navigator)));
         OpenHelpCommand = ReactiveCommand.Create(OnOpenHelp);
         OpenExportLogsCommand = ReactiveCommand.Create(OnOpenExportLogs);
         OpenAboutCommand = ReactiveCommand.Create(OnOpenAbout);
