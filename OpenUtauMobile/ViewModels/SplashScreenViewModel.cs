@@ -105,6 +105,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 // ---- 阶段 3：DocManager ----
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.DocManager"); ProgressPercent = 42; });
+                int pendingDeletionFailures = PluginManagementService.ApplyPendingDeletions();
                 DocManager.Inst.Initialize(mainThread, mainScheduler);
                 GlobalErrorSubscriber.Instance.Register();
                 Log.Information("DocManager初始化完成");
@@ -167,6 +168,9 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                     ProgressPercent = 100;
                     InitState = L.S("Splash.Complete");
                     Navigator.CompleteStartup(new HomeViewModel(Navigator));
+                    PluginLoadErrorReporter.Instance.ShowPendingErrors();
+                    if (pendingDeletionFailures > 0)
+                        ToastService.Enqueue(L.S("PluginManager.PendingDeletionFailed"));
                 });
             }
             catch (OperationCanceledException)
@@ -181,6 +185,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                     InitState = L.S("Splash.Failed");
                     // 初始化可能尚未注册 DocManager 订阅者，直接显示启动错误。
                     ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(e)));
+                    PluginLoadErrorReporter.Instance.ShowPendingErrors();
                 });
             }
         }, ct);

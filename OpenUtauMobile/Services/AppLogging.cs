@@ -27,6 +27,7 @@ public static class AppLogging
 #else
         configuration.MinimumLevel.Information();
 #endif
+        configuration.WriteTo.Sink(PluginLoadErrorReporter.Instance);
         if (filePath != null)
         {
             configuration.WriteTo.File(filePath,

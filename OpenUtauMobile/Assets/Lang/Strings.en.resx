@@ -2258,4 +2258,82 @@
   <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
     <value>The singer is missing. Select an available singer.</value>
   </data>
+  <data name="Options.PluginManager" xml:space="preserve">
+    <value>Plugin manager</value>
+  </data>
+  <data name="Options.PluginManager.Desc" xml:space="preserve">
+    <value>Install and delete DLL plugins</value>
+  </data>
+  <data name="PluginManager.Title" xml:space="preserve">
+    <value>Plugin manager</value>
+  </data>
+  <data name="PluginManager.Install" xml:space="preserve">
+    <value>Install plugin</value>
+  </data>
+  <data name="PluginManager.Empty" xml:space="preserve">
+    <value>No DLL plugins installed. Use the plus button to add one.</value>
+  </data>
+  <data name="PluginManager.RefreshFailed" xml:space="preserve">
+    <value>Unable to read plugin list: {0}</value>
+  </data>
+  <data name="PluginManager.SelectFile" xml:space="preserve">
+    <value>Select DLL plugin</value>
+  </data>
+  <data name="PluginManager.Checking" xml:space="preserve">
+    <value>Checking managed assembly…</value>
+  </data>
+  <data name="PluginManager.Copying" xml:space="preserve">
+    <value>Installing plugin…</value>
+  </data>
+  <data name="PluginManager.Completed" xml:space="preserve">
+    <value>Installation complete</value>
+  </data>
+  <data name="PluginManager.InvalidAssembly" xml:space="preserve">
+    <value>The selected file is not a valid managed DLL assembly.</value>
+  </data>
+  <data name="PluginManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>Built-in plugins are managed by the app and cannot be installed here.</value>
+  </data>
+  <data name="PluginManager.AlreadyExists" xml:space="preserve">
+    <value>A plugin with this filename already exists or is pending deletion. Delete it and restart the app before installing.</value>
+  </data>
+  <data name="PluginManager.InstallFailed" xml:space="preserve">
+    <value>Plugin installation failed</value>
+  </data>
+  <data name="PluginManager.InstallSucceeded" xml:space="preserve">
+    <value>Plugin installed</value>
+  </data>
+  <data name="PluginManager.RestartToActivate" xml:space="preserve">
+    <value>The plugin was installed successfully. Restart the app for it to take effect.</value>
+  </data>
+  <data name="PluginManager.DeleteTitle" xml:space="preserve">
+    <value>Delete plugin</value>
+  </data>
+  <data name="PluginManager.DeleteMessage" xml:space="preserve">
+    <value>Mark “{0}” for deletion?&#10;&#10;This DLL will be deleted before plugins load at the next startup. Restart the app to fully remove its loaded features.</value>
+  </data>
+  <data name="PluginManager.PendingDeletion" xml:space="preserve">
+    <value>Pending deletion on restart</value>
+  </data>
+  <data name="PluginManager.DeleteFailed" xml:space="preserve">
+    <value>Plugin deletion failed</value>
+  </data>
+  <data name="PluginManager.PendingDeletionFailed" xml:space="preserve">
+    <value>Some plugins could not be deleted. Check the plugin manager.</value>
+  </data>
+  <data name="PluginManager.LoadFailedTitle" xml:space="preserve">
+    <value>Plugin loading failed</value>
+  </data>
+  <data name="PluginManager.LoadFailed" xml:space="preserve">
+    <value>Failed to load these DLL plugins or scan their directory:&#10;{0}&#10;&#10;Check the error details, required assemblies, and compatibility with this version of the app.</value>
+  </data>
+  <data name="PluginManager.CancelDeletion" xml:space="preserve">
+    <value>Undo deletion</value>
+  </data>
+  <data name="PluginManager.DeletionCancelled" xml:space="preserve">
+    <value>Deletion mark removed</value>
+  </data>
+  <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
+    <value>Failed to undo deletion</value>
+  </data>
 </root>

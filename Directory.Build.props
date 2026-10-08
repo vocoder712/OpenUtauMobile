@@ -23,6 +23,10 @@
         <SourceCommit Condition="'$(SourceCommit)' == ''">Unknown</SourceCommit>
         <ActionRunId Condition="'$(ActionRunId)' == ''">Unknown</ActionRunId>
     </PropertyGroup>
+    <!-- 上游程序集绑定版本独立于 OPUM 产品版本，保持第三方插件的引用身份。 -->
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'OpenUtau.Core' Or '$(MSBuildProjectName)' == 'OpenUtau.Plugin.Builtin'">
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    </PropertyGroup>
     <!-- 启用预览语言特性 -->
     <PropertyGroup>
         <LangVersion>preview</LangVersion>

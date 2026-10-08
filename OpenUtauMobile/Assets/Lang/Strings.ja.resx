@@ -2251,4 +2251,82 @@
   <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
     <value>歌手が見つかりません。利用可能な歌手を選択してください。</value>
   </data>
+  <data name="Options.PluginManager" xml:space="preserve">
+    <value>プラグイン管理</value>
+  </data>
+  <data name="Options.PluginManager.Desc" xml:space="preserve">
+    <value>DLL プラグインのインストールと削除</value>
+  </data>
+  <data name="PluginManager.Title" xml:space="preserve">
+    <value>プラグイン管理</value>
+  </data>
+  <data name="PluginManager.Install" xml:space="preserve">
+    <value>プラグインをインストール</value>
+  </data>
+  <data name="PluginManager.Empty" xml:space="preserve">
+    <value>DLL プラグインはありません。右下の＋ボタンで追加できます。</value>
+  </data>
+  <data name="PluginManager.RefreshFailed" xml:space="preserve">
+    <value>プラグイン一覧を読み込めません：{0}</value>
+  </data>
+  <data name="PluginManager.SelectFile" xml:space="preserve">
+    <value>DLL プラグインを選択</value>
+  </data>
+  <data name="PluginManager.Checking" xml:space="preserve">
+    <value>マネージドアセンブリを確認中…</value>
+  </data>
+  <data name="PluginManager.Copying" xml:space="preserve">
+    <value>プラグインをインストール中…</value>
+  </data>
+  <data name="PluginManager.Completed" xml:space="preserve">
+    <value>インストール完了</value>
+  </data>
+  <data name="PluginManager.InvalidAssembly" xml:space="preserve">
+    <value>選択したファイルは有効なマネージド DLL アセンブリではありません。</value>
+  </data>
+  <data name="PluginManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>内蔵プラグインはアプリが管理するため、ここではインストールできません。</value>
+  </data>
+  <data name="PluginManager.AlreadyExists" xml:space="preserve">
+    <value>同名のプラグインが存在するか、削除待ちです。削除してアプリを再起動してからインストールしてください。</value>
+  </data>
+  <data name="PluginManager.InstallFailed" xml:space="preserve">
+    <value>プラグインのインストールに失敗しました</value>
+  </data>
+  <data name="PluginManager.InstallSucceeded" xml:space="preserve">
+    <value>プラグインをインストールしました</value>
+  </data>
+  <data name="PluginManager.RestartToActivate" xml:space="preserve">
+    <value>プラグインをインストールしました。アプリを再起動すると有効になります。</value>
+  </data>
+  <data name="PluginManager.DeleteTitle" xml:space="preserve">
+    <value>プラグインを削除</value>
+  </data>
+  <data name="PluginManager.DeleteMessage" xml:space="preserve">
+    <value>「{0}」を削除予定にしますか？&#10;&#10;この DLL は次回起動時、プラグインの読み込み前に削除されます。読み込み済みの機能を完全に削除するにはアプリを再起動してください。</value>
+  </data>
+  <data name="PluginManager.PendingDeletion" xml:space="preserve">
+    <value>再起動時に削除予定</value>
+  </data>
+  <data name="PluginManager.DeleteFailed" xml:space="preserve">
+    <value>プラグインの削除に失敗しました</value>
+  </data>
+  <data name="PluginManager.PendingDeletionFailed" xml:space="preserve">
+    <value>一部のプラグインを削除できませんでした。プラグイン管理で確認してください。</value>
+  </data>
+  <data name="PluginManager.LoadFailedTitle" xml:space="preserve">
+    <value>プラグインの読み込みに失敗しました</value>
+  </data>
+  <data name="PluginManager.LoadFailed" xml:space="preserve">
+    <value>以下の DLL プラグイン、またはそのディレクトリの読み込みに失敗しました：&#10;{0}&#10;&#10;エラーの詳細、必要なアセンブリ、このバージョンのアプリとの互換性を確認してください。</value>
+  </data>
+  <data name="PluginManager.CancelDeletion" xml:space="preserve">
+    <value>削除予定を取り消す</value>
+  </data>
+  <data name="PluginManager.DeletionCancelled" xml:space="preserve">
+    <value>削除予定を取り消しました</value>
+  </data>
+  <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
+    <value>削除予定の取り消しに失敗しました</value>
+  </data>
 </root>

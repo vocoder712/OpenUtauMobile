@@ -349,6 +349,9 @@ namespace OpenUtau.Core.Util {
             public bool DetachPianoRoll = true;
 
             #region OpenUtau Mobile 特定选项
+            /// <summary>待下次启动删除的插件文件，保存相对于插件目录的路径。</summary>
+            public List<string> PendingPluginDeletions = [];
+
             /// <summary>各平台的界面图形后端回退顺序；空列表使用 Avalonia 默认配置，重启后生效。</summary>
             public Dictionary<string, List<string>> GraphicsBackendFallbackOrders = new();
 

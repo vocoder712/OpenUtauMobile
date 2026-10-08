@@ -2213,4 +2213,82 @@
   <data name="RendererSettings.Error.MissingSinger" xml:space="preserve">
     <value>Певец отсутствует. Выберите доступного певца.</value>
   </data>
+  <data name="Options.PluginManager" xml:space="preserve">
+    <value>Управление плагинами</value>
+  </data>
+  <data name="Options.PluginManager.Desc" xml:space="preserve">
+    <value>Установка и удаление DLL-плагинов</value>
+  </data>
+  <data name="PluginManager.Title" xml:space="preserve">
+    <value>Управление плагинами</value>
+  </data>
+  <data name="PluginManager.Install" xml:space="preserve">
+    <value>Установить плагин</value>
+  </data>
+  <data name="PluginManager.Empty" xml:space="preserve">
+    <value>DLL-плагины не установлены. Нажмите кнопку «+», чтобы добавить плагин.</value>
+  </data>
+  <data name="PluginManager.RefreshFailed" xml:space="preserve">
+    <value>Не удалось прочитать список плагинов: {0}</value>
+  </data>
+  <data name="PluginManager.SelectFile" xml:space="preserve">
+    <value>Выберите DLL-плагин</value>
+  </data>
+  <data name="PluginManager.Checking" xml:space="preserve">
+    <value>Проверка управляемой сборки…</value>
+  </data>
+  <data name="PluginManager.Copying" xml:space="preserve">
+    <value>Установка плагина…</value>
+  </data>
+  <data name="PluginManager.Completed" xml:space="preserve">
+    <value>Установка завершена</value>
+  </data>
+  <data name="PluginManager.InvalidAssembly" xml:space="preserve">
+    <value>Выбранный файл не является допустимой управляемой DLL-сборкой.</value>
+  </data>
+  <data name="PluginManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>Встроенными плагинами управляет приложение. Их нельзя установить здесь.</value>
+  </data>
+  <data name="PluginManager.AlreadyExists" xml:space="preserve">
+    <value>Плагин с таким именем уже существует или ожидает удаления. Удалите его и перезапустите приложение перед установкой.</value>
+  </data>
+  <data name="PluginManager.InstallFailed" xml:space="preserve">
+    <value>Не удалось установить плагин</value>
+  </data>
+  <data name="PluginManager.InstallSucceeded" xml:space="preserve">
+    <value>Плагин установлен</value>
+  </data>
+  <data name="PluginManager.RestartToActivate" xml:space="preserve">
+    <value>Плагин успешно установлен. Перезапустите приложение, чтобы активировать его.</value>
+  </data>
+  <data name="PluginManager.DeleteTitle" xml:space="preserve">
+    <value>Удалить плагин</value>
+  </data>
+  <data name="PluginManager.DeleteMessage" xml:space="preserve">
+    <value>Отметить «{0}» для удаления?&#10;&#10;Эта DLL будет удалена при следующем запуске до загрузки плагинов. Перезапустите приложение для полного удаления загруженных функций.</value>
+  </data>
+  <data name="PluginManager.PendingDeletion" xml:space="preserve">
+    <value>Будет удалён при перезапуске</value>
+  </data>
+  <data name="PluginManager.DeleteFailed" xml:space="preserve">
+    <value>Не удалось удалить плагин</value>
+  </data>
+  <data name="PluginManager.PendingDeletionFailed" xml:space="preserve">
+    <value>Некоторые плагины не удалось удалить. Проверьте список плагинов.</value>
+  </data>
+  <data name="PluginManager.LoadFailedTitle" xml:space="preserve">
+    <value>Ошибка загрузки плагинов</value>
+  </data>
+  <data name="PluginManager.LoadFailed" xml:space="preserve">
+    <value>Не удалось загрузить следующие DLL-плагины или прочитать их каталог:&#10;{0}&#10;&#10;Проверьте подробности ошибки, необходимые сборки и совместимость с этой версией приложения.</value>
+  </data>
+  <data name="PluginManager.CancelDeletion" xml:space="preserve">
+    <value>Отменить удаление</value>
+  </data>
+  <data name="PluginManager.DeletionCancelled" xml:space="preserve">
+    <value>Отметка об удалении снята</value>
+  </data>
+  <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
+    <value>Не удалось отменить удаление</value>
+  </data>
 </root>

@@ -152,6 +152,7 @@ internal sealed partial class Program
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
             .WriteTo.Sink(new BrowserConsoleLogSink())
+            .WriteTo.Sink(PluginLoadErrorReporter.Instance)
             .CreateLogger();
         Log.Information("==========Start logging==========");
     }
