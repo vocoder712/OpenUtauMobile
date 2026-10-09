@@ -152,6 +152,8 @@ public class PartsCanvas : Control, ICmdSubscriber
     #region 手势解释器
 
     private readonly GestureInterpreter _gesture = new();
+    private EditorViewModel? _boundViewModel;
+    private bool _isAttached;
 
     #endregion
 
@@ -170,13 +172,25 @@ public class PartsCanvas : Control, ICmdSubscriber
     {
         base.OnDataContextChanged(e);
 
-        // DataContext 变化时重新绑定 DocManager 订阅，防止重复注册
+        // 订阅只在可见树中有效；导航重建视图不能留下指向旧画布的事件。
+        if (_boundViewModel != null) _boundViewModel.RequestInvalidateVisual -= InvalidateVisual;
+        _boundViewModel = DataContext as EditorViewModel;
         DocManager.Inst.RemoveSubscriber(this);
-        if (DataContext is not null)
+        if (_isAttached && _boundViewModel != null)
+        {
             DocManager.Inst.AddSubscriber(this);
+            _boundViewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
 
-        if (DataContext is not EditorViewModel vm) return;
-        vm.RequestInvalidateVisual += InvalidateVisual;
+        if (_boundViewModel is not { } vm)
+        {
+            _gesture.Tap = _gesture.DoubleTap = _gesture.DragBegin = null;
+            _gesture.DragUpdate = null;
+            _gesture.DragEnd = null;
+            _gesture.PinchUpdate = null;
+            _gesture.TwoFingerTap = _gesture.ThreeFingerTap = null;
+            return;
+        }
 
         _gesture.Tap = pt => vm.OnGestureTap(pt);
         _gesture.DoubleTap = pt => vm.OnGestureDoubleTap(pt);
@@ -196,8 +210,31 @@ public class PartsCanvas : Control, ICmdSubscriber
             vm.OnTrackAreaSizeChanged(e.NewSize.Width, e.NewSize.Height);
     }
 
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _isAttached = true;
+        DocManager.Inst.RemoveSubscriber(this);
+        if (_boundViewModel != null)
+        {
+            DocManager.Inst.AddSubscriber(this);
+            _boundViewModel.RequestInvalidateVisual -= InvalidateVisual;
+            _boundViewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
+        if (SelectedParts != null)
+        {
+            SelectedParts.CollectionChanged -= OnCollectionChanged;
+            SelectedParts.CollectionChanged += OnCollectionChanged;
+        }
+        foreach (UPart part in DocManager.Inst.Project.parts) RegisterPeaksCallback(part);
+        InvalidateVisual();
+    }
+
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _isAttached = false;
+        if (_boundViewModel != null) _boundViewModel.RequestInvalidateVisual -= InvalidateVisual;
+        if (SelectedParts != null) SelectedParts.CollectionChanged -= OnCollectionChanged;
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
         foreach (WaveCache c in _waveCache.Values) c.Dispose();
@@ -219,7 +256,7 @@ public class PartsCanvas : Control, ICmdSubscriber
             // 绑定/解绑集合变更事件
             if (change.OldValue is INotifyCollectionChanged oldList)
                 oldList.CollectionChanged -= OnCollectionChanged;
-            if (change.NewValue is INotifyCollectionChanged newList)
+            if (_isAttached && change.NewValue is INotifyCollectionChanged newList)
                 newList.CollectionChanged += OnCollectionChanged;
 
             InvalidateVisual();

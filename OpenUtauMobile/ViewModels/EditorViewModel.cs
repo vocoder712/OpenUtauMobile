@@ -772,6 +772,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         switch (action)
         {
+            case EditorMoreAction.ExpressionGraphs:
+                if (_disposed || IsLoadingProject || Navigator.CurrentViewModel != this) break;
+                UProject graphProject = DocManager.Inst.Project;
+                Navigator.Navigate(new ExpressionGraphLibraryViewModel(Navigator, graphProject));
+                break;
             case EditorMoreAction.Undo:
                 Undo();
                 break;

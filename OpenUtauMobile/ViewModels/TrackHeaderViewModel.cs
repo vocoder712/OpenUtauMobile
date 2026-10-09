@@ -112,55 +112,68 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectSinger()
     {
+        UProject project = DocManager.Inst.Project;
+        USinger? originalSinger = _track.Singer;
+        URenderSettings originalSettings = _track.RendererSettings.Clone();
+        string? originalGraph = _track.ExpressionGraph;
         USinger? singer = await TrackHeaderService.Inst.PickSingerAsync();
-        if (singer == null) return;
-        DocManager.Inst.StartUndoGroup("切换歌手");
-        Log.Information("正在为轨道 {TrackName} 选择歌手 {SingerName}", TrackName, singer.Name);
-        // 执行切换歌手命令
-        DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, _track, singer));
-        // 切音素器
-        if (!string.IsNullOrEmpty(singer.Id) &&
-            Preferences.Default.SingerPhonemizers.TryGetValue(singer.Id, out string? phonemizerName) &&
-            TryChangePhonemizer(phonemizerName))
-        {
-        }
-        else if (!string.IsNullOrEmpty(singer.DefaultPhonemizer))
-        {
-            TryChangePhonemizer(singer.DefaultPhonemizer);
-        }
-
-        // 切渲染器
-        if (!singer.Found) // 默认渲染器
-        {
-            URenderSettings settings = new();
-            DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
-        }
-        else if (singer.SingerType != _track.RendererSettings.Renderer?.SingerType)
-        {
-            URenderSettings settings = new()
-            {
-                renderer = Renderers.GetDefaultRenderer(singer.SingerType), // 根据歌手类型
-            };
-            DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
-        }
-
-        // 
-        DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(_track.TrackNo, true));
-        DocManager.Inst.EndUndoGroup();
-        // 保存
+        if (singer == null || ReferenceEquals(singer, originalSinger)
+            || !ReferenceEquals(project, DocManager.Inst.Project) || !project.tracks.Contains(_track)
+            || !ReferenceEquals(originalSinger, _track.Singer) || originalGraph != _track.ExpressionGraph
+            || originalSettings.renderer != _track.RendererSettings.renderer
+            || originalSettings.resampler != _track.RendererSettings.resampler
+            || originalSettings.wavtool != _track.RendererSettings.wavtool || DocManager.Inst.HasOpenUndoGroup) return;
+        ApplySinger(project, singer);
+        // 保存最近使用的歌手；切换事务已经完成。
         if (!string.IsNullOrEmpty(singer.Id) && singer.Found)
         {
             Preferences.Default.RecentSingers.Remove(singer.Id);
             Preferences.Default.RecentSingers.Insert(0, singer.Id);
             if (Preferences.Default.RecentSingers.Count > 16)
-            {
                 Preferences.Default.RecentSingers.RemoveRange(16, Preferences.Default.RecentSingers.Count - 16);
-            }
         }
-
         Preferences.Save();
-
         Refresh();
+    }
+
+    private void ApplySinger(UProject project, USinger singer)
+    {
+        DocManager.Inst.StartUndoGroup("切换歌手");
+        try
+        {
+            Log.Information("正在为轨道 {TrackName} 选择歌手 {SingerName}", TrackName, singer.Name);
+            // 执行切换歌手命令
+            DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, _track, singer));
+            // 切音素器
+            if (!string.IsNullOrEmpty(singer.Id) &&
+                Preferences.Default.SingerPhonemizers.TryGetValue(singer.Id, out string? phonemizerName) &&
+                TryChangePhonemizer(phonemizerName))
+            {
+            }
+            else if (!string.IsNullOrEmpty(singer.DefaultPhonemizer))
+            {
+                TryChangePhonemizer(singer.DefaultPhonemizer);
+            }
+
+            // 切渲染器
+            if (!singer.Found) // 默认渲染器
+            {
+                URenderSettings settings = new();
+                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
+            }
+            else if (singer.SingerType != _track.RendererSettings.Renderer?.SingerType)
+            {
+                URenderSettings settings = new()
+                {
+                    renderer = Renderers.GetDefaultRenderer(singer.SingerType), // 根据歌手类型
+                };
+                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
+            }
+
+            TrackExpressionGraphSelection.Revalidate(project, _track);
+            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(_track.TrackNo, true));
+        }
+        finally { DocManager.Inst.EndUndoGroup(); }
     }
 
     private async Task SelectPhonemizer()
@@ -212,28 +225,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             return;
         }
 
-        URenderSettings settings = selection.Settings;
-        bool renderChanged = settings.renderer != original.renderer || settings.resampler != original.resampler || settings.wavtool != original.wavtool;
-        bool graphChanged = selection.ExpressionGraph != originalGraph;
-        if (!renderChanged && !graphChanged) return;
-        // 提交时从当前工程构建图草稿，保留其他轨道和图的最新修改。
-        SetExpressionGraphsCommand? graphCommand = null;
-        if (graphChanged)
-        {
-            ExpressionGraphEdits.Draft draft = new(project);
-            draft.TrackOverrides[project.tracks.IndexOf(_track)] = selection.ExpressionGraph;
-            graphCommand = new SetExpressionGraphsCommand(project, draft.ToState());
-        }
-        DocManager.Inst.StartUndoGroup();
-        try
-        {
-            if (renderChanged) DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(project, _track, settings));
-            if (graphCommand != null) DocManager.Inst.ExecuteCmd(graphCommand);
-        }
-        finally
-        {
-            DocManager.Inst.EndUndoGroup();
-        }
+        TrackExpressionGraphSelection.ApplyRenderer(project, _track, selection);
         Refresh();
     }
 

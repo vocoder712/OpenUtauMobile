@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels" xmlns:c="using:OpenUtauMobile.Controls"
+             x:Class="OpenUtauMobile.Controls.ExpressionGraphSettingsPopup" x:DataType="vm:ExpressionGraphSettingsViewModel"
+             Classes="PopupDialogRoot">
+    <c:DialogShell Header="{DynamicResource ExpressionGraph.Settings}" CloseCommand="{Binding CancelCommand}">
+        <c:DialogShell.Footer>
+            <c:DialogActionRow>
+                <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                <Button Content="{DynamicResource Expressions.Apply}" Command="{Binding ApplyCommand}" Classes="DialogPrimary"
+                        c:DialogShell.IsDefaultAction="True" />
+            </c:DialogActionRow>
+        </c:DialogShell.Footer>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding Renderer}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <TextBlock Text="{DynamicResource ExpressionGraph.Name}" />
+                    <TextBox Text="{Binding Name, Mode=TwoWay}" AutomationProperties.Name="{DynamicResource ExpressionGraph.Name}" />
+                    <TextBlock Text="{DynamicResource ExpressionGraph.PitchTarget}" TextWrapping="Wrap" />
+                    <ComboBox ItemsSource="{Binding PitchOptions}" SelectedItem="{Binding SelectedPitch, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" AutomationProperties.Name="{DynamicResource ExpressionGraph.PitchTarget}" />
+                    <CheckBox IsChecked="{Binding IsDefault, Mode=TwoWay}" IsEnabled="{Binding CanSetDefault}">
+                        <TextBlock Text="{DynamicResource ExpressionGraph.SetDefault}" TextWrapping="Wrap" />
+                    </CheckBox>
+                    <TextBlock Text="{Binding DefaultImpact}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Warning}"
+                               IsVisible="{Binding DefaultImpact, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Text="{Binding Status}" TextWrapping="Wrap" />
+                    <TextBlock Text="{DynamicResource ExpressionGraph.References}" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Usage}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}"
+                               IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </c:DialogShell>
+</UserControl>

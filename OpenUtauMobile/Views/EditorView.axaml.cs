@@ -7,6 +7,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Controls;
@@ -95,15 +96,30 @@ public partial class EditorView : UserControl
         PhonemeParamPanel.RequestMagnifierOpen += OnParameterMagnifierOpen;
         PhonemeParamPanel.RequestMagnifierUpdate += OnParameterMagnifierUpdate;
         PhonemeParamPanel.RequestMagnifierClose += OnMagnifierClose;
-        AttachedToVisualTree += (_, _) => InitializeResponsiveLayout();
+        AttachedToVisualTree += (_, _) =>
+        {
+            if (DataContext is EditorViewModel vm) BindViewModel(vm);
+            InitializeResponsiveLayout();
+        };
+        DetachedFromVisualTree += (_, _) =>
+        {
+            // 临时离开页面不销毁编辑状态，但旧视图不能继续订阅编辑器或放大镜事件。
+            _viewModelSubscription?.Dispose();
+            _viewModelSubscription = null;
+            _widthAnimTimer?.Stop();
+        };
 
         // 初始化轨道头列宽动画
         InitializeTrackHeaderAnimation();
 
         // 订阅 DataContext 变化，绑定到 ViewModel
-        this.WhenAnyValue(x => x.DataContext)
-            .OfType<EditorViewModel>()
-            .Subscribe(BindViewModel);
+        this.WhenAnyValue(x => x.DataContext).Subscribe(context =>
+        {
+            _viewModelSubscription?.Dispose();
+            _viewModelSubscription = null;
+            PART_PianoRollGrid.DataContext = (context as EditorViewModel)?.PianoRollViewModel;
+            if (this.IsAttachedToVisualTree() && context is EditorViewModel vm) BindViewModel(vm);
+        });
     }
 
     private void BindViewModel(EditorViewModel vm)

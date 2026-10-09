@@ -141,6 +141,8 @@ public class TrackHeaderCanvas : Panel, ICmdSubscriber
     {
         base.OnAttachedToVisualTree(e);
         DocManager.Inst.AddSubscriber(this);
+        // 页面首次显示或导航返回时，从当前工程重建；不能依赖已错过的加载通知。
+        FullUpdate();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)

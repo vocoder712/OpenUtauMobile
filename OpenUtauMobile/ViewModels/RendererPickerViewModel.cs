@@ -30,6 +30,7 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
     private readonly string? _originalGraph;
     private readonly Dictionary<string, string?> _graphDrafts = [];
     private string? _graphSlot;
+    private string? _graphRenderer;
     private readonly CompositeDisposable _disposables = [];
     private bool _refreshing;
     private bool _disposed;
@@ -38,9 +39,9 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
     public string SingerName => _singer?.Name ?? string.Empty;
     public string OriginalRenderer => _original.renderer ?? string.Empty;
     public ObservableCollectionExtended<string> Renderers { get; } = [];
-    public ObservableCollectionExtended<string> Resamplers { get; } = [];
+    [Reactive] public IReadOnlyList<string> Resamplers { get; private set; } = [];
     public ObservableCollectionExtended<string> Wavtools { get; } = [];
-    public ObservableCollectionExtended<RendererGraphOption> Graphs { get; } = [];
+    [Reactive] public IReadOnlyList<RendererGraphOption> Graphs { get; private set; } = [];
     [Reactive] public RendererGraphOption? SelectedGraph { get; set; }
     [Reactive] public string GraphDescription { get; private set; } = string.Empty;
     [Reactive] public string GraphWarning { get; private set; } = string.Empty;
@@ -66,6 +67,7 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         _singer = track.Singer;
         _original = track.RendererSettings.Clone();
         _originalGraph = track.ExpressionGraph;
+        _graphRenderer = _original.renderer;
         if (_original.renderer != null)
             _graphDrafts[RendererRegistry.GetExpressionGraphSlot(_original.renderer)] = _originalGraph;
         if (_singer is { Found: true }) Renderers.Load(RendererRegistry.GetSupportedRenderers(_singer.SingerType));
@@ -78,7 +80,7 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         CancelCommand = ReactiveCommand.Create(() => RaiseClose(null)).DisposeWith(_disposables);
         this.WhenAnyValue(vm => vm.SelectedRenderer, vm => vm.SelectedResampler, vm => vm.SelectedWavtool)
             .Subscribe(_ => Refresh()).DisposeWith(_disposables);
-        this.WhenAnyValue(vm => vm.SelectedGraph).Subscribe(_ => Refresh()).DisposeWith(_disposables);
+        this.WhenAnyValue(vm => vm.SelectedGraph).Subscribe(_ => QueueRefresh()).DisposeWith(_disposables);
         if (Application.Current != null)
             Application.Current.GetResourceObservable("RendererSettings.Graph.Default")
                 .Subscribe(_ => Dispatcher.UIThread.Post(Refresh)).DisposeWith(_disposables);
@@ -123,7 +125,7 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
             if (!Resamplers.SequenceEqual(compatible))
             {
                 string? resampler = SelectedResampler;
-                Resamplers.Load(compatible);
+                Resamplers = compatible;
                 SelectedResampler = compatible.Contains(resampler) ? resampler : null;
             }
             if (!Resamplers.Contains(SelectedResampler!)) SelectedResampler = null;
@@ -150,8 +152,11 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         string? slot = SelectedRenderer == null ? null : RendererRegistry.GetExpressionGraphSlot(SelectedRenderer);
         if (_graphSlot != null && SelectedGraph != null) _graphDrafts[_graphSlot] = SelectedGraph.Id;
         string? id = slot == _graphSlot ? SelectedGraph?.Id
-            : slot != null && _graphDrafts.TryGetValue(slot, out string? saved) ? saved : null;
+            : slot != null && _graphDrafts.TryGetValue(slot, out string? saved) ? saved : SelectedGraph?.Id;
         _graphSlot = slot;
+        if (SelectedRenderer != _graphRenderer)
+            id = TrackExpressionGraphSelection.Resolve(_project, SelectedRenderer, id);
+        _graphRenderer = SelectedRenderer;
 
         UExpressionGraph[] compatible = _project.expressionGraphs?
             .Where(graph => RendererGraphOption.IsCompatible(graph, SelectedRenderer)).ToArray() ?? [];
@@ -165,11 +170,13 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         {
             string name = RendererGraphOption.Name(graph);
             if (compatible.Count(other => RendererGraphOption.Name(other) == name) > 1) name = $"{name} ({graph.id})";
-            options.Add(new RendererGraphOption(graph.id, name));
+            options.Add(Graphs.FirstOrDefault(option => option.Id == graph.id && option.Label == name)
+                ?? new RendererGraphOption(graph.id, name));
         }
         if (!options.Any(option => option.Id == id))
             options.Add(new RendererGraphOption(id, string.Format(L.S("RendererSettings.Graph.Unavailable"), id)));
-        if (!Graphs.SequenceEqual(options)) Graphs.Load(options);
+        // 替换完整候选快照，避免选择回写期间对同一个集合做 Clear/Add。
+        if (!Graphs.SequenceEqual(options)) Graphs = options;
         SelectedGraph = Graphs.First(option => option.Id == id);
 
         string? effectiveId = id;
@@ -217,8 +224,19 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
-        if (Dispatcher.UIThread.CheckAccess()) Refresh();
-        else Dispatcher.UIThread.Post(Refresh);
+        QueueRefresh();
+    }
+
+    private bool _refreshPending;
+    private void QueueRefresh()
+    {
+        if (_refreshing || _disposed || _refreshPending) return;
+        _refreshPending = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _refreshPending = false;
+            Refresh();
+        });
     }
 
     public void Dispose()

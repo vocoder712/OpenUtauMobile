@@ -21,106 +21,119 @@
             <Border Classes="DialogBodyBorder">
                 <TabControl>
                     <TabItem Header="{DynamicResource EditorMore.EditTab}">
-                        <Border Padding="0,16,0,0">
-                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <Button Classes="tonal" HorizontalAlignment="Stretch"
-                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                        Content="{DynamicResource Editor.Undo}" IsEnabled="{Binding CanUndo}"
-                                        Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter><vm:EditorMoreAction>Undo</vm:EditorMoreAction></Button.CommandParameter>
-                                </Button>
-                                <Button Classes="tonal" HorizontalAlignment="Stretch"
-                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                        Content="{DynamicResource Editor.Redo}" IsEnabled="{Binding CanRedo}"
-                                        Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter><vm:EditorMoreAction>Redo</vm:EditorMoreAction></Button.CommandParameter>
-                                </Button>
-                                <ToggleButton x:Name="MergeNearbyPhrasesRow" MinHeight="56"
-                                              HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                              Padding="0" CornerRadius="0" Background="Transparent"
-                                              Foreground="{DynamicResource Sem.Color.OnSurface}"
-                                              AutomationProperties.Name="{DynamicResource EditorMore.MergeNearbyPhrases}"
-                                              ToolTip.Tip="{DynamicResource EditorMore.MergeNearbyPhrases.Desc}"
-                                              IsChecked="{Binding MergeNearbyPhrases, Mode=TwoWay}">
-                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
-                                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
-                                                   FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
-                                                   Text="{DynamicResource EditorMore.MergeNearbyPhrases}" />
-                                        <ToggleSwitch x:Name="MergeNearbyPhrasesToggle" Grid.Column="1"
-                                                      VerticalAlignment="Center" OffContent="" OnContent=""
-                                                      IsHitTestVisible="False" Focusable="False"
-                                                      IsChecked="{Binding MergeNearbyPhrases, Mode=OneWay}" />
-                                    </Grid>
-                                </ToggleButton>
-                            </StackPanel>
-                        </Border>
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Border Padding="0,16,0,0">
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                    <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            Content="{DynamicResource Editor.Undo}" IsEnabled="{Binding CanUndo}"
+                                            Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter><vm:EditorMoreAction>Undo</vm:EditorMoreAction></Button.CommandParameter>
+                                    </Button>
+                                    <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            Content="{DynamicResource Editor.Redo}" IsEnabled="{Binding CanRedo}"
+                                            Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter><vm:EditorMoreAction>Redo</vm:EditorMoreAction></Button.CommandParameter>
+                                    </Button>
+                                    <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            Content="{DynamicResource ExpressionGraph.Title}" Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter><vm:EditorMoreAction>ExpressionGraphs</vm:EditorMoreAction></Button.CommandParameter>
+                                    </Button>
+                                    <ToggleButton x:Name="MergeNearbyPhrasesRow" MinHeight="56"
+                                                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                                  Padding="0" CornerRadius="0" Background="Transparent"
+                                                  Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                                  AutomationProperties.Name="{DynamicResource EditorMore.MergeNearbyPhrases}"
+                                                  ToolTip.Tip="{DynamicResource EditorMore.MergeNearbyPhrases.Desc}"
+                                                  IsChecked="{Binding MergeNearbyPhrases, Mode=TwoWay}">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                            <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                                       Text="{DynamicResource EditorMore.MergeNearbyPhrases}" />
+                                            <ToggleSwitch x:Name="MergeNearbyPhrasesToggle" Grid.Column="1"
+                                                          VerticalAlignment="Center" OffContent="" OnContent=""
+                                                          IsHitTestVisible="False" Focusable="False"
+                                                          IsChecked="{Binding MergeNearbyPhrases, Mode=OneWay}" />
+                                        </Grid>
+                                    </ToggleButton>
+                                </StackPanel>
+                            </Border>
+                        </ScrollViewer>
                     </TabItem>
                     <!-- 导出 -->
                     <TabItem Header="{DynamicResource EditorMore.FileTab}">
-                        <Border Padding="0,16,0,0">
-                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <Button
-                                    Classes="tonal"
-                                    HorizontalAlignment="Stretch"
-                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                    Content="{DynamicResource EditorMore.SaveAs}"
-                                    Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter>
-                                        <vm:EditorMoreAction>SaveAs</vm:EditorMoreAction>
-                                    </Button.CommandParameter>
-                                </Button>
-                                <Button Classes="tonal" HorizontalAlignment="Stretch"
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Border Padding="0,16,0,0">
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                    <Button
+                                        Classes="tonal"
+                                        HorizontalAlignment="Stretch"
                                         MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                        Content="{DynamicResource EditorMore.SaveAsTemplate}"
+                                        Content="{DynamicResource EditorMore.SaveAs}"
                                         Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter><vm:EditorMoreAction>SaveAsTemplate</vm:EditorMoreAction></Button.CommandParameter>
-                                </Button>
-                            </StackPanel>
-                        </Border>
+                                        <Button.CommandParameter>
+                                            <vm:EditorMoreAction>SaveAs</vm:EditorMoreAction>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                    <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            Content="{DynamicResource EditorMore.SaveAsTemplate}"
+                                            Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter><vm:EditorMoreAction>SaveAsTemplate</vm:EditorMoreAction></Button.CommandParameter>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </ScrollViewer>
                     </TabItem>
                     <!-- 导入 -->
                     <TabItem Header="{DynamicResource EditorMore.ImportTab}">
-                        <Border Padding="0,16,0,0">
-                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <Button
-                                    Classes="tonal"
-                                    HorizontalAlignment="Stretch"
-                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                    Content="{DynamicResource EditorMore.ImportAudio}"
-                                    Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter>
-                                        <vm:EditorMoreAction>ImportAudio</vm:EditorMoreAction>
-                                    </Button.CommandParameter>
-                                </Button>
-                                <Button
-                                    Classes="tonal"
-                                    HorizontalAlignment="Stretch"
-                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                    Content="{DynamicResource EditorMore.ImportTrack}"
-                                    Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter>
-                                        <vm:EditorMoreAction>ImportTrack</vm:EditorMoreAction>
-                                    </Button.CommandParameter>
-                                </Button>
-                            </StackPanel>
-                        </Border>
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Border Padding="0,16,0,0">
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                    <Button
+                                        Classes="tonal"
+                                        HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource EditorMore.ImportAudio}"
+                                        Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter>
+                                            <vm:EditorMoreAction>ImportAudio</vm:EditorMoreAction>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                    <Button
+                                        Classes="tonal"
+                                        HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource EditorMore.ImportTrack}"
+                                        Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter>
+                                            <vm:EditorMoreAction>ImportTrack</vm:EditorMoreAction>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </ScrollViewer>
                     </TabItem>
                     <!-- 导出 -->
                     <TabItem Header="{DynamicResource EditorMore.ExportTab}">
-                        <Border Padding="0,16,0,0">
-                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <Button
-                                    Classes="tonal"
-                                    HorizontalAlignment="Stretch"
-                                    MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                    Content="{DynamicResource EditorMore.ExportAudio}"
-                                    Command="{Binding ConfirmCommand}">
-                                    <Button.CommandParameter>
-                                        <vm:EditorMoreAction>ExportAudio</vm:EditorMoreAction>
-                                    </Button.CommandParameter>
-                                </Button>
-                            </StackPanel>
-                        </Border>
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Border Padding="0,16,0,0">
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                    <Button
+                                        Classes="tonal"
+                                        HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource EditorMore.ExportAudio}"
+                                        Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter>
+                                            <vm:EditorMoreAction>ExportAudio</vm:EditorMoreAction>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </ScrollViewer>
                     </TabItem>
                 </TabControl>
             </Border>

@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:tokens="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+             xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Controls.FabMenu">
+    <UserControl.Styles>
+        <Style Selector="Button.FabMenuItem">
+            <Setter Property="Height" Value="{x:Static tokens:FabMenuTokens.ItemHeight}" />
+            <Setter Property="CornerRadius" Value="{x:Static tokens:FabMenuTokens.ItemCornerRadius}" />
+            <Setter Property="Padding" Value="24,0" />
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+            <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.TitleMSize}" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="HorizontalContentAlignment" Value="Right" />
+        </Style>
+    </UserControl.Styles>
+    <Panel>
+        <!-- 透明外部命中层只负责关闭菜单，不给画布或列表添加模态暗幕。 -->
+        <Border x:Name="DismissLayer" Background="Transparent" IsVisible="False" PointerPressed="DismissPressed" />
+        <Grid Margin="16" RowDefinitions="*,56" IsHitTestVisible="True">
+            <!-- 留出阴影空间，内容右边缘仍与 FAB 对齐。短屏只滚动选项。 -->
+            <ScrollViewer x:Name="MenuScroll" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                          Margin="-12,0,-12,-4" IsVisible="False" ClipToBounds="True"
+                          HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <Border Padding="12">
+                    <StackPanel x:Name="MenuItems" Spacing="{x:Static tokens:FabMenuTokens.ItemGap}" />
+                </Border>
+            </ScrollViewer>
+            <Border x:Name="ToggleShadow" Grid.Row="1" Width="56" Height="56" CornerRadius="16"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <ToggleButton x:Name="Toggle" Width="56" Height="56" Padding="0" CornerRadius="16"
+                        Click="ToggleClicked" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <icons:PackIconPhosphorIcons x:Name="ToggleIcon" Kind="Plus" Width="24" Height="24" />
+                </ToggleButton>
+            </Border>
+        </Grid>
+    </Panel>
+</UserControl>

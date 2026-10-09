@@ -2291,4 +2291,56 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>Не вдалося скасувати видалення</value>
   </data>
+  <data name="ExpressionGraph.Title" xml:space="preserve"><value>Expression graphs</value></data>
+  <data name="ExpressionGraph.LibraryTitle" xml:space="preserve"><value>Графи виразів проєкту</value></data>
+  <data name="ExpressionGraph.AllRenderers" xml:space="preserve"><value>All renderers</value></data>
+  <data name="ExpressionGraph.RendererFilter" xml:space="preserve"><value>Filter by renderer</value></data>
+  <data name="ExpressionGraph.OtherRenderers" xml:space="preserve"><value>Other renderers</value></data>
+  <data name="ExpressionGraph.Create" xml:space="preserve"><value>Create expression graph</value></data>
+  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>Choose a renderer to create a preset graph. If its family has no default, the new graph becomes the default for tracks following it.</value></data>
+  <data name="ExpressionGraph.NewName" xml:space="preserve"><value>{0} graph</value></data>
+  <data name="ExpressionGraph.CopyName" xml:space="preserve"><value>{0} (copy)</value></data>
+  <data name="ExpressionGraph.Copy" xml:space="preserve"><value>Клонувати</value></data>
+  <data name="ExpressionGraph.NoRenderer" xml:space="preserve"><value>No renderer specified</value></data>
+  <data name="ExpressionGraph.ReferenceCount" xml:space="preserve"><value>Referenced by {0} tracks</value></data>
+  <data name="ExpressionGraph.Valid" xml:space="preserve"><value>Status: valid</value></data>
+  <data name="ExpressionGraph.Invalid" xml:space="preserve"><value>Status: invalid — {0}</value></data>
+  <data name="ExpressionGraph.DefaultBadge" xml:space="preserve"><value>Типовий граф: {0}</value></data>
+  <data name="ExpressionGraph.DefaultFor" xml:space="preserve"><value>Default for {0}</value></data>
+  <data name="ExpressionGraph.FollowingTrack" xml:space="preserve"><value>{0} · follows default</value></data>
+  <data name="ExpressionGraph.ExplicitTrack" xml:space="preserve"><value>{0} · explicit reference</value></data>
+  <data name="ExpressionGraph.Unused" xml:space="preserve"><value>No tracks reference this graph.</value></data>
+  <data name="ExpressionGraph.FollowDefault" xml:space="preserve"><value>Follows default</value></data>
+  <data name="ExpressionGraph.Off" xml:space="preserve"><value>Graphs disabled</value></data>
+  <data name="ExpressionGraph.Explicit" xml:space="preserve"><value>Explicit selection</value></data>
+  <data name="ExpressionGraph.Builtin" xml:space="preserve"><value>Uses built-in behavior</value></data>
+  <data name="ExpressionGraph.DefaultProblem" xml:space="preserve"><value>Default for {0}: {1}</value></data>
+  <data name="ExpressionGraph.Empty" xml:space="preserve"><value>This project has no expression graphs. Use the floating button to create one.</value></data>
+  <data name="ExpressionGraph.FilterEmpty" xml:space="preserve"><value>No expression graphs for this renderer family.</value></data>
+  <data name="ExpressionGraph.Settings" xml:space="preserve"><value>Graph settings</value></data>
+  <data name="ExpressionGraph.Name" xml:space="preserve"><value>Graph name</value></data>
+  <data name="ExpressionGraph.PitchTarget" xml:space="preserve"><value>Curve for editing and loading pitch</value></data>
+  <data name="ExpressionGraph.PitchDeviation" xml:space="preserve"><value>Pitch deviation (PITD)</value></data>
+  <data name="ExpressionGraph.PitchOverride" xml:space="preserve"><value>Pitch override (PITO)</value></data>
+  <data name="ExpressionGraph.SetDefault" xml:space="preserve"><value>Default graph for this renderer family</value></data>
+  <data name="ExpressionGraph.References" xml:space="preserve"><value>References and usage</value></data>
+  <data name="ExpressionGraph.DefaultImpact" xml:space="preserve"><value>Applying will change the default graph for these tracks: {0}</value></data>
+  <data name="ExpressionGraph.PageActions" xml:space="preserve"><value>Library actions</value></data>
+  <data name="ExpressionGraph.GraphActions" xml:space="preserve"><value>Graph actions</value></data>
+  <data name="ExpressionGraph.UndoProject" xml:space="preserve"><value>Undo project action</value></data>
+  <data name="ExpressionGraph.RedoProject" xml:space="preserve"><value>Redo project action</value></data>
+  <data name="ExpressionGraph.DeleteTitle" xml:space="preserve"><value>Delete expression graph</value></data>
+  <data name="ExpressionGraph.DeleteMessage" xml:space="preserve"><value>Deleting “{0}” clears its default and track override references.
+
+{1}
+
+Affected tracks will resolve their remaining references or use built-in behavior. You can undo this action.</value></data>
+  <data name="ExpressionGraph.StaleProject" xml:space="preserve"><value>The project changed. Return to the editor and reopen the library.</value></data>
+  <data name="ExpressionGraph.StaleSettings" xml:space="preserve"><value>The graph or its references changed. Close and reopen settings before editing.</value></data>
+  <data name="ExpressionGraph.Busy" xml:space="preserve"><value>Another project action is being committed. Try again shortly.</value></data>
+  <data name="ExpressionGraph.NameRequired" xml:space="preserve"><value>Enter a graph name.</value></data>
+  <data name="FabMenu.Close" xml:space="preserve"><value>Close creation menu</value></data>
+  <data name="FabMenu.Expanded" xml:space="preserve"><value>Menu expanded</value></data>
+  <data name="FabMenu.Collapsed" xml:space="preserve"><value>Menu collapsed</value></data>
+  <data name="ExpressionGraph.ReferenceWarnings" xml:space="preserve"><value>Reference warnings ({0})</value></data>
 </root>

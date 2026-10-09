@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels"
+             xmlns:c="using:OpenUtauMobile.Controls"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             x:Class="OpenUtauMobile.Views.ExpressionGraphLibraryView"
+             x:DataType="vm:ExpressionGraphLibraryViewModel"
+             Background="{DynamicResource Sem.Color.Surface}">
+    <UserControl.Styles>
+        <Style Selector="Button.GraphCard">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        </Style>
+    </UserControl.Styles>
+    <Panel>
+        <Grid RowDefinitions="Auto,Auto,*" IsEnabled="{Binding IsCurrentProject}">
+            <Border Classes="TopBar">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Button Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
+                            ToolTip.Tip="{DynamicResource Common.Back}" AutomationProperties.Name="{DynamicResource Common.Back}" />
+                    <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource ExpressionGraph.LibraryTitle}" />
+                    
+                    <Button Grid.Column="2" Classes="TopBarBtn" Click="PageMenuClicked" Content="{icons:PhosphorIcons DotsThreeVertical}"
+                            ToolTip.Tip="{DynamicResource ExpressionGraph.PageActions}" AutomationProperties.Name="{DynamicResource ExpressionGraph.PageActions}" />
+                </Grid>
+            </Border>
+            <Border Grid.Row="1" Padding="16,8">
+                <StackPanel Spacing="8">
+                    <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter, Mode=TwoWay}"
+                              HorizontalAlignment="Stretch" AutomationProperties.Name="{DynamicResource ExpressionGraph.RendererFilter}" />
+                    <Button Content="{Binding ReferenceWarningSummary}" Command="{Binding ShowWarningsCommand}" Classes="text"
+                            Foreground="{DynamicResource Sem.Color.Warning}"
+                            IsVisible="{Binding ReferenceWarnings, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Text="{DynamicResource ExpressionGraph.CreateHint}" TextWrapping="Wrap"
+                               FontSize="{x:Static semantic:TypographyTokens.BodySSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}"
+                               IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+            <Grid Grid.Row="2" Margin="16,0,16,0" IsEnabled="{Binding !IsBusy}">
+                <TextBlock IsVisible="{Binding IsEmpty}" Text="{Binding EmptyMessage}" Margin="0,24,0,88"
+                           VerticalAlignment="Top" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                <ScrollViewer IsVisible="{Binding !IsEmpty}" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl x:Name="GraphList" ItemsSource="{Binding Graphs}" Margin="0,0,0,88">
+                        <ItemsControl.ItemTemplate>
+                            <!-- 表情图卡片 -->
+                            <DataTemplate x:DataType="vm:ExpressionGraphLibraryItem">
+                                <Grid Margin="0,0,0,8">
+                                    <Button Classes="GraphCard"
+                                            Command="{Binding $parent[UserControl].((vm:ExpressionGraphLibraryViewModel)DataContext).SettingsCommand}"
+                                            CommandParameter="{Binding}" AutomationProperties.Name="{Binding Name}">
+                                        <StackPanel Spacing="8">
+                                            <Grid ColumnDefinitions="*,Auto,40" MinHeight="32" ColumnSpacing="8">
+                                                <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" FontWeight="Medium"
+                                                           VerticalAlignment="Center" ToolTip.Tip="{Binding Name}"
+                                                           FontSize="{x:Static semantic:TypographyTokens.TitleMSize}" />
+                                                <Border Grid.Column="1" IsVisible="{Binding IsDefault}" CornerRadius="4" Padding="8,4"
+                                                        MaxWidth="144" VerticalAlignment="Center" ToolTip.Tip="{Binding DefaultLabel}"
+                                                        Background="{DynamicResource Sem.Color.SecondaryContainer}">
+                                                    <TextBlock Text="{Binding DefaultLabel}" TextTrimming="CharacterEllipsis" FontWeight="Medium"
+                                                               FontSize="{x:Static semantic:TypographyTokens.LabelMSize}"
+                                                               Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+                                                </Border>
+                                            </Grid>
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                                                <Border CornerRadius="4" Padding="8,4" VerticalAlignment="Center"
+                                                        MaxWidth="144" Background="{DynamicResource Sem.Color.PrimaryContainer}" ToolTip.Tip="{Binding Renderer}">
+                                                    <TextBlock Text="{Binding Renderer}" TextTrimming="CharacterEllipsis" FontWeight="Medium"
+                                                               FontSize="{x:Static semantic:TypographyTokens.LabelMSize}"
+                                                               Foreground="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+                                                </Border>
+                                                <TextBlock Grid.Column="1" Text="{Binding References}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                <icons:PackIconPhosphorIcons Grid.Column="2" Kind="WarningCircle" Width="16" Height="16"
+                                                                              IsVisible="{Binding HasError}" ToolTip.Tip="{Binding Status}" AutomationProperties.Name="{Binding Status}"
+                                                                              Foreground="{DynamicResource Sem.Color.Error}" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="icon" Margin="0,8,8,0" VerticalAlignment="Top" HorizontalAlignment="Right"
+                                            Click="GraphMenuClicked" Content="{icons:PhosphorIcons DotsThreeVertical}"
+                                            ToolTip.Tip="{DynamicResource ExpressionGraph.GraphActions}" AutomationProperties.Name="{DynamicResource ExpressionGraph.GraphActions}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+        <c:FabMenu x:Name="CreateMenu" IsEnabled="{Binding IsCurrentProject}" Actions="{Binding CreationActions}"
+                   OpenLabel="{DynamicResource ExpressionGraph.Create}" IsExpanded="{Binding IsCreationMenuOpen, Mode=TwoWay}" />
+        <!-- 工程替换后仍允许返回，旧工程操作保持禁用。 -->
+        <Button Classes="TopBarBtn" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16,8"
+                IsVisible="{Binding !IsCurrentProject}" Command="{Binding BackCommand}"
+                Content="{icons:PhosphorIcons ArrowLeft}" AutomationProperties.Name="{DynamicResource Common.Back}" />
+    </Panel>
+</UserControl>

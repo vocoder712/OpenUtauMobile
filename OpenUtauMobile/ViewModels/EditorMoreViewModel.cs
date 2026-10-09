@@ -14,7 +14,8 @@ public enum EditorMoreAction
     SaveAsTemplate, // 保存为模板
     SaveAs, // 另存为
     Undo,
-    Redo
+    Redo,
+    ExpressionGraphs
 }
 
 public class EditorMoreViewModel : PopupViewModelBase

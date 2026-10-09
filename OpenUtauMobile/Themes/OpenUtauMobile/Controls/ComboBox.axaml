@@ -1,6 +1,7 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:metrics="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
                     xmlns:sys="using:System"
+                    xmlns:helpers="using:OpenUtauMobile.Themes.OpenUtauMobile.Controls"
                     x:CompileBindings="False">
 
   <Thickness x:Key="ComboBoxTopHeaderMargin">0,0,0,4</Thickness>
@@ -12,6 +13,7 @@
   <x:Double x:Key="ComboBoxMinHeight">40</x:Double>
 
   <ControlTheme x:Key="{x:Type ComboBox}" TargetType="ComboBox">
+    <Setter Property="helpers:ComboBoxSourceSnapshot.IsEnabled" Value="True" />
     <Setter Property="Cursor" Value="Hand" />
     <Setter Property="Padding" Value="{x:Static metrics:InputTokens.Padding}" />
     <Setter Property="FocusAdorner" Value="{x:Null}" />

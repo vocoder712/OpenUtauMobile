@@ -2336,4 +2336,56 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>取消删除标记失败</value>
   </data>
+  <data name="ExpressionGraph.Title" xml:space="preserve"><value>表情图</value></data>
+  <data name="ExpressionGraph.LibraryTitle" xml:space="preserve"><value>工程表情图管理</value></data>
+  <data name="ExpressionGraph.AllRenderers" xml:space="preserve"><value>全部渲染器</value></data>
+  <data name="ExpressionGraph.RendererFilter" xml:space="preserve"><value>筛选渲染器</value></data>
+  <data name="ExpressionGraph.OtherRenderers" xml:space="preserve"><value>其他渲染器</value></data>
+  <data name="ExpressionGraph.Create" xml:space="preserve"><value>创建表情图</value></data>
+  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>选择渲染器创建预设图；该家族没有默认图时，新图会成为默认图，并作用于跟随默认的轨道。</value></data>
+  <data name="ExpressionGraph.NewName" xml:space="preserve"><value>{0} 图</value></data>
+  <data name="ExpressionGraph.CopyName" xml:space="preserve"><value>{0}（副本）</value></data>
+  <data name="ExpressionGraph.Copy" xml:space="preserve"><value>克隆</value></data>
+  <data name="ExpressionGraph.NoRenderer" xml:space="preserve"><value>未指定渲染器</value></data>
+  <data name="ExpressionGraph.ReferenceCount" xml:space="preserve"><value>引用轨道：{0}</value></data>
+  <data name="ExpressionGraph.Valid" xml:space="preserve"><value>状态：有效</value></data>
+  <data name="ExpressionGraph.Invalid" xml:space="preserve"><value>状态：无效 — {0}</value></data>
+  <data name="ExpressionGraph.DefaultBadge" xml:space="preserve"><value>{0}默认图</value></data>
+  <data name="ExpressionGraph.DefaultFor" xml:space="preserve"><value>{0} 家族默认</value></data>
+  <data name="ExpressionGraph.FollowingTrack" xml:space="preserve"><value>{0} · 跟随默认</value></data>
+  <data name="ExpressionGraph.ExplicitTrack" xml:space="preserve"><value>{0} · 显式引用</value></data>
+  <data name="ExpressionGraph.Unused" xml:space="preserve"><value>没有轨道引用此图。</value></data>
+  <data name="ExpressionGraph.FollowDefault" xml:space="preserve"><value>跟随默认</value></data>
+  <data name="ExpressionGraph.Off" xml:space="preserve"><value>禁用表情图</value></data>
+  <data name="ExpressionGraph.Explicit" xml:space="preserve"><value>显式选择</value></data>
+  <data name="ExpressionGraph.Builtin" xml:space="preserve"><value>使用内置行为</value></data>
+  <data name="ExpressionGraph.DefaultProblem" xml:space="preserve"><value>{0} 家族默认：{1}</value></data>
+  <data name="ExpressionGraph.Empty" xml:space="preserve"><value>当前工程没有表情图。点击右下角按钮创建。</value></data>
+  <data name="ExpressionGraph.FilterEmpty" xml:space="preserve"><value>此渲染器家族没有表情图。</value></data>
+  <data name="ExpressionGraph.Settings" xml:space="preserve"><value>图设置</value></data>
+  <data name="ExpressionGraph.Name" xml:space="preserve"><value>图名称</value></data>
+  <data name="ExpressionGraph.PitchTarget" xml:space="preserve"><value>绘制与载入音高的目标曲线</value></data>
+  <data name="ExpressionGraph.PitchDeviation" xml:space="preserve"><value>音高偏移（PITD）</value></data>
+  <data name="ExpressionGraph.PitchOverride" xml:space="preserve"><value>音高覆盖（PITO）</value></data>
+  <data name="ExpressionGraph.SetDefault" xml:space="preserve"><value>作为此渲染器家族的默认图</value></data>
+  <data name="ExpressionGraph.References" xml:space="preserve"><value>引用与使用情况</value></data>
+  <data name="ExpressionGraph.DefaultImpact" xml:space="preserve"><value>应用后会改变这些轨道的默认图：{0}</value></data>
+  <data name="ExpressionGraph.PageActions" xml:space="preserve"><value>图库操作</value></data>
+  <data name="ExpressionGraph.GraphActions" xml:space="preserve"><value>此图操作</value></data>
+  <data name="ExpressionGraph.UndoProject" xml:space="preserve"><value>撤销工程操作</value></data>
+  <data name="ExpressionGraph.RedoProject" xml:space="preserve"><value>重做工程操作</value></data>
+  <data name="ExpressionGraph.DeleteTitle" xml:space="preserve"><value>删除表情图</value></data>
+  <data name="ExpressionGraph.DeleteMessage" xml:space="preserve"><value>删除“{0}”将清除指向它的默认图与轨道覆盖引用。
+
+{1}
+
+相关轨道将按剩余引用重新解析图或使用内置行为。此操作可以撤销。</value></data>
+  <data name="ExpressionGraph.StaleProject" xml:space="preserve"><value>工程已切换，请返回编辑器重新打开图库。</value></data>
+  <data name="ExpressionGraph.StaleSettings" xml:space="preserve"><value>图或引用已发生变化，请关闭并重新打开设置后再修改。</value></data>
+  <data name="ExpressionGraph.Busy" xml:space="preserve"><value>工程正在提交其他操作，请稍后重试。</value></data>
+  <data name="ExpressionGraph.NameRequired" xml:space="preserve"><value>请输入图名称。</value></data>
+  <data name="FabMenu.Close" xml:space="preserve"><value>关闭创建菜单</value></data>
+  <data name="FabMenu.Expanded" xml:space="preserve"><value>菜单已展开</value></data>
+  <data name="FabMenu.Collapsed" xml:space="preserve"><value>菜单已收起</value></data>
+  <data name="ExpressionGraph.ReferenceWarnings" xml:space="preserve"><value>引用警告（{0}）</value></data>
 </root>
