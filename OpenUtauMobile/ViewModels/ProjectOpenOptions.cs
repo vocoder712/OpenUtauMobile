@@ -8,6 +8,7 @@ public enum ProjectOpenKind
     Normal,
     Template,
     ExternalCopy,
+    Recovery
 }
 
 /// <summary>

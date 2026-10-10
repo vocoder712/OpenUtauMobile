@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Reflection;
 using Avalonia;
-using Avalonia.Threading;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Layout;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Threading;
 using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
 

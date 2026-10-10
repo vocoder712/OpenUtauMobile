@@ -1,9 +1,9 @@
-﻿using OpenUtauMobile.Services.Platform;
-using OpenUtauMobile.Services.Dialogs;
-using System.Linq;
+﻿using System.Linq;
 using System.Reactive;
 using System.Reflection;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Platform;
 using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;

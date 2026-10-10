@@ -1,7 +1,7 @@
 ﻿using System.Reactive;
-using ReactiveUI;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
+using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;
 

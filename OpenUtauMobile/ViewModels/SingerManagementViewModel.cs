@@ -1,11 +1,11 @@
-﻿using OpenUtauMobile.Services.Dialogs;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reactive;
 using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

@@ -9,8 +9,8 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtau.Core.Util;
-using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Controls;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.ViewModels;
 using ReactiveUI;
 

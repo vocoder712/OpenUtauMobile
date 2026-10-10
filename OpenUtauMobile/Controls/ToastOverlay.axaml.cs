@@ -1,12 +1,12 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
-using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 using System.Threading.Tasks;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtauMobile.Controls.Tokens;
+using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 
 namespace OpenUtauMobile.Controls;
 

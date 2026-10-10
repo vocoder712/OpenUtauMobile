@@ -1,4 +1,3 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +18,7 @@ using OpenUtauMobile.Audio;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Services.Performance;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
