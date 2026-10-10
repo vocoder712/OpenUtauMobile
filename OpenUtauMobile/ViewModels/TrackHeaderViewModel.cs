@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using OpenUtau.Api;
@@ -32,9 +33,13 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     private readonly UTrack _track;
     private readonly CompositeDisposable _disposable = [];
     private bool _isRefreshing;
+    private byte[]? _avatarData;
+    private bool _avatarInitialized;
 
     [Reactive] public string TrackName { get; set; } = string.Empty;
     [Reactive] public bool Muted { get; set; }
+    [Reactive] public bool Mute { get; set; }
+    [Reactive] public bool Solo { get; set; }
     [Reactive] public double Volume { get; set; }
     [Reactive] public double Pan { get; set; }
     [Reactive] public IBrush TrackColorBrush { get; set; } = Brushes.Transparent;
@@ -57,8 +62,9 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> MuteCommand { get; }
     public ReactiveCommand<Unit, Unit> SoloCommand { get; }
     public ReactiveCommand<Unit, Unit> SelectSingerCommand { get; }
-    public ReactiveCommand<Unit, Unit> SelectPhonemizerCommand { get; }
+    public ReactiveCommand<Control?, Unit> SelectPhonemizerCommand { get; }
     public ReactiveCommand<Unit, Unit> SelectRendererCommand { get; }
+    public ReactiveCommand<Unit, Unit> ShowSettingsCommand { get; }
     public ReactiveCommand<Unit, Unit> RemoveTrackCommand { get; }
     public ReactiveCommand<Unit, Unit> MoveUpCommand { get; }
     public ReactiveCommand<Unit, Unit> MoveDownCommand { get; }
@@ -95,9 +101,10 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         // 选择歌手命令
         SelectSingerCommand = ReactiveCommand.CreateFromTask(SelectSinger).DisposeWith(_disposable);
         // 选择音素器命令
-        SelectPhonemizerCommand = ReactiveCommand.CreateFromTask(SelectPhonemizer).DisposeWith(_disposable);
+        SelectPhonemizerCommand = ReactiveCommand.CreateFromTask<Control?>(SelectPhonemizer).DisposeWith(_disposable);
         // 选择渲染器命令
         SelectRendererCommand = ReactiveCommand.CreateFromTask(SelectRenderer).DisposeWith(_disposable);
+        ShowSettingsCommand = ReactiveCommand.CreateFromTask(() => TrackHeaderService.Inst.ShowTrackSettingsAsync(_track)).DisposeWith(_disposable);
         // 删除命令
         RemoveTrackCommand = ReactiveCommand.Create(RemoveTrack).DisposeWith(_disposable);
         // 上移命令
@@ -112,41 +119,48 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectSinger()
     {
-        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync();
-        if (singer == null) return;
+        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync(_track.Singer);
+        if (singer != null) SetSinger(singer);
+    }
+
+    public void SetSinger(USinger singer)
+    {
+        if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Singer == singer) return;
         DocManager.Inst.StartUndoGroup("切换歌手");
-        Log.Information("正在为轨道 {TrackName} 选择歌手 {SingerName}", TrackName, singer.Name);
-        // 执行切换歌手命令
-        DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, _track, singer));
-        // 切音素器
-        if (!string.IsNullOrEmpty(singer.Id) &&
-            Preferences.Default.SingerPhonemizers.TryGetValue(singer.Id, out string? phonemizerName) &&
-            TryChangePhonemizer(phonemizerName))
+        try
         {
-        }
-        else if (!string.IsNullOrEmpty(singer.DefaultPhonemizer))
-        {
-            TryChangePhonemizer(singer.DefaultPhonemizer);
-        }
-
-        // 切渲染器
-        if (!singer.Found) // 默认渲染器
-        {
-            URenderSettings settings = new();
-            DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
-        }
-        else if (singer.SingerType != _track.RendererSettings.Renderer?.SingerType)
-        {
-            URenderSettings settings = new()
+            Log.Information("正在为轨道 {TrackName} 选择歌手 {SingerName}", TrackName, singer.Name);
+            // 执行切换歌手命令
+            DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, _track, singer));
+            // 切音素器
+            if (!string.IsNullOrEmpty(singer.Id) &&
+                Preferences.Default.SingerPhonemizers.TryGetValue(singer.Id, out string? phonemizerName) &&
+                TryChangePhonemizer(phonemizerName))
             {
-                renderer = Renderers.GetDefaultRenderer(singer.SingerType), // 根据歌手类型
-            };
-            DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
-        }
+            }
+            else if (!string.IsNullOrEmpty(singer.DefaultPhonemizer))
+            {
+                TryChangePhonemizer(singer.DefaultPhonemizer);
+            }
 
-        // 
-        DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(_track.TrackNo, true));
-        DocManager.Inst.EndUndoGroup();
+            // 切渲染器
+            if (!singer.Found) // 默认渲染器
+            {
+                URenderSettings settings = new();
+                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
+            }
+            else if (singer.SingerType != _track.RendererSettings.Renderer?.SingerType)
+            {
+                URenderSettings settings = new()
+                {
+                    renderer = Renderers.GetDefaultRenderer(singer.SingerType), // 根据歌手类型
+                };
+                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
+            }
+
+            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(_track.TrackNo, true));
+        }
+        finally { DocManager.Inst.EndUndoGroup(); }
         // 保存
         if (!string.IsNullOrEmpty(singer.Id) && singer.Found)
         {
@@ -163,10 +177,15 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         Refresh();
     }
 
-    private async Task SelectPhonemizer()
+    private async Task SelectPhonemizer(Control? anchor)
     {
-        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync();
-        if (phonemizer == null) return;
+        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(_track.Phonemizer?.Name, anchor);
+        if (phonemizer != null) SetPhonemizer(phonemizer);
+    }
+
+    public void SetPhonemizer(Phonemizer phonemizer)
+    {
+        if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Phonemizer?.GetType() == phonemizer.GetType()) return;
         Log.Information("正在为轨道 {TrackName} 选择音素器 {PhonemizerName}", TrackName, phonemizer.Name);
 
         DocManager.Inst.StartUndoGroup("切换音素器");
@@ -185,9 +204,9 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
         Preferences.Default.RecentPhonemizers.Remove(name);
         Preferences.Default.RecentPhonemizers.Insert(0, name);
-        while (Preferences.Default.RecentPhonemizers.Count > 8)
+        while (Preferences.Default.RecentPhonemizers.Count > 10)
         {
-            Preferences.Default.RecentPhonemizers.RemoveRange(8, Preferences.Default.RecentPhonemizers.Count - 8);
+            Preferences.Default.RecentPhonemizers.RemoveRange(10, Preferences.Default.RecentPhonemizers.Count - 10);
         }
 
         Preferences.Save();
@@ -237,6 +256,24 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         Refresh();
     }
 
+
+    public void SetRenderer(string renderer)
+    {
+        if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Singer is not { Found: true } singer ||
+            !Renderers.GetSupportedRenderers(singer.SingerType).Contains(renderer) || _track.RendererSettings.renderer == renderer) return;
+        URenderSettings settings = _track.RendererSettings.Clone();
+        settings.renderer = renderer;
+        DocManager.Inst.StartUndoGroup();
+        try
+        {
+            DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
+        }
+        finally
+        {
+            DocManager.Inst.EndUndoGroup();
+        }
+        Refresh();
+    }
 
     private void ToggleMute()
     {
@@ -317,11 +354,12 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     private async Task Rename()
     {
         string? trackName = await TrackHeaderService.Inst.PickTrackNameAsync(_track.TrackName);
-        if (string.IsNullOrWhiteSpace(trackName))
-        {
-            return;
-        }
+        SetTrackName(trackName);
+    }
 
+    public void SetTrackName(string? trackName)
+    {
+        if (string.IsNullOrWhiteSpace(trackName) || !DocManager.Inst.Project.tracks.Contains(_track)) return;
         trackName = trackName.Trim();
         if (string.Equals(trackName, _track.TrackName, StringComparison.Ordinal))
         {
@@ -350,8 +388,13 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private void RefreshAvatar()
     {
-        USinger? singer = _track.Singer;
-        if (singer?.AvatarData == null)
+        byte[]? avatarData = _track.Singer?.AvatarData;
+        if (_avatarInitialized && ReferenceEquals(_avatarData, avatarData)) return;
+        _avatarInitialized = true;
+        _avatarData = avatarData;
+        SingerIcon?.Dispose();
+        SingerIcon = null;
+        if (avatarData == null)
         {
             SingerIcon = null;
             HasSingerAvatar = false;
@@ -360,7 +403,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
         try
         {
-            using MemoryStream stream = new(singer.AvatarData);
+            using MemoryStream stream = new(avatarData);
             SingerIcon = new Bitmap(stream);
             HasSingerAvatar = true;
         }
@@ -402,6 +445,9 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     public void Dispose()
     {
         _disposable.Dispose();
+        SingerIcon?.Dispose();
+        SingerIcon = null;
+        _avatarData = null;
         GC.SuppressFinalize(this);
     }
 
@@ -416,6 +462,8 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     private void RefreshMixFields()
     {
         Muted = _track.Muted;
+        Mute = _track.Mute;
+        Solo = _track.Solo;
         Volume = _track.Volume;
         Pan = _track.Pan;
         TrackColorBrush = _track.Muted ? Brushes.Gray : TrackPalette.GetTrackColor(_track.TrackColor).AccentColor;

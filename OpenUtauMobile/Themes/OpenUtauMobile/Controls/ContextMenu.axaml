@@ -2,9 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     x:CompileBindings="False">
 
-  <!--  Added missing resource  -->
-  <Thickness x:Key="MenuFlyoutScrollerMargin">0,4,0,4</Thickness>
-
   <ControlTheme x:Key="{x:Type ContextMenu}" TargetType="ContextMenu">
     <Setter Property="Background" Value="{DynamicResource MenuFlyoutPresenterBackground}" />
     <Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutPresenterBorderBrush}" />
@@ -25,6 +22,7 @@
                 MaxWidth="{TemplateBinding MaxWidth}"
                 MinHeight="{TemplateBinding MinHeight}"
                 HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                ClipToBounds="True"
                 CornerRadius="{TemplateBinding CornerRadius}">
           <ScrollViewer Theme="{StaticResource OpumMenuScrollViewer}">
             <ItemsPresenter Name="PART_ItemsPresenter"

@@ -1,5 +1,7 @@
 using OpenUtauMobile.Services.Dialogs;
 using System.Threading.Tasks;
+using System.Linq;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
@@ -26,16 +28,27 @@ public class TrackHeaderService : ITrackHeaderService
         }
     }
 
-    public async Task<USinger?> PickSingerAsync()
+    public async Task<USinger?> PickSingerAsync(USinger? currentSinger = null)
     {
+        if (ServiceHub.DesktopSingerPicker != null) return await ServiceHub.DesktopSingerPicker(currentSinger);
         return await PopupService.Show<USinger?>(new SingerPickerPopup(), new SingerPickerViewModel());
     }
 
-    public async Task<Phonemizer?> PickPhonemizerAsync()
+    public Task<Phonemizer?> PickPhonemizerAsync() => PickPhonemizerAsync(null);
+
+    public async Task<Phonemizer?> PickPhonemizerAsync(string? currentName, Control? anchor = null)
     {
-        return await Dispatcher.UIThread.InvokeAsync(static () =>
-            PopupService.Show<Phonemizer?>(new PhonemizerPickerPopup(), new PhonemizerPickerViewModel())
-        );
+        try
+        {
+            PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(CurrentName: currentName, Anchor: anchor));
+            return result?.Factory?.Create();
+        }
+        catch (System.Exception exception)
+        {
+            Serilog.Log.Error(exception, "Failed to create selected phonemizer");
+            ErrorDialogService.Show(new ErrorDialogViewModel(new OpenUtau.Core.ErrorMessageNotification(exception)));
+            return null;
+        }
     }
 
     public async Task<RendererSettingsSelection?> PickRendererAsync(UProject project, UTrack track)
@@ -47,8 +60,21 @@ public class TrackHeaderService : ITrackHeaderService
         });
     }
 
+    public async Task<string?> PickRendererNameAsync(string[] supportedRenderers)
+    {
+        if (supportedRenderers.Length == 0) return null;
+        if (ServiceHub.DesktopRendererPicker != null) return await ServiceHub.DesktopRendererPicker(supportedRenderers);
+        return await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            OptionConfirmPopupViewModel vm = new(L.S("TrackSettings.Renderer"), string.Empty,
+                supportedRenderers.Select(renderer => new[] { new OptionConfirmOption(renderer, renderer) }));
+            return PopupService.Show<string?>(new OptionConfirmPopup(), vm);
+        });
+    }
+
     public async Task<string?> PickTrackNameAsync(string currentName)
     {
+        if (ServiceHub.DesktopTrackNamePicker != null) return await ServiceHub.DesktopTrackNamePicker(currentName);
         return await Dispatcher.UIThread.InvokeAsync(() =>
             TextInputPopupService.ShowAsync(L.S("Picker.TrackRename.Title"), string.Empty,
                 L.S("Picker.TrackRename.Placeholder"), currentName,
@@ -61,4 +87,6 @@ public class TrackHeaderService : ITrackHeaderService
             PopupService.Show<string?>(new TrackColorPickerPopup(),
                 new TrackColorPickerPopupViewModel(currentColorName)));
     }
+
+    public Task ShowTrackSettingsAsync(UTrack track) => TrackSettingsService.Inst.ShowAsync(track);
 }

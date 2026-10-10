@@ -23,10 +23,9 @@
         <!-- Action 项目模板 -->
         <DataTemplate x:Key="BatchEditItemTemplate" x:DataType="vm:BatchEditItemViewModel">
             <Border Classes="BatchEditItem">
-                <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <Grid Classes="BatchEditItemLayout" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <Border
                         Grid.Row="0"
-                        Grid.RowSpan="2"
                         Grid.Column="0"
                         Classes="BatchEditItemIcon">
                         <iconPacks:PackIconPhosphorIcons
@@ -53,8 +52,8 @@
                             HorizontalAlignment="Stretch" />
                     </StackPanel>
                     <!-- 操作独立成行，给窄窗口的标题和参数保留完整宽度。 -->
-                    <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal"
-                                HorizontalAlignment="Right" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <StackPanel Classes="BatchEditItemActions" Orientation="Horizontal"
+                                HorizontalAlignment="Right">
                         <Button Classes="icon" Classes.tonal="{Binding IsPinned}"
                                 Command="{Binding TogglePinCommand}"
                                 ToolTip.Tip="{Binding PinLabel}" AutomationProperties.Name="{Binding PinLabel}">

@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using OpenUtauMobile.Controls.Tokens;
+using OpenUtauMobile.Helpers;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -51,6 +53,8 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
     private PianoRollViewModel? ViewModel => _viewModel ?? (DataContext as PianoRollViewModel);
 
     // 拖拽与双击状态
+    private readonly PhonemeResetTarget _resetTarget;
+    private IPointer? _editingPointer;
     private bool _isDraggingBoundary;
     private UPhoneme? _draggingPhoneme;
     private UPhoneme? _animatingPhoneme;
@@ -75,6 +79,22 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
     public PhonemeSimpleCanvas()
     {
         ClipToBounds = true;
+        _resetTarget = new PhonemeResetTarget(this);
+        PhonemeCanvasActions.Attach(this, () => Part, point => Part?.phonemes.FirstOrDefault(p => GetAliasLabelBounds(p).Contains(point)) ?? FindPhonemeAtTick(point.X / TickWidth + TickOffset - (Part?.position ?? 0)));
+    }
+
+    public Rect GetAliasLabelBounds(UPhoneme phoneme)
+    {
+        double left = ((Part?.position ?? 0) + phoneme.position - TickOffset) * TickWidth;
+        double totalWidth = (phoneme.End - phoneme.position) * TickWidth;
+        double margin = Math.Min(ChipMargin, Math.Max(1, totalWidth * .15));
+        double width = Math.Max(2, totalWidth - margin * 2);
+        left += margin;
+        string text = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
+        TextLayout layout = TextLayoutCache.Get(text, ThemeResources.GetBrush("Sem.Color.OnSurface"), 12, phoneme.phoneme != phoneme.rawPhoneme);
+        double top = 14 + (Math.Max(16, Bounds.Height - 20) - layout.Height) / 2;
+        double textLeft = left + (layout.Width <= width - 4 ? (width - layout.Width) / 2 : 2);
+        return new Rect(textLeft, top, width > 8 ? Math.Min(layout.Width, width - 4) : 0, layout.Height);
     }
 
     private void StartDragAnimation(double target)
@@ -114,6 +134,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
 
     protected override void OnDataContextChanged(EventArgs e)
     {
+        _editingPointer?.Capture(null);
         base.OnDataContextChanged(e);
         if (_viewModel != null)
         {
@@ -145,9 +166,11 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _editingPointer?.Capture(null);
         base.OnDetachedFromVisualTree(e);
         DocManager.Inst.RemoveSubscriber(this);
         _animTimer?.Stop();
+        _resetTarget.End();
         if (_viewModel != null)
         {
             _viewModel.RequestInvalidateVisual -= InvalidateVisual;
@@ -158,6 +181,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
+        if (change.Property == PartProperty) _editingPointer?.Capture(null);
         if (change.Property == PartProperty ||
             change.Property == TickWidthProperty ||
             change.Property == TickOffsetProperty)
@@ -222,7 +246,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             double chipRight = x2 - actualMargin;
             double chipWidth = Math.Max(2.0, chipRight - chipLeft);
 
-            bool isSelected = ViewModel?.SelectedNotes.Contains(phoneme.Parent) ?? false;
+            bool isSelected = ViewModel?.IsNoteSelected(phoneme.Parent) ?? false;
             IBrush fillBrush = isSelected ? selectedChipFill : defaultChipFill;
             IBrush currentTextBrush = isSelected ? selectedTextBrush : textBrush;
 
@@ -273,13 +297,14 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             Rect handleRect = new Rect(handleX, handleY, handleWidth, handleH);
             context.DrawRectangle(handleBrush, null, handleRect, handleWidth * 0.5, handleWidth * 0.5);
         }
+        if (_isDraggingBoundary && ViewModel?.UseDesktopMouseInput != true) _resetTarget.Render(context);
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
         if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed) return;
-        if (Part == null)
+        if (Part == null || DocManager.Inst.HasOpenUndoGroup)
         {
             return;
         }
@@ -288,10 +313,15 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         double partPos = Part.position;
         double currentTick = pos.X / TickWidth + TickOffset - partPos;
 
+        UPhoneme? labelPhoneme = Part.phonemes.FirstOrDefault(p => GetAliasLabelBounds(p).Contains(pos));
+        UPhoneme? selectedPhoneme = labelPhoneme ?? FindPhonemeAtTick(currentTick);
+        if (selectedPhoneme?.Parent is { } selectedNote && ViewModel is { } vm && !vm.IsNoteSelected(selectedNote))
+        { vm.SelectedNotes.Clear(); vm.SelectedNotes.Add(selectedNote); }
         // 1. 测试是否击中边界手柄（支持滑动调整 timing offset）
-        UPhoneme? hitBoundaryPhoneme = FindPhonemeBoundaryAt(pos.X);
+        UPhoneme? hitBoundaryPhoneme = labelPhoneme != null ? null : FindPhonemeBoundaryAt(pos.X, e.Pointer.Type == PointerType.Mouse);
         if (hitBoundaryPhoneme != null && hitBoundaryPhoneme.Parent != null)
         {
+            _resetTarget.Begin();
             _isDraggingBoundary = true;
             _draggingPhoneme = hitBoundaryPhoneme;
             _animatingPhoneme = hitBoundaryPhoneme;
@@ -300,6 +330,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             _lastPushedOffset = _dragInitialOffset;
 
             StartDragAnimation(1.0);
+            _editingPointer = e.Pointer;
             e.Pointer.Capture(this);
             e.Handled = true;
             DocManager.Inst.StartUndoGroup();
@@ -323,7 +354,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
 
         if (elapsedMs < DoubleClickMaxTimeMs && dist < DoubleClickMaxDistance)
         {
-            UPhoneme? hitPhoneme = FindPhonemeAtTick(currentTick);
+            UPhoneme? hitPhoneme = selectedPhoneme;
             if (hitPhoneme != null && hitPhoneme.Parent != null)
             {
                 ViewModel?.RaiseRequestEditPhoneme(Part, hitPhoneme.Parent, hitPhoneme.index);
@@ -346,6 +377,13 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         }
 
         Point pos = e.GetPosition(this);
+        _resetTarget.IsActive = ViewModel?.UseDesktopMouseInput != true && _resetTarget.Contains(pos);
+        if (_resetTarget.IsActive)
+        {
+            if (ViewModel != null) ViewModel.EditingTip = L.S("PhonemePanel.Reset.ReleaseHint");
+            e.Handled = true;
+            return;
+        }
         double deltaPx = pos.X - _dragStartPointerX;
         int deltaTicks = (int)Math.Round(deltaPx / TickWidth);
         int newOffset = _dragInitialOffset + deltaTicks;
@@ -375,10 +413,14 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         if (e.Pointer.Type == PointerType.Mouse && e.GetCurrentPoint(this).Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonReleased) return;
         if (_isDraggingBoundary)
         {
+            if (ViewModel?.UseDesktopMouseInput != true && _resetTarget.Contains(e.GetPosition(this)) && Part != null && _draggingPhoneme?.Parent != null)
+                DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(Part, _draggingPhoneme.Parent, _draggingPhoneme.index, 0));
+            _resetTarget.End();
             _isDraggingBoundary = false;
             _draggingPhoneme = null;
             StartDragAnimation(0.0);
             DocManager.Inst.EndUndoGroup();
+            _editingPointer = null;
             e.Pointer.Capture(null);
             if (ViewModel != null)
             {
@@ -391,12 +433,18 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        _editingPointer = null;
+        _resetTarget.End();
         if (_isDraggingBoundary)
         {
             _isDraggingBoundary = false;
             _draggingPhoneme = null;
             StartDragAnimation(0.0);
-            DocManager.Inst.EndUndoGroup();
+            if (DocManager.Inst.HasOpenUndoGroup)
+            {
+                DocManager.Inst.RollBackUndoGroup();
+                DocManager.Inst.EndUndoGroup();
+            }
             if (ViewModel != null)
             {
                 ViewModel.EditingTip = string.Empty;
@@ -404,7 +452,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
         }
     }
 
-    private UPhoneme? FindPhonemeBoundaryAt(double pointerX)
+    private UPhoneme? FindPhonemeBoundaryAt(double pointerX, bool mouse)
     {
         if (Part == null)
         {
@@ -413,7 +461,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
 
         double partPos = Part.position;
         UPhoneme? best = null;
-        double bestDist = BoundaryHitRadius;
+        double bestDist = mouse && ViewModel?.UseDesktopMouseInput == true ? 6 : BoundaryHitRadius;
 
         foreach (UPhoneme phoneme in Part.phonemes)
         {

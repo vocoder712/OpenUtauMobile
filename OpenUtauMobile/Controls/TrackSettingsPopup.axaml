@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:icons="clr-namespace:IconPacks.Avalonia.PhosphorIcons;assembly=IconPacks.Avalonia.PhosphorIcons"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             x:Class="OpenUtauMobile.Controls.TrackSettingsPopup"
+             x:DataType="vm:TrackSettingsPopupViewModel"
+             Classes="PopupDialogRoot DialogHeightList">
+    <UserControl.Styles>
+        <Style Selector="Button.TrackSettingsControl, ComboBox.TrackSettingsControl">
+            <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="TextBlock.TrackSettingsLabel">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="Button.TrackSettingsControl.TrackSettingsPicker TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+    <controls:DialogShell Header="{DynamicResource TrackSettings.Title}" CloseCommand="{Binding CancelCommand}">
+        <controls:DialogShell.Footer>
+            <controls:DialogActionRow>
+                <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" Classes="DialogAction" />
+                <Button controls:DialogShell.IsDefaultAction="True" Content="{Binding ApplyLabel}"
+                        Command="{Binding ApplyCommand}" Classes="DialogAction DialogPrimary" />
+            </controls:DialogActionRow>
+        </controls:DialogShell.Footer>
+        <ScrollViewer x:Name="SettingsScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Offset="{Binding ScrollOffset, Mode=TwoWay}">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding TrackName}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{DynamicResource TrackSettings.Singer}" Classes="TrackSettingsLabel" />
+                        <Button Content="{Binding DraftSingerName}" Command="{Binding PickSingerCommand}"
+                                Classes="TrackSettingsControl" ToolTip.Tip="{DynamicResource TrackSettings.ChooseSinger}" />
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{DynamicResource TrackSettings.Phonemizer}" Classes="TrackSettingsLabel" />
+                        <Button Command="{Binding PickPhonemizerCommand}" HorizontalContentAlignment="Stretch"
+                                Classes="TrackSettingsControl TrackSettingsPicker" ToolTip.Tip="{Binding DraftPhonemizerName}">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <TextBlock Text="{Binding DraftPhonemizerName}" VerticalAlignment="Center" />
+                                <icons:PackIconPhosphorIcons Grid.Column="1" Kind="CaretDown" Width="12" Height="12" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                    <StackPanel Spacing="4" IsEnabled="{Binding IsRendererEnabled}">
+                        <TextBlock Text="{DynamicResource TrackSettings.Renderer}" Classes="TrackSettingsLabel" />
+                        <Button Command="{Binding PickRendererCommand}" HorizontalContentAlignment="Stretch"
+                                Classes="TrackSettingsControl TrackSettingsPicker">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                <TextBlock Text="{Binding DraftRenderer}" VerticalAlignment="Center" />
+                                <icons:PackIconPhosphorIcons Grid.Column="1" Kind="CaretDown" Width="12" Height="12" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock Text="{DynamicResource TrackSettings.MissingSinger}" IsVisible="{Binding !HasSinger}"
+                               TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <TextBlock Text="{DynamicResource TrackSettings.NoRenderers}" IsVisible="{Binding HasNoSupportedRenderers}"
+                               TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    <StackPanel Spacing="4" IsVisible="{Binding IsClassic}">
+                        <TextBlock Text="{DynamicResource TrackSettings.Resampler}" Classes="TrackSettingsLabel" />
+                        <ComboBox ItemsSource="{Binding Resamplers}" SelectedItem="{Binding SelectedResampler, Mode=OneWay}"
+                                  SelectionChanged="OnResamplerSelectionChanged" Classes="TrackSettingsControl"
+                                  IsEnabled="{Binding IsRendererEnabled}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TrackSettingsToolOption"><TextBlock Text="{Binding Name}" /></DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <ComboBox.ItemContainerTheme>
+                                <ControlTheme TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}"
+                                              x:DataType="vm:TrackSettingsToolOption">
+                                    <Setter Property="IsEnabled" Value="{Binding IsAvailable}" />
+                                </ControlTheme>
+                            </ComboBox.ItemContainerTheme>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Spacing="4" IsVisible="{Binding IsClassic}">
+                        <TextBlock Text="{DynamicResource TrackSettings.Wavtool}" Classes="TrackSettingsLabel" />
+                        <ComboBox ItemsSource="{Binding Wavtools}" SelectedItem="{Binding SelectedWavtool, Mode=OneWay}"
+                                  SelectionChanged="OnWavtoolSelectionChanged" Classes="TrackSettingsControl"
+                                  IsEnabled="{Binding IsRendererEnabled}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TrackSettingsToolOption"><TextBlock Text="{Binding Name}" /></DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <ComboBox.ItemContainerTheme>
+                                <ControlTheme TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}"
+                                              x:DataType="vm:TrackSettingsToolOption">
+                                    <Setter Property="IsEnabled" Value="{Binding IsAvailable}" />
+                                </ControlTheme>
+                            </ComboBox.ItemContainerTheme>
+                        </ComboBox>
+                    </StackPanel>
+                    <Button Content="{DynamicResource TrackSettings.Expressions}" Command="{Binding EditExpressionsCommand}"
+                            Classes="TrackSettingsControl" />
+                    <TextBlock Text="{DynamicResource TrackSettings.NoCompatibleTools}" IsVisible="{Binding !HasCompatibleToolPair}"
+                               TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
+                    <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                               TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </controls:DialogShell>
+</UserControl>

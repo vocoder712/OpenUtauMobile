@@ -23,6 +23,7 @@ public static class TrackImportService
             try
             {
                 UProject project = Formats.ReadProject([path]) ?? throw new InvalidDataException("Empty project.");
+                NotePhonemizerResolver.Normalize(project);
                 if (project.parts.Any(part => part.trackNo < 0 || part.trackNo >= project.tracks.Count))
                 {
                     throw new InvalidDataException("Invalid source track index.");

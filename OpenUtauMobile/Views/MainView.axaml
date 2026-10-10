@@ -29,7 +29,7 @@
 
             <Panel>
                 <!-- 导航页的容器 -->
-                <ContentControl Content="{Binding CurrentViewModel}" />
+                <ContentControl x:Name="PageHost" Content="{Binding CurrentViewModel}" />
             </Panel>
         </dialogHostAvalonia:DialogHost>
         <!-- 位于页面和 DialogHost 之上，且不参与任何输入命中。 -->

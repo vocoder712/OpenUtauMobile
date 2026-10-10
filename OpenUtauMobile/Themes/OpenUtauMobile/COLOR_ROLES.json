@@ -176,7 +176,7 @@
     "opacity": 1.0
   },
   "ComboBoxDropDownBackground": {
-    "role": "Surface",
+    "role": "SurfaceContainer",
     "opacity": 1.0
   },
   "ComboBoxDropDownBorderBrush": {

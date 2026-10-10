@@ -1,4 +1,5 @@
 using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Editor;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,6 +16,7 @@ using DynamicData;
 using DynamicData.Binding;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core;
+using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Audio;
@@ -239,9 +241,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     /// <summary>
     /// 播放标记的屏幕 X 坐标（像素）。
-    /// 始终等于音符画布宽度的一半（画布中央），仅在 OnNoteAreaSizeChanged 时更新。
-    /// 绑定到 PianoRollPlayPosCanvas.PlayMarkerScreenX，控件直接在此坐标绘制竖线，
-    /// 与 TickOffset 完全无关，从而实现「播放标记外观始终静止」。
+    /// 移动端固定于画布中的比例位置；桌面随时间轴中的播放位置移动。
+    /// 绑定到 PianoRollPlayPosCanvas.PlayMarkerScreenX，控件直接绘制竖线。
     /// </summary>
     [Reactive]
     public double PlayMarkerScreenX { get; private set; }
@@ -278,6 +279,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// 正在编辑的表情
     /// </summary>
     [Reactive] public string PrimaryExpressionKey { get; set; } = "vel";
+
     /// <summary>
     /// 背景表情
     /// </summary>
@@ -378,6 +380,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     #region 内部字段
     private readonly CompositeDisposable _disposables = new();
     private readonly ViewportMotionController _panMotion = new();
+    private bool _hasSkippedFirstPianoRollEditModeChange;
 
     private double _noteAreaWidth;
     private double _noteAreaHeight;
@@ -387,8 +390,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     private double _cachedMaxTickOffset;
     private double _cachedMaxKeyOffset;
     public double ContentEndTick;
-    
-    private bool _hasSkippedFirstPianoRollEditModeChange; // 用于跳过第一次 EditMode 变更的 Toast 提示
+
     #endregion
 
     /// <summary>
@@ -430,9 +432,15 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     }
 
     /// <summary>
-    /// 播放标记的屏幕 X 坐标（始终固定在画布水平中央）。
+    /// 播放标记的屏幕 X 坐标；移动端默认居中，桌面可配置靠左。
     /// </summary>
-    private double PlayMarkerX => _noteAreaWidth / 2.0;
+    private double PlayMarkerX => _noteAreaWidth * _playMarkerRatio;
+    private double _playMarkerRatio = .5;
+    public void SetPlayMarkerRatio(double ratio)
+    {
+        _playMarkerRatio = double.IsFinite(ratio) ? Math.Clamp(ratio, 0, 1) : .5;
+        OnNoteAreaSizeChanged(_noteAreaWidth, _noteAreaHeight);
+    }
 
     /// <summary>
     /// TickOffset 的最小值：使播放标记能恰好对齐绝对 Tick 0。
@@ -452,6 +460,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         EnsureMaxOffsets();
         TickOffset = Math.Clamp(TickOffset, MinTickOffset, _cachedMaxTickOffset);
         KeyOffset = Math.Clamp(KeyOffset, 0, _cachedMaxKeyOffset);
+        PlayMarkerScreenX = UseDesktopMouseInput ? TickToPointX(PlayPosTick) : PlayMarkerX;
     }
 
     /// <summary>
@@ -467,7 +476,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         PlayMarkerScreenX = PlayMarkerX;
         InvalidateMaxOffsets();
         // 重新定位：让 PlayPosTick 仍对齐新画布中央
-        if (TickWidth > 0)
+        if (!UseDesktopMouseInput && TickWidth > 0)
             TickOffset = PlayPosTick - PlayMarkerX / TickWidth;
         ApplyViewportLimits();
     }
@@ -602,6 +611,11 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// <summary>
     /// 由 EditorViewModel 同步播放位置与状态到钢琴卷帘。
     /// </summary>
+    private readonly HashSet<UNote> _selectedNoteLookup = [];
+    public bool IsNoteSelected(UNote note) => _selectedNoteLookup.Contains(note);
+
+    private readonly PlaybackViewportFollow _playbackFollow = new();
+
     public void SyncPlaybackState(int tick, bool isPlaying, bool isWaitingRender)
     {
         if (IsPresentationSuspended) return;
@@ -609,8 +623,18 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         IsPlaying = isPlaying;
         IsWaitingRender = isWaitingRender;
 
-        if (TickWidth > 0 && !_viewportInputActive)
+        if (UseDesktopMouseInput)
+        {
+            TickOffset = _playbackFollow.Update(Preferences.Default.PlaybackAutoScroll, isPlaying,
+                _viewportInputActive || _desktopOperation != DesktopOperation.None || _inputState != PianoRollInputState.Idle,
+                tick, TickOffset, TickWidth > 0 ? _noteAreaWidth / TickWidth : 0,
+                1.0 / Math.Max(1, Preferences.Default.PlaybackRefreshRate));
+        }
+        else if (TickWidth > 0 && !_viewportInputActive)
+        {
+            // 移动端保留固定标记与居中跟随。
             TickOffset = tick - PlayMarkerX / TickWidth;
+        }
         ApplyViewportLimits();
     }
 
@@ -695,11 +719,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             track = project.tracks[EditingVoicePart.trackNo];
         }
 
-        // 桌面端选择器枚举工程定义，具体编辑属性通过轨道解析。
-        foreach (KeyValuePair<string, UExpressionDescriptor> pair in project.expressions)
+        // 只显示官方默认表达式与 HiFiSampler 支持的表达式。
+        if (track != null)
         {
-            list.Add(track != null && track.TryGetExpDescriptor(project, pair.Key, out UExpressionDescriptor? descriptor)
-                ? descriptor : pair.Value);
+            list.AddRange(ExpressionCatalog.GetSupportedTrackExpressions(project, track));
         }
 
         foreach (UExpressionDescriptor desc in list)
@@ -722,7 +745,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         this.RaisePropertyChanged(nameof(PrimaryExpressionDescriptor));
         this.RaisePropertyChanged(nameof(SecondaryExpressionDescriptor));
     }
-    
+
     /// <summary>
     /// 核验当前选中的音符列表，移除不属于当前 EditingVoicePart 的音符。
     /// </summary>
@@ -744,7 +767,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             }
         }
     }
-    
+
     /// <summary>
     /// 校验当前选中的音高锚点列表，移除不存在的锚点。
     /// </summary>
@@ -893,27 +916,21 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 this.RaisePropertyChanged(nameof(IsParameterMode));
             })
             .DisposeWith(_disposables);
-        
-        // 音素面板模式切换监听 跳过第一次，用于toast
+
         this.WhenAnyValue(x => x.PhonemePanelMode)
             .Skip(1)
             .Subscribe(mode =>
             {
-                switch (mode)
+                if (UseDesktopMouseInput) return;
+                string? key = mode switch
                 {
-                    case PhonemePanelMode.PhonemeSimple:
-                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Simple"));
-                        break;
-                    case PhonemePanelMode.PhonemeAdvanced:
-                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Advanced"));
-                        break;
-                    case PhonemePanelMode.ParameterDraw:
-                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Draw"));
-                        break;
-                    case PhonemePanelMode.ParameterErase:
-                        ToastService.Enqueue(L.S("PhonemePanel.Toast.Erase"));
-                        break;
-                }
+                    PhonemePanelMode.PhonemeSimple => "PhonemePanel.Toast.Simple",
+                    PhonemePanelMode.PhonemeAdvanced => "PhonemePanel.Toast.Advanced",
+                    PhonemePanelMode.ParameterDraw => "PhonemePanel.Toast.Draw",
+                    PhonemePanelMode.ParameterErase => "PhonemePanel.Toast.Erase",
+                    _ => null,
+                };
+                if (key != null) ToastService.Enqueue(L.S(key));
             })
             .DisposeWith(_disposables);
 
@@ -950,36 +967,23 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 RebuildPianoRollContextActions();
                 RequestInvalidateVisual?.Invoke();
                 EditingTip = string.Empty;
-                
+                if (UseDesktopMouseInput) return;
                 if (!_hasSkippedFirstPianoRollEditModeChange)
                 {
                     _hasSkippedFirstPianoRollEditModeChange = true;
-                    return; // 跳过第一次变更的提示
+                    return;
                 }
-                
-                switch (EditMode)
+                string? key = EditMode switch
                 {
-                    case PianoRollEditMode.Vibrato:
-                        ToastService.Enqueue(L.S("PianoRoll.Toast.Vibrato"));
-                        break;
-                    case PianoRollEditMode.PitchPen:
-                        ToastService.Enqueue(IsPitchEraserMode
-                            ? L.S("PianoRoll.Toast.PitchEraser")
-                            : L.S("PianoRoll.Toast.PitchPen"));
-                        break;
-                    case PianoRollEditMode.Anchor:
-                        ToastService.Enqueue(L.S("PianoRoll.Toast.AnchorEdit"));
-                        break;
-                    case PianoRollEditMode.Hand:
-                        ToastService.Enqueue(L.S("PianoRoll.Toast.DragMode"));
-                        break;
-                    case PianoRollEditMode.MultiSelect:
-                        ToastService.Enqueue(L.S("PianoRoll.Toast.MultiSelectMode"));
-                        break;
-                    case PianoRollEditMode.Note:
-                        ToastService.Enqueue(L.S("PianoRoll.Toast.NoteMode"));
-                        break;
-                }
+                    PianoRollEditMode.Vibrato => "PianoRoll.Toast.Vibrato",
+                    PianoRollEditMode.PitchPen => IsPitchEraserMode ? "PianoRoll.Toast.PitchEraser" : "PianoRoll.Toast.PitchPen",
+                    PianoRollEditMode.Anchor => "PianoRoll.Toast.AnchorEdit",
+                    PianoRollEditMode.Hand => "PianoRoll.Toast.DragMode",
+                    PianoRollEditMode.MultiSelect => "PianoRoll.Toast.MultiSelectMode",
+                    PianoRollEditMode.Note => "PianoRoll.Toast.NoteMode",
+                    _ => null,
+                };
+                if (key != null) ToastService.Enqueue(L.S(key));
             })
             .DisposeWith(_disposables);
 
@@ -993,6 +997,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         SelectedNotes.ObserveCollectionChanges()
             .Subscribe(_ =>
             {
+                _selectedNoteLookup.Clear();
+                _selectedNoteLookup.UnionWith(SelectedNotes);
                 RebuildPianoRollContextActions();
                 RequestInvalidateVisual?.Invoke();
             })
@@ -1281,7 +1287,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             return null;
         }
 
-        double hitRadius = Math.Clamp(KeyHeight * 0.60, 14, 20);
+        double hitRadius = UseDesktopMouseInput ? 7 : Math.Clamp(KeyHeight * 0.60, 14, 20);
         double minDistanceSquared = hitRadius * hitRadius;
         PitchPointHit? bestHit = null;
 
@@ -1329,7 +1335,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
         const float minAnchorInsertGapMs = 1f;
         UProject project = DocManager.Inst.Project;
-        double hitThreshold = Math.Clamp(KeyHeight * 0.52, 12, 18);
+        double hitThreshold = UseDesktopMouseInput ? 5 : Math.Clamp(KeyHeight * 0.52, 12, 18);
         double minDistanceSquared = hitThreshold * hitThreshold;
         PitchCurveHit? bestHit = null;
 
@@ -1431,11 +1437,12 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public VibratoOverlayLayout? GetActiveVibratoOverlayLayout()
     {
-        if (EditMode != PianoRollEditMode.Vibrato || EditingVoicePart == null || SelectedNotes.Count == 0)
+        if ((EditMode != PianoRollEditMode.Vibrato && !IsDesktopTuning) || EditingVoicePart == null || SelectedNotes.Count == 0)
         {
             return null;
         }
 
+        if (IsDesktopTuning && !IsDesktopVibratoExpanded(SelectedNotes[0])) return null;
         return BuildVibratoOverlayLayout(SelectedNotes[0]);
     }
 
@@ -1924,7 +1931,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                     break;
                 }
 
-                if (!IsTemporaryPitchErase && IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
+                if (!UseDesktopMouseInput && !IsTemporaryPitchErase && IsPitchPenCanvasDragEnabled && HitTestExpandedNote(point) == null)
                 {
                     _inputState = PianoRollInputState.Panning;
                     break;
@@ -1938,7 +1945,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 // 开启放大镜
                 RequestMagnifierOpen?.Invoke(point);
 
-                DocManager.Inst.StartUndoGroup();
+                // 连续笔画只在结束时校验工程；曲线命令仍即时更新画布。
+                DocManager.Inst.StartUndoGroup(deferValidate: true);
                 RequestInvalidateVisual?.Invoke();
                 break;
             case PianoRollEditMode.Anchor:
@@ -2246,7 +2254,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         _editingVibratoDurationMs = 0;
         EditingTip = string.Empty;
     }
-    
+
     private void OnGesturePinchEnd()
     {
         SyncPlayPosFromViewportCenter();
@@ -2332,7 +2340,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// </summary>
     private void SyncPlayPosFromViewportCenter()
     {
-        if (TickWidth <= 0 || IsPlaying) // 播放中不允许同步
+        if (UseDesktopMouseInput || TickWidth <= 0 || IsPlaying) // 桌面平移不改变播放位置
         {
             return;
         }
@@ -2395,7 +2403,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                     items.Add(CreateSplitNotesAction());
                 }
 
-                if (hasSingleNote)
+                if (hasSingleNote || UseDesktopMouseInput && hasNoteSelection)
                 {
                     // 音符属性
                     items.Add(new ContextActionItem
@@ -2529,7 +2537,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                     });
                 }
 
-                break;
+                if (!IsDesktopTuning) break;
+                goto case PianoRollEditMode.Vibrato;
 
             case PianoRollEditMode.Vibrato:
                 if (hasNoteSelection)
@@ -2559,7 +2568,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         items.Add(new ContextActionItem
                         {
                             Icon = PackIconPhosphorIconsKind.Trash,
-                            Tip = L.S("Common.Delete"),
+                            Tip = L.S(IsDesktopTuning ? "BatchEdit.Action.ClearVibratos" : "Common.Delete"),
                             IsDanger = true,
                             Command = ReactiveCommand.Create(DeleteVibrato)
                         });
@@ -2567,6 +2576,37 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 }
 
                 break;
+        }
+
+        if (UseDesktopMouseInput && EditMode == PianoRollEditMode.Note)
+        {
+            items.Add(new ContextActionItem
+            {
+                Icon = PackIconPhosphorIconsKind.SelectionAll,
+                Tip = L.S("Common.SelectAll"),
+                Command = ReactiveCommand.Create(SelectAllNotes)
+            });
+            if (hasNoteSelection)
+            {
+                items.Add(new ContextActionItem
+                {
+                    Icon = PackIconPhosphorIconsKind.Copy,
+                    Tip = L.S("Common.Copy"),
+                    Command = ReactiveCommand.Create(CopySelectedNotes)
+                });
+                items.Add(new ContextActionItem
+                {
+                    Icon = PackIconPhosphorIconsKind.Scissors,
+                    Tip = L.S("Common.Cut"),
+                    Command = ReactiveCommand.Create(CutSelectedNotes)
+                });
+            }
+            items.Add(new ContextActionItem
+            {
+                Icon = PackIconPhosphorIconsKind.Clipboard,
+                Tip = L.S("Common.Paste"),
+                Command = ReactiveCommand.Create(PasteNotes)
+            });
         }
 
         PianoRollContextActions = items;
@@ -2582,7 +2622,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         };
     }
 
-    private async Task ShowBulkLyricEditPopupAsync()
+    public async Task ShowBulkLyricEditPopupAsync()
     {
         UVoicePart? part = EditingVoicePart;
         if (part == null || part.notes.Count == 0)
@@ -2590,7 +2630,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             return;
         }
 
-        BulkLyricEditViewModel viewModel = new(part, SelectedNotes.ToList());
+        BulkLyricEditViewModel viewModel = new(part, SelectedNotes.ToList(), UseDesktopMouseInput);
         await PopupService.Show<object>(new BulkLyricEditPopup(), viewModel);
     }
 
@@ -2598,22 +2638,24 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     {
         return new ContextActionItem
         {
+            Id = "batch-edits",
             Icon = PackIconPhosphorIconsKind.ListChecks,
             Tip = L.S("BatchEdit.Title"),
             Command = ReactiveCommand.CreateFromTask(ShowBatchEditPopupAsync),
         };
     }
 
-    private async Task ShowBatchEditPopupAsync()
+    public async Task ShowBatchEditPopupAsync()
     {
         UVoicePart? part = EditingVoicePart;
-        if (part == null)
+        if (part == null || IsBatchEditRunning || DocManager.Inst.HasOpenUndoGroup)
         {
             return;
         }
 
         List<UNote> selectedNotes = SelectedNotes.ToList();
-        BatchEditViewModel viewModel = new(DocManager.Inst.Project, part, selectedNotes);
+        UProject project = DocManager.Inst.Project;
+        BatchEditViewModel viewModel = new(project, part, selectedNotes);
         BatchEditExecutionRequest? request = await PopupService.Show<BatchEditExecutionRequest>(
             new BatchEditPopup(),
             viewModel);
@@ -2622,13 +2664,131 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             return;
         }
 
-        await ExecuteBatchEditAsync(part, request);
+        await ExecuteBatchEditAsync(project, part, request);
+    }
+
+    public Task ExecuteDesktopBatchEditAsync(UProject project, UVoicePart part, BatchEditExecutionRequest request)
+    {
+        return ExecuteBatchEditAsync(project, part, request, showProgress: false);
+    }
+
+    private static int _batchEditRunning;
+    public static bool IsBatchEditRunning => Volatile.Read(ref _batchEditRunning) != 0;
+    public static event Action<bool>? BatchEditRunningChanged;
+
+    private static bool IsBatchEditContextValid(UProject project, UVoicePart part, BatchEditExecutionRequest request) =>
+        ReferenceEquals(project, DocManager.Inst.Project) && project.parts.Contains(part) &&
+        (!request.RequiresNotes || request.TargetNotes.Count > 0) &&
+        request.TargetNotes.All(part.notes.Contains) && !DocManager.Inst.HasOpenUndoGroup;
+
+    private static void ResetBatchOperationSafely(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager, bool resetNotes)
+    {
+        List<UNote> notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+        docManager.StartUndoGroup("command.batch.reset", true);
+        try
+        {
+            foreach (UNote note in notes)
+            {
+                if (resetNotes)
+                {
+                    docManager.ExecuteCmd(new ResetPitchPointsCommand(part, note));
+                    if (note.vibrato.length > 0)
+                    {
+                        docManager.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
+                    }
+                    if (note.phonemeOverrides.Any(item => item.offset != null || item.preutterDelta != null || item.overlapDelta != null))
+                    {
+                        docManager.ExecuteCmd(new ClearPhonemeTimingCommand(part, note));
+                    }
+                    foreach (UPhonemeOverride phonemeOverride in note.phonemeOverrides)
+                    {
+                        if (phonemeOverride.phoneme != null)
+                        {
+                            docManager.ExecuteCmd(new ChangePhonemeAliasCommand(part, note, phonemeOverride.index, null));
+                        }
+                    }
+                }
+                if (note.phonemeExpressions.Count > 0)
+                {
+                    docManager.ExecuteCmd(new ResetExpressionsCommand(part, note));
+                }
+            }
+
+            bool allNotes = notes.Count == part.notes.Count;
+            List<(int Start, int End)> ranges = allNotes ? [] : GetSelectedTickRanges(part, notes);
+            foreach (UCurve curve in part.curves.ToArray())
+            {
+                if (allNotes)
+                {
+                    docManager.ExecuteCmd(new ClearCurveCommand(part, curve.abbr));
+                    continue;
+                }
+
+                if (curve.descriptor == null)
+                {
+                    continue;
+                }
+                int defaultValue = (int)curve.descriptor.defaultValue;
+                foreach ((int start, int end) in ranges)
+                {
+                    docManager.ExecuteCmd(new PasteCurveCommand(project, part, curve.abbr,
+                        start, defaultValue, end, defaultValue));
+                }
+            }
+        }
+        finally
+        {
+            docManager.EndUndoGroup();
+        }
+    }
+
+    private static List<(int Start, int End)> GetSelectedTickRanges(UVoicePart part, List<UNote> notes)
+    {
+        Dictionary<UNote, int> firstPhonemePositions = [];
+        foreach (UPhoneme phoneme in part.phonemes)
+        {
+            if (phoneme.Parent != null) firstPhonemePositions.TryAdd(phoneme.Parent, phoneme.position);
+        }
+
+        List<(int Start, int End)> ranges = notes.Select(note =>
+        {
+            int start = note.position;
+            if (note.Prev is { } previous && previous.End < note.position &&
+                firstPhonemePositions.TryGetValue(note, out int phonemePosition))
+            {
+                start = Math.Min(start, phonemePosition);
+            }
+            return (start - 1, note.End + 1);
+        }).OrderBy(range => range.Item1).ToList();
+
+        List<(int Start, int End)> merged = [];
+        foreach ((int start, int end) in ranges)
+        {
+            if (merged.Count == 0 || start > merged[^1].End)
+            {
+                merged.Add((start, end));
+            }
+            else
+            {
+                (int previousStart, int previousEnd) = merged[^1];
+                merged[^1] = (previousStart, Math.Max(previousEnd, end));
+            }
+        }
+        return merged;
     }
 
     private static async Task ExecuteBatchEditAsync(
+        UProject project,
         UVoicePart part,
-        BatchEditExecutionRequest request)
+        BatchEditExecutionRequest request,
+        bool showProgress = true)
     {
+        if (!IsBatchEditContextValid(project, part, request))
+        {
+            ToastService.Enqueue(L.S("BatchEdit.Validation.SelectionUnavailable"));
+            return;
+        }
+        if (Interlocked.CompareExchange(ref _batchEditRunning, 1, 0) != 0) return;
         string runningMessage = string.Format(
             CultureInfo.CurrentCulture,
             L.S("BatchEdit.Status.Running"),
@@ -2636,6 +2796,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
         try
         {
+            BatchEditRunningChanged?.Invoke(true);
             if (request.Operation.IsAsync)
             {
                 if (request.SupportsCancellation)
@@ -2644,6 +2805,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         runningMessage,
                         0d,
                         (loading, cancellationToken) => RunAsyncBatchBackend(
+                            project,
                             part,
                             request,
                             loading,
@@ -2655,6 +2817,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         runningMessage,
                         0d,
                         loading => RunAsyncBatchBackend(
+                            project,
                             part,
                             request,
                             loading,
@@ -2663,42 +2826,43 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             }
             else
             {
-                await LoadingPopupService.RunAsync(
-                    runningMessage,
-                    _ => RunSynchronousBatchBackend(part, request));
+                // 剪贴板回调会等待 UI 线程，必须保留后台执行及阻止交互的加载窗口。
+                if (showProgress || request.Operation is CommonnoteCopy or CommonnotePaste)
+                    await LoadingPopupService.RunAsync(runningMessage, _ => RunSynchronousBatchBackend(project, part, request));
+                else
+                    RunSynchronousBatchOperation(project, part, request);
             }
 
-            ToastService.Enqueue(string.Format(
-                CultureInfo.CurrentCulture,
-                L.S("BatchEdit.Status.Completed"),
-                request.Title));
         }
         catch (OperationCanceledException)
         {
-            ToastService.Enqueue(L.S("BatchEdit.Status.Cancelled"));
+            return;
         }
         catch (Exception exception)
         {
-            ToastService.Enqueue(string.Format(
-                CultureInfo.CurrentCulture,
-                L.S("BatchEdit.Status.Failed"),
-                request.Title));
             ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _batchEditRunning, 0);
+            BatchEditRunningChanged?.Invoke(false);
         }
     }
 
     private static async Task RunAsyncBatchBackend(
+        UProject project,
         UVoicePart part,
         BatchEditExecutionRequest request,
         LoadingPopupViewModel loading,
         CancellationToken cancellationToken)
     {
+        if (!IsBatchEditContextValid(project, part, request)) throw new OperationCanceledException();
         try
         {
             await Task.Run(() =>
             {
                 request.Operation.RunAsync(
-                    DocManager.Inst.Project,
+                    project,
                     part,
                     request.TargetNotes.ToList(),
                     DocManager.Inst,
@@ -2726,20 +2890,35 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     }
 
     private static Task RunSynchronousBatchBackend(
+        UProject project,
         UVoicePart part,
         BatchEditExecutionRequest request)
     {
-        return Task.Run(() =>
+        if (!IsBatchEditContextValid(project, part, request)) throw new OperationCanceledException();
+        return Task.Run(() => DocManager.Inst.RunWithSynchronousMainThreadDispatch(
+            () => RunSynchronousBatchOperation(project, part, request)));
+    }
+
+    private static void RunSynchronousBatchOperation(UProject project, UVoicePart part, BatchEditExecutionRequest request)
+    {
+        if (!IsBatchEditContextValid(project, part, request)) throw new OperationCanceledException();
+        try
         {
-            DocManager.Inst.RunWithSynchronousMainThreadDispatch(() =>
+            if (request.Operation is ResetAllExpressions or ResetAll)
             {
-                request.Operation.Run(
-                    DocManager.Inst.Project,
-                    part,
-                    request.TargetNotes.ToList(),
-                    DocManager.Inst);
-            });
-        });
+                ResetBatchOperationSafely(project, part, request.TargetNotes.ToList(), DocManager.Inst,
+                    request.Operation is ResetAll);
+            }
+            else
+            {
+                request.Operation.Run(project, part, request.TargetNotes.ToList(), DocManager.Inst);
+            }
+        }
+        finally
+        {
+            // 上游操作抛错时也结束本次 Undo 组，避免后续编辑一直被禁用。
+            if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup();
+        }
     }
 
     // ── 操作方法存根 ──────────────────────────────────────────────────
@@ -2762,14 +2941,38 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         SelectedNotes.Clear();
     }
 
-    private async Task EditNotePropertiesAsync()
+    private bool editingNoteProperties;
+    private bool notePropertiesDisposed;
+    private CancellationTokenSource? notePropertiesCancellation;
+
+    public async Task EditNotePropertiesAsync()
     {
-        if (EditingVoicePart == null || SelectedNotes.Count == 0)
+        if (notePropertiesDisposed || editingNoteProperties || EditingVoicePart == null || SelectedNotes.Count == 0)
         {
             return;
         }
-        using NotePropertiesViewModel viewModel = new(EditingVoicePart, SelectedNotes);
-        await PopupService.Show<object>(new NotePropertiesPopup(), viewModel);
+        editingNoteProperties = true;
+        using CancellationTokenSource cancellation = new();
+        notePropertiesCancellation = cancellation;
+        try
+        {
+            using NotePropertiesViewModel viewModel = new(EditingVoicePart, SelectedNotes);
+            // 复用输入控件，避免重新绑定数值时覆盖尚未解析的文本。
+            NotePropertiesPopup propertiesPopup = new();
+            using CancellationTokenRegistration registration = cancellation.Token.Register(() => Dispatcher.UIThread.Post(viewModel.RequestBack));
+            while (!cancellation.IsCancellationRequested && EditingVoicePart is { } part && viewModel.Editor.MatchesCurrentSelection(DocManager.Inst.Project, part, SelectedNotes))
+            {
+                NotePropertyField? field = await PopupService.Show<NotePropertyField>(propertiesPopup, viewModel);
+                if (field == null) break;
+                if (cancellation.IsCancellationRequested || EditingVoicePart != part || !viewModel.Editor.MatchesCurrentSelection(DocManager.Inst.Project, part, SelectedNotes)) break;
+                PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(
+                    AllowTrackDefault: true, CurrentName: field.PhonemizerValue, TrackDefaultLabel: field.TrackDefaultLabel,
+                    CancellationToken: cancellation.Token));
+                if (cancellation.IsCancellationRequested || EditingVoicePart != part || !viewModel.Editor.MatchesCurrentSelection(DocManager.Inst.Project, part, SelectedNotes)) break;
+                if (result != null) field.SetPhonemizer(result);
+            }
+        }
+        finally { notePropertiesCancellation = null; editingNoteProperties = false; }
     }
 
     private void BeginSelection()
@@ -2835,7 +3038,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         EditingTip = string.Empty;
         IsSelecting = false;
         ReplaceSelectedNotes(notes);
-        ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Selected"), SelectedNotes.Count));
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Selected"), SelectedNotes.Count));
     }
 
     public void SelectAllNotes()
@@ -2847,15 +3050,17 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         }
 
         ReplaceSelectedNotes(EditingVoicePart.notes);
-        ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.AllSelected"), SelectedNotes.Count));
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.AllSelected"), SelectedNotes.Count));
     }
 
     private void ReplaceSelectedNotes(IEnumerable<UNote> notes)
     {
+        UNote[] selection = notes.ToArray();
+        if (SelectedNotes.SequenceEqual(selection)) return;
         // Load 会先清空再逐项添加；合并通知，避免每个音符都重建菜单控件和测量布局。
         using (SelectedNotes.SuspendNotifications())
         {
-            SelectedNotes.Load(notes);
+            SelectedNotes.Load(selection);
         }
     }
 
@@ -2870,7 +3075,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             .OrderBy(n => n.position)
             .Select(n => n.Clone())
             .ToList();
-        ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Copied"), SelectedNotes.Count));
+        if (!UseDesktopMouseInput)
+            ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Copied"), SelectedNotes.Count), 1000);
     }
 
     public void CutSelectedNotes()
@@ -2896,9 +3102,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         }
         finally { DocManager.Inst.EndUndoGroup(); }
 
-        int count = selected.Length;
         SelectedNotes.Clear();
-        ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Cut"), count));
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Cut"), selected.Length));
     }
 
     private ContextActionItem CreateSplitNotesAction()
@@ -3037,12 +3242,19 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         DocManager.Inst.EndUndoGroup();
 
         ReplaceSelectedNotes(notes);
-        ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Pasted"), notes.Count));
+        if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Pasted"), notes.Count));
     }
 
     private void TogglePitchEraser()
     {
         IsPitchEraserMode = !IsPitchEraserMode;
+    }
+
+    private bool IsDeletableAnchor(PitchPoint anchor)
+    {
+        UNote? note = FindNoteForPitchPoint(anchor);
+        int index = note?.pitch.data.IndexOf(anchor) ?? -1;
+        return note != null && index > 0 && index < note.pitch.data.Count - 1;
     }
 
     private void DeleteSelectedAnchors()
@@ -3053,10 +3265,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         Dictionary<UNote, List<int>> toDelete = new();
         foreach (PitchPoint pp in SelectedAnchors)
         {
+            if (!IsDeletableAnchor(pp)) continue;
             UNote? note = FindNoteForPitchPoint(pp);
             if (note == null) continue;
             int idx = note.pitch.data.IndexOf(pp);
-            if (idx <= 0 || idx >= note.pitch.data.Count - 1) continue; // 保护首末点
             if (!toDelete.TryGetValue(note, out List<int>? list))
                 toDelete[note] = list = new List<int>();
             list.Add(idx);
@@ -3350,8 +3562,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         if (EditingVoicePart == null) return;
         UProject project = DocManager.Inst.Project;
 
-        // 降低灵敏度：用户移动 2px → 锚点等效移动 1px
-        Vector scaledTotal = totalOffset * AnchorDragSensitivity;
+        // 触控降低灵敏度，桌面鼠标按实际位移移动锚点。
+        Vector scaledTotal = totalOffset * (UseDesktopMouseInput ? 1 : AnchorDragSensitivity);
 
         for (int i = 0; i < SelectedAnchors.Count; i++)
         {
@@ -3734,6 +3946,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     public void Dispose()
     {
         EndPitchStroke();
+        notePropertiesDisposed = true;
+        notePropertiesCancellation?.Cancel();
         StopPreviewTone();
         _panMotion.Dispose();
         DocManager.Inst.RemoveSubscriber(this);

@@ -5,6 +5,7 @@ using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Helpers;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -48,7 +49,28 @@ public sealed class BatchEditDescriptor
     public double? Maximum { get; init; }
     public bool RequiresConfirmation { get; init; }
     public bool SupportsCancellation { get; init; }
+    public bool RequiresNotes { get; init; } = true;
     public required Func<string, BatchEdit> Factory { get; init; }
+
+    public bool TryCreate(string? parameterValue, out BatchEdit? operation, out string validationMessage)
+    {
+        string value = (parameterValue ?? string.Empty).Trim();
+        string? errorKey = ParameterKind switch
+        {
+            BatchEditParameterKind.Text when string.IsNullOrWhiteSpace(value) => "BatchEdit.Validation.Required",
+            BatchEditParameterKind.Integer when !int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integer) ||
+                !IsWithinRange(integer) => "BatchEdit.Validation.Number",
+            BatchEditParameterKind.Decimal when !double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double number) ||
+                !double.IsFinite(number) || !IsWithinRange(number) => "BatchEdit.Validation.Number",
+            _ => null,
+        };
+        validationMessage = errorKey == null ? string.Empty : L.S(errorKey);
+        operation = errorKey == null ? Factory(value) : null;
+        return operation != null;
+    }
+
+    private bool IsWithinRange(double value) =>
+        (!Minimum.HasValue || value >= Minimum.Value) && (!Maximum.HasValue || value <= Maximum.Value);
 }
 
 /// <summary>
@@ -132,7 +154,7 @@ public static class BatchEditCatalog
         NoParameter("common-note-paste", BatchEditCategory.Notes,
             "BatchEdit.Action.CommonNotePaste", PackIconPhosphorIconsKind.Clipboard,
             _ => new CommonnotePaste(() =>
-                ServiceHub.ClipboardService.GetTextAsync().GetAwaiter().GetResult())),
+                ServiceHub.ClipboardService.GetTextAsync().GetAwaiter().GetResult()), requiresNotes: false),
         NoParameter("hanzi-to-pinyin", BatchEditCategory.Notes,
             "BatchEdit.Action.HanziToPinyin", PackIconPhosphorIconsKind.Translate,
             _ => new HanziToPinyin()),
@@ -191,7 +213,8 @@ public static class BatchEditCatalog
         PackIconPhosphorIconsKind icon,
         Func<string, BatchEdit> factory,
         bool requiresConfirmation = false,
-        bool supportsCancellation = false)
+        bool supportsCancellation = false,
+        bool requiresNotes = true)
     {
         return new BatchEditDescriptor
         {
@@ -201,6 +224,7 @@ public static class BatchEditCatalog
             Icon = icon,
             RequiresConfirmation = requiresConfirmation,
             SupportsCancellation = supportsCancellation,
+            RequiresNotes = requiresNotes,
             Factory = factory,
         };
     }

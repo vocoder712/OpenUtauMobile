@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
                     x:CompileBindings="False">
   <ResourceDictionary.ThemeDictionaries>
     <ResourceDictionary x:Key="Default">
@@ -180,10 +181,10 @@
       <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundDisabled" Color="{DynamicResource Sem.Value.OnSurfaceVariant}" Opacity="0.38" />
       <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundFocused" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="1" />
       <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundFocusedPressed" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="1" />
-      <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{DynamicResource Sem.Value.Surface}" Opacity="1" />
+      <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{DynamicResource Sem.Value.SurfaceContainer}" Opacity="1" />
       <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
       <Thickness x:Key="ComboBoxDropdownBorderPadding">0</Thickness>
-      <Thickness x:Key="ComboBoxDropdownContentMargin">0,4,0,4</Thickness>
+      <Thickness x:Key="ComboBoxDropdownContentMargin">0</Thickness>
 
       <!-- Resources for ListBox.xaml -->
       <Thickness x:Key="ListBoxBorderThemeThickness">0</Thickness>
@@ -194,13 +195,13 @@
 
       <!-- Resources for MenuFlyout.xaml (Menu, ContextMenu, etc) -->
       <x:Double x:Key="MenuFlyoutSeparatorThemeHeight">1</x:Double>
-      <x:Double x:Key="MenuFlyoutThemeMinHeight">32</x:Double>
+      <x:Double x:Key="MenuFlyoutThemeMinHeight">0</x:Double>
       <Thickness x:Key="MenuFlyoutPresenterThemePadding">0,0</Thickness>
       <Thickness x:Key="MenuFlyoutItemChevronMargin">12,0,0,0</Thickness>
       <Thickness x:Key="MenuFlyoutSeparatorThemePadding">12,4,12,4</Thickness>
       <StaticResource x:Key="MenuFlyoutItemBackground" ResourceKey="SystemControlTransparentBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Hover}" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Pressed}" />
       <StaticResource x:Key="MenuFlyoutItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="MenuFlyoutItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
       <StaticResource x:Key="MenuFlyoutItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />
@@ -951,10 +952,10 @@
       <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundDisabled" Color="{DynamicResource Sem.Value.OnSurfaceVariant}" Opacity="0.38" />
       <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundFocused" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="1" />
       <SolidColorBrush x:Key="ComboBoxDropDownGlyphForegroundFocusedPressed" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="1" />
-      <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{DynamicResource Sem.Value.Surface}" Opacity="1" />
+      <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="{DynamicResource Sem.Value.SurfaceContainer}" Opacity="1" />
       <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="{DynamicResource Sem.Value.OutlineVariant}" Opacity="1" />
       <Thickness x:Key="ComboBoxDropdownBorderPadding">0</Thickness>
-      <Thickness x:Key="ComboBoxDropdownContentMargin">0,4,0,4</Thickness>
+      <Thickness x:Key="ComboBoxDropdownContentMargin">0</Thickness>
 
       <!-- Resources for ListBox.xaml -->
       <Thickness x:Key="ListBoxBorderThemeThickness">0</Thickness>
@@ -965,13 +966,13 @@
 
       <!-- Resources for MenuFlyout.xaml (Menu, ContextMenu, etc) -->
       <x:Double x:Key="MenuFlyoutSeparatorThemeHeight">1</x:Double>
-      <x:Double x:Key="MenuFlyoutThemeMinHeight">32</x:Double>
+      <x:Double x:Key="MenuFlyoutThemeMinHeight">0</x:Double>
       <Thickness x:Key="MenuFlyoutPresenterThemePadding">0,0</Thickness>
       <Thickness x:Key="MenuFlyoutItemChevronMargin">12,0,0,0</Thickness>
       <Thickness x:Key="MenuFlyoutSeparatorThemePadding">12,4,12,4</Thickness>
       <StaticResource x:Key="MenuFlyoutItemBackground" ResourceKey="SystemControlTransparentBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPointerOver" ResourceKey="SystemControlHighlightListLowBrush" />
-      <StaticResource x:Key="MenuFlyoutItemBackgroundPressed" ResourceKey="SystemControlHighlightListMediumBrush" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Hover}" />
+      <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{DynamicResource Sem.Value.OnSurface}" Opacity="{x:Static semantic:StateOpacityTokens.Pressed}" />
       <StaticResource x:Key="MenuFlyoutItemBackgroundDisabled" ResourceKey="SystemControlTransparentBrush" />
       <StaticResource x:Key="MenuFlyoutItemForeground" ResourceKey="SystemControlForegroundBaseHighBrush" />
       <StaticResource x:Key="MenuFlyoutItemForegroundPointerOver" ResourceKey="SystemControlHighlightAltBaseHighBrush" />

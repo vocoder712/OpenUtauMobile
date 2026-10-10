@@ -147,6 +147,15 @@
   <data name="Common.Delete" xml:space="preserve">
     <value>Delete</value>
   </data>
+  <data name="Common.Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Common.File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Common.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
   <data name="Common.Copy" xml:space="preserve">
     <value>Copy</value>
   </data>
@@ -203,9 +212,6 @@
   </data>
   <data name="Settings.Nav.AppearanceAndLanguage.Sub" xml:space="preserve">
     <value>Theme, language, singer portrait…</value>
-  </data>
-  <data name="Settings.Edit.CategoryTitle" xml:space="preserve">
-    <value>Editing &amp; Behaviour</value>
   </data>
   <data name="Settings.Edit.PianoKeyBehavior" xml:space="preserve">
     <value>Piano Key Behavior</value>
@@ -331,9 +337,6 @@
   <data name="Settings.StopButton.AlwaysZero" xml:space="preserve">
     <value>Always Go to 0</value>
   </data>
-  <data name="Settings.Render.CategoryTitle" xml:space="preserve">
-    <value>Render &amp; Performance</value>
-  </data>
   <data name="Settings.Render.DiffSingerParams" xml:space="preserve">
     <value>DiffSinger Inference Parameters</value>
   </data>
@@ -412,9 +415,6 @@
   <data name="Settings.Audio.Device" xml:space="preserve">
     <value>Device {0}</value>
   </data>
-  <data name="Settings.File.CategoryTitle" xml:space="preserve">
-    <value>File &amp; Storage</value>
-  </data>
   <data name="Settings.File.AdditionalSingerPath" xml:space="preserve">
     <value>Additional Singer Path</value>
   </data>
@@ -435,9 +435,6 @@
   </data>
   <data name="Settings.File.Cache.Size" xml:space="preserve">
     <value>Current cache size</value>
-  </data>
-  <data name="Settings.Appearance.CategoryTitle" xml:space="preserve">
-    <value>Appearance &amp; Language</value>
   </data>
   <data name="Settings.Appearance.Theme" xml:space="preserve">
     <value>Theme</value>
@@ -465,9 +462,6 @@
   </data>
   <data name="Settings.Appearance.ThemeColor.Mode.Custom" xml:space="preserve">
     <value>Custom</value>
-  </data>
-  <data name="Settings.Appearance.ThemeColor.ApplyHex" xml:space="preserve">
-    <value>Apply</value>
   </data>
   <data name="Settings.Appearance.ThemeColor.OpenPicker" xml:space="preserve">
     <value>Picker</value>
@@ -522,9 +516,6 @@
   </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>Go to parent folder</value>
-  </data>
-  <data name="FilePicker.Close" xml:space="preserve">
-    <value>Close</value>
   </data>
   <data name="FilePicker.SelectFolder" xml:space="preserve">
     <value>Select This Folder</value>
@@ -718,20 +709,8 @@
   <data name="Editor.ProjectLoaded" xml:space="preserve">
     <value>Project loaded</value>
   </data>
-  <data name="Editor.Action.Delete" xml:space="preserve">
-    <value>Delete</value>
-  </data>
   <data name="Editor.Action.Rename" xml:space="preserve">
     <value>Rename</value>
-  </data>
-  <data name="Editor.Action.Copy" xml:space="preserve">
-    <value>Copy</value>
-  </data>
-  <data name="Editor.Action.Cut" xml:space="preserve">
-    <value>Cut</value>
-  </data>
-  <data name="Editor.Action.Paste" xml:space="preserve">
-    <value>Paste</value>
   </data>
   <data name="Editor.Action.Split" xml:space="preserve">
     <value>Split</value>
@@ -760,21 +739,6 @@
   <data name="Editor.Action.DeleteTempo" xml:space="preserve">
     <value>Delete Tempo Mark</value>
   </data>
-  <data name="Editor.Toast.SyncTempo" xml:space="preserve">
-    <value>Syncing tempo not implemented yet</value>
-  </data>
-  <data name="Editor.Selection.Copied" xml:space="preserve">
-    <value>{0} parts copied</value>
-  </data>
-  <data name="Editor.Selection.Cut" xml:space="preserve">
-    <value>{0} parts cut</value>
-  </data>
-  <data name="Editor.Selection.Pasted" xml:space="preserve">
-    <value>{0} parts pasted</value>
-  </data>
-  <data name="Editor.Selection.AllSelected" xml:space="preserve">
-    <value>All {0} parts selected</value>
-  </data>
   <data name="PianoRoll.DragSelect" xml:space="preserve">
     <value>Drag/Select</value>
   </data>
@@ -793,9 +757,6 @@
   <data name="PianoRoll.Vibrato" xml:space="preserve">
     <value>Vibrato</value>
   </data>
-  <data name="PianoRoll.Action.Delete" xml:space="preserve">
-    <value>Delete</value>
-  </data>
   <data name="PianoRoll.Action.Properties" xml:space="preserve">
     <value>Properties</value>
   </data>
@@ -804,18 +765,6 @@
   </data>
   <data name="PianoRoll.Action.SelectionEnd" xml:space="preserve">
     <value>End Selection</value>
-  </data>
-  <data name="PianoRoll.Action.SelectAll" xml:space="preserve">
-    <value>Select All</value>
-  </data>
-  <data name="PianoRoll.Action.Copy" xml:space="preserve">
-    <value>Copy</value>
-  </data>
-  <data name="PianoRoll.Action.Cut" xml:space="preserve">
-    <value>Cut</value>
-  </data>
-  <data name="PianoRoll.Action.Paste" xml:space="preserve">
-    <value>Paste</value>
   </data>
   <data name="PianoRoll.Action.Split" xml:space="preserve">
     <value>Split notes</value>
@@ -874,47 +823,14 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>Vibrato Preset</value>
   </data>
-  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
-    <value>Vibrato mode</value>
-  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>Pitch Eraser mode</value>
-  </data>
-  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
-    <value>Pitch Pen mode</value>
-  </data>
-  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
-    <value>Pitch Anchor edit mode</value>
-  </data>
-  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
-    <value>Drag mode</value>
-  </data>
-  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
-    <value>Multi-select mode</value>
-  </data>
-  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
-    <value>Note mode</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>Vibrato mode not available yet</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>Press "|◀" to end selection</value>
-  </data>
-  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
-    <value>{0} notes selected</value>
-  </data>
-  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
-    <value>All {0} notes selected</value>
-  </data>
-  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
-    <value>{0} notes copied</value>
-  </data>
-  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
-    <value>{0} notes cut</value>
-  </data>
-  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
-    <value>{0} notes pasted</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>Note properties editor not implemented yet</value>
@@ -927,9 +843,6 @@
   </data>
   <data name="PianoRoll.Redone" xml:space="preserve">
     <value>Redone</value>
-  </data>
-  <data name="PianoRoll.PortraitLoadError" xml:space="preserve">
-    <value>Failed to load portrait</value>
   </data>
   <data name="SingerManagement.Title" xml:space="preserve">
     <value>Singer Management</value>
@@ -981,9 +894,6 @@
   </data>
   <data name="DependencyManager.Installing" xml:space="preserve">
     <value>Installing...</value>
-  </data>
-  <data name="DependencyManager.Toast.Loaded" xml:space="preserve">
-    <value>Loaded {0} available packages</value>
   </data>
   <data name="DependencyManager.Toast.LoadFailed" xml:space="preserve">
     <value>Failed to load: {0}</value>
@@ -1125,9 +1035,6 @@
   </data>
   <data name="EditorMore.Title" xml:space="preserve">
     <value>More Actions</value>
-  </data>
-  <data name="EditorMore.FileTab" xml:space="preserve">
-    <value>File</value>
   </data>
   <data name="EditorMore.SaveAs" xml:space="preserve">
     <value>Save As</value>
@@ -1360,9 +1267,6 @@
   <data name="SingerSetup.Step2.Desc" xml:space="preserve">
     <value>Select the correct encoding for text files. Preview content to verify display</value>
   </data>
-  <data name="SingerSetup.Step2.TextEncoding" xml:space="preserve">
-    <value>Text File Encoding</value>
-  </data>
   <data name="SingerSetup.Step2.Preview" xml:space="preserve">
     <value>Text File Preview:</value>
   </data>
@@ -1377,9 +1281,6 @@
   </data>
   <data name="SingerSetup.Step3.AutoDesc" xml:space="preserve">
     <value>Singer info detected automatically. Confirm to continue</value>
-  </data>
-  <data name="SingerSetup.Step3.TypeLabel" xml:space="preserve">
-    <value>Singer Type</value>
   </data>
   <data name="SingerSetup.Step3.TypeHelp" xml:space="preserve">
     <value>Singer Type Reference</value>
@@ -1416,9 +1317,6 @@
   </data>
   <data name="SingerSetup.Step4.TextEncoding" xml:space="preserve">
     <value>Text File Encoding: </value>
-  </data>
-  <data name="SingerSetup.Step4.SingerType" xml:space="preserve">
-    <value>Singer Type</value>
   </data>
   <data name="SingerSetup.Step4.Type" xml:space="preserve">
     <value>Type: </value>
@@ -1476,9 +1374,6 @@
   </data>
   <data name="ProjectEdit.BpmRange" xml:space="preserve">
     <value>BPM must be a value between 10 and 1000</value>
-  </data>
-  <data name="Editor.SyncTempoTodo" xml:space="preserve">
-    <value>Tempo sync not available, TODO</value>
   </data>
   <data name="PianoRoll.PortraitLoadFailed" xml:space="preserve">
     <value>Failed to load portrait</value>
@@ -1615,15 +1510,6 @@
   <data name="BatchEdit.Status.Progress" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
-  <data name="BatchEdit.Status.Completed" xml:space="preserve">
-    <value>Completed {0}.</value>
-  </data>
-  <data name="BatchEdit.Status.Cancelled" xml:space="preserve">
-    <value>Operation cancelled.</value>
-  </data>
-  <data name="BatchEdit.Status.Failed" xml:space="preserve">
-    <value>{0} failed.</value>
-  </data>
   <data name="BatchEdit.Action.RomajiToHiragana" xml:space="preserve">
     <value>Romaji to Hiragana</value>
   </data>
@@ -1757,18 +1643,6 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>Parameter erase mode</value>
   </data>
-  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
-    <value>Simple phoneme mode</value>
-  </data>
-  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
-    <value>Advanced phoneme mode</value>
-  </data>
-  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
-    <value>Parameter draw mode</value>
-  </data>
-  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
-    <value>Parameter erase mode</value>
-  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>Primary parameter</value>
   </data>
@@ -1814,11 +1688,7 @@
   <data name="BulkLyricEdit.SelectedOnly" xml:space="preserve">
     <value>Apply to selected notes only</value>
   </data>
-  <data name="BulkLyricEdit.Apply" xml:space="preserve">
-    <value>Apply</value>
-  </data>
   <data name="ImportTracks.FilesSelected" xml:space="preserve"><value>{0} files selected</value></data>
-  <data name="ImportTracks.Next" xml:space="preserve"><value>Next</value></data>
   <data name="ImportTracks.ImportCount" xml:space="preserve"><value>Import {0} tracks</value></data>
   <data name="ImportTracks.SourceSummary" xml:space="preserve"><value>{0} tracks</value></data>
   <data name="ImportTracks.TrackSummary" xml:space="preserve"><value>{0} vocal parts · {1} audio parts</value></data>
@@ -1848,7 +1718,6 @@
   <data name="VoiceMapping.Hint" xml:space="preserve"><value>Map original voice colors to the current singer. Skipping leaves imported tracks in place.</value></data>
   <data name="VoiceMapping.VocalModesHint" xml:space="preserve"><value>Map imported vocal mode curves to DiffSinger voice colors. Default skips conversion; existing target curves are kept.</value></data>
   <data name="VoiceMapping.Default" xml:space="preserve"><value>Default</value></data>
-  <data name="VoiceMapping.Skip" xml:space="preserve"><value>Skip</value></data>
   <data name="VoiceMapping.Apply" xml:space="preserve"><value>Apply mapping</value></data>
   <data name="VoiceMapping.NoNotes" xml:space="preserve"><value>This track has no notes or voice colors to map.</value></data>
   <data name="VoiceMapping.Undo" xml:space="preserve"><value>Remap voice colors</value></data>
@@ -1877,11 +1746,6 @@
   <data name="Mixer.ResetHint" xml:space="preserve"><value>Double-click a slider to restore its default</value></data>
   <data name="Mixer.ToggleFx" xml:space="preserve"><value>Enable effects / bypass (lit when enabled)</value></data>
   <data name="Mixer.FxOn" xml:space="preserve"><value>Enabled</value></data>
-  <data name="EditorMore.EditTab" xml:space="preserve"><value>Edit</value></data>
-  <data name="History.NoUndo" xml:space="preserve"><value>Nothing to undo</value></data>
-  <data name="History.NoRedo" xml:space="preserve"><value>Nothing to redo</value></data>
-  <data name="History.Undone" xml:space="preserve"><value>Undid: {0}</value></data>
-  <data name="History.Redone" xml:space="preserve"><value>Redid: {0}</value></data>
   <data name="History.Edit" xml:space="preserve"><value>Edit</value></data>
   <data name="Mixer.MidFrequency" xml:space="preserve"><value>Mid-band center (Hz)</value></data>
   <data name="Mixer.Makeup" xml:space="preserve"><value>Makeup gain (dB)</value></data>
@@ -1894,7 +1758,6 @@
   <data name="Mixer.ReverbGraph" xml:space="preserve"><value>Freeverb · Time s → / Wet peak dB ↑</value></data>
   <data name="Mixer.ReverbGraphHint" xml:space="preserve"><value>Left/right impulse decay preview (4 s), wet only. Not live audio; long tails may extend beyond the window.</value></data>
   <data name="Mixer.Preset" xml:space="preserve"><value>Effect preset</value></data>
-  <data name="Mixer.ApplyPreset" xml:space="preserve"><value>Apply</value></data>
   <data name="Mixer.ApplyPresetUndo" xml:space="preserve"><value>Apply effect preset</value></data>
   <data name="Mixer.PresetLibrary" xml:space="preserve"><value>Effect chain presets</value></data>
   <data name="Mixer.DefaultPreset" xml:space="preserve"><value>Apply default chain</value></data>
@@ -1975,7 +1838,6 @@
   <data name="NoteExtraction.MissingGgml" xml:space="preserve"><value>Install the GAME GGML model package (game-ggml-medium) containing exactly one GGUF model.</value></data>
   <data name="NoteExtraction.MissingNative" xml:space="preserve"><value>This app build does not contain a compatible GAME GGML runtime. Use a GGML-enabled app build or select ONNX.</value></data>
   <data name="NoteExtraction.BackendStatus" xml:space="preserve"><value>{0} · {1}: {2}</value></data>
-  <data name="NoteExtraction.Installed" xml:space="preserve"><value>Installed</value></data>
   <data name="NoteExtraction.NotInstalled" xml:space="preserve"><value>Missing or incomplete</value></data>
   <data name="NoteExtraction.LanguageUnavailable" xml:space="preserve"><value>Language unsupported</value></data>
   <data name="NoteExtraction.RmvpeInstalled" xml:space="preserve"><value>rmvpe: installed</value></data>
@@ -1994,7 +1856,6 @@
   <data name="NoteExtraction.RunGgml" xml:space="preserve"><value>Extract with GGML</value></data>
   <data name="NoteExtraction.ExtractingPitch" xml:space="preserve"><value>Extracting pitch curve…</value></data>
   <data name="NoteExtraction.InvalidSettings" xml:space="preserve"><value>Enter valid values; radius and clip count must be integers.</value></data>
-  <data name="NoteProperties.Apply" xml:space="preserve"><value>Apply</value></data>
   <data name="NoteProperties.Summary" xml:space="preserve"><value>{0} notes selected</value></data>
   <data name="NoteProperties.Hint" xml:space="preserve"><value>Only edited fields are applied. Blank fields indicate mixed values.</value></data>
   <data name="NoteProperties.Mixed" xml:space="preserve"><value>Mixed values</value></data>
@@ -2336,4 +2197,112 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>Failed to undo deletion</value>
   </data>
+  <data name="Desktop.Workspace" xml:space="preserve"><value>Workspace</value></data>
+  <data name="Desktop.Arrangement" xml:space="preserve"><value>Arrangement</value></data>
+  <data name="Desktop.PianoRoll" xml:space="preserve"><value>Piano roll</value></data>
+  <data name="Desktop.TuningMode" xml:space="preserve"><value>Tuning</value></data>
+  <data name="Desktop.ArrangementAndPianoRoll" xml:space="preserve"><value>Arrangement + Piano roll</value></data>
+  <data name="Desktop.ArrangementHint" xml:space="preserve"><value>Click: select · Ctrl-click: toggle selection · Shift-click: extend selection · Empty drag: box select · Double-click: create / edit · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.InputHint" xml:space="preserve"><value>Click: select · Shift/Ctrl: extend selection · Empty drag: box select · Double-click: create / edit lyric · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.Tools" xml:space="preserve"><value>External tools</value></data>
+  <data name="Desktop.View" xml:space="preserve"><value>View</value></data>
+  <data name="Desktop.Project" xml:space="preserve"><value>Project</value></data>
+  <data name="Desktop.Transport" xml:space="preserve"><value>Transport</value></data>
+  <data name="Desktop.Help" xml:space="preserve"><value>Help</value></data>
+  <data name="Desktop.CloseProject" xml:space="preserve"><value>Close project</value></data>
+  <data name="Desktop.NoteProperties" xml:space="preserve"><value>Note properties</value></data>
+  <data name="Desktop.Inspector" xml:space="preserve"><value>Inspector</value></data>
+  <data name="Desktop.ResetLayout" xml:space="preserve"><value>Reset layout</value></data>
+  <data name="Desktop.DropOneProject" xml:space="preserve"><value>Drop one project at a time. Audio files can be dropped together.</value></data>
+  <data name="Desktop.Templates" xml:space="preserve"><value>Templates</value></data>
+  <data name="Desktop.NoTemplates" xml:space="preserve"><value>Saved project templates appear here.</value></data>
+  <data name="Desktop.Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Desktop.InstallFile" xml:space="preserve"><value>Install tool file</value></data>
+  <data name="Desktop.InstallFolder" xml:space="preserve"><value>Install tool folder</value></data>
+  <data name="Desktop.OpenFolder" xml:space="preserve"><value>Open folder</value></data>
+  <data name="Desktop.Resamplers" xml:space="preserve"><value>Resamplers</value></data>
+  <data name="Desktop.Wavtools" xml:space="preserve"><value>Wavtools</value></data>
+  <data name="Desktop.WinePath" xml:space="preserve"><value>Wine executable</value></data>
+  <data name="Desktop.Builtin" xml:space="preserve"><value>Built in</value></data>
+  <data name="Desktop.Discovered" xml:space="preserve"><value>Discovered</value></data>
+  <data name="Desktop.Unavailable" xml:space="preserve"><value>Unavailable on this platform or runtime missing</value></data>
+  <data name="Desktop.ExperimentalWine" xml:space="preserve"><value>Experimental · requires Wine</value></data>
+  <data name="Desktop.NativeWavtoolUnavailable" xml:space="preserve"><value>Native Unix wavtools are unavailable in the current batch-script engine</value></data>
+  <data name="Desktop.ToolChangesQueued" xml:space="preserve"><value>Queued. Close the project to apply tool changes safely.</value></data>
+  <data name="Desktop.ToolsCompatibility" xml:space="preserve"><value>Tools must match your OS and CPU architecture. Installing a file does not verify rendering. A single-file install copies its YAML manifest and MoReSampler's moreconfig.txt; use folder install for package dependencies.</value></data>
+  <data name="Desktop.InvalidToolFolder" xml:space="preserve"><value>Choose a normal tool folder outside the managed tool directory. Linked folders are not supported.</value></data>
+  <data name="Desktop.InvalidToolFile" xml:space="preserve"><value>Choose a supported tool executable or script.</value></data>
+  <data name="Desktop.ReplaceTool" xml:space="preserve"><value>Replace installed tool files?</value></data>
+  <data name="Desktop.Replace" xml:space="preserve"><value>Replace</value></data>
+  <data name="Desktop.ToolInUse" xml:space="preserve"><value>This tool is used by the active project and cannot be removed.</value></data>
+  <data name="Desktop.Track" xml:space="preserve"><value>Track</value></data>
+  <data name="Desktop.Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Desktop.Phoneme" xml:space="preserve"><value>Phoneme</value></data>
+  <data name="Desktop.NoNotes" xml:space="preserve"><value>Select notes to edit their properties.</value></data>
+  <data name="Desktop.NoTrack" xml:space="preserve"><value>Add or select a track.</value></data>
+  <data name="Desktop.NoPhoneme" xml:space="preserve"><value>Select notes with generated phonemes.</value></data>
+  <data name="Desktop.Color" xml:space="preserve"><value>Track color</value></data>
+  <data name="Desktop.UseDefault" xml:space="preserve"><value>Use as default</value></data>
+  <data name="Desktop.Alias" xml:space="preserve"><value>Alias</value></data>
+  <data name="Desktop.Offset" xml:space="preserve"><value>Offset (ticks)</value></data>
+  <data name="Desktop.Preutter" xml:space="preserve"><value>Preutterance delta (ms)</value></data>
+  <data name="Desktop.Overlap" xml:space="preserve"><value>Overlap delta (ms)</value></data>
+  <data name="Desktop.Attack" xml:space="preserve"><value>Attack delta (ms)</value></data>
+  <data name="Desktop.Release" xml:space="preserve"><value>Release delta (ms)</value></data>
+  <data name="Desktop.ToolChangesApplied" xml:space="preserve"><value>Tool changes applied.</value></data>
+  <data name="Desktop.NotExecutable" xml:space="preserve"><value>No execute permission</value></data>
+  <data name="Desktop.NoteTool" xml:space="preserve"><value>Notes · select, move, resize and create</value></data>
+  <data name="Desktop.TuningTool" xml:space="preserve"><value>Tuning · pitch anchors and vibrato</value></data>
+  <data name="Desktop.TuningHint" xml:space="preserve"><value>Drag: move pitch anchors / vibrato handles · Click curve: add anchor · Double-click vibrato: toggle · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.PitchHint" xml:space="preserve"><value>Drag: draw pitch · Right-click and drag: erase · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.AllLanguages" xml:space="preserve"><value>All languages</value></data>
+  <data name="Desktop.DropOneInstaller" xml:space="preserve"><value>Drop one installer at a time.</value></data>
+  <data name="Desktop.Parameters" xml:space="preserve"><value>Parameter panel</value></data>
+  <data name="Desktop.EditExpressionLane" xml:space="preserve"><value>Edit expression in parameter panel</value></data>
+  <data name="DependencyManager.SortByName" xml:space="preserve"><value>Sort by name</value></data>
+  <data name="DependencyManager.SortByDeveloper" xml:space="preserve"><value>Sort by developer</value></data>
+  <data name="DependencyManager.LatestVersion" xml:space="preserve"><value>Latest version</value></data>
+  <data name="DependencyManager.InstalledVersion" xml:space="preserve"><value>Installed version</value></data>
+  <data name="DependencyManager.EmptyAvailable" xml:space="preserve"><value>No packages are available.</value></data>
+  <data name="DependencyManager.EmptyInstalled" xml:space="preserve"><value>No packages are installed.</value></data>
+  <data name="DependencyManager.NoResults" xml:space="preserve"><value>No results match your search.</value></data>
+  <data name="Desktop.Window" xml:space="preserve"><value>OUM</value></data>
+  <data name="Desktop.SurfaceUnavailable" xml:space="preserve"><value>This desktop screen is not available yet.</value></data>
+  <data name="Desktop.Favorite" xml:space="preserve"><value>Favorite</value></data>
+  <data name="Home.Action.OpenTemplate" xml:space="preserve"><value>Create from selected template</value></data>
+  <data name="Desktop.NavigationHint" xml:space="preserve"><value>Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>Drag: erase pitch · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
+  <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Notes to update: {0}</value></data>
+  <data name="Editor.Selection.Copied" xml:space="preserve">
+    <value>{0} parts copied</value>
+  </data>
+  <data name="PianoRoll.Selection.Copied" xml:space="preserve">
+    <value>{0} notes copied</value>
+  </data>
+  <data name="TrackSettings.Title" xml:space="preserve"><value>Track settings</value></data>
+  <data name="TrackSettings.HoldHint" xml:space="preserve"><value>Hold the track name or background to open track settings</value></data>
+  <data name="TrackSettings.Singer" xml:space="preserve"><value>Singer</value></data>
+  <data name="TrackSettings.ChooseSinger" xml:space="preserve"><value>Choose singer</value></data>
+  <data name="TrackSettings.Phonemizer" xml:space="preserve"><value>Phonemizer</value></data>
+  <data name="TrackSettings.ChoosePhonemizer" xml:space="preserve"><value>Choose phonemizer</value></data>
+  <data name="TrackSettings.Renderer" xml:space="preserve"><value>Renderer</value></data>
+  <data name="TrackSettings.Resampler" xml:space="preserve"><value>Resampler</value></data>
+  <data name="TrackSettings.Wavtool" xml:space="preserve"><value>Wavtool</value></data>
+  <data name="TrackSettings.Expressions" xml:space="preserve"><value>Expression defaults…</value></data>
+  <data name="TrackSettings.Done" xml:space="preserve"><value>Done</value></data>
+  <data name="TrackSettings.NoSinger" xml:space="preserve"><value>No singer selected</value></data>
+  <data name="TrackSettings.NoRenderers" xml:space="preserve"><value>This singer has no supported renderers.</value></data>
+  <data name="TrackSettings.MissingSinger" xml:space="preserve"><value>Choose a singer to configure rendering.</value></data>
+  <data name="TrackSettings.NoCompatibleTools" xml:space="preserve"><value>No compatible resampler and wavtool are available.</value></data>
+  <data name="TrackSettings.Error.Stale" xml:space="preserve"><value>This track changed while settings were open. Close and reopen track settings.</value></data>
+  <data name="TrackSettings.Error.Busy" xml:space="preserve"><value>Another edit is in progress. Close it before applying track settings.</value></data>
+  <data name="TrackSettings.Error.MissingSinger" xml:space="preserve"><value>Select an installed singer before changing rendering settings.</value></data>
+  <data name="TrackSettings.Error.SingerUnavailable" xml:space="preserve"><value>The selected singer is no longer available. Choose it again.</value></data>
+  <data name="TrackSettings.Error.PhonemizerUnavailable" xml:space="preserve"><value>The selected phonemizer is no longer available. Choose it again.</value></data>
+  <data name="TrackSettings.Error.Renderer" xml:space="preserve"><value>Select a renderer supported by this singer.</value></data>
+  <data name="TrackSettings.Error.Tools" xml:space="preserve"><value>Select a compatible resampler and wavtool.</value></data>
+  <data name="TrackSettings.Error.Apply" xml:space="preserve"><value>Track settings could not be applied.</value></data>
+  <data name="NoteProperties.PhonemizerUnavailable" xml:space="preserve"><value>Unavailable phonemizer: {0}</value></data>
+  <data name="Picker.Phonemizer.Empty" xml:space="preserve"><value>No phonemizers are available.</value></data>
+  <data name="SingerManagement.NoResults" xml:space="preserve"><value>No singers match your search.</value></data>
 </root>

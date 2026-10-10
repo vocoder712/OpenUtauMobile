@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtauMobile.Services;
 using ReactiveUI.Fody.Helpers;
+using ReactiveUI;
 using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
@@ -17,6 +18,88 @@ public class MainViewModel : ViewModelBase
     private readonly Stack<NavigateViewModelBase> _navigationStack = []; // 导航栈
     private bool _externalProjectOpeningReady;
     private bool _externalProjectDrainActive;
+    private bool _desktopProjectOpening;
+
+    public EditorViewModel? ActiveEditor => System.Linq.Enumerable.FirstOrDefault(System.Linq.Enumerable.OfType<EditorViewModel>(_navigationStack));
+    private bool HasActiveSingerInstallation
+    {
+        get
+        {
+            foreach (NavigateViewModelBase viewModel in _navigationStack)
+                if (viewModel is ClassicSingerSetupViewModel { IsInstalling: true }) return true;
+            return false;
+        }
+    }
+
+    public async Task<bool> OpenDesktopProjectAsync(ProjectOpenOptions options)
+    {
+        if (HasActiveSingerInstallation) return false;
+        if (_desktopProjectOpening) return false;
+        _desktopProjectOpening = true;
+        try
+        {
+            EditorViewModel? editor = ActiveEditor;
+            EditorViewModel.PreparedProject preparedProject;
+            try
+            {
+                preparedProject = await EditorViewModel.PrepareProjectAsync(options);
+            }
+            catch (Exception exception)
+            {
+                Log.Error(exception, "Failed to prepare desktop project {Path}", options.Path);
+                ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
+                return false;
+            }
+            if (editor != ActiveEditor) return false;
+            if (editor != null && !await editor.ConfirmExitAsync()) return false;
+            if (editor != ActiveEditor) return false;
+            if (HasActiveSingerInstallation) return false;
+            while (_navigationStack.Count > 1 && (ActiveEditor != null || CurrentViewModel is not HomeViewModel))
+            {
+                if (!TryRemoveCurrentViewModel(CurrentViewModel, false)) return false;
+            }
+            if (editor != null) DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Format.Ustx.Create()));
+            if (ServiceHub.BeforeDesktopProjectOpenAsync != null) await ServiceHub.BeforeDesktopProjectOpenAsync();
+            EditorViewModel replacement = new(this, options, preparedProject);
+            OnNavigate(replacement);
+            await replacement.ProjectLoadCompletion;
+            return ActiveEditor == replacement;
+        }
+        finally { _desktopProjectOpening = false; }
+    }
+
+    public void NavigateDesktopUtility(NavigateViewModelBase viewModel)
+    {
+        if (HasActiveSingerInstallation)
+        {
+            (viewModel as IDisposable)?.Dispose();
+            return;
+        }
+        if (CurrentViewModel.GetType() == viewModel.GetType())
+        {
+            (viewModel as IDisposable)?.Dispose();
+            return;
+        }
+        while (_navigationStack.Count > 1 && CurrentViewModel != ActiveEditor && (ActiveEditor != null || CurrentViewModel is not HomeViewModel))
+        {
+            if (!TryRemoveCurrentViewModel(CurrentViewModel, false)) return;
+        }
+        if (CurrentViewModel is HomeViewModel && viewModel is HomeViewModel) return;
+        OnNavigate(viewModel);
+    }
+
+    public Task CloseDesktopProjectAsync(EditorViewModel editor)
+    {
+        if (HasActiveSingerInstallation) return Task.CompletedTask;
+        if (ActiveEditor != editor) return Task.CompletedTask;
+        while (_navigationStack.Count > 1 && ActiveEditor != null)
+        {
+            if (!TryRemoveCurrentViewModel(CurrentViewModel, false)) break;
+        }
+        DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Format.Ustx.Create()));
+        CurrentViewModel.OnNavigatedTo();
+        return Task.CompletedTask;
+    }
 
     public MainViewModel()
     {
@@ -44,6 +127,7 @@ public class MainViewModel : ViewModelBase
     {
         CurrentViewModel = vm;
         _navigationStack.Push(vm);
+        this.RaisePropertyChanged(nameof(ActiveEditor));
         UpdatePlatformDisplayState();
         CurrentViewModel.OnNavigatedTo(); // 调用导航到新视图模型时的处理逻辑
     }
@@ -77,6 +161,7 @@ public class MainViewModel : ViewModelBase
         }
 
         CurrentViewModel = _navigationStack.Peek();
+        this.RaisePropertyChanged(nameof(ActiveEditor));
         UpdatePlatformDisplayState();
         if (notifyRevealedViewModel)
         {
@@ -159,6 +244,13 @@ public class MainViewModel : ViewModelBase
         bool sourceTransferred = false;
         try
         {
+            if (ServiceHub.UseDesktopFileWorkflows)
+            {
+                ProjectOpenKind kind = request.DeleteSourceAfterRead || !Path.GetExtension(request.LocalPath).Equals(".ustx", StringComparison.OrdinalIgnoreCase)
+                    ? ProjectOpenKind.ExternalCopy : ProjectOpenKind.Normal;
+                sourceTransferred = await OpenDesktopProjectAsync(new(request.LocalPath, kind, request.DeleteSourceAfterRead));
+                return;
+            }
             if (CurrentViewModel is EditorViewModel currentEditor)
             {
                 bool canExit = await currentEditor.ConfirmExitAsync();
@@ -237,7 +329,8 @@ public class MainViewModel : ViewModelBase
     /// <returns>当前工程允许退出时返回 true。</returns>
     public async Task<bool> ConfirmCloseAsync()
     {
-        if (CurrentViewModel is EditorViewModel editorViewModel)
+        if (HasActiveSingerInstallation) return false;
+        if (ActiveEditor is EditorViewModel editorViewModel)
         {
             return await editorViewModel.ConfirmExitAsync();
         }

@@ -37,7 +37,7 @@
             </Border>
 
             <!-- 歌手列表 -->
-            <c:SingerList DockPanel.Dock="Top"
+            <c:SingerList
                           ClipToBounds="False"
                           Singers="{Binding Singers}"
                           SelectSingerCommand="{Binding OpenSingerCommand}" />

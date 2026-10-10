@@ -15,6 +15,7 @@
              x:DataType="vm:SettingsViewModel">
 
     <UserControl.Resources>
+        <x:Double x:Key="SettingsNavItemMinHeight">56</x:Double>
         <conv:EnumEqualConverter x:Key="EnumEqual" />
         <conv:EnumNotEqualConverter x:Key="EnumNotEqual" />
     </UserControl.Resources>
@@ -29,7 +30,7 @@
             <Border DockPanel.Dock="Top" Classes="TopBar">
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <Button Grid.Column="0"
-                            Classes="TopBarBtn"
+                            Classes="TopBarBtn DesktopBack"
                             Command="{Binding BackCommand}"
                             ToolTip.Tip="{DynamicResource Common.Back}"
                             Content="{iconPacks:PhosphorIcons ArrowLeft}">
@@ -102,7 +103,7 @@
                                             IsVisible="{Binding SelectedCategory,
                                                 Converter={StaticResource EnumEqual},
                                                 ConverterParameter=EditAndBehaviour}" />
-                                    <Grid ColumnDefinitions="64,*" MinHeight="56">
+                                    <Grid Classes="SettingsNavItemLayout" ColumnDefinitions="64,*" MinHeight="{DynamicResource SettingsNavItemMinHeight}">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
@@ -162,7 +163,7 @@
                                             IsVisible="{Binding SelectedCategory,
                                                 Converter={StaticResource EnumEqual},
                                                 ConverterParameter=RenderAndPerformance}" />
-                                    <Grid ColumnDefinitions="64,*" MinHeight="56">
+                                    <Grid Classes="SettingsNavItemLayout" ColumnDefinitions="64,*" MinHeight="{DynamicResource SettingsNavItemMinHeight}">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
@@ -222,7 +223,7 @@
                                             IsVisible="{Binding SelectedCategory,
                                                 Converter={StaticResource EnumEqual},
                                                 ConverterParameter=FileAndStorage}" />
-                                    <Grid ColumnDefinitions="64,*" MinHeight="56">
+                                    <Grid Classes="SettingsNavItemLayout" ColumnDefinitions="64,*" MinHeight="{DynamicResource SettingsNavItemMinHeight}">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
@@ -282,7 +283,7 @@
                                             IsVisible="{Binding SelectedCategory,
                                                 Converter={StaticResource EnumEqual},
                                                 ConverterParameter=AppearanceAndLanguage}" />
-                                    <Grid ColumnDefinitions="64,*" MinHeight="56">
+                                    <Grid Classes="SettingsNavItemLayout" ColumnDefinitions="64,*" MinHeight="{DynamicResource SettingsNavItemMinHeight}">
                                         <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
                                             <Border Width="36" Height="36"
                                                     CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
@@ -348,7 +349,7 @@
                                 IsVisible="{Binding SelectedCategory,
                                 Converter={StaticResource EnumEqual},
                                 ConverterParameter=EditAndBehaviour}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Edit.CategoryTitle}" />
+                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Nav.EditAndBehaviour}" />
 
                                 <!-- 歌词助手 -->
                                 <Border Classes="SettingCard">
@@ -747,7 +748,7 @@
                                 IsVisible="{Binding SelectedCategory,
                                 Converter={StaticResource EnumEqual},
                                 ConverterParameter=RenderAndPerformance}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Render.CategoryTitle}" />
+                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Nav.RenderAndPerformance}" />
 
                                 <!-- 全局性能监视器 -->
                                 <Border Classes="SettingCard">
@@ -1031,7 +1032,7 @@
                                 IsVisible="{Binding SelectedCategory,
                                 Converter={StaticResource EnumEqual},
                                 ConverterParameter=FileAndStorage}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
-                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.File.CategoryTitle}" />
+                                <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Nav.FileAndStorage}" />
 
                                 <!-- 额外歌手路径 -->
                                 <Border Classes="SettingCard">
@@ -1105,7 +1106,7 @@
                                 Converter={StaticResource EnumEqual},
                                 ConverterParameter=AppearanceAndLanguage}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle"
-                                           Text="{DynamicResource Settings.Appearance.CategoryTitle}" />
+                                           Text="{DynamicResource Settings.Nav.AppearanceAndLanguage}" />
 
                                 <!-- 主题选择 -->
                                 <Border Classes="SettingCard">
@@ -1166,7 +1167,7 @@
                                                          Watermark="#RRGGBB"
                                                          VerticalAlignment="Center" />
                                                 <Button Grid.Column="2"
-                                                        Content="{DynamicResource Settings.Appearance.ThemeColor.ApplyHex}"
+                                                        Content="{DynamicResource Common.Apply}"
                                                         Command="{Binding ApplyThemeSeedHexCommand}"
                                                         Classes="filled" />
                                                 <Button Grid.Column="3"

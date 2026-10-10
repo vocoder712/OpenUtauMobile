@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -18,22 +20,24 @@ public class ExpressionsPopupViewModel : PopupViewModelBase
     private readonly ObservableCollection<ExpressionBuilder> trackExpressions;
     private bool isTrackOverride;
     private ExpressionBuilder? expression;
+    private readonly bool deferredTrackEdit;
 
     [Reactive] public string Error { get; set; } = string.Empty;
     public ObservableCollection<ExpressionBuilder> Expressions => IsTrackOverride ? trackExpressions : projectExpressions;
     public ObservableCollection<ExpressionBuilder> SelectedExpressions { get; } = new();
     public ObservableCollection<ExpressionBuilder> AddOptions { get; } = new();
-    public bool IsSwitchVisible => track != null;
+    public bool IsSwitchVisible => track != null && !deferredTrackEdit;
     public bool IsSelected => Expression != null;
     public string Title => L.S("Expressions.Title");
     public string CustomDefaultLabel => L.S(IsTrackOverride ? "Expressions.TrackDefault" : "Expressions.ProjectDefault");
+    public string ApplyLabel => L.S(deferredTrackEdit ? "TrackSettings.Done" : "Expressions.Apply");
 
     public bool IsTrackOverride
     {
         get => isTrackOverride;
         set
         {
-            if (value == isTrackOverride || value && track == null) return;
+            if (value == isTrackOverride || value && track == null || !value && deferredTrackEdit) return;
             this.RaiseAndSetIfChanged(ref isTrackOverride, value);
             SelectedExpressions.Clear();
             this.RaisePropertyChanged(nameof(Expressions));
@@ -61,13 +65,16 @@ public class ExpressionsPopupViewModel : PopupViewModelBase
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
     public ReactiveCommand<ExpressionBuilder, Unit> AddOverrideCommand { get; }
 
-    public ExpressionsPopupViewModel(UProject project, UTrack? track)
+    public ExpressionsPopupViewModel(UProject project, UTrack? track, bool deferredTrackEdit = false,
+        IReadOnlyList<UExpressionDescriptor>? initialTrackExpressions = null)
     {
         this.project = project;
         this.track = track;
+        this.deferredTrackEdit = deferredTrackEdit && track != null;
         projectExpressions = new(project.expressions.Values.Select(descriptor => new ExpressionBuilder(descriptor)));
-        trackExpressions = new(track?.TrackExpressions.Select(descriptor => new ExpressionBuilder(descriptor, true))
-            ?? Enumerable.Empty<ExpressionBuilder>());
+        IReadOnlyList<UExpressionDescriptor> initialTrack = initialTrackExpressions ??
+            (IReadOnlyList<UExpressionDescriptor>?)track?.TrackExpressions ?? Array.Empty<UExpressionDescriptor>();
+        trackExpressions = new(initialTrack.Select(descriptor => new ExpressionBuilder(descriptor, true)));
         isTrackOverride = track != null;
         Expression = Expressions.FirstOrDefault();
         ProjectCommand = ReactiveCommand.Create(() => { IsTrackOverride = false; });
@@ -132,7 +139,9 @@ public class ExpressionsPopupViewModel : PopupViewModelBase
                 if (suggestions == null) continue;
                 foreach (UExpressionDescriptor suggestion in suggestions)
                 {
-                    if (!projectExpressions.Any(existing => existing.Abbr == suggestion.abbr))
+                    if (ExpressionCatalog.IsIncluded(source, suggestion) &&
+                        !projectExpressions.Any(existing => existing.Abbr == suggestion.abbr ||
+                            !string.IsNullOrEmpty(suggestion.flag) && existing.Flag == suggestion.flag))
                         projectExpressions.Add(new ExpressionBuilder(suggestion));
                 }
             }
@@ -173,16 +182,38 @@ public class ExpressionsPopupViewModel : PopupViewModelBase
         return true;
     }
 
+    private bool TryBuildDescriptors(out UExpressionDescriptor[] projectDescriptors, out UExpressionDescriptor[] trackDescriptors)
+    {
+        projectDescriptors = [];
+        trackDescriptors = [];
+        if (!deferredTrackEdit && !ValidateScope(projectExpressions, false) ||
+            track != null && !ValidateScope(trackExpressions, true)) return false;
+        projectDescriptors = deferredTrackEdit
+            ? project.expressions.Values.Select(descriptor => descriptor.Clone()).ToArray()
+            : projectExpressions.Select(builder => builder.Build()).ToArray();
+        trackDescriptors = trackExpressions.Select(builder => builder.Build()).ToArray();
+        if (!HasUniqueBuiltAbbreviations(projectDescriptors) || !HasUniqueBuiltAbbreviations(trackDescriptors))
+        {
+            Error = L.S("Expressions.Error.DuplicateAbbr");
+            return false;
+        }
+        return true;
+    }
+
+    private static bool HasUniqueBuiltAbbreviations(IEnumerable<UExpressionDescriptor> descriptors) =>
+        descriptors.Select(descriptor => descriptor.abbr).Distinct(StringComparer.OrdinalIgnoreCase).Count() == descriptors.Count();
+
     private void Apply()
     {
         Error = string.Empty;
-        if (!ValidateScope(projectExpressions, false) || track != null && !ValidateScope(trackExpressions, true)) return;
         try
         {
-            UExpressionDescriptor[] projectDescriptors = projectExpressions.Select(builder => builder.Build()).ToArray();
-            UExpressionDescriptor[] trackDescriptors = trackExpressions.Select(builder => builder.Build()).ToArray();
-            // 构建和检查先完成，避免格式化后的重复缩写使命令在替换定义途中失败。
-            _ = projectDescriptors.ToDictionary(descriptor => descriptor.abbr);
+            if (!TryBuildDescriptors(out UExpressionDescriptor[] projectDescriptors, out UExpressionDescriptor[] trackDescriptors)) return;
+            if (deferredTrackEdit)
+            {
+                RaiseClose(new TrackExpressionSettingsDraft(trackDescriptors.Select(descriptor => descriptor.Clone()).ToArray()));
+                return;
+            }
             ConfigureExpressionsCommand command = track == null
                 ? new ConfigureExpressionsCommand(project, projectDescriptors)
                 : new ConfigureExpressionsCommand(project, projectDescriptors, track, trackDescriptors);
