@@ -27,6 +27,6 @@ public sealed record RendererGraphOption(string? Id, string Label)
             ? string.Format(L.S("RendererSettings.Graph.Invalid"), Name(graph), error) : string.Empty;
     }
 
-    public static bool CanKeep(UProject project, string? renderer, string? id, string? originalRenderer, string? originalId) =>
-        (renderer == originalRenderer && id == originalId) || Problem(project, renderer, id).Length == 0;
+    public static bool CanKeep(UProject project, string? renderer, string? id) =>
+        id == null || (!string.IsNullOrEmpty(id) && Problem(project, renderer, id).Length == 0);
 }

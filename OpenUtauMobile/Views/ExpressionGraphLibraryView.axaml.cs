@@ -61,6 +61,7 @@ public partial class ExpressionGraphLibraryView : UserControl
         {
             Items =
             {
+                new MenuItem { Header = L.S("ExpressionGraph.Import"), Command = vm.ImportCommand, IsEnabled = !vm.IsBusy && vm.IsCurrentProject },
                 new MenuItem { Header = L.S("ExpressionGraph.UndoProject"), Command = vm.UndoCommand, IsEnabled = vm.CanUndo && !vm.IsBusy },
                 new MenuItem { Header = L.S("ExpressionGraph.RedoProject"), Command = vm.RedoCommand, IsEnabled = vm.CanRedo && !vm.IsBusy },
             },
@@ -76,6 +77,7 @@ public partial class ExpressionGraphLibraryView : UserControl
         {
             Items =
             {
+                new MenuItem { Header = L.S("ExpressionGraph.Export"), Command = vm.ExportCommand, CommandParameter = item, IsEnabled = !vm.IsBusy && vm.IsCurrentProject },
                 new MenuItem { Header = L.S("ExpressionGraph.Copy"), Command = vm.DuplicateCommand, CommandParameter = item },
                 new MenuItem { Header = L.S("Common.Delete"), Command = vm.DeleteCommand, CommandParameter = item },
             },

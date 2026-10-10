@@ -220,7 +220,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             || original.renderer != _track.RendererSettings.renderer
             || original.resampler != _track.RendererSettings.resampler || original.wavtool != _track.RendererSettings.wavtool
             || originalGraph != _track.ExpressionGraph
-            || !RendererGraphOption.CanKeep(project, selection.Settings.renderer, selection.ExpressionGraph, original.renderer, originalGraph))
+            || !RendererGraphOption.CanKeep(project, selection.Settings.renderer, selection.ExpressionGraph))
         {
             return;
         }

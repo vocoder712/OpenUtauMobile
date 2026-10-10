@@ -2153,14 +2153,8 @@
   <data name="RendererSettings.Graph.Default" xml:space="preserve">
     <value>Типовий для проєкту</value>
   </data>
-  <data name="RendererSettings.Graph.Off" xml:space="preserve">
-    <value>Вимкнути граф виразів</value>
-  </data>
   <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
     <value>Недоступний: {0}</value>
-  </data>
-  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
-    <value>Граф виразів вимкнено.</value>
   </data>
   <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
     <value>Немає активного графа виразів.</value>
@@ -2311,7 +2305,6 @@
   <data name="ExpressionGraph.ExplicitTrack" xml:space="preserve"><value>{0} · explicit reference</value></data>
   <data name="ExpressionGraph.Unused" xml:space="preserve"><value>No tracks reference this graph.</value></data>
   <data name="ExpressionGraph.FollowDefault" xml:space="preserve"><value>Follows default</value></data>
-  <data name="ExpressionGraph.Off" xml:space="preserve"><value>Graphs disabled</value></data>
   <data name="ExpressionGraph.Explicit" xml:space="preserve"><value>Explicit selection</value></data>
   <data name="ExpressionGraph.Builtin" xml:space="preserve"><value>Uses built-in behavior</value></data>
   <data name="ExpressionGraph.DefaultProblem" xml:space="preserve"><value>Default for {0}: {1}</value></data>
@@ -2343,4 +2336,13 @@ Affected tracks will resolve their remaining references or use built-in behavior
   <data name="FabMenu.Expanded" xml:space="preserve"><value>Menu expanded</value></data>
   <data name="FabMenu.Collapsed" xml:space="preserve"><value>Menu collapsed</value></data>
   <data name="ExpressionGraph.ReferenceWarnings" xml:space="preserve"><value>Reference warnings ({0})</value></data>
+  <data name="ExpressionGraph.Import" xml:space="preserve"><value>Імпорт графа експресій</value></data>
+  <data name="ExpressionGraph.Export" xml:space="preserve"><value>Експорт графа експресій</value></data>
+  <data name="ExpressionGraph.Imported" xml:space="preserve"><value>Граф «{0}» імпортовано.</value></data>
+  <data name="ExpressionGraph.ImportAdded" xml:space="preserve"><value>Додано визначення експресій: {0}</value></data>
+  <data name="ExpressionGraph.ImportConflicts" xml:space="preserve"><value>Конфліктні визначення; збережено визначення проєкту: {0}</value></data>
+  <data name="ExpressionGraph.ImportFailed" xml:space="preserve"><value>Помилка імпорту: {0}</value></data>
+  <data name="ExpressionGraph.ExportFailed" xml:space="preserve"><value>Помилка експорту: {0}</value></data>
+  <data name="ExpressionGraph.Exported" xml:space="preserve"><value>Граф експортовано до: {0}</value></data>
+  <data name="ExpressionGraph.InvalidFileData" xml:space="preserve"><value>Файл графа містить пошкоджені або повторювані дані.</value></data>
 </root>

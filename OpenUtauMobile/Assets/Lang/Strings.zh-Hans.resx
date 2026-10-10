@@ -2198,14 +2198,8 @@
   <data name="RendererSettings.Graph.Default" xml:space="preserve">
     <value>跟随工程默认</value>
   </data>
-  <data name="RendererSettings.Graph.Off" xml:space="preserve">
-    <value>关闭表情图</value>
-  </data>
   <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
     <value>不可用：{0}</value>
-  </data>
-  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
-    <value>已关闭表情图。</value>
   </data>
   <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
     <value>当前没有生效的表情图。</value>
@@ -2356,7 +2350,6 @@
   <data name="ExpressionGraph.ExplicitTrack" xml:space="preserve"><value>{0} · 显式引用</value></data>
   <data name="ExpressionGraph.Unused" xml:space="preserve"><value>没有轨道引用此图。</value></data>
   <data name="ExpressionGraph.FollowDefault" xml:space="preserve"><value>跟随默认</value></data>
-  <data name="ExpressionGraph.Off" xml:space="preserve"><value>禁用表情图</value></data>
   <data name="ExpressionGraph.Explicit" xml:space="preserve"><value>显式选择</value></data>
   <data name="ExpressionGraph.Builtin" xml:space="preserve"><value>使用内置行为</value></data>
   <data name="ExpressionGraph.DefaultProblem" xml:space="preserve"><value>{0} 家族默认：{1}</value></data>
@@ -2388,4 +2381,13 @@
   <data name="FabMenu.Expanded" xml:space="preserve"><value>菜单已展开</value></data>
   <data name="FabMenu.Collapsed" xml:space="preserve"><value>菜单已收起</value></data>
   <data name="ExpressionGraph.ReferenceWarnings" xml:space="preserve"><value>引用警告（{0}）</value></data>
+  <data name="ExpressionGraph.Import" xml:space="preserve"><value>导入表情图</value></data>
+  <data name="ExpressionGraph.Export" xml:space="preserve"><value>导出表情图</value></data>
+  <data name="ExpressionGraph.Imported" xml:space="preserve"><value>已导入“{0}”。</value></data>
+  <data name="ExpressionGraph.ImportAdded" xml:space="preserve"><value>新增表情定义：{0}</value></data>
+  <data name="ExpressionGraph.ImportConflicts" xml:space="preserve"><value>以下表情定义存在冲突，已保留工程中的定义：{0}</value></data>
+  <data name="ExpressionGraph.ImportFailed" xml:space="preserve"><value>导入失败：{0}</value></data>
+  <data name="ExpressionGraph.ExportFailed" xml:space="preserve"><value>导出失败：{0}</value></data>
+  <data name="ExpressionGraph.Exported" xml:space="preserve"><value>表情图已导出到：{0}</value></data>
+  <data name="ExpressionGraph.InvalidFileData" xml:space="preserve"><value>图文件包含损坏或重复的数据。</value></data>
 </root>

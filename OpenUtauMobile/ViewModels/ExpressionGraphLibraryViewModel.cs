@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -15,7 +16,9 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -77,6 +80,8 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
     public ReactiveCommand<ExpressionGraphLibraryItem, Unit> DeleteCommand { get; }
     public ReactiveCommand<string, Unit> CreateCommand { get; }
     public ReactiveCommand<Unit, Unit> ShowWarningsCommand { get; }
+    public ReactiveCommand<Unit, Unit> ImportCommand { get; }
+    public ReactiveCommand<ExpressionGraphLibraryItem, Unit> ExportCommand { get; }
 
     public ExpressionGraphLibraryViewModel(MainViewModel navigator, UProject project)
         : base(navigator)
@@ -92,6 +97,8 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
         DeleteCommand = ReactiveCommand.CreateFromTask<ExpressionGraphLibraryItem>(DeleteAsync).DisposeWith(_subscriptions);
         CreateCommand = ReactiveCommand.CreateFromTask<string>(CreateAsync).DisposeWith(_subscriptions);
         ShowWarningsCommand = ReactiveCommand.CreateFromTask(ShowWarningsAsync).DisposeWith(_subscriptions);
+        ImportCommand = ReactiveCommand.CreateFromTask(ImportAsync).DisposeWith(_subscriptions);
+        ExportCommand = ReactiveCommand.CreateFromTask<ExpressionGraphLibraryItem>(ExportAsync).DisposeWith(_subscriptions);
         DocManager.Inst.AddSubscriber(this);
         if (Application.Current != null)
             Application.Current.GetResourceObservable("ExpressionGraph.LibraryTitle")
@@ -115,6 +122,80 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
         && !DocManager.Inst.HasOpenUndoGroup;
 
     private UExpressionGraph? Find(string id) => _project.expressionGraphs?.FirstOrDefault(graph => graph.id == id);
+
+    // 文件选择不持有工程锁；返回后同时检查工程与页面，禁止过期结果继续操作。
+    private bool IsFileOperationCurrent() => !_disposed && ReferenceEquals(DocManager.Inst.Project, _project)
+        && ReferenceEquals(Navigator.CurrentViewModel, this) && !DocManager.Inst.HasOpenUndoGroup;
+
+    private async Task ImportAsync()
+    {
+        if (!CanEdit()) return;
+        IsCreationMenuOpen = false;
+        IsBusy = true;
+        Error = string.Empty;
+        try
+        {
+            string path = await FilePicker.PickSingleFileAsync(L.S("ExpressionGraph.Import"), ["*.ougraph"]);
+            if (path.Length == 0 || !IsFileOperationCurrent()) return;
+            ExpressionGraphFile file = await Task.Run(() => ExpressionGraphFile.Load(path));
+            if (!IsFileOperationCurrent()) return;
+            // 在命令开始前验证可克隆性及定义唯一性，避免损坏文件留下部分导入。
+            if (file.expressions == null || file.expressions.Any(descriptor => descriptor == null)
+                || file.expressions.Where(descriptor => !string.IsNullOrEmpty(descriptor.abbr))
+                    .GroupBy(descriptor => descriptor.abbr).Any(group => group.Count() > 1))
+                throw new InvalidDataException(L.S("ExpressionGraph.InvalidFileData"));
+            _ = file.graph!.Clone();
+            foreach (UExpressionDescriptor descriptor in file.expressions) _ = descriptor.Clone();
+            _ = ExpressionGraphProgram.Compile(file.graph, out _);
+            ExpressionGraphFile.ImportResult result = file.ImportInto(_project);
+            Refresh();
+            Reveal(result.GraphId);
+            UExpressionGraph graph = Find(result.GraphId)!;
+            string report = string.Format(L.S("ExpressionGraph.Imported"), RendererGraphOption.Name(graph));
+            if (result.AddedExpressions.Count > 0)
+                report += "\n\n" + string.Format(L.S("ExpressionGraph.ImportAdded"), string.Join(", ", result.AddedExpressions));
+            if (result.ConflictingExpressions.Count > 0)
+                report += "\n\n" + string.Format(L.S("ExpressionGraph.ImportConflicts"), string.Join(", ", result.ConflictingExpressions));
+            if (ExpressionGraphProgram.Compile(graph, out string? problem) == null)
+                report += "\n\n" + string.Format(L.S("ExpressionGraph.Invalid"), problem);
+            await OptionConfirmPopupService.ShowAsync(L.S("ExpressionGraph.Import"), report,
+                new OptionConfirmOption[] { new(L.S("Common.Close"), "close") });
+        }
+        catch (Exception exception)
+        {
+            if (IsFileOperationCurrent()) Error = string.Format(L.S("ExpressionGraph.ImportFailed"), exception.Message);
+        }
+        finally { IsBusy = false; Refresh(); }
+    }
+
+    private async Task ExportAsync(ExpressionGraphLibraryItem item)
+    {
+        if (!CanEdit() || Find(item.Id) is not { } graph) return;
+        IsCreationMenuOpen = false;
+        IsBusy = true;
+        Error = string.Empty;
+        try
+        {
+            // 图与表情定义一起克隆；文件选择期间的编辑不会混入导出结果。
+            ExpressionGraphFile snapshot = ExpressionGraphFile.Create(_project, graph);
+            string name = RendererGraphOption.Name(graph);
+            foreach (char invalid in Path.GetInvalidFileNameChars()) name = name.Replace(invalid, '_');
+            string path = await FilePicker.SaveFileAsync(L.S("ExpressionGraph.Export"), "ougraph", name,
+                Path.GetDirectoryName(_project.FilePath) ?? string.Empty);
+            if (path.Length == 0 || !IsFileOperationCurrent()) return;
+            await Task.Run(() => snapshot.Save(path));
+            await ServiceHub.FlushFileSystemAsync();
+            if (!IsFileOperationCurrent()) return;
+            await OptionConfirmPopupService.ShowAsync(L.S("ExpressionGraph.Export"),
+                string.Format(L.S("ExpressionGraph.Exported"), path),
+                new OptionConfirmOption[] { new(L.S("Common.Close"), "close") });
+        }
+        catch (Exception exception)
+        {
+            if (IsFileOperationCurrent()) Error = string.Format(L.S("ExpressionGraph.ExportFailed"), exception.Message);
+        }
+        finally { IsBusy = false; Refresh(); }
+    }
 
     private string[] RendererFamilies()
     {

@@ -2191,14 +2191,8 @@
   <data name="RendererSettings.Graph.Default" xml:space="preserve">
     <value>プロジェクトの既定値を使用</value>
   </data>
-  <data name="RendererSettings.Graph.Off" xml:space="preserve">
-    <value>表情グラフを無効化</value>
-  </data>
   <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
     <value>使用不可：{0}</value>
-  </data>
-  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
-    <value>表情グラフは無効です。</value>
   </data>
   <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
     <value>有効な表情グラフはありません。</value>
@@ -2349,7 +2343,6 @@
   <data name="ExpressionGraph.ExplicitTrack" xml:space="preserve"><value>{0} · explicit reference</value></data>
   <data name="ExpressionGraph.Unused" xml:space="preserve"><value>No tracks reference this graph.</value></data>
   <data name="ExpressionGraph.FollowDefault" xml:space="preserve"><value>Follows default</value></data>
-  <data name="ExpressionGraph.Off" xml:space="preserve"><value>Graphs disabled</value></data>
   <data name="ExpressionGraph.Explicit" xml:space="preserve"><value>Explicit selection</value></data>
   <data name="ExpressionGraph.Builtin" xml:space="preserve"><value>Uses built-in behavior</value></data>
   <data name="ExpressionGraph.DefaultProblem" xml:space="preserve"><value>Default for {0}: {1}</value></data>
@@ -2381,4 +2374,13 @@ Affected tracks will resolve their remaining references or use built-in behavior
   <data name="FabMenu.Expanded" xml:space="preserve"><value>Menu expanded</value></data>
   <data name="FabMenu.Collapsed" xml:space="preserve"><value>Menu collapsed</value></data>
   <data name="ExpressionGraph.ReferenceWarnings" xml:space="preserve"><value>Reference warnings ({0})</value></data>
+  <data name="ExpressionGraph.Import" xml:space="preserve"><value>表情グラフをインポート</value></data>
+  <data name="ExpressionGraph.Export" xml:space="preserve"><value>表情グラフをエクスポート</value></data>
+  <data name="ExpressionGraph.Imported" xml:space="preserve"><value>「{0}」をインポートしました。</value></data>
+  <data name="ExpressionGraph.ImportAdded" xml:space="preserve"><value>追加された表情定義：{0}</value></data>
+  <data name="ExpressionGraph.ImportConflicts" xml:space="preserve"><value>次の表情定義は競合するため、プロジェクトの定義を保持しました：{0}</value></data>
+  <data name="ExpressionGraph.ImportFailed" xml:space="preserve"><value>インポートに失敗しました：{0}</value></data>
+  <data name="ExpressionGraph.ExportFailed" xml:space="preserve"><value>エクスポートに失敗しました：{0}</value></data>
+  <data name="ExpressionGraph.Exported" xml:space="preserve"><value>表情グラフのエクスポート先：{0}</value></data>
+  <data name="ExpressionGraph.InvalidFileData" xml:space="preserve"><value>グラフファイルに破損または重複したデータがあります。</value></data>
 </root>

@@ -9,20 +9,17 @@ using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Services.Tracks;
 
-/// <summary>切换歌手或渲染器后，按兼容且可编译的显式图、默认图、关闭的顺序解析覆盖。</summary>
+/// <summary>保留可用的指定图；没有指定图或指定图不可用时，始终跟随工程默认。</summary>
 public static class TrackExpressionGraphSelection
 {
     public static string? Resolve(UProject project, string? renderer, string? requested)
     {
-        if (requested == string.Empty) return string.Empty;
         bool Usable(string? id) => !string.IsNullOrEmpty(id)
             && project.expressionGraphs?.FirstOrDefault(graph => graph.id == id) is { } graph
             && RendererGraphOption.IsCompatible(graph, renderer)
             && ExpressionGraphProgram.Compile(graph, out _) != null;
         if (Usable(requested)) return requested;
-        string? defaultId = renderer == null ? null : project.defaultExpressionGraphs?
-            .GetValueOrDefault(Renderers.GetExpressionGraphSlot(renderer));
-        return Usable(defaultId) ? null : string.Empty;
+        return null;
     }
 
     public static void Revalidate(UProject project, UTrack track)
