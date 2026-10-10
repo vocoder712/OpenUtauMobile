@@ -2412,4 +2412,14 @@
   <data name="GraphViewer.InvalidLink" xml:space="preserve"><value>损坏或不可识别的连线</value></data>
   <data name="GraphViewer.Unconnected" xml:space="preserve"><value>未连接</value></data>
   <data name="GraphViewer.Empty" xml:space="preserve"><value>此图没有节点。</value></data>
+  <data name="GraphEdit.Parameters" xml:space="preserve"><value>节点参数</value></data>
+  <data name="GraphEdit.Apply" xml:space="preserve"><value>应用</value></data>
+  <data name="GraphEdit.Reload" xml:space="preserve"><value>取消并重载</value></data>
+  <data name="GraphEdit.Conflict" xml:space="preserve"><value>输入期间此节点已被修改。请取消并重载后重新编辑。</value></data>
+  <data name="GraphEdit.MissingChoice" xml:space="preserve"><value>{0}（不可用）</value></data>
+  <data name="GraphEdit.InvalidNumber" xml:space="preserve"><value>请输入有限数值，小数使用小数点。</value></data>
+  <data name="GraphEdit.InvalidChoice" xml:space="preserve"><value>请选择可用选项。</value></data>
+  <data name="GraphEdit.Range" xml:space="preserve"><value>请输入 {0} 到 {1} 之间的数值。</value></data>
+  <data name="GraphEdit.OverriddenFallback" xml:space="preserve"><value>回退值：当前由已连接的来源覆盖。</value></data>
+  <data name="GraphEdit.OptionalNumber" xml:space="preserve"><value>留空使用节点内置的回退值。</value></data>
 </root>

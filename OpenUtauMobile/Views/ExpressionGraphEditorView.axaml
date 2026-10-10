@@ -6,7 +6,7 @@
              x:Class="OpenUtauMobile.Views.ExpressionGraphEditorView"
              x:DataType="vm:ExpressionGraphEditorViewModel"
              Background="{DynamicResource Sem.Color.Surface}">
-    <Grid RowDefinitions="Auto,Auto,Auto,*">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*">
         <Border Classes="TopBar">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <Button Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
@@ -32,7 +32,11 @@
             <Button Grid.Column="4" Classes="icon" Content="{icons:PhosphorIcons Plus}" Click="ZoomInClicked"
                     ToolTip.Tip="{DynamicResource GraphViewer.ZoomIn}" AutomationProperties.Name="{DynamicResource GraphViewer.ZoomIn}" />
         </Grid>
-        <Grid Grid.Row="3" x:Name="WorkArea" RowDefinitions="*,Auto" ColumnDefinitions="*,Auto" ClipToBounds="True">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="8,0,8,4" Spacing="8">
+            <Button Classes="text" Content="{DynamicResource Editor.Undo}" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}" />
+            <Button Classes="text" Content="{DynamicResource Editor.Redo}" Command="{Binding RedoCommand}" IsEnabled="{Binding CanRedo}" />
+        </StackPanel>
+        <Grid Grid.Row="4" x:Name="WorkArea" RowDefinitions="*,Auto" ColumnDefinitions="*,Auto" ClipToBounds="True">
             <c:ExpressionGraphCanvas x:Name="GraphCanvas" Scene="{Binding Scene}" Viewport="{Binding Viewport}"
                     SelectedKey="{Binding SelectedKey}" IsEnabled="{Binding IsAvailable}"
                     NodeBrush="{DynamicResource Sem.Color.SurfaceContainer}"
@@ -77,6 +81,13 @@
                                 </ItemsControl>
                             </StackPanel>
                             <TextBlock Text="{Binding SelectedNode.Summary}" TextWrapping="Wrap" IsVisible="{Binding !IsDetailsExpanded}" />
+                            <ItemsControl ItemsSource="{Binding Parameters}" IsVisible="{Binding IsDetailsExpanded}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:GraphParameterEdit">
+                                        <c:GraphParameterEditor />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                             <ItemsControl ItemsSource="{Binding Details}" IsVisible="{Binding IsDetailsExpanded}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:GraphNodeDetail">

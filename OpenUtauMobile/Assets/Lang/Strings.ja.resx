@@ -2405,4 +2405,14 @@ Affected tracks will resolve their remaining references or use built-in behavior
   <data name="GraphViewer.InvalidLink" xml:space="preserve"><value>Damaged or unsupported link</value></data>
   <data name="GraphViewer.Unconnected" xml:space="preserve"><value>Unconnected</value></data>
   <data name="GraphViewer.Empty" xml:space="preserve"><value>This graph has no nodes.</value></data>
+  <data name="GraphEdit.Parameters" xml:space="preserve"><value>Node parameters</value></data>
+  <data name="GraphEdit.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="GraphEdit.Reload" xml:space="preserve"><value>Cancel / reload</value></data>
+  <data name="GraphEdit.Conflict" xml:space="preserve"><value>This node changed while you were editing. Cancel / reload before editing again.</value></data>
+  <data name="GraphEdit.MissingChoice" xml:space="preserve"><value>{0} (unavailable)</value></data>
+  <data name="GraphEdit.InvalidNumber" xml:space="preserve"><value>Enter a finite number using a decimal point.</value></data>
+  <data name="GraphEdit.InvalidChoice" xml:space="preserve"><value>Select an available value.</value></data>
+  <data name="GraphEdit.Range" xml:space="preserve"><value>Enter a value between {0} and {1}.</value></data>
+  <data name="GraphEdit.OverriddenFallback" xml:space="preserve"><value>Fallback value. The connected source currently overrides this value.</value></data>
+  <data name="GraphEdit.OptionalNumber" xml:space="preserve"><value>Leave empty to use the node's built-in fallback.</value></data>
 </root>

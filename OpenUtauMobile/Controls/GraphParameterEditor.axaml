@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels"
+             x:Class="OpenUtauMobile.Controls.GraphParameterEditor"
+             x:DataType="vm:GraphParameterEdit">
+    <StackPanel Spacing="4" Margin="0,0,0,12">
+        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Hint}" IsVisible="{Binding Hint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <TextBox x:Name="ParameterText" Text="{Binding Text, Mode=TwoWay}" IsVisible="{Binding IsText}" KeyDown="TextKeyDown"
+                 TextInputOptions.ContentType="{Binding InputContentType}" TextInputOptions.ReturnKeyType="Done"
+                 AutomationProperties.Name="{Binding Label}" />
+        <CheckBox x:Name="ParameterBool" IsChecked="{Binding BoolValue, Mode=TwoWay}" IsVisible="{Binding IsBool}"
+                  Content="{Binding Text}" AutomationProperties.Name="{Binding Label}" />
+        <ComboBox x:Name="ParameterChoice" ItemsSource="{Binding Choices}" SelectedItem="{Binding SelectedChoice, Mode=TwoWay}"
+                  HorizontalAlignment="Stretch" IsVisible="{Binding IsChoice}" AutomationProperties.Name="{Binding Label}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:GraphParameterChoice">
+                    <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <Slider x:Name="ParameterSlider" IsVisible="{Binding IsSlider}" Value="{Binding SliderValue, Mode=OneWay}"
+                Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" SmallChange="{Binding Step}"
+                TickFrequency="{Binding Step}" AutomationProperties.Name="{Binding Label}" />
+        <TextBlock Text="{Binding Error}" IsVisible="{Binding HasError}" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Sem.Color.Error}" />
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding IsDirty}">
+            <Button Classes="text" Content="{DynamicResource GraphEdit.Reload}" Command="{Binding CancelCommand}" />
+            <Button Grid.Column="1" Classes="text" Content="{DynamicResource GraphEdit.Apply}" Command="{Binding ApplyCommand}" />
+        </Grid>
+    </StackPanel>
+</UserControl>
