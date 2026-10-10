@@ -15,7 +15,7 @@ using OpenUtauMobile.Services.Dialogs;
 namespace OpenUtauMobile.Controls;
 
 /// <summary>单控件只读画布；缓存文字、连线与空间索引，无空闲计时器和逐节点控件。</summary>
-public sealed class ExpressionGraphCanvas : Control
+public sealed class ExpressionGraphCanvas : Control, IEditorViewport
 {
     public static readonly StyledProperty<ExpressionGraphScene?> SceneProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, ExpressionGraphScene?>(nameof(Scene));
     public static readonly StyledProperty<GraphViewport?> ViewportProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, GraphViewport?>(nameof(Viewport));
@@ -42,6 +42,9 @@ public sealed class ExpressionGraphCanvas : Control
     private readonly Dictionary<int, StreamGeometry> _paths = [];
     private readonly Dictionary<(string, bool), TextLayout> _texts = [];
     private readonly GestureInterpreter _gesture = new(uniformScale: true);
+    private ViewportMotionController? _panMotion;
+    private ViewportInputSession? _viewportInput;
+    private bool _attached;
     private IDisposable? _nativeInput;
     private Window? _window;
     public int LastDrawnNodes { get; private set; }
@@ -55,7 +58,13 @@ public sealed class ExpressionGraphCanvas : Control
     {
         ClipToBounds = true; Focusable = true;
         _gesture.Tap = _gesture.DoubleTap = point => NodeSelected?.Invoke(Hit(point));
-        _gesture.DragUpdate = (_, step, _, _, _) => Pan(step);
+        _gesture.DragUpdate = (_, step, _, _, timestamp) =>
+        {
+            if (_panMotion == null) return;
+            if (!_panMotion.IsRunning) _panMotion.BeginDirectManipulation(timestamp);
+            _panMotion.UpdateDirectManipulation(step, timestamp);
+        };
+        _gesture.DragEnd = (_, _, timestamp) => _panMotion?.EndDirectManipulation(timestamp);
         _gesture.PinchUpdate = (scale, _, center, pan) =>
         {
             Zoom(scale, center - pan); Pan(pan);
@@ -63,11 +72,40 @@ public sealed class ExpressionGraphCanvas : Control
         AddHandler(PointerTouchPadGestureMagnifyEvent, (_, e) =>
         {
             if (!IsInputAvailable) return;
-            Zoom(1 + e.Delta.X, e.GetPosition(this)); e.Handled = true;
+            e.Handled = SubmitViewportInput(new(ViewportInputKind.Magnify, default, 1 + e.Delta.X,
+                e.GetPosition(this), e.KeyModifiers), e.GetPosition(this));
         });
     }
 
-    private bool IsInputAvailable => IsEnabled && Scene != null && !DialogHost.IsDialogOpen("MainDialogHost");
+    /// <summary>后台页面、禁用状态和模态弹窗期间禁止继续运动。</summary>
+    private bool IsInputAvailable => _attached && IsEffectivelyVisible && IsEffectivelyEnabled && Scene != null && !DialogHost.IsDialogOpen("MainDialogHost");
+
+    bool IEditorViewport.CanNavigateViewport => IsInputAvailable && Viewport != null;
+    bool IEditorViewport.SupportsVerticalZoom => false;
+    void IEditorViewport.BeginViewportInput() => _panMotion?.Cancel();
+    Vector IEditorViewport.PanViewport(Vector pixels) { Pan(pixels); return pixels; }
+    void IEditorViewport.ZoomViewport(double scaleX, double scaleY, Point anchor) => ApplyZoom(scaleX, anchor);
+    void IEditorViewport.EndViewportInput(bool hadZoomInput, bool interrupted) { }
+
+    /// <summary>系统惯性由平台提供，仅复用共享输入会话的合并和平滑，不叠加拖拽惯性。</summary>
+    private bool SubmitViewportInput(ViewportInput input, Point anchor)
+    {
+        if (input.Phase != ViewportInputPhase.Update)
+        {
+            if (_viewportInput?.IsActive != true) return false;
+            if (input.Phase == ViewportInputPhase.Cancel) _viewportInput.Cancel();
+            else _viewportInput.EndInput();
+            return true;
+        }
+        if (!IsInputAvailable || _gesture.HasActivePointers) return false;
+        return _viewportInput?.Submit(this, input, anchor, ViewportAxes.Both) == true;
+    }
+
+    /// <summary>直接导航或新的触摸操作优先，立即丢弃未应用的平滑尾段和惯性。</summary>
+    internal void InterruptMotion()
+    {
+        _panMotion?.Cancel(); _viewportInput?.Cancel();
+    }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
@@ -78,12 +116,15 @@ public sealed class ExpressionGraphCanvas : Control
             if (Viewport is { Initialized: false } && Bounds.Width > 0) Fit();
         }
         if (change.Property == ForegroundProperty) ClearText();
+        if (change.Property == ViewportProperty || (change.Property == IsEnabledProperty || change.Property == IsEffectivelyEnabledProperty || change.Property == IsVisibleProperty) && change.NewValue is false)
+            CancelPointers();
         if (change.Property == BoundsProperty && Viewport is { } viewport)
         {
             Rect old = change.GetOldValue<Rect>();
             if (!viewport.Initialized) Fit();
             else if (old.Width > 0 && old.Height > 0)
             {
+                CancelPointers();
                 viewport.Offset += new Vector((Bounds.Width - old.Width) / 2, (Bounds.Height - old.Height) / 2);
                 InvalidateVisual();
             }
@@ -99,6 +140,12 @@ public sealed class ExpressionGraphCanvas : Control
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        _attached = true;
+        _panMotion = new ViewportMotionController { PanDelta = delta =>
+        {
+            if (IsInputAvailable) Pan(delta); else _panMotion?.Cancel();
+        } };
+        _viewportInput = new ViewportInputSession();
         PopupService.Opening += CancelPointers;
         if (TopLevel.GetTopLevel(this) is { } root)
         {
@@ -106,31 +153,31 @@ public sealed class ExpressionGraphCanvas : Control
             if (_window != null) _window.Deactivated += OnDeactivated;
             _nativeInput = ServiceHub.ViewportInputPlatform?.Attach(root, input =>
             {
+                if (input.Phase != ViewportInputPhase.Update) return SubmitViewportInput(input, default);
                 Point? position = root.TranslatePoint(input.Position, this);
                 if (!IsVisible || !IsInputAvailable || position == null || !new Rect(Bounds.Size).Contains(position.Value)) return false;
-                if (input.Phase == ViewportInputPhase.Cancel) { CancelPointers(); return true; }
-                if (input.Phase == ViewportInputPhase.End) return true;
-                if (input.Kind == ViewportInputKind.Magnify) Zoom(input.Scale, position.Value);
-                else if (input.Modifiers.HasFlag(KeyModifiers.Control)) Zoom(Math.Exp(input.Delta.Y * .12), position.Value);
-                else Pan(input.Delta * (input.Kind == ViewportInputKind.Wheel ? 48 : 1));
-                return true;
+                return SubmitViewportInput(input, position.Value);
             });
         }
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _attached = false;
         _nativeInput?.Dispose(); _nativeInput = null;
         PopupService.Opening -= CancelPointers;
         if (_window != null) _window.Deactivated -= OnDeactivated;
         _window = null;
         CancelPointers(); ClearText(); _paths.Clear();
+        _panMotion?.Dispose(); _panMotion = null;
+        _viewportInput?.Dispose(); _viewportInput = null;
         base.OnDetachedFromVisualTree(e);
     }
 
     /// <summary>只改变视口，适应原有坐标与所有可绘制连线。</summary>
     public void Fit()
     {
+        InterruptMotion();
         if (Scene == null || Viewport == null || Bounds.Width <= 0 || Bounds.Height <= 0) return;
         Rect graph = Scene.Bounds.Inflate(24);
         Viewport.Scale = Math.Clamp(Math.Min(Bounds.Width / graph.Width, Bounds.Height / graph.Height), .08, 1.25);
@@ -144,6 +191,7 @@ public sealed class ExpressionGraphCanvas : Control
         if (Scene == null || !Scene.ByKey.TryGetValue(key, out GraphVisualNode? node) || Viewport == null) return;
         Rect screen = new(ToScreen(node.Bounds.TopLeft), node.Bounds.Size * Viewport.Scale);
         if (onlyIfHidden && new Rect(Bounds.Size).Deflate(16).Contains(screen) && Viewport.Scale >= .9) return;
+        InterruptMotion();
         if (!onlyIfHidden || Viewport.Scale < .9) Viewport.Scale = Math.Max(Viewport.Scale, 1);
         Viewport.Offset = new Vector(Bounds.Width, Bounds.Height) / 2 - new Vector(node.Bounds.Center.X, node.Bounds.Center.Y) * Viewport.Scale;
         InvalidateVisual();
@@ -152,6 +200,12 @@ public sealed class ExpressionGraphCanvas : Control
     /// <summary>以屏幕锚点等比缩放；不创建动画或持续后台刷新。</summary>
     public void Zoom(double factor, Point anchor)
     {
+        InterruptMotion(); ApplyZoom(factor, anchor);
+    }
+
+    /// <summary>共享输入会话和直接缩放共用锚点计算，避免平滑更新打断自身。</summary>
+    private void ApplyZoom(double factor, Point anchor)
+    {
         if (Viewport == null || !double.IsFinite(factor) || factor <= 0) return;
         Point world = ToWorld(anchor);
         Viewport.Scale = Math.Clamp(Viewport.Scale * factor, .08, 3);
@@ -159,6 +213,7 @@ public sealed class ExpressionGraphCanvas : Control
         Viewport.Initialized = true; InvalidateVisual();
     }
 
+    /// <summary>直接输入与惯性共用 O(1) 平移路径，只请求重绘，不重建图。</summary>
     private void Pan(Vector delta)
     {
         if (Viewport == null || !double.IsFinite(delta.X) || !double.IsFinite(delta.Y)) return;
@@ -259,7 +314,7 @@ public sealed class ExpressionGraphCanvas : Control
     {
         base.OnPointerPressed(e);
         if (Viewport == null || !IsInputAvailable) return;
-        Focus(); _gesture.OnPointerPressed(e, this);
+        InterruptMotion(); Focus(); _gesture.OnPointerPressed(e, this);
     }
 
     private static double Distance(Point a, Point b) => new Vector(a.X - b.X, a.Y - b.Y).Length;
@@ -279,11 +334,12 @@ public sealed class ExpressionGraphCanvas : Control
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        if (_gesture.HasActivePointers) InterruptMotion();
         _gesture.OnPointerCancelled(e, this);
     }
 
     /// <summary>通过共享识别器释放触点和识别状态，避免重挂载后出现残留拖动。</summary>
-    public void CancelPointers() => _gesture.Cancel();
+    public void CancelPointers() { InterruptMotion(); _gesture.Cancel(); }
 
     private void OnDeactivated(object? sender, EventArgs e) => CancelPointers();
 
@@ -291,8 +347,6 @@ public sealed class ExpressionGraphCanvas : Control
     {
         base.OnPointerWheelChanged(e);
         if (!IsInputAvailable) return;
-        if (e.KeyModifiers.HasFlag(KeyModifiers.Control)) Zoom(Math.Exp(e.Delta.Y * .12), e.GetPosition(this));
-        else Pan((e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? new Vector(e.Delta.Y, e.Delta.X) : e.Delta) * 48);
-        e.Handled = true;
+        e.Handled = SubmitViewportInput(new(ViewportInputKind.Wheel, e.Delta, 1, e.GetPosition(this), e.KeyModifiers), e.GetPosition(this));
     }
 }

@@ -24,6 +24,9 @@ public partial class ExpressionGraphEditorView : UserControl
     public ExpressionGraphEditorView()
     {
         InitializeComponent();
+        // 页内工具栏、详情和键盘操作也优先于尚未结束的视口运动，不清除识别器中的触点。
+        AddHandler(PointerPressedEvent, (_, _) => GraphCanvas.InterruptMotion(), RoutingStrategies.Tunnel, true);
+        AddHandler(KeyDownEvent, (_, _) => GraphCanvas.InterruptMotion(), RoutingStrategies.Tunnel, true);
         GraphCanvas.NodeSelected += key => { if (_vm != null) _vm.SelectedKey = key; };
         SizeChanged += (_, _) => QueueInspectorLayout();
         WorkArea.SizeChanged += (_, _) => QueueInspectorLayout();
