@@ -6,6 +6,7 @@ using Avalonia.Threading;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtauMobile.Controls.Tokens;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
+using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 
 namespace OpenUtauMobile.Controls
 {

@@ -110,10 +110,20 @@ public class DependencyManagerViewModel : NavigateViewModelBase, IDisposable
             ApplyFilterAndSort();
         }));
 
-        // 独立加载，离线索引超时不阻塞本地列表；延续 UI 上下文更新绑定集合。
-        _ = LoadInstalledPackagesAsync();
-        _ = LoadAvailablePackagesAsync();
+        _ = LoadInitialPackagesAsync();
 
+    }
+    private async Task LoadInitialPackagesAsync()
+    {
+        try
+        {
+            // 独立加载，在线索引超时不阻塞本地列表；保留各自的界面线程更新与异常处理。
+            await Task.WhenAll(LoadInstalledPackagesAsync(), LoadAvailablePackagesAsync());
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "依赖管理器初始加载失败");
+        }
     }
     private void OnPackagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {

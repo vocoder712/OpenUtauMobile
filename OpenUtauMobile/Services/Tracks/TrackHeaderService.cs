@@ -1,5 +1,6 @@
 using OpenUtauMobile.Services.Dialogs;
 using System.Threading.Tasks;
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using OpenUtau.Api;
@@ -56,6 +57,18 @@ public class TrackHeaderService : ITrackHeaderService
         {
             using RendererPickerViewModel vm = new(project, track);
             return await PopupService.Show<RendererSettingsSelection?>(new RendererPickerPopup(), vm);
+        });
+    }
+
+    public async Task<string?> PickRendererNameAsync(string[] supportedRenderers)
+    {
+        if (supportedRenderers.Length == 0) return null;
+        if (ServiceHub.DesktopRendererPicker != null) return await ServiceHub.DesktopRendererPicker(supportedRenderers);
+        return await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            OptionConfirmPopupViewModel vm = new(L.S("TrackSettings.Renderer"), string.Empty,
+                supportedRenderers.Select(renderer => new[] { new OptionConfirmOption(renderer, renderer) }));
+            return PopupService.Show<string?>(new OptionConfirmPopup(), vm);
         });
     }
 

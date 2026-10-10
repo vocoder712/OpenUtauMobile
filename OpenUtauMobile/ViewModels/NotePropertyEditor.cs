@@ -274,7 +274,8 @@ namespace OpenUtauMobile.ViewModels
 
             NotePropertyGroup expressions = AddGroup("Expressions");
             UTrack track = project.tracks[part.trackNo];
-            foreach (UExpressionDescriptor descriptor in ExpressionCatalog.GetSupportedTrackExpressions(project, track).Where(d => d.type is UExpressionType.Numerical or UExpressionType.Options))
+            foreach (UExpressionDescriptor descriptor in ExpressionCatalog.GetSupportedTrackExpressions(project, track)
+                         .Where(d => d.type is UExpressionType.Numerical or UExpressionType.Options))
             {
                 UExpressionDescriptor effective = descriptor.abbr == OpenUtau.Core.Format.Ustx.CLR && track.VoiceColorExp?.options.Length > 0 ? track.VoiceColorExp : descriptor;
                 decimal[] values = notes.SelectMany(n =>

@@ -700,11 +700,11 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
 
         foreach (UPhoneme phoneme in Part.phonemes)
         {
-            if (phoneme.Parent == null || phoneme.Parent.OverlapError || phoneme.Error)
+            if (phoneme.Parent == null || phoneme.Parent.OverlapError)
             {
                 continue;
             }
-            // 位置基准线
+            // 错误音素仍可调整位置以修复映射或时长问题，父音符重叠错误与绘制规则一致地排除。
             double posX = (Part.position + phoneme.position - TickOffset) * TickWidth;
             double distance = Math.Abs(pointerPos.X - posX);
             if (distance <= hitRadius * 0.75 && distance < nearestDistance

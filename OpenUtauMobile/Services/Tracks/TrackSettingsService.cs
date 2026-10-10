@@ -48,7 +48,7 @@ public sealed class TrackSettingsService
                     }
                     case TrackSettingsAction.PickRenderer:
                     {
-                        string? renderer = await TrackHeaderService.Inst.PickRendererAsync(viewModel.Renderers.ToArray());
+                        string? renderer = await TrackHeaderService.Inst.PickRendererNameAsync(viewModel.Renderers.ToArray());
                         if (renderer != null) viewModel.SetRenderer(renderer);
                         break;
                     }
