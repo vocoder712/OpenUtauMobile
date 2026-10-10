@@ -77,6 +77,7 @@ public partial class ExpressionGraphLibraryView : UserControl
         {
             Items =
             {
+                new MenuItem { Header = L.S("ExpressionGraph.Settings"), Command = vm.SettingsCommand, CommandParameter = item, IsEnabled = !vm.IsBusy && vm.IsCurrentProject },
                 new MenuItem { Header = L.S("ExpressionGraph.Export"), Command = vm.ExportCommand, CommandParameter = item, IsEnabled = !vm.IsBusy && vm.IsCurrentProject },
                 new MenuItem { Header = L.S("ExpressionGraph.Copy"), Command = vm.DuplicateCommand, CommandParameter = item },
                 new MenuItem { Header = L.S("Common.Delete"), Command = vm.DeleteCommand, CommandParameter = item },

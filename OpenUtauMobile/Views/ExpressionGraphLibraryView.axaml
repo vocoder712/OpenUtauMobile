@@ -54,7 +54,7 @@
                             <DataTemplate x:DataType="vm:ExpressionGraphLibraryItem">
                                 <Grid Margin="0,0,0,8">
                                     <Button Classes="GraphCard"
-                                            Command="{Binding $parent[UserControl].((vm:ExpressionGraphLibraryViewModel)DataContext).SettingsCommand}"
+                                            Command="{Binding $parent[UserControl].((vm:ExpressionGraphLibraryViewModel)DataContext).OpenGraphCommand}"
                                             CommandParameter="{Binding}" AutomationProperties.Name="{Binding Name}">
                                         <StackPanel Spacing="8">
                                             <Grid ColumnDefinitions="*,Auto,40" MinHeight="32" ColumnSpacing="8">

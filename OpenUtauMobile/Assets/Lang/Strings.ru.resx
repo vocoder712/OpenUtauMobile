@@ -2345,4 +2345,26 @@ Affected tracks will resolve their remaining references or use built-in behavior
   <data name="ExpressionGraph.ExportFailed" xml:space="preserve"><value>Ошибка экспорта: {0}</value></data>
   <data name="ExpressionGraph.Exported" xml:space="preserve"><value>Граф экспортирован в: {0}</value></data>
   <data name="ExpressionGraph.InvalidFileData" xml:space="preserve"><value>Файл графа содержит повреждённые или повторяющиеся данные.</value></data>
+  <data name="GraphViewer.ReadOnly" xml:space="preserve"><value>Read-only view</value></data>
+  <data name="GraphViewer.Search" xml:space="preserve"><value>Search</value></data>
+  <data name="GraphViewer.Fit" xml:space="preserve"><value>Fit graph</value></data>
+  <data name="GraphViewer.Locate" xml:space="preserve"><value>Locate</value></data>
+  <data name="GraphViewer.ZoomIn" xml:space="preserve"><value>Zoom in</value></data>
+  <data name="GraphViewer.ZoomOut" xml:space="preserve"><value>Zoom out</value></data>
+  <data name="GraphViewer.Canvas" xml:space="preserve"><value>Expression graph canvas</value></data>
+  <data name="GraphViewer.Details" xml:space="preserve"><value>Details</value></data>
+  <data name="GraphViewer.SearchHint" xml:space="preserve"><value>Node type, ID or parameter</value></data>
+  <data name="GraphViewer.SearchLimit" xml:space="preserve"><value>Up to 50 results. Type to narrow the search.</value></data>
+  <data name="GraphViewer.Input" xml:space="preserve"><value>Input</value></data>
+  <data name="GraphViewer.Output" xml:space="preserve"><value>Output</value></data>
+  <data name="GraphViewer.Fallback" xml:space="preserve"><value>Fallback</value></data>
+  <data name="GraphViewer.Diagnostic" xml:space="preserve"><value>Graph diagnostics</value></data>
+  <data name="GraphViewer.GraphMissing" xml:space="preserve"><value>This graph was removed from the project.</value></data>
+  <data name="GraphViewer.InvalidNode" xml:space="preserve"><value>Damaged node record</value></data>
+  <data name="GraphViewer.InvalidPosition" xml:space="preserve"><value>Invalid coordinates; displayed at the origin</value></data>
+  <data name="GraphViewer.UnknownNode" xml:space="preserve"><value>Unsupported node type</value></data>
+  <data name="GraphViewer.DuplicateId" xml:space="preserve"><value>Duplicate node ID; connected links are ambiguous</value></data>
+  <data name="GraphViewer.InvalidLink" xml:space="preserve"><value>Damaged or unsupported link</value></data>
+  <data name="GraphViewer.Unconnected" xml:space="preserve"><value>Unconnected</value></data>
+  <data name="GraphViewer.Empty" xml:space="preserve"><value>This graph has no nodes.</value></data>
 </root>

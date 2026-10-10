@@ -2390,4 +2390,26 @@
   <data name="ExpressionGraph.ExportFailed" xml:space="preserve"><value>导出失败：{0}</value></data>
   <data name="ExpressionGraph.Exported" xml:space="preserve"><value>表情图已导出到：{0}</value></data>
   <data name="ExpressionGraph.InvalidFileData" xml:space="preserve"><value>图文件包含损坏或重复的数据。</value></data>
+  <data name="GraphViewer.ReadOnly" xml:space="preserve"><value>只读查看</value></data>
+  <data name="GraphViewer.Search" xml:space="preserve"><value>查找</value></data>
+  <data name="GraphViewer.Fit" xml:space="preserve"><value>适应全图</value></data>
+  <data name="GraphViewer.Locate" xml:space="preserve"><value>定位</value></data>
+  <data name="GraphViewer.ZoomIn" xml:space="preserve"><value>放大</value></data>
+  <data name="GraphViewer.ZoomOut" xml:space="preserve"><value>缩小</value></data>
+  <data name="GraphViewer.Canvas" xml:space="preserve"><value>表情图画布</value></data>
+  <data name="GraphViewer.Details" xml:space="preserve"><value>详情</value></data>
+  <data name="GraphViewer.SearchHint" xml:space="preserve"><value>节点类型、ID 或参数</value></data>
+  <data name="GraphViewer.SearchLimit" xml:space="preserve"><value>最多显示 50 个结果；输入关键词缩小范围。</value></data>
+  <data name="GraphViewer.Input" xml:space="preserve"><value>输入</value></data>
+  <data name="GraphViewer.Output" xml:space="preserve"><value>输出</value></data>
+  <data name="GraphViewer.Fallback" xml:space="preserve"><value>回退值</value></data>
+  <data name="GraphViewer.Diagnostic" xml:space="preserve"><value>查看图诊断</value></data>
+  <data name="GraphViewer.GraphMissing" xml:space="preserve"><value>此图已从工程中删除。</value></data>
+  <data name="GraphViewer.InvalidNode" xml:space="preserve"><value>损坏的节点记录</value></data>
+  <data name="GraphViewer.InvalidPosition" xml:space="preserve"><value>节点坐标无效，临时显示在原点</value></data>
+  <data name="GraphViewer.UnknownNode" xml:space="preserve"><value>不支持此节点类型</value></data>
+  <data name="GraphViewer.DuplicateId" xml:space="preserve"><value>节点 ID 重复，关联连线无法确定</value></data>
+  <data name="GraphViewer.InvalidLink" xml:space="preserve"><value>损坏或不可识别的连线</value></data>
+  <data name="GraphViewer.Unconnected" xml:space="preserve"><value>未连接</value></data>
+  <data name="GraphViewer.Empty" xml:space="preserve"><value>此图没有节点。</value></data>
 </root>

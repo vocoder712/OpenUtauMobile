@@ -1,0 +1,100 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels"
+             xmlns:c="using:OpenUtauMobile.Controls"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Views.ExpressionGraphEditorView"
+             x:DataType="vm:ExpressionGraphEditorViewModel"
+             Background="{DynamicResource Sem.Color.Surface}">
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <Border Classes="TopBar">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Button Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
+                        ToolTip.Tip="{DynamicResource Common.Back}" AutomationProperties.Name="{DynamicResource Common.Back}" />
+                <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                <Button Grid.Column="2" Classes="TopBarBtn" Command="{Binding SettingsCommand}" IsEnabled="{Binding IsAvailable}"
+                        Content="{icons:PhosphorIcons Gear}" ToolTip.Tip="{DynamicResource ExpressionGraph.Settings}"
+                        AutomationProperties.Name="{DynamicResource ExpressionGraph.Settings}" />
+            </Grid>
+        </Border>
+        <StackPanel Grid.Row="1" Margin="16,0,16,4" Spacing="4">
+            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            <Button Content="{DynamicResource GraphViewer.Diagnostic}" Command="{Binding DiagnosticCommand}" Classes="text"
+                    HorizontalAlignment="Left" Foreground="{DynamicResource Sem.Color.Warning}"
+                    IsVisible="{Binding Diagnostic, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </StackPanel>
+        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,Auto,Auto" Margin="8,0,8,4" IsEnabled="{Binding IsAvailable}">
+            <Button Classes="text" Content="{DynamicResource GraphViewer.Search}" Command="{Binding SearchCommand}" />
+            <Button Grid.Column="1" Classes="text" Content="{DynamicResource GraphViewer.Fit}" Click="FitClicked" />
+            <Button Grid.Column="2" Classes="text" Content="{DynamicResource GraphViewer.Locate}" Click="LocateClicked" IsEnabled="{Binding HasSelection}" />
+            <Button Grid.Column="3" Classes="icon" Content="{icons:PhosphorIcons Minus}" Click="ZoomOutClicked"
+                    ToolTip.Tip="{DynamicResource GraphViewer.ZoomOut}" AutomationProperties.Name="{DynamicResource GraphViewer.ZoomOut}" />
+            <Button Grid.Column="4" Classes="icon" Content="{icons:PhosphorIcons Plus}" Click="ZoomInClicked"
+                    ToolTip.Tip="{DynamicResource GraphViewer.ZoomIn}" AutomationProperties.Name="{DynamicResource GraphViewer.ZoomIn}" />
+        </Grid>
+        <Grid Grid.Row="3" x:Name="WorkArea" RowDefinitions="*,Auto" ColumnDefinitions="*,Auto" ClipToBounds="True">
+            <c:ExpressionGraphCanvas x:Name="GraphCanvas" Scene="{Binding Scene}" Viewport="{Binding Viewport}"
+                    SelectedKey="{Binding SelectedKey}" IsEnabled="{Binding IsAvailable}"
+                    NodeBrush="{DynamicResource Sem.Color.SurfaceContainer}"
+                    InputBrush="{DynamicResource Sem.Color.PrimaryContainer}"
+                    OutputBrush="{DynamicResource Sem.Color.SecondaryContainer}"
+                    Foreground="{DynamicResource Sem.Color.OnSurface}"
+                    LineBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                    SelectionBrush="{DynamicResource Sem.Color.Primary}"
+                    AutomationProperties.Name="{DynamicResource GraphViewer.Canvas}" />
+            <TextBlock Text="{DynamicResource GraphViewer.Empty}" IsVisible="{Binding IsEmpty}" IsHitTestVisible="False"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16" TextWrapping="Wrap"
+                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            <Border x:Name="Inspector" Grid.Row="1" Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                    IsVisible="{Binding ShowInspector}" Padding="16,8">
+                <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                        <TextBlock Text="{Binding SelectedNode.Title}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Classes="text" Content="{DynamicResource GraphViewer.Details}" Command="{Binding ToggleDetailsCommand}"
+                                IsVisible="{Binding HasSelection}" />
+                        <Button Grid.Column="2" Classes="icon" Content="{icons:PhosphorIcons X}" Command="{Binding CloseInspectorCommand}"
+                                ToolTip.Tip="{DynamicResource Common.Close}" AutomationProperties.Name="{DynamicResource Common.Close}" />
+                    </Grid>
+                    <TextBox Grid.Row="1" x:Name="SearchBox" Text="{Binding Query, Mode=TwoWay}" PlaceholderText="{DynamicResource GraphViewer.SearchHint}"
+                             IsVisible="{Binding IsSearchOpen}" AutomationProperties.Name="{DynamicResource GraphViewer.Search}" />
+                    <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Spacing="8">
+                            <StackPanel IsVisible="{Binding IsSearchOpen}" Spacing="4">
+                                <TextBlock Text="{DynamicResource GraphViewer.SearchLimit}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                <ItemsControl ItemsSource="{Binding SearchResults}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:GraphSearchResult">
+                                            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0,0,4"
+                                                    Command="{Binding $parent[UserControl].((vm:ExpressionGraphEditorViewModel)DataContext).LocateCommand}"
+                                                    CommandParameter="{Binding Key}">
+                                                <StackPanel Spacing="4">
+                                                    <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="{Binding Summary}" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                </StackPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <TextBlock Text="{Binding SelectedNode.Summary}" TextWrapping="Wrap" IsVisible="{Binding !IsDetailsExpanded}" />
+                            <ItemsControl ItemsSource="{Binding Details}" IsVisible="{Binding IsDetailsExpanded}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:GraphNodeDetail">
+                                        <StackPanel Spacing="4" Margin="0,0,0,12">
+                                            <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                            <TextBlock Text="{Binding Value}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                            <Button Classes="text" Content="{DynamicResource GraphViewer.Locate}"
+                                                    HorizontalAlignment="Left" IsVisible="{Binding TargetKey, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                                    Command="{Binding $parent[UserControl].((vm:ExpressionGraphEditorViewModel)DataContext).LocateCommand}"
+                                                    CommandParameter="{Binding TargetKey}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

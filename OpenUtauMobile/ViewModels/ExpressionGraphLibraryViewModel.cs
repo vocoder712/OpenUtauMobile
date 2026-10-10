@@ -76,6 +76,7 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
     public ReactiveCommand<Unit, Unit> UndoCommand { get; }
     public ReactiveCommand<Unit, Unit> RedoCommand { get; }
     public ReactiveCommand<ExpressionGraphLibraryItem, Unit> SettingsCommand { get; }
+    public ReactiveCommand<ExpressionGraphLibraryItem, Unit> OpenGraphCommand { get; }
     public ReactiveCommand<ExpressionGraphLibraryItem, Unit> DuplicateCommand { get; }
     public ReactiveCommand<ExpressionGraphLibraryItem, Unit> DeleteCommand { get; }
     public ReactiveCommand<string, Unit> CreateCommand { get; }
@@ -93,6 +94,12 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
         RedoCommand = ReactiveCommand.Create(() => { if (CanRedo && CanEdit()) DocManager.Inst.Redo(); })
             .DisposeWith(_subscriptions);
         SettingsCommand = ReactiveCommand.CreateFromTask<ExpressionGraphLibraryItem>(ShowSettingsAsync).DisposeWith(_subscriptions);
+        OpenGraphCommand = ReactiveCommand.Create<ExpressionGraphLibraryItem>(item =>
+        {
+            if (!CanEdit() || Find(item.Id) == null) return;
+            IsCreationMenuOpen = false; _selectedId = item.Id;
+            Navigator.Navigate(new ExpressionGraphEditorViewModel(Navigator, _project, item.Id));
+        }).DisposeWith(_subscriptions);
         DuplicateCommand = ReactiveCommand.Create<ExpressionGraphLibraryItem>(Duplicate).DisposeWith(_subscriptions);
         DeleteCommand = ReactiveCommand.CreateFromTask<ExpressionGraphLibraryItem>(DeleteAsync).DisposeWith(_subscriptions);
         CreateCommand = ReactiveCommand.CreateFromTask<string>(CreateAsync).DisposeWith(_subscriptions);
