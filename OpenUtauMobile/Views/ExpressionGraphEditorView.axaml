@@ -46,15 +46,16 @@
         </StackPanel>
         <Grid Grid.Row="2" x:Name="WorkArea" RowDefinitions="*,Auto" ColumnDefinitions="*,Auto" ClipToBounds="True">
             <Grid x:Name="CanvasRegion" ClipToBounds="True">
-            <c:ExpressionGraphCanvas x:Name="GraphCanvas" Scene="{Binding Scene}" Viewport="{Binding Viewport}"
-                    SelectedKey="{Binding SelectedKey}" IsEnabled="{Binding IsAvailable}"
-                    NodeBrush="{DynamicResource Sem.Color.SurfaceContainer}"
-                    InputBrush="{DynamicResource Sem.Color.PrimaryContainer}"
-                    OutputBrush="{DynamicResource Sem.Color.SecondaryContainer}"
-                    Foreground="{DynamicResource Sem.Color.OnSurface}"
-                    LineBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                    SelectionBrush="{DynamicResource Sem.Color.Primary}"
-                    AutomationProperties.Name="{DynamicResource GraphViewer.Canvas}" />
+                <!-- 画布 -->
+                <c:ExpressionGraphCanvas x:Name="GraphCanvas" Scene="{Binding Scene}" Viewport="{Binding Viewport}"
+                                         SelectedKey="{Binding SelectedKey}" IsEnabled="{Binding IsAvailable}"
+                                         NodeBrush="{DynamicResource Sem.Color.SurfaceContainer}"
+                                         InputBrush="{DynamicResource Sem.Color.PrimaryContainer}"
+                                         OutputBrush="{DynamicResource Sem.Color.SecondaryContainer}"
+                                         Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                         LineBrush="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                         SelectionBrush="{DynamicResource Sem.Color.Primary}"
+                                         AutomationProperties.Name="{DynamicResource GraphViewer.Canvas}" />
             <TextBlock Text="{DynamicResource GraphViewer.Empty}" IsVisible="{Binding IsEmpty}" IsHitTestVisible="False"
                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16" TextWrapping="Wrap"
                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
@@ -63,20 +64,23 @@
                        FontSize="{x:Static semantic:TypographyTokens.TitleSSize}" FontWeight="Medium" LineHeight="20"
                        TextTrimming="CharacterEllipsis" MaxLines="1" IsHitTestVisible="False"
                        Foreground="{DynamicResource Sem.Color.OnSurface}" Background="{DynamicResource Sem.Color.Surface}" />
+            <!-- 操作工具栏 -->
             <Border x:Name="CanvasToolbar" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="16"
                     Height="64" Padding="8" CornerRadius="32" Background="{DynamicResource Sem.Color.SurfaceContainer}">
                 <StackPanel Orientation="Horizontal" Spacing="4" IsEnabled="{Binding IsAvailable}">
-                    <Button x:Name="AddTool" Classes="icon GraphTool" Command="{Binding AddNodeCommand}" Content="{icons:PhosphorIcons PlusSquare}" ToolTip.Tip="{DynamicResource GraphTopology.AddNode}" AutomationProperties.Name="{DynamicResource GraphTopology.AddNode}" />
+                    <Button x:Name="AddTool" Classes="icon GraphTool" Command="{Binding AddNodeCommand}" Content="{icons:PhosphorIcons Plus}" ToolTip.Tip="{DynamicResource GraphTopology.AddNode}" AutomationProperties.Name="{DynamicResource GraphTopology.AddNode}" />
                     <Button x:Name="SearchTool" Classes="icon GraphTool" Command="{Binding SearchCommand}" Content="{icons:PhosphorIcons MagnifyingGlass}" ToolTip.Tip="{DynamicResource GraphViewer.Search}" AutomationProperties.Name="{DynamicResource GraphViewer.Search}" />
                     <Button x:Name="FitTool" Classes="icon GraphTool" Click="FitClicked" Content="{icons:PhosphorIcons ArrowsOut}" ToolTip.Tip="{DynamicResource GraphViewer.Fit}" AutomationProperties.Name="{DynamicResource GraphViewer.Fit}" />
                     <Button x:Name="LocateTool" Classes="icon GraphTool" Click="LocateClicked" IsEnabled="{Binding HasSelection}" Content="{icons:PhosphorIcons Crosshair}" ToolTip.Tip="{DynamicResource GraphViewer.Locate}" AutomationProperties.Name="{DynamicResource GraphViewer.Locate}" />
-                    <Button x:Name="ZoomOutTool" Classes="icon GraphTool" Click="ZoomOutClicked" Content="{icons:PhosphorIcons Minus}" ToolTip.Tip="{DynamicResource GraphViewer.ZoomOut}" AutomationProperties.Name="{DynamicResource GraphViewer.ZoomOut}" />
-                    <Button x:Name="ZoomInTool" Classes="icon GraphTool" Click="ZoomInClicked" Content="{icons:PhosphorIcons Plus}" ToolTip.Tip="{DynamicResource GraphViewer.ZoomIn}" AutomationProperties.Name="{DynamicResource GraphViewer.ZoomIn}" />
+                    <Button x:Name="ZoomOutTool" Classes="icon GraphTool" Click="ZoomOutClicked" Content="{icons:PhosphorIcons MagnifyingGlassMinus}" ToolTip.Tip="{DynamicResource GraphViewer.ZoomOut}" AutomationProperties.Name="{DynamicResource GraphViewer.ZoomOut}" />
+                    <Button x:Name="ZoomInTool" Classes="icon GraphTool" Click="ZoomInClicked" Content="{icons:PhosphorIcons MagnifyingGlassPlus}" ToolTip.Tip="{DynamicResource GraphViewer.ZoomIn}" AutomationProperties.Name="{DynamicResource GraphViewer.ZoomIn}" />
                     <Button x:Name="OverflowTool" Classes="icon GraphTool" Click="OverflowClicked" Content="{icons:PhosphorIcons DotsThree}" ToolTip.Tip="{DynamicResource Editor.More}" AutomationProperties.Name="{DynamicResource Editor.More}" />
                 </StackPanel>
             </Border>
             </Grid>
-            <Border x:Name="Inspector" Grid.Row="1" Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+            <!-- Inspector 面板 -->
+            <Border x:Name="Inspector" Grid.Row="1" Grid.Column="0"
+                    Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
                     IsVisible="{Binding ShowInspector}" Padding="16,8">
                 <Grid RowDefinitions="Auto,Auto,*" RowSpacing="8">
                     <Grid ColumnDefinitions="*,Auto">
@@ -150,7 +154,9 @@
                     </ScrollViewer>
                 </Grid>
             </Border>
-            <Canvas x:Name="SplitOverlay" Grid.RowSpan="2" Grid.ColumnSpan="2" IsVisible="{Binding ShowInspector}">
+            <!-- 拖拽调整 Inspector 大小的手柄 -->
+            <Canvas x:Name="SplitOverlay" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" Grid.Column="0"
+                    IsVisible="{Binding ShowInspector}">
                 <Grid x:Name="InspectorHandle" Width="{x:Static local:ViewConstants.EditorSplitHandleWidth}"
                       Height="{x:Static local:ViewConstants.EditorSplitHandleHeight}" RenderTransformOrigin="50%,50%"
                       Background="Transparent" ToolTip.Tip="{DynamicResource GraphEdit.ResizePanel}" AutomationProperties.Name="{DynamicResource GraphEdit.ResizePanel}">
