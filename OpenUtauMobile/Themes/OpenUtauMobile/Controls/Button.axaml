@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:CompileBindings="False"
                     xmlns:components="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
                     xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
-                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+                    xmlns:chrome="using:OpenUtauMobile.Themes.OpenUtauMobile.Controls">
   <!-- 所有按钮复用同一个模板和状态机；外部样式只设置角色与布局。 -->
   <ControlTheme x:Key="{x:Type Button}" TargetType="Button">
     <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
@@ -24,7 +25,8 @@
         <Panel Name="PART_Root">
           <Border Name="PART_Chrome" Background="{TemplateBinding Background}"
                   BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                  CornerRadius="{TemplateBinding CornerRadius}" />
+                  CornerRadius="{TemplateBinding CornerRadius}"
+                  BoxShadow="{TemplateBinding chrome:ButtonChrome.BoxShadow}" />
           <Border Name="PART_StateLayer" Background="{TemplateBinding Foreground}"
                   CornerRadius="{TemplateBinding CornerRadius}" IsHitTestVisible="False" Opacity="0" />
           <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"

@@ -2153,14 +2153,8 @@
   <data name="RendererSettings.Graph.Default" xml:space="preserve">
     <value>По умолчанию для проекта</value>
   </data>
-  <data name="RendererSettings.Graph.Off" xml:space="preserve">
-    <value>Отключить граф выражений</value>
-  </data>
   <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
     <value>Недоступен: {0}</value>
-  </data>
-  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
-    <value>Граф выражений отключён.</value>
   </data>
   <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
     <value>Нет активного графа выражений.</value>
@@ -2291,4 +2285,118 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>Не удалось отменить удаление</value>
   </data>
+  <data name="ExpressionGraph.Title" xml:space="preserve"><value>Expression graphs</value></data>
+  <data name="ExpressionGraph.LibraryTitle" xml:space="preserve"><value>Графы выражений проекта</value></data>
+  <data name="ExpressionGraph.AllRenderers" xml:space="preserve"><value>All renderers</value></data>
+  <data name="ExpressionGraph.RendererFilter" xml:space="preserve"><value>Filter by renderer</value></data>
+  <data name="ExpressionGraph.OtherRenderers" xml:space="preserve"><value>Other renderers</value></data>
+  <data name="ExpressionGraph.Create" xml:space="preserve"><value>Create expression graph</value></data>
+  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>Choose a renderer to create a graph. If its family has no default, a new preset graph becomes the default for tracks following it.</value></data>
+  <data name="ExpressionGraph.NewName" xml:space="preserve"><value>{0} graph</value></data>
+  <data name="ExpressionGraph.CopyName" xml:space="preserve"><value>{0} (copy)</value></data>
+  <data name="ExpressionGraph.Copy" xml:space="preserve"><value>Клонировать</value></data>
+  <data name="ExpressionGraph.NoRenderer" xml:space="preserve"><value>No renderer specified</value></data>
+  <data name="ExpressionGraph.ReferenceCount" xml:space="preserve"><value>Referenced by {0} tracks</value></data>
+  <data name="ExpressionGraph.Valid" xml:space="preserve"><value>Status: valid</value></data>
+  <data name="ExpressionGraph.Invalid" xml:space="preserve"><value>Status: invalid — {0}</value></data>
+  <data name="ExpressionGraph.DefaultBadge" xml:space="preserve"><value>Граф по умолчанию: {0}</value></data>
+  <data name="ExpressionGraph.DefaultFor" xml:space="preserve"><value>Default for {0}</value></data>
+  <data name="ExpressionGraph.FollowingTrack" xml:space="preserve"><value>{0} · follows default</value></data>
+  <data name="ExpressionGraph.ExplicitTrack" xml:space="preserve"><value>{0} · explicit reference</value></data>
+  <data name="ExpressionGraph.Unused" xml:space="preserve"><value>No tracks reference this graph.</value></data>
+  <data name="ExpressionGraph.FollowDefault" xml:space="preserve"><value>Follows default</value></data>
+  <data name="ExpressionGraph.Explicit" xml:space="preserve"><value>Explicit selection</value></data>
+  <data name="ExpressionGraph.Builtin" xml:space="preserve"><value>Uses built-in behavior</value></data>
+  <data name="ExpressionGraph.DefaultProblem" xml:space="preserve"><value>Default for {0}: {1}</value></data>
+  <data name="ExpressionGraph.Empty" xml:space="preserve"><value>This project has no expression graphs. Use the floating button to create one.</value></data>
+  <data name="ExpressionGraph.FilterEmpty" xml:space="preserve"><value>No expression graphs for this renderer family.</value></data>
+  <data name="ExpressionGraph.Settings" xml:space="preserve"><value>Graph settings</value></data>
+  <data name="ExpressionGraph.Name" xml:space="preserve"><value>Graph name</value></data>
+  <data name="ExpressionGraph.PitchTarget" xml:space="preserve"><value>Curve for editing and loading pitch</value></data>
+  <data name="ExpressionGraph.PitchDeviation" xml:space="preserve"><value>Pitch deviation (PITD)</value></data>
+  <data name="ExpressionGraph.PitchOverride" xml:space="preserve"><value>Pitch override (PITO)</value></data>
+  <data name="ExpressionGraph.SetDefault" xml:space="preserve"><value>Default graph for this renderer family</value></data>
+  <data name="ExpressionGraph.References" xml:space="preserve"><value>References and usage</value></data>
+  <data name="ExpressionGraph.DefaultImpact" xml:space="preserve"><value>Applying will change the default graph for these tracks: {0}</value></data>
+  <data name="ExpressionGraph.PageActions" xml:space="preserve"><value>Library actions</value></data>
+  <data name="ExpressionGraph.GraphActions" xml:space="preserve"><value>Graph actions</value></data>
+  <data name="ExpressionGraph.UndoProject" xml:space="preserve"><value>Undo project action</value></data>
+  <data name="ExpressionGraph.RedoProject" xml:space="preserve"><value>Redo project action</value></data>
+  <data name="ExpressionGraph.DeleteTitle" xml:space="preserve"><value>Delete expression graph</value></data>
+  <data name="ExpressionGraph.DeleteMessage" xml:space="preserve"><value>Deleting “{0}” clears its default and track override references.
+
+{1}
+
+Affected tracks will resolve their remaining references or use built-in behavior. You can undo this action.</value></data>
+  <data name="ExpressionGraph.StaleProject" xml:space="preserve"><value>The project changed. Return to the editor and reopen the library.</value></data>
+  <data name="ExpressionGraph.StaleSettings" xml:space="preserve"><value>The graph or its references changed. Close and reopen settings before editing.</value></data>
+  <data name="ExpressionGraph.Busy" xml:space="preserve"><value>Another project action is being committed. Try again shortly.</value></data>
+  <data name="ExpressionGraph.NameRequired" xml:space="preserve"><value>Enter a graph name.</value></data>
+  <data name="FabMenu.Close" xml:space="preserve"><value>Close creation menu</value></data>
+  <data name="FabMenu.Expanded" xml:space="preserve"><value>Menu expanded</value></data>
+  <data name="FabMenu.Collapsed" xml:space="preserve"><value>Menu collapsed</value></data>
+  <data name="ExpressionGraph.ReferenceWarnings" xml:space="preserve"><value>Reference warnings ({0})</value></data>
+  <data name="ExpressionGraph.Import" xml:space="preserve"><value>Импорт графа экспрессий</value></data>
+  <data name="ExpressionGraph.Export" xml:space="preserve"><value>Экспорт графа экспрессий</value></data>
+  <data name="ExpressionGraph.Imported" xml:space="preserve"><value>Граф «{0}» импортирован.</value></data>
+  <data name="ExpressionGraph.ImportAdded" xml:space="preserve"><value>Добавлены определения экспрессий: {0}</value></data>
+  <data name="ExpressionGraph.ImportConflicts" xml:space="preserve"><value>Конфликтующие определения; сохранены определения проекта: {0}</value></data>
+  <data name="ExpressionGraph.ImportFailed" xml:space="preserve"><value>Ошибка импорта: {0}</value></data>
+  <data name="ExpressionGraph.ExportFailed" xml:space="preserve"><value>Ошибка экспорта: {0}</value></data>
+  <data name="ExpressionGraph.Exported" xml:space="preserve"><value>Граф экспортирован в: {0}</value></data>
+  <data name="ExpressionGraph.InvalidFileData" xml:space="preserve"><value>Файл графа содержит повреждённые или повторяющиеся данные.</value></data>
+  <data name="GraphViewer.ReadOnly" xml:space="preserve"><value>Read-only view</value></data>
+  <data name="GraphViewer.Search" xml:space="preserve"><value>Search</value></data>
+  <data name="GraphViewer.Fit" xml:space="preserve"><value>Fit graph</value></data>
+  <data name="GraphViewer.Locate" xml:space="preserve"><value>Locate</value></data>
+  <data name="GraphViewer.ZoomIn" xml:space="preserve"><value>Zoom in</value></data>
+  <data name="GraphViewer.ZoomOut" xml:space="preserve"><value>Zoom out</value></data>
+  <data name="GraphViewer.Canvas" xml:space="preserve"><value>Expression graph canvas</value></data>
+  <data name="GraphViewer.Details" xml:space="preserve"><value>Details</value></data>
+  <data name="GraphViewer.SearchHint" xml:space="preserve"><value>Node type, ID or parameter</value></data>
+  <data name="GraphViewer.SearchLimit" xml:space="preserve"><value>Up to 50 results. Type to narrow the search.</value></data>
+  <data name="GraphViewer.Input" xml:space="preserve"><value>Input</value></data>
+  <data name="GraphViewer.Output" xml:space="preserve"><value>Output</value></data>
+  <data name="GraphViewer.Fallback" xml:space="preserve"><value>Fallback</value></data>
+  <data name="GraphViewer.Diagnostic" xml:space="preserve"><value>Graph diagnostics</value></data>
+  <data name="GraphViewer.GraphMissing" xml:space="preserve"><value>This graph was removed from the project.</value></data>
+  <data name="GraphViewer.InvalidNode" xml:space="preserve"><value>Damaged node record</value></data>
+  <data name="GraphViewer.InvalidPosition" xml:space="preserve"><value>Invalid coordinates; displayed at the origin</value></data>
+  <data name="GraphViewer.UnknownNode" xml:space="preserve"><value>Unsupported node type</value></data>
+  <data name="GraphViewer.DuplicateId" xml:space="preserve"><value>Duplicate node ID; connected links are ambiguous</value></data>
+  <data name="GraphViewer.InvalidLink" xml:space="preserve"><value>Damaged or unsupported link</value></data>
+  <data name="GraphViewer.Unconnected" xml:space="preserve"><value>Unconnected</value></data>
+  <data name="GraphViewer.Empty" xml:space="preserve"><value>This graph has no nodes.</value></data>
+  <data name="GraphEdit.Parameters" xml:space="preserve"><value>Node parameters</value></data>
+  <data name="GraphEdit.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="GraphEdit.Reload" xml:space="preserve"><value>Cancel / reload</value></data>
+  <data name="GraphEdit.Conflict" xml:space="preserve"><value>This node changed while you were editing. Cancel / reload before editing again.</value></data>
+  <data name="GraphEdit.MissingChoice" xml:space="preserve"><value>{0} (unavailable)</value></data>
+  <data name="GraphEdit.InvalidNumber" xml:space="preserve"><value>Enter a finite number using a decimal point.</value></data>
+  <data name="GraphEdit.InvalidChoice" xml:space="preserve"><value>Select an available value.</value></data>
+  <data name="GraphEdit.Range" xml:space="preserve"><value>Enter a value between {0} and {1}.</value></data>
+  <data name="GraphEdit.OverriddenFallback" xml:space="preserve"><value>Fallback value. The connected source currently overrides this value.</value></data>
+  <data name="GraphEdit.OptionalNumber" xml:space="preserve"><value>Leave empty to use the node's built-in fallback.</value></data>
+  <data name="GraphTopology.AddNode" xml:space="preserve"><value>Add node</value></data>
+  <data name="GraphTopology.DeleteNode" xml:space="preserve"><value>Delete node</value></data>
+  <data name="GraphTopology.ChangeSource" xml:space="preserve"><value>Change source</value></data>
+  <data name="GraphTopology.Disconnect" xml:space="preserve"><value>Disconnect</value></data>
+  <data name="GraphTopology.DeleteMessage" xml:space="preserve"><value>Delete {0} and its {1} connected links? You can undo this.</value></data>
+  <data name="GraphTopology.Stale" xml:space="preserve"><value>The graph changed. Cancel and reopen this operation.</value></data>
+  <data name="GraphTopology.InvalidLink" xml:space="preserve"><value>Cannot connect: invalid port or a cycle would form. The existing connection is unchanged.</value></data>
+  <data name="GraphTopology.SourceMessage" xml:space="preserve"><value>{0} · {1}
+Current source: {2}
+Applying replaces the source of this input.</value></data>
+  <data name="GraphTopology.Search" xml:space="preserve"><value>Search type, node ID or output port</value></data>
+  <data name="GraphTopology.Results" xml:space="preserve"><value>{0} results</value></data>
+  <data name="GraphTopology.MoreResults" xml:space="preserve"><value>{0} results; showing the first 100. Search to narrow the list.</value></data>
+  <data name="GraphTopology.TemplateHint" xml:space="preserve"><value>Add nodes and connections to an empty graph to produce outputs. It is not automatically made the default.</value></data>
+  <data name="GraphTopology.PresetGraph" xml:space="preserve"><value>Preset graph</value></data>
+  <data name="GraphTopology.EmptyGraph" xml:space="preserve"><value>Empty graph</value></data>
+  <data name="GraphTopology.EmptyName" xml:space="preserve"><value>{0} empty graph</value></data>
+  <data name="GraphTopology.Editing" xml:space="preserve"><value>Graph editing</value></data>
+  <data name="GraphTopology.Unavailable" xml:space="preserve"><value>Incomplete or unavailable</value></data>
+  <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
+  <data name="GraphEdit.Title" xml:space="preserve"><value>Редактор графа</value></data>
+  <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>Изменить размер панели свойств</value></data>
 </root>

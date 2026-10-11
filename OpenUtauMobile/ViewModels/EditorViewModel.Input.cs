@@ -1,6 +1,6 @@
-using Avalonia;
 using System;
 using System.Threading.Tasks;
+using Avalonia;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;

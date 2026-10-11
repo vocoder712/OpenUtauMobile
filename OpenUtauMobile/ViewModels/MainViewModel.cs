@@ -1,11 +1,13 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtau.Core;
+using OpenUtau.Core.Pipeline;
+using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
 
@@ -237,11 +239,23 @@ public class MainViewModel : ViewModelBase
     /// <returns>当前工程允许退出时返回 true。</returns>
     public async Task<bool> ConfirmCloseAsync()
     {
-        if (CurrentViewModel is EditorViewModel editorViewModel)
+        // 遍历导航栈，确认所有编辑器页面是否允许退出。
+        foreach (NavigateViewModelBase page in _navigationStack)
         {
-            return await editorViewModel.ConfirmExitAsync();
+            if (page is not EditorViewModel editorViewModel)
+            {
+                continue;
+            }
+    
+            // 缓存当前工程和修订版本引用
+            UProject project = DocManager.Inst.Project;
+            DocRevision revision = DocManager.Inst.Revision;
+            bool confirmed = await editorViewModel.ConfirmExitAsync();
+    
+            // 弹窗等待期间可能替换工程或提交新修改，旧确认不能授权关闭新状态。
+            return confirmed && _navigationStack.Contains(editorViewModel) &&
+                   ReferenceEquals(project, DocManager.Inst.Project) && revision == DocManager.Inst.Revision;
         }
-
         return true;
     }
 }

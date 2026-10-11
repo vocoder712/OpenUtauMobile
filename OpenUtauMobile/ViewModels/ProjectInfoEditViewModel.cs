@@ -1,6 +1,6 @@
-﻿using OpenUtauMobile.Services.Dialogs;
-using System.Reactive;
+﻿using System.Reactive;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

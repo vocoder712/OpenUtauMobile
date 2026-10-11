@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels" xmlns:c="using:OpenUtauMobile.Controls"
+             x:Class="OpenUtauMobile.Controls.ExpressionGraphRendererPickerPopup"
+             x:DataType="vm:ExpressionGraphRendererPickerViewModel" Classes="PopupDialogRoot">
+    <c:DialogShell Header="{DynamicResource ExpressionGraph.Create}" CloseCommand="{Binding CancelCommand}">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{DynamicResource ExpressionGraph.CreateHint}" TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding Renderers}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Button Content="{Binding}" Classes="DialogAction" HorizontalAlignment="Stretch"
+                                        Command="{Binding $parent[UserControl].((vm:ExpressionGraphRendererPickerViewModel)DataContext).SelectCommand}"
+                                        CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </c:DialogShell>
+</UserControl>

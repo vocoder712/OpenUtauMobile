@@ -1,4 +1,3 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -10,6 +9,7 @@ using OpenUtau.Core.Util;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -161,8 +161,9 @@ public class HomeViewModel : NavigateViewModelBase
     private void OpenRecovery()
     {
         if (string.IsNullOrEmpty(RecoveryPath)) return;
-        DismissRecovery();
-        Navigator.Navigate(new EditorViewModel(Navigator, new ProjectOpenOptions(RecoveryPath)));
+        RecoveryBannerDismissed = true;
+        RecoveryBannerHeight = 0;
+        Navigator.Navigate(new EditorViewModel(Navigator, new ProjectOpenOptions(RecoveryPath, ProjectOpenKind.Recovery)));
     }
 
     private void DismissRecovery()

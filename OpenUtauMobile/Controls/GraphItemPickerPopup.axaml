@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels" xmlns:c="using:OpenUtauMobile.Controls"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Controls.GraphItemPickerPopup" x:DataType="vm:GraphItemPickerViewModel"
+             Classes="PopupDialogRoot DialogHeightList">
+    <c:DialogShell Header="{Binding Title}" CloseCommand="{Binding CancelCommand}">
+        <c:DialogShell.Footer>
+            <c:DialogActionRow>
+                <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
+                <Button Content="{DynamicResource Expressions.Apply}" Command="{Binding ConfirmCommand}" IsEnabled="{Binding CanConfirm}"
+                        Classes="DialogPrimary" c:DialogShell.IsDefaultAction="True" />
+            </c:DialogActionRow>
+        </c:DialogShell.Footer>
+        <Grid RowDefinitions="Auto,*">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBox Text="{Binding Query, Mode=TwoWay}" PlaceholderText="{DynamicResource GraphTopology.Search}"
+                             AutomationProperties.Name="{DynamicResource GraphTopology.Search}" />
+                    <TextBlock Text="{Binding CountHint}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}"
+                               IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+            <ScrollViewer x:Name="ItemScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                <Border Classes="DialogBodyBorder">
+                    <ItemsControl ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:GraphPickerItem">
+                                <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Margin="0,0,0,8"
+                                        Command="{Binding $parent[UserControl].((vm:GraphItemPickerViewModel)DataContext).SelectCommand}" CommandParameter="{Binding}">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                        </StackPanel>
+                                        <ContentControl Grid.Column="1" Content="{icons:PhosphorIcons Check}" IsVisible="{Binding IsSelected}" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </ScrollViewer>
+        </Grid>
+    </c:DialogShell>
+</UserControl>

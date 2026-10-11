@@ -1,9 +1,9 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Reactive;
 using System.Threading;
 using Avalonia.Threading;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 

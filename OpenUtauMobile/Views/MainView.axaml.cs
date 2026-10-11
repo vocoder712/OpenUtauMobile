@@ -1,10 +1,10 @@
-﻿using OpenUtauMobile.Services.Dialogs;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using DialogHostAvalonia;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Views;

@@ -1,7 +1,7 @@
 ﻿using System.Reactive;
-using ReactiveUI;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
+using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -14,7 +14,8 @@ public enum EditorMoreAction
     SaveAsTemplate, // 保存为模板
     SaveAs, // 另存为
     Undo,
-    Redo
+    Redo,
+    ExpressionGraphs
 }
 
 public class EditorMoreViewModel : PopupViewModelBase

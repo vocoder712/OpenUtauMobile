@@ -1,5 +1,3 @@
-using OpenUtauMobile.Services.Tracks;
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,8 +19,9 @@ using OpenUtauMobile.Controls;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Storage;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -544,6 +543,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     project.FilePath = string.Empty;
                     project.Saved = false;
                     break;
+                case ProjectOpenKind.Recovery:
+                    // 强制另存为
+                    project.FilePath = string.Empty;
+                    project.Saved = false;
+                    break;
                 case ProjectOpenKind.Normal:
                 default:
                     break;
@@ -772,6 +776,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         switch (action)
         {
+            case EditorMoreAction.ExpressionGraphs:
+                if (_disposed || IsLoadingProject || Navigator.CurrentViewModel != this) break;
+                UProject graphProject = DocManager.Inst.Project;
+                Navigator.Navigate(new ExpressionGraphLibraryViewModel(Navigator, graphProject));
+                break;
             case EditorMoreAction.Undo:
                 Undo();
                 break;

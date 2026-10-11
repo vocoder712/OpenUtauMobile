@@ -1,4 +1,3 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,6 +21,7 @@ using OpenUtauMobile.Controls;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;

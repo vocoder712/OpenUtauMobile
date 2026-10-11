@@ -72,9 +72,11 @@ public class GestureInterpreter
     /// 相近 → 双轴同步；双轴都太近 → 放弃缩放（只保留平移）。
     /// 策略在整轮捏合期间固定不变。
     /// </param>
-    public GestureInterpreter(bool enableAxisLock = false)
+    /// <param name="uniformScale">按双指欧氏距离等比缩放，优先于锁轴；默认仍使用现有分轴行为。</param>
+    public GestureInterpreter(bool enableAxisLock = false, bool uniformScale = false)
     {
         EnableAxisLock = enableAxisLock;
+        UniformScale = uniformScale;
     }
 
     #region 阈值（可由外部配置）
@@ -83,6 +85,8 @@ public class GestureInterpreter
     /// 是否启用捏合轴意图锁定（由构造时传入，运行期只读）。
     /// </summary>
     public bool EnableAxisLock { get; }
+    /// <summary>为图画布等二维场景输出相同的 scaleX/scaleY，不改变默认调用方。</summary>
+    public bool UniformScale { get; }
 
     /// <summary>单指拖拽判定阈值（px）。移动超过此距离才进入拖拽状态。</summary>
     public double DragThreshold { get; set; } = 6.0;
@@ -184,6 +188,7 @@ public class GestureInterpreter
     private bool _isPinching;
     private double _pinchPrevDistX;
     private double _pinchPrevDistY;
+    private double _pinchPrevDistance;
 
     private Point _pinchPrevCenter;
 
@@ -316,7 +321,12 @@ public class GestureInterpreter
     public void OnPointerCancelled(PointerCaptureLostEventArgs e, Control relativeTo)
     {
         if (!_touches.ContainsKey(e.Pointer)) return;
+        Cancel();
+    }
 
+    /// <summary>离页、失活或弹窗打开时统一结束手势并释放全部捕获。</summary>
+    public void Cancel()
+    {
         List<IPointer> cancelledPointers = [.. _touches.Keys];
 
         // 捕获丢失意味着平台不再保证其余触点仍会收到 Released。
@@ -343,6 +353,7 @@ public class GestureInterpreter
         _isPinching = false;
         _isDragging = false;
         _state = GestureState.Idle;
+        _waitingSecondTap = false;
     }
 
     #endregion
@@ -429,6 +440,7 @@ public class GestureInterpreter
 
         _pinchPrevDistX = Math.Max(rawDistX, MinPinchDist);
         _pinchPrevDistY = Math.Max(rawDistY, MinPinchDist);
+        _pinchPrevDistance = UniformScale ? Math.Max(new Vector(rawDistX, rawDistY).Length, MinPinchDist) : 0;
         _pinchPrevCenter = new Point((p0.X + p1.X) * 0.5, (p0.Y + p1.Y) * 0.5);
 
         if (EnableAxisLock)
@@ -452,6 +464,7 @@ public class GestureInterpreter
         Point center = new((p0.X + p1.X) * 0.5, (p0.Y + p1.Y) * 0.5);
         double curDistX = Math.Max(Math.Abs(p1.X - p0.X), MinPinchDist);
         double curDistY = Math.Max(Math.Abs(p1.Y - p0.Y), MinPinchDist);
+        double distance = UniformScale ? Math.Max(new Vector(p1.X - p0.X, p1.Y - p0.Y).Length, MinPinchDist) : 0;
 
         double scaleX = curDistX / _pinchPrevDistX;
         double scaleY = curDistY / _pinchPrevDistY;
@@ -463,11 +476,16 @@ public class GestureInterpreter
         {
             _pinchPrevDistX = curDistX;
             _pinchPrevDistY = curDistY;
+            _pinchPrevDistance = distance;
             _pinchPrevCenter = center;
             return;
         }
 
-        if (EnableAxisLock)
+        if (UniformScale)
+        {
+            scaleX = scaleY = distance / _pinchPrevDistance;
+        }
+        else if (EnableAxisLock)
         {
             switch (_pinchAxisMode)
             {
@@ -492,6 +510,7 @@ public class GestureInterpreter
 
         _pinchPrevDistX = curDistX;
         _pinchPrevDistY = curDistY;
+        _pinchPrevDistance = distance;
         _pinchPrevCenter = center;
 
         e.Handled = true;
