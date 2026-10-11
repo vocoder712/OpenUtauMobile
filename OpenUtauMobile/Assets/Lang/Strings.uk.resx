@@ -1058,6 +1058,12 @@
   <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>Фонетика</value></data>
   <data name="LyricEdit.NoSinger" xml:space="preserve"><value>Банк не призначено або не завантажено</value></data>
   <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>Відповідних варіантів немає</value></data>
+  <data name="Settings.Edit.DesktopMode" xml:space="preserve">
+    <value>Режим робочого столу</value>
+  </data>
+  <data name="Settings.Edit.DesktopMode.Desc" xml:space="preserve">
+    <value>Використовувати інтерфейс для комп’ютера. Вимкніть, щоб використовувати мобільний інтерфейс. Перезапустіть застосунок для застосування.</value>
+  </data>
   <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>Помічник для тексту</value></data>
   <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>Перетворює введений текст на кану, романізацію або фонеми.</value></data>
   <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>Також пропонувати результат у квадратних дужках</value></data>

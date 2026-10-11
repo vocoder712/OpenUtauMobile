@@ -1135,6 +1135,12 @@
   <data name="LyricEdit.PhoneticSource" xml:space="preserve"><value>音标</value></data>
   <data name="LyricEdit.NoSinger" xml:space="preserve"><value>尚未分配或加载歌手</value></data>
   <data name="LyricEdit.NoSuggestions" xml:space="preserve"><value>没有匹配的候选</value></data>
+  <data name="Settings.Edit.DesktopMode" xml:space="preserve">
+    <value>桌面模式</value>
+  </data>
+  <data name="Settings.Edit.DesktopMode.Desc" xml:space="preserve">
+    <value>使用桌面界面；关闭后使用移动界面。重启应用后生效。</value>
+  </data>
   <data name="Settings.Edit.LyricsHelper" xml:space="preserve"><value>歌词助手</value></data>
   <data name="Settings.Edit.LyricsHelper.Desc" xml:space="preserve"><value>将输入的歌词转换为假名、罗马字或音素。</value></data>
   <data name="Settings.Edit.LyricsHelper.Brackets" xml:space="preserve"><value>同时提供带方括号的转换结果</value></data>

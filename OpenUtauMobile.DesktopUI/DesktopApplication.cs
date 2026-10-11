@@ -1,11 +1,19 @@
+using OpenUtau.Core.Util;
 using OpenUtauMobile.Services;
 
 namespace OpenUtauMobile.DesktopUI
 {
     public static class DesktopApplication
     {
+        /// <summary>启动时按桌面模式偏好注册窗口、输入和文件操作能力。</summary>
         public static void Register()
         {
+            if (!Preferences.Default.DesktopModeEnabled)
+            {
+                ServiceHub.DesktopWindowFactory = null;
+                return;
+            }
+
             ServiceHub.UseDesktopFileWorkflows = true;
             ServiceHub.DesktopPointerDragFactory = Services.DesktopPointerDrag.Create;
             ServiceHub.DesktopSingerPicker = Views.DesktopTrackPickers.PickSingerAsync;
