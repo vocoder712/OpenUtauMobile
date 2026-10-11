@@ -2059,14 +2059,8 @@
   <data name="RendererSettings.Graph.Default" xml:space="preserve">
     <value>跟随工程默认</value>
   </data>
-  <data name="RendererSettings.Graph.Off" xml:space="preserve">
-    <value>关闭表情图</value>
-  </data>
   <data name="RendererSettings.Graph.Unavailable" xml:space="preserve">
     <value>不可用：{0}</value>
-  </data>
-  <data name="RendererSettings.Graph.Disabled" xml:space="preserve">
-    <value>已关闭表情图。</value>
   </data>
   <data name="RendererSettings.Graph.NoEffective" xml:space="preserve">
     <value>当前没有生效的表情图。</value>
@@ -2305,4 +2299,118 @@
   <data name="NoteProperties.PhonemizerUnavailable" xml:space="preserve"><value>音素器不可用：{0}</value></data>
   <data name="Picker.Phonemizer.Empty" xml:space="preserve"><value>没有可用的音素器。</value></data>
   <data name="SingerManagement.NoResults" xml:space="preserve"><value>没有匹配的歌手。</value></data>
+  <data name="ExpressionGraph.Title" xml:space="preserve"><value>表情图</value></data>
+  <data name="ExpressionGraph.LibraryTitle" xml:space="preserve"><value>工程表情图管理</value></data>
+  <data name="ExpressionGraph.AllRenderers" xml:space="preserve"><value>全部渲染器</value></data>
+  <data name="ExpressionGraph.RendererFilter" xml:space="preserve"><value>筛选渲染器</value></data>
+  <data name="ExpressionGraph.OtherRenderers" xml:space="preserve"><value>其他渲染器</value></data>
+  <data name="ExpressionGraph.Create" xml:space="preserve"><value>创建表情图</value></data>
+  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>选择渲染器创建图；该家族没有默认图时，新预设图会成为默认图，并作用于跟随默认的轨道。</value></data>
+  <data name="ExpressionGraph.NewName" xml:space="preserve"><value>{0} 图</value></data>
+  <data name="ExpressionGraph.CopyName" xml:space="preserve"><value>{0}（副本）</value></data>
+  <data name="ExpressionGraph.Copy" xml:space="preserve"><value>克隆</value></data>
+  <data name="ExpressionGraph.NoRenderer" xml:space="preserve"><value>未指定渲染器</value></data>
+  <data name="ExpressionGraph.ReferenceCount" xml:space="preserve"><value>引用轨道：{0}</value></data>
+  <data name="ExpressionGraph.Valid" xml:space="preserve"><value>状态：有效</value></data>
+  <data name="ExpressionGraph.Invalid" xml:space="preserve"><value>状态：无效 — {0}</value></data>
+  <data name="ExpressionGraph.DefaultBadge" xml:space="preserve"><value>{0}默认图</value></data>
+  <data name="ExpressionGraph.DefaultFor" xml:space="preserve"><value>{0} 家族默认</value></data>
+  <data name="ExpressionGraph.FollowingTrack" xml:space="preserve"><value>{0} · 跟随默认</value></data>
+  <data name="ExpressionGraph.ExplicitTrack" xml:space="preserve"><value>{0} · 显式引用</value></data>
+  <data name="ExpressionGraph.Unused" xml:space="preserve"><value>没有轨道引用此图。</value></data>
+  <data name="ExpressionGraph.FollowDefault" xml:space="preserve"><value>跟随默认</value></data>
+  <data name="ExpressionGraph.Explicit" xml:space="preserve"><value>显式选择</value></data>
+  <data name="ExpressionGraph.Builtin" xml:space="preserve"><value>使用内置行为</value></data>
+  <data name="ExpressionGraph.DefaultProblem" xml:space="preserve"><value>{0} 家族默认：{1}</value></data>
+  <data name="ExpressionGraph.Empty" xml:space="preserve"><value>当前工程没有表情图。点击右下角按钮创建。</value></data>
+  <data name="ExpressionGraph.FilterEmpty" xml:space="preserve"><value>此渲染器家族没有表情图。</value></data>
+  <data name="ExpressionGraph.Settings" xml:space="preserve"><value>图设置</value></data>
+  <data name="ExpressionGraph.Name" xml:space="preserve"><value>图名称</value></data>
+  <data name="ExpressionGraph.PitchTarget" xml:space="preserve"><value>绘制与载入音高的目标曲线</value></data>
+  <data name="ExpressionGraph.PitchDeviation" xml:space="preserve"><value>音高偏移（PITD）</value></data>
+  <data name="ExpressionGraph.PitchOverride" xml:space="preserve"><value>音高覆盖（PITO）</value></data>
+  <data name="ExpressionGraph.SetDefault" xml:space="preserve"><value>作为此渲染器家族的默认图</value></data>
+  <data name="ExpressionGraph.References" xml:space="preserve"><value>引用与使用情况</value></data>
+  <data name="ExpressionGraph.DefaultImpact" xml:space="preserve"><value>应用后会改变这些轨道的默认图：{0}</value></data>
+  <data name="ExpressionGraph.PageActions" xml:space="preserve"><value>图库操作</value></data>
+  <data name="ExpressionGraph.GraphActions" xml:space="preserve"><value>此图操作</value></data>
+  <data name="ExpressionGraph.UndoProject" xml:space="preserve"><value>撤销工程操作</value></data>
+  <data name="ExpressionGraph.RedoProject" xml:space="preserve"><value>重做工程操作</value></data>
+  <data name="ExpressionGraph.DeleteTitle" xml:space="preserve"><value>删除表情图</value></data>
+  <data name="ExpressionGraph.DeleteMessage" xml:space="preserve"><value>删除“{0}”将清除指向它的默认图与轨道覆盖引用。
+
+{1}
+
+相关轨道将按剩余引用重新解析图或使用内置行为。此操作可以撤销。</value></data>
+  <data name="ExpressionGraph.StaleProject" xml:space="preserve"><value>工程已切换，请返回编辑器重新打开图库。</value></data>
+  <data name="ExpressionGraph.StaleSettings" xml:space="preserve"><value>图或引用已发生变化，请关闭并重新打开设置后再修改。</value></data>
+  <data name="ExpressionGraph.Busy" xml:space="preserve"><value>工程正在提交其他操作，请稍后重试。</value></data>
+  <data name="ExpressionGraph.NameRequired" xml:space="preserve"><value>请输入图名称。</value></data>
+  <data name="FabMenu.Close" xml:space="preserve"><value>关闭创建菜单</value></data>
+  <data name="FabMenu.Expanded" xml:space="preserve"><value>菜单已展开</value></data>
+  <data name="FabMenu.Collapsed" xml:space="preserve"><value>菜单已收起</value></data>
+  <data name="ExpressionGraph.ReferenceWarnings" xml:space="preserve"><value>引用警告（{0}）</value></data>
+  <data name="ExpressionGraph.Import" xml:space="preserve"><value>导入表情图</value></data>
+  <data name="ExpressionGraph.Export" xml:space="preserve"><value>导出表情图</value></data>
+  <data name="ExpressionGraph.Imported" xml:space="preserve"><value>已导入“{0}”。</value></data>
+  <data name="ExpressionGraph.ImportAdded" xml:space="preserve"><value>新增表情定义：{0}</value></data>
+  <data name="ExpressionGraph.ImportConflicts" xml:space="preserve"><value>以下表情定义存在冲突，已保留工程中的定义：{0}</value></data>
+  <data name="ExpressionGraph.ImportFailed" xml:space="preserve"><value>导入失败：{0}</value></data>
+  <data name="ExpressionGraph.ExportFailed" xml:space="preserve"><value>导出失败：{0}</value></data>
+  <data name="ExpressionGraph.Exported" xml:space="preserve"><value>表情图已导出到：{0}</value></data>
+  <data name="ExpressionGraph.InvalidFileData" xml:space="preserve"><value>图文件包含损坏或重复的数据。</value></data>
+  <data name="GraphViewer.ReadOnly" xml:space="preserve"><value>只读查看</value></data>
+  <data name="GraphViewer.Search" xml:space="preserve"><value>查找</value></data>
+  <data name="GraphViewer.Fit" xml:space="preserve"><value>适应全图</value></data>
+  <data name="GraphViewer.Locate" xml:space="preserve"><value>定位</value></data>
+  <data name="GraphViewer.ZoomIn" xml:space="preserve"><value>放大</value></data>
+  <data name="GraphViewer.ZoomOut" xml:space="preserve"><value>缩小</value></data>
+  <data name="GraphViewer.Canvas" xml:space="preserve"><value>表情图画布</value></data>
+  <data name="GraphViewer.Details" xml:space="preserve"><value>详情</value></data>
+  <data name="GraphViewer.SearchHint" xml:space="preserve"><value>节点类型、ID 或参数</value></data>
+  <data name="GraphViewer.SearchLimit" xml:space="preserve"><value>最多显示 50 个结果；输入关键词缩小范围。</value></data>
+  <data name="GraphViewer.Input" xml:space="preserve"><value>输入</value></data>
+  <data name="GraphViewer.Output" xml:space="preserve"><value>输出</value></data>
+  <data name="GraphViewer.Fallback" xml:space="preserve"><value>回退值</value></data>
+  <data name="GraphViewer.Diagnostic" xml:space="preserve"><value>查看图诊断</value></data>
+  <data name="GraphViewer.GraphMissing" xml:space="preserve"><value>此图已从工程中删除。</value></data>
+  <data name="GraphViewer.InvalidNode" xml:space="preserve"><value>损坏的节点记录</value></data>
+  <data name="GraphViewer.InvalidPosition" xml:space="preserve"><value>节点坐标无效，临时显示在原点</value></data>
+  <data name="GraphViewer.UnknownNode" xml:space="preserve"><value>不支持此节点类型</value></data>
+  <data name="GraphViewer.DuplicateId" xml:space="preserve"><value>节点 ID 重复，关联连线无法确定</value></data>
+  <data name="GraphViewer.InvalidLink" xml:space="preserve"><value>损坏或不可识别的连线</value></data>
+  <data name="GraphViewer.Unconnected" xml:space="preserve"><value>未连接</value></data>
+  <data name="GraphViewer.Empty" xml:space="preserve"><value>此图没有节点。</value></data>
+  <data name="GraphEdit.Parameters" xml:space="preserve"><value>节点参数</value></data>
+  <data name="GraphEdit.Apply" xml:space="preserve"><value>应用</value></data>
+  <data name="GraphEdit.Reload" xml:space="preserve"><value>取消并重载</value></data>
+  <data name="GraphEdit.Conflict" xml:space="preserve"><value>输入期间此节点已被修改。请取消并重载后重新编辑。</value></data>
+  <data name="GraphEdit.MissingChoice" xml:space="preserve"><value>{0}（不可用）</value></data>
+  <data name="GraphEdit.InvalidNumber" xml:space="preserve"><value>请输入有限数值，小数使用小数点。</value></data>
+  <data name="GraphEdit.InvalidChoice" xml:space="preserve"><value>请选择可用选项。</value></data>
+  <data name="GraphEdit.Range" xml:space="preserve"><value>请输入 {0} 到 {1} 之间的数值。</value></data>
+  <data name="GraphEdit.OverriddenFallback" xml:space="preserve"><value>回退值：当前由已连接的来源覆盖。</value></data>
+  <data name="GraphEdit.OptionalNumber" xml:space="preserve"><value>留空使用节点内置的回退值。</value></data>
+  <data name="GraphTopology.AddNode" xml:space="preserve"><value>添加节点</value></data>
+  <data name="GraphTopology.DeleteNode" xml:space="preserve"><value>删除节点</value></data>
+  <data name="GraphTopology.ChangeSource" xml:space="preserve"><value>更换来源</value></data>
+  <data name="GraphTopology.Disconnect" xml:space="preserve"><value>断开</value></data>
+  <data name="GraphTopology.DeleteMessage" xml:space="preserve"><value>删除 {0} 及其 {1} 条关联连接？此操作可撤销。</value></data>
+  <data name="GraphTopology.Stale" xml:space="preserve"><value>图已发生变化，请取消并重新打开此操作。</value></data>
+  <data name="GraphTopology.InvalidLink" xml:space="preserve"><value>无法连接：端口无效或会形成循环。原连接保持不变。</value></data>
+  <data name="GraphTopology.SourceMessage" xml:space="preserve"><value>{0} · {1}
+当前来源：{2}
+应用后替换此输入的来源。</value></data>
+  <data name="GraphTopology.Search" xml:space="preserve"><value>搜索类型、节点 ID 或输出端口</value></data>
+  <data name="GraphTopology.Results" xml:space="preserve"><value>{0} 项</value></data>
+  <data name="GraphTopology.MoreResults" xml:space="preserve"><value>共 {0} 项，显示前 100 项；请搜索缩小范围。</value></data>
+  <data name="GraphTopology.TemplateHint" xml:space="preserve"><value>空白图需要添加节点和连接以产生输出；不会自动设为默认图。</value></data>
+  <data name="GraphTopology.PresetGraph" xml:space="preserve"><value>预设图</value></data>
+  <data name="GraphTopology.EmptyGraph" xml:space="preserve"><value>空白图</value></data>
+  <data name="GraphTopology.EmptyName" xml:space="preserve"><value>{0} 空白图</value></data>
+  <data name="GraphTopology.Editing" xml:space="preserve"><value>图编辑</value></data>
+  <data name="GraphTopology.Unavailable" xml:space="preserve"><value>未完成或不可用</value></data>
+  <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>尚无已连接输出</value></data>
+  <data name="GraphEdit.Title" xml:space="preserve"><value>图编辑器</value></data>
+  <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>调整属性面板大小</value></data>
 </root>

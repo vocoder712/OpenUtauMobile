@@ -36,6 +36,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     private readonly UProject project;
     private readonly UTrack track;
     private readonly URenderSettings originalRenderSettings;
+    private readonly string? originalExpressionGraph;
     private readonly USinger? originalSinger;
     private readonly Phonemizer originalPhonemizer;
     private readonly UExpressionDescriptor[] originalTrackExpressions;
@@ -80,7 +81,8 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     public IReadOnlyList<UExpressionDescriptor> DraftTrackExpressions { get; private set; }
     public bool IsStale => !ReferenceEquals(DocManager.Inst.Project, project) || !project.tracks.Contains(track) ||
         !ReferenceEquals(track.Singer, originalSinger) || track.Phonemizer?.GetType() != originalPhonemizer.GetType() ||
-        !SameRenderSettings(track.RendererSettings, originalRenderSettings) || !SameExpressions(track.TrackExpressions, originalTrackExpressions);
+        !SameRenderSettings(track.RendererSettings, originalRenderSettings) || track.ExpressionGraph != originalExpressionGraph ||
+        !SameExpressions(track.TrackExpressions, originalTrackExpressions);
 
     public TrackSettingsPopupViewModel(UProject project, UTrack track)
     {
@@ -89,6 +91,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
         originalSinger = track.Singer;
         originalPhonemizer = track.Phonemizer!;
         originalRenderSettings = track.RendererSettings.Clone();
+        originalExpressionGraph = track.ExpressionGraph;
         classicDraftInitialized = originalRenderSettings.renderer == CoreRenderers.CLASSIC;
         originalTrackExpressions = track.TrackExpressions.Select(expression => expression.Clone()).ToArray();
         DraftTrackExpressions = originalTrackExpressions.Select(expression => expression.Clone()).ToArray();

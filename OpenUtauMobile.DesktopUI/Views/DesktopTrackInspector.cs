@@ -58,7 +58,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             UProject project = DocManager.Inst.Project;
             int index = _editor.PianoRollViewModel.EditingVoicePart?.trackNo ?? _editor.PianoRollViewModel.EditingWavePart?.trackNo ?? _editor.SelectedParts.LastOrDefault()?.trackNo ?? 0;
             UTrack? track = index >= 0 && index < project.tracks.Count ? project.tracks[index] : null;
-            string? renderKey = track == null ? null : $"{track.Singer?.Id ?? track.Singer?.Name}|{track.RendererSettings.renderer}|{track.RendererSettings.resampler}|{track.RendererSettings.wavtool}";
+            string? renderKey = track == null ? null : $"{track.Singer?.Id ?? track.Singer?.Name}|{track.RendererSettings.renderer}|{track.RendererSettings.resampler}|{track.RendererSettings.wavtool}|{track.ExpressionGraph}";
             if (_track == track && _trackVm != null && _renderSettingsKey == renderKey) { _trackVm.Refresh(); return; }
             _renderSettingsKey = renderKey;
             _trackVm?.Dispose(); _trackVm = null; _track = track;
@@ -99,8 +99,15 @@ namespace OpenUtauMobile.DesktopUI.Views
             singer.Classes.Add("DesktopTrackChoice");
             singer.Click += async (_, _) =>
             {
-                USinger? chosen = await DesktopTrackPickers.PickSingerAsync(track.Singer, singer);
-                if (chosen == null || singerVm != _trackVm || _track != track) return;
+                USinger? originalSinger = track.Singer;
+                URenderSettings originalSettings = track.RendererSettings.Clone();
+                string? originalGraph = track.ExpressionGraph;
+                USinger? chosen = await DesktopTrackPickers.PickSingerAsync(originalSinger, singer);
+                if (chosen == null || singerVm != _trackVm || _track != track || !ReferenceEquals(project, DocManager.Inst.Project)
+                    || !ReferenceEquals(originalSinger, track.Singer) || originalGraph != track.ExpressionGraph
+                    || originalSettings.renderer != track.RendererSettings.renderer
+                    || originalSettings.resampler != track.RendererSettings.resampler
+                    || originalSettings.wavtool != track.RendererSettings.wavtool) return;
                 singerVm.SetSinger(chosen);
             };
             ToolTip.SetTip(singer, DesktopUi.Label("TrackSettings.Singer"));
@@ -119,6 +126,10 @@ namespace OpenUtauMobile.DesktopUI.Views
                 if (rendererVm == _trackVm && renderer.SelectedItem is string selected) rendererVm.SetRenderer(selected);
             };
             body.Children.Add(DesktopInspectorControls.FieldRow(DesktopUi.Label("TrackSettings.Renderer"), renderer));
+            Button graph = DesktopUi.Command("ExpressionGraph.Title", "SelectRendererCommand");
+            graph.HorizontalAlignment = HorizontalAlignment.Stretch;
+            graph.IsEnabled = renderers.Length > 0;
+            body.Children.Add(graph);
             if (track.RendererSettings.renderer == Renderers.CLASSIC)
             {
                 body.Children.Add(ToolPicker(track, DesktopToolKind.Resampler));

@@ -1,4 +1,3 @@
-using OpenUtauMobile.Services.Tracks;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,10 +11,11 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using OpenUtau.Api;
 using OpenUtau.Core;
-using OpenUtau.Core.Render;
 using OpenUtau.Core.ExpressionGraph;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;
@@ -119,13 +119,41 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectSinger()
     {
-        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync(_track.Singer);
-        if (singer != null) SetSinger(singer);
+        UProject project = DocManager.Inst.Project;
+        USinger? originalSinger = _track.Singer;
+        URenderSettings originalSettings = _track.RendererSettings.Clone();
+        string? originalGraph = _track.ExpressionGraph;
+        USinger? singer = await TrackHeaderService.Inst.PickSingerAsync(originalSinger);
+        if (singer == null || ReferenceEquals(singer, originalSinger)
+            || !ReferenceEquals(project, DocManager.Inst.Project) || !project.tracks.Contains(_track)
+            || !ReferenceEquals(originalSinger, _track.Singer) || originalGraph != _track.ExpressionGraph
+            || originalSettings.renderer != _track.RendererSettings.renderer
+            || originalSettings.resampler != _track.RendererSettings.resampler
+            || originalSettings.wavtool != _track.RendererSettings.wavtool || DocManager.Inst.HasOpenUndoGroup) return;
+        SetSinger(singer);
     }
 
+    /// <summary>切换歌手，并在同一撤销事务中校验轨道的表情图。</summary>
     public void SetSinger(USinger singer)
     {
-        if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Singer == singer) return;
+        UProject project = DocManager.Inst.Project;
+        if (!project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || ReferenceEquals(_track.Singer, singer)) return;
+        ApplySinger(project, singer);
+        // 保存最近使用的歌手；切换事务已经完成。
+        if (!string.IsNullOrEmpty(singer.Id) && singer.Found)
+        {
+            Preferences.Default.RecentSingers.Remove(singer.Id);
+            Preferences.Default.RecentSingers.Insert(0, singer.Id);
+            if (Preferences.Default.RecentSingers.Count > 16)
+                Preferences.Default.RecentSingers.RemoveRange(16, Preferences.Default.RecentSingers.Count - 16);
+        }
+        Preferences.Save();
+        Refresh();
+    }
+
+    /// <summary>统一歌手、音素器、渲染设置和表情图的切换事务。</summary>
+    private void ApplySinger(UProject project, USinger singer)
+    {
         DocManager.Inst.StartUndoGroup("切换歌手");
         try
         {
@@ -158,23 +186,10 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
                 DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
             }
 
+            TrackExpressionGraphSelection.Revalidate(project, _track);
             DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(_track.TrackNo, true));
         }
         finally { DocManager.Inst.EndUndoGroup(); }
-        // 保存
-        if (!string.IsNullOrEmpty(singer.Id) && singer.Found)
-        {
-            Preferences.Default.RecentSingers.Remove(singer.Id);
-            Preferences.Default.RecentSingers.Insert(0, singer.Id);
-            if (Preferences.Default.RecentSingers.Count > 16)
-            {
-                Preferences.Default.RecentSingers.RemoveRange(16, Preferences.Default.RecentSingers.Count - 16);
-            }
-        }
-
-        Preferences.Save();
-
-        Refresh();
     }
 
     private async Task SelectPhonemizer(Control? anchor)
@@ -226,37 +241,17 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             || original.renderer != _track.RendererSettings.renderer
             || original.resampler != _track.RendererSettings.resampler || original.wavtool != _track.RendererSettings.wavtool
             || originalGraph != _track.ExpressionGraph
-            || !RendererGraphOption.CanKeep(project, selection.Settings.renderer, selection.ExpressionGraph, original.renderer, originalGraph))
+            || !RendererGraphOption.CanKeep(project, selection.Settings.renderer, selection.ExpressionGraph))
         {
             return;
         }
 
-        URenderSettings settings = selection.Settings;
-        bool renderChanged = settings.renderer != original.renderer || settings.resampler != original.resampler || settings.wavtool != original.wavtool;
-        bool graphChanged = selection.ExpressionGraph != originalGraph;
-        if (!renderChanged && !graphChanged) return;
-        // 提交时从当前工程构建图草稿，保留其他轨道和图的最新修改。
-        SetExpressionGraphsCommand? graphCommand = null;
-        if (graphChanged)
-        {
-            ExpressionGraphEdits.Draft draft = new(project);
-            draft.TrackOverrides[project.tracks.IndexOf(_track)] = selection.ExpressionGraph;
-            graphCommand = new SetExpressionGraphsCommand(project, draft.ToState());
-        }
-        DocManager.Inst.StartUndoGroup();
-        try
-        {
-            if (renderChanged) DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(project, _track, settings));
-            if (graphCommand != null) DocManager.Inst.ExecuteCmd(graphCommand);
-        }
-        finally
-        {
-            DocManager.Inst.EndUndoGroup();
-        }
+        TrackExpressionGraphSelection.ApplyRenderer(project, _track, selection);
         Refresh();
     }
 
 
+    /// <summary>切换渲染器，并保留兼容的表情图引用。</summary>
     public void SetRenderer(string renderer)
     {
         if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Singer is not { Found: true } singer ||
@@ -267,6 +262,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         try
         {
             DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
+            TrackExpressionGraphSelection.Revalidate(DocManager.Inst.Project, _track);
         }
         finally
         {

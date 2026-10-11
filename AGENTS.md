@@ -16,6 +16,7 @@
 - `OpenUtau.Core/Util/Preferences.cs#OpenUtau Mobile特定选项` can be modified. 
 - Do not hand-edit upstream-copy `OpenUtau.Plugin.Builtin` for feature work. For upstream synchronization, follow `docs/UPSTREAM_SYNC.md`, including its compatibility-review requirements.
 - Follow `.editorconfig`. Write new code comments in Simplified Chinese; preserve upstream comments.
+- Newly added classes, public methods, hot private methods, and hot properties should use XML comments in Simplified Chinese whenever possible.
 
 ## Verification
 - Before `dotnet build`, set `$env:AVALONIA_TELEMETRY_OPTOUT='1';` (or the equivalent environment variable in another shell).

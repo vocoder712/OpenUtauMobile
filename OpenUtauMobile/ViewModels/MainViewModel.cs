@@ -1,11 +1,13 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtau.Core;
+using OpenUtau.Core.Pipeline;
+using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI.Fody.Helpers;
 using ReactiveUI;
 using Serilog;
@@ -51,7 +53,7 @@ public class MainViewModel : ViewModelBase
                 return false;
             }
             if (editor != ActiveEditor) return false;
-            if (editor != null && !await editor.ConfirmExitAsync()) return false;
+            if (!await ConfirmCloseAsync()) return false;
             if (editor != ActiveEditor) return false;
             if (HasActiveSingerInstallation) return false;
             while (_navigationStack.Count > 1 && (ActiveEditor != null || CurrentViewModel is not HomeViewModel))
@@ -332,9 +334,15 @@ public class MainViewModel : ViewModelBase
         if (HasActiveSingerInstallation) return false;
         if (ActiveEditor is EditorViewModel editorViewModel)
         {
-            return await editorViewModel.ConfirmExitAsync();
-        }
+            // 缓存当前工程和修订版本引用
+            UProject project = DocManager.Inst.Project;
+            DocRevision revision = DocManager.Inst.Revision;
+            bool confirmed = await editorViewModel.ConfirmExitAsync();
 
+            // 弹窗等待期间可能替换工程或提交新修改，旧确认不能授权关闭新状态。
+            return confirmed && !HasActiveSingerInstallation && ActiveEditor == editorViewModel && _navigationStack.Contains(editorViewModel) &&
+                   ReferenceEquals(project, DocManager.Inst.Project) && revision == DocManager.Inst.Revision;
+        }
         return true;
     }
 }

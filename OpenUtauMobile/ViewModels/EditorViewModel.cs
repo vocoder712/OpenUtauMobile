@@ -23,7 +23,6 @@ using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Storage;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -512,6 +511,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         {
             case ProjectOpenKind.Template:
             case ProjectOpenKind.ExternalCopy:
+            case ProjectOpenKind.Recovery:
                 project.FilePath = string.Empty;
                 project.Saved = false;
                 break;
@@ -804,6 +804,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     {
         switch (action)
         {
+            case EditorMoreAction.ExpressionGraphs:
+                if (_disposed || IsLoadingProject || Navigator.CurrentViewModel != this) break;
+                UProject graphProject = DocManager.Inst.Project;
+                Navigator.Navigate(new ExpressionGraphLibraryViewModel(Navigator, graphProject));
+                break;
             case EditorMoreAction.Undo:
                 Undo();
                 break;

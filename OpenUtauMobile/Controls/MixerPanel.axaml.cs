@@ -1,10 +1,6 @@
-using OpenUtauMobile.Services.Tracks;
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using OpenUtau.Core.SignalChain.Effects;
-using OpenUtauMobile.Helpers;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,7 +9,11 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtau.Core;
 using OpenUtau.Core.SignalChain;
+using OpenUtau.Core.SignalChain.Effects;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.ViewModels;
 using Serilog;
 

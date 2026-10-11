@@ -116,6 +116,8 @@ public sealed class TrackSettingsService
             manager.StartUndoGroup("TrackSettings.Apply", deferValidate: true);
             ownsUndoGroup = true;
             foreach (UCommand command in commands) manager.ExecuteCmd(command);
+            // 使用最终轨道设置校验图引用，并与设置修改一起撤销。
+            TrackExpressionGraphSelection.Revalidate(viewModel.Project, viewModel.Track);
             manager.EndUndoGroup();
             ownsUndoGroup = false;
         }

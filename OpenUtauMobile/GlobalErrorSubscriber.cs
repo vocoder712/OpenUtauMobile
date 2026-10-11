@@ -1,5 +1,5 @@
-﻿using OpenUtauMobile.Services.Dialogs;
-using OpenUtau.Core;
+﻿using OpenUtau.Core;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile;

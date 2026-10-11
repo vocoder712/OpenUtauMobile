@@ -52,6 +52,10 @@ namespace OpenUtauMobile.DesktopUI.Views
                 (singer, _, _) => Utility("SingerDetail.Title", new DesktopSingerDetailPage(singer))),
             [typeof(OptionsViewModel)] = Route<OptionsViewModel>("Options.Title", DesktopWindowProfile.Standard,
                 (options, _, _) => Utility("Options.Title", new DesktopOptionsPage(options))),
+            [typeof(ExpressionGraphLibraryViewModel)] = Route<ExpressionGraphLibraryViewModel>("ExpressionGraph.LibraryTitle", DesktopWindowProfile.Standard,
+                (graphs, _, _) => ExpressionGraphLibrary(graphs)),
+            [typeof(ExpressionGraphEditorViewModel)] = Route<ExpressionGraphEditorViewModel>("GraphEdit.Title", DesktopWindowProfile.Standard,
+                (graph, _, _) => ExpressionGraphEditor(graph)),
             [typeof(SplashScreenViewModel)] = Route<SplashScreenViewModel>("Desktop.Window", DesktopWindowProfile.Standard,
                 (splash, _, _) => new SplashScreenView { DataContext = splash }),
         };
@@ -68,6 +72,22 @@ namespace OpenUtauMobile.DesktopUI.Views
                 return route.Build(viewModel, main, layout);
             if (data is ViewModelBase model) return Unavailable(model);
             return null;
+        }
+
+        /// <summary>在桌面工具窗口中复用表情图库，不再添加第二层页面标题。</summary>
+        private static Control ExpressionGraphLibrary(ExpressionGraphLibraryViewModel graphs)
+        {
+            ExpressionGraphLibraryView view = new() { DataContext = graphs };
+            view.SetDesktopChrome();
+            return view;
+        }
+
+        /// <summary>在桌面工具窗口中复用图编辑器及其画布、参数和撤销逻辑。</summary>
+        private static Control ExpressionGraphEditor(ExpressionGraphEditorViewModel graph)
+        {
+            ExpressionGraphEditorView view = new() { DataContext = graph };
+            view.SetDesktopChrome();
+            return view;
         }
 
         private static Control Settings(SettingsViewModel settings)

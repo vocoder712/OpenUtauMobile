@@ -196,6 +196,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                     PanelItem("Desktop.Inspector", w => w.ToggleInspector(), w => w.IsInspectorRequested),
                     Item("Mixer.Title", () => _pages.Workspace?.ToggleMixer(), () => HasEditor), Item("Desktop.ResetLayout", () => _pages.Workspace?.ResetLayout(), () => HasEditor)),
                 Menu("Desktop.Project", Item("TrackAdder.AddTrack", () => _main.ActiveEditor?.AddTrackCommand.Execute().Subscribe(), () => HasEditor),
+                    Item("ExpressionGraph.Title", () => EditorAction(EditorMoreAction.ExpressionGraphs), () => HasEditor && _main.CurrentViewModel == _main.ActiveEditor),
                     Item("EditorMore.SaveAsTemplate", () => EditorAction(EditorMoreAction.SaveAsTemplate), () => HasEditor)),
                 Menu("Desktop.Transport", Item("Editor.PlayPause", () => _main.ActiveEditor?.PlayPauseCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.PlayPauseCommand), new KeyGesture(Key.Space)),
                     Item("Editor.Stop", () => _main.ActiveEditor?.StopCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.StopCommand))),
@@ -248,7 +249,7 @@ namespace OpenUtauMobile.DesktopUI.Views
         });
         private Task CloseProjectAsync() => RunFileAsync(async () =>
         {
-            if (_main.ActiveEditor is not { } editor || !await editor.ConfirmExitAsync()) return;
+            if (_main.ActiveEditor is not { } editor || !await _main.ConfirmCloseAsync()) return;
             await _main.CloseDesktopProjectAsync(editor);
         });
         private async void OnShellKeyDown(object? sender, KeyEventArgs e)
