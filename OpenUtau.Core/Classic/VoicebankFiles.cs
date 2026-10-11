@@ -64,7 +64,9 @@ namespace OpenUtau.Classic {
                 Tuple.Create(noExt + ".hifi.npz", tempNoExt + ".hifi.npz"),
                 //Tuple.Create(noExt + ".lessaudio", tempNoExt + ".lessaudio"),
             };
-            if (resampler.Manifest?.files is string[] files) {
+            // Any resampler can reach here: RenderExternal copies for the built-in ones too.
+            var files = resampler?.Manifest?.files;
+            if (files != null) {
                 for (int i = 0; i < files.Length; i++) {
                     ResamplerFiles.Add(Tuple.Create(noExt + $"{files[i]}", tempNoExt + $"{files[i]}"));
                 }

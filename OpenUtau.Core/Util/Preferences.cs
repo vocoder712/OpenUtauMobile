@@ -156,6 +156,7 @@ namespace OpenUtau.Core.Util {
                 }
             });
             ValidatePreference("DefaultRenderer", () => {
+                if (Default.DefaultRenderer == "Classic") Default.DefaultRenderer = Renderers.CLASSIC;
                 if (!Renderers.getRendererOptions().Contains(Default.DefaultRenderer)) {
                     Default.DefaultRenderer = string.Empty;
                 }
