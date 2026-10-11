@@ -1945,8 +1945,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 // 开启放大镜
                 RequestMagnifierOpen?.Invoke(point);
 
-                // 连续笔画只在结束时校验工程；曲线命令仍即时更新画布。
-                DocManager.Inst.StartUndoGroup(deferValidate: true);
+                // 最终音高依赖校验后的乐句数据；笔画期间保留校验，让绘制和擦除实时更新。
+                DocManager.Inst.StartUndoGroup();
                 RequestInvalidateVisual?.Invoke();
                 break;
             case PianoRollEditMode.Anchor:
