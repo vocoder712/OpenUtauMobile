@@ -99,16 +99,18 @@ namespace OpenUtau.Core.Render {
 
         public static List<string> getRendererOptions() {
             var options = new List<string> {
-                "WORLDLINE-R",
-                "Classic"
+                WORLDLINE_R,
+                WORLDLINE_R11,
+                WORLDLINE_R2,
+                CLASSIC
             };
             options.AddRange(GetExternalSupportedRenderers(USingerType.Classic));
             return options;
         }
 
         public static string GetDefaultRenderer(USingerType singerType) {
-            if (Preferences.Default.DefaultRenderer == "Classic" && singerType == USingerType.Classic) {
-                return CLASSIC;
+            if (singerType == USingerType.Classic && classicRenderers.Contains(Preferences.Default.DefaultRenderer)) {
+                return Preferences.Default.DefaultRenderer;
             } else {
                 return GetSupportedRenderers(singerType)[0];
             }
