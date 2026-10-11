@@ -14,7 +14,7 @@ using OpenUtauMobile.Services.Dialogs;
 
 namespace OpenUtauMobile.Controls;
 
-/// <summary>单控件只读画布；缓存文字、连线与空间索引，无空闲计时器和逐节点控件。</summary>
+/// <summary>单控件图画布；缓存文字、连线与空间索引，节点拖动只预览局部几何。</summary>
 public sealed class ExpressionGraphCanvas : Control, IEditorViewport
 {
     public static readonly StyledProperty<ExpressionGraphScene?> SceneProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, ExpressionGraphScene?>(nameof(Scene));
@@ -37,10 +37,22 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     public IBrush SelectionBrush { get => GetValue(SelectionBrushProperty); set => SetValue(SelectionBrushProperty, value); }
     public event Action<string?>? NodeSelected;
 
+    /// <summary>页面校验字段后返回一次性提交动作；画布只持有拖动期间的预览。</summary>
+    public Func<string, Action<Vector>?>? PrepareNodeMove { get; set; }
+    private enum DragTarget { Canvas, Node, Blocked }
+    private DragTarget _dragTarget;
+    private bool _multiPointerGesture;
+    private bool _releasingPointer;
+    private bool _nodeMovementStarted;
+    private GraphVisualNode? _moveNode;
+    private Action<Vector>? _moveCommit;
+    private Vector _moveOffset;
+    private readonly Dictionary<int, (GraphVisualLink Link, StreamGeometry Path)> _moveLinks = [];
     private readonly List<GraphVisualNode> _visibleNodes = [];
     private readonly List<GraphVisualLink> _visibleLinks = [];
     private readonly Dictionary<int, StreamGeometry> _paths = [];
-    private readonly Dictionary<(string, bool), TextLayout> _texts = [];
+    private enum NodeTextRole { Summary, Title, Port }
+    private readonly Dictionary<(string, NodeTextRole), TextLayout> _texts = [];
     private readonly GestureInterpreter _gesture = new(uniformScale: true);
     private ViewportMotionController? _panMotion;
     private ViewportInputSession? _viewportInput;
@@ -58,13 +70,26 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     {
         ClipToBounds = true; Focusable = true;
         _gesture.Tap = _gesture.DoubleTap = point => NodeSelected?.Invoke(Hit(point));
-        _gesture.DragUpdate = (_, step, _, _, timestamp) =>
+        _gesture.DragBegin = _ => _nodeMovementStarted = _dragTarget == DragTarget.Node;
+        _gesture.DragUpdate = (_, step, total, _, timestamp) =>
         {
+            if (_dragTarget == DragTarget.Blocked) return;
+            if (_dragTarget == DragTarget.Node)
+            {
+                PreviewNodeMove(total); return;
+            }
             if (_panMotion == null) return;
             if (!_panMotion.IsRunning) _panMotion.BeginDirectManipulation(timestamp);
             _panMotion.UpdateDirectManipulation(step, timestamp);
         };
-        _gesture.DragEnd = (_, _, timestamp) => _panMotion?.EndDirectManipulation(timestamp);
+        _gesture.DragEnd = (_, total, timestamp) =>
+        {
+            if (_dragTarget == DragTarget.Canvas) { _panMotion?.EndDirectManipulation(timestamp); return; }
+            Action<Vector>? commit = _nodeMovementStarted ? _moveCommit : null;
+            double scale = Viewport?.Scale ?? 1;
+            ClearNodeMove();
+            commit?.Invoke(total / scale);
+        };
         _gesture.PinchUpdate = (scale, _, center, pan) =>
         {
             Zoom(scale, center - pan); Pan(pan);
@@ -125,7 +150,6 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
             else if (old.Width > 0 && old.Height > 0)
             {
                 CancelPointers();
-                viewport.Offset += new Vector((Bounds.Width - old.Width) / 2, (Bounds.Height - old.Height) / 2);
                 InvalidateVisual();
             }
         }
@@ -185,7 +209,7 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
         Viewport.Initialized = true; InvalidateVisual();
     }
 
-    /// <summary>定位稳定节点键；详情面板占用空间后仍以剩余画布中心为锚点。</summary>
+    /// <summary>显式定位稳定节点键，以当前画布中心为锚点。</summary>
     public void Locate(string key, bool onlyIfHidden = false)
     {
         if (Scene == null || !Scene.ByKey.TryGetValue(key, out GraphVisualNode? node) || Viewport == null) return;
@@ -243,6 +267,7 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
             Pen highlighted = new(SelectionBrush, 2.5 / scale);
             foreach (GraphVisualLink link in _visibleLinks)
             {
+                if (_moveLinks.ContainsKey(link.Index)) continue;
                 if (!_paths.TryGetValue(link.Index, out StreamGeometry? path))
                 {
                     double bend = Math.Max(40, Math.Abs(link.End.X - link.Start.X) * .5);
@@ -254,41 +279,68 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
                 }
                 context.DrawGeometry(null, link.From.Key == SelectedKey || link.To.Key == SelectedKey ? highlighted : ordinary, path);
             }
+            foreach (var preview in _moveLinks.Values)
+                context.DrawGeometry(null, highlighted, preview.Path);
+            if (_nodeMovementStarted && _moveNode != null && !_visibleNodes.Contains(_moveNode))
+                _visibleNodes.Add(_moveNode);
             foreach (GraphVisualNode node in _visibleNodes)
             {
-                context.DrawRectangle(NodeBrush, node.Key == SelectedKey ? highlighted : ordinary, node.Bounds, 8, 8);
+                using var moved = context.PushTransform(Matrix.CreateTranslation(_nodeMovementStarted && node == _moveNode ? _moveOffset : default));
+                context.DrawRectangle(NodeBrush, null, node.Bounds, 8, 8);
                 IBrush header = node.Type?.Role == GraphNodeRole.Input ? InputBrush
                     : node.Type?.IsOutput == true ? OutputBrush : NodeBrush;
                 context.DrawRectangle(header, null, new Rect(node.Bounds.Position, new Size(node.Bounds.Width, 24)), 8, 8);
-                DrawText(context, node.Title, node.Bounds.TopLeft + new Vector(8, 3), true, node.Bounds.Width - 16);
+                // 标题底色先绘制，外框最后描边，避免圆角和选中边框被标题遮挡。
+                context.DrawRectangle(null, node.Key == SelectedKey ? highlighted : ordinary, node.Bounds, 8, 8);
+                DrawText(context, node.Title, node.Bounds.TopLeft + new Vector(8, 3), NodeTextRole.Title, node.Bounds.Width - 16);
                 if (scale < .45) continue;
-                DrawText(context, node.Summary, node.Bounds.TopLeft + new Vector(8, 26), false, node.Bounds.Width - 16);
+                DrawText(context, node.Summary, node.Bounds.TopLeft + new Vector(8, 26), NodeTextRole.Summary, node.Bounds.Width - 16);
                 for (int i = 0; i < node.Inputs.Length; i++)
                 {
                     Point point = node.InputPoint(i);
                     context.DrawEllipse(LineBrush, null, point, 3, 3);
-                    DrawText(context, node.InputLabels[i], point + new Vector(8, -9), false, node.Bounds.Width / 2 - 12);
+                    DrawPortLabel(context, node.InputLabels[i], point, node.Bounds.Width / 2 - 12, false);
                 }
                 for (int i = 0; i < node.Outputs.Length; i++)
                 {
                     Point point = node.OutputPoint(i);
                     context.DrawEllipse(LineBrush, null, point, 3, 3);
-                    DrawText(context, node.OutputLabels[i], point + new Vector(-node.Bounds.Width / 2 + 4, -9), false, node.Bounds.Width / 2 - 12);
+                    DrawPortLabel(context, node.OutputLabels[i], point, node.Bounds.Width / 2 - 12, true);
                 }
             }
         }
         LastDrawnNodes = _visibleNodes.Count; LastDrawnLinks = _visibleLinks.Count;
     }
 
-    private void DrawText(DrawingContext context, string content, Point point, bool bold = false, double width = 212)
+    /// <summary>按语义缓存文字布局；标题和端口比参数摘要更醒目，平移缩放不重新排版。</summary>
+    private TextLayout GetText(string content, NodeTextRole role)
     {
-        if (!_texts.TryGetValue((content, bold), out TextLayout? text))
+        if (!_texts.TryGetValue((content, role), out TextLayout? text))
         {
-            text = new TextLayout(content, new Typeface(FontFamily.Default, weight: bold ? FontWeight.SemiBold : FontWeight.Normal),
-                bold ? 14 : 12, Foreground, textWrapping: TextWrapping.NoWrap);
-            _texts[(content, bold)] = text;
+            FontWeight weight = role == NodeTextRole.Title ? FontWeight.SemiBold
+                : role == NodeTextRole.Port ? FontWeight.Medium : FontWeight.Normal;
+            text = new TextLayout(content, new Typeface(FontFamily.Default, weight: weight),
+                role == NodeTextRole.Summary ? 12 : 14, Foreground, textWrapping: TextWrapping.NoWrap);
+            _texts[(content, role)] = text;
         }
+        return text;
+    }
+
+    /// <summary>标题和摘要限制在节点内部，不影响节点宽度或连线位置。</summary>
+    private void DrawText(DrawingContext context, string content, Point point, NodeTextRole role, double width)
+    {
+        TextLayout text = GetText(content, role);
         using (context.PushClip(new Rect(point, new Size(width, 24)))) text.Draw(context, point);
+    }
+
+    /// <summary>端口文字与接口垂直居中，输入左对齐、输出右对齐，并各占节点的一半。</summary>
+    private void DrawPortLabel(DrawingContext context, string content, Point port, double width, bool output)
+    {
+        TextLayout text = GetText(content, NodeTextRole.Port);
+        double left = output ? port.X - 8 - width : port.X + 8;
+        double x = output ? port.X - 8 - text.Width : left;
+        Rect clip = new(left, port.Y - 10, width, 20);
+        using (context.PushClip(clip)) text.Draw(context, new Point(x, port.Y - text.Height / 2));
     }
 
     private string? Hit(Point screen)
@@ -313,8 +365,27 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
-        if (Viewport == null || !IsInputAvailable) return;
-        InterruptMotion(); Focus(); _gesture.OnPointerPressed(e, this);
+        if (Viewport == null || !IsInputAvailable || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed) return;
+        InterruptMotion(); Focus();
+        if (_gesture.HasActivePointers)
+        {
+            ClearNodeMove(); _dragTarget = DragTarget.Blocked; _multiPointerGesture = true;
+        }
+        else
+        {
+            _multiPointerGesture = false; _dragTarget = DragTarget.Canvas;
+            Point world = ToWorld(e.GetPosition(this));
+            if (SelectedKey is { } key && Scene!.ByKey.TryGetValue(key, out GraphVisualNode? node)
+                && new Rect(node.Bounds.Position, new Size(node.Bounds.Width, 24)).Contains(world) && Hit(e.GetPosition(this)) == key)
+            {
+                _dragTarget = DragTarget.Blocked;
+                Action<Vector>? commit = PrepareNodeMove?.Invoke(key);
+                if (commit != null && Scene?.ByKey.TryGetValue(key, out node) == true)
+                { _moveNode = node; _moveCommit = commit; _dragTarget = DragTarget.Node; }
+            }
+        }
+        _gesture.OnPointerPressed(e, this);
+        if (_multiPointerGesture) _dragTarget = DragTarget.Canvas;
     }
 
     private static double Distance(Point a, Point b) => new Vector(a.X - b.X, a.Y - b.Y).Length;
@@ -328,18 +399,62 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-        _gesture.OnPointerReleased(e, this);
+        _releasingPointer = true;
+        try { _gesture.OnPointerReleased(e, this); }
+        finally { _releasingPointer = false; }
+        if (!_gesture.HasActivePointers) { ClearNodeMove(); _multiPointerGesture = false; _dragTarget = DragTarget.Canvas; }
     }
 
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        if (_releasingPointer) return;
         if (_gesture.HasActivePointers) InterruptMotion();
+        ClearNodeMove(); _dragTarget = DragTarget.Blocked;
         _gesture.OnPointerCancelled(e, this);
+        if (!_gesture.HasActivePointers) { _multiPointerGesture = false; _dragTarget = DragTarget.Canvas; }
     }
 
     /// <summary>通过共享识别器释放触点和识别状态，避免重挂载后出现残留拖动。</summary>
-    public void CancelPointers() { InterruptMotion(); _gesture.Cancel(); }
+    public void CancelPointers()
+    {
+        InterruptMotion(); ClearNodeMove(); _dragTarget = DragTarget.Blocked;
+        _gesture.Cancel(); _multiPointerGesture = false; _dragTarget = DragTarget.Canvas;
+    }
+
+    /// <summary>预览只更新相邻连线的曲线，节点和全图索引直到提交才重建。</summary>
+    private void PreviewNodeMove(Vector pixels)
+    {
+        if (_moveNode == null || Scene == null || Viewport == null) return;
+        _moveOffset = pixels / Viewport.Scale;
+        if (!double.IsFinite(_moveOffset.X) || !double.IsFinite(_moveOffset.Y)) return;
+        void Update(GraphVisualLink link)
+        {
+            Point start = link.Start + (link.From == _moveNode ? _moveOffset : default);
+            Point end = link.End + (link.To == _moveNode ? _moveOffset : default);
+            double bend = Math.Max(40, Math.Abs(end.X - start.X) * .5);
+            // 每次预览替换几何；重复 Open 已有对象会保留旧路径，形成拖动残影。
+            StreamGeometry path = new();
+            using (StreamGeometryContext writer = path.Open())
+            {
+                writer.BeginFigure(start, false);
+                writer.CubicBezierTo(start + new Vector(bend, 0), end - new Vector(bend, 0), end);
+                writer.EndFigure(false);
+            }
+            _moveLinks[link.Index] = (link, path);
+        }
+        foreach (GraphVisualLink link in Scene.Incoming[_moveNode.Key]) Update(link);
+        foreach (GraphVisualLink link in Scene.Outgoing[_moveNode.Key]) Update(link);
+        InvalidateVisual();
+    }
+
+    /// <summary>取消或释放时丢弃局部预览，取消路径不产生工程命令。</summary>
+    private void ClearNodeMove()
+    {
+        bool hadPreview = _nodeMovementStarted;
+        _moveNode = null; _moveCommit = null; _nodeMovementStarted = false; _moveOffset = default; _moveLinks.Clear();
+        if (hadPreview) InvalidateVisual();
+    }
 
     private void OnDeactivated(object? sender, EventArgs e) => CancelPointers();
 

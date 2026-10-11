@@ -2291,7 +2291,7 @@
   <data name="ExpressionGraph.RendererFilter" xml:space="preserve"><value>Filter by renderer</value></data>
   <data name="ExpressionGraph.OtherRenderers" xml:space="preserve"><value>Other renderers</value></data>
   <data name="ExpressionGraph.Create" xml:space="preserve"><value>Create expression graph</value></data>
-  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>Choose a renderer to create a preset graph. If its family has no default, the new graph becomes the default for tracks following it.</value></data>
+  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>Choose a renderer to create a graph. If its family has no default, a new preset graph becomes the default for tracks following it.</value></data>
   <data name="ExpressionGraph.NewName" xml:space="preserve"><value>{0} graph</value></data>
   <data name="ExpressionGraph.CopyName" xml:space="preserve"><value>{0} (copy)</value></data>
   <data name="ExpressionGraph.Copy" xml:space="preserve"><value>Клонувати</value></data>
@@ -2377,4 +2377,26 @@ Affected tracks will resolve their remaining references or use built-in behavior
   <data name="GraphEdit.Range" xml:space="preserve"><value>Enter a value between {0} and {1}.</value></data>
   <data name="GraphEdit.OverriddenFallback" xml:space="preserve"><value>Fallback value. The connected source currently overrides this value.</value></data>
   <data name="GraphEdit.OptionalNumber" xml:space="preserve"><value>Leave empty to use the node's built-in fallback.</value></data>
+  <data name="GraphTopology.AddNode" xml:space="preserve"><value>Add node</value></data>
+  <data name="GraphTopology.DeleteNode" xml:space="preserve"><value>Delete node</value></data>
+  <data name="GraphTopology.ChangeSource" xml:space="preserve"><value>Change source</value></data>
+  <data name="GraphTopology.Disconnect" xml:space="preserve"><value>Disconnect</value></data>
+  <data name="GraphTopology.DeleteMessage" xml:space="preserve"><value>Delete {0} and its {1} connected links? You can undo this.</value></data>
+  <data name="GraphTopology.Stale" xml:space="preserve"><value>The graph changed. Cancel and reopen this operation.</value></data>
+  <data name="GraphTopology.InvalidLink" xml:space="preserve"><value>Cannot connect: invalid port or a cycle would form. The existing connection is unchanged.</value></data>
+  <data name="GraphTopology.SourceMessage" xml:space="preserve"><value>{0} · {1}
+Current source: {2}
+Applying replaces the source of this input.</value></data>
+  <data name="GraphTopology.Search" xml:space="preserve"><value>Search type, node ID or output port</value></data>
+  <data name="GraphTopology.Results" xml:space="preserve"><value>{0} results</value></data>
+  <data name="GraphTopology.MoreResults" xml:space="preserve"><value>{0} results; showing the first 100. Search to narrow the list.</value></data>
+  <data name="GraphTopology.TemplateHint" xml:space="preserve"><value>Add nodes and connections to an empty graph to produce outputs. It is not automatically made the default.</value></data>
+  <data name="GraphTopology.PresetGraph" xml:space="preserve"><value>Preset graph</value></data>
+  <data name="GraphTopology.EmptyGraph" xml:space="preserve"><value>Empty graph</value></data>
+  <data name="GraphTopology.EmptyName" xml:space="preserve"><value>{0} empty graph</value></data>
+  <data name="GraphTopology.Editing" xml:space="preserve"><value>Graph editing</value></data>
+  <data name="GraphTopology.Unavailable" xml:space="preserve"><value>Incomplete or unavailable</value></data>
+  <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
+  <data name="GraphEdit.Title" xml:space="preserve"><value>Редактор графа</value></data>
+  <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>Змінити розмір панелі властивостей</value></data>
 </root>

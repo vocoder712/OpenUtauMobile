@@ -5,8 +5,6 @@
              x:DataType="vm:GraphParameterEdit">
     <StackPanel Spacing="4" Margin="0,0,0,12">
         <TextBlock Text="{Binding Label}" FontWeight="SemiBold" TextWrapping="Wrap" />
-        <TextBlock Text="{Binding Hint}" IsVisible="{Binding Hint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                   TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         <TextBox x:Name="ParameterText" Text="{Binding Text, Mode=TwoWay}" IsVisible="{Binding IsText}" KeyDown="TextKeyDown"
                  TextInputOptions.ContentType="{Binding InputContentType}" TextInputOptions.ReturnKeyType="Done"
                  AutomationProperties.Name="{Binding Label}" />
@@ -26,7 +24,7 @@
         <TextBlock Text="{Binding Error}" IsVisible="{Binding HasError}" TextWrapping="Wrap"
                    Foreground="{DynamicResource Sem.Color.Error}" />
         <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding IsDirty}">
-            <Button Classes="text" Content="{DynamicResource GraphEdit.Reload}" Command="{Binding CancelCommand}" />
+            <Button Classes="text" Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
             <Button Grid.Column="1" Classes="text" Content="{DynamicResource GraphEdit.Apply}" Command="{Binding ApplyCommand}" />
         </Grid>
     </StackPanel>

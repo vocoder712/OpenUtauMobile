@@ -20,12 +20,15 @@ using ReactiveUI.Fody.Helpers;
 namespace OpenUtauMobile.ViewModels;
 
 /// <summary>只读参数或端口信息；可定位项保存稳定节点键。</summary>
-public sealed record GraphNodeDetail(string Label, string Value, string? TargetKey = null);
+public sealed record GraphNodeDetail(string Label, string Value, string? TargetKey = null, string? InputPort = null)
+{
+    public bool IsInput => InputPort != null;
+}
 /// <summary>节点搜索结果，数量限制仅影响展示，不改动图。</summary>
 public sealed record GraphSearchResult(string Key, string Title, string Summary);
 
 /// <summary>单图编辑会话；参数经校验后提交命令，画布动作只影响本地状态。</summary>
-public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable
+public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable
 {
     private readonly UProject _project;
     private readonly string _graphId;
@@ -47,7 +50,6 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
     [Reactive] public bool IsEmpty { get; private set; }
     [Reactive] public bool IsBusy { get; private set; }
     [Reactive] public bool IsSearchOpen { get; set; }
-    [Reactive] public bool IsDetailsExpanded { get; set; }
     [Reactive] public string Query { get; set; } = string.Empty;
     [Reactive] public IReadOnlyList<GraphSearchResult> SearchResults { get; private set; } = [];
     [Reactive] public IReadOnlyList<GraphNodeDetail> Details { get; private set; } = [];
@@ -59,6 +61,8 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
     public bool ShowInspector => HasSelection || IsSearchOpen;
     public event Action<string>? RequestLocate;
     public event Action<GraphParameterEdit>? RequestRevealParameter;
+    /// <summary>输入端口的回退值由来源行展示，普通参数只展示一次。</summary>
+    [Reactive] public IReadOnlyList<GraphParameterEdit> NonInputParameters { get; private set; } = [];
 
     public string? SelectedKey
     {
@@ -75,21 +79,19 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
     public ReactiveCommand<Unit, Unit> SearchCommand { get; }
     public ReactiveCommand<Unit, Unit> CloseInspectorCommand { get; }
-    public ReactiveCommand<Unit, Unit> ToggleDetailsCommand { get; }
     public ReactiveCommand<string, Unit> LocateCommand { get; }
     public ReactiveCommand<Unit, Unit> SettingsCommand { get; }
     public ReactiveCommand<Unit, Unit> DiagnosticCommand { get; }
     public ReactiveCommand<Unit, Unit> UndoCommand { get; }
     public ReactiveCommand<Unit, Unit> RedoCommand { get; }
 
-    /// <summary>通过工程身份与图 ID 创建只读会话，不持有可写节点引用。</summary>
+    /// <summary>通过工程身份与图 ID 创建编辑会话，提交时重新定位最新节点。</summary>
     public ExpressionGraphEditorViewModel(MainViewModel navigator, UProject project, string graphId) : base(navigator)
     {
         _project = project; _graphId = graphId;
         BackCommand = ReactiveCommand.Create(OnBackRequested).DisposeWith(_subscriptions);
         SearchCommand = ReactiveCommand.Create(() => { if (ResolveParameterEdits()) IsSearchOpen = !IsSearchOpen; }).DisposeWith(_subscriptions);
-        CloseInspectorCommand = ReactiveCommand.Create(() => { if (!ResolveParameterEdits()) return; IsSearchOpen = false; IsDetailsExpanded = false; SelectedKey = null; }).DisposeWith(_subscriptions);
-        ToggleDetailsCommand = ReactiveCommand.Create(() => { if (!IsDetailsExpanded || ResolveParameterEdits()) IsDetailsExpanded = !IsDetailsExpanded; }).DisposeWith(_subscriptions);
+        CloseInspectorCommand = ReactiveCommand.Create(() => { if (!ResolveParameterEdits()) return; IsSearchOpen = false; SelectedKey = null; }).DisposeWith(_subscriptions);
         LocateCommand = ReactiveCommand.Create<string>(key =>
         {
             if (IsAvailable && Scene?.ByKey.ContainsKey(key) == true && ResolveParameterEdits())
@@ -99,6 +101,7 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
         }).DisposeWith(_subscriptions);
         SettingsCommand = ReactiveCommand.CreateFromTask(ShowSettingsAsync).DisposeWith(_subscriptions);
         DiagnosticCommand = ReactiveCommand.CreateFromTask(ShowDiagnosticAsync).DisposeWith(_subscriptions);
+        InitializeTopologyCommands();
         UndoCommand = ReactiveCommand.Create(() => { if (CanUndo && ContextIsCurrent()) { CancelParameterPreviews(); DocManager.Inst.Undo(); Refresh(); } }).DisposeWith(_subscriptions);
         RedoCommand = ReactiveCommand.Create(() => { if (CanRedo && ContextIsCurrent()) { CancelParameterPreviews(); DocManager.Inst.Redo(); Refresh(); } }).DisposeWith(_subscriptions);
         this.WhenAnyValue(vm => vm.Query).Subscribe(_ => UpdateSearch()).DisposeWith(_subscriptions);
@@ -134,8 +137,10 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
             Diagnostic = Scene.Diagnostic;
             UpdateSelection(); UpdateSearch();
         }
-        else SynchronizeParameters();
-        Status = $"{graph.renderer ?? L.S("ExpressionGraph.NoRenderer")} · {L.S("GraphEdit.Parameters")}";
+        else { SynchronizeParameters(); UpdateTopologySelection(); }
+        bool hasOutput = Scene?.Nodes.Any(node => node.Type?.IsOutput == true && Scene.Incoming[node.Key].Count > 0) == true;
+        Status = $"{graph.renderer ?? L.S("ExpressionGraph.NoRenderer")} · {L.S(Diagnostic.Length > 0 ? "GraphTopology.Unavailable"
+            : hasOutput ? "GraphTopology.Editing" : "GraphTopology.NoOutputs")}";
     }
 
     private void UpdateSelection()
@@ -145,6 +150,7 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
             this.RaiseAndSetIfChanged(ref _selectedKey, null, nameof(SelectedKey));
         this.RaisePropertyChanged(nameof(HasSelection)); this.RaisePropertyChanged(nameof(ShowInspector));
         SynchronizeParameters();
+        UpdateTopologySelection();
         if (SelectedNode == null || Scene == null) { Details = []; return; }
         GraphVisualNode selected = SelectedNode;
         List<GraphNodeDetail> details = [];
@@ -167,8 +173,8 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
             if (incoming.TryGetValue(port, out GraphVisualLink[]? links))
                 foreach (GraphVisualLink link in links)
                     details.Add(new(label, $"{link.From.Title} · {ExpressionGraphScene.Humanize(link.FromPort)}"
-                        + (Parameters.Any(field => field.Name == port) ? string.Empty : $"\n{L.S("GraphViewer.Fallback")}: {fallback}"), link.From.Key));
-            else if (!Parameters.Any(field => field.Name == port)) details.Add(new(label, $"{L.S("GraphViewer.Fallback")}: {fallback}"));
+                        + (Parameters.Any(field => field.Name == port) ? string.Empty : $"\n{L.S("GraphViewer.Fallback")}: {fallback}"), link.From.Key, port));
+            else if (!Parameters.Any(field => field.Name == port)) details.Add(new(label, $"{L.S("GraphViewer.Fallback")}: {fallback}", InputPort: port));
         }
         foreach (string port in selected.Outputs)
         {
@@ -233,7 +239,7 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
             bool connected = isInput && Scene!.Incoming[selected.Key].Any(link => link.ToPort == field.Name);
             string hint = connected ? L.S("GraphEdit.OverriddenFallback") : isInput ? L.S("GraphViewer.Fallback")
                 : field.Definition.Kind == GraphParameterKind.Number && field.Definition.Default == null ? L.S("GraphEdit.OptionalNumber") : string.Empty;
-            string label = isInput ? $"{L.S("GraphViewer.Input")} · {ExpressionGraphScene.Humanize(field.Name)}" : ExpressionGraphScene.Humanize(field.Name);
+            string label = isInput ? L.S("GraphViewer.Fallback") : ExpressionGraphScene.Humanize(field.Name);
             field.Synchronize(node, hint, ChoicesFor(field.Definition, node), label);
         }
     }
@@ -260,7 +266,7 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
         }
         if (!valid)
         {
-            IsSearchOpen = false; IsDetailsExpanded = true;
+            IsSearchOpen = false;
             RequestRevealParameter?.Invoke(fields.First(field => field.HasError));
             return false;
         }
@@ -342,13 +348,10 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
         : OptionConfirmPopupService.ShowAsync(L.S("GraphViewer.Diagnostic"), Diagnostic + "\n\n" + Usage,
             new OptionConfirmOption[] { new(L.S("Common.Close"), "close") });
 
-    /// <summary>返回先收起搜索和详情，再清除选择，最后离开页面。</summary>
+    /// <summary>确认字段草稿后一次返回图库；编辑面板和搜索由关闭按钮收起。</summary>
     public override void OnBackRequested()
     {
         if (!ResolveParameterEdits()) return;
-        if (IsSearchOpen) { IsSearchOpen = false; return; }
-        if (IsDetailsExpanded) { IsDetailsExpanded = false; return; }
-        if (HasSelection) { SelectedKey = null; return; }
         Navigator.NavigateBack(this);
     }
 
@@ -369,6 +372,6 @@ public sealed class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmd
         _disposed = true;
         ClearParameters();
         DocManager.Inst.RemoveSubscriber(this); _subscriptions.Dispose();
-        RequestLocate = null; RequestRevealParameter = null;
+        RequestLocate = null; RequestRevealParameter = null; GetInsertionPoint = null;
     }
 }

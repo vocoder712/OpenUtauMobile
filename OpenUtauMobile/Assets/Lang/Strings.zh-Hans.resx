@@ -2336,7 +2336,7 @@
   <data name="ExpressionGraph.RendererFilter" xml:space="preserve"><value>筛选渲染器</value></data>
   <data name="ExpressionGraph.OtherRenderers" xml:space="preserve"><value>其他渲染器</value></data>
   <data name="ExpressionGraph.Create" xml:space="preserve"><value>创建表情图</value></data>
-  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>选择渲染器创建预设图；该家族没有默认图时，新图会成为默认图，并作用于跟随默认的轨道。</value></data>
+  <data name="ExpressionGraph.CreateHint" xml:space="preserve"><value>选择渲染器创建图；该家族没有默认图时，新预设图会成为默认图，并作用于跟随默认的轨道。</value></data>
   <data name="ExpressionGraph.NewName" xml:space="preserve"><value>{0} 图</value></data>
   <data name="ExpressionGraph.CopyName" xml:space="preserve"><value>{0}（副本）</value></data>
   <data name="ExpressionGraph.Copy" xml:space="preserve"><value>克隆</value></data>
@@ -2422,4 +2422,26 @@
   <data name="GraphEdit.Range" xml:space="preserve"><value>请输入 {0} 到 {1} 之间的数值。</value></data>
   <data name="GraphEdit.OverriddenFallback" xml:space="preserve"><value>回退值：当前由已连接的来源覆盖。</value></data>
   <data name="GraphEdit.OptionalNumber" xml:space="preserve"><value>留空使用节点内置的回退值。</value></data>
+  <data name="GraphTopology.AddNode" xml:space="preserve"><value>添加节点</value></data>
+  <data name="GraphTopology.DeleteNode" xml:space="preserve"><value>删除节点</value></data>
+  <data name="GraphTopology.ChangeSource" xml:space="preserve"><value>更换来源</value></data>
+  <data name="GraphTopology.Disconnect" xml:space="preserve"><value>断开</value></data>
+  <data name="GraphTopology.DeleteMessage" xml:space="preserve"><value>删除 {0} 及其 {1} 条关联连接？此操作可撤销。</value></data>
+  <data name="GraphTopology.Stale" xml:space="preserve"><value>图已发生变化，请取消并重新打开此操作。</value></data>
+  <data name="GraphTopology.InvalidLink" xml:space="preserve"><value>无法连接：端口无效或会形成循环。原连接保持不变。</value></data>
+  <data name="GraphTopology.SourceMessage" xml:space="preserve"><value>{0} · {1}
+当前来源：{2}
+应用后替换此输入的来源。</value></data>
+  <data name="GraphTopology.Search" xml:space="preserve"><value>搜索类型、节点 ID 或输出端口</value></data>
+  <data name="GraphTopology.Results" xml:space="preserve"><value>{0} 项</value></data>
+  <data name="GraphTopology.MoreResults" xml:space="preserve"><value>共 {0} 项，显示前 100 项；请搜索缩小范围。</value></data>
+  <data name="GraphTopology.TemplateHint" xml:space="preserve"><value>空白图需要添加节点和连接以产生输出；不会自动设为默认图。</value></data>
+  <data name="GraphTopology.PresetGraph" xml:space="preserve"><value>预设图</value></data>
+  <data name="GraphTopology.EmptyGraph" xml:space="preserve"><value>空白图</value></data>
+  <data name="GraphTopology.EmptyName" xml:space="preserve"><value>{0} 空白图</value></data>
+  <data name="GraphTopology.Editing" xml:space="preserve"><value>图编辑</value></data>
+  <data name="GraphTopology.Unavailable" xml:space="preserve"><value>未完成或不可用</value></data>
+  <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>尚无已连接输出</value></data>
+  <data name="GraphEdit.Title" xml:space="preserve"><value>图编辑器</value></data>
+  <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>调整属性面板大小</value></data>
 </root>

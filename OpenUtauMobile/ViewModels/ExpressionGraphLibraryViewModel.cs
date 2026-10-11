@@ -40,6 +40,7 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
     private readonly CompositeDisposable _subscriptions = new();
     private bool _disposed;
     private bool _refreshing;
+    private bool _openingGraph;
     private ExpressionGraphFilter? _filter;
     private string? _selectedId;
 
@@ -96,7 +97,8 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
         SettingsCommand = ReactiveCommand.CreateFromTask<ExpressionGraphLibraryItem>(ShowSettingsAsync).DisposeWith(_subscriptions);
         OpenGraphCommand = ReactiveCommand.Create<ExpressionGraphLibraryItem>(item =>
         {
-            if (!CanEdit() || Find(item.Id) == null) return;
+            if (_openingGraph || !ReferenceEquals(Navigator.CurrentViewModel, this) || !CanEdit() || Find(item.Id) == null) return;
+            _openingGraph = true;
             IsCreationMenuOpen = false; _selectedId = item.Id;
             Navigator.Navigate(new ExpressionGraphEditorViewModel(Navigator, _project, item.Id));
         }).DisposeWith(_subscriptions);
@@ -115,6 +117,7 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
 
     public override void OnNavigatedTo()
     {
+        _openingGraph = false;
         Refresh();
         if (_selectedId != null) Dispatcher.UIThread.Post(() => RequestRevealGraph?.Invoke(_selectedId));
     }
@@ -281,7 +284,8 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
                 ];
                 rows.Add(new ExpressionGraphLibraryItem(graph.id, RendererGraphOption.Name(graph), graph.renderer ?? L.S("ExpressionGraph.NoRenderer"),
                     isDefault, string.Format(L.S("ExpressionGraph.ReferenceCount"), references.Length),
-                    valid ? L.S("ExpressionGraph.Valid") : string.Format(L.S("ExpressionGraph.Invalid"), problem), !valid,
+                    valid ? L.S(ExpressionGraphLibraryInfo.HasConnectedOutput(graph) ? "ExpressionGraph.Valid" : "GraphTopology.NoOutputs")
+                        : string.Format(L.S("ExpressionGraph.Invalid"), problem), !valid,
                     ExpressionGraphLibraryInfo.Usage(_project, graph),
                     string.Format(L.S("ExpressionGraph.DefaultBadge"), graph.renderer == null ? string.Empty : Renderers.GetExpressionGraphSlot(graph.renderer))));
             }
@@ -315,13 +319,30 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
             finally { IsBusy = false; }
         }
         if (renderer.Length == 0 || !CanEdit() || !RendererFamilies().Contains(renderer)) return;
+        string? template;
+        IsBusy = true;
+        try
+        {
+            template = await OptionConfirmPopupService.ShowAsync(string.Format(L.S("ExpressionGraph.NewName"), renderer), L.S("GraphTopology.TemplateHint"),
+                new OptionConfirmOption[]
+                {
+                    new(L.S("Common.Cancel"), "cancel"),
+                    new(L.S("GraphTopology.PresetGraph"), "preset", isDefault: true),
+                    new(L.S("GraphTopology.EmptyGraph"), "empty"),
+                });
+        }
+        finally { IsBusy = false; }
+        if (template is not ("preset" or "empty") || !CanEdit()) return;
+        bool empty = template == "empty";
         string name = string.Format(L.S("ExpressionGraph.NewName"), renderer);
+        if (empty) name = string.Format(L.S("GraphTopology.EmptyName"), renderer);
         string? id = null;
         TryEdit(() => ExpressionGraphLibraryInfo.Apply(_project, draft =>
         {
             id = draft.NewId(name);
-            draft.Graphs.Add(ExpressionGraphEdits.CreateDefault(id, name, renderer));
-            draft.Defaults.TryAdd(Renderers.GetExpressionGraphSlot(renderer), id);
+            draft.Graphs.Add(empty ? new UExpressionGraph { id = id, name = name, renderer = renderer, preferredPitchCurve = OpenUtau.Core.Format.Ustx.PITO }
+                : ExpressionGraphEdits.CreateDefault(id, name, renderer));
+            if (!empty) draft.Defaults.TryAdd(Renderers.GetExpressionGraphSlot(renderer), id);
         }));
         if (id != null) Reveal(id);
     }
@@ -432,6 +453,14 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
 /// <summary>引用、诊断及失效检查共用 Core 的有效图解析，不修改未知数据。</summary>
 internal static class ExpressionGraphLibraryInfo
 {
+    /// <summary>无输出是合法的中间编辑状态；线性检查仅影响状态文案，不更改 Core 有效性。</summary>
+    public static bool HasConnectedOutput(UExpressionGraph graph)
+    {
+        HashSet<int> targets = (graph.links ?? []).Where(link => link != null).Select(link => link.to).ToHashSet();
+        return (graph.nodes ?? []).Any(node => node != null && targets.Contains(node.id)
+            && GraphNodeTypes.TryGet(node.type, out GraphNodeType? type) && type.IsOutput);
+    }
+
     public static void Apply(UProject project, Action<ExpressionGraphEdits.Draft> edit)
     {
         ExpressionGraphEdits.Draft draft = new(project);
