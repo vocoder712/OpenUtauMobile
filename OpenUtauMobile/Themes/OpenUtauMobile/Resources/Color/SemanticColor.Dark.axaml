@@ -22,7 +22,4 @@
 
     <Color x:Key="Sem.Value.Shadow">#000000</Color>
     <x:String x:Key="SvgCss">.cls-1{fill:#E6E1E5;}</x:String>
-    
-    <!-- 黑键 -->
-    <SolidColorBrush x:Key="Comp.Color.BlackKey" Color="{DynamicResource Sem.}"/>
 </ResourceDictionary>

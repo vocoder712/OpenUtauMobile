@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive.Disposables;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -23,8 +24,9 @@ namespace OpenUtauMobile.ViewModels;
 /// Classic/Enunu/DiffSinger/NEUTRINO 歌手安装向导的 ViewModel。
 /// 四步流程：Step 0 压缩包编码 → Step 1 文本编码 → Step 2 歌手类型 → Step 3 安装摘要
 /// </summary>
-public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
+public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable
 {
+    private readonly CompositeDisposable _subscriptions = new();
     [Reactive] public int Step { get; set; }
     public string StepText => string.Format(L.S("SingerSetup.StepFormat"), Step + 1);
 
@@ -82,7 +84,7 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
 
         // 订阅 ArchiveFilePath 变化
         this.WhenAnyValue(vm => vm.Step)
-            .Subscribe(_ => this.RaisePropertyChanged(nameof(StepText)));
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(StepText))).DisposeWith(_subscriptions);
 
         this.WhenAnyValue(vm => vm.ArchiveFilePath)
             .Subscribe(_ =>
@@ -121,15 +123,15 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
                         ErrorMessage = ex.Message;
                     }
                 }
-            });
+            }).DisposeWith(_subscriptions);
 
         // 订阅 Step、ArchiveEncoding、ArchiveFilePath 的变化以刷新存档列表
         this.WhenAnyValue(vm => vm.Step, vm => vm.ArchiveEncoding, vm => vm.ArchiveFilePath)
-            .Subscribe(_ => RefreshArchiveItems());
+            .Subscribe(_ => RefreshArchiveItems()).DisposeWith(_subscriptions);
 
         // 订阅 Step、TextEncoding 的变化以刷新文本列表
         this.WhenAnyValue(vm => vm.Step, vm => vm.TextEncoding)
-            .Subscribe(_ => RefreshTextItems());
+            .Subscribe(_ => RefreshTextItems()).DisposeWith(_subscriptions);
 
         // 注册为 DocManager 订阅者以接收进度通知
         DocManager.Inst.AddSubscriber(this);
@@ -409,6 +411,12 @@ public class ClassicSingerSetupViewModel : NavigateViewModelBase, ICmdSubscriber
         }
     }
 
+    public void Dispose()
+    {
+        DocManager.Inst.RemoveSubscriber(this);
+        _subscriptions.Dispose();
+        NextCommand.Dispose(); BackCommand.Dispose(); ConfirmInstallCommand.Dispose(); ExitCommand.Dispose();
+    }
     public override void OnNavigatedTo()
     {
         // 初始化时清空错误状态

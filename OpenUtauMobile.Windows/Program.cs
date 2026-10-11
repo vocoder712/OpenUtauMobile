@@ -33,6 +33,7 @@ sealed class Program
         InitPathManager();
         InitLogging();
         InitExceptionHandler();
+        OpenUtauMobile.DesktopUI.DesktopApplication.Register();
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ViewportInputPlatform = new WindowsViewportInput();
         ServiceHub.ExternalUrlLauncher = new WindowsExternalUrlLauncher();

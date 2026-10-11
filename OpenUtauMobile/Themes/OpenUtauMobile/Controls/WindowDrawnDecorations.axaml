@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:opum="clr-namespace:OpenUtauMobile.Controls"
                     x:CompileBindings="False">
 
   <x:Double x:Key="CaptionButtonWidth">45</x:Double>
@@ -68,6 +69,7 @@
                      IsHitTestVisible="False"
                      IsVisible="{TemplateBinding HasTitleBar}">
                 <TextBlock Text="{TemplateBinding Title}"
+                           IsVisible="{TemplateBinding opum:WindowChrome.ShowTitle}"
                            VerticalAlignment="Center"
                            Margin="12,0,0,0"
                            FontSize="12" />
@@ -80,16 +82,18 @@
                           Orientation="Horizontal"
                           Spacing="2"
                           TextElement.FontSize="10">
-                <Button x:Name="PART_FullScreenButton"
-                        Theme="{StaticResource OpumDrawnCaptionButton}"
-                        WindowDecorationProperties.ElementRole="FullScreenButton">
-                  <Viewbox Width="11" Margin="2">
-                    <Path Name="FullScreenButtonPath"
-                          Stretch="UniformToFill"
-                          Fill="{DynamicResource CaptionButtonForeground}"
-                          Data="M2048 2048v-819h-205v469l-1493 -1493h469v-205h-819v819h205v-469l1493 1493h-469v205h819z" />
-                  </Viewbox>
-                </Button>
+                <Panel IsVisible="{TemplateBinding opum:WindowChrome.ShowFullScreenButton}">
+                  <Button x:Name="PART_FullScreenButton"
+                          Theme="{StaticResource OpumDrawnCaptionButton}"
+                          WindowDecorationProperties.ElementRole="FullScreenButton">
+                    <Viewbox Width="11" Margin="2">
+                      <Path Name="FullScreenButtonPath"
+                            Stretch="UniformToFill"
+                            Fill="{DynamicResource CaptionButtonForeground}"
+                            Data="M2048 2048v-819h-205v469l-1493 -1493h469v-205h-819v819h205v-469l1493 1493h-469v205h819z" />
+                    </Viewbox>
+                  </Button>
+                </Panel>
                 <Button x:Name="PART_MinimizeButton"
                         Theme="{StaticResource OpumDrawnCaptionButton}"
                         WindowDecorationProperties.ElementRole="MinimizeButton">
@@ -140,15 +144,17 @@
                           Orientation="Horizontal"
                           Spacing="2"
                           TextElement.FontSize="10">
-                <Button x:Name="PART_PopoverFullScreenButton"
-                        Theme="{StaticResource OpumDrawnCaptionButton}"
-                        WindowDecorationProperties.ElementRole="FullScreenButton">
-                  <Viewbox Width="11" Margin="2">
-                    <Path Stretch="UniformToFill"
-                          Fill="{DynamicResource CaptionButtonForeground}"
-                          Data="M205 1024h819v-819h-205v469l-674 -674l-145 145l674 674h-469v205zM1374 1229h469v-205h-819v819h205v-469l674 674l145 -145z" />
-                  </Viewbox>
-                </Button>
+                <Panel IsVisible="{TemplateBinding opum:WindowChrome.ShowFullScreenButton}">
+                  <Button x:Name="PART_PopoverFullScreenButton"
+                          Theme="{StaticResource OpumDrawnCaptionButton}"
+                          WindowDecorationProperties.ElementRole="FullScreenButton">
+                    <Viewbox Width="11" Margin="2">
+                      <Path Stretch="UniformToFill"
+                            Fill="{DynamicResource CaptionButtonForeground}"
+                            Data="M205 1024h819v-819h-205v469l-674 -674l-145 145l674 674h-469v205zM1374 1229h469v-205h-819v819h205v-469l674 674l145 -145z" />
+                    </Viewbox>
+                  </Button>
+                </Panel>
                 <Button x:Name="PART_PopoverCloseButton"
                         Background="#ffe81123"
                         BorderBrush="#fff1707a"

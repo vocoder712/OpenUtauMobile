@@ -1,0 +1,220 @@
+<UserControl xmlns:shared="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile" xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels;assembly=OpenUtauMobile"
+             xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens;assembly=OpenUtauMobile"
+             xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:tools="clr-namespace:OpenUtauMobile.Tools;assembly=OpenUtauMobile"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;assembly=OpenUtauMobile"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;assembly=OpenUtauMobile"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="OpenUtauMobile.DesktopUI.Views.DesktopSingerSetupPage"
+             x:DataType="vm:ClassicSingerSetupViewModel">
+
+    <UserControl.Resources>
+        <tools:EncodingNameConverter x:Key="EncodingNameConverter" />
+    </UserControl.Resources>
+
+    <Grid x:Name="SetupLayout" ColumnDefinitions="180,*" ColumnSpacing="20">
+        <Border x:Name="StepRail" Padding="12" CornerRadius="16" Background="{DynamicResource Sem.Color.SurfaceContainerLow}" />
+        <Panel Grid.Column="1">
+            <Panel x:Name="WizardPanel">
+                <!-- Step 0: 压缩包编码 -->
+                <Grid x:Name="Step0" Background="{DynamicResource Sem.Color.Surface}"
+
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      RowDefinitions="Auto,*,Auto">
+
+                    <!-- 标题 -->
+                    <Border Padding="0,0,0,16" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step1.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step1.Desc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="1" Background="{DynamicResource Sem.Color.SurfaceContainerLow}" Padding="20" CornerRadius="16" Margin="0,0,8,0">
+                        <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="12">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step1.ArchiveEncoding}" FontWeight="SemiBold" />
+                            <ComboBox Grid.Row="1" ItemsSource="{Binding Encodings}" SelectedItem="{Binding ArchiveEncoding}" MaxWidth="300" HorizontalAlignment="Left">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding Converter={StaticResource EncodingNameConverter}, Mode=OneWay}" /></DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBlock Grid.Row="2" Text="{DynamicResource SingerSetup.Step1.Preview}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" FontWeight="SemiBold" />
+                            <ListBox Grid.Row="3" ItemsSource="{Binding TextItems}" Background="{DynamicResource Sem.Color.Surface}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" Padding="8">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding}" FontSize="12" FontFamily="monospace" TextWrapping="Wrap" /></DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+
+                    <!-- 底部按钮 -->
+                    <Border Grid.Row="2" Padding="0,16,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Button Classes="Secondary" Content="{DynamicResource Common.Back}" Command="{Binding BackCommand}" HorizontalAlignment="Left" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <Button Classes="Primary"
+                                        Content="{DynamicResource Common.Next}"
+                                        Command="{Binding NextCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Step 1: 文本编码 -->
+                <Grid x:Name="Step1" Background="{DynamicResource Sem.Color.Surface}"
+
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      RowDefinitions="Auto,*,Auto">
+
+                    <!-- 标题 -->
+                    <Border Padding="0,0,0,16" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step2.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step2.Desc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="1" Background="{DynamicResource Sem.Color.SurfaceContainerLow}" Padding="20" CornerRadius="16" Margin="0,0,8,0">
+                        <Grid RowDefinitions="Auto,Auto,*" RowSpacing="12">
+                            <ComboBox Grid.Row="0" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}" MaxWidth="300" HorizontalAlignment="Left">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding Converter={StaticResource EncodingNameConverter}, Mode=OneWay}" /></DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBlock Grid.Row="1" Text="{DynamicResource SingerSetup.Step2.Preview}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" FontWeight="SemiBold" />
+                            <ListBox Grid.Row="2" ItemsSource="{Binding TextItems}" Background="{DynamicResource Sem.Color.Surface}" CornerRadius="8" BorderThickness="1" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" Padding="8">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate><TextBlock Text="{Binding}" FontSize="12" FontFamily="monospace" TextWrapping="Wrap" /></DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+
+                    <!-- 底部按钮 -->
+                    <Border Grid.Row="2" Padding="0,16,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Button Grid.Column="0"
+                                    Classes="Secondary"
+                                    Content="{DynamicResource Common.Previous}"
+                                    Command="{Binding BackCommand}" />
+                            <Button Grid.Column="2"
+                                    Classes="Primary"
+                                    Content="{DynamicResource Common.Next}"
+                                    Command="{Binding NextCommand}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Step 2: 歌手类型 -->
+                <Grid x:Name="Step2" Background="{DynamicResource Sem.Color.Surface}"
+
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      RowDefinitions="Auto,*,Auto">
+
+                    <!-- 标题 -->
+                    <Border Padding="0,0,0,16" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerType}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
+                                       IsVisible="{Binding MissingInfo}" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.ManualDesc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap"
+                                       IsVisible="{Binding MissingInfo}" />
+
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.SingerInfo}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold"
+                                       IsVisible="{Binding !MissingInfo}" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step3.AutoDesc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap"
+                                       IsVisible="{Binding !MissingInfo}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 内容 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                                Padding="20" CornerRadius="16" Margin="0,0,8,0" VerticalAlignment="Top">
+                            <shared:SingerSetupTypeFields />
+                        </Border>
+                    </ScrollViewer>
+
+                    <!-- 底部按钮 -->
+                    <Border Grid.Row="2" Padding="0,16,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Button Grid.Column="0"
+                                    Classes="Secondary"
+                                    Content="{DynamicResource Common.Previous}"
+                                    Command="{Binding BackCommand}" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <Button Classes="Primary"
+                                        Content="{DynamicResource Common.Next}"
+                                        Command="{Binding NextCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Step 3: 安装摘要 -->
+                <Grid x:Name="Step3" Background="{DynamicResource Sem.Color.Surface}"
+
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      RowDefinitions="Auto,*,Auto">
+
+                    <!-- 标题 -->
+                    <Border Padding="0,0,0,16" Grid.Row="0">
+                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                            <TextBlock Text="{DynamicResource SingerSetup.Step4.Title}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource SingerSetup.Step4.Desc}"
+                                       FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
+                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 安装摘要信息 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                                Padding="20" CornerRadius="16" Margin="0,0,8,0" VerticalAlignment="Top">
+                            <shared:SingerSetupSummary />
+                        </Border>
+                    </ScrollViewer>
+
+                    <!-- 底部按钮 -->
+                    <Border Grid.Row="2" Padding="0,16,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Button Grid.Column="0"
+                                    Classes="Secondary"
+                                    Content="{DynamicResource Common.Previous}"
+                                    Command="{Binding BackCommand}" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                <Button Classes="Primary"
+                                        Content="{DynamicResource SingerSetup.ConfirmInstall}"
+                                        Command="{Binding ConfirmInstallCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Panel>
+        <!-- 进度展示区 -->
+        <shared:SingerSetupResult />
+        </Panel>
+    </Grid>
+</UserControl>

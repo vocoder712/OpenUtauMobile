@@ -1,5 +1,6 @@
 using System;
 using Avalonia;
+using OpenUtau.Core;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -14,18 +15,34 @@ public partial class PianoRollViewModel
 
     public bool BeginTemporaryPitchErase(Point point)
     {
-        if (EditMode != PianoRollEditMode.PitchPen || EditingVoicePart == null || !CanNavigateViewport) return false;
+        if (EditMode != PianoRollEditMode.PitchPen || EditingVoicePart == null || !CanNavigateViewport || DocManager.Inst.HasOpenUndoGroup) return false;
         IsTemporaryPitchErase = true;
         OnGestureDragBegin(point);
         OnGestureDragUpdate(point, default, default, point, 0);
         return true;
     }
 
-    public void EndTemporaryPitchErase()
+    public void EndTemporaryPitchErase(bool cancel = false)
     {
         if (!IsTemporaryPitchErase) return;
-        OnGestureDragEnd(default, 0);
+        if (cancel)
+        {
+            try
+            {
+                if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.RollBackUndoGroup();
+            }
+            finally
+            {
+                if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup();
+                _lastPitch = null;
+                _inputState = PianoRollInputState.Idle;
+                ResetPitchDrawPointerState();
+                RequestMagnifierClose?.Invoke();
+            }
+        }
+        else OnGestureDragEnd(default, 0);
         IsTemporaryPitchErase = false;
+        RequestInvalidateVisual?.Invoke();
     }
     /// <summary>
     /// 是否可以平移视口
@@ -51,8 +68,8 @@ public partial class PianoRollViewModel
 
     public void ZoomViewport(double scaleX, double scaleY, Point anchor)
     {
-        // 横向固定在播放标记处，纵向沿用指针锚点，并保留亚 tick 精度。
-        double anchorX = PlayMarkerScreenX;
+        // 桌面固定在鼠标处，移动端横向仍固定在播放标记处。
+        double anchorX = UseDesktopMouseInput ? anchor.X : PlayMarkerScreenX;
         double tick = TickOffset + anchorX / TickWidth;
         double key = KeyOffset + anchor.Y / KeyHeight;
         TickWidth = Math.Clamp(TickWidth * scaleX, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax);

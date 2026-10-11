@@ -10,6 +10,7 @@
     <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForeground}" />
     <!--  Narrow padding should be used for mouse input, when non-narrow one should be used for touch input in future.  -->
     <Setter Property="Padding" Value="{DynamicResource MenuBarItemPadding}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
     <Setter Property="Template">
       <ControlTemplate>
         <Border Name="PART_LayoutRoot"
@@ -38,6 +39,7 @@
                       MaxWidth="{DynamicResource FlyoutThemeMaxWidth}"
                       MinHeight="{DynamicResource MenuFlyoutThemeMinHeight}"
                       HorizontalAlignment="Stretch"
+                      ClipToBounds="True"
                       CornerRadius="{DynamicResource OverlayCornerRadius}">
                 <ScrollViewer Theme="{StaticResource OpumMenuScrollViewer}">
                   <ItemsPresenter Name="PART_ItemsPresenter"
@@ -55,6 +57,10 @@
     <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
       <Setter Property="RecognizesAccessKey" Value="True" />
     </Style> 
+
+    <Style Selector="^:pointerover:not(:disabled) /template/ Border#PART_LayoutRoot">
+      <Setter Property="Background" Value="{DynamicResource MenuFlyoutItemBackgroundPointerOver}" />
+    </Style>
 
     <Style Selector="^:selected">
       <Style Selector="^ /template/ Border#PART_LayoutRoot">

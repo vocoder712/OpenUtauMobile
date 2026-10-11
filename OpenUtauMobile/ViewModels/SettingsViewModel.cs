@@ -377,6 +377,13 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     public ReactiveCommand<Unit, Unit> ClearCacheCommand { get; }
 
     // ── Edit & Behaviour ─────────────────────────────────────────────
+    /// <summary>只有 Windows、Linux 和 macOS 展示桌面模式选项。</summary>
+    public bool IsDesktopPlatform { get; } = OperatingSystem.IsWindows() || OperatingSystem.IsLinux() || OperatingSystem.IsMacOS();
+
+    /// <summary>下次启动时是否启用桌面界面。</summary>
+    [Reactive]
+    public bool DesktopModeEnabled { get; set; }
+
     public bool IsAndroidPlatform { get; } = OperatingSystem.IsAndroid();
 
     public IReadOnlyList<LyricsHelperOption> AvailableLyricsHelpers { get; } =
@@ -840,6 +847,16 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Default.AndroidKeepScreenAwakeWhileEditing = enabled;
                 Preferences.Save();
                 ServiceHub.PlatformDisplayService?.Refresh();
+            })
+            .DisposeWith(_disposables);
+
+        DesktopModeEnabled = Preferences.Default.DesktopModeEnabled;
+        this.WhenAnyValue(x => x.DesktopModeEnabled)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.DesktopModeEnabled = enabled;
+                Preferences.Save();
             })
             .DisposeWith(_disposables);
 

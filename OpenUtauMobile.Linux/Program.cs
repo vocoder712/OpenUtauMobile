@@ -32,6 +32,7 @@ sealed class Program
         InitPathManager();
         InitLogging();
         InitExceptionHandler();
+        OpenUtauMobile.DesktopUI.DesktopApplication.Register();
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalUrlLauncher = new LinuxExternalUrlLauncher();
         ServiceHub.ExternalStorageService = new LinuxExternalStorageService();

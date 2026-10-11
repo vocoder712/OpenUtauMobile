@@ -25,7 +25,7 @@
     <Grid RowDefinitions="Auto,Auto,*">
         <Border Classes="TopBar">
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
-                <Button Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
+                <Button x:Name="BackButton" Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
                         ToolTip.Tip="{DynamicResource Common.Back}" AutomationProperties.Name="{DynamicResource Common.Back}" />
                 <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource GraphEdit.Title}" TextTrimming="CharacterEllipsis" />
                 <Button Grid.Column="2" Classes="TopBarBtn" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}"

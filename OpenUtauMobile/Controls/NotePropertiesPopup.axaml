@@ -2,14 +2,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:OpenUtauMobile.ViewModels"
              xmlns:controls="using:OpenUtauMobile.Controls"
+             xmlns:icons="clr-namespace:IconPacks.Avalonia.PhosphorIcons;assembly=IconPacks.Avalonia.PhosphorIcons"
              xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:Class="OpenUtauMobile.Controls.NotePropertiesPopup"
              x:DataType="vm:NotePropertiesViewModel"
              Classes="PopupDialogRoot DialogHeightList">
+    <UserControl.Resources>
+        <x:Double x:Key="NotePropertiesControlMinHeight">48</x:Double>
+        <x:Double x:Key="NotePropertiesChoiceMinHeight">48</x:Double>
+    </UserControl.Resources>
     <UserControl.Styles>
         <Style Selector="NumericUpDown, ComboBox, TextBox, Slider">
-            <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+            <Setter Property="MinHeight" Value="{DynamicResource NotePropertiesControlMinHeight}" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
         </Style>
         <Style Selector="TabItem">
@@ -21,8 +26,25 @@
             <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
             <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
         </Style>
+        <Style Selector="Border.PropertySummary">
+            <Setter Property="Padding" Value="24,0,24,12" />
+        </Style>
+        <Style Selector="Border.PropertyContent">
+            <Setter Property="Padding" Value="0,8" />
+        </Style>
+        <Style Selector="CheckBox.PropertyToggle">
+            <Setter Property="MinHeight" Value="{DynamicResource NotePropertiesChoiceMinHeight}" />
+        </Style>
         <Style Selector="Button.PresetAction">
-            <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+            <Setter Property="MinHeight" Value="{DynamicResource NotePropertiesChoiceMinHeight}" />
+        </Style>
+        <Style Selector="Button.NotePhonemizerPicker">
+            <Setter Property="MinHeight" Value="{DynamicResource NotePropertiesChoiceMinHeight}" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Button.NotePhonemizerPicker TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
     </UserControl.Styles>
     <controls:DialogShell Header="{DynamicResource NoteProperties.Title}" CloseCommand="{Binding CancelCommand}">
@@ -32,12 +54,12 @@
                            Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
                 <controls:DialogActionRow>
                     <Button Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" />
-                    <Button controls:DialogShell.IsDefaultAction="True" Content="{DynamicResource NoteProperties.Apply}" Click="OnApply" Classes="DialogPrimary" />
+                    <Button controls:DialogShell.IsDefaultAction="True" Content="{DynamicResource Common.Apply}" Click="OnApply" Classes="DialogPrimary" />
                 </controls:DialogActionRow>
             </StackPanel>
         </controls:DialogShell.Footer>
         <Grid RowDefinitions="Auto,*">
-            <Border Padding="24,0,24,12">
+            <Border Classes="PropertySummary">
                 <TextBlock Text="{Binding Summary}" Classes="DialogSubtitle" TextWrapping="Wrap" />
             </Border>
             <Border Grid.Row="1" Classes="DialogBodyBorder">
@@ -52,7 +74,7 @@
                     <TabControl.ContentTemplate>
                         <DataTemplate x:DataType="vm:NotePropertyGroup">
                             <ScrollViewer HorizontalScrollBarVisibility="Disabled" Offset="{Binding ScrollOffset, Mode=TwoWay}">
-                                <Border Padding="0,8">
+                                <Border Classes="PropertyContent">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
                                         <TextBlock Text="{DynamicResource NoteProperties.Hint}" Classes="DialogSubtitle" TextWrapping="Wrap" />
                                         <TextBlock Text="{Binding EmptyMessage}" IsVisible="{Binding EmptyMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
@@ -63,7 +85,7 @@
                                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                                         <ToggleSwitch IsChecked="{Binding Enabled, Mode=TwoWay}" Content="{DynamicResource NoteProperties.VibratoEnabled}"
                                                                       OnContent="{DynamicResource NoteProperties.On}" OffContent="{DynamicResource NoteProperties.Off}" />
-                                                        <CheckBox IsChecked="{Binding AutoEnabled, Mode=TwoWay}" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}">
+                                                        <CheckBox IsChecked="{Binding AutoEnabled, Mode=TwoWay}" Classes="PropertyToggle">
                                                             <TextBlock Text="{DynamicResource NoteProperties.AutoVibrato}" TextWrapping="Wrap" />
                                                         </CheckBox>
                                                         <StackPanel IsVisible="{Binding AutoEnabled}" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
@@ -98,22 +120,31 @@
                                                 <DataTemplate x:DataType="vm:NotePropertyField">
                                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                                         <TextBlock Text="{Binding Label}" Classes="PropertyLabel" />
-                                                        <TextBox IsVisible="{Binding IsText}" Text="{Binding Text, Mode=TwoWay}"
+                                                        <TextBox IsVisible="{Binding IsText}" IsEnabled="{Binding IsEnabled}" Text="{Binding Text, Mode=TwoWay}"
                                                                  PlaceholderText="{DynamicResource NoteProperties.Mixed}" AutomationProperties.Name="{Binding Label}" />
-                                                        <NumericUpDown IsVisible="{Binding IsNumber}" Value="{Binding Number, Mode=TwoWay}"
+                                                        <NumericUpDown IsVisible="{Binding IsNumber}" IsEnabled="{Binding IsEnabled}" Value="{Binding Number, Mode=TwoWay}"
                                                                        Text="{Binding NumberText, Mode=TwoWay}"
                                                                        Minimum="{Binding Minimum}" Maximum="{Binding Maximum}" Increment="{Binding Increment}"
                                                                        PlaceholderText="{DynamicResource NoteProperties.Mixed}"
                                                                        AutomationProperties.Name="{Binding Label}" />
-                                                        <Slider IsVisible="{Binding IsNumber}" Minimum="{Binding SliderMinimum}" Maximum="{Binding SliderMaximum}"
+                                                        <Slider IsVisible="{Binding IsNumber}" IsEnabled="{Binding IsEnabled}" Minimum="{Binding SliderMinimum}" Maximum="{Binding SliderMaximum}"
                                                                 Value="{Binding SliderValue, Mode=TwoWay}" AutomationProperties.Name="{Binding Label}" />
                                                         <ComboBox IsVisible="{Binding IsChoice}" ItemsSource="{Binding Options}" IsEnabled="{Binding IsEnabled}"
                                                                   SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                                                                   PlaceholderText="{DynamicResource NoteProperties.Choose}" AutomationProperties.Name="{Binding Label}" />
+                                                        <Button IsVisible="{Binding IsPhonemizerPicker}" IsEnabled="{Binding IsEnabled}"
+                                                                Click="OnPickPhonemizer" Classes="NotePhonemizerPicker DesktopPicker"
+                                                                ToolTip.Tip="{Binding PhonemizerDisplay}"
+                                                                AutomationProperties.Name="{Binding Label}">
+                                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                                <TextBlock Text="{Binding PhonemizerDisplay}" VerticalAlignment="Center" />
+                                                                <icons:PackIconPhosphorIcons Grid.Column="1" Kind="CaretDown" Width="12" Height="12" VerticalAlignment="Center" />
+                                                            </Grid>
+                                                        </Button>
                                                         <TextBlock Text="{Binding Hint}" IsVisible="{Binding Hint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                                                                    Classes="DialogSubtitle" TextWrapping="Wrap" />
-                                                        <CheckBox IsVisible="{Binding CanReset}" IsChecked="{Binding ResetRequested, Mode=OneWay}"
-                                                                  Command="{Binding ResetCommand}" MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}">
+                                                        <CheckBox IsVisible="{Binding CanReset}" IsEnabled="{Binding IsEnabled}" IsChecked="{Binding ResetRequested, Mode=OneWay}"
+                                                                  Command="{Binding ResetCommand}" Classes="PropertyToggle">
                                                             <TextBlock Text="{DynamicResource NoteProperties.Reset}" TextWrapping="Wrap" />
                                                         </CheckBox>
                                                     </StackPanel>

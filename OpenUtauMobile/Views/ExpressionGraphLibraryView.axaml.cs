@@ -15,6 +15,9 @@ public partial class ExpressionGraphLibraryView : UserControl
 {
     private ExpressionGraphLibraryViewModel? _vm;
 
+    /// <summary>桌面宿主通过窗口关闭返回上一页，隐藏移动端返回按钮。</summary>
+    public void SetDesktopChrome() => BackButton.IsVisible = false;
+
     public ExpressionGraphLibraryView()
     {
         InitializeComponent();

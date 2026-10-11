@@ -1,4 +1,5 @@
-﻿using System;
+using OpenUtauMobile.Services.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,6 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Services;
-using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Storage;
@@ -42,11 +42,12 @@ public static class FilePicker
         ];
     }
 
-    private static readonly bool UseInternalPicker = OperatingSystem.IsBrowser() || OperatingSystem.IsAndroid()
+    private static bool UseInternalPicker => OperatingSystem.IsBrowser() ||
+        (!ServiceHub.UseDesktopFileWorkflows && (OperatingSystem.IsAndroid()
 #if DEBUG
                                                      || OperatingSystem.IsWindows()
 #endif
-        ;
+        ));
     /// <summary>
     /// 权限检查
     /// </summary>

@@ -16,7 +16,7 @@ namespace OpenUtauMobile.Services.Dialogs;
 public static class PopupService
 {
     public static event Action? Opening;
-    private const string MainDialogHostIdentifier = "MainDialogHost";
+    private static string MainDialogHostIdentifier => ServiceHub.DesktopWindowContext?.DialogHostIdentifier ?? "MainDialogHost";
 
     public static async Task<T?> Show<T>(ContentControl view, PopupViewModelBase vm)
         => await RunOnUiThreadAsync(() => ShowWithViewCore<T>(view, vm, MainDialogHostIdentifier));
@@ -25,11 +25,13 @@ public static class PopupService
     {
         using IDisposable focus = DialogKeyboard.PreserveFocus(AppService.GetTopLevel());
         Opening?.Invoke();
+        view.DataContext = vm;
         try
         {
+            if (ServiceHub.DesktopWindowContext is { } context)
+                return await context.ShowPopupAsync(view, vm) is T desktopResult ? desktopResult : default;
             EventHandler<object?> handler = (_, parameter) => DialogHost.Close(dialogIdentifier, parameter);
 
-            view.DataContext = vm;
             vm.ClosingEvent += handler;
             object? result = await DialogHost.Show(
                 view,
@@ -75,6 +77,11 @@ public static class PopupService
     {
         using IDisposable focus = DialogKeyboard.PreserveFocus(AppService.GetTopLevel());
         Opening?.Invoke();
+        if (ServiceHub.DesktopWindowContext is { } context && new ViewLocator().Build(vm) is { } view)
+        {
+            view.DataContext = vm;
+            return await context.ShowPopupAsync(view, vm) is T desktopResult ? desktopResult : default;
+        }
         EventHandler<object?> handler = (_, parameter) => DialogHost.Close(dialogIdentifier, parameter);
 
         vm.ClosingEvent += handler;

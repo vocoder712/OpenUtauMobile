@@ -27,7 +27,7 @@
                     Command="{Binding StartCommand}" />
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
-        <DockPanel>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <Border Classes="DialogBodyBorder">
                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
@@ -87,6 +87,6 @@
                     </StackPanel>
                 </StackPanel>
             </Border>
-        </DockPanel>
+        </ScrollViewer>
     </dialogs:DialogShell>
 </UserControl>

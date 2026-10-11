@@ -76,7 +76,7 @@ public sealed class NoteExtractionPopupViewModel : PopupViewModelBase
 
     private string Status(string name, GameDependency dependency) => string.Format(L.S("NoteExtraction.BackendStatus"),
         name, dependency.PackageId, L.S(!dependency.IsInstalled ? "NoteExtraction.NotInstalled"
-            : dependency.SupportsLanguage(Language?.Code) ? "NoteExtraction.Installed" : "NoteExtraction.LanguageUnavailable"));
+            : dependency.SupportsLanguage(Language?.Code) ? "Common.Installed" : "NoteExtraction.LanguageUnavailable"));
 
     private void Confirm(NoteExtractionBackend backend)
     {

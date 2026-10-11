@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
@@ -12,6 +15,8 @@ namespace OpenUtauMobile.Controls;
 /// </summary>
 public partial class SingerList : UserControl
 {
+    private INotifyCollectionChanged? _subscribedSingers;
+    private bool _attached;
     #region 数据源
     public static readonly StyledProperty<IEnumerable<USinger>?> SingersProperty =
         AvaloniaProperty.Register<SingerList, IEnumerable<USinger>?>(nameof(Singers));
@@ -42,7 +47,51 @@ public partial class SingerList : UserControl
         base.OnPropertyChanged(change);
         if (change.Property == SingersProperty)
         {
-            SingerItemsControl.ItemsSource = Singers;
+            SubscribeToSingers();
+            RefreshSearch();
         }
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        _attached = true;
+        SubscribeToSingers();
+        RefreshSearch();
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _attached = false;
+        SubscribeToSingers();
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void SubscribeToSingers()
+    {
+        if (_subscribedSingers != null)
+        {
+            _subscribedSingers.CollectionChanged -= OnSingersChanged;
+        }
+        _subscribedSingers = _attached ? Singers as INotifyCollectionChanged : null;
+        if (_subscribedSingers != null)
+        {
+            _subscribedSingers.CollectionChanged += OnSingersChanged;
+        }
+    }
+
+    private void OnSingersChanged(object? sender, NotifyCollectionChangedEventArgs e) => RefreshSearch();
+
+    private void OnSearchTextChanged(object? sender, TextChangedEventArgs e) => RefreshSearch();
+
+    private void RefreshSearch()
+    {
+        string query = SingerSearch.Text ?? string.Empty;
+        // 与桌面一致，按本地化名称、标识和作者进行不区分大小写的匹配。
+        USinger[] filtered = (Singers ?? []).Where(singer =>
+            (singer.LocalizedName + " " + singer.Id + " " + singer.Author)
+                .Contains(query, StringComparison.CurrentCultureIgnoreCase)).ToArray();
+        SingerItemsControl.ItemsSource = filtered;
+        SingerEmptyMessage.IsVisible = query.Length > 0 && filtered.Length == 0;
     }
 }

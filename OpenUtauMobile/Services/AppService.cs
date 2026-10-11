@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia.Controls;
 
 namespace OpenUtauMobile.Services;
@@ -11,6 +11,7 @@ public static class AppService
     /// <returns></returns>
     public static TopLevel? GetTopLevel()
     {
+        if (ServiceHub.DesktopWindowContext?.ActiveTopLevel is { } active) return active;
         return TopLevel.GetTopLevel(Avalonia.Application.Current?.ApplicationLifetime switch
         {
             // 桌面多窗口应用

@@ -8,6 +8,14 @@
         <Setter Property="MinWidth" Value="{x:Static localTokens:BatchEditTokens.PopupMinWidth}" />
     </Style>
 
+    <Style Selector="Grid.BatchEditItemLayout">
+        <Setter Property="RowSpacing" Value="{x:Static foundation:LayoutTokens.SpaceS}" />
+    </Style>
+    <Style Selector="StackPanel.BatchEditItemActions">
+        <Setter Property="Grid.Row" Value="2" />
+        <Setter Property="Grid.ColumnSpan" Value="3" />
+        <Setter Property="Spacing" Value="{x:Static foundation:LayoutTokens.SpaceS}" />
+    </Style>
     <Style Selector="Border.BatchEditScope">
         <Setter Property="Margin" Value="12,12,12,4" />
         <Setter Property="Padding" Value="12,12" />
@@ -23,6 +31,7 @@
     </Style>
 
     <Style Selector="Border.BatchEditItemIcon">
+        <Setter Property="Grid.RowSpan" Value="2" />
         <Setter Property="Width" Value="{x:Static localTokens:BatchEditTokens.ItemIconSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:BatchEditTokens.ItemIconSize}" />
         <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />

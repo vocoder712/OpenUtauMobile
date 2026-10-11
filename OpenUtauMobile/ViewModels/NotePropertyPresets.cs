@@ -19,6 +19,7 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
     private readonly Action<IReadOnlyList<object>> commit;
     private object? selected;
     private bool modified;
+    public bool IsApplying { get; private set; }
     public ObservableCollection<object> Items { get; }
     [Reactive] public string Name { get; set; } = string.Empty;
     [Reactive] public string Error { get; private set; } = string.Empty;
@@ -33,11 +34,15 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
             {
                 return;
             }
-            this.RaiseAndSetIfChanged(ref selected, value);
+            selected = value;
             if (value != null)
             {
-                select(value);
+                IsApplying = true;
+                try { select(value); }
+                finally { IsApplying = false; }
             }
+            // 先填充草稿，再通知选择器；桌面即时提交不能早于套用预设。
+            this.RaisePropertyChanged(nameof(Selected));
         }
     }
 
@@ -50,6 +55,14 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
         this.commit = commit;
         SaveCommand = ReactiveCommand.Create(Save);
         RemoveCommand = ReactiveCommand.Create(Remove, this.WhenAnyValue(vm => vm.Selected).Select(value => value != null));
+    }
+
+    public void RestoreSessionState(NotePropertyPresets previous)
+    {
+        Name = previous.Name;
+        Error = previous.Error;
+        // 刷新草稿只恢复界面状态，不能重新套用预设覆盖撤销后的实际值。
+        this.RaiseAndSetIfChanged(ref selected, previous.Selected != null && Items.Contains(previous.Selected) ? previous.Selected : null, nameof(Selected));
     }
 
     private void Save()
@@ -92,6 +105,7 @@ public sealed class NotePropertyPresets : ReactiveObject, IDisposable
             return false;
         }
         commit(Items.ToArray());
+        modified = false;
         return true;
     }
 

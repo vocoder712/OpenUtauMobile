@@ -4,6 +4,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
 
 namespace OpenUtauMobile.Controls;
 
@@ -13,6 +14,8 @@ public class DialogShell : HeaderedContentControl
     public static readonly AttachedProperty<bool> IsDefaultActionProperty =
         AvaloniaProperty.RegisterAttached<DialogShell, Button, bool>("IsDefaultAction");
 
+    public static bool IsTextInputComposing(Visual? source) => DialogKeyboard.IsComposing(source);
+
     public static bool GetIsDefaultAction(Button button) => button.GetValue(IsDefaultActionProperty);
     public static void SetIsDefaultAction(Button button, bool value) => button.SetValue(IsDefaultActionProperty, value);
 
@@ -21,6 +24,15 @@ public class DialogShell : HeaderedContentControl
         Focusable = true;
         AttachedToVisualTree += (_, _) => DialogKeyboard.Attach(this);
         DetachedFromVisualTree += (_, _) => DialogKeyboard.Detach(this);
+    }
+
+    public static readonly StyledProperty<bool> IsWindowHostedProperty =
+        AvaloniaProperty.Register<DialogShell, bool>(nameof(IsWindowHosted));
+
+    public bool IsWindowHosted
+    {
+        get => GetValue(IsWindowHostedProperty);
+        set => SetValue(IsWindowHostedProperty, value);
     }
 
     public static readonly StyledProperty<ICommand?> CloseCommandProperty =
@@ -58,7 +70,7 @@ public class DialogShell : HeaderedContentControl
     }
 }
 
-/// <summary>显式定义的一行操作，可见按钮等宽铺满，不自动分行。</summary>
+/// <summary>显式定义的一行操作；触控等宽铺满，窗口宿主可使用标签的自然宽度。</summary>
 public class DialogActionRow : Panel
 {
     public static readonly StyledProperty<double> SpacingProperty =
@@ -66,8 +78,12 @@ public class DialogActionRow : Panel
 
     static DialogActionRow()
     {
-        AffectsMeasure<DialogActionRow>(SpacingProperty);
+        AffectsMeasure<DialogActionRow>(SpacingProperty, CompactProperty);
     }
+
+    public static readonly StyledProperty<bool> CompactProperty =
+        AvaloniaProperty.Register<DialogActionRow, bool>(nameof(Compact));
+    public bool Compact { get => GetValue(CompactProperty); set => SetValue(CompactProperty, value); }
 
     public double Spacing
     {
@@ -76,11 +92,13 @@ public class DialogActionRow : Panel
     }
 
     private readonly List<Control> visibleActions = [];
+    private readonly List<double> naturalWidths = [];
     private double preferredWidth;
 
     protected override Size MeasureOverride(Size availableSize)
     {
         visibleActions.Clear();
+        naturalWidths.Clear();
         preferredWidth = 0;
         foreach (Control child in Children)
         {
@@ -96,6 +114,7 @@ public class DialogActionRow : Panel
                 continue;
             }
             visibleActions.Add(child);
+            naturalWidths.Add(child.DesiredSize.Width);
             preferredWidth = Math.Max(preferredWidth, child.DesiredSize.Width);
         }
 
@@ -116,25 +135,34 @@ public class DialogActionRow : Panel
         }
 
         double gapCount = visibleActions.Count - 1;
+        double naturalContentWidth = 0;
+        foreach (double actionWidth in naturalWidths) naturalContentWidth += actionWidth;
+        double naturalWidth = (Compact ? naturalContentWidth : preferredWidth * visibleActions.Count) + gapCount * Spacing;
         double width = double.IsPositiveInfinity(availableWidth)
-            ? preferredWidth * visibleActions.Count + gapCount * Spacing
-            : Math.Max(0, availableWidth);
+            ? naturalWidth
+            : Compact ? Math.Min(naturalWidth, Math.Max(0, availableWidth)) : Math.Max(0, availableWidth);
         // 极窄视口下先压缩间隔，避免负单元格宽度或越界排列。
         double gap = gapCount > 0 ? Math.Min(Spacing, width / gapCount) : 0;
-        double cellWidth = Math.Max(0, width - gapCount * gap) / visibleActions.Count;
+        double contentWidth = Math.Max(0, width - gapCount * gap);
+        double cellWidth = contentWidth / visibleActions.Count;
         double rowHeight = 0;
-        foreach (Control child in visibleActions)
+        double x = 0;
+        for (int index = 0; index < visibleActions.Count; index++)
         {
-            // 只让文字在分配的单元格中换行，保留业务视图指定的按钮分组。
-            child.Measure(new Size(cellWidth, double.PositiveInfinity));
+            Control child = visibleActions[index];
+            double actionWidth = Compact && naturalContentWidth > 0
+                ? naturalWidths[index] * contentWidth / naturalContentWidth : cellWidth;
+            child.Measure(new Size(actionWidth, double.PositiveInfinity));
             rowHeight = Math.Max(rowHeight, child.DesiredSize.Height);
         }
         if (arrange)
         {
             for (int index = 0; index < visibleActions.Count; index++)
             {
-                visibleActions[index].Arrange(
-                    new Rect(index * (cellWidth + gap), 0, cellWidth, rowHeight));
+                double actionWidth = Compact && naturalContentWidth > 0
+                    ? naturalWidths[index] * contentWidth / naturalContentWidth : cellWidth;
+                visibleActions[index].Arrange(new Rect(x, 0, actionWidth, rowHeight));
+                x += actionWidth + gap;
             }
         }
 
@@ -142,23 +170,28 @@ public class DialogActionRow : Panel
     }
 }
 
-/// <summary>纵向排列业务视图指定的操作行，也可用作二维列表的外层项目面板。</summary>
+/// <summary>排列业务视图指定的操作行；默认纵向堆叠，窗口宿主可经 DesktopInline 样式切为横向单行。</summary>
 public class DialogActionRows : StackPanel
 {
     private readonly List<Control> visibleRows = [];
+    private bool horizontalLayout;
 
     protected override Size MeasureOverride(Size availableSize)
     {
         visibleRows.Clear();
         double width = 0;
         double height = 0;
+        // 横向模式仅供窗口宿主的 DesktopInline 行组使用，触屏端保持纵向堆叠。
+        bool horizontal = Orientation == Orientation.Horizontal;
         foreach (Control child in Children)
         {
             if (!child.IsVisible)
             {
                 continue;
             }
-            child.Measure(new Size(availableSize.Width, double.PositiveInfinity));
+            child.Measure(horizontal && double.IsPositiveInfinity(availableSize.Width)
+                ? Size.Infinity
+                : new Size(availableSize.Width, double.PositiveInfinity));
             // 动态操作行外面可能还有 ContentPresenter；空行不占用行间隔。
             if (child.DesiredSize.Height <= 0)
             {
@@ -166,20 +199,72 @@ public class DialogActionRows : StackPanel
             }
             if (visibleRows.Count > 0)
             {
-                height += Spacing;
+                if (horizontal)
+                {
+                    width += Spacing;
+                }
+                else
+                {
+                    height += Spacing;
+                }
             }
             visibleRows.Add(child);
-            width = Math.Max(width, child.DesiredSize.Width);
-            height += child.DesiredSize.Height;
+            if (horizontal)
+            {
+                width += child.DesiredSize.Width;
+                height = Math.Max(height, child.DesiredSize.Height);
+            }
+            else
+            {
+                width = Math.Max(width, child.DesiredSize.Width);
+                height += child.DesiredSize.Height;
+            }
+        }
+        horizontalLayout = horizontal && (double.IsPositiveInfinity(availableSize.Width) || width <= availableSize.Width);
+        if (horizontal && !horizontalLayout)
+        {
+            width = 0;
+            height = 0;
+            foreach (Control child in visibleRows)
+            {
+                child.Measure(new Size(availableSize.Width, double.PositiveInfinity));
+                width = Math.Max(width, child.DesiredSize.Width);
+                height += child.DesiredSize.Height;
+            }
+            height += Spacing * Math.Max(0, visibleRows.Count - 1);
         }
         return new Size(width, height);
     }
 
     protected override Size ArrangeOverride(Size finalSize)
     {
+        if (horizontalLayout)
+        {
+            double requiredWidth = visibleRows.Count > 1 ? Spacing * (visibleRows.Count - 1) : 0;
+            foreach (Control child in visibleRows) requiredWidth += child.DesiredSize.Width;
+            if (requiredWidth > finalSize.Width)
+            {
+                horizontalLayout = false;
+                foreach (Control child in visibleRows) child.Measure(new Size(finalSize.Width, double.PositiveInfinity));
+            }
+        }
+        if (horizontalLayout)
+        {
+            double x = 0;
+            foreach (Control child in visibleRows)
+            {
+                child.Arrange(new Rect(x, 0, child.DesiredSize.Width, finalSize.Height));
+                x += child.DesiredSize.Width + Spacing;
+            }
+            return finalSize;
+        }
         double y = 0;
         foreach (Control child in visibleRows)
         {
+            if (child.DesiredSize.Width > finalSize.Width)
+            {
+                child.Measure(new Size(finalSize.Width, double.PositiveInfinity));
+            }
             child.Arrange(new Rect(0, y, finalSize.Width, child.DesiredSize.Height));
             y += child.DesiredSize.Height + Spacing;
         }

@@ -35,7 +35,7 @@
             <Border DockPanel.Dock="Top" Classes="TopBar">
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                     <Button Grid.Column="0"
-                            Classes="TopBarBtn"
+                            Classes="TopBarBtn DesktopBack"
                             Command="{Binding BackCommand}"
                             ToolTip.Tip="{DynamicResource Common.Back}"
                             Content="{iconPacks:PhosphorIcons ArrowLeft}" />

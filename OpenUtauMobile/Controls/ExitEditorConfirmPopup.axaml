@@ -13,7 +13,7 @@
     Classes="PopupDialogRoot">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Editor.BackConfirm.Title}">
         <dialogs:DialogShell.Footer>
-            <dialogs:DialogActionRows>
+            <dialogs:DialogActionRows Classes="DesktopInline">
                 <dialogs:DialogActionRow>
                     <Button
                         Classes="DialogAction"

@@ -36,6 +36,9 @@ public partial class ExpressionGraphEditorView : UserControl
     private double _splitRatio;
     private ContextMenu? _overflowMenu;
     private Button[] _tools = [];
+
+    /// <summary>桌面宿主通过窗口关闭返回上一页，保留图编辑操作栏。</summary>
+    public void SetDesktopChrome() => BackButton.IsVisible = false;
     private readonly string[] _toolLabels = ["GraphTopology.AddNode", "GraphViewer.Search", "GraphViewer.Fit", "GraphViewer.Locate", "GraphViewer.ZoomOut", "GraphViewer.ZoomIn"];
 
     /// <summary>组合标准页面控件与功能局部画布、属性编辑区域。</summary>

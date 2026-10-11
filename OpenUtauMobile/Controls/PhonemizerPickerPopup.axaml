@@ -13,7 +13,13 @@
     Classes="PopupDialogRoot DialogHeightList">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Picker.Phonemizer.Title}">
         <DockPanel>
-            <!-- 标题栏 -->
+            <StackPanel DockPanel.Dock="Top" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <Button IsVisible="{Binding AllowTrackDefault}" Command="{Binding UseTrackDefaultCommand}" Classes="DialogAction">
+                    <TextBlock Text="{Binding TrackDefaultLabel}" TextWrapping="Wrap" />
+                </Button>
+                <TextBlock IsVisible="{Binding HasNoFactories}" Text="{DynamicResource Picker.Phonemizer.Empty}"
+                           TextWrapping="Wrap" Classes="DialogSubtitle" />
+            </StackPanel>
             <!-- 音素器列表容器 -->
             <Grid DockPanel.Dock="Top" ColumnDefinitions="160,*">
                 <!-- 左侧：分组 -->

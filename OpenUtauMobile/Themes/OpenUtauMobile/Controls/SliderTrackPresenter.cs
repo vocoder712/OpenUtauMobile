@@ -17,18 +17,29 @@ public class SliderTrackPresenter : Control
     public static readonly StyledProperty<IBrush> InactiveTickBrushProperty = AvaloniaProperty.Register<SliderTrackPresenter, IBrush>(nameof(InactiveTickBrush), Brushes.Black);
     public static readonly StyledProperty<IBrush> DisabledActiveBrushProperty = AvaloniaProperty.Register<SliderTrackPresenter, IBrush>(nameof(DisabledActiveBrush), Brushes.Gray);
     public static readonly StyledProperty<IBrush> DisabledInactiveBrushProperty = AvaloniaProperty.Register<SliderTrackPresenter, IBrush>(nameof(DisabledInactiveBrush), Brushes.LightGray);
+    public static readonly StyledProperty<double> ThumbSizeProperty = AvaloniaProperty.Register<SliderTrackPresenter, double>(nameof(ThumbSize), SliderTokens.MinHeight);
+    public static readonly StyledProperty<double> TrackHeightProperty = AvaloniaProperty.Register<SliderTrackPresenter, double>(nameof(TrackHeight), SliderTokens.TrackHeight);
+    public static readonly StyledProperty<double> HandleWidthProperty = AvaloniaProperty.Register<SliderTrackPresenter, double>(nameof(HandleWidth), SliderTokens.HandleWidth);
+    public static readonly StyledProperty<double> ActiveHandleWidthProperty = AvaloniaProperty.Register<SliderTrackPresenter, double>(nameof(ActiveHandleWidth), SliderTokens.ActiveHandleWidth);
+    public static readonly StyledProperty<double> HandleGapProperty = AvaloniaProperty.Register<SliderTrackPresenter, double>(nameof(HandleGap), SliderTokens.HandleGap);
     public Slider? Source { get => GetValue(SourceProperty); set => SetValue(SourceProperty, value); }
     public IBrush ActiveTickBrush { get => GetValue(ActiveTickBrushProperty); set => SetValue(ActiveTickBrushProperty, value); }
     public IBrush InactiveTickBrush { get => GetValue(InactiveTickBrushProperty); set => SetValue(InactiveTickBrushProperty, value); }
     public IBrush DisabledActiveBrush { get => GetValue(DisabledActiveBrushProperty); set => SetValue(DisabledActiveBrushProperty, value); }
     public IBrush DisabledInactiveBrush { get => GetValue(DisabledInactiveBrushProperty); set => SetValue(DisabledInactiveBrushProperty, value); }
+    public double ThumbSize { get => GetValue(ThumbSizeProperty); set => SetValue(ThumbSizeProperty, value); }
+    public double TrackHeight { get => GetValue(TrackHeightProperty); set => SetValue(TrackHeightProperty, value); }
+    public double HandleWidth { get => GetValue(HandleWidthProperty); set => SetValue(HandleWidthProperty, value); }
+    public double ActiveHandleWidth { get => GetValue(ActiveHandleWidthProperty); set => SetValue(ActiveHandleWidthProperty, value); }
+    public double HandleGap { get => GetValue(HandleGapProperty); set => SetValue(HandleGapProperty, value); }
     private Slider? _subscribed;
     private INotifyCollectionChanged? _ticks;
     private bool _attached;
 
     static SliderTrackPresenter()
     {
-        AffectsRender<SliderTrackPresenter>(SourceProperty, ActiveTickBrushProperty, InactiveTickBrushProperty, DisabledActiveBrushProperty, DisabledInactiveBrushProperty);
+        AffectsRender<SliderTrackPresenter>(SourceProperty, ActiveTickBrushProperty, InactiveTickBrushProperty, DisabledActiveBrushProperty, DisabledInactiveBrushProperty,
+            ThumbSizeProperty, TrackHeightProperty, HandleWidthProperty, ActiveHandleWidthProperty, HandleGapProperty);
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -88,7 +99,8 @@ public class SliderTrackPresenter : Control
         bool vertical = slider.Orientation == Orientation.Vertical;
         double length = vertical ? Bounds.Height : Bounds.Width;
         double cross = vertical ? Bounds.Width : Bounds.Height;
-        double inset = Math.Min(SliderTokens.MinHeight, length) / 2;
+        // 绘制和 Track 共用命中区尺寸，桌面缩放后把手与轨道仍使用同一坐标。
+        double inset = Math.Min(ThumbSize, length) / 2;
         double extent = length - inset * 2;
         if (extent <= 0) return;
         double range = slider.Maximum - slider.Minimum;
@@ -97,8 +109,8 @@ public class SliderTrackPresenter : Control
         double Position(double f) => inset + (reverse ? 1 - f : f) * extent;
         double center = Position(fraction);
         double handleWidth = slider.Classes.Contains(":pressed") || slider.Classes.Contains(":focus-visible")
-            ? SliderTokens.ActiveHandleWidth : SliderTokens.HandleWidth;
-        double gap = SliderTokens.HandleGap + handleWidth / 2;
+            ? ActiveHandleWidth : HandleWidth;
+        double gap = HandleGap + handleWidth / 2;
         IBrush active = slider.IsEffectivelyEnabled ? slider.Foreground ?? Brushes.Transparent : DisabledActiveBrush;
         IBrush inactive = slider.IsEffectivelyEnabled ? slider.Background ?? Brushes.Transparent : DisabledInactiveBrush;
 
@@ -144,9 +156,9 @@ public class SliderTrackPresenter : Control
         void Segment(double start, double end, IBrush brush, bool leading)
         {
             if (end <= start) return;
-            Rect rect = vertical ? new Rect((cross - SliderTokens.TrackHeight) / 2, start, SliderTokens.TrackHeight, end - start)
-                : new Rect(start, (cross - SliderTokens.TrackHeight) / 2, end - start, SliderTokens.TrackHeight);
-            double outer = SliderTokens.TrackHeight / 2;
+            Rect rect = vertical ? new Rect((cross - TrackHeight) / 2, start, TrackHeight, end - start)
+                : new Rect(start, (cross - TrackHeight) / 2, end - start, TrackHeight);
+            double outer = TrackHeight / 2;
             double inner = SliderTokens.InsideCorner;
             double first = leading ? outer : inner;
             double last = leading ? inner : outer;

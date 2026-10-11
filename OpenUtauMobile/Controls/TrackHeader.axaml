@@ -8,6 +8,8 @@
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:Class="OpenUtauMobile.Controls.TrackHeader"
+             ToolTip.Tip="{DynamicResource TrackSettings.HoldHint}"
+             AutomationProperties.HelpText="{DynamicResource TrackSettings.HoldHint}"
              x:DataType="vm:TrackHeaderViewModel">
     <UserControl.Styles>
         <StyleInclude Source="/Controls/Styles/TrackHeader.axaml" />
@@ -21,16 +23,15 @@
     </UserControl.Resources>
     <!--
         主体背景层 + HUD 层：半透明和模糊效果；HUD 层默认不可见，调整旋钮时显示。
-        主体层：头像 + 右侧详情面板；
-               彩色等腰直角三角形浮于左上角。
+        主体层：头像、相邻的静音/独奏控制与右侧详情面板。
     -->
     <Panel Background="{DynamicResource Sem.Color.SurfaceContainer}">
         <!-- 主体层 -->
         <Panel x:Name="BackgroundLayer">
             <!-- 基本内容层：头像 + 详情 -->
-            <Grid ColumnDefinitions="64, *">
+            <Grid ColumnDefinitions="64, Auto, *">
                 <!-- 左侧头像和轨道名：固定宽度，始终可见 -->
-                <Grid Grid.Column="0" RowDefinitions="*, Auto">
+                <Grid Grid.Column="0" RowDefinitions="*, Auto" Classes="TrackHeaderContent" Classes.TrackSilenced="{Binding Muted}">
                     <!-- 圆形歌手头像（点击弹出歌手选择器） -->
                     <controls:ShapeHitTestButton Grid.Row="0"
                                                  HitTestShape="Ellipse"
@@ -104,8 +105,9 @@
                 </Grid>
 
                 <!-- 详情面板，仅当轨道展开时显示 -->
-                <Border Grid.Column="1"
+                <Border Grid.Column="2"
                         x:Name="DetailsPanel"
+                        Classes="TrackHeaderContent" Classes.TrackSilenced="{Binding Muted}"
                         IsVisible="{Binding IsExpanded}"
                         ClipToBounds="True"
                         HorizontalAlignment="Stretch"
@@ -120,7 +122,7 @@
                                     Command="{Binding ChangeColorCommand}"
                                     ToolTip.Tip="{DynamicResource TrackHeader.ChangeColor}"
                                     Width="16" Height="16" />
-                            <Button Grid.Column="1" Grid.Row="0" Padding="0"
+                            <Button Name="TrackNameSettingsButton" Grid.Column="1" Grid.Row="0" Padding="0"
                                     Foreground="{DynamicResource TrackHeaderForegroundBrush}"
                                     Command="{Binding RenameCommand}"
                                     ToolTip.Tip="{DynamicResource TrackHeader.Rename}"
@@ -139,6 +141,7 @@
                             <Button Grid.Row="1" Grid.Column="1"
                                     Classes="TrackHeaderCompactAction"
                                     Command="{Binding SelectPhonemizerCommand}"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                     Background="Transparent"
                                     BorderThickness="0"
                                     VerticalAlignment="Stretch"
@@ -226,30 +229,43 @@
                         </Grid>
                     </Grid>
                 </Border>
+                <!-- 静音和独奏位于头像右侧，折叠轨道时隐藏。 -->
+                <Grid Grid.Column="1" Classes="TrackHeaderMixStates" IsVisible="{Binding IsExpanded}" ColumnDefinitions="*,*" RowDefinitions="*,*" ColumnSpacing="2" RowSpacing="2">
+                    <ToggleButton Name="TrackMuteToggle" Classes="TrackHeaderState" Content="M" Command="{Binding MuteCommand}"
+                                  IsChecked="{Binding Mute, Mode=OneWay}" ToolTip.Tip="{DynamicResource Mixer.Mute}" AutomationProperties.Name="{DynamicResource Mixer.Mute}" />
+                    <ToggleButton Name="TrackSoloToggle" Classes="TrackHeaderState TrackHeaderSolo" Content="S" Command="{Binding SoloCommand}"
+                                  IsChecked="{Binding Solo, Mode=OneWay}" ToolTip.Tip="{DynamicResource Mixer.Solo}" AutomationProperties.Name="{DynamicResource Mixer.Solo}" />
+                </Grid>
+                <controls:ShapeHitTestButton Name="ColorBarButton"
+                        HitTestShape="TopLeftTriangle"
+                        Width="20" Height="20" MinWidth="0" MinHeight="0" CornerRadius="0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Padding="0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        ZIndex="10"
+                        IsVisible="{Binding IsExpanded, Converter={StaticResource BoolInvertConverter}}"
+                        ToolTip.Tip="{DynamicResource TrackHeader.Mute}"
+                        AutomationProperties.Name="{DynamicResource Mixer.Mute}"
+                        Command="{Binding MuteCommand}">
+                    <Polygon Name="ColorTriangle"
+                             IsHitTestVisible="False"
+                             Fill="{Binding TrackColorBrush}"
+                             Points="0,0 20,0 0,20"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Top" />
+                </controls:ShapeHitTestButton>
             </Grid>
 
-            <!-- 左上角彩色等腰直角三角形色标（可点击） -->
-            <controls:ShapeHitTestButton Name="ColorBarButton"
-                    HitTestShape="TopLeftTriangle"
-                    Width="20" Height="20" MinWidth="0" MinHeight="0" CornerRadius="0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Padding="0"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    ZIndex="10"
-                    ToolTip.Tip="{DynamicResource TrackHeader.Mute}"
-                    Command="{Binding MuteCommand}">
-                <Polygon Name="ColorTriangle"
-                                 IsHitTestVisible="False"
-                                 Fill="{Binding TrackColorBrush}"
-                                 Points="0,0 20,0 0,20"
-                                 HorizontalAlignment="Left"
-                                 VerticalAlignment="Top" />
-            </controls:ShapeHitTestButton>
         </Panel>
 
 
+        <Border x:Name="DesktopKnobReadout" IsVisible="False" IsHitTestVisible="False"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4" Padding="5,2"
+                CornerRadius="3" Background="{DynamicResource Sem.Color.SurfaceContainerHigh}">
+            <TextBlock x:Name="DesktopKnobValue" FontSize="11" Foreground="{DynamicResource Sem.Color.OnSurface}" />
+        </Border>
         <!-- 旋钮调整 HUD：覆盖整个轨道头，由 code-behind 驱动显隐和内容 -->
         <Border x:Name="HudOverlay"
                 IsVisible="False"

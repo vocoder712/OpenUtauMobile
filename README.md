@@ -50,9 +50,10 @@ is incomplete. **Unavailable** means the feature is not exposed or its required 
 | Feature | Windows | Android | Linux | macOS | iOS | Browser |
 | --- | --- | --- | --- | --- | --- | --- |
 | Shared project / piano-roll editor | Integrated | Integrated | Integrated | Integrated | Experimental | Experimental |
+| Desktop workspace, persistent inspectors and tool manager | Integrated; local checks below | Uses mobile presentation | Integrated; host verification pending | Integrated; host verification pending | Uses mobile presentation | Uses mobile presentation |
 | Audio playback | Integrated | Integrated | Integrated | Integrated | Experimental (AVAudioEngine) | Unavailable (Dummy output) |
 | Built-in worldline / WORLDLINE-R synthesis | Integrated | Integrated; page-size limitation below | Integrated | Integrated | Unavailable (worldline not bundled) | Unavailable |
-| External UTAU resampler / wavtool programs | Conditional: matching Windows tools | No desktop executable compatibility guarantee | Conditional: matching tools / runtime | Conditional: matching tools / runtime | Unavailable | Unavailable |
+| External UTAU resampler / wavtool programs | Conditional: matching Windows tools | No desktop executable compatibility guarantee | Native resamplers conditional; Windows tools experimental through Wine; native external wavtools unavailable | Native resamplers conditional; Windows tools experimental through Wine; native external wavtools unavailable | Unavailable | Unavailable |
 | ONNX Runtime CPU inference | Integrated | Integrated (Android AAR) | Integrated | Integrated | Experimental | Unavailable in the current host |
 | ONNX hardware acceleration | Conditional: DirectML | Conditional: NNAPI | Conditional: CUDA + cuDNN | Conditional: CoreML | Not exposed as an iOS accelerator by the current selector | Unavailable |
 | DiffSinger / Vogen model-based synthesis | Conditional | Conditional | Conditional | Conditional | Experimental | Unavailable |
@@ -67,6 +68,45 @@ is incomplete. **Unavailable** means the feature is not exposed or its required 
 Model-based renderers require the appropriate voicebank and auxiliary models. HifiSampler additionally requires
 its vocoder dependency package. A renderer appearing in the registry does not certify an external engine's
 availability on the target OS. Phonemizers and renderers inherited from Core can have their own dependencies.
+
+### Desktop workspace
+
+Windows, Linux and macOS hosts reference a separate `OpenUtauMobile.DesktopUI` assembly. The desktop
+workspace combines menus and transport, arrangement, piano roll, parameter/phoneme lanes, a persistent Track → Notes → Phoneme inspector column and a separate mixer window. Panel sizes and window state are saved separately
+from projects; View → Reset Layout restores defaults. Mobile hosts retain their existing navigation and
+share editing surfaces, gestures, commands and note-property validation with desktop. View → Mixer opens the desktop mixer at its usable minimum size. Mobile's mixer opens from the sliders button
+next to Save. Desktop navigation uses the top menus, and all panel dividers use one grip style. Either the arrangement or piano roll can be collapsed completely. The mixer window shares the active project. Desktop dialogs use separate owned windows, and the bottom editing lane can fill the piano-roll area. The menu shares the title-bar row where the platform supports it.
+
+Desktop's Notes tool combines click/box selection, note movement and edge resizing. Double-click adds a
+note or edits lyrics inline; Ctrl/Cmd-click toggles selection, Shift-click adds selection and middle-drag pans.
+Panning and zooming preserve playback position; clicking or dragging either ruler seeks; arrangement clips and editing canvases do not seek. The help bar follows the selected piano tool. Stop reveals its configured return position in both desktop viewports.
+The separate Tuning tool exposes pitch anchors; clicking the small vibrato icon below a note enables or disables vibrato and shows its controls when enabled. Desktop defaults to advanced phoneme editing. Pitch drawing remains a third tool.
+Mobile retains its touch editing modes.
+
+Desktop uses native file dialogs in Debug and Release. Existing USTX files save in place; unnamed,
+template and imported projects use Save As. Utilities open in owned windows and retain the active editor session; Escape and the native window close button return to it. Batch and bulk lyric editing are available in the Edit menu; desktop bulk lyrics target only selected notes. Singer and renderer choices use dropdowns, phonemizers use an anchored search/language picker, and individual lyrics/phonemes edit inline over their canvas labels. File contains recent projects, templates and recovery. Desktop always starts on Home.
+
+The Tools manager installs files or complete folders, preserving companion files, and exposes Classic
+renderer selections in the Track inspector. Tool discovery is not execution verification. Dropping a singer archive opens installation, audio imports into the project, and a tool starts its installation workflow; ambiguous executables ask for resampler/wavtool classification. Linux/macOS
+native resamplers require execute permission; Windows programs require a configured Wine executable
+and remain experimental. Native external wavtools are unavailable on these platforms because the
+existing engine generates Windows batch scripts. Builtin tools remain the defaults.
+
+Tool installation, removal, Wine changes and rescanning are serialized and queued until the active
+project closes. This conservative boundary avoids modifying tool registries during background rendering
+without changing upstream engine code. Queued operations can be cancelled. Tools referenced by the
+active project cannot be uninstalled.
+
+Local desktop checks cover Windows compilation, Android ARM64 compilation, offscreen desktop/mobile
+layouts, simulated keyboard and mouse interactions, inspector validation/undo, navigation lifecycle,
+file identity and companion-file installation. Actual builtin worldline and single-note straycat-rs/convergence renders using a synthetic
+voicebank produced non-silent audio from paths containing spaces and non-ASCII characters. Concurrent
+straycat-rs `G0` invocations reproduced a feature-cache EOF race; this requires a separate upstream
+rendering review. These checks
+do not establish native dialog interaction, OS drag-and-drop, real touch/device behavior, Linux/macOS
+execution, Wine execution or general compatibility with third-party external tool combinations.
+
+See [desktop architecture and verification](docs/DESKTOP_UI.md) for implementation boundaries.
 
 ### Hardware acceleration
 

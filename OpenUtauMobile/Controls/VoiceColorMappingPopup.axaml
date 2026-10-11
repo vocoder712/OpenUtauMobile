@@ -19,7 +19,7 @@
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActions>
                 <Button
-                    Content="{DynamicResource VoiceMapping.Skip}"
+                    Content="{DynamicResource Common.Skip}"
                     Command="{Binding CancelCommand}"
                     Classes="DialogAction" />
                 <Button dialogs:DialogShell.IsDefaultAction="True"

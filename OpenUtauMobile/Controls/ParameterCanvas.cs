@@ -131,6 +131,14 @@ public class ParameterCanvas : Control, ICmdSubscriber
     public ParameterCanvas()
     {
         ClipToBounds = true;
+        // 桌面端右键即擦除（ParameterCanvas 按下即处理右键），需屏蔽气泡到谱面网格的右键菜单。
+        ContextRequested += (_, e) =>
+        {
+            if (ViewModel?.UseDesktopMouseInput == true)
+            {
+                e.Handled = true;
+            }
+        };
     }
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -666,7 +674,8 @@ public class ParameterCanvas : Control, ICmdSubscriber
         _strokeErase = right || IsEraseMode;
         _drawingPointer = pos;
         e.Pointer.Capture(this);
-        DocManager.Inst.StartUndoGroup();
+        // 连续绘制和擦除共享一次校验，避免每个指针采样都重建声部。
+        DocManager.Inst.StartUndoGroup(deferValidate: true);
 
         float value = CalculateValueFromY(pos.Y, descriptor);
 

@@ -20,86 +20,95 @@
         <conv:StringToInitialConverter x:Key="StringToInitial" />
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                  HorizontalScrollBarVisibility="Disabled"
-                  ClipToBounds="False">
-        <Border Padding="16,16,16,24">
-            <ItemsControl x:Name="SingerItemsControl">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="ustx:USinger">
-                        <!-- 卡片按钮 -->
-                        <Button Classes="SingerCard"
-                                CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
-                                Margin="0,0,0,10"
-                                Command="{Binding $parent[c:SingerList].SelectSingerCommand}"
-                                CommandParameter="{Binding}">
-                            <Border CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}" ClipToBounds="True">
-                                <Grid ColumnDefinitions="6,16,60,*" MinHeight="76">
-
-                                    <!-- Col 0: 彩签 -->
-                                    <Border Grid.Column="0"
-                                            Background="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}"
-                                            CornerRadius="16,0,0,16" />
-
-                                    <!-- Col 2: 圆形头像 -->
-                                    <Panel Grid.Column="2"
-                                           Width="48" Height="48"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Center">
-                                        <Ellipse Width="48" Height="48"
-                                                 Fill="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}"
-                                                 Opacity="0.25" />
-                                        <TextBlock
-                                            Text="{Binding LocalizedName, Converter={StaticResource StringToInitial}}"
-                                            FontSize="20"
-                                            FontWeight="SemiBold"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Foreground="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}" />
-                                        <Panel
-                                            IsVisible="{Binding AvatarData, Converter={StaticResource NullToBool}}">
-                                            <Ellipse Width="48" Height="48">
-                                                <Ellipse.Fill>
-                                                    <ImageBrush
-                                                        Source="{Binding AvatarData, Converter={StaticResource AvatarDataToBitmap}}"
-                                                        Stretch="UniformToFill" />
-                                                </Ellipse.Fill>
-                                            </Ellipse>
-                                        </Panel>
-                                    </Panel>
-
-                                    <!-- Col 3: 名字 + ID + 类型标签 -->
-                                    <Border Padding="12,8,8,8" Grid.Column="3">
-                                        <StackPanel
-                                                    VerticalAlignment="Center"
-                                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                            <TextBlock Text="{Binding LocalizedName}"
-                                                       FontSize="17"
-                                                       FontWeight="SemiBold"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Text="{Binding Id}"
-                                                       FontSize="11"
-                                                       Opacity="0.55"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <Border CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
-                                                    HorizontalAlignment="Left"
-                                                    Background="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}"
-                                                    Opacity="0.85" Padding="4,4">
-                                                <TextBlock
-                                                    Text="{Binding SingerType, Converter={StaticResource SingerTypeToLabel}}"
-                                                    FontSize="10"
-                                                    FontWeight="SemiBold"
-                                                    Foreground="{DynamicResource Sem.Color.OnPrimary}" />
-                                            </Border>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </Border>
-                        </Button>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+    <Grid RowDefinitions="Auto,*">
+        <Border Padding="16,16,16,0">
+            <TextBox x:Name="SingerSearch" PlaceholderText="{DynamicResource Desktop.Search}"
+                     AutomationProperties.Name="{DynamicResource Desktop.Search}" TextChanged="OnSearchTextChanged" />
         </Border>
-    </ScrollViewer>
+        <TextBlock x:Name="SingerEmptyMessage" Grid.Row="1" IsVisible="False" Margin="16"
+                   Text="{DynamicResource SingerManagement.NoResults}" TextWrapping="Wrap"
+                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      ClipToBounds="False">
+            <Border Padding="16,16,16,24">
+                <ItemsControl x:Name="SingerItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="ustx:USinger">
+                            <!-- 卡片按钮 -->
+                            <Button Classes="SingerCard"
+                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}"
+                                    Margin="0,0,0,10"
+                                    Command="{Binding $parent[c:SingerList].SelectSingerCommand}"
+                                    CommandParameter="{Binding}">
+                                <Border CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}" ClipToBounds="True">
+                                    <Grid ColumnDefinitions="6,16,60,*" MinHeight="76">
+
+                                        <!-- Col 0: 彩签 -->
+                                        <Border Grid.Column="0"
+                                                Background="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}"
+                                                CornerRadius="16,0,0,16" />
+
+                                        <!-- Col 2: 圆形头像 -->
+                                        <Panel Grid.Column="2"
+                                               Width="48" Height="48"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center">
+                                            <Ellipse Width="48" Height="48"
+                                                     Fill="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}"
+                                                     Opacity="0.25" />
+                                            <TextBlock
+                                                Text="{Binding LocalizedName, Converter={StaticResource StringToInitial}}"
+                                                FontSize="20"
+                                                FontWeight="SemiBold"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Foreground="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}" />
+                                            <Panel
+                                                IsVisible="{Binding AvatarData, Converter={StaticResource NullToBool}}">
+                                                <Ellipse Width="48" Height="48">
+                                                    <Ellipse.Fill>
+                                                        <ImageBrush
+                                                            Source="{Binding AvatarData, Converter={StaticResource AvatarDataToBitmap}}"
+                                                            Stretch="UniformToFill" />
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+                                            </Panel>
+                                        </Panel>
+
+                                        <!-- Col 3: 名字 + ID + 类型标签 -->
+                                        <Border Padding="12,8,8,8" Grid.Column="3">
+                                            <StackPanel
+                                                        VerticalAlignment="Center"
+                                                        Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{Binding LocalizedName}"
+                                                           FontSize="17"
+                                                           FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Id}"
+                                                           FontSize="11"
+                                                           Opacity="0.55"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <Border CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
+                                                        HorizontalAlignment="Left"
+                                                        Background="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}"
+                                                        Opacity="0.85" Padding="4,4">
+                                                    <TextBlock
+                                                        Text="{Binding SingerType, Converter={StaticResource SingerTypeToLabel}}"
+                                                        FontSize="10"
+                                                        FontWeight="SemiBold"
+                                                        Foreground="{DynamicResource Sem.Color.OnPrimary}" />
+                                                </Border>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+        </ScrollViewer>
+    </Grid>
 
 </UserControl>

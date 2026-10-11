@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia.Controls;
+using Avalonia;
+using Avalonia.Threading;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
@@ -31,5 +33,17 @@ public partial class NotePropertiesPopup : PopupDialogControl
         {
             viewModel.ApplyCommand.Execute().Subscribe();
         }
+    }
+
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+        if (DataContext is NotePropertiesViewModel viewModel)
+            Dispatcher.UIThread.Post(viewModel.RestorePickerInputs, DispatcherPriority.Loaded);
+    }
+
+    private void OnPickPhonemizer(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is NotePropertiesViewModel viewModel) viewModel.RequestPhonemizerPicker();
     }
 }

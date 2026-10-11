@@ -27,7 +27,7 @@ namespace OpenUtauMobile.Controls;
 /// 编曲区分片画布。负责绘制所有 UPart（音符缩略图 / 波形缩略图 / 名称标签），
 /// 并通过 ICmdSubscriber 订阅 DocManager 命令以维护内部绘制缓存的一致性。
 /// </summary>
-public class PartsCanvas : Control, ICmdSubscriber
+public partial class PartsCanvas : Control, ICmdSubscriber
 {
     #region Avalonia 属性
 
@@ -170,6 +170,7 @@ public class PartsCanvas : Control, ICmdSubscriber
 
     protected override void OnDataContextChanged(EventArgs e)
     {
+        EndDesktopPointer(true);
         base.OnDataContextChanged(e);
 
         // 订阅只在可见树中有效；导航重建视图不能留下指向旧画布的事件。
@@ -232,6 +233,7 @@ public class PartsCanvas : Control, ICmdSubscriber
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        EndDesktopPointer(true);
         _isAttached = false;
         if (_boundViewModel != null) _boundViewModel.RequestInvalidateVisual -= InvalidateVisual;
         if (SelectedParts != null) SelectedParts.CollectionChanged -= OnCollectionChanged;
@@ -362,7 +364,6 @@ public class PartsCanvas : Control, ICmdSubscriber
         List<UPart> parts = DocManager.Inst.Project.parts;
         // 透明矩形确保控件能接收指针事件
         context.DrawRectangle(Brushes.Transparent, null, new Rect(Bounds.Size));
-        if (parts.Count <= 0) return;
 
         foreach (UPart part in parts)
         {
@@ -408,6 +409,7 @@ public class PartsCanvas : Control, ICmdSubscriber
                 DrawResizeHandles(context, rect);
             }
         }
+        if (_desktopBox is Rect box) context.DrawRectangle(null, ThemeResources.GetPen("Sem.Color.Primary", 1), box);
     }
 
     /// <summary>
@@ -785,24 +787,26 @@ public class PartsCanvas : Control, ICmdSubscriber
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
-        _gesture.OnPointerPressed(e, this);
+        if (!HandleDesktopPressed(e)) _gesture.OnPointerPressed(e, this);
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-        _gesture.OnPointerMoved(e, this);
+        if (!HandleDesktopMoved(e)) _gesture.OnPointerMoved(e, this);
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-        _gesture.OnPointerReleased(e, this);
+        if (_desktopPointer == e.Pointer) { EndDesktopPointer(false, e.GetPosition(this), e.Timestamp); e.Handled = true; }
+        else if (DataContext is not EditorViewModel { UseDesktopInput: true } || e.Pointer.Type != PointerType.Mouse) _gesture.OnPointerReleased(e, this);
     }
 
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
+        if (_desktopPointer == e.Pointer) EndDesktopPointer(true);
         _gesture.OnPointerCancelled(e, this);
     }
     #endregion

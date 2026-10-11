@@ -23,7 +23,7 @@ public partial class EditorViewModel
     {
         _panMotion.Cancel();
         _inputState = TrackInputState.Idle;
-        _autoPageActive = false;
+        _playbackFollow.Reset();
         _viewportInputActive = true;
     }
 

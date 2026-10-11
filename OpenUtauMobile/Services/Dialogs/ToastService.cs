@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +21,12 @@ public static class ToastService
     /// </summary>
     public static void Register(Func<Task> consume)
     {
+        if (ServiceHub.DesktopWindowContext is { } context)
+        {
+            Volatile.Write(ref _consume, null);
+            while (Dequeue() is { } item) context.ShowMessage(item.message, item.durationMs);
+            return;
+        }
         Volatile.Write(ref _consume, consume);
         // 若注册前已有消息排队，立即触发
         if (!_queue.IsEmpty)
@@ -41,6 +47,7 @@ public static class ToastService
     /// </summary>
     public static void Enqueue(string message, double durationMs = 2000)
     {
+        if (ServiceHub.DesktopWindowContext is { } context) { context.ShowMessage(message, durationMs); return; }
         _queue.Enqueue((message, durationMs));
         TryStartConsuming();
     }

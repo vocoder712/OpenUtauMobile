@@ -31,6 +31,7 @@ sealed class Program
         InitPathManager();
         InitLogging();
         InitExceptionHandler();
+        OpenUtauMobile.DesktopUI.DesktopApplication.Register();
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalUrlLauncher = new MacOSExternalUrlLauncher();
         ServiceHub.ExternalStorageService = new MacOSExternalStorageService();

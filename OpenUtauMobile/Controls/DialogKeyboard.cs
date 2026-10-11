@@ -124,6 +124,17 @@ internal static class DialogKeyboard
 
         private void Complete(object? sender, KeyEventArgs e)
         {
+            // 子控件先处理自己的 Escape（例如收起下拉框），剩余事件才取消当前弹窗。
+            if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None && !IsComposing(e.Source as Visual))
+            {
+                DialogShell? active = Shells.LastOrDefault(s => s.IsEffectivelyVisible);
+                if (active?.CloseCommand is { } cancel && cancel.CanExecute(null))
+                {
+                    e.Handled = true;
+                    cancel.Execute(null);
+                }
+                return;
+            }
             if (e.Key != Key.Enter || e.KeyModifiers != KeyModifiers.None || _compositionEnter ||
                 _keyShell == null || !Shells.Contains(_keyShell) || !_keyShell.IsEffectivelyVisible) return;
             Visual? source = e.Source as Visual;

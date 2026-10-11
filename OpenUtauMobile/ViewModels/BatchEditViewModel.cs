@@ -29,6 +29,7 @@ public sealed class BatchEditItemViewModel : ViewModelBase
     public string ParameterLabel => HasParameter ? L.S(_descriptor.ParameterLabelKey) : string.Empty;
     public bool RequiresConfirmation => _descriptor.RequiresConfirmation;
     public bool SupportsCancellation => _descriptor.SupportsCancellation;
+    public bool RequiresNotes => _descriptor.RequiresNotes;
     public bool IsPinned
     {
         get => _isPinned;
@@ -79,45 +80,9 @@ public sealed class BatchEditItemViewModel : ViewModelBase
 
     public bool TryCreate(out BatchEdit? batchEdit)
     {
-        ValidationMessage = string.Empty;
-        string value = (ParameterValue ?? string.Empty).Trim();
-        if (_descriptor.ParameterKind == BatchEditParameterKind.Text && string.IsNullOrWhiteSpace(value))
-        {
-            ValidationMessage = L.S("BatchEdit.Validation.Required");
-            batchEdit = null;
-            return false;
-        }
-
-        if (_descriptor.ParameterKind == BatchEditParameterKind.Integer)
-        {
-            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integerValue) ||
-                !IsWithinRange(integerValue))
-            {
-                ValidationMessage = L.S("BatchEdit.Validation.Number");
-                batchEdit = null;
-                return false;
-            }
-        }
-
-        if (_descriptor.ParameterKind == BatchEditParameterKind.Decimal)
-        {
-            if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double decimalValue) ||
-                !IsWithinRange(decimalValue))
-            {
-                ValidationMessage = L.S("BatchEdit.Validation.Number");
-                batchEdit = null;
-                return false;
-            }
-        }
-
-        batchEdit = _descriptor.Factory(value);
-        return true;
-    }
-
-    private bool IsWithinRange(double value)
-    {
-        return (!_descriptor.Minimum.HasValue || value >= _descriptor.Minimum.Value) &&
-               (!_descriptor.Maximum.HasValue || value <= _descriptor.Maximum.Value);
+        bool valid = _descriptor.TryCreate(ParameterValue, out batchEdit, out string message);
+        ValidationMessage = message;
+        return valid;
     }
 }
 
@@ -125,7 +90,8 @@ public sealed record BatchEditExecutionRequest(
     BatchEdit Operation,
     string Title,
     IReadOnlyList<UNote> TargetNotes,
-    bool SupportsCancellation);
+    bool SupportsCancellation,
+    bool RequiresNotes = true);
 
 public sealed class BatchEditViewModel : PopupViewModelBase
 {
@@ -201,7 +167,7 @@ public sealed class BatchEditViewModel : PopupViewModelBase
         item.IsConfirmationPending = false;
         item.ExecuteLabel = L.S("BatchEdit.Run");
         List<UNote> targetNotes = GetCurrentTargetNotes();
-        if (_usesSelection && targetNotes.Count == 0)
+        if (item.RequiresNotes && targetNotes.Count == 0)
         {
             item.ValidationMessage = L.S("BatchEdit.Validation.SelectionUnavailable");
             return;
@@ -211,7 +177,8 @@ public sealed class BatchEditViewModel : PopupViewModelBase
             batchEdit,
             item.Title,
             targetNotes,
-            item.SupportsCancellation));
+            item.SupportsCancellation,
+            item.RequiresNotes));
     }
 
     private void TogglePin(BatchEditItemViewModel item)

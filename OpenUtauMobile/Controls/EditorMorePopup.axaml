@@ -20,7 +20,7 @@
             <!-- Tab 区域 -->
             <Border Classes="DialogBodyBorder">
                 <TabControl>
-                    <TabItem Header="{DynamicResource EditorMore.EditTab}">
+                    <TabItem Header="{DynamicResource Common.Edit}">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <Border Padding="0,16,0,0">
                                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
@@ -63,7 +63,7 @@
                         </ScrollViewer>
                     </TabItem>
                     <!-- 导出 -->
-                    <TabItem Header="{DynamicResource EditorMore.FileTab}">
+                    <TabItem Header="{DynamicResource Common.File}">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <Border Padding="0,16,0,0">
                                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">

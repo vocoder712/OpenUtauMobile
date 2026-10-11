@@ -1,9 +1,39 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:OpenUtauMobile.Controls">
     <Style Selector="Button.TrackHeaderCompactAction">
         <Setter Property="MinHeight" Value="0" />
         <Setter Property="MinWidth" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
+    </Style>
+    <Style Selector="Grid.TrackHeaderContent.TrackSilenced, Border.TrackHeaderContent.TrackSilenced">
+        <Setter Property="Opacity" Value="0.55" />
+    </Style>
+    <Style Selector="Grid.TrackHeaderMixStates">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="MaxHeight" Value="60" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="2,0" />
+    </Style>
+    <Style Selector="ToggleButton.TrackHeaderSolo">
+        <Setter Property="Grid.Row" Value="1" />
+    </Style>
+    <Style Selector="ToggleButton.TrackHeaderState">
+        <Setter Property="Grid.ColumnSpan" Value="2" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="controls|TrackHeader.DesktopTrackHeader Grid.TrackHeaderMixStates">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="MaxHeight" Value="50" />
+    </Style>
+    <Style Selector="controls|TrackHeader.DesktopTrackHeader ToggleButton.TrackHeaderState">
+        <Setter Property="FontSize" Value="10" />
     </Style>
 </Styles>

@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OpenUtauMobile.ViewModels" xmlns:c="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile"
+             xmlns:desktop="using:OpenUtauMobile.DesktopUI.Views"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.DesktopUI.Views.DesktopWorkspace" x:DataType="vm:EditorViewModel" Classes="DesktopWorkspace">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="4" IsEnabled="{Binding !IsLoadingProject}">
+        <Border Padding="8,4" Background="Transparent">
+            <Grid ColumnDefinitions="*,Auto,*">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <Button Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" Command="{Binding UndoCommand}" Content="{icons:PhosphorIcons ArrowCounterClockwise}" ToolTip.Tip="{DynamicResource Editor.Undo}" />
+                    <Button Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" Command="{Binding RedoCommand}" Content="{icons:PhosphorIcons ArrowClockwise}" ToolTip.Tip="{DynamicResource Editor.Redo}" />
+                    <Button Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" Command="{Binding AddTrackCommand}" Content="{icons:PhosphorIcons Plus}" ToolTip.Tip="{DynamicResource TrackAdder.AddTrack}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" Command="{Binding StopCommand}" Content="{icons:PhosphorIcons Stop}" ToolTip.Tip="{DynamicResource Editor.Stop}" />
+                    <Button Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" Command="{Binding PlayPauseCommand}" ToolTip.Tip="{DynamicResource Editor.PlayPause}">
+                        <Panel><icons:PackIconPhosphorIcons Kind="Play" IsVisible="{Binding !IsPlaying}"/><icons:PackIconPhosphorIcons Kind="Pause" IsVisible="{Binding IsPlaying}"/></Panel>
+                    </Button>
+                    <Button Classes="DesktopAction DesktopTransportControl" Command="{Binding EditTimeSignatureCommand}" Content="{Binding ProjectTimeSignature}" />
+                    <TextBox x:Name="TempoInput" Classes="DesktopTransportControl" Width="64" TextAlignment="Center" ToolTip.Tip="{DynamicResource ProjectEdit.BpmRange}" />
+                    <Border Classes="DesktopTimeDisplay" Padding="8,0" Height="28" CornerRadius="4" Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"><TextBlock x:Name="TimeDisplay" MinWidth="90" VerticalAlignment="Center" FontFamily="monospace" Text="00:00.000" /></Border>
+                </StackPanel>
+                <Grid Grid.Column="2" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <TextBlock Name="RenderProgress" Text="{Binding ProgressMessage}" Margin="12,0" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" ToolTip.Tip="{Binding ProgressMessage}" />
+                    <ContentControl x:Name="TrackTools" Grid.Column="1" VerticalAlignment="Center" />
+                </Grid>
+            </Grid>
+        </Border>
+        <Grid x:Name="WorkspaceGrid" Margin="6,0" Grid.Row="1" ColumnDefinitions="*,6,320" ColumnSpacing="0">
+            <Grid x:Name="EditingGrid" RowDefinitions="28*,6,72*">
+                <Border x:Name="ArrangementPane" Classes="DesktopPanel" ClipToBounds="True">
+                    <c:ArrangementSurface x:Name="Arrangement" />
+                </Border>
+                <desktop:DesktopPanelSplitter x:Name="ArrangementSplitter" Grid.Row="1" ResizeDirection="Rows" HorizontalAlignment="Stretch" Background="{DynamicResource Sem.Color.OutlineVariant}" />
+                <Border x:Name="PianoPane" Grid.Row="2" Classes="DesktopPanel" ClipToBounds="True">
+                    <Grid RowDefinitions="Auto,*">
+                        <Border Padding="8,4" Background="{DynamicResource Sem.Color.SurfaceContainer}">
+                            <ContentControl x:Name="PianoTools" HorizontalAlignment="Center" />
+                        </Border>
+                        <c:PianoRollSurface Grid.Row="1" x:Name="Piano" />
+                    </Grid>
+                </Border>
+            </Grid>
+            <desktop:DesktopPanelSplitter x:Name="InspectorSplitter" Grid.Column="1" ResizeDirection="Columns" VerticalAlignment="Stretch" Background="{DynamicResource Sem.Color.OutlineVariant}" />
+            <Border x:Name="InspectorHost" ClipToBounds="True" Grid.Column="2" Classes="DesktopPanel" />
+        </Grid>
+        <Border x:Name="StatusHintHost" Grid.Row="2" Padding="8,3" Background="{DynamicResource Sem.Color.SurfaceContainer}">
+            <TextBlock x:Name="InputHint" Text="{DynamicResource Desktop.InputHint}" FontSize="11" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        </Border>
+    </Grid>
+</UserControl>

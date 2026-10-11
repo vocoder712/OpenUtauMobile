@@ -23,10 +23,10 @@
         <Grid RowDefinitions="Auto,Auto,*" IsEnabled="{Binding IsCurrentProject}">
             <Border Classes="TopBar">
                 <Grid ColumnDefinitions="Auto,*,Auto">
-                    <Button Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
+                    <Button x:Name="BackButton" Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
                             ToolTip.Tip="{DynamicResource Common.Back}" AutomationProperties.Name="{DynamicResource Common.Back}" />
                     <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource ExpressionGraph.LibraryTitle}" />
-                    
+
                     <Button Grid.Column="2" Classes="TopBarBtn" Click="PageMenuClicked" Content="{icons:PhosphorIcons DotsThreeVertical}"
                             ToolTip.Tip="{DynamicResource ExpressionGraph.PageActions}" AutomationProperties.Name="{DynamicResource ExpressionGraph.PageActions}" />
                 </Grid>

@@ -5,6 +5,7 @@ namespace OpenUtauMobile.Views;
 
 public partial class SettingsView : UserControl
 {
+    public bool PersistentNavigation { get; set; }
     public SettingsView()
     {
         InitializeComponent();
@@ -17,7 +18,7 @@ public partial class SettingsView : UserControl
     {
         if (DataContext is SettingsViewModel vm)
         {
-            bool shouldExpand = e.NewSize.Width >= ViewConstants.SettingsSidebarBreakpoint;
+            bool shouldExpand = PersistentNavigation || e.NewSize.Width >= ViewConstants.SettingsSidebarBreakpoint;
             if (vm.IsNavExpanded != shouldExpand)
             {
                 vm.IsNavExpanded = shouldExpand;

@@ -7,14 +7,20 @@
              Classes="PopupDialogRoot">
     <c:DialogShell Header="{Binding Title}" CloseCommand="{Binding CancelCommand}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <Border Classes="DialogBodyBorder">
+            <Border Classes="DialogBodyBorder MixerPresetChoices">
                 <ItemsControl ItemsSource="{Binding OptionRows}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><StackPanel Spacing="8" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:OptionConfirmRow">
                             <ItemsControl ItemsSource="{Binding Options}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate><StackPanel Spacing="8" /></ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:OptionConfirmOption">
-                                        <Button Classes="DialogAction" HorizontalAlignment="Stretch"
+                                        <Button Classes="DialogAction MixerPresetOption" HorizontalAlignment="Stretch"
                                                 Content="{Binding Label}"
                                                 Command="{Binding $parent[UserControl].((vm:OptionConfirmPopupViewModel)DataContext).SelectOptionCommand}"
                                                 CommandParameter="{Binding}" />

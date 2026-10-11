@@ -349,6 +349,9 @@ namespace OpenUtau.Core.Util {
             public bool DetachPianoRoll = true;
 
             #region OpenUtau Mobile 特定选项
+            /// <summary>桌面平台使用桌面界面；关闭后使用移动界面，重启后生效。</summary>
+            public bool DesktopModeEnabled = true;
+
             /// <summary>待下次启动删除的插件文件，保存相对于插件目录的路径。</summary>
             public List<string> PendingPluginDeletions = [];
 

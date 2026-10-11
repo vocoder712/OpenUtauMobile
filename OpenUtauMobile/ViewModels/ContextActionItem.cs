@@ -8,6 +8,9 @@ namespace OpenUtauMobile.ViewModels;
 /// </summary>
 public class ContextActionItem
 {
+    /// <summary>稳定操作标识，供桌面菜单替换特定入口使用。</summary>
+    public string Id { get; init; } = string.Empty;
+
     /// <summary>按钮显示图标（强类型）。</summary>
     public PackIconPhosphorIconsKind Icon { get; init; } = PackIconPhosphorIconsKind.CaretUp;
 

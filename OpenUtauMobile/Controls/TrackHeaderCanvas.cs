@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using OpenUtau.Core;
@@ -186,11 +186,14 @@ public class TrackHeaderCanvas : Panel, ICmdSubscriber
             case RenameTrackCommand renameTrackCommand:
                 Refresh(renameTrackCommand.track);
                 break;
-            case TrackChangeSingerCommand:
+            case TrackChangeSingerCommand singer:
+                Refresh(singer.track);
                 break;
-            case TrackChangePhonemizerCommand:
+            case TrackChangePhonemizerCommand phonemizer:
+                Refresh(phonemizer.track);
                 break;
-            case TrackChangeRenderSettingCommand:
+            case TrackChangeRenderSettingCommand renderer:
+                Refresh(renderer.track);
                 break;
             case ChangeTrackColorCommand changeTrackColorCommand:
                 Refresh(changeTrackColorCommand.track);
