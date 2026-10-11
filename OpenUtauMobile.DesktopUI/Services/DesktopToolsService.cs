@@ -36,6 +36,24 @@ namespace OpenUtauMobile.DesktopUI.Services
         }
 
         public static string Folder(DesktopToolKind kind) => kind == DesktopToolKind.Resampler ? PathManager.Inst.ResamplersPath : PathManager.Inst.WavtoolsPath;
+        private static bool IsBuiltin(string name, DesktopToolKind kind) => kind == DesktopToolKind.Resampler
+            ? name is "worldline" or "hifisampler"
+            : name == SharpWavtool.nameConvergence || name == SharpWavtool.nameSimple;
+
+        // 选择器与移动端共用引擎注册表；文件发现状态仅用于工具管理页面。
+        public static IReadOnlyList<DesktopTool> GetRegisteredTools(DesktopToolKind kind)
+        {
+            IEnumerable<string> names = kind == DesktopToolKind.Resampler
+                ? ToolsManager.Inst.Resamplers.Select(tool => tool.ToString()!)
+                : ToolsManager.Inst.Wavtools.Select(tool => tool.ToString()!);
+            return names.Select(name =>
+            {
+                bool builtin = IsBuiltin(name, kind);
+                string status = builtin ? "Desktop.Builtin" : "Desktop.Discovered";
+                return new DesktopTool(name, builtin ? null : Path.Combine(Folder(kind), name), kind, builtin, L.S(status), true, status);
+            }).ToArray();
+        }
+
         public static IReadOnlyList<DesktopTool> GetTools(DesktopToolKind kind)
         {
             List<DesktopTool> tools = [];
@@ -46,7 +64,7 @@ namespace OpenUtauMobile.DesktopUI.Services
             foreach (string name in registered)
             {
                 string path = Path.Combine(folder, name);
-                bool builtin = kind == DesktopToolKind.Resampler ? name == "worldline" : name == SharpWavtool.nameConvergence || name == SharpWavtool.nameSimple;
+                bool builtin = IsBuiltin(name, kind);
                 if (builtin) tools.Add(new(name, null, kind, true, L.S("Desktop.Builtin"), true, "Desktop.Builtin"));
                 else if (!File.Exists(path)) tools.Add(new(name, path, kind, false, L.S("Desktop.Unavailable"), false, "Desktop.Unavailable"));
             }
