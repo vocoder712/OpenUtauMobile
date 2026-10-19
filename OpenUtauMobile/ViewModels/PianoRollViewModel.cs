@@ -3001,6 +3001,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         {
             EditingTip = string.Empty;
             IsSelecting = false;
+            RebuildPianoRollContextActions();
             RequestInvalidateVisual?.Invoke(); // 触发画布重绘以清除选区可视效果
             return;
         }
@@ -3038,6 +3039,9 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         EditingTip = string.Empty;
         IsSelecting = false;
         ReplaceSelectedNotes(notes);
+        // 选中音符未变化时也必须退出选区菜单状态并清除选区遮罩。
+        RebuildPianoRollContextActions();
+        RequestInvalidateVisual?.Invoke();
         if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Selected"), SelectedNotes.Count));
     }
 

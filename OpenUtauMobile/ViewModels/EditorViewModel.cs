@@ -2203,6 +2203,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public bool CanMergeSelectedParts => !DocManager.Inst.HasOpenUndoGroup && SelectedParts.OfType<UVoicePart>()
         .Where(DocManager.Inst.Project.parts.Contains).GroupBy(part => part.trackNo).Any(parts => parts.Count() > 1);
 
+    /// <summary>合并同轨演唱分片，并保留音符、普通曲线及带掩码曲线。</summary>
     public void MergeSelectedParts()
     {
         if (!CanMergeSelectedParts) return;
@@ -2263,6 +2264,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 }
                 merged.curves.Add(new UCurve(descriptor) { xs = points.Keys.ToList(), ys = points.Values.ToList() });
             }
+            merged.maskedCurves = MergeMaskedCurves(sources, merged.position);
             merges.Add((sources, merged));
         }
         if (merges.Count == 0) return;
@@ -2283,6 +2285,50 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
         finally { DocManager.Inst.EndUndoGroup(); }
         ReplaceSelectedParts(selection.Where(project.parts.Contains));
+    }
+
+    /// <summary>平移并合并采样段；重叠区域由后一个分片覆盖，保留无值间隙与原始采样相位。</summary>
+    private static List<UMaskedCurve> MergeMaskedCurves(IReadOnlyList<UVoicePart> sources, int position)
+    {
+        List<UMaskedCurve> result = [];
+        foreach (string abbreviation in sources.SelectMany(part => part.maskedCurves).Select(curve => curve.abbr).Distinct())
+        {
+            UMaskedCurve merged = new(abbreviation);
+            foreach (UVoicePart source in sources)
+            {
+                int offset = source.position - position;
+                UMaskedRun[] incoming = source.maskedCurves.Where(curve => curve.abbr == abbreviation)
+                    .SelectMany(curve => curve.runs).Where(run => run.ys.Length > 0)
+                    .Select(run => new UMaskedRun { x = offset + run.x, ys = run.ys.ToArray() }).ToArray();
+                int start = incoming.Length == 0 ? offset : Math.Min(offset, incoming.Min(run => run.x));
+                int end = incoming.Length == 0 ? offset + source.Duration - 1
+                    : Math.Max(offset + source.Duration - 1, incoming.Max(run => run.End));
+                List<UMaskedRun> retained = [];
+                foreach (UMaskedRun run in merged.runs)
+                {
+                    if (run.End < start || run.x > end)
+                    {
+                        retained.Add(run);
+                        continue;
+                    }
+                    // 仅截取现有采样，不调用会重新吸附坐标的 SetValues/Clear。
+                    int before = (int)Math.Clamp(Math.Ceiling((start - (double)run.x) / UMaskedCurve.interval), 0, run.ys.Length);
+                    if (before > 0)
+                    {
+                        retained.Add(new UMaskedRun { x = run.x, ys = run.ys[..before] });
+                    }
+                    int after = (int)Math.Clamp(Math.Floor((end - (double)run.x) / UMaskedCurve.interval) + 1, 0, run.ys.Length);
+                    if (after < run.ys.Length)
+                    {
+                        retained.Add(new UMaskedRun { x = run.x + after * UMaskedCurve.interval, ys = run.ys[after..] });
+                    }
+                }
+                retained.AddRange(incoming);
+                merged.runs = retained.OrderBy(run => run.x).ToList();
+            }
+            if (!merged.IsEmpty) result.Add(merged);
+        }
+        return result;
     }
 
     public void SelectAllParts()

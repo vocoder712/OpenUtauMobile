@@ -823,14 +823,38 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>颤音预设</value>
   </data>
+  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
+    <value>颤音模式</value>
+  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>音高曲线橡皮擦模式</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
+    <value>音高曲线画笔模式</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
+    <value>音高锚点编辑模式</value>
+  </data>
+  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
+    <value>拖拽模式</value>
+  </data>
+  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
+    <value>多选模式</value>
+  </data>
+  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
+    <value>音符模式</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>颤音模式暂未上线</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>按"|◀"结束选区</value>
+  </data>
+  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
+    <value>已剪切 {0} 个音符</value>
+  </data>
+  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
+    <value>已粘贴 {0} 个音符</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>音符属性编辑窗尚未实现</value>
@@ -1649,6 +1673,18 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>参数擦除模式</value>
   </data>
+  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
+    <value>简易音素模式</value>
+  </data>
+  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
+    <value>高级音素模式</value>
+  </data>
+  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
+    <value>参数绘制模式</value>
+  </data>
+  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
+    <value>参数擦除模式</value>
+  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>主编辑参数</value>
   </data>
@@ -2275,6 +2311,12 @@
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>将更新的音符数：{0}</value></data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>已复制 {0} 个分片</value>
+  </data>
+  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
+    <value>已选中 {0} 个音符</value>
+  </data>
+  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
+    <value>已全选 {0} 个音符</value>
   </data>
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>已复制 {0} 个音符</value>
