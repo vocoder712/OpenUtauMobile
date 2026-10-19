@@ -746,14 +746,38 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>Пресет вібрато</value>
   </data>
+  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
+    <value>Режим вібрато</value>
+  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>Режим стирання висоти</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
+    <value>Режим олівця висоти</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
+    <value>Режим редагування якорів висоти</value>
+  </data>
+  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
+    <value>Режим перетягування</value>
+  </data>
+  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
+    <value>Режим мультивибору</value>
+  </data>
+  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
+    <value>Режим нот</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>Режим вібрато поки недоступний</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>Натисніть "|◀", щоб завершити виділення</value>
+  </data>
+  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
+    <value>Вирізано нот: {0}</value>
+  </data>
+  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
+    <value>Вставлено нот: {0}</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>Редактор властивостей нот ще не реалізовано</value>
@@ -1583,6 +1607,18 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>Режим гумки параметрів</value>
   </data>
+  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
+    <value>Перемкнуто в простий режим фонем</value>
+  </data>
+  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
+    <value>Перемкнуто в розширений режим фонем</value>
+  </data>
+  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
+    <value>Перемкнуто в режим малювання параметрів</value>
+  </data>
+  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
+    <value>Перемкнуто в режим гумки параметрів</value>
+  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>Основний параметр</value>
   </data>
@@ -2230,6 +2266,12 @@
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Нот для оновлення: {0}</value></data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>Скопійовано частин: {0}</value>
+  </data>
+  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
+    <value>Вибрано нот: {0}</value>
+  </data>
+  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
+    <value>Вибрано всі {0} нот</value>
   </data>
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>Скопійовано нот: {0}</value>

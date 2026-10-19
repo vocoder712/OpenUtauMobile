@@ -823,14 +823,38 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>Vibrato Preset</value>
   </data>
+  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
+    <value>Vibrato mode</value>
+  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>Pitch Eraser mode</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
+    <value>Pitch Pen mode</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
+    <value>Pitch Anchor edit mode</value>
+  </data>
+  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
+    <value>Drag mode</value>
+  </data>
+  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
+    <value>Multi-select mode</value>
+  </data>
+  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
+    <value>Note mode</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>Vibrato mode not available yet</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>Press "|◀" to end selection</value>
+  </data>
+  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
+    <value>{0} notes cut</value>
+  </data>
+  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
+    <value>{0} notes pasted</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>Note properties editor not implemented yet</value>
@@ -1649,6 +1673,18 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>Parameter erase mode</value>
   </data>
+  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
+    <value>Simple phoneme mode</value>
+  </data>
+  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
+    <value>Advanced phoneme mode</value>
+  </data>
+  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
+    <value>Parameter draw mode</value>
+  </data>
+  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
+    <value>Parameter erase mode</value>
+  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>Primary parameter</value>
   </data>
@@ -2275,6 +2311,12 @@
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Notes to update: {0}</value></data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>{0} parts copied</value>
+  </data>
+  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
+    <value>{0} notes selected</value>
+  </data>
+  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
+    <value>All {0} notes selected</value>
   </data>
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>{0} notes copied</value>

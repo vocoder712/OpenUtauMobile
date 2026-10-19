@@ -823,14 +823,38 @@
   <data name="PianoRoll.Action.VibratoPreset" xml:space="preserve">
     <value>ビブラートプリセット</value>
   </data>
+  <data name="PianoRoll.Toast.Vibrato" xml:space="preserve">
+    <value>ビブラートモード</value>
+  </data>
   <data name="PianoRoll.Toast.PitchEraser" xml:space="preserve">
     <value>ピッチ消しゴムモード</value>
+  </data>
+  <data name="PianoRoll.Toast.PitchPen" xml:space="preserve">
+    <value>ピッチペンモード</value>
+  </data>
+  <data name="PianoRoll.Toast.AnchorEdit" xml:space="preserve">
+    <value>ピッチアンカー編集モード</value>
+  </data>
+  <data name="PianoRoll.Toast.DragMode" xml:space="preserve">
+    <value>ドラッグモード</value>
+  </data>
+  <data name="PianoRoll.Toast.MultiSelectMode" xml:space="preserve">
+    <value>複数選択モード</value>
+  </data>
+  <data name="PianoRoll.Toast.NoteMode" xml:space="preserve">
+    <value>ノートモード</value>
   </data>
   <data name="PianoRoll.Toast.VibratoNotReady" xml:space="preserve">
     <value>ビブラートモードは準備中です</value>
   </data>
   <data name="PianoRoll.Selection.EndTip" xml:space="preserve">
     <value>"|◀"を押して選択を終了</value>
+  </data>
+  <data name="PianoRoll.Selection.Cut" xml:space="preserve">
+    <value>{0} 個のノートをカット</value>
+  </data>
+  <data name="PianoRoll.Selection.Pasted" xml:space="preserve">
+    <value>{0} 個のノートをペースト</value>
   </data>
   <data name="PianoRoll.Toast.NotePropertiesNotImpl" xml:space="preserve">
     <value>ノートプロパティエディターは未実装です</value>
@@ -1645,6 +1669,18 @@
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
     <value>パラメータ消しゴムモード</value>
   </data>
+  <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
+    <value>シンプル音素モード</value>
+  </data>
+  <data name="PhonemePanel.Toast.Advanced" xml:space="preserve">
+    <value>詳細音素モード</value>
+  </data>
+  <data name="PhonemePanel.Toast.Draw" xml:space="preserve">
+    <value>パラメータ描画モード</value>
+  </data>
+  <data name="PhonemePanel.Toast.Erase" xml:space="preserve">
+    <value>パラメータ消しゴムモード</value>
+  </data>
   <data name="PhonemePanel.Param.Primary" xml:space="preserve">
     <value>主パラメータ</value>
   </data>
@@ -2271,6 +2307,12 @@
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>更新するノート数：{0}</value></data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>{0} 個のパートをコピー</value>
+  </data>
+  <data name="PianoRoll.Selection.Selected" xml:space="preserve">
+    <value>{0} 個のノートを選択</value>
+  </data>
+  <data name="PianoRoll.Selection.AllSelected" xml:space="preserve">
+    <value>全 {0} 個のノートを選択</value>
   </data>
   <data name="PianoRoll.Selection.Copied" xml:space="preserve">
     <value>{0} 個のノートをコピー</value>
