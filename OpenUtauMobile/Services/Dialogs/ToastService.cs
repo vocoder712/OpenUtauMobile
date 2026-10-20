@@ -1,92 +1,125 @@
 using System;
-using System.Collections.Concurrent;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using OpenUtauMobile.ViewModels;
 
-namespace OpenUtauMobile.Services.Dialogs;
-
-/// <summary>
-/// 全局 Toast 服务，任意线程均可调用 <see cref="Enqueue"/>。
-/// </summary>
-public static class ToastService
+namespace OpenUtauMobile.Services.Dialogs
 {
-    private static readonly ConcurrentQueue<(string message, double durationMs)> _queue = new();
-    private static int _isShowing; // 0 = idle, 1 = consuming；用 Interlocked 操作
-    private static Func<Task>? _consume;
+    /// <summary>一条提示的不可变快照；带错误详情时使用可点击变体。</summary>
+    /// <param name="Message">用户可读的摘要。</param>
+    /// <param name="DurationMs">可见驻留时长，非正数表示等待用户处理。</param>
+    /// <param name="Error">点击后打开的错误详情；普通提示为空。</param>
+    public sealed record ToastMessage(string Message, double DurationMs, ErrorDialogViewModel? Error = null);
 
-    /// <summary>
-    /// 注册消费回调（由 ToastOverlay 在 OnAttachedToVisualTree 中调用）。
-    /// 注册后若队列非空则立即触发消费。
-    /// </summary>
-    public static void Register(Func<Task> consume)
+    /// <summary>线程安全的应用内提示队列，同一时刻只允许当前宿主启动一个消费者。</summary>
+    public static class ToastService
     {
-        if (ServiceHub.DesktopWindowContext is { } context)
+        private static readonly object Gate = new();
+        private static readonly LinkedList<ToastMessage> Queue = new();
+        private static Func<Task>? _consume;
+        private static int _registration;
+        private static bool _running;
+
+        /// <summary>注册当前浮层；普通桌面提示仍由状态栏显示，可点击错误由浮层承载。</summary>
+        public static void Register(Func<Task> consume)
         {
-            Volatile.Write(ref _consume, null);
-            while (Dequeue() is { } item) context.ShowMessage(item.message, item.durationMs);
-            return;
-        }
-        Volatile.Write(ref _consume, consume);
-        // 若注册前已有消息排队，立即触发
-        if (!_queue.IsEmpty)
-            TryStartConsuming();
-    }
-
-    /// <summary>
-    /// 注销消费回调（由 ToastOverlay 在 OnDetachedFromVisualTree 中调用）。
-    /// </summary>
-    public static void Unregister()
-    {
-        Volatile.Write(ref _consume, null);
-        Interlocked.Exchange(ref _isShowing, 0);
-    }
-
-    /// <summary>
-    /// 将消息加入队列，可在任意线程调用。
-    /// </summary>
-    public static void Enqueue(string message, double durationMs = 2000)
-    {
-        if (ServiceHub.DesktopWindowContext is { } context) { context.ShowMessage(message, durationMs); return; }
-        _queue.Enqueue((message, durationMs));
-        TryStartConsuming();
-    }
-
-    /// <summary>
-    /// 从队列取出下一条消息，供 ToastOverlay 消费循环调用。
-    /// 若队列已空则返回 null 并将 _isShowing 重置为 idle。
-    /// </summary>
-    public static (string message, double durationMs)? Dequeue()
-    {
-        if (_queue.TryDequeue(out (string message, double durationMs) item))
-            return item;
-
-        // 队列空，重置标志
-        Interlocked.Exchange(ref _isShowing, 0);
-        return null;
-    }
-
-    // 尝试启动消费循环，保证只有一个在跑
-    private static void TryStartConsuming()
-    {
-        Func<Task>? consume = Volatile.Read(ref _consume);
-        if (consume == null)
-        {
-            return;
-        }
-
-        // CAS：只有从 0 → 1 成功的线程才触发
-        if (Interlocked.CompareExchange(ref _isShowing, 1, 0) == 0)
-        {
-            Dispatcher.UIThread.Post(() =>
+            lock (Gate)
             {
-                // 注销可能发生在入队与调度回调之间，避免在视图卸载后启动旧消费者。
-                if (!ReferenceEquals(Volatile.Read(ref _consume), consume))
-                {
-                    return;
-                }
+                _consume = consume;
+                _registration++;
+                _running = false;
+                TryStartConsuming();
+            }
+        }
 
-                _ = consume.Invoke();
+        /// <summary>注销宿主，使已经排队的旧消费回调失效。</summary>
+        public static void Unregister()
+        {
+            lock (Gate)
+            {
+                _consume = null;
+                _registration++;
+                _running = false;
+            }
+        }
+
+        /// <summary>从任意线程加入普通提示，保留既有调用方式。</summary>
+        public static void Enqueue(string message, double durationMs = 2000)
+        {
+            if (ServiceHub.DesktopWindowContext is { } context)
+            {
+                context.ShowMessage(message, durationMs);
+                return;
+            }
+            Add(new ToastMessage(message, durationMs));
+        }
+
+        /// <summary>加入可点击的错误提示；较长驻留给触屏和键盘用户留出查看时间。</summary>
+        public static void EnqueueError(string message, ErrorDialogViewModel error, double durationMs = 10000)
+        {
+            Add(new ToastMessage(message, durationMs, error));
+        }
+
+        /// <summary>取出一条消息；消费者退出时统一检查其间新加入的消息，避免丢失唤醒。</summary>
+        public static ToastMessage? Dequeue()
+        {
+            lock (Gate)
+            {
+                if (Queue.First == null) return null;
+                ToastMessage message = Queue.First.Value;
+                Queue.RemoveFirst();
+                return message;
+            }
+        }
+
+        /// <summary>宿主卸载时将尚未处理的消息放回队首，不丢失详情入口。</summary>
+        internal static void Return(ToastMessage message)
+        {
+            lock (Gate)
+            {
+                Queue.AddFirst(message);
+                TryStartConsuming();
+            }
+        }
+
+        private static void Add(ToastMessage message)
+        {
+            lock (Gate)
+            {
+                Queue.AddLast(message);
+                TryStartConsuming();
+            }
+        }
+
+        /// <summary>调用方持有队列锁；登记消费状态后才投递，避免后台入队启动并行消费者。</summary>
+        private static void TryStartConsuming()
+        {
+            if (_consume == null || _running || Queue.Count == 0) return;
+            _running = true;
+            Func<Task> consume = _consume;
+            int registration = _registration;
+            Dispatcher.UIThread.Post(async () =>
+            {
+                lock (Gate)
+                {
+                    if (registration != _registration) return;
+                }
+                try
+                {
+                    await consume();
+                }
+                finally
+                {
+                    lock (Gate)
+                    {
+                        if (registration == _registration)
+                        {
+                            _running = false;
+                            TryStartConsuming();
+                        }
+                    }
+                }
             });
         }
     }

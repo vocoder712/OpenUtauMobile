@@ -2470,4 +2470,7 @@ Applying replaces the source of this input.</value></data>
   <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>Using: {1}. Other folders with this ID were skipped:{2}</value></data>
   <data name="Warning.FallbackTitle" xml:space="preserve"><value>Application warning</value></data>
   <data name="Warning.Dismiss" xml:space="preserve"><value>Dismiss warning</value></data>
+  <data name="errors.failed.prerender" xml:space="preserve">
+    <value>Background pre-rendering failed.</value>
+  </data>
 </root>

@@ -2466,4 +2466,7 @@ Applying replaces the source of this input.</value></data>
   <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>使用中：{1}。同じ ID の他のフォルダーはスキップされました：{2}</value></data>
   <data name="Warning.FallbackTitle" xml:space="preserve"><value>アプリの警告</value></data>
   <data name="Warning.Dismiss" xml:space="preserve"><value>警告を削除</value></data>
+  <data name="errors.failed.prerender" xml:space="preserve">
+    <value>バックグラウンドの事前レンダリングに失敗しました。</value>
+  </data>
 </root>

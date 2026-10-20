@@ -2470,4 +2470,7 @@
   <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>正在使用：{1}。已跳过具有相同 ID 的其他目录：{2}</value></data>
   <data name="Warning.FallbackTitle" xml:space="preserve"><value>应用告警</value></data>
   <data name="Warning.Dismiss" xml:space="preserve"><value>删除告警</value></data>
+  <data name="errors.failed.prerender" xml:space="preserve">
+    <value>后台预渲染失败</value>
+  </data>
 </root>

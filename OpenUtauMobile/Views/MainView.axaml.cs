@@ -23,7 +23,6 @@ public partial class MainView : UserControl
         };
         WarningOverlay.CenterVisibilityChanged += open =>
         {
-            ToastOverlay.IsVisible = !open && ServiceHub.DesktopWindowContext == null;
             ToastOverlay.IsPaused = open;
             PerformanceLayer.IsVisible = !open;
         };
@@ -42,7 +41,6 @@ public partial class MainView : UserControl
         App.RefreshSystemThemeColor();
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested += OnBackRequested;
-        ToastOverlay.IsVisible = ServiceHub.DesktopWindowContext == null;
         ToastService.Register(ToastOverlay.ConsumeAsync);
         ErrorDialogService.Register(
             async vm => { await PopupService.Show<object>(new ErrorDialogPopup(), vm); },

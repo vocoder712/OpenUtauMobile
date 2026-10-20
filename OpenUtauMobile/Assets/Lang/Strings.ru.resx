@@ -2425,4 +2425,7 @@ Applying replaces the source of this input.</value></data>
   <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>Используется: {1}. Другие папки с этим ID пропущены: {2}</value></data>
   <data name="Warning.FallbackTitle" xml:space="preserve"><value>Предупреждение приложения</value></data>
   <data name="Warning.Dismiss" xml:space="preserve"><value>Удалить предупреждение</value></data>
+  <data name="errors.failed.prerender" xml:space="preserve">
+    <value>Не удалось выполнить фоновый предварительный рендеринг.</value>
+  </data>
 </root>
