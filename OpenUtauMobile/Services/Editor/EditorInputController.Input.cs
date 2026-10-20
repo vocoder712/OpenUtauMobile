@@ -56,6 +56,7 @@ public sealed partial class EditorInputController
             _inputPiano.PropertyChanged += OnInputPianoPropertyChanged;
         }
         PopupService.Opening += CancelEditorInput;
+        Warnings.WarningInbox.CenterOpening += CancelForWarningCenter;
     }
 
     private void DetachEditorInput()
@@ -63,6 +64,7 @@ public sealed partial class EditorInputController
         CancelEditorInput();
         DetachKeyboardInput();
         PopupService.Opening -= CancelEditorInput;
+        Warnings.WarningInbox.CenterOpening -= CancelForWarningCenter;
         _platformInput?.Dispose();
         _platformInput = null;
         if (_inputPiano != null) _inputPiano.PropertyChanged -= OnInputPianoPropertyChanged;
@@ -83,6 +85,13 @@ public sealed partial class EditorInputController
     }
 
     private void OnInputDeactivated(object? sender, EventArgs e)
+    {
+        CancelEditorInput();
+        _pressedKeys.Clear();
+    }
+
+    /// <summary>告警模态接管前结束编辑手势及按键状态，避免关闭后遗留修饰键。</summary>
+    private void CancelForWarningCenter()
     {
         CancelEditorInput();
         _pressedKeys.Clear();

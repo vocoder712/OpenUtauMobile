@@ -2416,4 +2416,13 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>Редактор графа</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>Змінити розмір панелі властивостей</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>Центр попереджень</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>Закрити центр попереджень</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>Очистити всі попередження</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>Ігнорувати</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>Центр попереджень: {0}</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>Повторюваний ID голосового банку: {0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>Використовується: {1}. Інші папки з цим ID пропущено: {2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>Попередження застосунку</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>Видалити попередження</value></data>
 </root>

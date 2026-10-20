@@ -2461,4 +2461,13 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>Graph editor</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>Resize properties panel</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>Warning center</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>Close warning center</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>Clear all warnings</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>Ignore</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>Warning center, {0} warnings</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>Duplicate voicebank ID: {0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>Using: {1}. Other folders with this ID were skipped:{2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>Application warning</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>Dismiss warning</value></data>
 </root>

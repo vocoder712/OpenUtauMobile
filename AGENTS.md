@@ -17,6 +17,7 @@
 - Do not hand-edit upstream-copy `OpenUtau.Plugin.Builtin` for feature work. For upstream synchronization, follow `docs/UPSTREAM_SYNC.md`, including its compatibility-review requirements.
 - Follow `.editorconfig`. Write new code comments in Simplified Chinese; preserve upstream comments.
 - Newly added classes, public methods, hot private methods, and hot properties should use XML comments in Simplified Chinese whenever possible.
+- When newly added controls involve icons, you must use existing icons in the icon library and are prohibited from drawing icons yourself in forms such as PathGeometry. If necessary, stop and confirm.
 
 ## Verification
 - Before `dotnet build`, set `$env:AVALONIA_TELEMETRY_OPTOUT='1';` (or the equivalent environment variable in another shell).

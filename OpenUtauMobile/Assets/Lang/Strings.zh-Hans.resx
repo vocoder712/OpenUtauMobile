@@ -2461,4 +2461,13 @@
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>尚无已连接输出</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>图编辑器</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>调整属性面板大小</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>告警中心</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>关闭告警中心</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>清除全部告警</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>忽略</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>告警中心，{0} 条告警</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>声库 ID 重复：{0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>正在使用：{1}。已跳过具有相同 ID 的其他目录：{2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>应用告警</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>删除告警</value></data>
 </root>

@@ -1,0 +1,87 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:OpenUtauMobile.Controls.Warnings"
+             xmlns:model="clr-namespace:OpenUtauMobile.Services.Warnings"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+             xmlns:shape="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:typography="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             x:Class="OpenUtauMobile.Controls.Warnings.WarningOverlay" DataContext="{x:Null}" ClipToBounds="True">
+    <UserControl.Styles>
+        <Style Selector="Button.WarningClose">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <!-- 列表只拥有滚动和虚拟化，不借用 ListBox 的选择/容器装饰。 -->
+        <Style Selector="ItemsControl#WarningItems">
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <ScrollViewer x:Name="PART_ScrollViewer" HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto" Padding="0">
+                        <ItemsPresenter x:Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <Panel>
+        <Canvas x:Name="OrbLayer">
+            <local:WarningOrb x:Name="Orb" IsVisible="False" Click="OrbClicked" />
+        </Canvas>
+        <Canvas x:Name="ArrivalLayer">
+            <local:WarningOrb x:Name="Flight" IsVisible="False" IsHitTestVisible="False" Focusable="False" />
+            <local:WarningCard x:Name="ArrivalCard" IsVisible="False" />
+        </Canvas>
+        <Grid x:Name="Center" IsVisible="False" Background="Transparent" Focusable="True"
+              KeyboardNavigation.TabNavigation="Cycle">
+            <Image x:Name="SnapshotImage" Stretch="Fill" IsHitTestVisible="False">
+                <Image.Effect><BlurEffect Radius="16" /></Image.Effect>
+            </Image>
+            <Border Background="{DynamicResource Sem.Color.Surface}" Opacity="0.84" IsHitTestVisible="False" />
+            <Grid x:Name="CenterContent" RowDefinitions="Auto,*">
+                <Grid ColumnDefinitions="*,Auto" Margin="20,12,12,4">
+                    <TextBlock Text="{DynamicResource Warning.Center}" FontSize="{x:Static typography:TypographyTokens.HeadlineSSize}"
+                               Foreground="{DynamicResource Sem.Color.OnSurface}" VerticalAlignment="Center" />
+                    <Button x:Name="CloseButton" Grid.Column="1" Classes="WarningClose" Click="CloseClicked"
+                            AutomationProperties.Name="{DynamicResource Warning.Close}"
+                            ToolTip.Tip="{DynamicResource Warning.Close}">
+                        <icons:PackIconPhosphorIcons Kind="X" Width="{x:Static typography:IconTokens.Standard}"
+                                                   Height="{x:Static typography:IconTokens.Standard}" />
+                    </Button>
+                </Grid>
+                <ItemsControl x:Name="WarningItems" Grid.Row="1" ClipToBounds="True" Margin="16,8,16,0">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><VirtualizingStackPanel /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="model:WarningItem" x:DataType="model:WarningItem">
+                            <local:WarningCard Margin="0,0,0,12" MaxHeight="480" CanSwipeDismiss="True" Focusable="True"
+                                               AutomationProperties.Name="{Binding Title}"
+                                               SwipeStarted="CardSwipeStarted" DismissRequested="CardDismissRequested">
+                                <local:WarningCard.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{DynamicResource Warning.Dismiss}" Click="CardDismissMenuClicked" />
+                                    </ContextMenu>
+                                </local:WarningCard.ContextMenu>
+                            </local:WarningCard>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Button x:Name="ClearButton" Grid.Row="1" Width="{x:Static components:FabTokens.Size}" Height="{x:Static components:FabTokens.Size}"
+                        Padding="16" CornerRadius="{x:Static shape:ShapeTokens.CornerXL}"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,24"
+                        Background="{DynamicResource Sem.Color.PrimaryContainer}"
+                        Foreground="{DynamicResource Sem.Color.OnPrimaryContainer}" Click="ClearClicked"
+                        AutomationProperties.Name="{DynamicResource Warning.ClearAll}"
+                        ToolTip.Tip="{DynamicResource Warning.ClearAll}">
+                    <icons:PackIconPhosphorIcons Kind="X" Width="{x:Static typography:IconTokens.Standard}"
+                                               Height="{x:Static typography:IconTokens.Standard}" />
+                </Button>
+            </Grid>
+        </Grid>
+    </Panel>
+</UserControl>

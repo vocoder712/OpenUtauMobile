@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
@@ -13,6 +14,9 @@ namespace OpenUtauMobile.Controls;
 public partial class ToastOverlay : UserControl
 {
     private readonly TranslateTransform _translate = new TranslateTransform(0, 0);
+
+    /// <summary>功能模态显示时暂停普通提示的消费及驻留计时，不丢弃队列。</summary>
+    public bool IsPaused { get; set; }
 
     public ToastOverlay()
     {
@@ -45,17 +49,32 @@ public partial class ToastOverlay : UserControl
     {
         while (true)
         {
+            while (IsPaused) await Task.Delay(50);
             (string message, double durationMs)? item = ToastService.Dequeue();
             if (item == null)
                 break;
 
             ToastText.Text = item.Value.message;
             await ShowAsync();
-            await Task.Delay((int)item.Value.durationMs);
+            await WaitVisibleTimeAsync(item.Value.durationMs);
             await HideAsync();
 
             // 两条消息之间短暂间隔，避免闪烁
             await Task.Delay(80);
+        }
+    }
+
+    /// <summary>只累计可见驻留时间，告警中心退出后继续显示尚未读完的提示。</summary>
+    private async Task WaitVisibleTimeAsync(double milliseconds)
+    {
+        double elapsed = 0;
+        Stopwatch clock = Stopwatch.StartNew();
+        while (elapsed < milliseconds)
+        {
+            await Task.Delay(50);
+            double interval = clock.Elapsed.TotalMilliseconds;
+            clock.Restart();
+            if (!IsPaused) elapsed += interval;
         }
     }
 

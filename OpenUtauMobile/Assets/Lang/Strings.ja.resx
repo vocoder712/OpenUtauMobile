@@ -2457,4 +2457,13 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>グラフエディター</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>プロパティパネルのサイズ変更</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>警告センター</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>警告センターを閉じる</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>すべての警告を消去</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>無視</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>警告センター、警告 {0} 件</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>音源 ID が重複しています：{0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>使用中：{1}。同じ ID の他のフォルダーはスキップされました：{2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>アプリの警告</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>警告を削除</value></data>
 </root>

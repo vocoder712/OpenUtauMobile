@@ -2416,4 +2416,13 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>Редактор графа</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>Изменить размер панели свойств</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>Центр предупреждений</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>Закрыть центр предупреждений</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>Удалить все предупреждения</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>Игнорировать</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>Центр предупреждений: {0}</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>Повторяющийся ID голосового банка: {0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>Используется: {1}. Другие папки с этим ID пропущены: {2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>Предупреждение приложения</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>Удалить предупреждение</value></data>
 </root>

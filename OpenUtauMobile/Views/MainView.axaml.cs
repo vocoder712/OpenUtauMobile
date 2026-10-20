@@ -14,6 +14,19 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
+        WarningOverlay.SetPageHost(PageHost);
+        WarningOverlay.SetPresentationReady(false);
+        PageHost.PropertyChanged += (_, change) =>
+        {
+            if (change.Property == ContentControl.ContentProperty)
+                WarningOverlay.SetPresentationReady(PageHost.Content is ViewModelBase and not SplashScreenViewModel);
+        };
+        WarningOverlay.CenterVisibilityChanged += open =>
+        {
+            ToastOverlay.IsVisible = !open && ServiceHub.DesktopWindowContext == null;
+            ToastOverlay.IsPaused = open;
+            PerformanceLayer.IsVisible = !open;
+        };
     }
 
     public MainView(Avalonia.Controls.Templates.IDataTemplate pageTemplate) : this()
@@ -24,6 +37,7 @@ public partial class MainView : UserControl
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        WarningOverlay.SetPresentationReady(PageHost.Content is ViewModelBase and not SplashScreenViewModel);
         // Android 的 Material You 色值在 TopLevel 建立后才可由平台设置读取。
         App.RefreshSystemThemeColor();
         TopLevel? topLevel = AppService.GetTopLevel();
@@ -66,6 +80,12 @@ public partial class MainView : UserControl
                 popup?.RequestBack();
             }
 
+            e.Handled = true;
+            return;
+        }
+
+        if (WarningOverlay.RequestBack())
+        {
             e.Handled = true;
             return;
         }

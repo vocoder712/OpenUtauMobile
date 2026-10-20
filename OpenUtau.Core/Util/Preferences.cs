@@ -350,6 +350,12 @@ namespace OpenUtau.Core.Util {
             public bool DetachPianoRoll = true;
 
             #region OpenUtau Mobile 特定选项
+            /// <summary>告警悬浮球贴靠侧：0 为左侧，1 为右侧。</summary>
+            public int WarningOrbDockSide = 1;
+
+            /// <summary>告警悬浮球在可用纵向区间的相对落点，范围为零至一。</summary>
+            public double WarningOrbDockYRatio = 0.6;
+
             /// <summary>桌面平台使用桌面界面；关闭后使用移动界面，重启后生效。</summary>
             public bool DesktopModeEnabled = true;
 
