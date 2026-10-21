@@ -10,21 +10,25 @@
                 Background="{DynamicResource Sem.Color.InverseSurface}"
                 CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
                 MinWidth="48" MinHeight="48" MaxWidth="560"
-                VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="16,0,16,88">
+                VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="8,0,8,88">
             <Grid>
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16" Margin="16,0" IsHitTestVisible="False">
+                <!-- 图标自身拥有前置间距，隐藏时一并折叠，普通消息保持左右各 16dp。 -->
+                <Grid ColumnDefinitions="*,Auto" Margin="16,0" IsHitTestVisible="False">
                     <TextBlock x:Name="ToastText" Foreground="{DynamicResource Sem.Color.InverseOnSurface}"
-                               FontSize="{x:Static semantic:TypographyTokens.BodyMSize}" LineHeight="20"
+                               FontFamily="{DynamicResource ContentControlThemeFontFamily}"
+                               FontSize="{x:Static semantic:TypographyTokens.BodyMSize}" FontWeight="Normal"
+                               LineHeight="20" LetterSpacing="0.25"
                                Margin="0,14" MaxLines="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
                                VerticalAlignment="Center" />
                     <icons:PackIconPhosphorIcons x:Name="ToastActionIcon" Grid.Column="1" IsVisible="False"
                                                Kind="CaretRightFill" Width="{x:Static semantic:IconTokens.Standard}"
                                                Height="{x:Static semantic:IconTokens.Standard}"
-                                               VerticalAlignment="Center" Foreground="{DynamicResource Sem.Color.InverseOnSurface}" />
+                                               Margin="16,0,0,0" VerticalAlignment="Center"
+                                               Foreground="{DynamicResource Sem.Color.InversePrimary}" />
                 </Grid>
                 <!-- 整条消息是同一按钮；正文和图标均复用基础按钮的按下、聚焦与悬停反馈。 -->
                 <Button x:Name="ToastActionButton" IsVisible="False" Background="Transparent" BorderThickness="0"
-                        Foreground="{DynamicResource Sem.Color.InverseOnSurface}" Padding="0"
+                        Foreground="{DynamicResource Sem.Color.InversePrimary}" Padding="0"
                         CornerRadius="{x:Static foundation:ShapeTokens.CornerS}"
                         MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
