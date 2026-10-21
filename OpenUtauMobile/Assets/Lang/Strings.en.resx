@@ -1712,6 +1712,12 @@
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>Note: {0} | Phoneme #{1}</value>
   </data>
+  <data name="PhonemeEdit.ViewError" xml:space="preserve">
+    <value>View error</value>
+  </data>
+  <data name="PhonemeEdit.UnknownError" xml:space="preserve">
+    <value>This phoneme has an error, but no detailed cause is available. Check the lyrics, phonemizer, and voicebank configuration.</value>
+  </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>Release to reset parameter</value>
   </data>

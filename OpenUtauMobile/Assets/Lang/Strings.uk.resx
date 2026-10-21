@@ -1667,6 +1667,12 @@
   <data name="Editor.Action.Merge" xml:space="preserve">
     <value>Об'єднати</value>
   </data>
+  <data name="PhonemeEdit.ViewError" xml:space="preserve">
+    <value>Переглянути помилку</value>
+  </data>
+  <data name="PhonemeEdit.UnknownError" xml:space="preserve">
+    <value>У цій фонемі виявлено помилку, але докладна причина недоступна. Перевірте текст, фонемайзер і налаштування голосового банку.</value>
+  </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>Відпустіть, щоб скинути параметр</value>
   </data>

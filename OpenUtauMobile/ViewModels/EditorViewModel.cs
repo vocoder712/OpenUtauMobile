@@ -957,15 +957,22 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     }
 
     /// <summary>
-    /// 显示音素别名编辑弹窗。ViewModel 直接执行命令，弹窗关闭不返回任何信息。
+    /// 显示音素编辑和错误详情；返回编辑时保留原有草稿，不重入模态宿主。
     /// </summary>
     private static async Task<object?> ShowPhonemeEditPopupAsync(UVoicePart part, UNote note, int phonemeIndex)
     {
         PhonemeEditViewModel vm = new PhonemeEditViewModel(part, note, phonemeIndex);
+        UProject project = DocManager.Inst.Project;
+        PhonemeEditPopup view = new();
         try
         {
-            return await Dispatcher.UIThread.InvokeAsync(() =>
-                PopupService.Show<object>(new PhonemeEditPopup(), vm));
+            while (true)
+            {
+                object? result = await Dispatcher.UIThread.InvokeAsync(() => PopupService.Show<object>(view, vm));
+                if (result is not ErrorDialogViewModel error) return result;
+                await Dispatcher.UIThread.InvokeAsync(() => PopupService.Show<object>(new ErrorDialogPopup(), error));
+                if (!ReferenceEquals(project, DocManager.Inst.Project) || !project.parts.Contains(part)) return null;
+            }
         }
         finally
         {

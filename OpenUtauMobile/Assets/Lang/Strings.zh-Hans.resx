@@ -1712,6 +1712,12 @@
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>音符: {0} | 音素 #{1}</value>
   </data>
+  <data name="PhonemeEdit.ViewError" xml:space="preserve">
+    <value>查看错误</value>
+  </data>
+  <data name="PhonemeEdit.UnknownError" xml:space="preserve">
+    <value>此音素存在错误，但未提供具体原因。请检查歌词、音素器和声库配置。</value>
+  </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>松开以重置参数</value>
   </data>

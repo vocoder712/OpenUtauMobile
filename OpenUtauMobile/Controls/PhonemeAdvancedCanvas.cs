@@ -236,6 +236,10 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
         IBrush textBgBrush = ThemeResources.GetBrush("Sem.Color.SurfaceContainerHighest");
         IPen textBorderPen = ThemeResources.GetPen("Sem.Color.OutlineVariant");
         IBrush textBrush = ThemeResources.GetBrush("Sem.Color.OnSurface");
+        IBrush errorFill = ThemeResources.GetBrush("Sem.Color.ErrorContainer");
+        IBrush errorText = ThemeResources.GetBrush("Sem.Color.OnErrorContainer");
+        IPen errorBorder = ThemeResources.GetPen("Sem.Color.Error");
+        IPen selectedErrorBorder = ThemeResources.GetPen("Sem.Color.Error", 2);
 
         double totalHeight = Bounds.Height;
         double labelY = TopMargin + 2.0;
@@ -260,6 +264,7 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             }
 
             bool isSelected = ViewModel?.IsNoteSelected(phoneme.Parent) ?? false;
+            bool hasError = phoneme.Error || phoneme.ErrorException != null;
             IPen pen = isSelected ? selectedPen : defaultPen;
             IBrush fill = isSelected ? selectedBrush : defaultBrush;
 
@@ -352,7 +357,8 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             double expansion = 6.0 * progress; // 拖拽时平滑上下延伸 6dp
             double thicknessBonus = 1.2 * progress;
             double lineThickness = (isModifiedTiming ? 3.0 : 1.5) + thicknessBonus;
-            IPen linePen = (isModifiedTiming || progress > 0.001)
+            IPen linePen = hasError ? ThemeResources.GetPen("Sem.Color.Error", lineThickness)
+                : (isModifiedTiming || progress > 0.001)
                 ? ThemeResources.GetPen("Sem.Color.Primary", lineThickness)
                 : (isModifiedTiming ? timingThickPen : timingPen);
 
@@ -365,13 +371,14 @@ public class PhonemeAdvancedCanvas : Control, ICmdSubscriber
             if (!string.IsNullOrEmpty(labelText))
             {
                 bool isCustom = phoneme.phoneme != phoneme.rawPhoneme;
-                TextLayout textLayout = TextLayoutCache.Get(labelText, textBrush, 11, isCustom);
+                TextLayout textLayout = TextLayoutCache.Get(labelText, hasError ? errorText : textBrush, 11, isCustom);
                 double pillWidth = textLayout.Width + 8.0;
                 double pillHeight = textLayout.Height + 2.0;
                 double pillX = posX + 2.0;
 
                 Rect pillRect = new Rect(pillX, labelY, pillWidth, pillHeight);
-                context.DrawRectangle(textBgBrush, textBorderPen, pillRect, 3, 3);
+                IPen labelBorder = hasError ? isSelected ? selectedErrorBorder : errorBorder : textBorderPen;
+                context.DrawRectangle(hasError ? errorFill : textBgBrush, labelBorder, pillRect, 3, 3);
                 using (context.PushTransform(Matrix.CreateTranslation(pillX + 4.0, labelY + 1.0)))
                 {
                     textLayout.Draw(context, new Point(0, 0));

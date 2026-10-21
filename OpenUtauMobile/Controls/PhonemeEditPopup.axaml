@@ -1,6 +1,7 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,7 +14,7 @@
     Classes="PopupDialogRoot DialogHeightCompact">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource PhonemeEdit.Title}">
         <dialogs:DialogShell.Footer>
-            <dialogs:DialogActions>
+            <dialogs:DialogActionRow>
                 <Button
                     Command="{Binding CancelCommand}"
                     Classes="DialogAction"
@@ -26,7 +27,7 @@
                     Command="{Binding ConfirmCommand}"
                     Classes="DialogAction DialogPrimary"
                     Content="{DynamicResource Common.Confirm}" />
-            </dialogs:DialogActions>
+            </dialogs:DialogActionRow>
         </dialogs:DialogShell.Footer>
         <DockPanel>
             <!-- 标题栏 -->
@@ -65,7 +66,15 @@
                         CornerRadius="{x:Static foundation:ShapeTokens.CornerM}"
                         FontSize="14"
                         BorderThickness="1"  Padding="12,8" />
-                    <!-- 按钮栏（与歌词编辑完全一致的 3 个按钮） -->
+                    <Button x:Name="ViewPhonemeError"
+                            Classes="text"
+                            IsVisible="{Binding HasError}"
+                            Command="{Binding ViewErrorCommand}"
+                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                            AutomationProperties.Name="{DynamicResource PhonemeEdit.ViewError}">
+                        <TextBlock Text="{DynamicResource PhonemeEdit.ViewError}"
+                                   TextWrapping="Wrap" LineHeight="20" LetterSpacing="0.1" />
+                    </Button>
                 </StackPanel>
             </Border>
         </DockPanel>

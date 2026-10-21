@@ -13,7 +13,7 @@ namespace OpenUtauMobile.ViewModels;
 /// 音素别名编辑弹窗 ViewModel。
 /// 支持直接修改音素别名（ChangePhonemeAliasCommand），支持恢复默认别名，支持在声部的音素列表中切换导航。
 /// </summary>
-public class PhonemeEditViewModel : PopupViewModelBase, IDisposable
+public class PhonemeEditViewModel : PopupViewModelBase, IDisposable, ICmdSubscriber
 {
     private readonly UVoicePart _part;
     private int _currentPhonemeIndex;
@@ -41,6 +41,13 @@ public class PhonemeEditViewModel : PopupViewModelBase, IDisposable
     /// </summary>
     [Reactive]
     public string RawPhonemeHint { get; private set; } = "";
+
+    /// <summary>当前音素是否存在可查看的错误，重新分词后同步更新。</summary>
+    [Reactive]
+    public bool HasError { get; private set; }
+
+    /// <summary>请求查看错误详情，不提交当前别名草稿。</summary>
+    public ReactiveCommand<Unit, Unit> ViewErrorCommand { get; }
 
     /// <summary>
     /// 取消命令
@@ -87,8 +94,10 @@ public class PhonemeEditViewModel : PopupViewModelBase, IDisposable
         ResetCommand = ReactiveCommand.Create(OnReset);
         NextCommand = ReactiveCommand.Create(OnNext);
         ConfirmCommand = ReactiveCommand.Create(OnConfirm);
+        ViewErrorCommand = ReactiveCommand.Create(OnViewError, this.WhenAnyValue(x => x.HasError));
 
         LoadCurrentPhoneme();
+        DocManager.Inst.AddSubscriber(this);
     }
 
     private void LoadCurrentPhoneme()
@@ -96,6 +105,7 @@ public class PhonemeEditViewModel : PopupViewModelBase, IDisposable
         if (_currentPhonemeIndex >= 0 && _currentPhonemeIndex < _part.phonemes.Count)
         {
             CurrentPhoneme = _part.phonemes[_currentPhonemeIndex];
+            RefreshErrorState();
             string currentVal = CurrentPhoneme.phoneme != CurrentPhoneme.rawPhoneme
                 ? CurrentPhoneme.phoneme
                 : (!string.IsNullOrEmpty(CurrentPhoneme.phoneme) ? CurrentPhoneme.phoneme : "");
@@ -111,6 +121,35 @@ public class PhonemeEditViewModel : PopupViewModelBase, IDisposable
     }
 
     private bool HasNext => _currentPhonemeIndex + 1 < _part.phonemes.Count;
+
+    /// <summary>重新取得当前音素的错误状态，同时保留尚未提交的别名文本。</summary>
+    private void RefreshErrorState()
+    {
+        if (CurrentPhoneme is { } current)
+        {
+            CurrentPhoneme = _part.phonemes.FirstOrDefault(phoneme =>
+                phoneme.Parent == current.Parent && phoneme.index == current.index);
+        }
+        HasError = CurrentPhoneme is { Error: true } or { ErrorException: not null };
+    }
+
+    /// <summary>由调用方先结束编辑弹窗，再显示既有错误弹窗，避免同一模态宿主重入。</summary>
+    private void OnViewError()
+    {
+        RefreshErrorState();
+        if (!HasError) return;
+        ErrorMessageNotification notification = CurrentPhoneme?.ErrorException is { } error
+            ? new ErrorMessageNotification(error)
+            : new ErrorMessageNotification(L.S("PhonemeEdit.UnknownError"));
+        RaiseClose(new ErrorDialogViewModel(notification));
+    }
+
+    /// <summary>异步分词结果到达时刷新错误入口，不覆盖用户正在编辑的别名。</summary>
+    public void OnNext(UCommand cmd, bool isUndo)
+    {
+        if (cmd is PhonemizedNotification notification && ReferenceEquals(notification.part, _part))
+            RefreshErrorState();
+    }
 
     private void SaveCurrentPhonemeEdit()
     {
@@ -161,6 +200,8 @@ public class PhonemeEditViewModel : PopupViewModelBase, IDisposable
 
     public void Dispose()
     {
+        DocManager.Inst.RemoveSubscriber(this);
+        ViewErrorCommand.Dispose();
         CancelCommand.Dispose();
         ResetCommand.Dispose();
         NextCommand.Dispose();
