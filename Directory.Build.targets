@@ -1,0 +1,27 @@
+<Project>
+    <!-- DirectML 通过包目标直接添加 Content，需与 NuGet 原生资产使用同一符号开关。 -->
+    <Target Name="ExcludeDirectMLNativeSymbols" BeforeTargets="AssignTargetPaths"
+            Condition="'$(CopyNuGetNativeSymbols)' == 'false'">
+        <ItemGroup>
+            <Content Remove="@(Content)"
+                     Condition="'%(Content.Extension)' == '.pdb' and '%(Content.DefiningProjectName)' == 'Microsoft.AI.DirectML'" />
+        </ItemGroup>
+    </Target>
+    <!-- 部分 NuGet 包把原生 PDB 列为运行库，SDK 的托管符号开关不会过滤它们。 -->
+    <Target Name="ExcludeNuGetNativeSymbolsFromBuild" AfterTargets="ResolvePackageAssets"
+            Condition="'$(CopyNuGetNativeSymbols)' == 'false'">
+        <ItemGroup>
+            <NativeCopyLocalItems Remove="@(NativeCopyLocalItems)"
+                                  Condition="'%(NativeCopyLocalItems.Extension)' == '.pdb' and '%(NativeCopyLocalItems.NuGetPackageId)' != ''" />
+            <RuntimeTargetsCopyLocalItems Remove="@(RuntimeTargetsCopyLocalItems)"
+                                         Condition="'%(RuntimeTargetsCopyLocalItems.AssetType)' == 'native' and '%(RuntimeTargetsCopyLocalItems.Extension)' == '.pdb' and '%(RuntimeTargetsCopyLocalItems.NuGetPackageId)' != ''" />
+        </ItemGroup>
+    </Target>
+    <Target Name="ExcludeNuGetNativeSymbolsFromPublish" AfterTargets="ComputeResolvedFilesToPublishList"
+            Condition="'$(CopyNuGetNativeSymbols)' == 'false'">
+        <ItemGroup>
+            <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+                                   Condition="'%(ResolvedFileToPublish.AssetType)' == 'native' and '%(ResolvedFileToPublish.Extension)' == '.pdb' and '%(ResolvedFileToPublish.NuGetPackageId)' != ''" />
+        </ItemGroup>
+    </Target>
+</Project>

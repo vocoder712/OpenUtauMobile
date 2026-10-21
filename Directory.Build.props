@@ -30,6 +30,9 @@
     <!-- 启用预览语言特性 -->
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
+        <!-- 在 SDK 推断架构和输出路径之前，为桌面入口及探针选择单一运行时。 -->
+        <_OpumPreviousBeforeMicrosoftNETSdkTargets>$(BeforeMicrosoftNETSdkTargets)</_OpumPreviousBeforeMicrosoftNETSdkTargets>
+        <BeforeMicrosoftNETSdkTargets>$(MSBuildThisFileDirectory)build/DesktopRuntime.props</BeforeMicrosoftNETSdkTargets>
     </PropertyGroup>
     <!-- 元数据映射 -->
     <ItemGroup>
