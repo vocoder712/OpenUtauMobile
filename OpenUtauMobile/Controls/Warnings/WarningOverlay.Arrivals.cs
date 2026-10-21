@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
@@ -15,7 +14,7 @@ namespace OpenUtauMobile.Controls.Warnings
     {
         private void StartNextArrival()
         {
-            if (!_attached || !_presentationReady || !_active || IsCenterOpen || HostModal || _arrivalAnimation != null || _arriving != null || _inbox == null || Bounds.Width < 1 || Bounds.Height < 1) return;
+            if (!_attached || !_presentationReady || PresentationSuspended || IsCenterOpen || HostModal || _arrivalAnimation != null || _arriving != null || _inbox == null || Bounds.Width < 1 || Bounds.Height < 1) return;
             foreach (WarningItem item in _inbox.Items)
             {
                 if (item.Presented) continue;
@@ -46,23 +45,25 @@ namespace OpenUtauMobile.Controls.Warnings
                 {
                     ArrivalCard.Opacity = WarningMotion.Ease(t);
                     enter.Y = -24 * (1 - WarningMotion.Ease(t));
-                }, token);
+                }, token, PresentationTimestamp, () => PresentationSuspended);
                 // 完成驻留和汇入后才算已展示，中断、宿主重建和布局变化不能吞掉提示。
                 // 同键内容更新不重建任务，不重置已经过去的驻留时间。
                 double elapsed = 0;
                 const double dwellDuration = 4000;
-                Stopwatch dwellClock = Stopwatch.StartNew();
+                double previousTime = PresentationTimestamp();
                 while (elapsed < dwellDuration)
                 {
                     await Task.Delay(16, token);
-                    double interval = dwellClock.Elapsed.TotalMilliseconds;
-                    dwellClock.Restart();
+                    double now = PresentationTimestamp();
+                    double interval = now - previousTime;
+                    previousTime = now;
+                    if (PresentationSuspended) continue;
                     // 交互中断后必须重新获得完整阅读时间，边缘细线同时恢复全长。
-                    elapsed = ArrivalCard.IsPointerOver || ArrivalCard.IsKeyboardFocusWithin || _arrivalPressed
+                    elapsed = _windowFocused && (ArrivalCard.IsPointerOver || ArrivalCard.IsKeyboardFocusWithin || _arrivalPressed)
                         ? 0 : Math.Min(dwellDuration, elapsed + interval);
                     ArrivalCard.RemainingFraction = 1 - elapsed / dwellDuration;
                 }
-                while (_orbPointer != null || _dragging || _snapping) await Task.Delay(32, token);
+                while (PresentationSuspended || _orbPointer != null || _dragging || _snapping) await Task.Delay(32, token);
                 ArrivalCard.IsHitTestVisible = false;
                 await MergeArrivalAsync(token);
                 item.Presented = true;
@@ -103,7 +104,7 @@ namespace OpenUtauMobile.Controls.Warnings
             Flight.GlyphOpacity = 0;
             Flight.Dock = 0;
             Flight.Roundness = 0;
-            Stopwatch clock = Stopwatch.StartNew();
+            double previousTime = PresentationTimestamp();
             double progress = 0;
             Point segmentFrom = from;
             double segmentStart = 0;
@@ -111,9 +112,11 @@ namespace OpenUtauMobile.Controls.Warnings
             while (progress < 1)
             {
                 await Task.Delay(16, token);
-                if (_orbPointer != null || _dragging || _snapping)
+                double now = PresentationTimestamp();
+                double interval = now - previousTime;
+                previousTime = now;
+                if (PresentationSuspended || _orbPointer != null || _dragging || _snapping)
                 {
-                    clock.Restart();
                     paused = true;
                     continue;
                 }
@@ -123,8 +126,7 @@ namespace OpenUtauMobile.Controls.Warnings
                     segmentStart = progress;
                     paused = false;
                 }
-                progress = Math.Min(1, progress + clock.Elapsed.TotalMilliseconds / 600);
-                clock.Restart();
+                progress = Math.Min(1, progress + interval / 600);
                 double t = progress;
                 // 已有球在飞行最后一段交给同一图标，避免长时间重叠两枚图标。
                 Orb.Opacity = 1 - Math.Clamp((t - 0.75) / 0.2, 0, 1);

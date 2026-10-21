@@ -22,7 +22,9 @@
                 <ControlTemplate>
                     <ScrollViewer x:Name="PART_ScrollViewer" HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto" Padding="0">
-                        <ItemsPresenter x:Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        <!-- 阴影留白随内容滚动，底部空隙避免清除按钮挡住最后一张卡。 -->
+                        <ItemsPresenter x:Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}"
+                                        Margin="16,16,16,104" />
                     </ScrollViewer>
                 </ControlTemplate>
             </Setter>
@@ -38,10 +40,8 @@
         </Canvas>
         <Grid x:Name="Center" IsVisible="False" Background="Transparent" Focusable="True"
               KeyboardNavigation.TabNavigation="Cycle">
-            <Image x:Name="SnapshotImage" Stretch="Fill" IsHitTestVisible="False">
-                <Image.Effect><BlurEffect Radius="16" /></Image.Effect>
-            </Image>
-            <Border Background="{DynamicResource Sem.Color.Surface}" Opacity="0.84" IsHitTestVisible="False" />
+            <Image x:Name="SnapshotImage" Stretch="Fill" IsHitTestVisible="False" />
+            <Border Background="{DynamicResource Sem.Color.Surface}" Opacity="0.12" IsHitTestVisible="False" />
             <Grid x:Name="CenterContent" RowDefinitions="Auto,*">
                 <Grid ColumnDefinitions="*,Auto" Margin="20,12,12,4">
                     <TextBlock Text="{DynamicResource Warning.Center}" FontSize="{x:Static typography:TypographyTokens.HeadlineSSize}"
@@ -53,7 +53,7 @@
                                                    Height="{x:Static typography:IconTokens.Standard}" />
                     </Button>
                 </Grid>
-                <ItemsControl x:Name="WarningItems" Grid.Row="1" ClipToBounds="True" Margin="16,8,16,0">
+                <ItemsControl x:Name="WarningItems" Grid.Row="1" ClipToBounds="True">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate><VirtualizingStackPanel /></ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>

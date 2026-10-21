@@ -15,15 +15,27 @@ namespace OpenUtauMobile.Controls.Warnings
     /// <summary>用同一轮廓绘制和命中悬浮球，透明圆角不拦截导航页。</summary>
     public sealed class WarningOrb : Button, ICustomHitTest
     {
+        private static readonly StyledProperty<Color> ShadowColorProperty =
+            AvaloniaProperty.Register<WarningOrb, Color>("ShadowColor");
+
         static WarningOrb()
         {
-            AffectsRender<WarningOrb>(BackgroundProperty, ForegroundProperty, IsPressedProperty, IsPointerOverProperty, IsKeyboardFocusWithinProperty);
+            AffectsRender<WarningOrb>(BackgroundProperty, ForegroundProperty, IsPressedProperty, IsPointerOverProperty,
+                IsKeyboardFocusWithinProperty, IsEffectivelyEnabledProperty, ShadowColorProperty);
         }
 
         private double _dock;
         private double _roundness = 1;
         private double _glyphOpacity = 1;
         private PackIconPhosphorIcons? _glyph;
+        private bool _isPointerHeld;
+
+        /// <summary>宿主裁决的指针会话只影响海拔，不改变按钮原有的点击和拖动路由。</summary>
+        internal bool IsPointerHeld
+        {
+            get => _isPointerHeld;
+            set { _isPointerHeld = value; InvalidateVisual(); }
+        }
         /// <summary>贴边形状：负值连接左侧，正值连接右侧，零为自由圆形。</summary>
         public double Dock
         {
@@ -47,6 +59,7 @@ namespace OpenUtauMobile.Controls.Warnings
         public WarningOrb()
         {
             Width = Height = 56;
+            ClipToBounds = false;
             Padding = new Thickness(0);
             Template = new FuncControlTemplate<WarningOrb>((orb, _) =>
             {
@@ -66,6 +79,16 @@ namespace OpenUtauMobile.Controls.Warnings
             });
             this.Bind(BackgroundProperty, this.GetResourceObservable("Sem.Color.PrimaryContainer"));
             this.Bind(ForegroundProperty, this.GetResourceObservable("Sem.Color.OnPrimaryContainer"));
+            this.Bind(ShadowColorProperty, this.GetResourceObservable("Sem.Value.Shadow"));
+        }
+
+        /// <summary>表面阴影与命中轮廓共用圆角，贴边和收束时保持一致。</summary>
+        private CornerRadius OutlineCorners()
+        {
+            double r = WarningMotion.Lerp(12, Math.Min(Bounds.Width, Bounds.Height) / 2, Roundness);
+            double left = r * (1 - Math.Max(0, -Dock));
+            double right = r * (1 - Math.Max(0, Dock));
+            return new CornerRadius(left, right, right, left);
         }
 
         /// <summary>圆形、半圆连接矩形以及卡片收束共用一条连续曲线。</summary>
@@ -73,9 +96,9 @@ namespace OpenUtauMobile.Controls.Warnings
         {
             double w = Bounds.Width;
             double h = Bounds.Height;
-            double r = WarningMotion.Lerp(12, Math.Min(w, h) / 2, Roundness);
-            double left = r * (1 - Math.Max(0, -Dock));
-            double right = r * (1 - Math.Max(0, Dock));
+            CornerRadius corners = OutlineCorners();
+            double left = corners.TopLeft;
+            double right = corners.TopRight;
             const double k = 0.55228475;
             StreamGeometry geometry = new();
             using StreamGeometryContext path = geometry.Open();
@@ -99,7 +122,11 @@ namespace OpenUtauMobile.Controls.Warnings
         public override void Render(DrawingContext context)
         {
             base.Render(context);
-            context.DrawGeometry(Background, null, Outline());
+            Color shadowColor = GetValue(ShadowColorProperty);
+            BoxShadows shadows = !IsEffectivelyEnabled ? default
+                : IsPointerOver && !IsPressed && !IsPointerHeld ? WarningElevation.Level4(shadowColor)
+                : WarningElevation.Level3(shadowColor);
+            context.DrawRectangle(Background, null, new RoundedRect(new Rect(Bounds.Size), OutlineCorners()), shadows);
             if (Classes.Contains(":focus-visible")) context.DrawGeometry(null, new Pen(Foreground, 2), Outline());
         }
 

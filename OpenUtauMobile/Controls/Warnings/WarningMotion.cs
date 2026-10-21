@@ -21,14 +21,22 @@ namespace OpenUtauMobile.Controls.Warnings
             (byte)Lerp(from.A, to.A, progress), (byte)Lerp(from.R, to.R, progress),
             (byte)Lerp(from.G, to.G, progress), (byte)Lerp(from.B, to.B, progress));
 
-        /// <summary>在调用方的界面同步上下文逐帧更新，不使用每帧布局重建或偏好写盘。</summary>
-        public static async Task Run(int milliseconds, Action<double> frame, CancellationToken token)
+        /// <summary>在界面上下文逐帧更新；顶部展示可传入前台时钟，在后台保留原动画进度。</summary>
+        public static async Task Run(int milliseconds, Action<double> frame, CancellationToken token,
+            Func<double>? timestamp = null, Func<bool>? isPaused = null)
         {
             Stopwatch clock = Stopwatch.StartNew();
+            double started = timestamp?.Invoke() ?? 0;
             while (true)
             {
                 token.ThrowIfCancellationRequested();
-                double progress = Math.Min(1, clock.Elapsed.TotalMilliseconds / milliseconds);
+                if (isPaused?.Invoke() == true)
+                {
+                    await Task.Delay(32, token);
+                    continue;
+                }
+                double elapsed = timestamp != null ? timestamp() - started : clock.Elapsed.TotalMilliseconds;
+                double progress = Math.Min(1, elapsed / milliseconds);
                 frame(progress);
                 if (progress >= 1) return;
                 await Task.Delay(16, token);
