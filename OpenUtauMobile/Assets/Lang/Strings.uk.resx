@@ -2428,4 +2428,10 @@ Applying replaces the source of this input.</value></data>
   <data name="errors.failed.prerender" xml:space="preserve">
     <value>Не вдалося виконати фоновий попередній рендеринг.</value>
   </data>
+  <data name="Editor.Action.ReplaceAudio" xml:space="preserve"><value>Замінити аудіо</value></data>
+  <data name="AudioReplacement.Loading" xml:space="preserve"><value>Завантаження нового аудіо…</value></data>
+  <data name="AudioReplacement.Success" xml:space="preserve"><value>Аудіо замінено</value></data>
+  <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>Не вдалося прочитати аудіофайл: {0}</value></data>
+  <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>Проєкт або фрагмент змінився. Виберіть фрагмент знову, щоб замінити аудіо.</value></data>
+  <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>Неможливо прочитати аудіофайл: {0}</value></data>
 </root>

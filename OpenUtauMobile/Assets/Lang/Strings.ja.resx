@@ -2469,4 +2469,10 @@ Applying replaces the source of this input.</value></data>
   <data name="errors.failed.prerender" xml:space="preserve">
     <value>バックグラウンドの事前レンダリングに失敗しました。</value>
   </data>
+  <data name="Editor.Action.ReplaceAudio" xml:space="preserve"><value>音声を置き換え</value></data>
+  <data name="AudioReplacement.Loading" xml:space="preserve"><value>置き換える音声を読み込み中…</value></data>
+  <data name="AudioReplacement.Success" xml:space="preserve"><value>音声を置き換えました</value></data>
+  <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>音声ファイルを読み込めません：{0}</value></data>
+  <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>プロジェクトまたはパートが変更されました。パートを選択し直して音声を置き換えてください。</value></data>
+  <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>読み込めない音声ファイル：{0}</value></data>
 </root>

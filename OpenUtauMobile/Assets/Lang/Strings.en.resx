@@ -2473,4 +2473,10 @@ Applying replaces the source of this input.</value></data>
   <data name="errors.failed.prerender" xml:space="preserve">
     <value>Background pre-rendering failed.</value>
   </data>
+  <data name="Editor.Action.ReplaceAudio" xml:space="preserve"><value>Replace audio</value></data>
+  <data name="AudioReplacement.Loading" xml:space="preserve"><value>Loading replacement audio…</value></data>
+  <data name="AudioReplacement.Success" xml:space="preserve"><value>Audio replaced</value></data>
+  <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>Unable to read audio file: {0}</value></data>
+  <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>The project or part has changed. Select the part again to replace its audio.</value></data>
+  <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>Unreadable audio file: {0}</value></data>
 </root>

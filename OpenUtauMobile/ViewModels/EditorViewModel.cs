@@ -682,8 +682,12 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 RunOnUiThread(() =>
                 {
                     UPart[] remainingSelection = SelectedParts
+                        .Select(part => cmd is ReplacePartCommand replacement &&
+                            ReferenceEquals(part, isUndo ? replacement.newPart : replacement.part)
+                                ? isUndo ? replacement.part : replacement.newPart
+                                : part)
                         .Where(part => DocManager.Inst.Project.parts.Contains(part)).ToArray();
-                    if (remainingSelection.Length != SelectedParts.Count)
+                    if (!remainingSelection.SequenceEqual(SelectedParts))
                     {
                         ReplaceSelectedParts(remainingSelection);
                     }
@@ -1912,6 +1916,17 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     Command = ReactiveCommand.Create(SelectAllParts)
                 });
                 break;
+        }
+
+        if (SelectedParts is [UWavePart])
+        {
+            items.Add(new ContextActionItem
+            {
+                Id = "replace-audio",
+                Icon = PackIconPhosphorIconsKind.ArrowsClockwise,
+                Tip = L.S("Editor.Action.ReplaceAudio"),
+                Command = ReactiveCommand.CreateFromTask(ReplaceSelectedAudioAsync)
+            });
         }
 
         if (SelectedParts is [UWavePart wavePart]
