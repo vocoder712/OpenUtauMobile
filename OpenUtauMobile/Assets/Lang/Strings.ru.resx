@@ -2440,4 +2440,23 @@ Applying replaces the source of this input.</value></data>
   <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>Не удалось прочитать аудиофайл: {0}</value></data>
   <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>Проект или фрагмент изменился. Выберите фрагмент заново, чтобы заменить аудио.</value></data>
   <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>Не удаётся прочитать аудиофайл: {0}</value></data>
+  <data name="GraphSelection.Count" xml:space="preserve"><value>Выбрано: {0}</value></data>
+  <data name="GraphSelection.Enter" xml:space="preserve"><value>Выбрать несколько узлов</value></data>
+  <data name="GraphSelection.Exit" xml:space="preserve"><value>Выйти из режима выбора</value></data>
+  <data name="GraphSelection.All" xml:space="preserve"><value>Выбрать все узлы</value></data>
+  <data name="GraphSelection.Invert" xml:space="preserve"><value>Инвертировать выбор</value></data>
+  <data name="GraphSelection.Clear" xml:space="preserve"><value>Снять выделение</value></data>
+  <data name="GraphSelection.Copy" xml:space="preserve"><value>Копировать узлы</value></data>
+  <data name="GraphSelection.Paste" xml:space="preserve"><value>Вставить узлы</value></data>
+  <data name="GraphSelection.Delete" xml:space="preserve"><value>Удалить выбранные узлы</value></data>
+  <data name="GraphSelection.DeleteMessage" xml:space="preserve"><value>Удалить узлы ({0}) и связанные с ними связи ({1})?</value></data>
+  <data name="GraphSelection.InvalidNode" xml:space="preserve"><value>В выделении есть повторяющиеся ID, неизвестные типы узлов или неверные координаты. Проверьте диагностику графа.</value></data>
+  <data name="GraphSelection.Copied" xml:space="preserve"><value>Скопировано узлов: {0}</value></data>
+  <data name="GraphSelection.CopiedWithoutExternal" xml:space="preserve"><value>Скопировано узлов: {0}; внешние связи не включены</value></data>
+  <data name="GraphSelection.IncompatibleRenderer" xml:space="preserve"><value>Нельзя вставить узлы в граф другого семейства рендереров. Выберите совместимый граф.</value></data>
+  <data name="GraphSelection.InvalidTarget" xml:space="preserve"><value>Целевой граф содержит ошибки. Сначала проверьте его диагностику.</value></data>
+  <data name="GraphSelection.IdOverflow" xml:space="preserve"><value>В целевом графе закончились доступные ID узлов.</value></data>
+  <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>В целевом графе отсутствует или не поддерживается выражение «{0}».</value></data>
+  <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>В целевом графе уже есть такой выход. Снимите выделение с выходных узлов и скопируйте снова. Для дублирования всего графа создайте копию в библиотеке.</value></data>
+  <data name="GraphSelection.Selected" xml:space="preserve"><value>Выбрано</value></data>
 </root>

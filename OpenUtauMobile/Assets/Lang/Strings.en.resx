@@ -2485,4 +2485,23 @@ Applying replaces the source of this input.</value></data>
   <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>Unable to read audio file: {0}</value></data>
   <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>The project or part has changed. Select the part again to replace its audio.</value></data>
   <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>Unreadable audio file: {0}</value></data>
+  <data name="GraphSelection.Count" xml:space="preserve"><value>{0} selected</value></data>
+  <data name="GraphSelection.Enter" xml:space="preserve"><value>Select multiple nodes</value></data>
+  <data name="GraphSelection.Exit" xml:space="preserve"><value>Exit selection</value></data>
+  <data name="GraphSelection.All" xml:space="preserve"><value>Select all nodes</value></data>
+  <data name="GraphSelection.Invert" xml:space="preserve"><value>Invert selection</value></data>
+  <data name="GraphSelection.Clear" xml:space="preserve"><value>Clear selection</value></data>
+  <data name="GraphSelection.Copy" xml:space="preserve"><value>Copy nodes</value></data>
+  <data name="GraphSelection.Paste" xml:space="preserve"><value>Paste nodes</value></data>
+  <data name="GraphSelection.Delete" xml:space="preserve"><value>Delete selected nodes</value></data>
+  <data name="GraphSelection.DeleteMessage" xml:space="preserve"><value>Delete {0} nodes and their {1} connected links?</value></data>
+  <data name="GraphSelection.InvalidNode" xml:space="preserve"><value>The selection contains duplicate IDs, unknown node types, or invalid coordinates. Check the graph diagnostics.</value></data>
+  <data name="GraphSelection.Copied" xml:space="preserve"><value>Copied {0} nodes</value></data>
+  <data name="GraphSelection.CopiedWithoutExternal" xml:space="preserve"><value>Copied {0} nodes; external links are excluded</value></data>
+  <data name="GraphSelection.IncompatibleRenderer" xml:space="preserve"><value>Cannot paste into a graph for a different renderer family. Switch to a compatible graph.</value></data>
+  <data name="GraphSelection.InvalidTarget" xml:space="preserve"><value>The target graph has errors. Check its diagnostics first.</value></data>
+  <data name="GraphSelection.IdOverflow" xml:space="preserve"><value>The target graph has no room for more node IDs.</value></data>
+  <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>The target graph is missing or does not support expression “{0}”.</value></data>
+  <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>The target graph already has the same output. Deselect output nodes and copy again. To duplicate the whole graph, create a copy in the library.</value></data>
+  <data name="GraphSelection.Selected" xml:space="preserve"><value>Selected</value></data>
 </root>

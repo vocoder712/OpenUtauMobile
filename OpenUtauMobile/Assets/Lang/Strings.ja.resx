@@ -2481,4 +2481,23 @@ Applying replaces the source of this input.</value></data>
   <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>音声ファイルを読み込めません：{0}</value></data>
   <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>プロジェクトまたはパートが変更されました。パートを選択し直して音声を置き換えてください。</value></data>
   <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>読み込めない音声ファイル：{0}</value></data>
+  <data name="GraphSelection.Count" xml:space="preserve"><value>{0} 件選択中</value></data>
+  <data name="GraphSelection.Enter" xml:space="preserve"><value>複数のノードを選択</value></data>
+  <data name="GraphSelection.Exit" xml:space="preserve"><value>選択モードを終了</value></data>
+  <data name="GraphSelection.All" xml:space="preserve"><value>すべて選択</value></data>
+  <data name="GraphSelection.Invert" xml:space="preserve"><value>選択を反転</value></data>
+  <data name="GraphSelection.Clear" xml:space="preserve"><value>選択を解除</value></data>
+  <data name="GraphSelection.Copy" xml:space="preserve"><value>ノードをコピー</value></data>
+  <data name="GraphSelection.Paste" xml:space="preserve"><value>ノードを貼り付け</value></data>
+  <data name="GraphSelection.Delete" xml:space="preserve"><value>選択したノードを削除</value></data>
+  <data name="GraphSelection.DeleteMessage" xml:space="preserve"><value>{0} 個のノードと、それらに接続された {1} 本のリンクを削除しますか？</value></data>
+  <data name="GraphSelection.InvalidNode" xml:space="preserve"><value>選択に重複 ID、不明なノード型、または無効な座標が含まれています。グラフの診断を確認してください。</value></data>
+  <data name="GraphSelection.Copied" xml:space="preserve"><value>{0} 個のノードをコピーしました</value></data>
+  <data name="GraphSelection.CopiedWithoutExternal" xml:space="preserve"><value>{0} 個のノードをコピーしました。外部リンクは含まれません</value></data>
+  <data name="GraphSelection.IncompatibleRenderer" xml:space="preserve"><value>異なるレンダラーファミリーのグラフには貼り付けできません。互換性のあるグラフに切り替えてください。</value></data>
+  <data name="GraphSelection.InvalidTarget" xml:space="preserve"><value>貼り付け先のグラフにエラーがあります。先に診断を確認してください。</value></data>
+  <data name="GraphSelection.IdOverflow" xml:space="preserve"><value>貼り付け先のノード ID が上限に達しています。</value></data>
+  <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>貼り付け先にエクスプレッション「{0}」がないか、対応していません。</value></data>
+  <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>貼り付け先に同じ出力があります。出力ノードの選択を解除して再度コピーしてください。グラフ全体を複製するにはライブラリでコピーを作成してください。</value></data>
+  <data name="GraphSelection.Selected" xml:space="preserve"><value>選択済み</value></data>
 </root>
