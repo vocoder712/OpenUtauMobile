@@ -35,8 +35,8 @@ namespace OpenUtauMobile.ViewModels
         {
             project = DocManager.Inst.Project;
             this.part = part;
-            HashSet<UNote> selected = new(selectedNotes);
-            notes = part.notes.Where(selected.Contains).ToArray();
+            HashSet<UNote> selected = [.. selectedNotes];
+            notes = [.. part.notes.Where(selected.Contains)];
             Summary = string.Format(L.S("NoteProperties.Summary"), notes.Length);
             if (notes.Length == 0)
             {
@@ -118,11 +118,7 @@ namespace OpenUtauMobile.ViewModels
             acceptChanges.Add(() => presetPitch = null);
             UPitch DraftPitch(UNote note)
             {
-                UPitch pitch = note.pitch.Clone();
-                if (presetPitch != null)
-                {
-                    pitch.data = presetPitch.data.Select(p => p.Clone()).ToList();
-                }
+                UPitch pitch = (presetPitch ?? note.pitch).Clone();
                 if (pitch.data.Count < 2)
                 {
                     return pitch;
@@ -164,13 +160,10 @@ namespace OpenUtauMobile.ViewModels
                 value =>
                 {
                     NotePresets.PortamentoPreset preset = (NotePresets.PortamentoPreset)value;
-                    presetPitch = preset.PitchPoints.Count >= 2 ? new UPitch { data = preset.PitchPoints.Select(p => p.Clone()).ToList() } : null;
-                    if (presetPitch != null)
-                    {
-                        shape.LoadChoice(presetPitch.data.Select(p => (int)p.shape));
-                    }
-                    length.SetNumber(presetPitch != null ? (decimal)(presetPitch.data[^1].X - presetPitch.data[0].X) : preset.PortamentoLength);
-                    start.SetNumber(presetPitch != null ? (decimal)presetPitch.data[0].X : preset.PortamentoStart);
+                    presetPitch = CreatePitchFromPreset(preset);
+                    shape.LoadChoice(presetPitch.data.Select(p => (int)p.shape));
+                    length.SetNumber((decimal)(presetPitch.data[^1].X - presetPitch.data[0].X));
+                    start.SetNumber((decimal)presetPitch.data[0].X);
                 },
                 items => NotePresets.Default.PortamentoPresets = items.Cast<NotePresets.PortamentoPreset>().ToList());
             edits.Add(commands =>
@@ -322,6 +315,26 @@ namespace OpenUtauMobile.ViewModels
             NotePropertyGroup group = new(L.S("NoteProperties." + key), L.S("NoteProperties.Tab." + key)) { Key = key };
             Groups.Add(group);
             return group;
+        }
+
+        /// <summary>与桌面一致，套用预设时创建独立曲线并恢复默认首点吸附。</summary>
+        private static UPitch CreatePitchFromPreset(NotePresets.PortamentoPreset preset)
+        {
+            UPitch pitch = new();
+            if (preset.PitchPoints.Count >= 2)
+            {
+                foreach (PitchPoint point in preset.PitchPoints)
+                {
+                    pitch.AddPoint(point.Clone());
+                }
+            }
+            else
+            {
+                PitchPointShape shape = NotePresets.Default.DefaultPitchShape;
+                pitch.AddPoint(new PitchPoint(preset.PortamentoStart, 0, shape));
+                pitch.AddPoint(new PitchPoint(preset.PortamentoStart + preset.PortamentoLength, 0, shape));
+            }
+            return pitch;
         }
 
         private static NotePropertyField AddChoice(NotePropertyGroup group, string key, string[] options, IEnumerable<int> values)
