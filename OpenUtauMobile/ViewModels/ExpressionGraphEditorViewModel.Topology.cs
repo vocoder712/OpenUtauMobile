@@ -98,21 +98,24 @@ public sealed partial class ExpressionGraphEditorViewModel
     /// <summary>在标题起笔时校验编辑会话；释放时只提交一次坐标变化，过期图不能被覆盖。</summary>
     public Action<Vector>? PrepareNodeMove(string key)
     {
-        if (key != SelectedKey || !CanStartTopology() || !CanDeleteNode || !ResolveParameterEdits()
-            || SelectedNode is not { } selected || CurrentGraph() is not { } graph) return null;
-        int id = selected.Data.id;
-        float x = selected.Data.x, y = selected.Data.y;
-        if (!float.IsFinite(x) || !float.IsFinite(y)) return null;
+        if (!CanStartTopology() || !ResolveParameterEdits() || CurrentGraph() is not { } graph
+            || Scene is not { } scene || !scene.ByKey.TryGetValue(key, out GraphVisualNode? selected) || !SelectedNodeIds.Contains(selected.Data.id)
+            || !SelectedNodeIds.IsSubsetOf(GetSelectableIds())) return null;
+        Dictionary<int, (float X, float Y)> starts = graph.nodes.Where(node => SelectedNodeIds.Contains(node.id))
+            .ToDictionary(node => node.id, node => (node.x, node.y));
         string expected = GraphFingerprint(graph);
         return delta =>
         {
-            if (!double.IsFinite(delta.X) || !double.IsFinite(delta.Y)) return;
-            float targetX = (float)(x + delta.X), targetY = (float)(y + delta.Y);
-            if (!float.IsFinite(targetX) || !float.IsFinite(targetY)) return;
+            if (!SelectedNodeIds.SetEquals(starts.Keys) || !double.IsFinite(delta.X) || !double.IsFinite(delta.Y)) return;
+            if (starts.Values.Any(point => !float.IsFinite((float)(point.X + delta.X)) || !float.IsFinite((float)(point.Y + delta.Y)))) return;
             TopologyError = CommitTopology(expected, copy =>
             {
-                var node = copy.nodes.Single(node => node.id == id);
-                node.x = targetX; node.y = targetY; return null;
+                foreach (var node in copy.nodes.Where(node => starts.ContainsKey(node.id)))
+                {
+                    node.x = (float)(starts[node.id].X + delta.X);
+                    node.y = (float)(starts[node.id].Y + delta.Y);
+                }
+                return null;
             }) ?? string.Empty;
         };
     }
@@ -146,8 +149,10 @@ public sealed partial class ExpressionGraphEditorViewModel
                 });
                 if (error == null && addedId is { } id)
                 {
-                    SelectedKey = Scene!.Nodes.Single(node => node.Data.id == id).Key;
-                    IsSearchOpen = false; RequestLocate?.Invoke(SelectedKey!);
+                    string key = Scene!.Nodes.Single(node => node.Data.id == id).Key;
+                    if (IsMultiSelect) { SelectedKey = null; SetNodeSelection([id]); }
+                    else SelectedKey = key;
+                    IsSearchOpen = false; RequestLocate?.Invoke(key);
                 }
                 return error;
             });

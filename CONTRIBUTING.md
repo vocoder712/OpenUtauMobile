@@ -108,6 +108,11 @@ dotnet run --project OpenUtauMobile.Windows/OpenUtauMobile.Windows.csproj -c Deb
 4. 在 C# 代码行旁设置断点，点击虫子图标 **Debug**。需要执行到断点所在操作才会暂停。
 
 普通 Windows 调试不必设置 `RuntimeIdentifier` 或 `EnableGameGgml`。
+桌面入口和 UI 探针的 Debug/Release 构建默认只复制当前系统架构所需的 NuGet 运行库，
+不会再输出所有平台的 `runtimes`。Windows、Linux、macOS 入口会使用各自平台的 RID；
+跨平台或跨架构构建请显式传入 `-r <RID>`。共享类库保持平台无关，Android、iOS 和浏览器仍由各自 SDK 选择 RID。
+NuGet 原生库附带的 PDB 默认不复制；需要调试这些第三方原生库时，传入
+`-p:CopyNuGetNativeSymbols=true`。应用自身的托管调试符号不受影响。
 构建会自动生成 `opum_game.dll`，并将对应架构的 worldline 放到输出目录。
 默认 Debug 输出位于 `OpenUtauMobile.Windows/bin/Debug/net10.0-windows/`。
 如果显式使用 `-r win-x64`，输出会多一层 `win-x64/`；启动时应使用此次构建的目录。

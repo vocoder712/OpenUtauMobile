@@ -1708,6 +1708,12 @@
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>ノート: {0} | 音素 #{1}</value>
   </data>
+  <data name="PhonemeEdit.ViewError" xml:space="preserve">
+    <value>エラーを表示</value>
+  </data>
+  <data name="PhonemeEdit.UnknownError" xml:space="preserve">
+    <value>この音素にエラーがありますが、詳しい原因は不明です。歌詞、音素変換器、音源の設定を確認してください。</value>
+  </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>指を離すとパラメーターをリセット</value>
   </data>
@@ -2457,4 +2463,41 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>グラフエディター</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>プロパティパネルのサイズ変更</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>警告センター</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>警告センターを閉じる</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>すべての警告を消去</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>無視</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>警告センター、警告 {0} 件</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>音源 ID が重複しています：{0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>使用中：{1}。同じ ID の他のフォルダーはスキップされました：{2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>アプリの警告</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>警告を削除</value></data>
+  <data name="errors.failed.prerender" xml:space="preserve">
+    <value>バックグラウンドの事前レンダリングに失敗しました。</value>
+  </data>
+  <data name="Editor.Action.ReplaceAudio" xml:space="preserve"><value>音声を置き換え</value></data>
+  <data name="AudioReplacement.Loading" xml:space="preserve"><value>置き換える音声を読み込み中…</value></data>
+  <data name="AudioReplacement.Success" xml:space="preserve"><value>音声を置き換えました</value></data>
+  <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>音声ファイルを読み込めません：{0}</value></data>
+  <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>プロジェクトまたはパートが変更されました。パートを選択し直して音声を置き換えてください。</value></data>
+  <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>読み込めない音声ファイル：{0}</value></data>
+  <data name="GraphSelection.Count" xml:space="preserve"><value>{0} 件選択中</value></data>
+  <data name="GraphSelection.Enter" xml:space="preserve"><value>複数のノードを選択</value></data>
+  <data name="GraphSelection.Exit" xml:space="preserve"><value>選択モードを終了</value></data>
+  <data name="GraphSelection.All" xml:space="preserve"><value>すべて選択</value></data>
+  <data name="GraphSelection.Invert" xml:space="preserve"><value>選択を反転</value></data>
+  <data name="GraphSelection.Clear" xml:space="preserve"><value>選択を解除</value></data>
+  <data name="GraphSelection.Copy" xml:space="preserve"><value>ノードをコピー</value></data>
+  <data name="GraphSelection.Paste" xml:space="preserve"><value>ノードを貼り付け</value></data>
+  <data name="GraphSelection.Delete" xml:space="preserve"><value>選択したノードを削除</value></data>
+  <data name="GraphSelection.DeleteMessage" xml:space="preserve"><value>{0} 個のノードと、それらに接続された {1} 本のリンクを削除しますか？</value></data>
+  <data name="GraphSelection.InvalidNode" xml:space="preserve"><value>選択に重複 ID、不明なノード型、または無効な座標が含まれています。グラフの診断を確認してください。</value></data>
+  <data name="GraphSelection.Copied" xml:space="preserve"><value>{0} 個のノードをコピーしました</value></data>
+  <data name="GraphSelection.CopiedWithoutExternal" xml:space="preserve"><value>{0} 個のノードをコピーしました。外部リンクは含まれません</value></data>
+  <data name="GraphSelection.IncompatibleRenderer" xml:space="preserve"><value>異なるレンダラーファミリーのグラフには貼り付けできません。互換性のあるグラフに切り替えてください。</value></data>
+  <data name="GraphSelection.InvalidTarget" xml:space="preserve"><value>貼り付け先のグラフにエラーがあります。先に診断を確認してください。</value></data>
+  <data name="GraphSelection.IdOverflow" xml:space="preserve"><value>貼り付け先のノード ID が上限に達しています。</value></data>
+  <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>貼り付け先にエクスプレッション「{0}」がないか、対応していません。</value></data>
+  <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>貼り付け先に同じ出力があります。出力ノードの選択を解除して再度コピーしてください。グラフ全体を複製するにはライブラリでコピーを作成してください。</value></data>
+  <data name="GraphSelection.Selected" xml:space="preserve"><value>選択済み</value></data>
 </root>

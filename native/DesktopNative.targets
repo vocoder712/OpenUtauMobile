@@ -1,4 +1,6 @@
 <Project>
+    <!-- 原生构建与 NuGet 资产解析共用同一个默认 RID。 -->
+    <Import Project="../build/DesktopRuntime.props" />
     <ItemGroup>
         <None Remove="runtimes/**" />
     </ItemGroup>

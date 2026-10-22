@@ -214,6 +214,11 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
 
         IBrush boundaryDefaultBrush = ThemeResources.GetBrush("Sem.Color.Outline");
         IBrush boundaryActiveBrush = ThemeResources.GetBrush("Sem.Color.Primary");
+        IBrush errorFill = ThemeResources.GetBrush("Sem.Color.ErrorContainer");
+        IBrush errorText = ThemeResources.GetBrush("Sem.Color.OnErrorContainer");
+        IBrush errorBrush = ThemeResources.GetBrush("Sem.Color.Error");
+        IPen errorBorder = ThemeResources.GetPen("Sem.Color.Error");
+        IPen selectedErrorBorder = ThemeResources.GetPen("Sem.Color.Error", 2);
 
         double canvasHeight = Bounds.Height;
         // 顶部预留 14dp 空隙避开上方悬浮的分割条胶囊手柄，底部预留 6dp
@@ -247,12 +252,14 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             double chipWidth = Math.Max(2.0, chipRight - chipLeft);
 
             bool isSelected = ViewModel?.IsNoteSelected(phoneme.Parent) ?? false;
-            IBrush fillBrush = isSelected ? selectedChipFill : defaultChipFill;
-            IBrush currentTextBrush = isSelected ? selectedTextBrush : textBrush;
+            bool hasError = phoneme.Error || phoneme.ErrorException != null;
+            IBrush fillBrush = hasError ? errorFill : isSelected ? selectedChipFill : defaultChipFill;
+            IBrush currentTextBrush = hasError ? errorText : isSelected ? selectedTextBrush : textBrush;
+            IPen borderPen = hasError ? isSelected ? selectedErrorBorder : errorBorder : chipBorderPen;
 
             // 1. 绘制音素卡片（SynthV 风格独立圆角药丸框）
             Rect blockRect = new Rect(chipLeft, topMargin, chipWidth, blockHeight);
-            context.DrawRectangle(fillBrush, chipBorderPen, blockRect, 4, 4);
+            context.DrawRectangle(fillBrush, borderPen, blockRect, 4, 4);
 
             // 2. 绘制音素文字
             string displayText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
@@ -289,7 +296,8 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             double expansion = 5.0 * progress; // 拖拽时平滑上下延伸 5dp，适度突出于卡片
             double widthBonus = 1.2 * progress;
             double handleWidth = (isModified ? 3.5 : 2.5) + widthBonus;
-            IBrush handleBrush = (isModified || progress > 0.001) ? boundaryActiveBrush : boundaryDefaultBrush;
+            IBrush handleBrush = hasError ? errorBrush
+                : (isModified || progress > 0.001) ? boundaryActiveBrush : boundaryDefaultBrush;
             double handleX = x1 - handleWidth * 0.5;
             double handleY = topMargin + 2.0 - expansion;
             double handleH = Math.Max(4.0, blockHeight - 4.0) + expansion * 2.0;

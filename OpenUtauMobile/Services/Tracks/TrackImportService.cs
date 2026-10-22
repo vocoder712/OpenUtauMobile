@@ -28,6 +28,12 @@ public static class TrackImportService
                 {
                     throw new InvalidDataException("Invalid source track index.");
                 }
+                // 来源读取在后台执行，等音频加载终止后再展示确认页，避免遗漏晚到的解码失败。
+                foreach (UWavePart part in project.parts.OfType<UWavePart>())
+                {
+                    try { part.Peaks?.GetAwaiter().GetResult(); }
+                    catch (Exception) { /* 片段保留；确认页根据 Peaks 终态显示不可读提示。 */ }
+                }
                 sources.Add(new TrackImportSource(path, project));
             }
             catch (Exception exception)

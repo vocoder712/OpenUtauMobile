@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using Avalonia;
@@ -54,12 +55,12 @@ public partial class ExpressionGraphEditorView : UserControl
         // 页内工具栏、详情和键盘操作也优先于尚未结束的视口运动，不清除识别器中的触点。
         AddHandler(PointerPressedEvent, (_, _) => GraphCanvas.InterruptMotion(), RoutingStrategies.Tunnel, true);
         AddHandler(KeyDownEvent, (_, _) => GraphCanvas.InterruptMotion(), RoutingStrategies.Tunnel, true);
-        GraphCanvas.NodeSelected += key => { if (_vm != null) _vm.SelectedKey = key; };
+        GraphCanvas.NodeSelected += key => _vm?.SelectCanvasNode(key);
         SizeChanged += (_, _) => QueueInspectorLayout();
         WorkArea.SizeChanged += (_, _) => QueueInspectorLayout();
         KeyDown += (_, e) =>
         {
-            if (_vm != null && e.KeyModifiers.HasFlag(KeyModifiers.Control)
+            if (_vm?.CanInteract == true && (e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Meta))
                 && e.Source is Control source && source is not TextBox && !source.GetVisualAncestors().OfType<TextBox>().Any())
             {
                 if (e.Key == Key.Z)
@@ -69,10 +70,16 @@ public partial class ExpressionGraphEditorView : UserControl
                     e.Handled = true;
                 }
                 if (e.Key == Key.Y) { _vm.RedoCommand.Execute().Subscribe(); e.Handled = true; }
+                if (e.Key == Key.C) { _vm.CopyNodesCommand.Execute().Subscribe(); e.Handled = true; }
+                if (e.Key == Key.V) { _vm.PasteNodesCommand.Execute().Subscribe(); e.Handled = true; }
+                if (e.Key == Key.A && _vm.IsMultiSelect) { _vm.SelectAllNodesCommand.Execute().Subscribe(); e.Handled = true; }
             }
             if (e.Key == Key.Escape && _vm != null)
             {
-                GraphCanvas.CancelPointers(); _vm.OnBackRequested(); e.Handled = true;
+                GraphCanvas.CancelPointers();
+                if (_overflowMenu?.IsOpen == true) _overflowMenu.Close();
+                else _vm.OnBackRequested();
+                e.Handled = true;
             }
         };
     }
@@ -82,7 +89,7 @@ public partial class ExpressionGraphEditorView : UserControl
         base.OnAttachedToVisualTree(e);
         _vm = DataContext as ExpressionGraphEditorViewModel;
         if (_vm == null) return;
-        _subscriptions = new(); _vm.RequestLocate += Locate; _vm.RequestRevealParameter += RevealParameter;
+        _subscriptions = new(); _vm.RequestLocate += Locate; _vm.RequestRevealParameter += RevealParameter; _vm.RequestRevealNodes += RevealNodes;
         // MD3 二级高度：主阴影 30%，环境阴影 15%；只绘制容器阴影，不改变命中区。
         this.GetResourceObservable("Sem.Value.Shadow").Subscribe(value =>
         {
@@ -91,7 +98,12 @@ public partial class ExpressionGraphEditorView : UserControl
                     [new BoxShadow { OffsetY = 2, Blur = 6, Spread = 2, Color = Color.FromArgb(38, shadow.R, shadow.G, shadow.B) }]);
         }).DisposeWith(_subscriptions);
         GraphCanvas.PrepareNodeMove = _vm.PrepareNodeMove;
-        _vm.GetInsertionPoint = () => GraphCanvas.ToWorld(new Point(GraphCanvas.Bounds.Width / 2, GraphCanvas.Bounds.Height / 2));
+        GraphCanvas.GetVisibleViewport = VisibleCanvasArea;
+        _vm.GetInsertionPoint = () => GraphCanvas.ToWorld(VisibleCanvasArea().Center);
+        _vm.WhenAnyValue(vm => vm.IsMultiSelect).Subscribe(_ =>
+        {
+            GraphCanvas.CancelPointers(); _overflowMenu?.Close(); GraphCanvas.Focus(); QueueInspectorLayout();
+        }).DisposeWith(_subscriptions);
         _window = TopLevel.GetTopLevel(this) as Window;
         if (_window != null) _window.Deactivated += OnDeactivated;
         PopupService.Opening += CancelParameterPreviews;
@@ -108,7 +120,7 @@ public partial class ExpressionGraphEditorView : UserControl
         PopupService.Opening -= CancelParameterPreviews;
         if (_window != null) _window.Deactivated -= OnDeactivated;
         _window = null;
-        if (_vm != null) { _vm.RequestLocate -= Locate; _vm.RequestRevealParameter -= RevealParameter; _vm.GetInsertionPoint = null; GraphCanvas.PrepareNodeMove = null; }
+        if (_vm != null) { _vm.RequestLocate -= Locate; _vm.RequestRevealParameter -= RevealParameter; _vm.RequestRevealNodes -= RevealNodes; _vm.GetInsertionPoint = null; GraphCanvas.PrepareNodeMove = null; GraphCanvas.GetVisibleViewport = null; }
         _subscriptions?.Dispose(); _subscriptions = null; _vm = null;
         GraphCanvas.CancelPointers();
         base.OnDetachedFromVisualTree(e);
@@ -136,7 +148,7 @@ public partial class ExpressionGraphEditorView : UserControl
             if (_wide != wide || !_vm.ShowInspector) CancelSplit();
             _wide = wide;
             Grid.SetRow(Inspector, wide ? 0 : 1); Grid.SetColumn(Inspector, wide ? 1 : 0);
-            Inspector.Width = wide ? Math.Clamp(_inspectorWidth, 240, Math.Max(240, WorkArea.Bounds.Width - 160)) : double.NaN;
+            Inspector.Width = wide ? Math.Clamp(_inspectorWidth, 240, Math.Max(240, WorkArea.Bounds.Width - 240)) : double.NaN;
             // 短窗口仍需容纳固定标题和可滚动输入，同时至少保留一段画布。
             Inspector.Height = wide ? double.NaN
                 : Math.Clamp(_inspectorHeight ?? Math.Min(280, WorkArea.Bounds.Height * .48), Math.Min(156, Math.Max(0, WorkArea.Bounds.Height - 96)), Math.Max(0, WorkArea.Bounds.Height - 96));
@@ -147,8 +159,20 @@ public partial class ExpressionGraphEditorView : UserControl
 
     private void Locate(string key) => Dispatcher.UIThread.Post(() =>
     {
-        if (_vm?.SelectedKey == key) { WorkArea.UpdateLayout(); GraphCanvas.Locate(key); }
+        if (_vm?.Scene?.ByKey.ContainsKey(key) == true) { WorkArea.UpdateLayout(); GraphCanvas.Locate(key); }
     }, DispatcherPriority.Loaded);
+
+    private Rect VisibleCanvasArea()
+    {
+        double top = Math.Min(56, GraphCanvas.Bounds.Height * .2);
+        return new Rect(16, top, Math.Max(1, GraphCanvas.Bounds.Width - 32), Math.Max(1, GraphCanvas.Bounds.Height - top - 96));
+    }
+
+    private void RevealNodes(IReadOnlySet<int> ids)
+    {
+        WorkArea.UpdateLayout();
+        GraphCanvas.RevealNodes(ids);
+    }
 
     private void RevealParameter(GraphParameterEdit field) => Dispatcher.UIThread.Post(() =>
     {
@@ -157,11 +181,11 @@ public partial class ExpressionGraphEditorView : UserControl
         this.GetVisualDescendants().OfType<GraphParameterEditor>().FirstOrDefault(editor => ReferenceEquals(editor.DataContext, field))?.Reveal();
     }, DispatcherPriority.Loaded);
 
-    /// <summary>只在画布尺寸改变时重新分配六个操作，隐藏项进入菜单且保留原命令。</summary>
+    /// <summary>复制、粘贴与选择操作常驻胶囊；其余动作按剩余空间进入菜单。</summary>
     private void UpdateToolbar()
     {
         double available = Math.Max(0, CanvasRegion.Bounds.Width - 32);
-        int slots = Math.Max(1, (int)Math.Floor((available - 12) / 52));
+        int slots = Math.Max(1, (int)Math.Floor((available - 12) / 52) - 3);
         int visible = slots >= _tools.Length ? _tools.Length : Math.Max(0, slots - 1);
         bool changed = false;
         for (int i = 0; i < _tools.Length; i++)
@@ -171,7 +195,25 @@ public partial class ExpressionGraphEditorView : UserControl
             _tools[i].IsVisible = show;
         }
         OverflowTool.IsVisible = visible < _tools.Length;
+        bool compactSelection = Bounds.Width < 480;
+        SelectAllTool.IsVisible = InvertSelectionTool.IsVisible = ClearSelectionTool.IsVisible = !compactSelection;
+        SelectionOverflowTool.IsVisible = compactSelection;
         if (changed) _overflowMenu?.Close();
+    }
+
+    private void SelectionOverflowClicked(object? sender, RoutedEventArgs e)
+    {
+        if (_vm?.CanInteract != true) return;
+        _overflowMenu?.Close();
+        ContextMenu menu = new();
+        foreach ((string label, Button button) in new[] { ("GraphSelection.All", SelectAllTool), ("GraphSelection.Invert", InvertSelectionTool), ("GraphSelection.Clear", ClearSelectionTool) })
+        {
+            MenuItem item = new() { Header = L.S(label), Command = button.Command, IsEnabled = button.IsEffectivelyEnabled };
+            if (button.Content is PackIconPhosphorIcons icon) item.Icon = new PackIconPhosphorIcons { Kind = icon.Kind, Width = 24, Height = 24 };
+            menu.Items.Add(item);
+        }
+        _overflowMenu = menu;
+        menu.Open(SelectionOverflowTool);
     }
 
     /// <summary>菜单项使用相同操作和图标库，控件禁用状态实时跟随画布按钮。</summary>
@@ -239,7 +281,7 @@ public partial class ExpressionGraphEditorView : UserControl
         Vector delta = e.GetPosition(this) - _splitPress;
         if (!_splitDragging && Math.Max(Math.Abs(delta.X), Math.Abs(delta.Y)) <= ViewConstants.SplitDragThreshold) return;
         _splitDragging = true;
-        if (_wide) _inspectorWidth = Math.Clamp(_splitExtent - delta.X, 240, Math.Max(240, WorkArea.Bounds.Width - 160));
+        if (_wide) _inspectorWidth = Math.Clamp(_splitExtent - delta.X, 240, Math.Max(240, WorkArea.Bounds.Width - 240));
         else _inspectorHeight = Math.Clamp(_splitExtent - delta.Y, Math.Min(156, Math.Max(0, WorkArea.Bounds.Height - 96)), Math.Max(0, WorkArea.Bounds.Height - 96));
         double axis = _wide ? WorkArea.Bounds.Height : WorkArea.Bounds.Width;
         _handleRatio = Math.Clamp(_splitRatio + (_wide ? delta.Y : delta.X) / Math.Max(1, axis - ViewConstants.EditorSplitHandleWidth - 2 * ViewConstants.EditorSplitHandleEdgeInset), 0, 1);

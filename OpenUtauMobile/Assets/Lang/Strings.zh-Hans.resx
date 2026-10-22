@@ -1712,6 +1712,12 @@
   <data name="PhonemeEdit.Info" xml:space="preserve">
     <value>音符: {0} | 音素 #{1}</value>
   </data>
+  <data name="PhonemeEdit.ViewError" xml:space="preserve">
+    <value>查看错误</value>
+  </data>
+  <data name="PhonemeEdit.UnknownError" xml:space="preserve">
+    <value>此音素存在错误，但未提供具体原因。请检查歌词、音素器和声库配置。</value>
+  </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>松开以重置参数</value>
   </data>
@@ -2461,4 +2467,41 @@
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>尚无已连接输出</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>图编辑器</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>调整属性面板大小</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>告警中心</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>关闭告警中心</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>清除全部告警</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>忽略</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>告警中心，{0} 条告警</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>声库 ID 重复：{0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>正在使用：{1}。已跳过具有相同 ID 的其他目录：{2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>应用告警</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>删除告警</value></data>
+  <data name="errors.failed.prerender" xml:space="preserve">
+    <value>后台预渲染失败</value>
+  </data>
+  <data name="Editor.Action.ReplaceAudio" xml:space="preserve"><value>替换音频</value></data>
+  <data name="AudioReplacement.Loading" xml:space="preserve"><value>正在加载替换音频……</value></data>
+  <data name="AudioReplacement.Success" xml:space="preserve"><value>音频已替换</value></data>
+  <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>无法读取音频文件：{0}</value></data>
+  <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>工程或分片已改变，请重新选择分片后替换。</value></data>
+  <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>音频文件不可读：{0}</value></data>
+  <data name="GraphSelection.Count" xml:space="preserve"><value>已选 {0} 项</value></data>
+  <data name="GraphSelection.Enter" xml:space="preserve"><value>选择多个节点</value></data>
+  <data name="GraphSelection.Exit" xml:space="preserve"><value>退出多选</value></data>
+  <data name="GraphSelection.All" xml:space="preserve"><value>全选节点</value></data>
+  <data name="GraphSelection.Invert" xml:space="preserve"><value>反选节点</value></data>
+  <data name="GraphSelection.Clear" xml:space="preserve"><value>清空选择</value></data>
+  <data name="GraphSelection.Copy" xml:space="preserve"><value>复制节点</value></data>
+  <data name="GraphSelection.Paste" xml:space="preserve"><value>粘贴节点</value></data>
+  <data name="GraphSelection.Delete" xml:space="preserve"><value>删除所选节点</value></data>
+  <data name="GraphSelection.DeleteMessage" xml:space="preserve"><value>删除 {0} 个节点及其关联的 {1} 条连线？</value></data>
+  <data name="GraphSelection.InvalidNode" xml:space="preserve"><value>所选节点存在重复 ID、未知类型或无效坐标，请先查看图诊断。</value></data>
+  <data name="GraphSelection.Copied" xml:space="preserve"><value>已复制 {0} 个节点</value></data>
+  <data name="GraphSelection.CopiedWithoutExternal" xml:space="preserve"><value>已复制 {0} 个节点；外部连线不包含在内</value></data>
+  <data name="GraphSelection.IncompatibleRenderer" xml:space="preserve"><value>无法粘贴到不同渲染器家族的图。请切换到兼容图。</value></data>
+  <data name="GraphSelection.InvalidTarget" xml:space="preserve"><value>目标图存在错误，请先处理图诊断。</value></data>
+  <data name="GraphSelection.IdOverflow" xml:space="preserve"><value>目标图的节点 ID 空间不足，无法粘贴。</value></data>
+  <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>目标图缺少或不支持表情参数“{0}”。</value></data>
+  <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>目标图已有相同的输出。请取消选择输出节点后重新复制；若要复制整张图，请在图库中创建副本。</value></data>
+  <data name="GraphSelection.Selected" xml:space="preserve"><value>已选择</value></data>
 </root>

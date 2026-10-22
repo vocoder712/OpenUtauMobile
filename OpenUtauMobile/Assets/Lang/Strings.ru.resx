@@ -1667,6 +1667,12 @@
   <data name="Editor.Action.Merge" xml:space="preserve">
     <value>Объединить</value>
   </data>
+  <data name="PhonemeEdit.ViewError" xml:space="preserve">
+    <value>Показать ошибку</value>
+  </data>
+  <data name="PhonemeEdit.UnknownError" xml:space="preserve">
+    <value>В этой фонеме обнаружена ошибка, но подробная причина недоступна. Проверьте текст, фонемайзер и настройки голосового банка.</value>
+  </data>
   <data name="PhonemePanel.Reset.ReleaseHint" xml:space="preserve">
     <value>Отпустите, чтобы сбросить параметр</value>
   </data>
@@ -2416,4 +2422,41 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphTopology.NoOutputs" xml:space="preserve"><value>No connected outputs yet</value></data>
   <data name="GraphEdit.Title" xml:space="preserve"><value>Редактор графа</value></data>
   <data name="GraphEdit.ResizePanel" xml:space="preserve"><value>Изменить размер панели свойств</value></data>
+  <data name="Warning.Center" xml:space="preserve"><value>Центр предупреждений</value></data>
+  <data name="Warning.Close" xml:space="preserve"><value>Закрыть центр предупреждений</value></data>
+  <data name="Warning.ClearAll" xml:space="preserve"><value>Удалить все предупреждения</value></data>
+  <data name="Warning.Ignore" xml:space="preserve"><value>Игнорировать</value></data>
+  <data name="Warning.OrbName" xml:space="preserve"><value>Центр предупреждений: {0}</value></data>
+  <data name="warnings.singers.duplicate" xml:space="preserve"><value>Повторяющийся ID голосового банка: {0}</value></data>
+  <data name="warnings.singers.duplicate.detail" xml:space="preserve"><value>Используется: {1}. Другие папки с этим ID пропущены: {2}</value></data>
+  <data name="Warning.FallbackTitle" xml:space="preserve"><value>Предупреждение приложения</value></data>
+  <data name="Warning.Dismiss" xml:space="preserve"><value>Удалить предупреждение</value></data>
+  <data name="errors.failed.prerender" xml:space="preserve">
+    <value>Не удалось выполнить фоновый предварительный рендеринг.</value>
+  </data>
+  <data name="Editor.Action.ReplaceAudio" xml:space="preserve"><value>Заменить аудио</value></data>
+  <data name="AudioReplacement.Loading" xml:space="preserve"><value>Загрузка нового аудио…</value></data>
+  <data name="AudioReplacement.Success" xml:space="preserve"><value>Аудио заменено</value></data>
+  <data name="AudioReplacement.Unreadable" xml:space="preserve"><value>Не удалось прочитать аудиофайл: {0}</value></data>
+  <data name="AudioReplacement.ProjectChanged" xml:space="preserve"><value>Проект или фрагмент изменился. Выберите фрагмент заново, чтобы заменить аудио.</value></data>
+  <data name="ImportTracks.UnreadableAudio" xml:space="preserve"><value>Не удаётся прочитать аудиофайл: {0}</value></data>
+  <data name="GraphSelection.Count" xml:space="preserve"><value>Выбрано: {0}</value></data>
+  <data name="GraphSelection.Enter" xml:space="preserve"><value>Выбрать несколько узлов</value></data>
+  <data name="GraphSelection.Exit" xml:space="preserve"><value>Выйти из режима выбора</value></data>
+  <data name="GraphSelection.All" xml:space="preserve"><value>Выбрать все узлы</value></data>
+  <data name="GraphSelection.Invert" xml:space="preserve"><value>Инвертировать выбор</value></data>
+  <data name="GraphSelection.Clear" xml:space="preserve"><value>Снять выделение</value></data>
+  <data name="GraphSelection.Copy" xml:space="preserve"><value>Копировать узлы</value></data>
+  <data name="GraphSelection.Paste" xml:space="preserve"><value>Вставить узлы</value></data>
+  <data name="GraphSelection.Delete" xml:space="preserve"><value>Удалить выбранные узлы</value></data>
+  <data name="GraphSelection.DeleteMessage" xml:space="preserve"><value>Удалить узлы ({0}) и связанные с ними связи ({1})?</value></data>
+  <data name="GraphSelection.InvalidNode" xml:space="preserve"><value>В выделении есть повторяющиеся ID, неизвестные типы узлов или неверные координаты. Проверьте диагностику графа.</value></data>
+  <data name="GraphSelection.Copied" xml:space="preserve"><value>Скопировано узлов: {0}</value></data>
+  <data name="GraphSelection.CopiedWithoutExternal" xml:space="preserve"><value>Скопировано узлов: {0}; внешние связи не включены</value></data>
+  <data name="GraphSelection.IncompatibleRenderer" xml:space="preserve"><value>Нельзя вставить узлы в граф другого семейства рендереров. Выберите совместимый граф.</value></data>
+  <data name="GraphSelection.InvalidTarget" xml:space="preserve"><value>Целевой граф содержит ошибки. Сначала проверьте его диагностику.</value></data>
+  <data name="GraphSelection.IdOverflow" xml:space="preserve"><value>В целевом графе закончились доступные ID узлов.</value></data>
+  <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>В целевом графе отсутствует или не поддерживается выражение «{0}».</value></data>
+  <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>В целевом графе уже есть такой выход. Снимите выделение с выходных узлов и скопируйте снова. Для дублирования всего графа создайте копию в библиотеке.</value></data>
+  <data name="GraphSelection.Selected" xml:space="preserve"><value>Выбрано</value></data>
 </root>

@@ -25,7 +25,10 @@ public sealed record GraphNodeDetail(string Label, string Value, string? TargetK
     public bool IsInput => InputPort != null;
 }
 /// <summary>节点搜索结果，数量限制仅影响展示，不改动图。</summary>
-public sealed record GraphSearchResult(string Key, string Title, string Summary);
+public sealed record GraphSearchResult(string Key, string Title, string Summary, bool IsSelected = false)
+{
+    public string AccessibilityLabel => Title + (IsSelected ? " · " + L.S("GraphSelection.Selected") : string.Empty);
+}
 
 /// <summary>单图编辑会话；参数经校验后提交命令，画布动作只影响本地状态。</summary>
 public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable
@@ -58,7 +61,8 @@ public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBa
     [Reactive] public bool CanUndo { get; private set; }
     [Reactive] public bool CanRedo { get; private set; }
     public bool HasSelection => SelectedNode != null;
-    public bool ShowInspector => HasSelection || IsSearchOpen;
+    public bool ShowInspector => !IsMultiSelect && HasSelection || IsSearchOpen;
+    public bool CanInteract => IsAvailable && !IsBusy;
     public event Action<string>? RequestLocate;
     public event Action<GraphParameterEdit>? RequestRevealParameter;
     /// <summary>输入端口的回退值由来源行展示，普通参数只展示一次。</summary>
@@ -96,16 +100,21 @@ public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBa
         {
             if (IsAvailable && Scene?.ByKey.ContainsKey(key) == true && ResolveParameterEdits())
             {
-                SelectedKey = key; IsSearchOpen = false; RequestLocate?.Invoke(key);
+                if (IsMultiSelect) SelectCanvasNode(key);
+                else { SelectedKey = key; IsSearchOpen = false; }
+                RequestLocate?.Invoke(key);
             }
         }).DisposeWith(_subscriptions);
         SettingsCommand = ReactiveCommand.CreateFromTask(ShowSettingsAsync).DisposeWith(_subscriptions);
         DiagnosticCommand = ReactiveCommand.CreateFromTask(ShowDiagnosticAsync).DisposeWith(_subscriptions);
         InitializeTopologyCommands();
+        InitializeSelectionCommands();
         UndoCommand = ReactiveCommand.Create(() => { if (CanUndo && ContextIsCurrent()) { CancelParameterPreviews(); DocManager.Inst.Undo(); Refresh(); } }).DisposeWith(_subscriptions);
         RedoCommand = ReactiveCommand.Create(() => { if (CanRedo && ContextIsCurrent()) { CancelParameterPreviews(); DocManager.Inst.Redo(); Refresh(); } }).DisposeWith(_subscriptions);
         this.WhenAnyValue(vm => vm.Query).Subscribe(_ => UpdateSearch()).DisposeWith(_subscriptions);
         this.WhenAnyValue(vm => vm.IsSearchOpen).Subscribe(_ => this.RaisePropertyChanged(nameof(ShowInspector))).DisposeWith(_subscriptions);
+        this.WhenAnyValue(vm => vm.IsAvailable, vm => vm.IsBusy)
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(CanInteract))).DisposeWith(_subscriptions);
         if (Application.Current != null)
             Application.Current.GetResourceObservable("GraphEdit.Parameters")
                 .Subscribe(_ => Dispatcher.UIThread.Post(() => Refresh(true))).DisposeWith(_subscriptions);
@@ -148,6 +157,7 @@ public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBa
         SelectedNode = _selectedKey != null && Scene?.ByKey.TryGetValue(_selectedKey, out GraphVisualNode? node) == true ? node : null;
         if (SelectedNode == null && _selectedKey != null)
             this.RaiseAndSetIfChanged(ref _selectedKey, null, nameof(SelectedKey));
+        SynchronizeNodeSelection();
         this.RaisePropertyChanged(nameof(HasSelection)); this.RaisePropertyChanged(nameof(ShowInspector));
         SynchronizeParameters();
         UpdateTopologySelection();
@@ -328,7 +338,7 @@ public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBa
         if (_disposed) return;
         SearchResults = Scene?.Nodes.Where(node => string.IsNullOrWhiteSpace(Query)
                 || node.SearchText.Contains(Query.Trim(), StringComparison.OrdinalIgnoreCase)).Take(50)
-            .Select(node => new GraphSearchResult(node.Key, node.Title, node.Summary)).ToArray() ?? [];
+            .Select(node => new GraphSearchResult(node.Key, node.Title, node.Summary, SelectedNodeIds.Contains(node.Data.id))).ToArray() ?? [];
     }
 
     private async Task ShowSettingsAsync()
@@ -351,6 +361,7 @@ public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBa
     /// <summary>确认字段草稿后一次返回图库；编辑面板和搜索由关闭按钮收起。</summary>
     public override void OnBackRequested()
     {
+        if (IsMultiSelect) { ExitMultiSelect(); return; }
         if (!ResolveParameterEdits()) return;
         Navigator.NavigateBack(this);
     }
@@ -358,7 +369,14 @@ public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBa
     /// <summary>合并文档更新；播放进度和纯视口操作不触发重新编译。</summary>
     public void OnNext(UCommand cmd, bool isUndo)
     {
-        if (cmd is LoadProjectNotification && !ReferenceEquals(DocManager.Inst.Project, _project)) { Refresh(); return; }
+        if (cmd is LoadProjectNotification)
+        {
+            IsMultiSelect = false;
+            this.RaiseAndSetIfChanged(ref _selectedKey, null, nameof(SelectedKey));
+            SetNodeSelection([]);
+            _source = null;
+            Refresh(); return;
+        }
         UpdateUndoState();
         if (_disposed || _pending || cmd is not (SetExpressionGraphsCommand or ConfigureExpressionsCommand or LoadProjectNotification or TrackCommand)) return;
         _pending = true;
@@ -370,8 +388,9 @@ public sealed partial class ExpressionGraphEditorViewModel : NavigateViewModelBa
     {
         if (_disposed) return;
         _disposed = true;
+        GraphNodeClipboard.Changed -= ClipboardChanged;
         ClearParameters();
         DocManager.Inst.RemoveSubscriber(this); _subscriptions.Dispose();
-        RequestLocate = null; RequestRevealParameter = null; GetInsertionPoint = null;
+        RequestLocate = null; RequestRevealParameter = null; RequestRevealNodes = null; GetInsertionPoint = null;
     }
 }

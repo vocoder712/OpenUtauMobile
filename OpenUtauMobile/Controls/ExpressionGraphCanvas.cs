@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -20,6 +21,8 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     public static readonly StyledProperty<ExpressionGraphScene?> SceneProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, ExpressionGraphScene?>(nameof(Scene));
     public static readonly StyledProperty<GraphViewport?> ViewportProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, GraphViewport?>(nameof(Viewport));
     public static readonly StyledProperty<string?> SelectedKeyProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, string?>(nameof(SelectedKey));
+    public static readonly StyledProperty<IReadOnlySet<int>> SelectedNodeIdsProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, IReadOnlySet<int>>(nameof(SelectedNodeIds), new HashSet<int>());
+    public static readonly StyledProperty<bool> IsMultiSelectProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, bool>(nameof(IsMultiSelect));
     public static readonly StyledProperty<IBrush> NodeBrushProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, IBrush>(nameof(NodeBrush), Brushes.LightGray);
     public static readonly StyledProperty<IBrush> InputBrushProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, IBrush>(nameof(InputBrush), Brushes.LightBlue);
     public static readonly StyledProperty<IBrush> OutputBrushProperty = AvaloniaProperty.Register<ExpressionGraphCanvas, IBrush>(nameof(OutputBrush), Brushes.LightGreen);
@@ -29,6 +32,8 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     public ExpressionGraphScene? Scene { get => GetValue(SceneProperty); set => SetValue(SceneProperty, value); }
     public GraphViewport? Viewport { get => GetValue(ViewportProperty); set => SetValue(ViewportProperty, value); }
     public string? SelectedKey { get => GetValue(SelectedKeyProperty); set => SetValue(SelectedKeyProperty, value); }
+    public IReadOnlySet<int> SelectedNodeIds { get => GetValue(SelectedNodeIdsProperty); set => SetValue(SelectedNodeIdsProperty, value); }
+    public bool IsMultiSelect { get => GetValue(IsMultiSelectProperty); set => SetValue(IsMultiSelectProperty, value); }
     public IBrush NodeBrush { get => GetValue(NodeBrushProperty); set => SetValue(NodeBrushProperty, value); }
     public IBrush InputBrush { get => GetValue(InputBrushProperty); set => SetValue(InputBrushProperty, value); }
     public IBrush OutputBrush { get => GetValue(OutputBrushProperty); set => SetValue(OutputBrushProperty, value); }
@@ -39,12 +44,15 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
 
     /// <summary>页面校验字段后返回一次性提交动作；画布只持有拖动期间的预览。</summary>
     public Func<string, Action<Vector>?>? PrepareNodeMove { get; set; }
+    /// <summary>页面给出未被浮动操作栏遮挡的画布区域。</summary>
+    public Func<Rect>? GetVisibleViewport { get; set; }
     private enum DragTarget { Canvas, Node, Blocked }
     private DragTarget _dragTarget;
     private bool _multiPointerGesture;
     private bool _releasingPointer;
     private bool _nodeMovementStarted;
     private GraphVisualNode? _moveNode;
+    private readonly Dictionary<string, GraphVisualNode> _moveNodes = [];
     private Action<Vector>? _moveCommit;
     private Vector _moveOffset;
     private readonly Dictionary<int, (GraphVisualLink Link, StreamGeometry Path)> _moveLinks = [];
@@ -62,7 +70,7 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     public int LastDrawnNodes { get; private set; }
     public int LastDrawnLinks { get; private set; }
 
-    static ExpressionGraphCanvas() => AffectsRender<ExpressionGraphCanvas>(SceneProperty, SelectedKeyProperty,
+    static ExpressionGraphCanvas() => AffectsRender<ExpressionGraphCanvas>(SceneProperty, SelectedKeyProperty, SelectedNodeIdsProperty, IsMultiSelectProperty,
         ViewportProperty, NodeBrushProperty, InputBrushProperty, OutputBrushProperty, ForegroundProperty, LineBrushProperty, SelectionBrushProperty);
 
     /// <summary>只在实际输入和数据变化时更新画布。</summary>
@@ -141,6 +149,7 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
             if (Viewport is { Initialized: false } && Bounds.Width > 0) Fit();
         }
         if (change.Property == ForegroundProperty) ClearText();
+        if (change.Property == IsMultiSelectProperty) CancelPointers();
         if (change.Property == ViewportProperty || (change.Property == IsEnabledProperty || change.Property == IsEffectivelyEnabledProperty || change.Property == IsVisibleProperty) && change.NewValue is false)
             CancelPointers();
         if (change.Property == BoundsProperty && Viewport is { } viewport)
@@ -249,6 +258,24 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     /// <summary>将图坐标转换为画布 DIP。</summary>
     public Point ToScreen(Point world) => Viewport == null ? world : world * Viewport.Scale + Viewport.Offset;
 
+    /// <summary>定位新粘贴集合；仅在集合大于可见区域时缩小，不改动文档坐标。</summary>
+    public void RevealNodes(IReadOnlySet<int> ids)
+    {
+        if (Scene == null || Viewport == null) return;
+        GraphVisualNode[] nodes = Scene.Nodes.Where(node => ids.Contains(node.Data.id)).ToArray();
+        if (nodes.Length == 0) return;
+        Rect area = GetVisibleViewport?.Invoke() ?? new Rect(Bounds.Size);
+        Rect bounds = nodes.Select(node => node.Bounds).Aggregate((a, b) => a.Union(b));
+        if (area.Width <= 0 || area.Height <= 0) return;
+        InterruptMotion();
+        Viewport.Scale = Math.Min(Viewport.Scale, Math.Max(.001, Math.Min(area.Width / Math.Max(1, bounds.Width), area.Height / Math.Max(1, bounds.Height))));
+        Viewport.Offset = area.Center - bounds.Center * Viewport.Scale;
+        Viewport.Initialized = true;
+        InvalidateVisual();
+    }
+
+    private bool IsNodeSelected(GraphVisualNode node) => IsMultiSelect ? SelectedNodeIds.Contains(node.Data.id) : node.Key == SelectedKey;
+
     /// <summary>缓存图坐标几何，仅提交当前视口包围盒查询得到的绘制项。</summary>
     public override void Render(DrawingContext context)
     {
@@ -277,21 +304,25 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
                     geometry.CubicBezierTo(link.Start + new Vector(bend, 0), link.End - new Vector(bend, 0), link.End);
                     geometry.EndFigure(false); _paths[link.Index] = path;
                 }
-                context.DrawGeometry(null, link.From.Key == SelectedKey || link.To.Key == SelectedKey ? highlighted : ordinary, path);
+                context.DrawGeometry(null, IsNodeSelected(link.From) || IsNodeSelected(link.To) ? highlighted : ordinary, path);
             }
             foreach (var preview in _moveLinks.Values)
                 context.DrawGeometry(null, highlighted, preview.Path);
-            if (_nodeMovementStarted && _moveNode != null && !_visibleNodes.Contains(_moveNode))
-                _visibleNodes.Add(_moveNode);
+            if (_nodeMovementStarted)
+            {
+                HashSet<string> visibleKeys = _visibleNodes.Select(node => node.Key).ToHashSet();
+                foreach (GraphVisualNode moving in _moveNodes.Values)
+                    if (visibleKeys.Add(moving.Key)) _visibleNodes.Add(moving);
+            }
             foreach (GraphVisualNode node in _visibleNodes)
             {
-                using var moved = context.PushTransform(Matrix.CreateTranslation(_nodeMovementStarted && node == _moveNode ? _moveOffset : default));
+                using var moved = context.PushTransform(Matrix.CreateTranslation(_nodeMovementStarted && _moveNodes.ContainsKey(node.Key) ? _moveOffset : default));
                 context.DrawRectangle(NodeBrush, null, node.Bounds, 8, 8);
                 IBrush header = node.Type?.Role == GraphNodeRole.Input ? InputBrush
                     : node.Type?.IsOutput == true ? OutputBrush : NodeBrush;
                 context.DrawRectangle(header, null, new Rect(node.Bounds.Position, new Size(node.Bounds.Width, 24)), 8, 8);
                 // 标题底色先绘制，外框最后描边，避免圆角和选中边框被标题遮挡。
-                context.DrawRectangle(null, node.Key == SelectedKey ? highlighted : ordinary, node.Bounds, 8, 8);
+                context.DrawRectangle(null, IsNodeSelected(node) ? highlighted : ordinary, node.Bounds, 8, 8);
                 DrawText(context, node.Title, node.Bounds.TopLeft + new Vector(8, 3), NodeTextRole.Title, node.Bounds.Width - 16);
                 if (scale < .45) continue;
                 DrawText(context, node.Summary, node.Bounds.TopLeft + new Vector(8, 26), NodeTextRole.Summary, node.Bounds.Width - 16);
@@ -375,13 +406,17 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
         {
             _multiPointerGesture = false; _dragTarget = DragTarget.Canvas;
             Point world = ToWorld(e.GetPosition(this));
-            if (SelectedKey is { } key && Scene!.ByKey.TryGetValue(key, out GraphVisualNode? node)
-                && new Rect(node.Bounds.Position, new Size(node.Bounds.Width, 24)).Contains(world) && Hit(e.GetPosition(this)) == key)
+            string? key = Hit(e.GetPosition(this));
+            if (key != null && Scene!.ByKey.TryGetValue(key, out GraphVisualNode? node) && IsNodeSelected(node)
+                && (IsMultiSelect || new Rect(node.Bounds.Position, new Size(node.Bounds.Width, 24)).Contains(world)))
             {
                 _dragTarget = DragTarget.Blocked;
                 Action<Vector>? commit = PrepareNodeMove?.Invoke(key);
                 if (commit != null && Scene?.ByKey.TryGetValue(key, out node) == true)
-                { _moveNode = node; _moveCommit = commit; _dragTarget = DragTarget.Node; }
+                {
+                    _moveNode = node; _moveCommit = commit; _dragTarget = DragTarget.Node;
+                    foreach (GraphVisualNode moving in Scene.Nodes.Where(IsNodeSelected)) _moveNodes[moving.Key] = moving;
+                }
             }
         }
         _gesture.OnPointerPressed(e, this);
@@ -430,8 +465,8 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
         if (!double.IsFinite(_moveOffset.X) || !double.IsFinite(_moveOffset.Y)) return;
         void Update(GraphVisualLink link)
         {
-            Point start = link.Start + (link.From == _moveNode ? _moveOffset : default);
-            Point end = link.End + (link.To == _moveNode ? _moveOffset : default);
+            Point start = link.Start + (_moveNodes.ContainsKey(link.From.Key) ? _moveOffset : default);
+            Point end = link.End + (_moveNodes.ContainsKey(link.To.Key) ? _moveOffset : default);
             double bend = Math.Max(40, Math.Abs(end.X - start.X) * .5);
             // 每次预览替换几何；重复 Open 已有对象会保留旧路径，形成拖动残影。
             StreamGeometry path = new();
@@ -443,8 +478,12 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
             }
             _moveLinks[link.Index] = (link, path);
         }
-        foreach (GraphVisualLink link in Scene.Incoming[_moveNode.Key]) Update(link);
-        foreach (GraphVisualLink link in Scene.Outgoing[_moveNode.Key]) Update(link);
+        HashSet<int> updated = [];
+        foreach (GraphVisualNode node in _moveNodes.Values)
+        {
+            foreach (GraphVisualLink link in Scene.Incoming[node.Key]) if (updated.Add(link.Index)) Update(link);
+            foreach (GraphVisualLink link in Scene.Outgoing[node.Key]) if (updated.Add(link.Index)) Update(link);
+        }
         InvalidateVisual();
     }
 
@@ -452,7 +491,7 @@ public sealed class ExpressionGraphCanvas : Control, IEditorViewport
     private void ClearNodeMove()
     {
         bool hadPreview = _nodeMovementStarted;
-        _moveNode = null; _moveCommit = null; _nodeMovementStarted = false; _moveOffset = default; _moveLinks.Clear();
+        _moveNode = null; _moveCommit = null; _nodeMovementStarted = false; _moveOffset = default; _moveLinks.Clear(); _moveNodes.Clear();
         if (hadPreview) InvalidateVisual();
     }
 

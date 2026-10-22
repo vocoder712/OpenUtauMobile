@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:model="clr-namespace:OpenUtauMobile.Services.Warnings"
+             xmlns:local="clr-namespace:OpenUtauMobile.Controls.Warnings"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:typography="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             x:Class="OpenUtauMobile.Controls.Warnings.WarningCard"
+             x:DataType="model:WarningItem" ClipToBounds="False">
+    <UserControl.Styles>
+        <Style Selector="Border#CardFocusRing">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="local|WarningCard:focus-visible Border#CardFocusRing">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </UserControl.Styles>
+    <Border x:Name="CardSurface" Background="{DynamicResource Sem.Color.SurfaceContainerHighest}" CornerRadius="12" Padding="16">
+        <Panel>
+            <Grid RowDefinitions="*,Auto" RowSpacing="12">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="24,*" ColumnSpacing="8">
+                            <icons:PackIconPhosphorIcons Kind="Warning" Width="{x:Static typography:IconTokens.Standard}"
+                                                         Height="{x:Static typography:IconTokens.Standard}" VerticalAlignment="Top"
+                                                         Foreground="{DynamicResource Sem.Color.Primary}" />
+                            <TextBlock x:Name="TitleText" Grid.Column="1" Text="{Binding Title}" TextWrapping="Wrap"
+                                                 FontSize="{x:Static typography:TypographyTokens.TitleMSize}" LineHeight="24" FontWeight="Medium"
+                                                 Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                        </Grid>
+                        <TextBlock x:Name="DetailText" Text="{Binding Detail}" TextWrapping="Wrap"
+                                             FontSize="{x:Static typography:TypographyTokens.BodyMSize}" LineHeight="20"
+                                             Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                    </StackPanel>
+                </ScrollViewer>
+                <Button x:Name="IgnoreButton" Grid.Row="1" Content="{DynamicResource Warning.Ignore}" IsVisible="False"
+                        Classes="text" Background="Transparent" BorderThickness="0" Foreground="{DynamicResource Sem.Color.Primary}"
+                        MinHeight="{x:Static typography:InteractionTokens.TouchTarget}" MinWidth="{x:Static typography:InteractionTokens.TouchTarget}"
+                        Padding="8,0" HorizontalAlignment="Left" Click="IgnoreClicked" />
+            </Grid>
+            <Button x:Name="CloseArrivalButton" IsVisible="False" HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Width="{x:Static typography:InteractionTokens.TouchTarget}" Height="{x:Static typography:InteractionTokens.TouchTarget}"
+                    Margin="0,-12,-12,0" Padding="12" Background="Transparent" BorderThickness="0"
+                    Foreground="{DynamicResource Sem.Color.OnSurface}" Click="CloseArrivalClicked"
+                    AutomationProperties.Name="{DynamicResource Common.Close}" ToolTip.Tip="{DynamicResource Common.Close}">
+                <icons:PackIconPhosphorIcons Kind="X" Width="{x:Static typography:IconTokens.Standard}"
+                                           Height="{x:Static typography:IconTokens.Standard}" />
+            </Button>
+            <!-- 顶部提示专用：贴住圆角之间的上边缘，不占正文空间或拦截输入。 -->
+            <Border x:Name="CountdownEdge" IsVisible="False" IsHitTestVisible="False" Height="2"
+                    VerticalAlignment="Top" Margin="-4,-16,-4,0" CornerRadius="1"
+                    Background="{DynamicResource Sem.Color.Primary}" RenderTransformOrigin="0%,50%">
+                <Border.RenderTransform><ScaleTransform ScaleX="1" /></Border.RenderTransform>
+            </Border>
+            <Border x:Name="CardFocusRing" Margin="-16" CornerRadius="12" BorderThickness="2"
+                    BorderBrush="{DynamicResource Sem.Color.Primary}" IsHitTestVisible="False" />
+        </Panel>
+    </Border>
+</UserControl>

@@ -1,0 +1,32 @@
+<Project>
+    <Import Project="$(_OpumPreviousBeforeMicrosoftNETSdkTargets)"
+            Condition="'$(_OpumPreviousBeforeMicrosoftNETSdkTargets)' != '' and '$(_OpumDesktopRuntimeDefaultsImported)' != 'true'" />
+    <!-- 共享类库保持平台无关；移动端和浏览器的 RID 由各自 SDK 管理。 -->
+    <PropertyGroup Condition="'$(_OpumDesktopRuntimeDefaultsImported)' != 'true'
+                              and ('$(OutputType)' == 'Exe' or '$(OutputType)' == 'WinExe')
+                              and '$(TargetFramework)' != ''
+                              and $([MSBuild]::GetTargetFrameworkIdentifier('$(TargetFramework)')) == '.NETCoreApp'
+                              and ($([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''
+                                   or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows')">
+        <_OpumDesktopRuntimeDefaultsImported>true</_OpumDesktopRuntimeDefaultsImported>
+        <CopyNuGetNativeSymbols Condition="'$(CopyNuGetNativeSymbols)' == ''">false</CopyNuGetNativeSymbols>
+        <_OpumDefaultDesktopRid>$(NETCoreSdkRuntimeIdentifier)</_OpumDefaultDesktopRid>
+        <_OpumDesktopArchitecture>$([System.Text.RegularExpressions.Regex]::Replace('$(NETCoreSdkRuntimeIdentifier)', '^.*-', ''))</_OpumDesktopArchitecture>
+        <_OpumDefaultDesktopRid Condition="'$(MSBuildProjectName)' == 'OpenUtauMobile.Windows'">win-$(_OpumDesktopArchitecture)</_OpumDefaultDesktopRid>
+        <_OpumDefaultDesktopRid Condition="'$(MSBuildProjectName)' == 'OpenUtauMobile.MacOS'">osx-$(_OpumDesktopArchitecture)</_OpumDefaultDesktopRid>
+        <_OpumDefaultDesktopRid Condition="'$(MSBuildProjectName)' == 'OpenUtauMobile.Linux' and !$([System.String]::Copy('$(NETCoreSdkRuntimeIdentifier)').StartsWith('linux-'))">linux-$(_OpumDesktopArchitecture)</_OpumDefaultDesktopRid>
+        <_OpumDesktopArchitecture Condition="'$(PlatformTarget)' != '' and '$(PlatformTarget)' != 'AnyCPU'">$(PlatformTarget)</_OpumDesktopArchitecture>
+        <_OpumDesktopArchitecture Condition="'$(PlatformTarget)' == '' and ('$(Platform)' == 'x86' or '$(Platform)' == 'x64' or '$(Platform)' == 'ARM64')">$(Platform)</_OpumDesktopArchitecture>
+        <_OpumDesktopArchitecture>$([System.String]::Copy('$(_OpumDesktopArchitecture)').ToLowerInvariant())</_OpumDesktopArchitecture>
+        <_OpumDefaultDesktopRid>$([System.Text.RegularExpressions.Regex]::Replace('$(_OpumDefaultDesktopRid)', '-[^-]+$', '-$(_OpumDesktopArchitecture)'))</_OpumDefaultDesktopRid>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(_OpumDesktopRuntimeDefaultsImported)' == 'true' and '$(RuntimeIdentifier)' == ''">
+        <RuntimeIdentifier>$(_OpumDefaultDesktopRid)</RuntimeIdentifier>
+        <!-- 默认构建沿用原目录；显式 -r 构建仍使用 SDK 的 RID 子目录。 -->
+        <AppendRuntimeIdentifierToOutputPath Condition="'$(AppendRuntimeIdentifierToOutputPath)' == ''">false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+    <PropertyGroup>
+        <!-- 桌面原生目标会提前导入本文件，避免 SDK 随后重复导入。 -->
+        <BeforeMicrosoftNETSdkTargets />
+    </PropertyGroup>
+</Project>

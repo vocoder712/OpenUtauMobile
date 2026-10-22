@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:controls="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:warnings="clr-namespace:OpenUtauMobile.Controls.Warnings"
              xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="OpenUtauMobile.Views.MainView"
@@ -30,10 +31,13 @@
             <Panel>
                 <!-- 导航页的容器 -->
                 <ContentControl x:Name="PageHost" Content="{Binding CurrentViewModel}" />
+                <warnings:WarningOverlay x:Name="WarningOverlay" />
             </Panel>
         </dialogHostAvalonia:DialogHost>
-        <!-- 位于页面和 DialogHost 之上，且不参与任何输入命中。 -->
+        <!-- 普通提示透传；错误变体仅在提示区域命中，并在模态打开时让出输入。 -->
         <controls:ToastOverlay x:Name="ToastOverlay" />
-        <controls:PerformanceMonitorOverlay />
+        <Panel x:Name="PerformanceLayer" IsHitTestVisible="False">
+            <controls:PerformanceMonitorOverlay />
+        </Panel>
     </Panel>
 </UserControl>

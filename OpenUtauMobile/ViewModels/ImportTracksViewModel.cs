@@ -174,9 +174,13 @@ public sealed class ImportTrackViewModel : ReactiveObject
         {
             warnings.Add(string.Format(L.S("ImportTracks.MissingSinger"), track.Singer?.Id ?? track.singer ?? L.S("ImportTracks.Unassigned")));
         }
-        foreach (UWavePart part in parts.OfType<UWavePart>().Where(part => !File.Exists(part.FilePath)))
+        foreach (UWavePart part in parts.OfType<UWavePart>())
         {
-            warnings.Add(string.Format(L.S("ImportTracks.MissingAudio"), part.FilePath));
+            if (!File.Exists(part.FilePath))
+                warnings.Add(string.Format(L.S("ImportTracks.MissingAudio"), part.FilePath));
+            else if (part.Peaks is { IsCompleted: true } peaks &&
+                (!peaks.IsCompletedSuccessfully || peaks.Result == null && part.Samples == null))
+                warnings.Add(string.Format(L.S("ImportTracks.UnreadableAudio"), part.FilePath));
         }
         // ValidateVoiceColor 会改写名称数组；预览只比较，保留来源映射供用户检查。
         if (track.VoiceColorNames.Length > 1 && track.VoiceColorExp != null &&
