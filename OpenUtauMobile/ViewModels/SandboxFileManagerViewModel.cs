@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
@@ -29,9 +30,11 @@ namespace OpenUtauMobile.ViewModels
         private readonly ISandboxFileTransferService _transfer;
         private readonly IDisposable? _languageSubscription;
         private CancellationTokenSource? _operation;
-        private SandboxPreparedExport? _preparedExport;
         private bool _disposed;
-        private bool _leaveAfterCancellation;
+        private TaskCompletionSource? _operationCompletion;
+        private Task<bool>? _leaveDecision;
+        private PopupViewModelBase? _operationPopup;
+        private bool _resultPending;
         private SandboxConflictAction? _batchConflictAction;
         private string? _listedPath;
         private bool _updatingSelection;
@@ -47,9 +50,6 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public string ErrorMessage { get; private set; } = "";
         [Reactive] public string StatusMessage { get; private set; } = "";
         [Reactive] public bool NeedsPersistence { get; private set; }
-        [Reactive] public bool HasPreparedExport { get; private set; }
-        public string PreparedExportName => _preparedExport?.Name ?? "";
-        public bool ShowPersistenceWarning => NeedsPersistence && !IsBusy;
         public bool ShowOperationProgress => IsBusy && !IsLoading;
         public bool CanModify => !IsBusy && !NeedsPersistence;
         /// <summary>底栏根据选择状态导出所选项目或整个当前目录。</summary>
@@ -70,7 +70,8 @@ namespace OpenUtauMobile.ViewModels
         public bool IsEmpty => Entries.Count == 0 && !IsBusy && string.IsNullOrEmpty(ErrorMessage);
         public bool HasSelection => Entries.Any(item => item.IsSelected);
         public string SelectionSummary => string.Format(L.S("Sandbox.SelectionSummary"), Entries.Count(item => item.IsSelected), Entries.Count);
-        public string ImportHint => OperatingSystem.IsBrowser() ? L.S("Sandbox.BrowserHint") : L.S("Sandbox.Hint");
+        /// <summary>导航器在移除页面前检查任务和弹窗是否仍归本页所有。</summary>
+        public bool CanDetach => !IsBusy && !NeedsPersistence && _leaveDecision == null && _operationPopup == null;
 
         public ReactiveCommand<Unit, Unit> BackCommand { get; }
         public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
@@ -86,8 +87,6 @@ namespace OpenUtauMobile.ViewModels
         public ReactiveCommand<SandboxFileItemViewModel, Unit> ExportItemCommand { get; }
         public ReactiveCommand<Unit, Unit> ExportSelectedCommand { get; }
         public ReactiveCommand<Unit, Unit> ExportCurrentCommand { get; }
-        public ReactiveCommand<Unit, Unit> SaveExportCommand { get; }
-        public ReactiveCommand<Unit, Unit> DismissExportCommand { get; }
         public ReactiveCommand<Unit, Unit> SelectAllCommand { get; }
         public ReactiveCommand<Unit, Unit> InvertSelectionCommand { get; }
         public ReactiveCommand<Unit, Unit> ClearSelectionCommand { get; }
@@ -146,14 +145,11 @@ namespace OpenUtauMobile.ViewModels
                 "importZip" => ImportAsync(false, true),
                 _ => Task.CompletedTask,
             }, writable);
-            SaveExportCommand = ReactiveCommand.CreateFromTask(SaveExportAsync,
-                this.WhenAnyValue(model => model.IsBusy, model => model.HasPreparedExport, (busy, prepared) => !busy && prepared));
-            DismissExportCommand = ReactiveCommand.Create(ClearExport, idle);
             SelectAllCommand = ReactiveCommand.Create(() => UpdateSelection(_ => true), idle);
             InvertSelectionCommand = ReactiveCommand.Create(() => UpdateSelection(item => !item.IsSelected), idle);
             ClearSelectionCommand = ReactiveCommand.Create(() => UpdateSelection(_ => false), idle);
             CancelCommand = ReactiveCommand.Create(() => _operation?.Cancel(), this.WhenAnyValue(model => model.CanCancel));
-            RetryPersistenceCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async _ => await FlushAsync()),
+            RetryPersistenceCommand = ReactiveCommand.CreateFromTask(RetryPersistenceAsync,
                 this.WhenAnyValue(model => model.IsBusy, model => model.NeedsPersistence, (busy, pending) => !busy && pending));
             PropertyChanged += (_, args) =>
             {
@@ -166,7 +162,6 @@ namespace OpenUtauMobile.ViewModels
                 if (args.PropertyName == nameof(ErrorMessage)) this.RaisePropertyChanged(nameof(IsEmpty));
                 if (args.PropertyName is nameof(NeedsPersistence) or nameof(IsBusy))
                 {
-                    this.RaisePropertyChanged(nameof(ShowPersistenceWarning));
                     this.RaisePropertyChanged(nameof(CanModify));
                 }
                 if (args.PropertyName is nameof(IsBusy) or nameof(IsLoading))
@@ -176,7 +171,6 @@ namespace OpenUtauMobile.ViewModels
                 .Where(value => value is string).Select(value => (string)value!).DistinctUntilChanged().Subscribe(_ =>
                 {
                     this.RaisePropertyChanged(nameof(RelativePath));
-                    this.RaisePropertyChanged(nameof(ImportHint));
                     this.RaisePropertyChanged(nameof(SelectionSummary));
                     this.RaisePropertyChanged(nameof(ExportActionLabel));
                     this.RaisePropertyChanged(nameof(CreationActions));
@@ -190,7 +184,7 @@ namespace OpenUtauMobile.ViewModels
             if (!IsBusy) _ = RunAsync(LoadAsync);
         }
 
-        /// <summary>可取消阶段先取消并清理；提交及持久化阶段等待完成。</summary>
+        /// <summary>返回先关闭 FAB；有任务时由通用选项弹窗确认，并等待任务收尾后离开。</summary>
         public override void OnBackRequested()
         {
             if (IsCreationMenuOpen)
@@ -198,24 +192,62 @@ namespace OpenUtauMobile.ViewModels
                 IsCreationMenuOpen = false;
                 return;
             }
-            if (IsBusy)
+            _ = LeaveAsync();
+        }
+
+        private async Task LeaveAsync()
+        {
+            if (await ConfirmLeaveAsync()) Navigator.NavigateBack(this);
+        }
+
+        /// <summary>所有导航出口共用一次离开决策；取消后等待流、暂存及持久化清理完成。</summary>
+        public async Task<bool> ConfirmLeaveAsync()
+        {
+            if (_leaveDecision != null) return await _leaveDecision;
+            if (_operationPopup != null) return false;
+            TaskCompletionSource<bool> decision = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            _leaveDecision = decision.Task;
+            bool leave = false;
+            try
             {
-                _leaveAfterCancellation = true;
-                if (CanCancel) _operation?.Cancel();
-                return;
+                if (IsBusy)
+                {
+                    Task completion = _operationCompletion?.Task ?? Task.CompletedTask;
+                    string? choice = await OptionConfirmPopupService.ShowAsync(L.S("Sandbox.StopTitle"), L.S("Sandbox.StopMessage"),
+                        [new OptionConfirmOption(L.S("Sandbox.ContinueTask"), "continue", isDefault: true),
+                         new OptionConfirmOption(L.S("Sandbox.StopAndLeave"), "stop", isDestructive: true)]);
+                    if (choice != "stop") return false;
+                    bool cancel = CanCancel;
+                    CanCancel = false;
+                    ProgressText = L.S("Sandbox.Stopping");
+                    if (cancel) _operation?.Cancel();
+                    await completion;
+                }
+                leave = !NeedsPersistence && string.IsNullOrEmpty(ErrorMessage);
+                if (!leave) _resultPending = true;
+                else _resultPending = false;
             }
-            if (NeedsPersistence)
+            catch (Exception exception)
             {
-                ToastService.Enqueue(L.S("Sandbox.PersistenceFailed"));
-                return;
+                Log.Error(exception, "沙箱页面退出确认失败");
+                ErrorMessage = string.Format(L.S("Sandbox.OperationFailed"), exception.Message);
+                _resultPending = true;
             }
-            Navigator.NavigateBack(this);
+            finally
+            {
+                _leaveDecision = null;
+                decision.TrySetResult(leave);
+                if (!leave) await ShowPendingResultAsync();
+            }
+            return leave;
         }
 
         /// <summary>统一处理取消、部分失败、持久化和离开页面的时序。</summary>
         private async Task RunAsync(Func<CancellationToken, Task> action, bool mutation = false, bool cancellable = true)
         {
-            if (IsBusy || _disposed) return;
+            if (IsBusy || _disposed || _leaveDecision != null || _operationPopup != null) return;
+            TaskCompletionSource completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            _operationCompletion = completion;
             IsCreationMenuOpen = false;
             IsBusy = true;
             CanCancel = cancellable;
@@ -254,13 +286,52 @@ namespace OpenUtauMobile.ViewModels
                 _operation = null;
                 IsBusy = false;
                 ProgressText = "";
-                if (_leaveAfterCancellation)
-                {
-                    _leaveAfterCancellation = false;
-                    // 操作失败时留在页面展示结果，不自动丢失错误信息。
-                    if (!NeedsPersistence && string.IsNullOrEmpty(ErrorMessage)) Navigator.NavigateBack(this);
-                }
+                _resultPending = NeedsPersistence || !string.IsNullOrEmpty(ErrorMessage) || !string.IsNullOrEmpty(StatusMessage);
+                completion.TrySetResult();
             }
+            if (_leaveDecision == null && !_disposed) await ShowPendingResultAsync();
+        }
+
+        /// <summary>操作结果只显示一次；保存失败在同一通用弹窗内提供重试入口。</summary>
+        private async Task ShowPendingResultAsync()
+        {
+            if (!_resultPending || _disposed || _operationPopup != null) return;
+            _resultPending = false;
+            string message = string.Join("\n\n", new[] { StatusMessage, ErrorMessage,
+                NeedsPersistence ? L.S("Sandbox.PersistenceFailed") : "" }.Where(value => !string.IsNullOrEmpty(value)));
+            OptionConfirmOption[] options = NeedsPersistence
+                ? [new(L.S("Common.Close"), "close", isDefault: true), new(L.S("Sandbox.RetrySave"), "retry", isPrimary: true)]
+                : [new(L.S("Common.Close"), "close", isPrimary: true, isDefault: true)];
+            string? result = await ShowOperationPopupAsync<string>(new OptionConfirmPopup(),
+                new OptionConfirmPopupViewModel(L.S("Sandbox.Title"), message, options), CancellationToken.None);
+            // 结果已经由弹窗展示，不在页面或下一次返回中驻留。
+            ErrorMessage = "";
+            StatusMessage = "";
+            if (result == "retry") await RetryPersistenceAsync();
+        }
+
+        /// <summary>重试只保存现有修改，不重复导入或删除，并通过同一弹窗报告结果。</summary>
+        private Task RetryPersistenceAsync() => RunAsync(async _ =>
+        {
+            await FlushAsync();
+            if (!NeedsPersistence) StatusMessage = L.S("Sandbox.Completed");
+        }, cancellable: false);
+
+        /// <summary>任务取消时关闭本任务持有的弹窗，并等待真实关闭而不遗留悬挂的等待任务。</summary>
+        private async Task<T?> ShowOperationPopupAsync<T>(ContentControl view, PopupViewModelBase model, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            _operationPopup = model;
+            try
+            {
+                Task<T?> shown = PopupService.Show<T>(view, model);
+                using CancellationTokenRegistration registration = token.Register(() => Dispatcher.UIThread.Post(() =>
+                {
+                    if (_operationPopup == model) model.RequestBack();
+                }));
+                return await shown;
+            }
+            finally { _operationPopup = null; }
         }
 
         /// <summary>后台读取目录及元数据；仅将仍然有效的结果提交到界面。</summary>
@@ -276,7 +347,7 @@ namespace OpenUtauMobile.ViewModels
             RefreshSelection();
             try
             {
-                SandboxFileItemViewModel[] items = await Task.Run(() => _files.List(path).Select(item =>
+                SandboxFileItemViewModel[] items = await Task.Run(() => _files.List(path, cancellationToken).Select(item =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     string? restriction;
@@ -345,6 +416,7 @@ namespace OpenUtauMobile.ViewModels
         {
             // 选择器先从点击直接发起；繁忙状态覆盖系统选择器的整个生命周期。
             await using SandboxImportBatch? batch = await _transfer.PickAsync(folder);
+            token.ThrowIfCancellationRequested();
             if (batch == null) { StatusMessage = L.S("Sandbox.Cancelled"); return; }
             _batchConflictAction = null;
             int count = await _files.ImportAsync(batch, CurrentPath, unzip, ResolveConflictAsync, CreateProgress(), token);
@@ -354,14 +426,14 @@ namespace OpenUtauMobile.ViewModels
         private async Task<SandboxConflictAction> ResolveConflictAsync(string name)
         {
             if (_batchConflictAction is { } cached) return cached;
-            string? choice = await PopupService.Show<string>(new OptionConfirmPopup(), new OptionConfirmPopupViewModel(
+            string? choice = await ShowOperationPopupAsync<string>(new OptionConfirmPopup(), new OptionConfirmPopupViewModel(
                 L.S("Sandbox.ConflictTitle"), string.Format(L.S("Sandbox.ConflictMessage"), name),
                 new OptionConfirmOption[][]
                 {
                     [new(L.S("Sandbox.KeepBoth"), "keep", isPrimary: true), new(L.S("Sandbox.KeepAll"), "keepAll")],
                     [new(L.S("Sandbox.Skip"), "skip"), new(L.S("Sandbox.SkipAll"), "skipAll")],
                     [new(L.S("Common.Cancel"), "cancel", isDefault: true)],
-                }));
+                }), _operation?.Token ?? CancellationToken.None);
             if (_operation?.IsCancellationRequested == true) return SandboxConflictAction.Cancel;
             if (choice == "keepAll") _batchConflictAction = SandboxConflictAction.KeepBoth;
             if (choice == "skipAll") _batchConflictAction = SandboxConflictAction.Skip;
@@ -373,25 +445,27 @@ namespace OpenUtauMobile.ViewModels
             };
         }
 
-        private Task CreateFolderAsync() => RunAsync(async _ =>
+        private Task CreateFolderAsync() => RunAsync(async token =>
         {
-            string? name = await PromptNameAsync(L.S("Sandbox.NewFolder"), "");
+            string? name = await PromptNameAsync(L.S("Sandbox.NewFolder"), "", token);
+            token.ThrowIfCancellationRequested();
             if (name == null) { StatusMessage = L.S("Sandbox.Cancelled"); return; }
             _files.CreateDirectory(CurrentPath, name);
-        }, mutation: true, cancellable: false);
+        }, mutation: true);
 
-        private Task RenameAsync(SandboxFileItemViewModel item) => RunAsync(async _ =>
+        private Task RenameAsync(SandboxFileItemViewModel item) => RunAsync(async token =>
         {
-            string? name = await PromptNameAsync(L.S("Sandbox.Rename"), item.Name);
+            string? name = await PromptNameAsync(L.S("Sandbox.Rename"), item.Name, token);
+            token.ThrowIfCancellationRequested();
             if (name == null) { StatusMessage = L.S("Sandbox.Cancelled"); return; }
             string destination = _files.Rename(item.Path, name);
             item.IsSelected = false;
-            await LoadAsync(CancellationToken.None);
+            await LoadAsync(token);
             SandboxFileItemViewModel? renamed = Entries.FirstOrDefault(entry => entry.Path == destination);
             if (renamed != null) renamed.IsSelected = true;
-        }, mutation: true, cancellable: false);
+        }, mutation: true);
 
-        private Task<string?> PromptNameAsync(string title, string value) => PopupService.Show<string>(new TextInputPopup(),
+        private Task<string?> PromptNameAsync(string title, string value, CancellationToken token) => ShowOperationPopupAsync<string>(new TextInputPopup(),
             new TextInputPopupViewModel(title, L.S("Sandbox.NameHint"), L.S("Sandbox.Name"), value, name =>
             {
                 string? error = SandboxFileService.ValidateName(name);
@@ -401,7 +475,7 @@ namespace OpenUtauMobile.ViewModels
                         OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal));
                 return name != value && exists
                     ? L.S("Sandbox.AlreadyExists") : null;
-            }));
+            }), token);
 
         private Task DeleteAsync(IReadOnlyList<SandboxFileItemViewModel> items) => RunAsync(async token =>
         {
@@ -413,10 +487,11 @@ namespace OpenUtauMobile.ViewModels
             }
             string names = string.Join("\n", items.Take(8).Select(item => item.Name));
             if (items.Count > 8) names += "\n…";
-            string? result = await OptionConfirmPopupService.ShowAsync(L.S("Sandbox.DeleteTitle"),
+            string? result = await ShowOperationPopupAsync<string>(new OptionConfirmPopup(), new OptionConfirmPopupViewModel(L.S("Sandbox.DeleteTitle"),
                 string.Format(L.S("Sandbox.DeleteMessage"), items.Count, names),
                 [new OptionConfirmOption(L.S("Common.Cancel"), "cancel", isDefault: true),
-                 new OptionConfirmOption(L.S("Sandbox.Delete"), "delete", isDestructive: true)]);
+                 new OptionConfirmOption(L.S("Sandbox.Delete"), "delete", isDestructive: true)]), token);
+            token.ThrowIfCancellationRequested();
             if (result != "delete") { StatusMessage = L.S("Sandbox.Cancelled"); return; }
             int completed = 0;
             List<string> failures = [];
@@ -435,35 +510,34 @@ namespace OpenUtauMobile.ViewModels
 
         private Task ExportAsync(IReadOnlyList<string> paths) => RunAsync(async token =>
         {
-            ClearExport();
-            _preparedExport = await _files.PrepareExportAsync(paths, CreateProgress(), token);
-            HasPreparedExport = true;
-            this.RaisePropertyChanged(nameof(PreparedExportName));
-        });
-
-        private Task SaveExportAsync() => RunAsync(async token =>
-        {
-            if (_preparedExport == null) return;
-            bool saved = await _transfer.SaveAsync(_preparedExport.FilePath, _preparedExport.Name, token);
-            if (saved)
+            await using SandboxPreparedExport prepared = await _files.PrepareExportAsync(paths, CreateProgress(), token);
+            OptionConfirmPopupViewModel prompt = new(L.S("Sandbox.Export"), L.S("Sandbox.ExportReady") + "\n\n" + prepared.Name,
+                [new OptionConfirmOption(L.S("Common.Cancel"), "cancel", isDefault: true),
+                 new OptionConfirmOption(L.S("Sandbox.SaveToDevice"), "save", isPrimary: true)]);
+            Task<bool>? download = null;
+            // 浏览器下载从选项按钮的原始点击直接发起，保留用户手势授权。
+            void StartDownload(object? sender, object? result)
             {
-                StatusMessage = L.S(_transfer.StartsDownload ? "Sandbox.DownloadStarted" : "Sandbox.Exported");
-                ClearExport();
+                if (!_transfer.StartsDownload || result is not "save" || token.IsCancellationRequested) return;
+                try { download = _transfer.SaveAsync(prepared.FilePath, prepared.Name, token); }
+                catch (Exception exception) { download = Task.FromException<bool>(exception); }
             }
-        }, cancellable: false);
+            prompt.ClosingEvent += StartDownload;
+            string? choice;
+            try { choice = await ShowOperationPopupAsync<string>(new OptionConfirmPopup(), prompt, token); }
+            finally { prompt.ClosingEvent -= StartDownload; }
+            token.ThrowIfCancellationRequested();
+            if (choice != "save") return;
+            // 原生保存可能正在覆盖设备文件，进入该步骤后等待完成，避免留下半份外部文件。
+            CanCancel = false;
+            bool saved = await (download ?? _transfer.SaveAsync(prepared.FilePath, prepared.Name, token));
+            if (saved) StatusMessage = L.S(_transfer.StartsDownload ? "Sandbox.DownloadStarted" : "Sandbox.Exported");
+        });
 
         private IProgress<string> CreateProgress() => new Progress<string>(name =>
         {
             if (IsBusy && !_disposed) ProgressText = name;
         });
-
-        private void ClearExport()
-        {
-            _preparedExport?.Dispose();
-            _preparedExport = null;
-            HasPreparedExport = false;
-            this.RaisePropertyChanged(nameof(PreparedExportName));
-        }
 
         /// <summary>离开导航栈时释放临时导出、取消令牌和命令订阅。</summary>
         public void Dispose()
@@ -472,12 +546,12 @@ namespace OpenUtauMobile.ViewModels
             _disposed = true;
             _operation?.Cancel();
             _languageSubscription?.Dispose();
-            ClearExport();
+            _operationPopup?.RequestBack();
             foreach (SandboxFileItemViewModel item in Entries) item.SelectionChanged -= RefreshSelection;
             BackCommand.Dispose(); RefreshCommand.Dispose(); GoUpCommand.Dispose(); OpenCommand.Dispose();
             ImportFilesCommand.Dispose(); ImportFolderCommand.Dispose(); ImportZipCommand.Dispose(); NewFolderCommand.Dispose();
             RenameCommand.Dispose(); DeleteItemCommand.Dispose(); DeleteSelectedCommand.Dispose(); ExportItemCommand.Dispose();
-            ExportSelectedCommand.Dispose(); ExportCurrentCommand.Dispose(); SaveExportCommand.Dispose(); DismissExportCommand.Dispose();
+            ExportSelectedCommand.Dispose(); ExportCurrentCommand.Dispose();
             SelectAllCommand.Dispose(); CancelCommand.Dispose(); RetryPersistenceCommand.Dispose();
             InvertSelectionCommand.Dispose(); ClearSelectionCommand.Dispose(); ExportCommand.Dispose(); CreationCommand.Dispose();
         }

@@ -97,33 +97,6 @@
             <ScrollViewer x:Name="FileScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding !IsLoading}">
                 <Border Padding="20,8,20,88">
                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
-                        <Border Padding="0,8" IsVisible="{Binding ShowPersistenceWarning}">
-                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                <TextBlock Text="{DynamicResource Sandbox.PersistenceFailed}" TextWrapping="Wrap"
-                                           Foreground="{DynamicResource Sem.Color.Error}" />
-                                <Button Classes="text" Command="{Binding RetryPersistenceCommand}" Content="{DynamicResource Sandbox.RetrySave}" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Padding="0,8" IsVisible="{Binding HasPreparedExport}">
-                            <Border Padding="16" CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
-                                    Background="{DynamicResource Sem.Color.SecondaryContainer}">
-                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                    <TextBlock Text="{DynamicResource Sandbox.ExportReady}" TextWrapping="Wrap"
-                                               Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
-                                    <TextBlock Text="{Binding PreparedExportName}" TextTrimming="CharacterEllipsis"
-                                               Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
-                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                        <Button Classes="filled" Command="{Binding SaveExportCommand}" Content="{DynamicResource Sandbox.SaveToDevice}"
-                                                MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}" />
-                                        <Button Grid.Column="1" Classes="icon" Command="{Binding DismissExportCommand}"
-                                                ToolTip.Tip="{DynamicResource Common.Cancel}" AutomationProperties.Name="{DynamicResource Common.Cancel}"
-                                                Content="{icons:PhosphorIcons X}" />
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-                        </Border>
-
                         <Border Padding="0,8" IsVisible="{Binding ShowOperationProgress}">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                 <ProgressBar IsIndeterminate="True" />
@@ -135,22 +108,14 @@
                             </StackPanel>
                         </Border>
 
-                        <TextBlock Text="{Binding ImportHint}" Classes="SandboxSupporting" />
-                        <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}"
-                                   IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                        <TextBlock Text="{Binding StatusMessage}" Classes="SandboxSupporting"
-                                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                         <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
                                 CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}" ClipToBounds="True"
                                 IsEnabled="{Binding !IsBusy}">
                             <ItemsControl ItemsSource="{Binding Entries}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="vm:SandboxFileItemViewModel">
-                                        <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="72">
-                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                      MinWidth="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                                      MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
-                                                      HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0,0,0"
+                                        <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="72" Margin="4,0">
+                                            <CheckBox Theme="{StaticResource OpumSelectionCheckBox}" IsChecked="{Binding IsSelected, Mode=TwoWay}"
                                                       AutomationProperties.Name="{Binding Name}" />
                                             <Button Grid.Column="1" Classes="SandboxEntry"
                                                     Command="{Binding DataContext.OpenCommand, ElementName=Root}" CommandParameter="{Binding}">

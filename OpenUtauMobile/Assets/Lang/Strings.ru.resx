@@ -2477,8 +2477,6 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.Folder" xml:space="preserve"><value>Папка</value></data>
   <data name="Sandbox.Name" xml:space="preserve"><value>Имя</value></data>
   <data name="Sandbox.NameHint" xml:space="preserve"><value>Введите имя. При переименовании файла укажите расширение.</value></data>
-  <data name="Sandbox.Hint" xml:space="preserve"><value>Папки и несколько элементов экспортируются в ZIP. После изменения ресурсов может потребоваться перезапуск.</value></data>
-  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>Папки и несколько элементов экспортируются в ZIP. Для импорта пустых папок используйте ZIP. Большие передачи сохраняются частями; может потребоваться перезапуск.</value></data>
   <data name="Sandbox.Working" xml:space="preserve"><value>Обработка…</value></data>
   <data name="Sandbox.Saving" xml:space="preserve"><value>Сохранение изменений…</value></data>
   <data name="Sandbox.Completed" xml:space="preserve"><value>Готово. Изменения ресурсов могут потребовать перезапуска.</value></data>
@@ -2515,4 +2513,9 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.InvertSelection" xml:space="preserve"><value>Инвертировать выбор</value></data>
   <data name="Sandbox.ClearSelection" xml:space="preserve"><value>Снять выделение</value></data>
   <data name="Sandbox.Add" xml:space="preserve"><value>Создать или импортировать</value></data>
+  <data name="Sandbox.StopTitle" xml:space="preserve"><value>Остановить текущую задачу?</value></data>
+  <data name="Sandbox.StopMessage" xml:space="preserve"><value>Файловая задача ещё выполняется. Остановить её и дождаться завершения текущего шага, очистки временных файлов и сохранения перед выходом? Готовые элементы сохранятся.</value></data>
+  <data name="Sandbox.ContinueTask" xml:space="preserve"><value>Продолжить задачу</value></data>
+  <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>Остановить и выйти</value></data>
+  <data name="Sandbox.Stopping" xml:space="preserve"><value>Остановка и очистка…</value></data>
 </root>

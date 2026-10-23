@@ -2518,8 +2518,6 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.Folder" xml:space="preserve"><value>フォルダー</value></data>
   <data name="Sandbox.Name" xml:space="preserve"><value>名前</value></data>
   <data name="Sandbox.NameHint" xml:space="preserve"><value>名前を入力してください。ファイルには必要な拡張子も含めてください。</value></data>
-  <data name="Sandbox.Hint" xml:space="preserve"><value>フォルダーや複数項目は ZIP で書き出します。変更後はアプリの再起動が必要な場合があります。</value></data>
-  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>フォルダーや複数項目は ZIP で書き出します。空のフォルダーは ZIP で読み込んでください。大きな転送は分割保存します。変更後は再起動が必要な場合があります。</value></data>
   <data name="Sandbox.Working" xml:space="preserve"><value>処理中…</value></data>
   <data name="Sandbox.Saving" xml:space="preserve"><value>変更を保存中…</value></data>
   <data name="Sandbox.Completed" xml:space="preserve"><value>完了しました。変更の反映に再起動が必要な場合があります。</value></data>
@@ -2556,4 +2554,9 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.InvertSelection" xml:space="preserve"><value>選択を反転</value></data>
   <data name="Sandbox.ClearSelection" xml:space="preserve"><value>選択を解除</value></data>
   <data name="Sandbox.Add" xml:space="preserve"><value>新規作成・読み込み</value></data>
+  <data name="Sandbox.StopTitle" xml:space="preserve"><value>現在の処理を中止しますか？</value></data>
+  <data name="Sandbox.StopMessage" xml:space="preserve"><value>ファイル処理が実行中です。中止して現在の手順、一時ファイルの削除、保存の完了を待ってから戻りますか？完了済みの項目は保持されます。</value></data>
+  <data name="Sandbox.ContinueTask" xml:space="preserve"><value>処理を続ける</value></data>
+  <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>中止して戻る</value></data>
+  <data name="Sandbox.Stopping" xml:space="preserve"><value>中止して一時ファイルを削除中…</value></data>
 </root>

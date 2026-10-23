@@ -44,10 +44,11 @@ namespace OpenUtauMobile.Storage
         }
 
         /// <summary>枚举一层目录，保持文件夹优先和本地化名称排序。</summary>
-        public IReadOnlyList<FileSystemInfo> List(string path)
+        public IReadOnlyList<FileSystemInfo> List(string path, CancellationToken cancellationToken = default)
         {
             DirectoryInfo directory = new(Resolve(path));
             return directory.EnumerateFileSystemInfos()
+                .Select(item => { cancellationToken.ThrowIfCancellationRequested(); return item; })
                 .Where(item => !item.Name.StartsWith(TemporaryPrefix, StringComparison.Ordinal))
                 .OrderBy(item => item is DirectoryInfo ? 0 : 1)
                 .ThenBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase).ToArray();
@@ -129,7 +130,7 @@ namespace OpenUtauMobile.Storage
         {
             path = Resolve(path);
             ThrowIfRestricted(GetMutationRestriction(path));
-            ValidateTree(path, 0);
+            await Task.Run(() => ValidateTree(path, 0, cancellationToken), cancellationToken);
             await DeleteTreeAsync(path, cancellationToken);
         }
 
@@ -219,6 +220,7 @@ namespace OpenUtauMobile.Storage
                 if (Directory.Exists(source)) Directory.Move(source, destination);
                 else File.Move(source, destination);
                 completed++;
+                await Task.Yield();
             }
             return completed;
         }
@@ -390,12 +392,13 @@ namespace OpenUtauMobile.Storage
             }
         }
 
-        private void ValidateTree(string path, int depth)
+        private void ValidateTree(string path, int depth, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             Resolve(path);
             if (depth > MaxDepth) throw new IOException(L.S("Sandbox.ImportLimit"));
             if (Directory.Exists(path))
-                foreach (string child in Directory.GetFileSystemEntries(path)) ValidateTree(child, depth + 1);
+                foreach (string child in Directory.GetFileSystemEntries(path)) ValidateTree(child, depth + 1, cancellationToken);
         }
 
         /// <summary>按路径段校验外部名称，拒绝目录穿越和平台特殊名称。</summary>

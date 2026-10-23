@@ -2477,8 +2477,6 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.Folder" xml:space="preserve"><value>Папка</value></data>
   <data name="Sandbox.Name" xml:space="preserve"><value>Назва</value></data>
   <data name="Sandbox.NameHint" xml:space="preserve"><value>Введіть назву. Для файлу вкажіть потрібне розширення.</value></data>
-  <data name="Sandbox.Hint" xml:space="preserve"><value>Папки та кілька елементів експортуються в ZIP. Зміни ресурсів можуть вимагати перезапуску.</value></data>
-  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>Папки та кілька елементів експортуються в ZIP. Для імпорту порожніх папок використовуйте ZIP. Великі передачі зберігаються частинами; може знадобитися перезапуск.</value></data>
   <data name="Sandbox.Working" xml:space="preserve"><value>Обробка…</value></data>
   <data name="Sandbox.Saving" xml:space="preserve"><value>Збереження змін…</value></data>
   <data name="Sandbox.Completed" xml:space="preserve"><value>Готово. Зміни ресурсів можуть вимагати перезапуску.</value></data>
@@ -2515,4 +2513,9 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.InvertSelection" xml:space="preserve"><value>Інвертувати вибір</value></data>
   <data name="Sandbox.ClearSelection" xml:space="preserve"><value>Очистити вибір</value></data>
   <data name="Sandbox.Add" xml:space="preserve"><value>Створити або імпортувати</value></data>
+  <data name="Sandbox.StopTitle" xml:space="preserve"><value>Зупинити поточне завдання?</value></data>
+  <data name="Sandbox.StopMessage" xml:space="preserve"><value>Файлове завдання ще виконується. Зупинити його й дочекатися завершення поточного кроку, очищення тимчасових файлів і збереження перед виходом? Готові елементи залишаться.</value></data>
+  <data name="Sandbox.ContinueTask" xml:space="preserve"><value>Продовжити завдання</value></data>
+  <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>Зупинити й вийти</value></data>
+  <data name="Sandbox.Stopping" xml:space="preserve"><value>Зупинення й очищення…</value></data>
 </root>

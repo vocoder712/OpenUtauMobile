@@ -2522,8 +2522,6 @@
   <data name="Sandbox.Folder" xml:space="preserve"><value>文件夹</value></data>
   <data name="Sandbox.Name" xml:space="preserve"><value>名称</value></data>
   <data name="Sandbox.NameHint" xml:space="preserve"><value>请输入名称。重命名文件时请保留所需扩展名。</value></data>
-  <data name="Sandbox.Hint" xml:space="preserve"><value>文件夹和多选项目导出为 ZIP。整理资源后，可能需要重启应用。</value></data>
-  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>文件夹和多选项目导出为 ZIP。导入含空文件夹的目录时，请使用 ZIP。大型传输会分批保存；资源变更可能需要重启应用。</value></data>
   <data name="Sandbox.Working" xml:space="preserve"><value>正在处理…</value></data>
   <data name="Sandbox.Saving" xml:space="preserve"><value>正在保存修改…</value></data>
   <data name="Sandbox.Completed" xml:space="preserve"><value>操作已完成。资源变更可能需要重启应用后生效。</value></data>
@@ -2560,4 +2558,9 @@
   <data name="Sandbox.InvertSelection" xml:space="preserve"><value>反选</value></data>
   <data name="Sandbox.ClearSelection" xml:space="preserve"><value>清除选择</value></data>
   <data name="Sandbox.Add" xml:space="preserve"><value>新建或导入</value></data>
+  <data name="Sandbox.StopTitle" xml:space="preserve"><value>中止当前任务？</value></data>
+  <data name="Sandbox.StopMessage" xml:space="preserve"><value>仍有文件任务正在进行。是否中止并离开？将等待当前步骤、临时文件清理及保存完成，已完成的项目会保留。</value></data>
+  <data name="Sandbox.ContinueTask" xml:space="preserve"><value>继续任务</value></data>
+  <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>中止并离开</value></data>
+  <data name="Sandbox.Stopping" xml:space="preserve"><value>正在中止并清理…</value></data>
 </root>

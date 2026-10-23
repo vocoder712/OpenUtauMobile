@@ -2522,8 +2522,6 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.Folder" xml:space="preserve"><value>Folder</value></data>
   <data name="Sandbox.Name" xml:space="preserve"><value>Name</value></data>
   <data name="Sandbox.NameHint" xml:space="preserve"><value>Enter a name. Include the extension when renaming a file.</value></data>
-  <data name="Sandbox.Hint" xml:space="preserve"><value>Folders and multiple items export as ZIP. Resource changes may require restarting the app.</value></data>
-  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>Folders and multiple items export as ZIP. Use ZIP to import empty folders. Large transfers are saved in batches; resource changes may require restarting the app.</value></data>
   <data name="Sandbox.Working" xml:space="preserve"><value>Working…</value></data>
   <data name="Sandbox.Saving" xml:space="preserve"><value>Saving changes…</value></data>
   <data name="Sandbox.Completed" xml:space="preserve"><value>Done. Resource changes may require restarting the app.</value></data>
@@ -2560,4 +2558,9 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.InvertSelection" xml:space="preserve"><value>Invert selection</value></data>
   <data name="Sandbox.ClearSelection" xml:space="preserve"><value>Clear selection</value></data>
   <data name="Sandbox.Add" xml:space="preserve"><value>Create or import</value></data>
+  <data name="Sandbox.StopTitle" xml:space="preserve"><value>Stop the current task?</value></data>
+  <data name="Sandbox.StopMessage" xml:space="preserve"><value>A file task is still running. Stop and wait for the current step, temporary-file cleanup, and saving to finish before leaving? Completed items will be kept.</value></data>
+  <data name="Sandbox.ContinueTask" xml:space="preserve"><value>Continue task</value></data>
+  <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>Stop and leave</value></data>
+  <data name="Sandbox.Stopping" xml:space="preserve"><value>Stopping and cleaning up…</value></data>
 </root>
