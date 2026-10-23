@@ -1672,7 +1672,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <returns>是否成功保存</returns>
     private static async Task<bool> RequestSaveAs()
     {
-        if (ServiceHub.UseDesktopFileWorkflows || OperatingSystem.IsBrowser())
+        if (ServiceHub.UseDesktopFileWorkflows || FilePickerWorkspace.IsSandboxed)
         {
             string destination = await FilePicker.SaveFileAsync(L.S("FilePicker.SaveProjectAs"), "ustx",
                 string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) ? L.S("FilePicker.DefaultProjectName") : Path.GetFileNameWithoutExtension(DocManager.Inst.Project.FilePath),
