@@ -180,59 +180,27 @@ jobs:
     secrets: inherit
 
   tag-and-release:
-    name: Tag and optional release
+    name: Release transaction
     if: github.event_name == 'workflow_dispatch'
     needs:
       - prepare
       - all-platforms
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     permissions:
       contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.prepare.outputs.tag }}
+      SOURCE_SHA: ${{ github.sha }}
+      RELEASE_RUN_ID: ${{ github.run_id }}
+      RELEASE_RUN_ATTEMPT: ${{ github.run_attempt }}
     steps:
       - name: Checkout the built commit
         uses: actions/checkout@v7
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Create and push annotated tag
-        shell: bash
-        env:
-          TAG: ${{ needs.prepare.outputs.tag }}
-          VERSION: ${{ needs.prepare.outputs.version }}
-          SOURCE_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          export LC_ALL=C
-
-          # 构建可能持续较久；创建 Tag 前重新同步远端 Tag，避免使用过期的版本视图。
-          git fetch --force --tags origin
-
-          if git show-ref --verify --quiet "refs/tags/$TAG"; then
-            echo "::error::Tag $TAG 在本次构建期间已被创建；拒绝覆盖。"
-            exit 1
-          fi
-
-          LATEST_TAG="$(
-            git tag --list 'v*' --sort=-version:refname |
-              grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' |
-              head -n 1 || true
-          )"
-
-          if [ -n "$LATEST_TAG" ]; then
-            LATEST_VERSION="${LATEST_TAG#v}"
-            HIGHEST="$(printf '%s\n%s\n' "$LATEST_VERSION" "$VERSION" | sort -V | tail -n 1)"
-            if [ "$HIGHEST" != "$VERSION" ] || [ "$VERSION" = "$LATEST_VERSION" ]; then
-              echo "::error::版本状态在构建期间发生变化：$VERSION 不再高于当前最高正式版本 $LATEST_VERSION。"
-              exit 1
-            fi
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag --annotate "$TAG" "$SOURCE_SHA" --message "OpenUtau Mobile ${TAG#v}"
-          git push origin "refs/tags/$TAG"
+          persist-credentials: false
 
       - name: Download release artifacts
         if: inputs.release != 'none'
@@ -240,35 +208,43 @@ jobs:
         with:
           pattern: OpenUtauMobile-*
           path: release-assets
-          merge-multiple: true
+          # 保留产物目录，以便逐平台核对清单，也避免混入失败诊断附件。
+          merge-multiple: false
 
-      - name: Create GitHub Release
-        if: inputs.release != 'none'
-        shell: bash
+      - name: Stage, upload serially and commit release
         env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.prepare.outputs.tag }}
-          VERSION: ${{ needs.prepare.outputs.version }}
+          BUILD_NUMBER: ${{ needs.prepare.outputs.build_number }}
           RELEASE_MODE: ${{ inputs.release }}
           CUSTOM_NOTES: ${{ inputs.release_notes }}
           VERSION_LYRICS: ${{ inputs.version_lyrics }}
-        run: |
-          set -euo pipefail
+        run: python3 .github/scripts/release.py release
 
-          release_args=(
-            --verify-tag
-            --generate-notes
-            --title "OpenUtau Mobile $VERSION"
-          )
+  rollback-release:
+    name: Roll back interrupted release
+    # 使用新的 runner 清理，覆盖发布 job 超时或原 runner 异常退出的情况。
+    if: >-
+      always() && github.event_name == 'workflow_dispatch' &&
+      needs.prepare.result == 'success' &&
+      (needs.tag-and-release.result == 'failure' || needs.tag-and-release.result == 'cancelled')
+    needs:
+      - prepare
+      - tag-and-release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout the built commit
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
 
-          if [ "$RELEASE_MODE" = "draft" ]; then
-            release_args+=(--draft)
-          fi
-
-          NOTES_PREFIX="$VERSION_LYRICS"
-          if [ -n "$CUSTOM_NOTES" ]; then
-            NOTES_PREFIX+=$'\n\n'"$CUSTOM_NOTES"
-          fi
-          release_args+=(--notes "$NOTES_PREFIX")
-
-          gh release create "$TAG" "${release_args[@]}" release-assets/*
+      - name: Roll back resources owned by this attempt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+          SOURCE_SHA: ${{ github.sha }}
+          RELEASE_RUN_ID: ${{ github.run_id }}
+          RELEASE_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: python3 .github/scripts/release.py rollback
