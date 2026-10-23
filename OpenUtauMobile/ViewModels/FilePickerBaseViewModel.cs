@@ -90,15 +90,15 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
             }
         };
 
-        if (OperatingSystem.IsBrowser())
-            initialPath = BrowserWorkspace.NormalizeDirectory(initialPath);
+        if (FilePickerWorkspace.IsSandboxed)
+            initialPath = FilePickerWorkspace.NormalizeDirectory(initialPath);
         if (!Directory.Exists(initialPath))
             initialPath = string.Empty;
 
         if (!string.IsNullOrEmpty(initialPath))
             CurrentPath = initialPath;
         else
-            CurrentPath = OperatingSystem.IsBrowser() ? BrowserWorkspace.Root : OperatingSystem.IsAndroid()
+            CurrentPath = FilePickerWorkspace.IsSandboxed ? FilePickerWorkspace.Root : OperatingSystem.IsAndroid()
                 ? "/sdcard"
                 : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
@@ -129,9 +129,9 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         previous.Dispose();
         if (token.IsCancellationRequested) return;
 
-        if (OperatingSystem.IsBrowser())
+        if (FilePickerWorkspace.IsSandboxed)
         {
-            string allowedPath = BrowserWorkspace.NormalizeDirectory(CurrentPath);
+            string allowedPath = FilePickerWorkspace.NormalizeDirectory(CurrentPath);
             if (allowedPath != CurrentPath)
             {
                 CurrentPath = allowedPath;
@@ -280,7 +280,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
 
     private void GoUp()
     {
-        if (OperatingSystem.IsBrowser() && CurrentPath == BrowserWorkspace.Root) return;
+        if (FilePickerWorkspace.IsSandboxed && CurrentPath == FilePickerWorkspace.Root) return;
         DirectoryInfo? parentDir = Directory.GetParent(CurrentPath);
         if (parentDir != null)
             CurrentPath = parentDir.FullName;

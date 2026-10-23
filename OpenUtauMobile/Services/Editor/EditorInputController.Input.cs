@@ -1,4 +1,3 @@
-using static Avalonia.Input.InputElement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
+using static Avalonia.Input.InputElement;
 
 namespace OpenUtauMobile.Services.Editor;
 

@@ -12,7 +12,6 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using IconPacks.Avalonia.PhosphorIcons;
-using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Themes.OpenUtauMobile.Controls;
 using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
@@ -173,9 +172,13 @@ public partial class FabMenu : UserControl
 
     private void UpdateLabel()
     {
-        string label = IsExpanded ? L.S("FabMenu.Close") : OpenLabel;
+        // 切换语言会先移除旧字典；资源暂缺时保留当前辅助文字，等待新字典到位。
+        if (!this.TryFindResource("FabMenu.Close", out object? close) || close is not string closeLabel ||
+            !this.TryFindResource(IsExpanded ? "FabMenu.Expanded" : "FabMenu.Collapsed", out object? help) || help is not string helpText)
+            return;
+        string label = IsExpanded ? closeLabel : OpenLabel;
         AutomationProperties.SetName(Toggle, label);
-        AutomationProperties.SetHelpText(Toggle, L.S(IsExpanded ? "FabMenu.Expanded" : "FabMenu.Collapsed"));
+        AutomationProperties.SetHelpText(Toggle, helpText);
         ToolTip.SetTip(Toggle, label);
     }
 

@@ -1,6 +1,3 @@
-using OpenUtauMobile.Services.Tracks;
-using OpenUtauMobile.Services.Editor;
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +19,9 @@ using OpenUtauMobile.Controls;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Editor;
+using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;
@@ -1672,7 +1672,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <returns>是否成功保存</returns>
     private static async Task<bool> RequestSaveAs()
     {
-        if (ServiceHub.UseDesktopFileWorkflows || OperatingSystem.IsBrowser())
+        if (ServiceHub.UseDesktopFileWorkflows || FilePickerWorkspace.IsSandboxed)
         {
             string destination = await FilePicker.SaveFileAsync(L.S("FilePicker.SaveProjectAs"), "ustx",
                 string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) ? L.S("FilePicker.DefaultProjectName") : Path.GetFileNameWithoutExtension(DocManager.Inst.Project.FilePath),

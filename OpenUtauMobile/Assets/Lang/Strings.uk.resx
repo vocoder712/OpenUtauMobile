@@ -2459,4 +2459,63 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>У цільовому графі відсутній або не підтримується вираз «{0}».</value></data>
   <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>У цільовому графі вже є такий вихід. Зніміть виділення з вихідних вузлів і скопіюйте знову. Щоб дублювати весь граф, створіть копію в бібліотеці.</value></data>
   <data name="GraphSelection.Selected" xml:space="preserve"><value>Вибрано</value></data>
+  <data name="Sandbox.Title" xml:space="preserve"><value>Файли пісочниці</value></data>
+  <data name="Sandbox.Description" xml:space="preserve"><value>Імпорт, експорт і впорядкування файлів</value></data>
+  <data name="Sandbox.Root" xml:space="preserve"><value>Файли застосунку</value></data>
+  <data name="Sandbox.ImportFiles" xml:space="preserve"><value>Імпортувати файли</value></data>
+  <data name="Sandbox.ImportFolder" xml:space="preserve"><value>Імпортувати папку</value></data>
+  <data name="Sandbox.ImportZip" xml:space="preserve"><value>Імпортувати папку із ZIP</value></data>
+  <data name="Sandbox.Export" xml:space="preserve"><value>Експортувати</value></data>
+  <data name="Sandbox.ExportCurrent" xml:space="preserve"><value>Експортувати поточну папку</value></data>
+  <data name="Sandbox.SaveToDevice" xml:space="preserve"><value>Зберегти на пристрій</value></data>
+  <data name="Sandbox.NewFolder" xml:space="preserve"><value>Нова папка</value></data>
+  <data name="Sandbox.Rename" xml:space="preserve"><value>Перейменувати</value></data>
+  <data name="Sandbox.Delete" xml:space="preserve"><value>Видалити</value></data>
+  <data name="Sandbox.More" xml:space="preserve"><value>Інші дії</value></data>
+  <data name="Sandbox.ToggleSelection" xml:space="preserve"><value>Вибрати / скасувати вибір</value></data>
+  <data name="Sandbox.SelectionSummary" xml:space="preserve"><value>Вибрано {0} із {1}</value></data>
+  <data name="Sandbox.Folder" xml:space="preserve"><value>Папка</value></data>
+  <data name="Sandbox.Name" xml:space="preserve"><value>Назва</value></data>
+  <data name="Sandbox.NameHint" xml:space="preserve"><value>Введіть назву. Для файлу вкажіть потрібне розширення.</value></data>
+  <data name="Sandbox.Working" xml:space="preserve"><value>Обробка…</value></data>
+  <data name="Sandbox.Saving" xml:space="preserve"><value>Збереження змін…</value></data>
+  <data name="Sandbox.Completed" xml:space="preserve"><value>Готово. Зміни ресурсів можуть вимагати перезапуску.</value></data>
+  <data name="Sandbox.Cancelled" xml:space="preserve"><value>Скасовано. Завершені елементи збережено.</value></data>
+  <data name="Sandbox.OperationFailed" xml:space="preserve"><value>Операцію виконано не повністю: {0}</value></data>
+  <data name="Sandbox.Imported" xml:space="preserve"><value>Імпортовано: {0}. Може знадобитися перезапуск.</value></data>
+  <data name="Sandbox.Deleted" xml:space="preserve"><value>Видалено: {0}.</value></data>
+  <data name="Sandbox.Exported" xml:space="preserve"><value>Збережено на пристрій.</value></data>
+  <data name="Sandbox.DownloadStarted" xml:space="preserve"><value>Завантаження розпочато. Перевірте збережений файл у браузері.</value></data>
+  <data name="Sandbox.ExportReady" xml:space="preserve"><value>Файл готовий до збереження.</value></data>
+  <data name="Sandbox.PersistenceFailed" xml:space="preserve"><value>Зміни не записано до постійного сховища. Повторіть збереження перед виходом.</value></data>
+  <data name="Sandbox.RetrySave" xml:space="preserve"><value>Повторити збереження</value></data>
+  <data name="Sandbox.ConflictTitle" xml:space="preserve"><value>Збіг назв</value></data>
+  <data name="Sandbox.ConflictMessage" xml:space="preserve"><value>«{0}» уже існує. Збереження обох додасть номер до нової назви та збереже наявний елемент.</value></data>
+  <data name="Sandbox.KeepBoth" xml:space="preserve"><value>Зберегти обидва</value></data>
+  <data name="Sandbox.KeepAll" xml:space="preserve"><value>Зберегти обидва для всіх</value></data>
+  <data name="Sandbox.Skip" xml:space="preserve"><value>Пропустити</value></data>
+  <data name="Sandbox.SkipAll" xml:space="preserve"><value>Пропустити всі збіги</value></data>
+  <data name="Sandbox.DeleteTitle" xml:space="preserve"><value>Видалити вибране?</value></data>
+  <data name="Sandbox.DeleteMessage" xml:space="preserve"><value>Буде видалено {0} елементів і весь вміст вибраних папок. Скасувати дію неможливо.
+
+{1}</value></data>
+  <data name="Sandbox.InvalidName" xml:space="preserve"><value>Неприпустима назва: не використовуйте шляхи, службові символи, пробіли по краях і крапку в кінці.</value></data>
+  <data name="Sandbox.AlreadyExists" xml:space="preserve"><value>Ця назва вже використовується.</value></data>
+  <data name="Sandbox.OutsideWorkspace" xml:space="preserve"><value>Шлях розташований поза робочою областю застосунку.</value></data>
+  <data name="Sandbox.LinkNotAllowed" xml:space="preserve"><value>Операція не підтримує символічні посилання та точки повторної обробки.</value></data>
+  <data name="Sandbox.Protected" xml:space="preserve"><value>Цим елементом керує застосунок. Для плагінів використовуйте менеджер плагінів.</value></data>
+  <data name="Sandbox.CloseEditor" xml:space="preserve"><value>Закрийте проєкт перед видаленням або перейменуванням ресурсів.</value></data>
+  <data name="Sandbox.ImportLimit" xml:space="preserve"><value>Перевищено ліміт кількості файлів або глибини папок. Розділіть операцію.</value></data>
+  <data name="Sandbox.ZipFilesOnly" xml:space="preserve"><value>Виберіть ZIP-файли. Для звичайних файлів використовуйте імпорт файлів.</value></data>
+  <data name="Sandbox.TransferUnavailable" xml:space="preserve"><value>Системний вибір файлів недоступний. Повторіть пізніше.</value></data>
+  <data name="Sandbox.FolderUnavailable" xml:space="preserve"><value>Вибір папки недоступний. Імпортуйте ZIP.</value></data>
+  <data name="Sandbox.SelectionActions" xml:space="preserve"><value>Дії з вибраним</value></data>
+  <data name="Sandbox.InvertSelection" xml:space="preserve"><value>Інвертувати вибір</value></data>
+  <data name="Sandbox.ClearSelection" xml:space="preserve"><value>Очистити вибір</value></data>
+  <data name="Sandbox.Add" xml:space="preserve"><value>Створити або імпортувати</value></data>
+  <data name="Sandbox.StopTitle" xml:space="preserve"><value>Зупинити поточне завдання?</value></data>
+  <data name="Sandbox.StopMessage" xml:space="preserve"><value>Файлове завдання ще виконується. Зупинити його й дочекатися завершення поточного кроку, очищення тимчасових файлів і збереження перед виходом? Готові елементи залишаться.</value></data>
+  <data name="Sandbox.ContinueTask" xml:space="preserve"><value>Продовжити завдання</value></data>
+  <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>Зупинити й вийти</value></data>
+  <data name="Sandbox.Stopping" xml:space="preserve"><value>Зупинення й очищення…</value></data>
 </root>

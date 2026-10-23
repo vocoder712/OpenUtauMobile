@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
                     x:CompileBindings="False">
 
   <StreamGeometry x:Key="CheckMarkPathData">M5.5 10.586 1.707 6.793A1 1 0 0 0 .293 8.207l4.5 4.5a1 1 0 0 0 1.414 0l11-11A1 1 0 0 0 15.793.293L5.5 10.586Z</StreamGeometry>
@@ -293,6 +294,52 @@
     </Style>
       <Style Selector="^:disabled">
       <Setter Property="Cursor" Value="Arrow" />
+    </Style>
+  </ControlTheme>
+  <!-- 独立列表选择框：18dp 图形居中于 48dp 触控区，40dp 状态层复用基础复选框状态。 -->
+  <ControlTheme x:Key="OpumSelectionCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+    <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+    <Setter Property="Height" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+    <Setter Property="MinWidth" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+    <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="2" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Panel Background="Transparent">
+          <Border x:Name="PART_Border" Width="40" Height="40" CornerRadius="20"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  Background="{TemplateBinding Background}" />
+          <Border x:Name="SelectionStateLayer" Width="40" Height="40" CornerRadius="20" Opacity="0"
+                  HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"
+                  Background="{TemplateBinding Foreground}" />
+          <Border x:Name="NormalRectangle" Width="18" Height="18" CornerRadius="2" BorderThickness="2"
+                  HorizontalAlignment="Center" VerticalAlignment="Center"
+                  BorderBrush="{DynamicResource CheckBoxCheckBackgroundStrokeUnchecked}"
+                  Background="{DynamicResource CheckBoxCheckBackgroundFillUnchecked}" />
+          <Viewbox Width="12" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Path x:Name="CheckGlyph" Opacity="0" Stretch="Uniform" FlowDirection="LeftToRight"
+                  Fill="{DynamicResource CheckBoxCheckGlyphForegroundUnchecked}" />
+          </Viewbox>
+          <Border x:Name="FocusRing" Width="40" Height="40" CornerRadius="20" BorderThickness="2"
+                  HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Opacity="0"
+                  BorderBrush="{DynamicResource Sem.Color.Primary}" />
+        </Panel>
+      </ControlTemplate>
+    </Setter>
+    <Style Selector="^:focus-visible /template/ Border#FocusRing">
+      <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="^:pointerover:not(:disabled) /template/ Border#SelectionStateLayer">
+      <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Hover}" />
+    </Style>
+    <Style Selector="^:focus-visible:not(:disabled) /template/ Border#SelectionStateLayer">
+      <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Focus}" />
+    </Style>
+    <Style Selector="^:pressed:not(:disabled) /template/ Border#SelectionStateLayer">
+      <Setter Property="Opacity" Value="{x:Static semantic:StateOpacityTokens.Pressed}" />
     </Style>
   </ControlTheme>
 </ResourceDictionary>

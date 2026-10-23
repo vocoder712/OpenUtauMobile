@@ -8,8 +8,8 @@ using OpenUtau.Core.Pipeline;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
-using ReactiveUI.Fody.Helpers;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
@@ -122,7 +122,17 @@ public class MainViewModel : ViewModelBase
     /// <param name="vm">目标页面实例</param>
     public void Navigate(NavigateViewModelBase vm)
     {
-        Dispatcher.UIThread.InvokeAsync(() => OnNavigate(vm));
+        Dispatcher.UIThread.InvokeAsync(async () =>
+        {
+            NavigateViewModelBase source = CurrentViewModel;
+            if (source is SandboxFileManagerViewModel sandbox &&
+                (!await sandbox.ConfirmLeaveAsync() || CurrentViewModel != source))
+            {
+                (vm as IDisposable)?.Dispose();
+                return;
+            }
+            OnNavigate(vm);
+        });
     }
 
     private void OnNavigate(NavigateViewModelBase vm)
@@ -141,11 +151,13 @@ public class MainViewModel : ViewModelBase
     public void NavigateBack(NavigateViewModelBase caller)
     {
         // 在UI线程上调用OnNavigateBack
-        Dispatcher.UIThread.InvokeAsync(() => OnNavigateBack(caller));
+        Dispatcher.UIThread.InvokeAsync(() => OnNavigateBackAsync(caller));
     }
 
-    private void OnNavigateBack(NavigateViewModelBase caller)
+    private async Task OnNavigateBackAsync(NavigateViewModelBase caller)
     {
+        if (CurrentViewModel != caller) return;
+        if (caller is SandboxFileManagerViewModel sandbox && !await sandbox.ConfirmLeaveAsync()) return;
         TryRemoveCurrentViewModel(caller, notifyRevealedViewModel: true);
     }
 
@@ -155,6 +167,8 @@ public class MainViewModel : ViewModelBase
         {
             return false;
         }
+        // 同步导航调用不能直接移除仍有任务或弹窗的沙箱页。
+        if (caller is SandboxFileManagerViewModel { CanDetach: false }) return false;
 
         ViewModelBase popped = _navigationStack.Pop();
         if (popped is IDisposable disposable)
@@ -246,6 +260,9 @@ public class MainViewModel : ViewModelBase
         bool sourceTransferred = false;
         try
         {
+            NavigateViewModelBase source = CurrentViewModel;
+            if (source is SandboxFileManagerViewModel sandbox &&
+                (!await sandbox.ConfirmLeaveAsync() || CurrentViewModel != source)) return;
             if (ServiceHub.UseDesktopFileWorkflows)
             {
                 ProjectOpenKind kind = request.DeleteSourceAfterRead || !Path.GetExtension(request.LocalPath).Equals(".ustx", StringComparison.OrdinalIgnoreCase)
@@ -332,6 +349,9 @@ public class MainViewModel : ViewModelBase
     public async Task<bool> ConfirmCloseAsync()
     {
         if (HasActiveSingerInstallation) return false;
+        NavigateViewModelBase source = CurrentViewModel;
+        if (source is SandboxFileManagerViewModel sandbox &&
+            (!await sandbox.ConfirmLeaveAsync() || CurrentViewModel != source)) return false;
         if (ActiveEditor is EditorViewModel editorViewModel)
         {
             // 缓存当前工程和修订版本引用

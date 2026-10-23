@@ -1,5 +1,6 @@
 ﻿using System.Reactive;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI;
 
@@ -11,6 +12,9 @@ public class OptionsViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenDependencyManagerCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenPluginManagerCommand { get; }
+    /// <summary>仅在平台注册了沙箱传输能力时显示文件管理入口。</summary>
+    public bool IsSandboxFileManagerAvailable => ServiceHub.SandboxFileTransferService != null;
+    public ReactiveCommand<Unit, Unit> OpenSandboxFileManagerCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenHelpCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenExportLogsCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenAboutCommand { get; }
@@ -21,6 +25,7 @@ public class OptionsViewModel : NavigateViewModelBase
         OpenSettingsCommand = ReactiveCommand.Create(OnOpenSettings);
         OpenDependencyManagerCommand = ReactiveCommand.Create(OnOpenDependencyManager);
         OpenPluginManagerCommand = ReactiveCommand.Create(() => Navigator.Navigate(new PluginManagerViewModel(Navigator)));
+        OpenSandboxFileManagerCommand = ReactiveCommand.Create(() => Navigator.Navigate(new SandboxFileManagerViewModel(Navigator)));
         OpenHelpCommand = ReactiveCommand.Create(OnOpenHelp);
         OpenExportLogsCommand = ReactiveCommand.Create(OnOpenExportLogs);
         OpenAboutCommand = ReactiveCommand.Create(OnOpenAbout);

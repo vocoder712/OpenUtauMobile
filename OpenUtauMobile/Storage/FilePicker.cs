@@ -1,4 +1,3 @@
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +7,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Storage;
@@ -42,7 +42,8 @@ public static class FilePicker
         ];
     }
 
-    private static bool UseInternalPicker => OperatingSystem.IsBrowser() ||
+    /// <summary>沙箱平台统一使用应用目录选择器，其余平台遵循宿主文件工作流。</summary>
+    private static bool UseInternalPicker => FilePickerWorkspace.IsSandboxed ||
         (!ServiceHub.UseDesktopFileWorkflows && (OperatingSystem.IsAndroid()
 #if DEBUG
                                                      || OperatingSystem.IsWindows()
@@ -54,8 +55,8 @@ public static class FilePicker
     /// <returns></returns>
     private static bool CheckAndRequestStoragePermission()
     {
-        // 浏览器仅访问应用虚拟目录，不申请设备文件系统权限。
-        if (OperatingSystem.IsBrowser()) return true;
+        // 浏览器与 iOS 仅访问应用目录，不申请设备文件系统权限。
+        if (FilePickerWorkspace.IsSandboxed) return true;
         IExternalStorageService? service = ServiceHub.ExternalStorageService;
         if (service == null) return false;
         if (!service.HasManageExternalStoragePermissionAsync())
@@ -86,7 +87,7 @@ public static class FilePicker
     /// <returns>选中的文件路径，如果取消或失败则返回 <see cref="string.Empty"/></returns>
     public static async Task<string> PickSingleFileAsync(string title, string[] filters)
     {
-        // 浏览器与 Android 使用应用内置选择器。
+        // 浏览器、iOS 与 Android 使用应用内置选择器。
         if (UseInternalPicker)
         {
             return await PickSingleFileInternalAsync(title, filters);
@@ -126,7 +127,7 @@ public static class FilePicker
 
     /// <summary>
     /// 选择一个目录，全平台统一入口。
-    /// 浏览器与 Android 使用内置 UI。
+    /// 浏览器、iOS 与 Android 使用内置 UI。
     /// 取消或失败时返回 <see cref="string.Empty"/>。
     /// </summary>
     public static async Task<string> PickFolderAsync(string title)
@@ -151,7 +152,7 @@ public static class FilePicker
 
     /// <summary>
     /// 文件保存对话框，全平台统一入口。
-    /// 浏览器、Android 与 Windows 调试版使用内置 UI；其他平台使用系统 <see cref="IStorageProvider.SaveFilePickerAsync"/>。
+    /// 浏览器、iOS、Android 与 Windows 调试版使用内置 UI；其他平台使用系统 <see cref="IStorageProvider.SaveFilePickerAsync"/>。
     /// </summary>
     /// <param name="title">对话框标题</param>
     /// <param name="extension">强制后缀（含点或不含均可，如 ".ustx" 或 "ustx"）</param>

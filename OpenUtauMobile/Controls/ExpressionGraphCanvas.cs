@@ -10,8 +10,8 @@ using DialogHostAvalonia;
 using OpenUtau.Core.ExpressionGraph;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Services;
-using OpenUtauMobile.Services.ExpressionGraph;
 using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.ExpressionGraph;
 
 namespace OpenUtauMobile.Controls;
 
