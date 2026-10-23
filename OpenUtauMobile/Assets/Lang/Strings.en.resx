@@ -2504,4 +2504,60 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>The target graph is missing or does not support expression “{0}”.</value></data>
   <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>The target graph already has the same output. Deselect output nodes and copy again. To duplicate the whole graph, create a copy in the library.</value></data>
   <data name="GraphSelection.Selected" xml:space="preserve"><value>Selected</value></data>
+  <data name="Sandbox.Title" xml:space="preserve"><value>Sandbox files</value></data>
+  <data name="Sandbox.Description" xml:space="preserve"><value>Import, export and organize app files</value></data>
+  <data name="Sandbox.Root" xml:space="preserve"><value>App files</value></data>
+  <data name="Sandbox.ImportFiles" xml:space="preserve"><value>Import files</value></data>
+  <data name="Sandbox.ImportFolder" xml:space="preserve"><value>Import folder</value></data>
+  <data name="Sandbox.ImportZip" xml:space="preserve"><value>Import folder from ZIP</value></data>
+  <data name="Sandbox.Export" xml:space="preserve"><value>Export</value></data>
+  <data name="Sandbox.ExportCurrent" xml:space="preserve"><value>Export current folder</value></data>
+  <data name="Sandbox.SaveToDevice" xml:space="preserve"><value>Save to device</value></data>
+  <data name="Sandbox.NewFolder" xml:space="preserve"><value>New folder</value></data>
+  <data name="Sandbox.Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="Sandbox.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Sandbox.More" xml:space="preserve"><value>More actions</value></data>
+  <data name="Sandbox.ToggleSelection" xml:space="preserve"><value>Select / deselect all</value></data>
+  <data name="Sandbox.SelectionSummary" xml:space="preserve"><value>{0} of {1} selected</value></data>
+  <data name="Sandbox.Folder" xml:space="preserve"><value>Folder</value></data>
+  <data name="Sandbox.Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Sandbox.NameHint" xml:space="preserve"><value>Enter a name. Include the extension when renaming a file.</value></data>
+  <data name="Sandbox.Hint" xml:space="preserve"><value>Folders and multiple items export as ZIP. Resource changes may require restarting the app.</value></data>
+  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>Folders and multiple items export as ZIP. Use ZIP to import empty folders. Large transfers are saved in batches; resource changes may require restarting the app.</value></data>
+  <data name="Sandbox.Working" xml:space="preserve"><value>Working…</value></data>
+  <data name="Sandbox.Saving" xml:space="preserve"><value>Saving changes…</value></data>
+  <data name="Sandbox.Completed" xml:space="preserve"><value>Done. Resource changes may require restarting the app.</value></data>
+  <data name="Sandbox.Cancelled" xml:space="preserve"><value>Cancelled. Completed items are kept.</value></data>
+  <data name="Sandbox.OperationFailed" xml:space="preserve"><value>The operation did not fully complete: {0}</value></data>
+  <data name="Sandbox.Imported" xml:space="preserve"><value>Imported {0} items. Resource changes may require restarting the app.</value></data>
+  <data name="Sandbox.Deleted" xml:space="preserve"><value>Deleted {0} items.</value></data>
+  <data name="Sandbox.Exported" xml:space="preserve"><value>Saved to device.</value></data>
+  <data name="Sandbox.DownloadStarted" xml:space="preserve"><value>Download started. Check your browser for the saved file.</value></data>
+  <data name="Sandbox.ExportReady" xml:space="preserve"><value>Your export is ready to save.</value></data>
+  <data name="Sandbox.PersistenceFailed" xml:space="preserve"><value>Changes are not saved to persistent storage. Retry saving before leaving.</value></data>
+  <data name="Sandbox.RetrySave" xml:space="preserve"><value>Retry saving</value></data>
+  <data name="Sandbox.ConflictTitle" xml:space="preserve"><value>Name conflict</value></data>
+  <data name="Sandbox.ConflictMessage" xml:space="preserve"><value>“{0}” already exists. Keeping both adds a number to the imported name and preserves the existing item.</value></data>
+  <data name="Sandbox.KeepBoth" xml:space="preserve"><value>Keep both</value></data>
+  <data name="Sandbox.KeepAll" xml:space="preserve"><value>Keep both for all</value></data>
+  <data name="Sandbox.Skip" xml:space="preserve"><value>Skip</value></data>
+  <data name="Sandbox.SkipAll" xml:space="preserve"><value>Skip all conflicts</value></data>
+  <data name="Sandbox.DeleteTitle" xml:space="preserve"><value>Delete selected items?</value></data>
+  <data name="Sandbox.DeleteMessage" xml:space="preserve"><value>Permanently delete {0} items and all contents of selected folders? This cannot be undone.
+
+{1}</value></data>
+  <data name="Sandbox.InvalidName" xml:space="preserve"><value>Invalid name. Avoid paths, reserved symbols, surrounding spaces and trailing periods.</value></data>
+  <data name="Sandbox.AlreadyExists" xml:space="preserve"><value>That name is already in use.</value></data>
+  <data name="Sandbox.OutsideWorkspace" xml:space="preserve"><value>The path is outside the app workspace.</value></data>
+  <data name="Sandbox.LinkNotAllowed" xml:space="preserve"><value>This operation does not support symbolic links or reparse points.</value></data>
+  <data name="Sandbox.Protected" xml:space="preserve"><value>This item is managed by the app and cannot be changed here. Use Plugin Manager for plugins.</value></data>
+  <data name="Sandbox.CloseEditor" xml:space="preserve"><value>Close the project before deleting or renaming resources.</value></data>
+  <data name="Sandbox.ImportLimit" xml:space="preserve"><value>The item count or folder depth limit was exceeded. Split the operation into smaller batches.</value></data>
+  <data name="Sandbox.ZipFilesOnly" xml:space="preserve"><value>Select ZIP files. Use Import files for ordinary files.</value></data>
+  <data name="Sandbox.TransferUnavailable" xml:space="preserve"><value>The system file picker is unavailable. Try again later.</value></data>
+  <data name="Sandbox.FolderUnavailable" xml:space="preserve"><value>Folder selection is unavailable. Import a ZIP instead.</value></data>
+  <data name="Sandbox.SelectionActions" xml:space="preserve"><value>Selection actions</value></data>
+  <data name="Sandbox.InvertSelection" xml:space="preserve"><value>Invert selection</value></data>
+  <data name="Sandbox.ClearSelection" xml:space="preserve"><value>Clear selection</value></data>
+  <data name="Sandbox.Add" xml:space="preserve"><value>Create or import</value></data>
 </root>

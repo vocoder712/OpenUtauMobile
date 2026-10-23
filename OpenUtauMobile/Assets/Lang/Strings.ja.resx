@@ -2500,4 +2500,60 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>貼り付け先にエクスプレッション「{0}」がないか、対応していません。</value></data>
   <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>貼り付け先に同じ出力があります。出力ノードの選択を解除して再度コピーしてください。グラフ全体を複製するにはライブラリでコピーを作成してください。</value></data>
   <data name="GraphSelection.Selected" xml:space="preserve"><value>選択済み</value></data>
+  <data name="Sandbox.Title" xml:space="preserve"><value>サンドボックスのファイル</value></data>
+  <data name="Sandbox.Description" xml:space="preserve"><value>アプリ内ファイルの読み込み・書き出し・整理</value></data>
+  <data name="Sandbox.Root" xml:space="preserve"><value>アプリのファイル</value></data>
+  <data name="Sandbox.ImportFiles" xml:space="preserve"><value>ファイルを読み込む</value></data>
+  <data name="Sandbox.ImportFolder" xml:space="preserve"><value>フォルダーを読み込む</value></data>
+  <data name="Sandbox.ImportZip" xml:space="preserve"><value>ZIP からフォルダーを読み込む</value></data>
+  <data name="Sandbox.Export" xml:space="preserve"><value>書き出す</value></data>
+  <data name="Sandbox.ExportCurrent" xml:space="preserve"><value>現在のフォルダーを書き出す</value></data>
+  <data name="Sandbox.SaveToDevice" xml:space="preserve"><value>端末に保存</value></data>
+  <data name="Sandbox.NewFolder" xml:space="preserve"><value>新規フォルダー</value></data>
+  <data name="Sandbox.Rename" xml:space="preserve"><value>名前を変更</value></data>
+  <data name="Sandbox.Delete" xml:space="preserve"><value>削除</value></data>
+  <data name="Sandbox.More" xml:space="preserve"><value>その他の操作</value></data>
+  <data name="Sandbox.ToggleSelection" xml:space="preserve"><value>すべて選択 / 選択解除</value></data>
+  <data name="Sandbox.SelectionSummary" xml:space="preserve"><value>{1} 件中 {0} 件選択</value></data>
+  <data name="Sandbox.Folder" xml:space="preserve"><value>フォルダー</value></data>
+  <data name="Sandbox.Name" xml:space="preserve"><value>名前</value></data>
+  <data name="Sandbox.NameHint" xml:space="preserve"><value>名前を入力してください。ファイルには必要な拡張子も含めてください。</value></data>
+  <data name="Sandbox.Hint" xml:space="preserve"><value>フォルダーや複数項目は ZIP で書き出します。変更後はアプリの再起動が必要な場合があります。</value></data>
+  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>フォルダーや複数項目は ZIP で書き出します。空のフォルダーは ZIP で読み込んでください。大きな転送は分割保存します。変更後は再起動が必要な場合があります。</value></data>
+  <data name="Sandbox.Working" xml:space="preserve"><value>処理中…</value></data>
+  <data name="Sandbox.Saving" xml:space="preserve"><value>変更を保存中…</value></data>
+  <data name="Sandbox.Completed" xml:space="preserve"><value>完了しました。変更の反映に再起動が必要な場合があります。</value></data>
+  <data name="Sandbox.Cancelled" xml:space="preserve"><value>キャンセルしました。完了した項目は保持されます。</value></data>
+  <data name="Sandbox.OperationFailed" xml:space="preserve"><value>一部の処理が完了しませんでした：{0}</value></data>
+  <data name="Sandbox.Imported" xml:space="preserve"><value>{0} 件を読み込みました。反映に再起動が必要な場合があります。</value></data>
+  <data name="Sandbox.Deleted" xml:space="preserve"><value>{0} 件を削除しました。</value></data>
+  <data name="Sandbox.Exported" xml:space="preserve"><value>端末に保存しました。</value></data>
+  <data name="Sandbox.DownloadStarted" xml:space="preserve"><value>ダウンロードを開始しました。ブラウザーで保存結果を確認してください。</value></data>
+  <data name="Sandbox.ExportReady" xml:space="preserve"><value>書き出すファイルの準備ができました。</value></data>
+  <data name="Sandbox.PersistenceFailed" xml:space="preserve"><value>変更は永続ストレージに未保存です。保存を再試行してから閉じてください。</value></data>
+  <data name="Sandbox.RetrySave" xml:space="preserve"><value>保存を再試行</value></data>
+  <data name="Sandbox.ConflictTitle" xml:space="preserve"><value>同じ名前の項目があります</value></data>
+  <data name="Sandbox.ConflictMessage" xml:space="preserve"><value>「{0}」は既に存在します。両方を保持すると読み込む名前に番号が付き、既存の項目は保持されます。</value></data>
+  <data name="Sandbox.KeepBoth" xml:space="preserve"><value>両方を保持</value></data>
+  <data name="Sandbox.KeepAll" xml:space="preserve"><value>すべて両方を保持</value></data>
+  <data name="Sandbox.Skip" xml:space="preserve"><value>スキップ</value></data>
+  <data name="Sandbox.SkipAll" xml:space="preserve"><value>競合をすべてスキップ</value></data>
+  <data name="Sandbox.DeleteTitle" xml:space="preserve"><value>選択項目を削除しますか？</value></data>
+  <data name="Sandbox.DeleteMessage" xml:space="preserve"><value>{0} 件と選択フォルダーの全内容を完全に削除します。元に戻せません。
+
+{1}</value></data>
+  <data name="Sandbox.InvalidName" xml:space="preserve"><value>無効な名前です。パス、予約記号、前後の空白、末尾のピリオドは使えません。</value></data>
+  <data name="Sandbox.AlreadyExists" xml:space="preserve"><value>その名前は既に使われています。</value></data>
+  <data name="Sandbox.OutsideWorkspace" xml:space="preserve"><value>アプリの作業領域外のパスです。</value></data>
+  <data name="Sandbox.LinkNotAllowed" xml:space="preserve"><value>シンボリックリンクや再解析ポイントには対応していません。</value></data>
+  <data name="Sandbox.Protected" xml:space="preserve"><value>アプリが管理する項目のため変更できません。プラグインは管理ページを使用してください。</value></data>
+  <data name="Sandbox.CloseEditor" xml:space="preserve"><value>削除や名前変更の前にプロジェクトを閉じてください。</value></data>
+  <data name="Sandbox.ImportLimit" xml:space="preserve"><value>項目数またはフォルダーの階層数が上限を超えました。分けて処理してください。</value></data>
+  <data name="Sandbox.ZipFilesOnly" xml:space="preserve"><value>ZIP ファイルを選択してください。通常のファイルには「ファイルを読み込む」を使用してください。</value></data>
+  <data name="Sandbox.TransferUnavailable" xml:space="preserve"><value>システムのファイル選択を開けません。後で再試行してください。</value></data>
+  <data name="Sandbox.FolderUnavailable" xml:space="preserve"><value>フォルダーを選択できません。ZIP を読み込んでください。</value></data>
+  <data name="Sandbox.SelectionActions" xml:space="preserve"><value>選択操作</value></data>
+  <data name="Sandbox.InvertSelection" xml:space="preserve"><value>選択を反転</value></data>
+  <data name="Sandbox.ClearSelection" xml:space="preserve"><value>選択を解除</value></data>
+  <data name="Sandbox.Add" xml:space="preserve"><value>新規作成・読み込み</value></data>
 </root>

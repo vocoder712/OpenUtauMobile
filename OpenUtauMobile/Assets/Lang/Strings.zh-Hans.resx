@@ -2504,4 +2504,60 @@
   <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>目标图缺少或不支持表情参数“{0}”。</value></data>
   <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>目标图已有相同的输出。请取消选择输出节点后重新复制；若要复制整张图，请在图库中创建副本。</value></data>
   <data name="GraphSelection.Selected" xml:space="preserve"><value>已选择</value></data>
+  <data name="Sandbox.Title" xml:space="preserve"><value>沙箱文件管理</value></data>
+  <data name="Sandbox.Description" xml:space="preserve"><value>导入、导出和整理应用内文件</value></data>
+  <data name="Sandbox.Root" xml:space="preserve"><value>应用文件</value></data>
+  <data name="Sandbox.ImportFiles" xml:space="preserve"><value>导入文件</value></data>
+  <data name="Sandbox.ImportFolder" xml:space="preserve"><value>导入文件夹</value></data>
+  <data name="Sandbox.ImportZip" xml:space="preserve"><value>从压缩包导入文件夹</value></data>
+  <data name="Sandbox.Export" xml:space="preserve"><value>导出</value></data>
+  <data name="Sandbox.ExportCurrent" xml:space="preserve"><value>导出当前文件夹</value></data>
+  <data name="Sandbox.SaveToDevice" xml:space="preserve"><value>保存到设备</value></data>
+  <data name="Sandbox.NewFolder" xml:space="preserve"><value>新建文件夹</value></data>
+  <data name="Sandbox.Rename" xml:space="preserve"><value>重命名</value></data>
+  <data name="Sandbox.Delete" xml:space="preserve"><value>删除</value></data>
+  <data name="Sandbox.More" xml:space="preserve"><value>更多操作</value></data>
+  <data name="Sandbox.ToggleSelection" xml:space="preserve"><value>全选 / 取消全选</value></data>
+  <data name="Sandbox.SelectionSummary" xml:space="preserve"><value>已选 {0} / {1} 项</value></data>
+  <data name="Sandbox.Folder" xml:space="preserve"><value>文件夹</value></data>
+  <data name="Sandbox.Name" xml:space="preserve"><value>名称</value></data>
+  <data name="Sandbox.NameHint" xml:space="preserve"><value>请输入名称。重命名文件时请保留所需扩展名。</value></data>
+  <data name="Sandbox.Hint" xml:space="preserve"><value>文件夹和多选项目导出为 ZIP。整理资源后，可能需要重启应用。</value></data>
+  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>文件夹和多选项目导出为 ZIP。导入含空文件夹的目录时，请使用 ZIP。大型传输会分批保存；资源变更可能需要重启应用。</value></data>
+  <data name="Sandbox.Working" xml:space="preserve"><value>正在处理…</value></data>
+  <data name="Sandbox.Saving" xml:space="preserve"><value>正在保存修改…</value></data>
+  <data name="Sandbox.Completed" xml:space="preserve"><value>操作已完成。资源变更可能需要重启应用后生效。</value></data>
+  <data name="Sandbox.Cancelled" xml:space="preserve"><value>操作已取消；已完成的项目会保留。</value></data>
+  <data name="Sandbox.OperationFailed" xml:space="preserve"><value>操作未全部完成：{0}</value></data>
+  <data name="Sandbox.Imported" xml:space="preserve"><value>已导入 {0} 项。资源变更可能需要重启应用后生效。</value></data>
+  <data name="Sandbox.Deleted" xml:space="preserve"><value>已删除 {0} 项。</value></data>
+  <data name="Sandbox.Exported" xml:space="preserve"><value>已保存到设备。</value></data>
+  <data name="Sandbox.DownloadStarted" xml:space="preserve"><value>已发起下载，请在浏览器中查看保存结果。</value></data>
+  <data name="Sandbox.ExportReady" xml:space="preserve"><value>文件已准备好，可以保存到设备。</value></data>
+  <data name="Sandbox.PersistenceFailed" xml:space="preserve"><value>修改尚未保存到持久存储，请重试保存后再离开。</value></data>
+  <data name="Sandbox.RetrySave" xml:space="preserve"><value>重试保存</value></data>
+  <data name="Sandbox.ConflictTitle" xml:space="preserve"><value>存在同名项目</value></data>
+  <data name="Sandbox.ConflictMessage" xml:space="preserve"><value>“{0}”已存在。保留两者会为新导入的项目添加编号，原有内容不会被覆盖。</value></data>
+  <data name="Sandbox.KeepBoth" xml:space="preserve"><value>保留两者</value></data>
+  <data name="Sandbox.KeepAll" xml:space="preserve"><value>全部保留两者</value></data>
+  <data name="Sandbox.Skip" xml:space="preserve"><value>跳过</value></data>
+  <data name="Sandbox.SkipAll" xml:space="preserve"><value>全部跳过</value></data>
+  <data name="Sandbox.DeleteTitle" xml:space="preserve"><value>删除所选项目？</value></data>
+  <data name="Sandbox.DeleteMessage" xml:space="preserve"><value>将永久删除 {0} 项及所选文件夹中的全部内容，无法撤销。
+
+{1}</value></data>
+  <data name="Sandbox.InvalidName" xml:space="preserve"><value>名称无效。请勿使用路径、特殊符号、首尾空格或末尾句点。</value></data>
+  <data name="Sandbox.AlreadyExists" xml:space="preserve"><value>该名称已被使用。</value></data>
+  <data name="Sandbox.OutsideWorkspace" xml:space="preserve"><value>路径超出应用工作区。</value></data>
+  <data name="Sandbox.LinkNotAllowed" xml:space="preserve"><value>不支持对符号链接或重解析点进行此操作。</value></data>
+  <data name="Sandbox.Protected" xml:space="preserve"><value>该项目由应用管理，不能在此修改。插件请使用插件管理页。</value></data>
+  <data name="Sandbox.CloseEditor" xml:space="preserve"><value>请先关闭工程，再删除或重命名资源。</value></data>
+  <data name="Sandbox.ImportLimit" xml:space="preserve"><value>文件数量或目录深度超过限制。请分批处理。</value></data>
+  <data name="Sandbox.ZipFilesOnly" xml:space="preserve"><value>请选择 ZIP 文件；导入普通文件请使用“导入文件”。</value></data>
+  <data name="Sandbox.TransferUnavailable" xml:space="preserve"><value>当前无法打开系统文件选择器，请稍后重试。</value></data>
+  <data name="Sandbox.FolderUnavailable" xml:space="preserve"><value>当前不支持选择文件夹，请改用 ZIP 导入。</value></data>
+  <data name="Sandbox.SelectionActions" xml:space="preserve"><value>选择操作</value></data>
+  <data name="Sandbox.InvertSelection" xml:space="preserve"><value>反选</value></data>
+  <data name="Sandbox.ClearSelection" xml:space="preserve"><value>清除选择</value></data>
+  <data name="Sandbox.Add" xml:space="preserve"><value>新建或导入</value></data>
 </root>

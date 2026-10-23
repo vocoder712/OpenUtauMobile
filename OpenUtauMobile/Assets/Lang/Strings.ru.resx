@@ -2459,4 +2459,60 @@ Applying replaces the source of this input.</value></data>
   <data name="GraphSelection.MissingExpression" xml:space="preserve"><value>В целевом графе отсутствует или не поддерживается выражение «{0}».</value></data>
   <data name="GraphSelection.OutputConflict" xml:space="preserve"><value>В целевом графе уже есть такой выход. Снимите выделение с выходных узлов и скопируйте снова. Для дублирования всего графа создайте копию в библиотеке.</value></data>
   <data name="GraphSelection.Selected" xml:space="preserve"><value>Выбрано</value></data>
+  <data name="Sandbox.Title" xml:space="preserve"><value>Файлы песочницы</value></data>
+  <data name="Sandbox.Description" xml:space="preserve"><value>Импорт, экспорт и управление файлами</value></data>
+  <data name="Sandbox.Root" xml:space="preserve"><value>Файлы приложения</value></data>
+  <data name="Sandbox.ImportFiles" xml:space="preserve"><value>Импорт файлов</value></data>
+  <data name="Sandbox.ImportFolder" xml:space="preserve"><value>Импорт папки</value></data>
+  <data name="Sandbox.ImportZip" xml:space="preserve"><value>Импорт папки из ZIP</value></data>
+  <data name="Sandbox.Export" xml:space="preserve"><value>Экспорт</value></data>
+  <data name="Sandbox.ExportCurrent" xml:space="preserve"><value>Экспорт текущей папки</value></data>
+  <data name="Sandbox.SaveToDevice" xml:space="preserve"><value>Сохранить на устройство</value></data>
+  <data name="Sandbox.NewFolder" xml:space="preserve"><value>Новая папка</value></data>
+  <data name="Sandbox.Rename" xml:space="preserve"><value>Переименовать</value></data>
+  <data name="Sandbox.Delete" xml:space="preserve"><value>Удалить</value></data>
+  <data name="Sandbox.More" xml:space="preserve"><value>Другие действия</value></data>
+  <data name="Sandbox.ToggleSelection" xml:space="preserve"><value>Выбрать / снять выбор</value></data>
+  <data name="Sandbox.SelectionSummary" xml:space="preserve"><value>Выбрано {0} из {1}</value></data>
+  <data name="Sandbox.Folder" xml:space="preserve"><value>Папка</value></data>
+  <data name="Sandbox.Name" xml:space="preserve"><value>Имя</value></data>
+  <data name="Sandbox.NameHint" xml:space="preserve"><value>Введите имя. При переименовании файла укажите расширение.</value></data>
+  <data name="Sandbox.Hint" xml:space="preserve"><value>Папки и несколько элементов экспортируются в ZIP. После изменения ресурсов может потребоваться перезапуск.</value></data>
+  <data name="Sandbox.BrowserHint" xml:space="preserve"><value>Папки и несколько элементов экспортируются в ZIP. Для импорта пустых папок используйте ZIP. Большие передачи сохраняются частями; может потребоваться перезапуск.</value></data>
+  <data name="Sandbox.Working" xml:space="preserve"><value>Обработка…</value></data>
+  <data name="Sandbox.Saving" xml:space="preserve"><value>Сохранение изменений…</value></data>
+  <data name="Sandbox.Completed" xml:space="preserve"><value>Готово. Изменения ресурсов могут потребовать перезапуска.</value></data>
+  <data name="Sandbox.Cancelled" xml:space="preserve"><value>Отменено. Завершённые элементы сохранены.</value></data>
+  <data name="Sandbox.OperationFailed" xml:space="preserve"><value>Операция выполнена не полностью: {0}</value></data>
+  <data name="Sandbox.Imported" xml:space="preserve"><value>Импортировано: {0}. Может потребоваться перезапуск.</value></data>
+  <data name="Sandbox.Deleted" xml:space="preserve"><value>Удалено: {0}.</value></data>
+  <data name="Sandbox.Exported" xml:space="preserve"><value>Сохранено на устройство.</value></data>
+  <data name="Sandbox.DownloadStarted" xml:space="preserve"><value>Загрузка начата. Проверьте сохранённый файл в браузере.</value></data>
+  <data name="Sandbox.ExportReady" xml:space="preserve"><value>Файл готов к сохранению.</value></data>
+  <data name="Sandbox.PersistenceFailed" xml:space="preserve"><value>Изменения не записаны в постоянное хранилище. Повторите сохранение перед выходом.</value></data>
+  <data name="Sandbox.RetrySave" xml:space="preserve"><value>Повторить сохранение</value></data>
+  <data name="Sandbox.ConflictTitle" xml:space="preserve"><value>Совпадение имён</value></data>
+  <data name="Sandbox.ConflictMessage" xml:space="preserve"><value>«{0}» уже существует. Сохранение обоих добавит номер к новому имени, не меняя существующий элемент.</value></data>
+  <data name="Sandbox.KeepBoth" xml:space="preserve"><value>Сохранить оба</value></data>
+  <data name="Sandbox.KeepAll" xml:space="preserve"><value>Сохранить оба для всех</value></data>
+  <data name="Sandbox.Skip" xml:space="preserve"><value>Пропустить</value></data>
+  <data name="Sandbox.SkipAll" xml:space="preserve"><value>Пропустить все совпадения</value></data>
+  <data name="Sandbox.DeleteTitle" xml:space="preserve"><value>Удалить выбранное?</value></data>
+  <data name="Sandbox.DeleteMessage" xml:space="preserve"><value>Будет удалено {0} элементов и всё содержимое выбранных папок. Это нельзя отменить.
+
+{1}</value></data>
+  <data name="Sandbox.InvalidName" xml:space="preserve"><value>Недопустимое имя: не используйте пути, служебные символы, пробелы по краям и точку в конце.</value></data>
+  <data name="Sandbox.AlreadyExists" xml:space="preserve"><value>Это имя уже используется.</value></data>
+  <data name="Sandbox.OutsideWorkspace" xml:space="preserve"><value>Путь находится вне рабочей области приложения.</value></data>
+  <data name="Sandbox.LinkNotAllowed" xml:space="preserve"><value>Операция не поддерживает символические ссылки и точки повторной обработки.</value></data>
+  <data name="Sandbox.Protected" xml:space="preserve"><value>Этот элемент управляется приложением. Для плагинов используйте менеджер плагинов.</value></data>
+  <data name="Sandbox.CloseEditor" xml:space="preserve"><value>Закройте проект перед удалением или переименованием ресурсов.</value></data>
+  <data name="Sandbox.ImportLimit" xml:space="preserve"><value>Превышен лимит числа файлов или глубины папок. Разделите операцию.</value></data>
+  <data name="Sandbox.ZipFilesOnly" xml:space="preserve"><value>Выберите ZIP-файлы. Для обычных файлов используйте импорт файлов.</value></data>
+  <data name="Sandbox.TransferUnavailable" xml:space="preserve"><value>Системный выбор файлов недоступен. Повторите позже.</value></data>
+  <data name="Sandbox.FolderUnavailable" xml:space="preserve"><value>Выбор папки недоступен. Импортируйте ZIP.</value></data>
+  <data name="Sandbox.SelectionActions" xml:space="preserve"><value>Действия с выбором</value></data>
+  <data name="Sandbox.InvertSelection" xml:space="preserve"><value>Инвертировать выбор</value></data>
+  <data name="Sandbox.ClearSelection" xml:space="preserve"><value>Снять выделение</value></data>
+  <data name="Sandbox.Add" xml:space="preserve"><value>Создать или импортировать</value></data>
 </root>

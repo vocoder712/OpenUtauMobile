@@ -105,6 +105,8 @@ internal sealed partial class Program
         InitExceptionHandler();
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.FlushFileSystemAsync = BrowserFileSystem.FlushAsync;
+        ServiceHub.SandboxFileTransferService = new BrowserSandboxFileTransferService();
+        ServiceHub.CreateSandboxTransferFileAsync = BrowserSandboxTransferFile.CreateAsync;
         ServiceHub.ExternalUrlLauncher = new BrowserExternalUrlLauncher();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         return AppBuilder.Configure<App>()

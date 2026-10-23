@@ -38,6 +38,7 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         ProbeOnnxRuntime();
         ServiceHub.InitAudioOutput = InitAudioOutput;
         ServiceHub.ExternalUrlLauncher = new IosExternalUrlLauncher();
+        ServiceHub.SandboxFileTransferService = new OpenUtauMobile.Storage.StorageProviderSandboxTransferService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         IosGraphicsBackendProvider graphicsProvider = new();
         GraphicsBackendService graphicsService = new(graphicsProvider);

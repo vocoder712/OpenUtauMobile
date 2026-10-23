@@ -1,5 +1,6 @@
 import { dotnet } from './_framework/dotnet.js'
 import { initialize } from './file-system.js'
+import { initialize as initializeFileTransfer } from './file-transfer.js'
 
 const is_browser = typeof window != "undefined";
 if (!is_browser) throw new Error(`Expected to be running in a browser`);
@@ -13,6 +14,7 @@ try {
     const config = dotnetRuntime.getConfig();
 
     await initialize(dotnetRuntime);
+    await initializeFileTransfer(dotnetRuntime);
     await dotnetRuntime.runMain(config.mainAssemblyName, [globalThis.location.href]);
 } catch (error) {
     console.error("Browser startup failed:", error);

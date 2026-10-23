@@ -6,6 +6,11 @@ let restoring = true;
 let flushing;
 let timer;
 let releaseLock;
+let dirtyBytes = 0;
+let firstChangeAt = 0;
+const activeWrites = new Map();
+const flushBytes = 32 * 1024 * 1024;
+const flushInterval = 2000;
 
 // 串行同步并追踪同步期间的新写入，避免旧快照覆盖新修改。
 export async function flush() {
@@ -15,12 +20,16 @@ export async function flush() {
         return flush();
     }
     clearTimeout(timer);
+    timer = undefined;
     flushing = (async () => {
         while (persistedRevision < revision) {
             const targetRevision = revision;
+            const targetBytes = dirtyBytes;
             await sync(false);
             persistedRevision = targetRevision;
+            dirtyBytes = Math.max(0, dirtyBytes - targetBytes);
         }
+        firstChangeAt = 0;
     })();
     try {
         await flushing;
@@ -34,12 +43,33 @@ function sync(populate) {
         error ? reject(error) : resolve()));
 }
 
-function changed() {
+function scheduleFlush() {
+    if (timer !== undefined || restoring) return;
+    const delay = hasRecentWrites() ? flushInterval : dirtyBytes >= flushBytes ? 0 :
+        Math.max(0, flushInterval - (Date.now() - firstChangeAt));
+    timer = setTimeout(() => {
+        timer = undefined;
+        // 连续写入时等待文件关闭或空闲，避免每写一小段就重新保存整份快照。
+        // 日志等长期打开的句柄在停止写入后也能保存，不会永久阻挡自动同步。
+        if (hasRecentWrites()) { scheduleFlush(); return; }
+        void flush().catch(error => console.error("Virtual file storage sync failed:", error));
+    }, delay);
+}
+
+function hasRecentWrites() {
+    const now = Date.now();
+    for (const [stream, changedAt] of activeWrites) {
+        if (now - changedAt >= flushInterval) activeWrites.delete(stream);
+    }
+    return activeWrites.size > 0;
+}
+
+function changed(bytes = 0) {
     if (restoring) return;
     revision++;
-    clearTimeout(timer);
-    timer = setTimeout(() => flush().catch(error =>
-        console.error("Virtual file storage sync failed:", error)), 100);
+    dirtyBytes += bytes;
+    if (!firstChangeAt) firstChangeAt = Date.now();
+    scheduleFlush();
 }
 
 // 在挂载节点上追踪修改，不修改其他临时文件系统的操作。
@@ -64,14 +94,46 @@ function trackNode(node) {
     }
     const streams = node.stream_ops;
     node.stream_ops = { ...streams };
+    node.stream_ops.close = stream => {
+        try { return streams.close?.(stream); }
+        finally {
+            if (activeWrites.delete(stream)) {
+                if (!activeWrites.size && dirtyBytes >= flushBytes) {
+                    clearTimeout(timer);
+                    timer = undefined;
+                }
+                changed();
+            }
+        }
+    };
     for (const name of ["write", "allocate", "msync"]) {
         if (!streams[name]) continue;
         node.stream_ops[name] = (...args) => {
             const result = streams[name](...args);
-            changed();
+            if (name === "write") activeWrites.set(args[0], Date.now());
+            changed(name === "write" ? result : 0);
             return result;
         };
     }
+}
+
+// 只清理本功能保留的隐藏暂存目录，保留中断前已改名提交的用户文件。
+function cleanupTransfers(directory) {
+    for (const name of fs.readdir(directory)) {
+        if (name === "." || name === "..") continue;
+        const path = `${directory}/${name}`;
+        if (!fs.isDir(fs.lstat(path).mode)) continue;
+        if (/^\.opum-transfer-[0-9a-f]{32}$/.test(name)) removeTree(path);
+        else cleanupTransfers(path);
+    }
+}
+
+function removeTree(path) {
+    if (fs.isDir(fs.lstat(path).mode)) {
+        for (const name of fs.readdir(path))
+            if (name !== "." && name !== "..") removeTree(`${path}/${name}`);
+        fs.rmdir(path);
+    } else fs.unlink(path);
 }
 
 export async function initialize(runtime) {
@@ -101,6 +163,7 @@ export async function initialize(runtime) {
     }, {}, root);
     await sync(true);
     restoring = false;
+    cleanupTransfers(root);
     fs.mkdirTree(`${root}/Projects`);
     fs.mkdirTree(`${root}/Data`);
     await flush();

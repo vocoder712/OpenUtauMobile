@@ -1,0 +1,204 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             x:Class="OpenUtauMobile.Views.SandboxFileManagerView"
+             x:DataType="vm:SandboxFileManagerViewModel"
+             x:Name="Root">
+    <UserControl.Styles>
+        <Style Selector="icons|PackIconPhosphorIcons">
+            <Setter Property="Width" Value="{x:Static semantic:IconTokens.Standard}" />
+            <Setter Property="Height" Value="{x:Static semantic:IconTokens.Standard}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button.SandboxEntry">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="MinHeight" Value="72" />
+            <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
+        </Style>
+        <Style Selector="Border.SandboxFooter">
+            <Setter Property="Padding" Value="20,12,20,16" />
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+            <Setter Property="BorderThickness" Value="0,1,0,0" />
+        </Style>
+        <Style Selector="MenuItem.SandboxMenuItem">
+            <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+            <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyLSize}" />
+        </Style>
+        <Style Selector="MenuItem.SandboxDelete">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
+        </Style>
+        <Style Selector="TextBlock.SandboxSupporting">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyMSize}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Background="{DynamicResource Sem.Color.Surface}">
+        <Border Classes="TopBar">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <Button Classes="TopBarBtn" Command="{Binding BackCommand}"
+                        ToolTip.Tip="{DynamicResource Common.Back}" AutomationProperties.Name="{DynamicResource Common.Back}"
+                        Content="{icons:PhosphorIcons ArrowLeft}" />
+                <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource Sandbox.Title}" />
+                <Button Grid.Column="2" Classes="icon" Command="{Binding RefreshCommand}"
+                        ToolTip.Tip="{DynamicResource ExportLogs.Refresh}" AutomationProperties.Name="{DynamicResource ExportLogs.Refresh}"
+                        Content="{icons:PhosphorIcons ArrowsClockwise}" />
+            </Grid>
+        </Border>
+
+        <Border x:Name="ActionToolbar" Grid.Row="3" Classes="SandboxFooter">
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,Auto,*"
+                  RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                  ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <TextBlock Grid.ColumnSpan="3" Text="{Binding SelectionSummary}" Classes="SandboxSupporting" />
+                <Button Grid.Row="1" Classes="icon" IsEnabled="{Binding !IsBusy}"
+                        ToolTip.Tip="{DynamicResource Sandbox.SelectionActions}" AutomationProperties.Name="{DynamicResource Sandbox.SelectionActions}"
+                        Content="{icons:PhosphorIcons ListChecks}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Classes="SandboxMenuItem" Header="{DynamicResource Common.SelectAll}" Command="{Binding SelectAllCommand}" />
+                            <MenuItem Classes="SandboxMenuItem" Header="{DynamicResource Sandbox.InvertSelection}" Command="{Binding InvertSelectionCommand}" />
+                            <MenuItem Classes="SandboxMenuItem" Header="{DynamicResource Sandbox.ClearSelection}" Command="{Binding ClearSelectionCommand}" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+                <Button Grid.Row="1" Grid.Column="1" Classes="icon" Command="{Binding DeleteSelectedCommand}" IsVisible="{Binding HasSelection}"
+                        ToolTip.Tip="{DynamicResource Sandbox.Delete}" AutomationProperties.Name="{DynamicResource Sandbox.Delete}"
+                        Content="{icons:PhosphorIcons Trash}" />
+                <Button x:Name="ExportButton" Grid.Row="1" Grid.Column="2" Classes="filled" HorizontalAlignment="Stretch"
+                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}" Command="{Binding ExportCommand}">
+                    <TextBlock Text="{Binding ExportActionLabel}" TextWrapping="Wrap" TextAlignment="Center" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Padding="20,8">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <Button Classes="icon" Command="{Binding GoUpCommand}"
+                        ToolTip.Tip="{DynamicResource FilePicker.GoUp}" AutomationProperties.Name="{DynamicResource FilePicker.GoUp}"
+                        Content="{icons:PhosphorIcons ArrowUp}" />
+                <TextBlock Grid.Column="1" Text="{Binding RelativePath}" VerticalAlignment="Center"
+                           FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" TextTrimming="CharacterEllipsis"
+                           ToolTip.Tip="{Binding RelativePath}" />
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <ScrollViewer x:Name="FileScroll" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding !IsLoading}">
+                <Border Padding="20,8,20,88">
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                        <Border Padding="0,8" IsVisible="{Binding ShowPersistenceWarning}">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <TextBlock Text="{DynamicResource Sandbox.PersistenceFailed}" TextWrapping="Wrap"
+                                           Foreground="{DynamicResource Sem.Color.Error}" />
+                                <Button Classes="text" Command="{Binding RetryPersistenceCommand}" Content="{DynamicResource Sandbox.RetrySave}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Padding="0,8" IsVisible="{Binding HasPreparedExport}">
+                            <Border Padding="16" CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                    Background="{DynamicResource Sem.Color.SecondaryContainer}">
+                                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                    <TextBlock Text="{DynamicResource Sandbox.ExportReady}" TextWrapping="Wrap"
+                                               Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+                                    <TextBlock Text="{Binding PreparedExportName}" TextTrimming="CharacterEllipsis"
+                                               Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}" />
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <Button Classes="filled" Command="{Binding SaveExportCommand}" Content="{DynamicResource Sandbox.SaveToDevice}"
+                                                MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}" />
+                                        <Button Grid.Column="1" Classes="icon" Command="{Binding DismissExportCommand}"
+                                                ToolTip.Tip="{DynamicResource Common.Cancel}" AutomationProperties.Name="{DynamicResource Common.Cancel}"
+                                                Content="{icons:PhosphorIcons X}" />
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Border>
+
+                        <Border Padding="0,8" IsVisible="{Binding ShowOperationProgress}">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                <ProgressBar IsIndeterminate="True" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                    <TextBlock Text="{Binding ProgressText}" Classes="SandboxSupporting" VerticalAlignment="Center" MaxLines="2" />
+                                    <Button Grid.Column="1" Classes="text" IsVisible="{Binding CanCancel}" Command="{Binding CancelCommand}"
+                                            Content="{DynamicResource Common.Cancel}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <TextBlock Text="{Binding ImportHint}" Classes="SandboxSupporting" />
+                        <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}"
+                                   IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <TextBlock Text="{Binding StatusMessage}" Classes="SandboxSupporting"
+                                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                        <Border Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                                CornerRadius="{x:Static foundation:ShapeTokens.CornerXL}" ClipToBounds="True"
+                                IsEnabled="{Binding !IsBusy}">
+                            <ItemsControl ItemsSource="{Binding Entries}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:SandboxFileItemViewModel">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" MinHeight="72">
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      MinWidth="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                                      MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,0,0,0"
+                                                      AutomationProperties.Name="{Binding Name}" />
+                                            <Button Grid.Column="1" Classes="SandboxEntry"
+                                                    Command="{Binding DataContext.OpenCommand, ElementName=Root}" CommandParameter="{Binding}">
+                                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                                    <Panel VerticalAlignment="Center" Width="{x:Static semantic:IconTokens.Standard}"
+                                                           Height="{x:Static semantic:IconTokens.Standard}">
+                                                        <icons:PackIconPhosphorIcons Kind="Folder" IsVisible="{Binding IsDirectory}"
+                                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                        <icons:PackIconPhosphorIcons Kind="File" IsVisible="{Binding !IsDirectory}"
+                                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                    </Panel>
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" />
+                                                        <TextBlock Text="{Binding Details}" TextTrimming="CharacterEllipsis" FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
+                                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Button>
+                                            <Button Grid.Column="2" Classes="icon" Content="{icons:PhosphorIcons DotsThreeVertical}" Margin="0,0,8,0"
+                                                    ToolTip.Tip="{DynamicResource Sandbox.More}" AutomationProperties.Name="{DynamicResource Sandbox.More}">
+                                                <Button.Flyout>
+                                                    <MenuFlyout>
+                                                        <MenuItem Classes="SandboxMenuItem" Header="{DynamicResource Sandbox.Export}"
+                                                                  Command="{Binding DataContext.ExportItemCommand, ElementName=Root}" CommandParameter="{Binding}" />
+                                                        <MenuItem Classes="SandboxMenuItem" Header="{DynamicResource Sandbox.Rename}" IsEnabled="{Binding CanMutate}" ToolTip.Tip="{Binding Restriction}"
+                                                                  Command="{Binding DataContext.RenameCommand, ElementName=Root}" CommandParameter="{Binding}" />
+                                                        <MenuItem Classes="SandboxMenuItem SandboxDelete" Header="{DynamicResource Sandbox.Delete}" IsEnabled="{Binding CanMutate}" ToolTip.Tip="{Binding Restriction}"
+                                                                  Command="{Binding DataContext.DeleteItemCommand, ElementName=Root}" CommandParameter="{Binding}" />
+                                                    </MenuFlyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                        <StackPanel IsVisible="{Binding IsEmpty}" HorizontalAlignment="Center" Spacing="{x:Static foundation:LayoutTokens.SpaceM}" Margin="0,32">
+                            <icons:PackIconPhosphorIcons Kind="Folder" Width="48" Height="48" HorizontalAlignment="Center"
+                                                           Foreground="{DynamicResource Sem.Color.Outline}" />
+                            <TextBlock Text="{DynamicResource FilePicker.Empty}" Classes="SandboxSupporting" TextAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </ScrollViewer>
+            <ProgressBar IsVisible="{Binding IsLoading}" IsIndeterminate="True" Width="160"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <c:FabMenu x:Name="CreateMenu" Actions="{Binding CreationActions}" IsEnabled="{Binding CanModify}"
+                       OpenLabel="{DynamicResource Sandbox.Add}" IsExpanded="{Binding IsCreationMenuOpen, Mode=TwoWay}" />
+        </Grid>
+    </Grid>
+</UserControl>
