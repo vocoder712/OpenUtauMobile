@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Media;
+using Avalonia.Threading;
 using ReactiveUI.Avalonia;
 using OpenUtau.Audio;
 using OpenUtau.Core;
@@ -20,31 +21,8 @@ using Serilog;
 
 internal sealed partial class Program
 {
-    [ThreadStatic]
-    private static bool _reportingFirstChance;
-
     private static async Task Main(string[] args)
     {
-        // WASM 首次抛出时堆栈可能尚未生成，延后输出；日志异常避免递归。
-        AppDomain.CurrentDomain.FirstChanceException += (s, e) =>
-        {
-            if (_reportingFirstChance)
-            {
-                return;
-            }
-            _reportingFirstChance = true;
-            try
-            {
-                var ex = e.Exception;
-                _ = Task.Run(() => ReportFirstChance(ex));
-            }
-            catch { }
-            finally
-            {
-                _reportingFirstChance = false;
-            }
-        };
-
         try
         {
             AppBuilder appBuilder = BuildAvaloniaApp()
@@ -76,24 +54,6 @@ internal sealed partial class Program
             catch { }
 
             throw;
-        }
-    }
-
-    private static void ReportFirstChance(Exception exception)
-    {
-        if (_reportingFirstChance)
-        {
-            return;
-        }
-        _reportingFirstChance = true;
-        try
-        {
-            Console.Error.WriteLine($"FirstChanceException: {exception}");
-        }
-        catch { }
-        finally
-        {
-            _reportingFirstChance = false;
         }
     }
 
@@ -150,9 +110,9 @@ internal sealed partial class Program
     private static void InitLogging()
     {
         AppLogging.Initialize();
-        // 浏览器没有桌面调试输出窗口，将应用日志和被捕获异常送到控制台。
+        // 浏览器控制台输出需要跨线程代理，避免逐条输出拖动命令及已捕获异常。
         Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
+            .MinimumLevel.Information()
             .WriteTo.Sink(new BrowserConsoleLogSink())
             .WriteTo.Sink(PluginLoadErrorReporter.Instance)
             .CreateLogger();
@@ -214,20 +174,30 @@ internal sealed partial class Program
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
             Log.Error((Exception)args.ExceptionObject, "Unhandled exception.");
-            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification((Exception)args.ExceptionObject));
+            // 致命运行时异常不能通过弹窗恢复，也不应继续向正在退出的 UI 派发任务。
+            if (!args.IsTerminating)
+            {
+                PostErrorNotification((Exception)args.ExceptionObject);
+            }
         };
         TaskScheduler.UnobservedTaskException += (_, args) =>
         {
             Log.Error(args.Exception, "Unobserved task exception.");
-            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(args.Exception));
             args.SetObserved();
+            PostErrorNotification(args.Exception);
         };
     }
 
     private static void HandleReactiveException(Exception exception)
     {
         Log.Error(exception, "Unhandled ReactiveUI exception.");
-        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(exception));
+        PostErrorNotification(exception);
+    }
+
+    /// <summary>将可恢复的后台异常通知派发到 UI 线程。</summary>
+    private static void PostErrorNotification(Exception exception)
+    {
+        Dispatcher.UIThread.Post(() => DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(exception)));
     }
 
     private static (bool success, Color color, string source) TryGetPlatformAccentFallback()

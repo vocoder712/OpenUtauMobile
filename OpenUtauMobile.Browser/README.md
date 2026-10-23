@@ -16,6 +16,7 @@ dotnet run --project OpenUtauMobile.Browser/OpenUtauMobile.Browser.csproj -c Deb
   除 `wasm-tools` 外需要 Python 3.10+、Git 和 Bazelisk；Emscripten 使用工作负载配套版本。
   详见 [Worldline 构建说明](../native/worldline/README.md)。这不包含 ONNX 后端或浏览器音频播放接入。
 - 启用 `WasmEnableThreads`，保留音素化与短语构建后台线程。SDK 开发服务器会自动附加跨源隔离响应头。
+- 浏览器控制台默认记录 Information 及以上级别，不全局监听 FirstChanceException。已捕获异常和正常任务取消不应逐次创建后台日志任务；拖动命令的 Debug 日志也不应逐条跨线程输出到控制台。
 - Debug 的原生编译使用 `-Oz`，原生链接使用 `-O2`。本机 .NET 10.0.12 的 `-O0` 多线程原生构建在运行时初始化时断言失败；这些设置保留 C# 的 Debug 配置和调试符号。相关上游记录：<https://github.com/dotnet/runtime/issues/112926>。
 - 浏览器发布关闭托管裁剪并启用 JSON 反射，保留现有序列化模型和通过反射发现的插件类型。代价是下载体积较大。
 - CJK 使用随应用打包的 Noto Sans CJK SC，西文使用 Inter。
@@ -54,6 +55,8 @@ IDBFS 会把已保存的文件加载到内存，适合先接通现有同步文�
 参考：[Emscripten IDBFS](https://emscripten.org/docs/api_reference/Filesystem-API.html#idbfs)、[浏览器持久存储权限](https://developer.mozilla.org/en-US/docs/Web/API/StorageManager/persist)。
 
 ## 已知范围
+
+当前 .NET 10 多线程 WASM 仍存在致命定时器锁异常风险：`System.Threading.Lock.Exit` → `TimerQueueTimer.Fire/Dispose` → `Task.Delay`，随后可能出现 GC 等待线程暂停失败并使页面失去响应。该堆栈已在 Chromium 内核浏览器中通过并发定时器、可取消延时复现；移除 FirstChanceException 日志任务、关闭 JITerpreter 均不能消除它。相关上游问题仍未关闭：[dotnet/runtime#129900](https://github.com/dotnet/runtime/issues/129900)。这些日志优化不代表多线程稳定性问题已经修复。当前后端会直接创建音素化和短语构建线程，单独关闭 `WasmEnableThreads` 会破坏初始化，不能作为现有架构的直接替代方案。
 
 启动、托管外部音素器扫描与后台音素化可以运行，但这不代表所有桌面插件和音频引擎都适用于浏览器。当前音频输出仍是既有的 Dummy 后端。ONNX 原生库在浏览器中不可用，重新读取偏好时的 ONNX 设备校验会记录异常；这不影响已验证的普通托管音素器。
 
