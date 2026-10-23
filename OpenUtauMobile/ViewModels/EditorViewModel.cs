@@ -1,6 +1,3 @@
-using OpenUtauMobile.Services.Tracks;
-using OpenUtauMobile.Services.Editor;
-using OpenUtauMobile.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +19,9 @@ using OpenUtauMobile.Controls;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.Editor;
+using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;

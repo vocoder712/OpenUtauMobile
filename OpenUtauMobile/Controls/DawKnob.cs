@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using Avalonia;
-using Avalonia.Controls.Primitives;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Platform;
-using Avalonia.Input;
 
 namespace OpenUtauMobile.Controls;
 

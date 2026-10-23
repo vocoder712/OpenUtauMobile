@@ -1,6 +1,6 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
-using System;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 

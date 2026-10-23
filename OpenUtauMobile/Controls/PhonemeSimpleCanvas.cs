@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using OpenUtauMobile.Controls.Tokens;
-using OpenUtauMobile.Helpers;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -10,6 +8,8 @@ using Avalonia.Media.TextFormatting;
 using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Controls.Tokens;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;

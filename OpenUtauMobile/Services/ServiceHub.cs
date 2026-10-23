@@ -1,9 +1,9 @@
-using OpenUtauMobile.Services.Platform;
 using System;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using OpenUtauMobile.Services.Graphics;
 using OpenUtauMobile.Services.Performance;
+using OpenUtauMobile.Services.Platform;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Platform;

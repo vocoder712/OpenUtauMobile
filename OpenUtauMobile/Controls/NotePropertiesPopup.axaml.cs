@@ -1,11 +1,11 @@
 using System;
 using System.Linq;
 using System.Reactive.Linq;
-using Avalonia.Controls;
 using Avalonia;
-using Avalonia.Threading;
+using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtauMobile.ViewModels;
 

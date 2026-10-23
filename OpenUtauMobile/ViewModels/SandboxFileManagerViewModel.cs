@@ -8,6 +8,9 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls;
+using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
@@ -16,9 +19,6 @@ using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using Avalonia;
-using Avalonia.Controls;
-using IconPacks.Avalonia.PhosphorIcons;
 
 namespace OpenUtauMobile.ViewModels
 {
