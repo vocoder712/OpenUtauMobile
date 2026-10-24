@@ -12,6 +12,13 @@ public partial class SettingsView : UserControl
 
         // 订阅控件尺寸变化，实现侧栏自适应展开/收起
         SizeChanged += OnSizeChanged;
+        Loaded += (_, _) =>
+        {
+            if (DataContext is SettingsViewModel vm)
+            {
+                _ = vm.InitializeAsync();
+            }
+        };
     }
 
     private void OnSizeChanged(object? sender, SizeChangedEventArgs e)

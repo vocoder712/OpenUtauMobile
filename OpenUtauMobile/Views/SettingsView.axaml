@@ -39,6 +39,13 @@
                 </Grid>
             </Border>
 
+            <Border DockPanel.Dock="Top" Padding="24,8" IsVisible="{Binding HasInitializationError}">
+                <ScrollViewer MaxHeight="160" HorizontalScrollBarVisibility="Disabled">
+                    <TextBlock Text="{Binding InitializationError}" TextWrapping="Wrap"
+                               Foreground="{DynamicResource Sem.Color.Error}" />
+                </ScrollViewer>
+            </Border>
+
             <Grid ColumnDefinitions="Auto,Auto,*">
 
                 <Border Grid.Column="0"
@@ -336,19 +343,24 @@
                         Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
                 <ScrollViewer Grid.Column="2"
+                              IsEnabled="{Binding ArePreferencesInitialized}"
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled"
                               BringIntoViewOnFocusChange="False">
                     <Border Padding="24,20,24,24">
-                        <Panel>
+                        <ContentControl Content="{Binding}" Classes="SettingsCategoryContent"
+                                        Classes.PreferencesReady="{Binding ArePreferencesInitialized}"
+                                        Classes.EditAndBehaviour="{Binding SelectedCategory, Converter={StaticResource EnumEqual}, ConverterParameter=EditAndBehaviour}"
+                                        Classes.RenderAndPerformance="{Binding SelectedCategory, Converter={StaticResource EnumEqual}, ConverterParameter=RenderAndPerformance}"
+                                        Classes.FileAndStorage="{Binding SelectedCategory, Converter={StaticResource EnumEqual}, ConverterParameter=FileAndStorage}"
+                                        Classes.AppearanceAndLanguage="{Binding SelectedCategory, Converter={StaticResource EnumEqual}, ConverterParameter=AppearanceAndLanguage}">
+                            <ContentControl.Resources>
 
                             <!-- ══════════════════════════════════════════
                                  编辑与行为
                                  ══════════════════════════════════════════ -->
-                            <StackPanel
-                                IsVisible="{Binding SelectedCategory,
-                                Converter={StaticResource EnumEqual},
-                                ConverterParameter=EditAndBehaviour}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                            <DataTemplate x:Key="EditAndBehaviourContent" x:DataType="vm:SettingsViewModel">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Nav.EditAndBehaviour}" />
 
                                 <!-- 桌面模式 -->
@@ -424,6 +436,7 @@
                                         </StackPanel>
                                         <ComboBox HorizontalAlignment="Stretch"
                                                   ItemsSource="{Binding AvailablePianoKeyBehaviors}"
+                                                  IsEnabled="{Binding !IsSoundFontInitializing}"
                                                   SelectedItem="{Binding SelectedPianoKeyBehavior, Mode=TwoWay}">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate x:DataType="vm:PianoKeyBehaviorOption">
@@ -461,6 +474,7 @@
                                                         Classes="filled"
                                                         Content="{DynamicResource Settings.Edit.SoundFontPath.Change}"
                                                         Command="{Binding ChangeSoundFontPathCommand}"
+                                                        IsEnabled="{Binding !IsSoundFontInitializing}"
                                                         VerticalAlignment="Center" />
                                             </Grid>
                                             <TextBlock FontSize="12"
@@ -755,14 +769,13 @@
                                 </Border>
 
                             </StackPanel>
+                            </DataTemplate>
 
                             <!-- ══════════════════════════════════════════
                                  渲染与性能
                                  ══════════════════════════════════════════ -->
-                            <StackPanel
-                                IsVisible="{Binding SelectedCategory,
-                                Converter={StaticResource EnumEqual},
-                                ConverterParameter=RenderAndPerformance}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                            <DataTemplate x:Key="RenderAndPerformanceContent" x:DataType="vm:SettingsViewModel">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Nav.RenderAndPerformance}" />
 
                                 <!-- 全局性能监视器 -->
@@ -901,6 +914,7 @@
                                         </StackPanel>
                                         <ComboBox HorizontalAlignment="Stretch"
                                                   ItemsSource="{Binding AvailableOnnxRunners}"
+                                                  IsEnabled="{Binding IsOnnxAvailable}"
                                                   SelectedItem="{Binding SelectedOnnxRunner, Mode=TwoWay}">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate x:DataType="vm:OnnxRunnerOption">
@@ -1021,6 +1035,7 @@
                                                     HorizontalAlignment="Left" />
                                             <ComboBox HorizontalAlignment="Stretch"
                                                       ItemsSource="{Binding AvailableAudioDevices}"
+                                                      IsEnabled="{Binding !IsRefreshingDevices}"
                                                       SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate x:DataType="vm:AudioDeviceOption">
@@ -1039,14 +1054,13 @@
                                 </Border>
 
                             </StackPanel>
+                            </DataTemplate>
 
                             <!-- ══════════════════════════════════════════
                                  文件与存储
                                  ══════════════════════════════════════════ -->
-                            <StackPanel
-                                IsVisible="{Binding SelectedCategory,
-                                Converter={StaticResource EnumEqual},
-                                ConverterParameter=FileAndStorage}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                            <DataTemplate x:Key="FileAndStorageContent" x:DataType="vm:SettingsViewModel">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Nav.FileAndStorage}" />
 
                                 <!-- 额外歌手路径 -->
@@ -1112,14 +1126,13 @@
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
+                            </DataTemplate>
 
                             <!-- ══════════════════════════════════════════
                                  外观与语言
                                  ══════════════════════════════════════════ -->
-                            <StackPanel
-                                IsVisible="{Binding SelectedCategory,
-                                Converter={StaticResource EnumEqual},
-                                ConverterParameter=AppearanceAndLanguage}" Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                            <DataTemplate x:Key="AppearanceAndLanguageContent" x:DataType="vm:SettingsViewModel">
+                            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Classes="CategoryTitle"
                                            Text="{DynamicResource Settings.Nav.AppearanceAndLanguage}" />
 
@@ -1254,8 +1267,28 @@
                                 </Border>
 
                             </StackPanel>
+                            </DataTemplate>
 
-                        </Panel>
+                            </ContentControl.Resources>
+                            <ContentControl.Styles>
+                                <!-- 初始空模板避免导航时构建所有分类，也避免触发全局页面定位器。 -->
+                                <Style Selector="ContentControl.SettingsCategoryContent">
+                                    <Setter Property="ContentTemplate"><DataTemplate /></Setter>
+                                </Style>
+                                <Style Selector="ContentControl.SettingsCategoryContent.PreferencesReady.EditAndBehaviour">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource EditAndBehaviourContent}" />
+                                </Style>
+                                <Style Selector="ContentControl.SettingsCategoryContent.PreferencesReady.RenderAndPerformance">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource RenderAndPerformanceContent}" />
+                                </Style>
+                                <Style Selector="ContentControl.SettingsCategoryContent.PreferencesReady.FileAndStorage">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource FileAndStorageContent}" />
+                                </Style>
+                                <Style Selector="ContentControl.SettingsCategoryContent.PreferencesReady.AppearanceAndLanguage">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource AppearanceAndLanguageContent}" />
+                                </Style>
+                            </ContentControl.Styles>
+                        </ContentControl>
                     </Border>
                 </ScrollViewer>
 
