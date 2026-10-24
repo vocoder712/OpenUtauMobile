@@ -320,7 +320,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     public ThemeColorModeOption? SelectedThemeColorMode { get; set; }
 
     /// <summary>预设主题色集合。</summary>
-    public IReadOnlyList<ThemeSeedPresetOption> PresetSeedColors { get; }
+    [Reactive]
+    public IReadOnlyList<ThemeSeedPresetOption> PresetSeedColors { get; private set; } = [];
 
     /// <summary>当前匹配到的预设主题色。</summary>
     [Reactive]
@@ -350,10 +351,14 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public bool IsCustomThemeColorMode { get; set; }
 
-    public ReactiveCommand<Unit, Unit> ApplyThemeSeedHexCommand { get; }
-    public ReactiveCommand<ThemeSeedPresetOption, Unit> ApplyThemePresetCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenThemeColorPickerCommand { get; }
-    public ReactiveCommand<Unit, Unit> ResetThemeSeedCommand { get; }
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> ApplyThemeSeedHexCommand { get; private set; } = null!;
+    [Reactive]
+    public ReactiveCommand<ThemeSeedPresetOption, Unit> ApplyThemePresetCommand { get; private set; } = null!;
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> OpenThemeColorPickerCommand { get; private set; } = null!;
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> ResetThemeSeedCommand { get; private set; } = null!;
 
     // ── File & Storage ────────────────────────────────────────────────
     /// <summary>额外歌手路径开关，开启时表示已设置了有效路径。</summary>
@@ -362,10 +367,11 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     /// <summary>额外歌手路径，实时与 Preferences 同步。</summary>
     [Reactive]
-    public string AdditionalSingerPath { get; set; }
+    public string AdditionalSingerPath { get; set; } = string.Empty;
 
     /// <summary>重新选择额外歌手路径命令。</summary>
-    public ReactiveCommand<Unit, Unit> ChangeAdditionalSingerPathCommand { get; }
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> ChangeAdditionalSingerPathCommand { get; private set; } = null!;
 
     /// <summary>整个应用缓存目录的大小，异步统计期间显示省略号。</summary>
     [Reactive]
@@ -374,7 +380,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     private int _cacheSizeRefreshVersion;
 
     /// <summary>清除应用缓存命令。</summary>
-    public ReactiveCommand<Unit, Unit> ClearCacheCommand { get; }
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> ClearCacheCommand { get; private set; } = null!;
 
     // ── Edit & Behaviour ─────────────────────────────────────────────
     /// <summary>只有 Windows、Linux 和 macOS 展示桌面模式选项。</summary>
@@ -386,10 +393,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     public bool IsAndroidPlatform { get; } = OperatingSystem.IsAndroid();
 
-    public IReadOnlyList<LyricsHelperOption> AvailableLyricsHelpers { get; } =
-        ActiveLyricsHelper.Inst.Available
-            .Select(type => new LyricsHelperOption(type))
-            .ToList();
+    [Reactive]
+    public IReadOnlyList<LyricsHelperOption> AvailableLyricsHelpers { get; private set; } = [];
 
     [Reactive]
     public LyricsHelperOption? SelectedLyricsHelper { get; set; }
@@ -450,14 +455,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     /// <summary>当前 SoundFont 文件路径。</summary>
     [Reactive]
-    public string SoundFontPath { get; set; }
+    public string SoundFontPath { get; set; } = string.Empty;
 
     /// <summary>SoundFont 是否已成功加载。</summary>
     [Reactive]
     public bool IsSoundFontLoaded { get; set; }
 
+    /// <summary>首次检查音色期间避免用户操作在 UI 线程等待单例加载锁。</summary>
+    [Reactive]
+    public bool IsSoundFontInitializing { get; private set; } = true;
+
     /// <summary>更改 SoundFont 路径命令。</summary>
-    public ReactiveCommand<Unit, Unit> ChangeSoundFontPathCommand { get; }
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> ChangeSoundFontPathCommand { get; private set; } = null!;
 
     // ── Edit & Behaviour: AutoScroll ────────────────────────────────
     /// <summary>可选走带自动翻页行为列表。</summary>
@@ -557,14 +567,16 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     public int NumRenderThreads { get; set; }
 
     /// <summary>可选机器学习运行器后端列表。</summary>
-    public IReadOnlyList<OnnxRunnerOption> AvailableOnnxRunners { get; }
+    [Reactive]
+    public IReadOnlyList<OnnxRunnerOption> AvailableOnnxRunners { get; private set; } = [];
 
     /// <summary>当前选中的机器学习运行器后端。</summary>
     [Reactive]
     public OnnxRunnerOption? SelectedOnnxRunner { get; set; }
 
     /// <summary>可选机器学习加速设备列表。</summary>
-    public IReadOnlyList<OnnxDeviceOption> AvailableOnnxDevices { get; }
+    [Reactive]
+    public IReadOnlyList<OnnxDeviceOption> AvailableOnnxDevices { get; private set; } = [];
 
     /// <summary>当前选中的机器学习加速设备。</summary>
     [Reactive]
@@ -576,7 +588,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     // ── Audio Backend & Device ──────────────────────────────────────
     /// <summary>可选音频后端列表（根据平台动态生成）。</summary>
-    public IReadOnlyList<AudioBackendOption> AvailableAudioBackends { get; }
+    [Reactive]
+    public IReadOnlyList<AudioBackendOption> AvailableAudioBackends { get; private set; } = [];
 
     /// <summary>当前选中的音频后端选项。</summary>
     [Reactive]
@@ -584,14 +597,15 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     /// <summary>可用音频设备列表。</summary>
     [Reactive]
-    public IReadOnlyList<AudioDeviceOption> AvailableAudioDevices { get; set; }
+    public IReadOnlyList<AudioDeviceOption> AvailableAudioDevices { get; set; } = [];
 
     /// <summary>当前选中的音频设备选项。</summary>
     [Reactive]
     public AudioDeviceOption? SelectedAudioDevice { get; set; }
 
     /// <summary>刷新音频设备列表命令。</summary>
-    public ReactiveCommand<Unit, Unit> RefreshAudioDevicesCommand { get; }
+    [Reactive]
+    public ReactiveCommand<Unit, Unit> RefreshAudioDevicesCommand { get; private set; } = null!;
 
     /// <summary>是否正在刷新设备列表。</summary>
     [Reactive]
@@ -600,7 +614,29 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     // ── Disposables ───────────────────────────────────────────────────
     private readonly CompositeDisposable _disposables = new();
 
-    public GraphicsBackendSettingsViewModel GraphicsBackendSettings { get; } = new(ServiceHub.GraphicsBackendService);
+    /// <summary>图形设置使用空模型占位，平台数据在后台读取。</summary>
+    [Reactive]
+    public GraphicsBackendSettingsViewModel GraphicsBackendSettings { get; private set; } = new(null);
+
+    /// <summary>基础偏好已完成绑定，页面内容可以交互。</summary>
+    [Reactive]
+    public bool ArePreferencesInitialized { get; private set; }
+
+    /// <summary>初始化错误只作为页内信息展示，不阻止导航及其他设置加载。</summary>
+    [Reactive]
+    public string InitializationError { get; private set; } = string.Empty;
+
+    /// <summary>是否存在需要展示的初始化错误。</summary>
+    [Reactive]
+    public bool HasInitializationError { get; private set; }
+
+    /// <summary>是否成功读取到可用的 ONNX 后端。</summary>
+    [Reactive]
+    public bool IsOnnxAvailable { get; private set; }
+
+    private Task? initializationTask;
+    private bool disposed;
+    private bool applyingInitialization;
 
     /// <summary>防止开关回拨时再次触发 async 订阅的标志。</summary>
     private bool _suppressToggle;
@@ -610,6 +646,163 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         BackCommand = ReactiveCommand.Create(() => Navigator.NavigateBack(this));
         ToggleNavCommand = ReactiveCommand.Create(OnToggleNav);
         SelectCategoryCommand = ReactiveCommand.Create<SettingsCategory>(OnSelectCategory);
+    }
+
+    /// <summary>页面显示后启动一次初始化；重复挂载复用任务，返回不等待后台探测。</summary>
+    public Task InitializeAsync() => initializationTask ??= InitializeCoreAsync();
+
+    /// <summary>先分批绑定基础偏好，再并行读取互不依赖的平台能力。</summary>
+    private async Task InitializeCoreAsync()
+    {
+        await InitializeSectionAsync("Settings.Appearance.Language", InitializeGeneralSettings);
+        await InitializeSectionAsync("Settings.Nav.FileAndStorage", InitializeStorageSettings);
+        await InitializeSectionAsync("Settings.Nav.EditAndBehaviour", InitializeLyricsSettings);
+        await InitializeSectionAsync("Settings.Edit.PianoKeyBehavior", InitializePianoSettings);
+        await InitializeSectionAsync("Settings.Nav.EditAndBehaviour", InitializePlaybackSettings);
+        await InitializeSectionAsync("Settings.Nav.EditAndBehaviour", InitializeEditingSettings);
+        await InitializeSectionAsync("Settings.Nav.RenderAndPerformance", InitializeRenderingSettings);
+        await InitializeSectionAsync("Settings.Render.OnnxRunner", InitializeOnnxSettings);
+        await InitializeSectionAsync("Settings.Nav.RenderAndPerformance", InitializeAudioSettings);
+        await InitializeSectionAsync("Settings.Nav.AppearanceAndLanguage", InitializeAppearanceSettings);
+        if (disposed) return;
+        ArePreferencesInitialized = true;
+
+        await Task.WhenAll(
+            InitializeOnnxAsync(),
+            InitializeSoundFontAsync(),
+            InitializeBackgroundAsync("Settings.Edit.LyricsHelper", () =>
+            {
+                List<LyricsHelperOption> options = ActiveLyricsHelper.Inst.Available
+                    .Select(type => new LyricsHelperOption(type)).ToList();
+                return (options, preferred: ActiveLyricsHelper.Inst.GetPreferred());
+            }, result =>
+            {
+                AvailableLyricsHelpers = result.options;
+                SelectedLyricsHelper = result.options.FirstOrDefault(option => option.HelperType == result.preferred);
+            }),
+            InitializeBackgroundAsync("Settings.Graphics.Title",
+                () => new GraphicsBackendSettingsViewModel(ServiceHub.GraphicsBackendService),
+                settings => GraphicsBackendSettings = settings),
+            InitializeThemePreviewAsync(),
+            RunInitializationAsync("Settings.Nav.RenderAndPerformance", RefreshAudioDevicesAsync),
+            RunInitializationAsync("Settings.Nav.FileAndStorage", RefreshCacheSizeAsync));
+    }
+
+    /// <summary>以低优先级逐项填充控件，任何一项失败都继续处理后续设置。</summary>
+    private async Task InitializeSectionAsync(string section, Action initialize)
+    {
+        await RunInitializationAsync(section, async () =>
+        {
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (!disposed) initialize();
+            }, DispatcherPriority.Background);
+        });
+    }
+
+    /// <summary>耗时读取仅在后台执行，结果及绑定通知统一在 UI 线程提交。</summary>
+    private Task InitializeBackgroundAsync<T>(string section, Func<T> read, Action<T> apply)
+    {
+        return RunInitializationAsync(section, async () =>
+        {
+            if (disposed) return;
+            T result = await Task.Run(read);
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (disposed) return;
+                applyingInitialization = true;
+                try
+                {
+                    apply(result);
+                }
+                finally
+                {
+                    applyingInitialization = false;
+                }
+            }, DispatcherPriority.Background);
+        });
+    }
+
+    /// <summary>统一接住初始化及结果应用异常，只记录日志和页内提示。</summary>
+    private async Task RunInitializationAsync(string section, Func<Task> initialize)
+    {
+        try
+        {
+            if (!disposed) await initialize();
+        }
+        catch (Exception exception)
+        {
+            await ReportInitializationErrorAsync(section, exception);
+        }
+    }
+
+    /// <summary>错误统一显示在当前页，退出页面后只保留日志。</summary>
+    private async Task ReportInitializationErrorAsync(string section, Exception exception)
+    {
+        Log.Error(exception, "Settings initialization failed: {Section}", section);
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            if (disposed) return;
+            // 错误展示不能再因资源缺失抛异常，必要时直接显示原始分类名。
+            string label = section;
+            try
+            {
+                label = L.S(section);
+            }
+            catch (Exception)
+            {
+            }
+            string message = $"{label}: {exception.GetBaseException().Message}";
+            InitializationError = string.IsNullOrEmpty(InitializationError)
+                ? message : InitializationError + Environment.NewLine + message;
+            HasInitializationError = true;
+        }, DispatcherPriority.Background);
+    }
+
+    /// <summary>平台主题 API 在 UI 线程读取，只刷新说明，不重新应用全局主题。</summary>
+    private Task InitializeThemePreviewAsync()
+    {
+        return InitializeSectionAsync("Settings.Nav.AppearanceAndLanguage", () =>
+        {
+            Color seed = ThemeSeedResolver.ResolveSeed(ServiceHub.SystemAccentColorProvider,
+                out string source, out string fallbackReason);
+            UpdateThemeColorPreview(seed, source, fallbackReason);
+        });
+    }
+
+    /// <summary>后端及设备顺序探测，设备失败时仍保留已发现的运行器。</summary>
+    private async Task InitializeOnnxAsync()
+    {
+        await InitializeBackgroundAsync("Settings.Render.OnnxRunner", GetAvailableOnnxRunners, runners =>
+        {
+            AvailableOnnxRunners = runners;
+            SelectedOnnxRunner = runners.FirstOrDefault(runner =>
+                string.Equals(runner.Value, Preferences.Default.OnnxRunner, StringComparison.OrdinalIgnoreCase))
+                ?? runners.FirstOrDefault();
+            IsOnnxAvailable = runners.Count > 0;
+        });
+        if (!IsOnnxAvailable || disposed) return;
+        await InitializeBackgroundAsync("Settings.Render.OnnxDevice", GetAvailableOnnxDevices, devices =>
+        {
+            AvailableOnnxDevices = devices;
+            SelectedOnnxDevice = devices.FirstOrDefault(device => device.DeviceId == Preferences.Default.OnnxGpu)
+                ?? devices.FirstOrDefault();
+            ShowOnnxDeviceSelector = SupportsOnnxDeviceSelection(SelectedOnnxRunner?.Value ?? string.Empty)
+                && devices.Count > 0;
+        });
+    }
+
+    /// <summary>首次访问音色单例可能读取大型文件，禁止在导航或 UI 线程执行。</summary>
+    private async Task InitializeSoundFontAsync()
+    {
+        await InitializeBackgroundAsync("Settings.Edit.SoundFontPath", () => SoundFontPlayer.Instance.IsReady,
+            loaded => IsSoundFontLoaded = loaded);
+        if (!disposed) IsSoundFontInitializing = false;
+    }
+
+    /// <summary>初始化语言与导航设置及变更订阅。</summary>
+    private void InitializeGeneralSettings()
+    {
         PresetSeedColors = ThemeSeedPresets.All
             .Select(p => new ThemeSeedPresetOption(p.Id, p.DisplayName, p.Hex, ApplyThemePreset))
             .ToList();
@@ -627,19 +820,29 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                                      string.Equals(l.Code, savedCode, StringComparison.OrdinalIgnoreCase))
                                  ?? AvailableLanguages[0];
 
+        // 分类按需创建时控件会重新提交选择；先按语义去重，再过滤初始化，避免回写默认项。
         // 语言切换：写入 Preferences 并热加载语言资源字典
         this.WhenAnyValue(x => x.SelectedLanguageOption)
-            .Skip(1) // 跳过初始值，避免重复加载
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Code)
+            .Skip(1)
             .Subscribe(opt =>
             {
+                // 分类模板首次绑定可能重新提交当前选项，空语言偏好等价于跟随系统。
+                string currentCode = string.IsNullOrWhiteSpace(Preferences.Default.Language)
+                    ? LocalizationManager.FollowSystemLanguageCode : Preferences.Default.Language;
+                if (string.Equals(currentCode, opt.Code, StringComparison.OrdinalIgnoreCase)) return;
                 LocalizationManager.LoadLanguage(opt.Code);
                 GraphicsBackendSettings.RefreshLocalization();
                 Preferences.Default.Language = opt.Code;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
+    }
 
+    /// <summary>初始化文件与存储设置及变更订阅。</summary>
+    private void InitializeStorageSettings()
+    {
         // ── 额外歌手路径初始化 ──────────────────────────────────────
         AdditionalSingerPath = Preferences.Default.AdditionalSingerPath;
         AdditionalSingerPathEnabled = !string.IsNullOrEmpty(AdditionalSingerPath);
@@ -697,17 +900,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 await RefreshCacheSizeAsync();
             }
         });
-        _ = RefreshCacheSizeAsync();
+    }
 
+    /// <summary>初始化歌词助手设置及变更订阅。</summary>
+    private void InitializeLyricsSettings()
+    {
         // 歌词助手设置与桌面端共用 Core 偏好。
-        Type preferredLyricsHelper = ActiveLyricsHelper.Inst.GetPreferred();
-        SelectedLyricsHelper = AvailableLyricsHelpers.FirstOrDefault(option =>
-            option.HelperType == preferredLyricsHelper);
         LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets;
 
         this.WhenAnyValue(x => x.SelectedLyricsHelper)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.HelperType)
+            .Skip(1)
+            .Where(_ => !applyingInitialization)
             .Subscribe(option =>
             {
                 ActiveLyricsHelper.Inst.Set(option.HelperType);
@@ -724,7 +929,11 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
+    }
 
+    /// <summary>初始化钢琴键与音色设置及变更订阅。</summary>
+    private void InitializePianoSettings()
+    {
         // 钢琴键行为初始化
         int behaviorVal = Preferences.Default.PianoKeyBehavior;
         PianoKeyBehavior behavior = behaviorVal is >= 0 and <= 2
@@ -737,8 +946,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         SelectedPianoKeyLabelMode = AvailablePianoKeyLabelModes.First(option => option.Value == labelMode);
 
         this.WhenAnyValue(x => x.SelectedPianoKeyLabelMode)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(option =>
             {
                 Preferences.Default.PianoKeyLabelMode = (int)option.Value;
@@ -748,12 +958,12 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .DisposeWith(_disposables);
 
         SoundFontPath = Preferences.Default.SoundFontPath;
-        IsSoundFontLoaded = SoundFontPlayer.Instance.IsReady;
 
         // 监听钢琴键行为变化
         this.WhenAnyValue(x => x.SelectedPianoKeyBehavior)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(opt =>
             {
                 Preferences.Default.PianoKeyBehavior = (int)opt.Value;
@@ -783,7 +993,11 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 IsSoundFontLoaded = SoundFontPlayer.Instance.IsReady;
             }
         });
+    }
 
+    /// <summary>初始化播放行为设置及变更订阅。</summary>
+    private void InitializePlaybackSettings()
+    {
         // 走带自动翻页行为初始化
         int autoScrollVal = Preferences.Default.PlaybackAutoScroll;
         SelectedAutoScrollBehavior = AvailableAutoScrollBehaviors.FirstOrDefault(b => b.Value == autoScrollVal)
@@ -791,8 +1005,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
         // 监听走带自动翻页行为变化
         this.WhenAnyValue(x => x.SelectedAutoScrollBehavior)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(opt =>
             {
                 Preferences.Default.PlaybackAutoScroll = opt.Value;
@@ -810,15 +1025,20 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
         // Monitor changes in the behavior of the Stop button and persist them to Preferences
         this.WhenAnyValue(x => x.SelectedStopButtonBehavior)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(opt =>
             {
                 Preferences.Default.StopButtonBehavior = (int)opt.Value;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
+    }
 
+    /// <summary>初始化编辑行为设置及变更订阅。</summary>
+    private void InitializeEditingSettings()
+    {
         // Android 显示行为
         int fullscreenModeValue = Preferences.Default.AndroidFullscreenMode;
         AndroidFullscreenMode fullscreenMode = fullscreenModeValue is >= 0 and <= 2
@@ -830,8 +1050,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         AndroidKeepScreenAwakeWhileEditing = Preferences.Default.AndroidKeepScreenAwakeWhileEditing;
 
         this.WhenAnyValue(x => x.SelectedAndroidFullscreenMode)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(option =>
             {
                 Preferences.Default.AndroidFullscreenMode = (int)option.Value;
@@ -1019,7 +1240,11 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
+    }
 
+    /// <summary>初始化渲染性能设置及变更订阅。</summary>
+    private void InitializeRenderingSettings()
+    {
         // 渲染与性能初始化
         PerformanceMonitorEnabled = Preferences.Default.PerformanceMonitorEnabled;
         DiffSingerSteps = Preferences.Default.DiffSingerSteps;
@@ -1081,23 +1306,16 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
+    }
 
-        // 机器学习运行器后端初始化
-        AvailableOnnxRunners = GetAvailableOnnxRunners();
-        AvailableOnnxDevices = GetAvailableOnnxDevices();
-        string savedOnnxRunner = Preferences.Default.OnnxRunner;
-        SelectedOnnxRunner = AvailableOnnxRunners.FirstOrDefault(r =>
-                                 string.Equals(r.Value, savedOnnxRunner, StringComparison.OrdinalIgnoreCase))
-                             ?? AvailableOnnxRunners[0];
-        SelectedOnnxDevice = AvailableOnnxDevices.FirstOrDefault(device =>
-                                 device.DeviceId == Preferences.Default.OnnxGpu)
-                             ?? AvailableOnnxDevices.FirstOrDefault();
-        ShowOnnxDeviceSelector = SupportsOnnxDeviceSelection(SelectedOnnxRunner.Value)
-                                 && AvailableOnnxDevices.Count > 0;
-
+    /// <summary>初始化机器学习后端设置及变更订阅。</summary>
+    private void InitializeOnnxSettings()
+    {
         this.WhenAnyValue(x => x.SelectedOnnxRunner)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
+            .Where(_ => !applyingInitialization)
             .Subscribe(opt =>
             {
                 Preferences.Default.OnnxRunner = opt.Value;
@@ -1108,15 +1326,21 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .DisposeWith(_disposables);
 
         this.WhenAnyValue(x => x.SelectedOnnxDevice)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.DeviceId)
+            .Skip(1)
+            .Where(_ => !applyingInitialization)
             .Subscribe(device =>
             {
                 Preferences.Default.OnnxGpu = device.DeviceId;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
+    }
 
+    /// <summary>初始化音频后端与设备设置及变更订阅。</summary>
+    private void InitializeAudioSettings()
+    {
         // 音频后端与设备初始化
         AvailableAudioBackends = GetAvailableAudioBackends();
 
@@ -1126,8 +1350,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
         // 监听音频后端变化
         this.WhenAnyValue(x => x.SelectedAudioBackend)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(opt =>
             {
                 Preferences.Default.AudioBackend = opt.Value;
@@ -1139,12 +1364,13 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         AvailableAudioDevices = new List<AudioDeviceOption> { new(null, L.S("Settings.Audio.DefaultDevice")) };
         SelectedAudioDevice = AvailableAudioDevices[0];
         RefreshAudioDevicesCommand = ReactiveCommand.CreateFromTask(RefreshAudioDevicesAsync);
-        _ = RefreshAudioDevicesAsync();
 
         // 监听音频设备变化
         this.WhenAnyValue(x => x.SelectedAudioDevice)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => (option.Device?.guid, option.Device?.deviceNumber))
+            .Skip(1)
+            .Where(_ => !applyingInitialization)
             .Subscribe(opt =>
             {
                 if (opt.Device != null)
@@ -1163,7 +1389,11 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
+    }
 
+    /// <summary>初始化外观与主题设置及变更订阅。</summary>
+    private void InitializeAppearanceSettings()
+    {
         // 主题初始化
         string savedTheme = Preferences.Default.ThemeName;
         SelectedThemeOption =
@@ -1187,8 +1417,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
         // 监听主题变化：写入 Preferences 并即时应用
         this.WhenAnyValue(x => x.SelectedThemeOption)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(opt =>
             {
                 Preferences.Default.ThemeName = opt.Value;
@@ -1204,8 +1435,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
         // 主题色模式变化：持久化并立即应用
         this.WhenAnyValue(x => x.SelectedThemeColorMode)
-            .Skip(1)
             .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
             .Subscribe(mode =>
             {
                 Preferences.Default.ThemeColorMode = mode.Value;
@@ -1238,8 +1470,6 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             Preferences.Save();
             ApplyResolvedThemeColor();
         });
-
-        ApplyResolvedThemeColor();
     }
 
     /// <summary>
@@ -1261,17 +1491,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// </summary>
     private static List<OnnxDeviceOption> GetAvailableOnnxDevices()
     {
-        try
-        {
-            return Onnx.getGpuInfo()
-                .Select(device => new OnnxDeviceOption(device.deviceId, device.ToString()))
-                .ToList();
-        }
-        catch (Exception e)
-        {
-            Log.Warning(e, "枚举ONNX加速设备失败");
-            return [];
-        }
+        return Onnx.getGpuInfo()
+            .Select(device => new OnnxDeviceOption(device.deviceId, device.ToString()))
+            .ToList();
     }
 
     private static bool SupportsOnnxDeviceSelection(string runner)
@@ -1317,6 +1539,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// </summary>
     private async Task RefreshAudioDevicesAsync()
     {
+        if (disposed || IsRefreshingDevices) return;
         IsRefreshingDevices = true;
 
         try
@@ -1326,21 +1549,13 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             {
                 List<AudioDeviceOption> list = [new(null, L.S("Settings.Audio.DefaultDevice"))];
 
-                try
+                IAudioOutput audioOutput = PlaybackManager.Inst.AudioOutput;
+                List<AudioOutputDevice> outputDevices = audioOutput.GetOutputDevices();
+                foreach (AudioOutputDevice device in outputDevices)
                 {
-                    IAudioOutput audioOutput = PlaybackManager.Inst.AudioOutput;
-
-                    List<AudioOutputDevice> outputDevices = audioOutput.GetOutputDevices();
-                    foreach (AudioOutputDevice device in outputDevices)
-                    {
-                        list.Add(new AudioDeviceOption(device,
-                            device.name ??
-                            string.Format(L.S("Settings.Audio.Device"), device.deviceNumber))); // Core 乱写null
-                    }
-                }
-                catch (Exception)
-                {
-                    // 获取设备失败，保持默认列表
+                    list.Add(new AudioDeviceOption(device,
+                        device.name ??
+                        string.Format(L.S("Settings.Audio.Device"), device.deviceNumber))); // Core 乱写null
                 }
 
                 return list;
@@ -1349,31 +1564,34 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             // 回到 UI 线程更新
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
-                AvailableAudioDevices = devices;
-
-                // 尝试恢复之前选择的设备
-                string savedDeviceName = Preferences.Default.PlaybackDevice;
-                if (!string.IsNullOrEmpty(savedDeviceName))
+                if (disposed) return;
+                applyingInitialization = true;
+                try
                 {
-                    AudioDeviceOption? matched = devices.FirstOrDefault(d => d.Device?.name == savedDeviceName);
-                    if (matched != null)
-                    {
-                        SelectedAudioDevice = matched;
-                        return;
-                    }
+                    AvailableAudioDevices = devices;
+                    // 恢复显示值时不切换设备，也不回写偏好。
+                    SelectedAudioDevice = devices.FirstOrDefault(device =>
+                        device.Device?.name == Preferences.Default.PlaybackDevice) ?? devices[0];
                 }
-
-                SelectedAudioDevice = devices[0];
+                finally
+                {
+                    applyingInitialization = false;
+                }
             });
+        }
+        catch (Exception exception)
+        {
+            await ReportInitializationErrorAsync("Settings.Nav.RenderAndPerformance", exception);
         }
         finally
         {
-            IsRefreshingDevices = false;
+            if (!disposed) IsRefreshingDevices = false;
         }
     }
 
     private async Task RefreshCacheSizeAsync()
     {
+        if (disposed) return;
         int version = ++_cacheSizeRefreshVersion;
         CacheSize = "…";
         string size;
@@ -1383,14 +1601,14 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         }
         catch (Exception exception)
         {
-            Log.Warning(exception, "Failed to calculate application cache size");
+            await ReportInitializationErrorAsync("Settings.Nav.FileAndStorage", exception);
             size = "—";
         }
 
         await Dispatcher.UIThread.InvokeAsync(() =>
         {
             // 忽略旧统计结果，避免覆盖清理后或重新进入分类时的最新结果。
-            if (version == _cacheSizeRefreshVersion)
+            if (!disposed && version == _cacheSizeRefreshVersion)
             {
                 CacheSize = size;
             }
@@ -1405,7 +1623,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     private void OnSelectCategory(SettingsCategory category)
     {
         SelectedCategory = category;
-        if (category == SettingsCategory.FileAndStorage)
+        if (ArePreferencesInitialized && category == SettingsCategory.FileAndStorage)
         {
             _ = RefreshCacheSizeAsync();
         }
@@ -1413,6 +1631,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     public void Dispose()
     {
+        disposed = true;
+        ++_cacheSizeRefreshVersion;
         _disposables.Dispose();
         GC.SuppressFinalize(this);
     }
@@ -1512,6 +1732,12 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             ServiceHub.SystemAccentColorProvider,
             out string source,
             out string fallbackReason);
+        UpdateThemeColorPreview(seed, source, fallbackReason);
+    }
+
+    /// <summary>同步主题预览说明，进入设置时不重新应用全局主题。</summary>
+    private void UpdateThemeColorPreview(Color seed, string source, string fallbackReason)
+    {
         ThemeSeedPreviewBrush = new SolidColorBrush(seed);
         ThemeColorSystemSource = source;
         HasThemeColorSystemSource = !string.IsNullOrWhiteSpace(source);

@@ -1936,8 +1936,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             });
         }
 
-        if (SelectedParts is [UWavePart wavePart]
-            && Services.NoteExtraction.GameBackendProvider.IsSupported)
+        if (SelectedParts is [UWavePart wavePart])
         {
             items.Add(new ContextActionItem
             {
