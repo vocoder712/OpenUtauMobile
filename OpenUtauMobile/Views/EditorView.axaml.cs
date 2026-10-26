@@ -3,6 +3,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Platform;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -38,14 +39,20 @@ public partial class EditorView : UserControl
     private bool _isLandscape;
     private bool _responsiveLayoutInitialized;
     private MixerPanel? _mixerPanel;
+    private IInsetsManager? _insets;
 
     public bool IsMixerOpen => _mixerPanel != null && DetailAreaHost.Children.Contains(_mixerPanel);
 
-    private void OnOpenMixerClick(object? sender, RoutedEventArgs e) => OpenMixer();
+    private void OnOpenMixerClick(object? sender, RoutedEventArgs e)
+    {
+        if (OpenMixerButton.IsChecked == true) OpenMixer();
+        else CloseMixer();
+    }
 
     public void OpenMixer()
     {
         if (IsMixerOpen || DataContext is not EditorViewModel vm) return;
+        EditorModePicker.CloseOpenPicker();
         _input.CancelEditorInput();
         _mixerPanel ??= CreateMixerPanel();
         OnMagnifierClose();
@@ -53,6 +60,7 @@ public partial class EditorView : UserControl
         // 移除整个控件树，参数面板、模式按钮和上下文菜单一同停止绘制与命中。
         DetailAreaHost.Children.Remove(PianoRollAreaGrid);
         DetailAreaHost.Children.Add(_mixerPanel);
+        OpenMixerButton.IsChecked = true;
         _input.ActiveArea = EditorInputController.EditArea.Mixer;
         _input.QueueEditorFocusRepair();
     }
@@ -69,6 +77,7 @@ public partial class EditorView : UserControl
         if (!IsMixerOpen) return;
         DetailAreaHost.Children.Remove(_mixerPanel!);
         DetailAreaHost.Children.Add(PianoRollAreaGrid);
+        OpenMixerButton.IsChecked = false;
         _input.ActiveArea = EditorInputController.EditArea.PianoRoll;
         _input.QueueEditorFocusRepair();
         if (DataContext is EditorViewModel vm)
@@ -96,17 +105,29 @@ public partial class EditorView : UserControl
         SplitDragHandle.PointerMoved += OnSplitHandlePointerMoved;
         SplitDragHandle.PointerReleased += OnSplitHandlePointerReleased;
         SplitDragHandle.PointerCaptureLost += OnSplitHandlePointerCaptureLost;
+        EditorGrid.SizeChanged += (_, e) =>
+        {
+            if (!_responsiveLayoutInitialized || e.NewSize.Width <= 0 || e.NewSize.Height <= 0) return;
+            SetCurrentTrackExtent(_isLandscape ? _landscapeTrackExtent : _portraitTrackExtent, remember: false);
+            UpdateSplitOverlayVisual();
+        };
 
         PhonemeParamPanel.RequestMagnifierOpen += OnParameterMagnifierOpen;
         PhonemeParamPanel.RequestMagnifierUpdate += OnParameterMagnifierUpdate;
         PhonemeParamPanel.RequestMagnifierClose += OnMagnifierClose;
         AttachedToVisualTree += (_, _) =>
         {
+            _insets = TopLevel.GetTopLevel(this)?.InsetsManager;
+            if (_insets != null) _insets.SafeAreaChanged += OnSafeAreaChanged;
+            EditorSafeArea.Padding = _insets?.SafeAreaPadding ?? default;
             if (DataContext is EditorViewModel vm) BindViewModel(vm);
             InitializeResponsiveLayout();
         };
         DetachedFromVisualTree += (_, _) =>
         {
+            if (_insets != null) _insets.SafeAreaChanged -= OnSafeAreaChanged;
+            _insets = null;
+            EditorModePicker.CloseOpenPicker();
             // 临时离开页面不销毁编辑状态，但旧视图不能继续订阅编辑器或放大镜事件。
             _viewModelSubscription?.Dispose();
             _viewModelSubscription = null;
@@ -251,12 +272,6 @@ public partial class EditorView : UserControl
 
         _responsiveLayoutInitialized = true;
 
-        if (_landscapeTrackExtent <= 0)
-        {
-            double width = Math.Max(Bounds.Width, EditorGrid.Bounds.Width);
-            _landscapeTrackExtent = width * ViewConstants.EditorSplitDefaultTrackRatioLandscape;
-        }
-
         _isLandscape = Bounds.Width > Bounds.Height;
         ApplyOrientationLayout();
     }
@@ -268,6 +283,8 @@ public partial class EditorView : UserControl
             return;
         }
 
+        EditorModePicker.CloseOpenPicker();
+        UpdateToolbarLayout();
         if (_isLandscape)
         {
             ApplyLandscapeLayout();
@@ -280,6 +297,37 @@ public partial class EditorView : UserControl
         UpdateSplitHandleOrientation();
         UpdateSplitHandleCursor();
         UpdateSplitOverlayVisual();
+    }
+
+    /// <summary>按方向分配各组的有限视口，组内溢出独立横向滚动。</summary>
+    private void UpdateToolbarLayout()
+    {
+        LandscapeTransportHost.IsVisible = _isLandscape;
+        LandscapeTransportViewport.IsVisible = _isLandscape;
+        LandscapeProjectActions.IsVisible = _isLandscape;
+        LandscapeProjectActionsViewport.IsVisible = _isLandscape;
+        PlaybackTimeDisplay.IsVisible = _isLandscape;
+        PlaybackGroupDivider.IsVisible = _isLandscape;
+        ProjectActionsDivider.IsVisible = _isLandscape;
+        PortraitTransportHost.IsVisible = !_isLandscape;
+
+        QuantizeTimeGroupViewport.MaxWidth = QuantizeSelector.Width + (_isLandscape ? PlaybackTimeDisplay.Width : 0);
+        CenteredToolbar.ColumnDefinitions[0].MaxWidth = ToggleGroupViewport.MaxWidth;
+        CenteredToolbar.ColumnDefinitions[2].MaxWidth = QuantizeTimeGroupViewport.MaxWidth;
+        CenteredToolbar.ColumnDefinitions[4].MaxWidth = LandscapeTransportViewport.MaxWidth;
+        CenteredToolbar.ColumnDefinitions[4].Width = new GridLength(_isLandscape ? 1 : 0, GridUnitType.Star);
+        // 每条分隔线占 1 DIP，两侧各留 8 DIP；足够宽时保持中间组整体居中。
+        CenteredToolbar.MaxWidth = ToggleGroupViewport.MaxWidth + 17 + QuantizeTimeGroupViewport.MaxWidth
+            + (_isLandscape ? 17 + LandscapeTransportViewport.MaxWidth : 0);
+        TopToolbarGrid.ColumnDefinitions[3].MaxWidth = LandscapeProjectActionsViewport.MaxWidth;
+        TopToolbarGrid.ColumnDefinitions[3].Width = new GridLength(_isLandscape ? 1 : 0, GridUnitType.Star);
+    }
+
+    /// <summary>系统安全区只影响页面边距，不重置用户的编辑分区。</summary>
+    private void OnSafeAreaChanged(object? sender, SafeAreaChangedArgs e)
+    {
+        EditorModePicker.CloseOpenPicker();
+        EditorSafeArea.Padding = e.SafeAreaPadding;
     }
 
     private void UpdateSplitHandleOrientation()
@@ -310,7 +358,7 @@ public partial class EditorView : UserControl
             _portraitTrackExtent = ViewConstants.EditorSplitDefaultTrackExtentPortrait;
         }
 
-        SetCurrentTrackExtent(_portraitTrackExtent);
+        SetCurrentTrackExtent(_portraitTrackExtent, remember: false);
     }
 
     private void ApplyLandscapeLayout()
@@ -331,10 +379,11 @@ public partial class EditorView : UserControl
 
         if (_landscapeTrackExtent <= 0)
         {
-            _landscapeTrackExtent = GetPrimaryTotalExtent() * ViewConstants.EditorSplitDefaultTrackRatioLandscape;
+            double availableWidth = Math.Max(0, Bounds.Width - EditorSafeArea.Padding.Left - EditorSafeArea.Padding.Right);
+            _landscapeTrackExtent = availableWidth * ViewConstants.EditorSplitDefaultTrackRatioLandscape;
         }
 
-        SetCurrentTrackExtent(_landscapeTrackExtent);
+        SetCurrentTrackExtent(_landscapeTrackExtent, remember: false);
     }
 
     private double ClampTrackExtent(double extent)
@@ -369,17 +418,18 @@ public partial class EditorView : UserControl
             : EditorGrid.RowDefinitions[0].Height.Value;
     }
 
-    private void SetCurrentTrackExtent(double extent)
+    /// <summary>按实际空间约束分区，临时缩小视口时保留用户原先设定的尺寸。</summary>
+    private void SetCurrentTrackExtent(double extent, bool remember = true)
     {
         double clamped = ClampTrackExtent(extent);
         if (_isLandscape)
         {
-            _landscapeTrackExtent = clamped;
+            if (remember) _landscapeTrackExtent = clamped;
             EditorGrid.ColumnDefinitions[0].Width = new GridLength(clamped, GridUnitType.Pixel);
         }
         else
         {
-            _portraitTrackExtent = clamped;
+            if (remember) _portraitTrackExtent = clamped;
             EditorGrid.RowDefinitions[0].Height = new GridLength(clamped, GridUnitType.Pixel);
         }
     }
@@ -505,6 +555,9 @@ public partial class EditorView : UserControl
             return;
         }
 
+        EditorModePicker.CloseOpenPicker();
+        UpdateToolbarLayout();
+
         bool newIsLandscape = e.NewSize.Width > e.NewSize.Height;
         if (!_responsiveLayoutInitialized)
         {
@@ -520,7 +573,7 @@ public partial class EditorView : UserControl
             return;
         }
 
-        SetCurrentTrackExtent(GetCurrentTrackExtent());
+        SetCurrentTrackExtent(_isLandscape ? _landscapeTrackExtent : _portraitTrackExtent, remember: false);
         UpdateSplitOverlayVisual();
     }
 

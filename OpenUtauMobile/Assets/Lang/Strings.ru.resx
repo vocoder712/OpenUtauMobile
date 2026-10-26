@@ -590,11 +590,14 @@
   <data name="Editor.Quantize.Off" xml:space="preserve">
     <value>Выкл.</value>
   </data>
+  <data name="Editor.Quantize.WholeNote" xml:space="preserve">
+    <value>Целая нота</value>
+  </data>
   <data name="Editor.NormalMode" xml:space="preserve">
-    <value>Обычный режим</value>
+    <value>Обычный</value>
   </data>
   <data name="Editor.MultiSelectMode" xml:space="preserve">
-    <value>Режим множественного выбора</value>
+    <value>Множественный выбор</value>
   </data>
   <data name="Editor.Stop" xml:space="preserve">
     <value>Стоп</value>
@@ -1596,16 +1599,16 @@
     <value>Переключить режим редактирования фонем и параметров</value>
   </data>
   <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
-    <value>Простой режим фонем</value>
+    <value>Простые фонемы</value>
   </data>
   <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
-    <value>Продвинутый режим фонем</value>
+    <value>Продвинутые фонемы</value>
   </data>
   <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
-    <value>Режим рисования параметров</value>
+    <value>Рисование параметров</value>
   </data>
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
-    <value>Режим ластика параметров</value>
+    <value>Ластик параметров</value>
   </data>
   <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
     <value>Переключено в простой режим фонем</value>
@@ -2518,4 +2521,11 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.ContinueTask" xml:space="preserve"><value>Продолжить задачу</value></data>
   <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>Остановить и выйти</value></data>
   <data name="Sandbox.Stopping" xml:space="preserve"><value>Остановка и очистка…</value></data>
+  <data name="Editor.Modes.Track" xml:space="preserve"><value>Режим редактирования аранжировки</value></data>
+  <data name="Editor.Modes.PianoRoll" xml:space="preserve"><value>Режим редактирования пианоролла</value></data>
+  <data name="Editor.Modes.Parameters" xml:space="preserve"><value>Режим редактирования фонем и параметров</value></data>
+  <data name="Editor.Metronome" xml:space="preserve"><value>Метроном</value></data>
+  <data name="Editor.Repeat" xml:space="preserve"><value>Повтор</value></data>
+  <data name="Editor.Record" xml:space="preserve"><value>Запись</value></data>
+  <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Запись</value></data>
 </root>

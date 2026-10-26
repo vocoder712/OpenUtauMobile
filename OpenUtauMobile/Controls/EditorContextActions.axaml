@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OpenUtauMobile.Controls.EditorContextActions">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/EditorContextActions.axaml" />
+    </UserControl.Styles>
+    <ScrollViewer x:Name="ActionsScrollViewer"
+                  HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+        <StackPanel x:Name="ActionsList" Orientation="Vertical" />
+    </ScrollViewer>
+</UserControl>

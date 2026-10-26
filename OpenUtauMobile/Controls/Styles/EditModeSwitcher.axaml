@@ -12,4 +12,17 @@
         <Setter Property="Width" Value="{x:Static localTokens:EditModeSwitcherTokens.ButtonSize}" />
         <Setter Property="Height" Value="{x:Static localTokens:EditModeSwitcherTokens.ButtonSize}" />
     </Style>
+    <Style Selector="Button.EditModeOption">
+        <Setter Property="Width" Value="80" />
+        <Setter Property="MinHeight" Value="56" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.EditModeOption.Selected">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+    </Style>
 </Styles>

@@ -27,7 +27,7 @@
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
-    <Style Selector="Button.TopBarBtn">
+    <Style Selector="Button.TopBarBtn, ToggleButton.TopBarBtn">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
@@ -37,6 +37,12 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- 顶栏开关复用普通图标按钮的几何规格，选中状态沿用全局开关色彩。 -->
+    <Style Selector="ToggleButton.TopBarBtn:checked">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
     </Style>
 
     <Style Selector="Button.TopBarBtn Path">

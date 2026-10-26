@@ -8,9 +8,17 @@ namespace OpenUtauMobile
     {
         /// <summary>
         /// 量化吸附分度选项列表。
-        /// -1 = 自动（根据 TickWidth 动态推导）；0 = 关闭（自由移动）；正数 = 固定分度（4=全音符…48=附点三十二分音符）。
+        /// -1 = 自动；-2 = 自动（三连音）；0 = 关闭；正数 = 全音符的分母（1=全音符，4=四分音符，3=二分音符三连音）。
         /// </summary>
-        public static readonly IReadOnlyList<int> SnapDivOptions = [-1, 0, 4, 8, 12, 16, 24, 32, 48];
+        public static readonly IReadOnlyList<int> SnapDivOptions =
+        [
+            -1, // 自动
+            -2, // 自动（三连音）
+            0, // 关闭
+            1, // 全音符
+            2, 4, 8, 16, 32, 64, 128, // 标准分度
+            3, 6, 12, 24, 48, 96, 192 // 三连音
+        ];
 
         /// <summary>
         /// 将吸附分度整数转换为界面显示标签。
@@ -18,13 +26,16 @@ namespace OpenUtauMobile
         public static string SnapDivToLabel(int div) => div switch
         {
             -1 => L.S("Editor.Quantize.Auto"),
+            -2 => $"{L.S("Editor.Quantize.Auto")}T",
             0 => L.S("Editor.Quantize.Off"),
+            1 => L.S("Editor.Quantize.WholeNote"),
+            > 0 when div % 3 == 0 => $"1/{div / 3 * 2}T",
             _ => $"1/{div}",
         };
 
         // 走带编曲区横向缩放（EditorViewModel.TickWidth，单位：像素/Tick）
-        public const double TickWidthMax = 240.0 / 480.0;
-        public const double TickWidthMin = 8.0 / 480.0;
+        public const double TickWidthMax = 2;
+        public const double TickWidthMin = 1.0 / 480.0;
         public const double TickWidthDefault = 24.0 / 480.0;
 
 
@@ -57,8 +68,7 @@ namespace OpenUtauMobile
         public const double TrackHeightDefault = 104;
         public const double TrackHeightDelta = 20;
 
-        // Part 调整手柄
-        public const double ResizeHandleVisualWidth = 14.0; // 视觉宽度（px）
+        // Part 调整区外观由分片两侧边框构成，命中宽度独立于边框厚度。
         public const double ResizeHandleHitWidth = 24.0; // 命中测试宽度（px，大于视觉，便于移动端触碰）
 
         // Note 调整手柄（在音符矩形右侧外部绘制，带 gap）
@@ -71,7 +81,7 @@ namespace OpenUtauMobile
         public const double PitchPenNoteHitVerticalExtension = 120.0;
 
         // 钢琴卷帘区横向缩放（PianoRollViewModel.TickWidth，单位：像素/Tick）
-        public const double PianoRollTickWidthMax = 1;
+        public const double PianoRollTickWidthMax = 8;
         public const double PianoRollTickWidthMin = 8.0 / 480.0;
         public const double PianoRollTickWidthDefault = 48.0 / 480.0;
 

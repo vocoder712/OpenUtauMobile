@@ -1,6 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
+        xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+        xmlns:editorTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
         xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation">
     <Design.PreviewWith>
         <StackPanel Orientation="Vertical" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
@@ -11,14 +13,17 @@
     </Design.PreviewWith>
     <Style Selector="Button.ContextActionBtn">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetXS}" />
+        <Setter Property="Padding" Value="2" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXXXL}" />
+        <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+        <Setter Property="Height" Value="{x:Static editorTokens:EditorTokens.ToolbarExtent}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}" />
+    </Style>
+    <Style Selector="Button.ContextActionBtn TextBlock.ContextActionCaption">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}" />
     </Style>
 </Styles>

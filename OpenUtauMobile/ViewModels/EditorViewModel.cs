@@ -162,12 +162,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public bool IsTrackHeaderExpanded { get; set; }
 
     /// <summary>
-    /// 上下文菜单是否展开
-    /// </summary>
-    [Reactive]
-    public bool IsContextMenuExpanded { get; set; } = true;
-
-    /// <summary>
     /// 项目曲速（第一个 Tempo），用于走带区轨道头主键显示。
     /// </summary>
     [Reactive]
@@ -274,6 +268,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         UndoCommand = ReactiveCommand.Create(Undo);
         RedoCommand = ReactiveCommand.Create(Redo);
         SaveCommand = ReactiveCommand.Create(Save);
+        InitializeEditorChrome();
         // 播放/暂停命令
         PlayPauseCommand = ReactiveCommand.Create(() =>
         {
@@ -481,11 +476,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         this.WhenAnyValue(x => x.SnapDiv)
             .Subscribe(div => PianoRollViewModel.PianoRollSnapDiv = div)
             .DisposeWith(_disposables);
-        // 上下文菜单展开时触发重建
-        this.WhenAnyValue(x => x.IsContextMenuExpanded)
-            .Where(expanded => expanded) // 仅展开时触发
-            .Subscribe(_ => RebuildTrackContextActions())
-            .DisposeWith(_disposables);
     }
 
     public override void OnNavigatedTo()
@@ -602,6 +592,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
+        if (cmd is not SetPlayPosTickNotification and not SeekPlayPosTickNotification and not ProgressBarNotification)
+            RunOnUiThread(RefreshHistoryState);
         // TODO: 一定要发到UI线程吗？:不需要！docman已经做了
         switch (cmd)
         {
@@ -672,7 +664,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     PianoRollViewModel.InvalidateMaxOffsets();
                     ApplyViewportLimits();
                     RequestInvalidateVisual?.Invoke();
-                    // ResetTrackContextActionPlayPosCaches();
                 });
                 break;
             case TrackCommand:
@@ -703,6 +694,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 RunOnUiThread(() =>
                 {
                     RefreshProjectInfo();
+                    RefreshPlaybackTime();
                     // ResetTrackContextActionPlayPosCaches();
                 });
                 RequestInvalidateVisual?.Invoke();
@@ -1135,6 +1127,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// 将任意 tick 位置吸附到最近的网格点。
     /// SnapDiv == 0：关闭，直接返回原始 tick。
     /// SnapDiv == -1：自动，由 MusicMath.GetSnapUnit 根据当前 TickWidth 推导分度。
+    /// SnapDiv == -2：自动三连音，根据当前 TickWidth 推导三连音分度。
     /// SnapDiv > 0：固定分度。
     /// </summary>
     public int SnapToRound(int tick)
@@ -1167,7 +1160,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         {
             // 自动：以像素宽度反推最合适的分度
             double minTicks = TickWidth > 0 ? ViewConstants.TrackMinTicklineWidth / TickWidth : resolution;
-            MusicMath.GetSnapUnit(resolution, minTicks, triplet: false, out int ticks, out _);
+            MusicMath.GetSnapUnit(resolution, minTicks, triplet: SnapDiv == -2, out int ticks, out _);
             return ticks;
         }
 
@@ -1177,6 +1170,25 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     #endregion
 
     #region 命中测试
+
+    /// <summary>
+    /// 命中已选中分片的顶部移动手柄，包含窄分片向右扩展的完整触摸区域。
+    /// </summary>
+    public UPart? HitTestMoveHandle(Point canvasPoint)
+    {
+        if (canvasPoint.X < 0 || canvasPoint.X >= TrackAreaWidth ||
+            canvasPoint.Y < 0 || canvasPoint.Y >= TrackAreaHeight) return null;
+        List<UPart> parts = DocManager.Inst.Project.parts;
+        for (int i = parts.Count - 1; i >= 0; i--)
+        {
+            UPart part = parts[i];
+            if (!SelectedParts.Contains(part)) continue;
+            PartLayout layout = PartLayout.Calculate(TickToCanvasX(part.position), TrackNoToCanvasY(part.trackNo),
+                part.Duration * TickWidth, TrackHeight, true, TrackAreaWidth);
+            if (layout.MoveHit.Width > 0 && layout.MoveHit.Contains(canvasPoint)) return part;
+        }
+        return null;
+    }
 
     public UPart? HitTestPart(Point canvasPoint)
     {
@@ -1256,7 +1268,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public void OnGestureTap(Point point)
     {
         InterruptPanMotionIfRunning();
-        UPart? hitTestPart = HitTestPart(point);
+        UPart? hitTestPart = HitTestMoveHandle(point) ?? HitTestPart(point);
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
@@ -1294,7 +1306,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public void OnGestureDoubleTap(Point point)
     {
         InterruptPanMotionIfRunning();
-        UPart? hit = HitTestPart(point);
+        UPart? hit = HitTestMoveHandle(point) ?? HitTestPart(point);
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
@@ -1343,8 +1355,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             WasPanMotionInterrupted = false;
         }
 
-        // 优先检测调整时长手柄（手柄区域在视觉上与 Part 矩形重叠，须先于 MovingParts 判断）
-        PartResizeHandleHit? resizeHit = SelectedParts.Count > 0 ? HitTestResizeHandle(point) : null;
+        _inputState = TrackInputState.Idle;
+        // 顶部移动区域优先，避免窄分片的时长调整命中区吞掉移动手柄。
+        UPart? moveHit = HitTestMoveHandle(point);
+        PartResizeHandleHit? resizeHit = moveHit == null && SelectedParts.Count > 0 ? HitTestResizeHandle(point) : null;
         if (resizeHit.HasValue)
         {
             _inputState = TrackInputState.ResizingParts;
@@ -1361,8 +1375,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         // 重叠区域优先命中已选中的分片，避免未选中的分片阻挡拖动。
         UPart? hit = HitTestPart(point, SelectedParts) ?? HitTestPart(point);
-        // 无论哪种模式，在选中的分片上开始拖动都进入拖动状态。
-        if (hit != null && SelectedParts.Contains(hit))
+        // 只有从顶部手柄开始的手势才能移动分片。
+        if (moveHit != null)
         {
             _inputState = TrackInputState.MovingParts;
             // 记录所有选中分片的初始位置
@@ -1797,12 +1811,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// </summary>
     private void RebuildTrackContextActions()
     {
-        // 性能优化：收起状态下不构建菜单
-        if (!IsContextMenuExpanded)
-        {
-            return;
-        }
-
         List<ContextActionItem> items = [];
         bool hasSelection = SelectedParts.Count > 0;
 

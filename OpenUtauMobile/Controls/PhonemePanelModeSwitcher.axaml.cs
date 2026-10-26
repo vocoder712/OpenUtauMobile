@@ -1,158 +1,71 @@
-using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
-using Avalonia.Interactivity;
-using Avalonia.Media;
 using IconPacks.Avalonia.PhosphorIcons;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
 
+/// <summary>保留强类型编辑模式绑定，复用贴边模式选择窗口。</summary>
 public partial class PhonemePanelModeSwitcher : UserControl
 {
-    // 依赖属性：当前面板编辑模式
+    /// <summary>当前编辑模式。</summary>
     public static readonly StyledProperty<PhonemePanelMode> CurrentModeProperty =
-        AvaloniaProperty.Register<PhonemePanelModeSwitcher, PhonemePanelMode>(
-            nameof(CurrentMode),
-            defaultBindingMode: BindingMode.TwoWay);
+        AvaloniaProperty.Register<PhonemePanelModeSwitcher, PhonemePanelMode>(nameof(CurrentMode),
+            PhonemePanelMode.PhonemeSimple, defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>当前编辑区使用的模式。</summary>
     public PhonemePanelMode CurrentMode
     {
         get => GetValue(CurrentModeProperty);
         set => SetValue(CurrentModeProperty, value);
     }
 
-    /// <summary>是否展示独立的擦除模式；桌面端使用右键擦除，无需单独模式。</summary>
+    /// <summary>是否展示移动端独立擦除模式。</summary>
     public static readonly StyledProperty<bool> ShowEraseModeProperty =
-        AvaloniaProperty.Register<PhonemePanelModeSwitcher, bool>(
-            nameof(ShowEraseMode),
-            defaultValue: true);
+        AvaloniaProperty.Register<PhonemePanelModeSwitcher, bool>(nameof(ShowEraseMode), true);
 
+    /// <summary>桌面端由鼠标右键擦除，隐藏独立擦除模式。</summary>
     public bool ShowEraseMode
     {
         get => GetValue(ShowEraseModeProperty);
         set => SetValue(ShowEraseModeProperty, value);
     }
 
-    private bool _isExpand;
-
+    /// <summary>初始化模式选项并将用户选择写回现有绑定。</summary>
     public PhonemePanelModeSwitcher()
     {
         InitializeComponent();
-        UpdateCurrentModeVisualState();
-        UpdateExpandVisualState();
+        UpdateOptions();
+        UpdateSelection();
+        Picker.ModeSelected += value => SetCurrentValue(CurrentModeProperty, (PhonemePanelMode)value);
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-        if (change.Property == CurrentModeProperty)
-        {
-            _isExpand = false;
-            UpdateExpandVisualState();
-            UpdateCurrentModeVisualState();
-        }
+        if (Picker == null) return;
+        if (change.Property == ShowEraseModeProperty) UpdateOptions();
+        if (change.Property == CurrentModeProperty || change.Property == ShowEraseModeProperty) UpdateSelection();
     }
 
-    private void UpdateCurrentModeVisualState()
+    /// <summary>桌面隐藏独立擦除入口时，仍按原有规则展示参数绘制图标。</summary>
+    private void UpdateSelection()
     {
-        IBrush selectedBrush = ThemeResources.GetBrush("Sem.Color.PrimaryContainer");
-        ResetModeListVisualState();
-        switch (CurrentMode)
-        {
-            case PhonemePanelMode.PhonemeSimple:
-                PhonemeSimpleButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.Rows
-                };
-                break;
-            case PhonemePanelMode.PhonemeAdvanced:
-                PhonemeAdvancedButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.WaveTriangle
-                };
-                break;
-            case PhonemePanelMode.ParameterDraw:
-                ParameterDrawButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.Pencil
-                };
-                break;
-            case PhonemePanelMode.ParameterErase:
-                if (ParameterEraseButton.IsVisible)
-                {
-                    ParameterEraseButton.Background = selectedBrush;
-                    SwitchButton.Content = new PackIconPhosphorIcons
-                    {
-                        Kind = PackIconPhosphorIconsKind.Eraser
-                    };
-                }
-                else
-                {
-                    goto case PhonemePanelMode.ParameterDraw;
-                }
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        Picker.SelectedValue = (int)(!ShowEraseMode && CurrentMode == PhonemePanelMode.ParameterErase
+            ? PhonemePanelMode.ParameterDraw : CurrentMode);
     }
 
-    private void OnSwitchButtonClick(object? sender, RoutedEventArgs e)
+    /// <summary>使用当前项目定义的模式及图标构建选择项。</summary>
+    private void UpdateOptions()
     {
-        _isExpand = !_isExpand;
-        UpdateExpandVisualState();
-    }
-
-    private void OnModeButtonClick(object? sender, RoutedEventArgs e)
-    {
-        if (ReferenceEquals(sender, PhonemeSimpleButton))
-        {
-            CurrentMode = PhonemePanelMode.PhonemeSimple;
-        }
-        else if (ReferenceEquals(sender, PhonemeAdvancedButton))
-        {
-            CurrentMode = PhonemePanelMode.PhonemeAdvanced;
-        }
-        else if (ReferenceEquals(sender, ParameterDrawButton))
-        {
-            CurrentMode = PhonemePanelMode.ParameterDraw;
-        }
-        else if (ReferenceEquals(sender, ParameterEraseButton))
-        {
-            CurrentMode = PhonemePanelMode.ParameterErase;
-        }
-
-        UpdateCurrentModeVisualState();
-    }
-
-    private void ResetModeListVisualState()
-    {
-        IImmutableSolidColorBrush backgroundBrush = Brushes.Transparent;
-        PhonemeSimpleButton.Background = backgroundBrush;
-        PhonemeAdvancedButton.Background = backgroundBrush;
-        ParameterDrawButton.Background = backgroundBrush;
-        if (ParameterEraseButton.IsVisible)
-        {
-            ParameterEraseButton.Background = backgroundBrush;
-        }
-    }
-
-    private void UpdateExpandVisualState()
-    {
-        if (_isExpand)
-        {
-            double width = ModeButtonsPanel.DesiredSize.Width;
-            ModeButtonsGrid.Width = width;
-        }
-        else
-        {
-            ModeButtonsGrid.Width = 0;
-        }
+        System.Collections.Generic.List<EditorModeOption> items = [
+            new((int)PhonemePanelMode.PhonemeSimple, PackIconPhosphorIconsKind.Rows, "PhonemePanel.Mode.Simple"),
+            new((int)PhonemePanelMode.PhonemeAdvanced, PackIconPhosphorIconsKind.WaveTriangle, "PhonemePanel.Mode.Advanced"),
+            new((int)PhonemePanelMode.ParameterDraw, PackIconPhosphorIconsKind.Pencil, "PhonemePanel.Mode.Draw"),
+            new((int)PhonemePanelMode.ParameterErase, PackIconPhosphorIconsKind.Eraser, "PhonemePanel.Mode.Erase"),
+        ];
+        if (!ShowEraseMode) items.RemoveAt(items.Count - 1);
+        Picker.SetOptions(items);
     }
 }

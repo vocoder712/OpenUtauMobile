@@ -1,158 +1,52 @@
-﻿using System;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Media;
+using Avalonia.Data;
 using IconPacks.Avalonia.PhosphorIcons;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
 
+/// <summary>保留强类型编辑模式绑定，复用贴边模式选择窗口。</summary>
 public partial class PianoRollEditModeSwitcher : UserControl
 {
-    // 依赖属性：当前编辑模式
+    /// <summary>当前编辑模式。</summary>
     public static readonly StyledProperty<PianoRollEditMode> CurrentModeProperty =
-        AvaloniaProperty.Register<PianoRollEditModeSwitcher, PianoRollEditMode>(nameof(CurrentMode));
+        AvaloniaProperty.Register<PianoRollEditModeSwitcher, PianoRollEditMode>(nameof(CurrentMode),
+            PianoRollEditMode.Hand, defaultBindingMode: BindingMode.TwoWay);
 
+    /// <summary>当前编辑区使用的模式。</summary>
     public PianoRollEditMode CurrentMode
     {
         get => GetValue(CurrentModeProperty);
         set => SetValue(CurrentModeProperty, value);
     }
 
-    private bool _isExpand;
-
+    /// <summary>初始化模式选项并将用户选择写回现有绑定。</summary>
     public PianoRollEditModeSwitcher()
     {
         InitializeComponent();
-        UpdateCurrentModeVisualState();
-        UpdateExpandVisualState();
+        UpdateOptions();
+        Picker.SelectedValue = (int)CurrentMode;
+        Picker.ModeSelected += value => SetCurrentValue(CurrentModeProperty, (PianoRollEditMode)value);
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-        if (change.Property == CurrentModeProperty)
-        {
-            _isExpand = false;
-            UpdateExpandVisualState();
-            UpdateCurrentModeVisualState();
-        }
+        if (Picker == null) return;
+        if (change.Property == CurrentModeProperty) Picker.SelectedValue = (int)CurrentMode;
     }
 
-    private void UpdateCurrentModeVisualState()
+    /// <summary>使用当前项目定义的模式及图标构建选择项。</summary>
+    private void UpdateOptions()
     {
-        IBrush selectedBrush = ThemeResources.GetBrush("Sem.Color.PrimaryContainer");
-        ResetModeListVisualState();
-        switch (CurrentMode)
-        {
-            case PianoRollEditMode.Hand:
-                HandButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.Hand
-                };
-                break;
-            case PianoRollEditMode.MultiSelect:
-                MultiSelectButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.Selection
-                };
-                break;
-            case PianoRollEditMode.Note:
-                NoteButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.MusicNoteSimple
-                };
-                break;
-            case PianoRollEditMode.PitchPen:
-                PitchPenButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.Pencil
-                };
-                break;
-            case PianoRollEditMode.Anchor:
-                AnchorButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.Cursor
-                };
-                break;
-            case PianoRollEditMode.Vibrato:
-                VibratoButton.Background = selectedBrush;
-                SwitchButton.Content = new PackIconPhosphorIcons
-                {
-                    Kind = PackIconPhosphorIconsKind.WaveSine
-                };
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-
-    private void OnSwitchButtonClick(object? sender, RoutedEventArgs e)
-    {
-        _isExpand = !_isExpand;
-        UpdateExpandVisualState();
-    }
-
-    private void OnModeButtonClick(object? sender, RoutedEventArgs e)
-    {
-        if (ReferenceEquals(sender, HandButton))
-        {
-            CurrentMode = PianoRollEditMode.Hand;
-        }
-        else if (ReferenceEquals(sender, MultiSelectButton))
-        {
-            CurrentMode = PianoRollEditMode.MultiSelect;
-        }
-        else if (ReferenceEquals(sender, NoteButton))
-        {
-            CurrentMode = PianoRollEditMode.Note;
-        }
-        else if (ReferenceEquals(sender, PitchPenButton))
-        {
-            CurrentMode = PianoRollEditMode.PitchPen;
-        }
-        else if (ReferenceEquals(sender, AnchorButton))
-        {
-            CurrentMode = PianoRollEditMode.Anchor;
-        }
-        else if (ReferenceEquals(sender, VibratoButton))
-        {
-            CurrentMode = PianoRollEditMode.Vibrato;
-        }
-
-        UpdateCurrentModeVisualState();
-    }
-
-    private void ResetModeListVisualState()
-    {
-        IImmutableSolidColorBrush backgroundBrush = Brushes.Transparent;
-        HandButton.Background = backgroundBrush;
-        MultiSelectButton.Background = backgroundBrush;
-        NoteButton.Background = backgroundBrush;
-        PitchPenButton.Background = backgroundBrush;
-        AnchorButton.Background = backgroundBrush;
-        VibratoButton.Background = backgroundBrush;
-    }
-
-    private void UpdateExpandVisualState()
-    {
-        if (_isExpand)
-        {
-            double width = ModeButtonsPanel.DesiredSize.Width;
-            ModeButtonsGrid.Width = width;
-        }
-        else
-        {
-            ModeButtonsGrid.Width = 0;
-        }
+        Picker.SetOptions([
+            new((int)PianoRollEditMode.Hand, PackIconPhosphorIconsKind.Hand, "PianoRoll.DragSelect"),
+            new((int)PianoRollEditMode.MultiSelect, PackIconPhosphorIconsKind.Selection, "PianoRoll.MultiSelect"),
+            new((int)PianoRollEditMode.Note, PackIconPhosphorIconsKind.MusicNoteSimple, "PianoRoll.NotePen"),
+            new((int)PianoRollEditMode.PitchPen, PackIconPhosphorIconsKind.Pencil, "PianoRoll.PitchPen"),
+            new((int)PianoRollEditMode.Anchor, PackIconPhosphorIconsKind.Cursor, "PianoRoll.Anchor"),
+            new((int)PianoRollEditMode.Vibrato, PackIconPhosphorIconsKind.WaveSine, "PianoRoll.Vibrato"),
+        ]);
     }
 }

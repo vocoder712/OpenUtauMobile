@@ -37,7 +37,8 @@ namespace OpenUtauMobile.Controls
             bool toggle = e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Meta);
             bool additive = toggle || e.KeyModifiers.HasFlag(KeyModifiers.Shift);
             _desktopSelection = vm.SelectedParts.ToArray();
-            UPart? hit = vm.HitTestPart(_desktopPress);
+            // 先识别扩展到分片外的移动区域，避免误清选区或选中相邻分片。
+            UPart? hit = vm.HitTestMoveHandle(_desktopPress) ?? vm.HitTestPart(_desktopPress);
             if (!left) { _desktopOperation = DesktopPartOperation.Pan; vm.BeginViewportInput(); }
             else if (hit == null)
             {
