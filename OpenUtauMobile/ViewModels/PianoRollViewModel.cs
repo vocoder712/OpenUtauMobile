@@ -1113,6 +1113,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     /// <summary>
     /// 根据 PianoRollSnapDiv 计算实际吸附单元（Tick 数）。
+    /// -1 使用普通自动分度，-2 使用三连音自动分度。
     /// 返回 0 表示关闭吸附（PianoRollSnapDiv == 0）。
     /// </summary>
     public int ResolveSnapUnit()
@@ -1122,7 +1123,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         if (PianoRollSnapDiv < 0) // 自动
         {
             double minTicks = TickWidth > 0 ? ViewConstants.PianoRollMinTicklineWidth / TickWidth : resolution;
-            MusicMath.GetSnapUnit(resolution, minTicks, triplet: false, out int ticks, out _);
+            MusicMath.GetSnapUnit(resolution, minTicks, triplet: PianoRollSnapDiv == -2, out int ticks, out _);
             return ticks;
         }
 

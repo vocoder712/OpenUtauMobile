@@ -667,6 +667,9 @@
   <data name="Editor.Quantize.Off" xml:space="preserve">
     <value>Off</value>
   </data>
+  <data name="Editor.Quantize.WholeNote" xml:space="preserve">
+    <value>Whole note</value>
+  </data>
   <data name="Editor.NormalMode" xml:space="preserve">
     <value>Normal</value>
   </data>

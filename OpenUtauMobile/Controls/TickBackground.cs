@@ -170,7 +170,7 @@ public class TickBackground : Control
         else
         {
             double minTicks = TickWidth > 0 ? MinTicklineWidth / TickWidth : resolution;
-            MusicMath.GetSnapUnit(resolution, minTicks, triplet: false, out snapUnit, out _);
+            MusicMath.GetSnapUnit(resolution, minTicks, triplet: SnapDiv == -2, out snapUnit, out _);
         }
 
         double minLineTick = MinTicklineWidth / TickWidth;
@@ -182,8 +182,8 @@ public class TickBackground : Control
         IPen snapGridPen = ThemeResources.GetPen("Sem.Pen.Grid.Snap");
         IPen snapMarkerPen = ThemeResources.GetPen("Sem.Pen.Grid.SnapMarker");
 
-        // 定位起始小节
-        project.timeAxis.TickPosToBarBeat(TickOrigin, out int bar, out _, out _);
+        // 从可见区域附近开始绘制，避免平移后仍遍历工程开头的所有小节。
+        project.timeAxis.TickPosToBarBeat((int)Math.Max(0, leftTick), out int bar, out _, out _);
         if (bar > 0)
         {
             bar--;
@@ -193,51 +193,60 @@ public class TickBackground : Control
 
         while (barTick <= rightTick)
         {
-            // 小节线
-            double x = Math.Round(barTick * TickWidth - pixelOffset) + 0.5;
-            context.DrawLine(barPen, new Point(x, -0.5), new Point(x, Bounds.Height + 0.5));
-
-            // 小节编号
-            if (ShowBarNumber)
-            {
-                TextLayout textLayout = TextLayoutCache.Get((bar + 1).ToString(),
-                    ThemeResources.GetBrush("Sem.Color.OnSurfaceVariant"), 10);
-                using (context.PushTransform(Matrix.CreateTranslation(x + 3, 10)))
-                {
-                    textLayout.Draw(context, new Point());
-                }
-            }
-
-            // 小节内线条
             UTimeSignature timeSig = project.timeAxis.TimeSignatureAtBar(bar);
             int nextBarTick = project.timeAxis.BarBeatToTickPos(bar + 1, 0);
             int ticksPerBeat = resolution * 4 / timeSig.beatUnit;
-            int ticksPerLine = snapUnit;
-            if (ticksPerBeat < snapUnit)
+
+            // 小节线过密时，每次将显示间隔翻倍；编号与实际绘制的小节线保持一致。
+            int barStep = 1;
+            while ((double)(nextBarTick - barTick) * barStep < minLineTick)
             {
-                ticksPerLine = ticksPerBeat;
+                barStep *= 2;
             }
-            else if (ticksPerBeat % snapUnit != 0)
+
+            double x = Math.Round(barTick * TickWidth - pixelOffset) + 0.5;
+            if ((bar - timeSig.barPosition) % barStep == 0)
             {
-                if (ticksPerBeat > minLineTick)
+                context.DrawLine(barPen, new Point(x, -0.5), new Point(x, Bounds.Height + 0.5));
+                if (ShowBarNumber)
                 {
-                    ticksPerLine = ticksPerBeat;
-                }
-                else
-                {
-                    ticksPerLine = nextBarTick - barTick;
+                    TextLayout textLayout = TextLayoutCache.Get((bar + 1).ToString(),
+                        ThemeResources.GetBrush("Sem.Color.OnSurfaceVariant"), 10);
+                    using (context.PushTransform(Matrix.CreateTranslation(x + 3, 10)))
+                    {
+                        textLayout.Draw(context, new Point());
+                    }
                 }
             }
 
+            // 分度不能整除一拍时，节拍线与跨拍的吸附线分别绘制。
+            int ticksPerLine = ticksPerBeat % snapUnit == 0 ? snapUnit : ticksPerBeat;
+
             if (nextBarTick > leftTick)
             {
-                for (int tick = barTick + ticksPerLine; tick < nextBarTick; tick += ticksPerLine)
+                // 节拍或细分线低于最小线距时不绘制，避免缩小时挤成一片。
+                if (ticksPerLine >= minLineTick)
                 {
-                    project.timeAxis.TickPosToBarBeat(tick, out int _, out int _, out int snapRemainingTicks);
-                    // 节拍实线、吸附虚线
-                    IPen pen = snapRemainingTicks != 0 ? snapGridPen : beatPen;
-                    x = Math.Round(tick * TickWidth - pixelOffset) + 0.5;
-                    context.DrawLine(pen, new Point(x, rulerHeight), new Point(x, Bounds.Height + 0.5));
+                    for (int tick = barTick + ticksPerLine; tick < nextBarTick; tick += ticksPerLine)
+                    {
+                        project.timeAxis.TickPosToBarBeat(tick, out int _, out int _, out int snapRemainingTicks);
+                        // 节拍实线、吸附虚线
+                        IPen pen = snapRemainingTicks != 0 ? snapGridPen : beatPen;
+                        x = Math.Round(tick * TickWidth - pixelOffset) + 0.5;
+                        context.DrawLine(pen, new Point(x, rulerHeight), new Point(x, Bounds.Height + 0.5));
+                    }
+                }
+
+                // 补绘跨拍的吸附线，并按绝对 Tick 对齐，避免三连音网格与实际吸附位置不一致。
+                if (ticksPerBeat % snapUnit != 0 && snapUnit >= minLineTick)
+                {
+                    int firstSnapTick = (int)(Math.Ceiling(Math.Max(barTick, leftTick) / snapUnit) * snapUnit);
+                    for (int tick = firstSnapTick; tick < nextBarTick && tick <= rightTick; tick += snapUnit)
+                    {
+                        if ((tick - barTick) % ticksPerBeat == 0) continue;
+                        x = Math.Round(tick * TickWidth - pixelOffset) + 0.5;
+                        context.DrawLine(snapGridPen, new Point(x, rulerHeight), new Point(x, Bounds.Height + 0.5));
+                    }
                 }
             }
 

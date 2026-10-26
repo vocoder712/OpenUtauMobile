@@ -19,8 +19,6 @@
         <tools:SnapDivToLabelConverter x:Key="SnapDivToLabelConverter" />
         <tools:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
         <tools:PathToFileNameConverter x:Key="PathToFileName" />
-        <tools:PathToDirectoryConverter x:Key="PathToDirectory" />
-        <tools:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
     </UserControl.Resources>
 
     <UserControl.Styles>
@@ -60,7 +58,7 @@
                     Content="{iconPacks:PhosphorIcons ArrowLeft}" />
                 <!-- 各组分别占用有限视口，窄屏可独立滑动到组内的任意操作。 -->
                 <Grid x:Name="CenteredToolbar" Grid.Column="1" ColumnDefinitions="*,Auto,*,Auto,0"
-                    HorizontalAlignment="Center" MaxWidth="257" IsEnabled="{Binding !IsLoadingProject}">
+                    HorizontalAlignment="Center" MaxWidth="273" IsEnabled="{Binding !IsLoadingProject}">
                     <ScrollViewer x:Name="ToggleGroupViewport" MaxWidth="144"
                         HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -76,10 +74,10 @@
                         </StackPanel>
                     </ScrollViewer>
                     <Border Grid.Column="1" Classes="EditorToolbarDivider" />
-                    <ScrollViewer x:Name="QuantizeTimeGroupViewport" Grid.Column="2" MaxWidth="96"
+                    <ScrollViewer x:Name="QuantizeTimeGroupViewport" Grid.Column="2" MaxWidth="112"
                         HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <ComboBox x:Name="QuantizeSelector" Width="96" VerticalAlignment="Center"
+                            <ComboBox x:Name="QuantizeSelector" Width="112" VerticalAlignment="Center"
                                 ItemsSource="{x:Static local:ViewConstants.SnapDivOptions}"
                                 SelectedItem="{Binding SnapDiv, Mode=TwoWay}"
                                 ToolTip.Tip="{DynamicResource Editor.Quantize}" AutomationProperties.Name="{DynamicResource Editor.Quantize}">

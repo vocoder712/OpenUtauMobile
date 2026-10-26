@@ -667,6 +667,9 @@
   <data name="Editor.Quantize.Off" xml:space="preserve">
     <value>オフ</value>
   </data>
+  <data name="Editor.Quantize.WholeNote" xml:space="preserve">
+    <value>全音符</value>
+  </data>
   <data name="Editor.NormalMode" xml:space="preserve">
     <value>通常</value>
   </data>

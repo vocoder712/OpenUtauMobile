@@ -1127,6 +1127,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// 将任意 tick 位置吸附到最近的网格点。
     /// SnapDiv == 0：关闭，直接返回原始 tick。
     /// SnapDiv == -1：自动，由 MusicMath.GetSnapUnit 根据当前 TickWidth 推导分度。
+    /// SnapDiv == -2：自动三连音，根据当前 TickWidth 推导三连音分度。
     /// SnapDiv > 0：固定分度。
     /// </summary>
     public int SnapToRound(int tick)
@@ -1159,7 +1160,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         {
             // 自动：以像素宽度反推最合适的分度
             double minTicks = TickWidth > 0 ? ViewConstants.TrackMinTicklineWidth / TickWidth : resolution;
-            MusicMath.GetSnapUnit(resolution, minTicks, triplet: false, out int ticks, out _);
+            MusicMath.GetSnapUnit(resolution, minTicks, triplet: SnapDiv == -2, out int ticks, out _);
             return ticks;
         }
 

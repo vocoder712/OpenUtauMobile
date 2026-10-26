@@ -288,6 +288,7 @@ public class EnumToBooleanConverter : IValueConverter
 }
 
 /// <summary>
+/// 将整数分度值转换为显示标签。
 /// int SnapDiv => display label ("自动" / "关" / "1/N").
 /// Calls ViewConstants.SnapDivToLabel.
 /// </summary>

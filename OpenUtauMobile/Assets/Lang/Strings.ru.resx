@@ -590,6 +590,9 @@
   <data name="Editor.Quantize.Off" xml:space="preserve">
     <value>Выкл.</value>
   </data>
+  <data name="Editor.Quantize.WholeNote" xml:space="preserve">
+    <value>Целая нота</value>
+  </data>
   <data name="Editor.NormalMode" xml:space="preserve">
     <value>Обычный</value>
   </data>
