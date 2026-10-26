@@ -1171,6 +1171,25 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     #region 命中测试
 
+    /// <summary>
+    /// 命中已选中分片的顶部移动手柄，包含窄分片向右扩展的完整触摸区域。
+    /// </summary>
+    public UPart? HitTestMoveHandle(Point canvasPoint)
+    {
+        if (canvasPoint.X < 0 || canvasPoint.X >= TrackAreaWidth ||
+            canvasPoint.Y < 0 || canvasPoint.Y >= TrackAreaHeight) return null;
+        List<UPart> parts = DocManager.Inst.Project.parts;
+        for (int i = parts.Count - 1; i >= 0; i--)
+        {
+            UPart part = parts[i];
+            if (!SelectedParts.Contains(part)) continue;
+            PartLayout layout = PartLayout.Calculate(TickToCanvasX(part.position), TrackNoToCanvasY(part.trackNo),
+                part.Duration * TickWidth, TrackHeight, true, TrackAreaWidth);
+            if (layout.MoveHit.Width > 0 && layout.MoveHit.Contains(canvasPoint)) return part;
+        }
+        return null;
+    }
+
     public UPart? HitTestPart(Point canvasPoint)
     {
         return HitTestPart(canvasPoint, DocManager.Inst.Project.parts);
@@ -1249,7 +1268,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public void OnGestureTap(Point point)
     {
         InterruptPanMotionIfRunning();
-        UPart? hitTestPart = HitTestPart(point);
+        UPart? hitTestPart = HitTestMoveHandle(point) ?? HitTestPart(point);
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
@@ -1287,7 +1306,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public void OnGestureDoubleTap(Point point)
     {
         InterruptPanMotionIfRunning();
-        UPart? hit = HitTestPart(point);
+        UPart? hit = HitTestMoveHandle(point) ?? HitTestPart(point);
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
@@ -1336,8 +1355,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             WasPanMotionInterrupted = false;
         }
 
-        // 优先检测调整时长手柄（手柄区域在视觉上与 Part 矩形重叠，须先于 MovingParts 判断）
-        PartResizeHandleHit? resizeHit = SelectedParts.Count > 0 ? HitTestResizeHandle(point) : null;
+        _inputState = TrackInputState.Idle;
+        // 顶部移动区域优先，避免窄分片的时长调整命中区吞掉移动手柄。
+        UPart? moveHit = HitTestMoveHandle(point);
+        PartResizeHandleHit? resizeHit = moveHit == null && SelectedParts.Count > 0 ? HitTestResizeHandle(point) : null;
         if (resizeHit.HasValue)
         {
             _inputState = TrackInputState.ResizingParts;
@@ -1354,8 +1375,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         // 重叠区域优先命中已选中的分片，避免未选中的分片阻挡拖动。
         UPart? hit = HitTestPart(point, SelectedParts) ?? HitTestPart(point);
-        // 无论哪种模式，在选中的分片上开始拖动都进入拖动状态。
-        if (hit != null && SelectedParts.Contains(hit))
+        // 只有从顶部手柄开始的手势才能移动分片。
+        if (moveHit != null)
         {
             _inputState = TrackInputState.MovingParts;
             // 记录所有选中分片的初始位置

@@ -16,7 +16,6 @@ using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Controls.Gestures;
-using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
 using OpenUtauMobile.ViewModels;
@@ -376,32 +375,39 @@ public partial class PartsCanvas : Control, ICmdSubscriber
             if (x + width < 0 || x > Bounds.Width) continue;
             if (y + height < 0 || y > Bounds.Height) continue;
 
-            Rect rect = new(x, y + 1, width, height - 2); // 分片在屏幕中的矩形区域，竖向上下各留 1px 间距分隔轨道
+            bool selected = SelectedParts != null && SelectedParts.Contains(part); // 是否选中
+            PartLayout layout = PartLayout.Calculate(x, y, width, height, selected, Bounds.Width);
+            Rect rect = layout.Body;
+            if (rect.Width <= 0 || rect.Height <= 0) continue;
             SolidColorBrush brush = TrackPalette.GetTrackColor(DocManager.Inst.Project.tracks[part.trackNo].TrackColor)
                 .AccentColor;
-            bool selected = SelectedParts != null && SelectedParts.Contains(part); // 是否选中
-            IPen? borderPen = selected ? ThemeResources.GetPen("Sem.Color.Primary", 2) : null;
 
             // 1. 背景色块 + 边框
             using (context.PushOpacity(selected ? 1 : 0.64))
             {
-                context.DrawRectangle(brush, borderPen, rect,
+                if (selected)
+                    context.DrawRectangle(ThemeResources.GetBrush("Sem.Color.Primary"), null, layout.Frame,
+                        radiusX: PartCornerRadius, radiusY: PartCornerRadius);
+                context.DrawRectangle(brush, null, layout.Fill,
                     radiusX: PartCornerRadius, radiusY: PartCornerRadius);
             }
 
             // 2. 内容缩略图（音符 / 波形）
-            switch (part)
+            using (context.PushClip(new RoundedRect(layout.Fill, PartCornerRadius)))
             {
-                case UVoicePart { notes.Count: > 0 } voicePart:
-                    DrawNotePreview(context, voicePart, rect);
-                    break;
-                case UWavePart wavePart:
-                    DrawWaveformCached(context, wavePart, rect);
-                    break;
-            }
+                switch (part)
+                {
+                    case UVoicePart { notes.Count: > 0 } voicePart:
+                        DrawNotePreview(context, voicePart, rect);
+                        break;
+                    case UWavePart wavePart:
+                        DrawWaveformCached(context, wavePart, rect);
+                        break;
+                }
 
-            // 3. 名称标签（最顶层，覆盖在缩略图上）
-            DrawPartLabel(context, part, rect, brush, selected);
+                // 标签避开顶部刘海，缩略图仍按完整主体坐标映射时间。
+                DrawPartLabel(context, part, rect, brush, selected);
+            }
 
             // 4. 绘制拖拽手柄
             if (selected)
@@ -409,7 +415,46 @@ public partial class PartsCanvas : Control, ICmdSubscriber
                 DrawResizeHandles(context, rect);
             }
         }
-        if (_desktopBox is Rect box) context.DrawRectangle(null, ThemeResources.GetPen("Sem.Color.Primary", 1), box);
+        // 移动手柄置于所有分片上方，与重叠区域的命中顺序保持一致。
+        foreach (UPart part in parts)
+        {
+            if (SelectedParts == null || !SelectedParts.Contains(part)) continue;
+            PartLayout layout = PartLayout.Calculate(
+                (part.position - TickOffset) * TickWidth, part.trackNo * TrackHeight - TrackOffset,
+                part.Duration * TickWidth, TrackHeight, true, Bounds.Width);
+            DrawMoveHandle(context, layout);
+        }
+        if (_desktopBox is { } box) context.DrawRectangle(null, ThemeResources.GetPen("Sem.Color.Primary", 1), box);
+    }
+
+    /// <summary>
+    /// 创建与顶边相连的刘海轮廓；这是边框结构，不是图标。
+    /// </summary>
+    private static StreamGeometry CreateMoveHandleGeometry()
+    {
+        StreamGeometry geometry = new();
+        using StreamGeometryContext path = geometry.Open();
+        path.BeginFigure(new Point(0, 0), true);
+        path.LineTo(new Point(PartLayout.MoveWidth, 0));
+        path.CubicBezierTo(new Point(30, 0), new Point(30, 6), new Point(28, 6));
+        path.LineTo(new Point(4, PartLayout.MoveHeight));
+        path.CubicBezierTo(new Point(2, 6), new Point(2, 0), new Point(0, 0));
+        path.EndFigure(true);
+        return geometry;
+    }
+
+    private static readonly StreamGeometry MoveHandleGeometry = CreateMoveHandleGeometry();
+
+    /// <summary>
+    /// 裁剪绘制顶部移动手柄，保证窄分片和离屏分片不出现外溢。
+    /// </summary>
+    private void DrawMoveHandle(DrawingContext context, PartLayout layout)
+    {
+        if (layout.MoveClip.Width <= 0 || layout.MoveClip.Height <= 0 ||
+            layout.MoveClip.Bottom <= 0 || layout.MoveClip.Top >= Bounds.Height) return;
+        using (context.PushClip(layout.MoveClip))
+        using (context.PushTransform(Matrix.CreateTranslation(layout.MoveHandle.X, layout.MoveHandle.Y)))
+            context.DrawGeometry(ThemeResources.GetBrush("Sem.Color.Primary"), null, MoveHandleGeometry);
     }
 
     /// <summary>
@@ -437,7 +482,7 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         }
 
         using (context.PushClip(new RoundedRect(rect, PartCornerRadius)))
-        using (context.PushTransform(Matrix.CreateTranslation(labelLeft, rect.Y + 2)))
+        using (context.PushTransform(Matrix.CreateTranslation(labelLeft, rect.Y + 2 + (selected ? PartLayout.MoveHeight : 0))))
         {
             using (context.PushOpacity(0.6))
             {
