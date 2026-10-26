@@ -13,7 +13,7 @@
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
-             Background="{DynamicResource DynamicResource Sem.Color.SurfaceContainerLow}">
+             Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
     <UserControl.Resources>
         <tools:SnapDivToLabelConverter x:Key="SnapDivToLabelConverter" />
@@ -24,6 +24,14 @@
     </UserControl.Resources>
 
     <UserControl.Styles>
+        <Style Selector="Border.EditorToolbarDivider">
+            <Setter Property="Width" Value="1" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Margin" Value="8,0" />
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.OutlineVariant}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
         <Style Selector="Grid#SplitDragHandle, Grid#PhonemeSplitHandlePill">
             <Setter Property="Opacity" Value="{x:Static localTokens:EditorTokens.HandleRestOpacity}" />
             <Setter Property="Cursor" Value="{x:Static local:ViewConstants.cursorSizeNS}" />
@@ -42,51 +50,134 @@
         </Style>
     </UserControl.Styles>
 
+    <Border x:Name="EditorSafeArea">
     <DockPanel>
-        <!-- 顶部工具栏 -->
+        <!-- 顶栏沿用全局规格；中间组在返回与页级操作之间居中。 -->
         <Border DockPanel.Dock="Top" Classes="TopBar">
-            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                <Button Grid.Column="0"
-                        Classes="TopBarBtn"
-                        Command="{Binding BackCommand}"
-                        ToolTip.Tip="{DynamicResource Common.Back}"
-                        Content="{iconPacks:PhosphorIcons ArrowLeft}">
-                </Button>
-                <!-- 标题 -->
-                <StackPanel Grid.Column="1"
-                            VerticalAlignment="Center"
-                            Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
-                            Margin="0,0,8,0">
-                    <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToFileName}}"
-                               FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
-                               FontWeight="SemiBold"
-                               TextTrimming="CharacterEllipsis" />
-                    <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToDirectory}}"
-                               FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
-                               Opacity="0.50"
-                               TextTrimming="CharacterEllipsis" />
-                </StackPanel>
-
-                <!-- 保存 混音 更多 -->
-                <StackPanel Grid.Column="2"
-                            IsEnabled="{Binding !IsLoadingProject}"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                    <Button Command="{Binding SaveCommand}"
-                            ToolTip.Tip="{DynamicResource Editor.Save}"
-                            Classes="TopBarBtn"
-                            Content="{iconPacks:PhosphorIcons FloppyDisk}">
-                    </Button>
-                    <Button x:Name="OpenMixerButton" Classes="TopBarBtn" Click="OnOpenMixerClick"
-                            ToolTip.Tip="{DynamicResource Mixer.Title}"
-                            Content="{iconPacks:PhosphorIcons SlidersHorizontal}" />
-                    <Button Command="{Binding ShowMorePopupCommand}"
-                            ToolTip.Tip="{DynamicResource Editor.More}"
-                            Classes="TopBarBtn"
-                            Content="{iconPacks:PhosphorIcons DotsThreeVertical}">
-                    </Button>
-                </StackPanel>
+            <Grid x:Name="TopToolbarGrid" ColumnDefinitions="Auto,3*,Auto,0,Auto">
+                <Button Classes="TopBarBtn" Command="{Binding BackCommand}"
+                    ToolTip.Tip="{DynamicResource Common.Back}" AutomationProperties.Name="{DynamicResource Common.Back}"
+                    Content="{iconPacks:PhosphorIcons ArrowLeft}" />
+                <!-- 各组分别占用有限视口，窄屏可独立滑动到组内的任意操作。 -->
+                <Grid x:Name="CenteredToolbar" Grid.Column="1" ColumnDefinitions="*,Auto,*,Auto,0"
+                    HorizontalAlignment="Center" MaxWidth="257" IsEnabled="{Binding !IsLoadingProject}">
+                    <ScrollViewer x:Name="ToggleGroupViewport" MaxWidth="144"
+                        HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ToggleButton x:Name="MetronomeButton" Classes="TopBarBtn" IsChecked="{Binding IsMetronomeEnabled, Mode=TwoWay}"
+                                ToolTip.Tip="{DynamicResource Editor.Metronome}" AutomationProperties.Name="{DynamicResource Editor.Metronome}"
+                                Content="{iconPacks:PhosphorIcons Metronome}" />
+                            <ToggleButton x:Name="RepeatButton" Classes="TopBarBtn" IsChecked="{Binding IsRepeatEnabled, Mode=TwoWay}"
+                                ToolTip.Tip="{DynamicResource Editor.Repeat}" AutomationProperties.Name="{DynamicResource Editor.Repeat}"
+                                Content="{iconPacks:PhosphorIcons Repeat}" />
+                            <ToggleButton x:Name="OpenMixerButton" Classes="TopBarBtn" Click="OnOpenMixerClick"
+                                ToolTip.Tip="{DynamicResource Mixer.Title}" AutomationProperties.Name="{DynamicResource Mixer.Title}"
+                                Content="{iconPacks:PhosphorIcons SlidersHorizontal}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                    <Border Grid.Column="1" Classes="EditorToolbarDivider" />
+                    <ScrollViewer x:Name="QuantizeTimeGroupViewport" Grid.Column="2" MaxWidth="96"
+                        HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <ComboBox x:Name="QuantizeSelector" Width="96" VerticalAlignment="Center"
+                                ItemsSource="{x:Static local:ViewConstants.SnapDivOptions}"
+                                SelectedItem="{Binding SnapDiv, Mode=TwoWay}"
+                                ToolTip.Tip="{DynamicResource Editor.Quantize}" AutomationProperties.Name="{DynamicResource Editor.Quantize}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="x:Int32">
+                                        <TextBlock Text="{Binding Converter={StaticResource SnapDivToLabelConverter}}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <Border x:Name="PlaybackTimeDisplay" Width="64" Padding="8,4" IsVisible="False" VerticalAlignment="Center">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock x:Name="PlaybackMinutesDisplay" Text="{Binding PlaybackMinutesSeconds}" FontFamily="monospace"
+                                        FontSize="{x:Static semantic:TypographyTokens.LabelMSize}" FontWeight="Bold" LineHeight="16"
+                                        Foreground="{DynamicResource Sem.Color.OnSurface}" />
+                                    <TextBlock x:Name="PlaybackFractionDisplay" Text="{Binding PlaybackFraction}" FontFamily="monospace"
+                                        FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" FontWeight="Medium" LineHeight="16"
+                                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                    <Border x:Name="PlaybackGroupDivider" Grid.Column="3" Classes="EditorToolbarDivider" IsVisible="False" />
+                    <ScrollViewer x:Name="LandscapeTransportViewport" Grid.Column="4" MaxWidth="144" IsVisible="False"
+                        HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                        <StackPanel x:Name="LandscapeTransportHost" Orientation="Horizontal" IsVisible="False" VerticalAlignment="Center">
+                            <Button x:Name="LandscapeRecordButton" Classes="TopBarBtn" Command="{Binding RecordCommand}"
+                                ToolTip.Tip="{DynamicResource Editor.Record}" AutomationProperties.Name="{DynamicResource Editor.Record}"
+                                Content="{iconPacks:PhosphorIcons Record}" />
+                            <Button Classes="TopBarBtn" Command="{Binding StopCommand}"
+                                ToolTip.Tip="{DynamicResource Editor.Stop}" AutomationProperties.Name="{DynamicResource Editor.Stop}"
+                                Content="{iconPacks:PhosphorIcons Stop}" />
+                            <Button Classes="icon filled" Command="{Binding PlayPauseCommand}"
+                                ToolTip.Tip="{DynamicResource Editor.PlayPause}" AutomationProperties.Name="{DynamicResource Editor.PlayPause}">
+                                <Panel>
+                                    <iconPacks:PackIconPhosphorIcons Kind="Play" IsVisible="{Binding !IsPlaying}" />
+                                    <iconPacks:PackIconPhosphorIcons Kind="Pause" IsVisible="{Binding IsPlaying}" />
+                                </Panel>
+                            </Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+                <Border x:Name="ProjectActionsDivider" Grid.Column="2" Classes="EditorToolbarDivider" IsVisible="False" />
+                <ScrollViewer x:Name="LandscapeProjectActionsViewport" Grid.Column="3" MaxWidth="144" IsVisible="False"
+                    HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="LandscapeProjectActions" Orientation="Horizontal" IsVisible="False"
+                        IsEnabled="{Binding !IsLoadingProject}" VerticalAlignment="Center">
+                        <Button Classes="TopBarBtn" Command="{Binding SaveCommand}"
+                            ToolTip.Tip="{DynamicResource Editor.Save}" AutomationProperties.Name="{DynamicResource Editor.Save}"
+                            Content="{iconPacks:PhosphorIcons FloppyDisk}" />
+                        <Button Classes="TopBarBtn" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}"
+                            ToolTip.Tip="{DynamicResource Editor.Undo}" AutomationProperties.Name="{DynamicResource Editor.Undo}"
+                            Content="{iconPacks:PhosphorIcons ArrowCounterClockwise}" />
+                        <Button Classes="TopBarBtn" Command="{Binding RedoCommand}" IsEnabled="{Binding CanRedo}"
+                            ToolTip.Tip="{DynamicResource Editor.Redo}" AutomationProperties.Name="{DynamicResource Editor.Redo}"
+                            Content="{iconPacks:PhosphorIcons ArrowClockwise}" />
+                    </StackPanel>
+                </ScrollViewer>
+                <Button Grid.Column="4" Classes="TopBarBtn" Command="{Binding ShowMorePopupCommand}"
+                    IsEnabled="{Binding !IsLoadingProject}" ToolTip.Tip="{DynamicResource Editor.More}"
+                    AutomationProperties.Name="{DynamicResource Editor.More}"
+                    Content="{iconPacks:PhosphorIcons DotsThreeVertical}" />
             </Grid>
+        </Border>
+
+        <!-- 状态行常驻底部，进度开始或结束时不改变画布尺寸。 -->
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
+                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="0,1,0,0">
+            <Panel x:Name="ProgressPanel" Height="28" ClipToBounds="True">
+                <Rectangle Fill="{DynamicResource Sem.Color.Success}" Opacity="0.15" HorizontalAlignment="Left">
+                    <Rectangle.Width>
+                        <MultiBinding Converter="{StaticResource ProgressToWidthConverter}">
+                            <Binding Path="ProgressValue" />
+                            <Binding Path="Bounds.Width" ElementName="ProgressPanel" />
+                        </MultiBinding>
+                    </Rectangle.Width>
+                    <Rectangle.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Width" Duration="{x:Static foundation:MotionTokens.DurationLargeMove}" Easing="QuadraticEaseOut" />
+                        </Transitions>
+                    </Rectangle.Transitions>
+                </Rectangle>
+                <Grid x:Name="ProjectStatusText" ColumnDefinitions="2*,3*" ColumnSpacing="8" Margin="16,0">
+                    <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToFileName}}"
+                               ToolTip.Tip="{Binding ProjectPath}" TextTrimming="CharacterEllipsis"
+                               FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="{Binding ProgressMessage}" ToolTip.Tip="{Binding ProgressMessage}"
+                               TextTrimming="CharacterEllipsis" TextAlignment="Right"
+                               FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                </Grid>
+            </Panel>
+        </Border>
+        <!-- 竖屏高频操作靠近拇指，横屏时同组操作由顶栏呈现。 -->
+        <Border x:Name="PortraitTransportHost" DockPanel.Dock="Bottom"
+                Height="{x:Static localTokens:EditorTokens.ToolbarExtent}" Padding="4"
+                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="0,1,0,0">
+            <c:EditorTransportControls MaxWidth="480" />
         </Border>
         <!-- 主编辑区，分为走带编曲（上）和钢琴卷帘（下）两大部分
              第二列用于支持响应式布局 -->
@@ -197,4 +288,5 @@
                 Margin="12" />
         </Grid>
     </DockPanel>
+    </Border>
 </UserControl>

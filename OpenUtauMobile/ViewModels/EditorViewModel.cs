@@ -162,12 +162,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public bool IsTrackHeaderExpanded { get; set; }
 
     /// <summary>
-    /// 上下文菜单是否展开
-    /// </summary>
-    [Reactive]
-    public bool IsContextMenuExpanded { get; set; } = true;
-
-    /// <summary>
     /// 项目曲速（第一个 Tempo），用于走带区轨道头主键显示。
     /// </summary>
     [Reactive]
@@ -274,6 +268,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         UndoCommand = ReactiveCommand.Create(Undo);
         RedoCommand = ReactiveCommand.Create(Redo);
         SaveCommand = ReactiveCommand.Create(Save);
+        InitializeEditorChrome();
         // 播放/暂停命令
         PlayPauseCommand = ReactiveCommand.Create(() =>
         {
@@ -481,11 +476,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         this.WhenAnyValue(x => x.SnapDiv)
             .Subscribe(div => PianoRollViewModel.PianoRollSnapDiv = div)
             .DisposeWith(_disposables);
-        // 上下文菜单展开时触发重建
-        this.WhenAnyValue(x => x.IsContextMenuExpanded)
-            .Where(expanded => expanded) // 仅展开时触发
-            .Subscribe(_ => RebuildTrackContextActions())
-            .DisposeWith(_disposables);
     }
 
     public override void OnNavigatedTo()
@@ -602,6 +592,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
+        if (cmd is not SetPlayPosTickNotification and not SeekPlayPosTickNotification and not ProgressBarNotification)
+            RunOnUiThread(RefreshHistoryState);
         // TODO: 一定要发到UI线程吗？:不需要！docman已经做了
         switch (cmd)
         {
@@ -703,6 +695,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 RunOnUiThread(() =>
                 {
                     RefreshProjectInfo();
+                    RefreshPlaybackTime();
                     // ResetTrackContextActionPlayPosCaches();
                 });
                 RequestInvalidateVisual?.Invoke();
@@ -1797,12 +1790,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// </summary>
     private void RebuildTrackContextActions()
     {
-        // 性能优化：收起状态下不构建菜单
-        if (!IsContextMenuExpanded)
-        {
-            return;
-        }
-
         List<ContextActionItem> items = [];
         bool hasSelection = SelectedParts.Count > 0;
 

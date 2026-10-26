@@ -1,0 +1,8 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OpenUtauMobile.Controls.EditorModePicker">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/EditModeSwitcher.axaml" />
+    </UserControl.Styles>
+    <Button x:Name="SwitchButton" Classes="EditModeBtn" Click="OnSwitchClick" />
+</UserControl>

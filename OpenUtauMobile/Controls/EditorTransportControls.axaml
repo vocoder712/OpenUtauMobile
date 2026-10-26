@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+    xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+    x:Class="OpenUtauMobile.Controls.EditorTransportControls"
+    x:DataType="vm:EditorViewModel">
+    <!-- 中间列固定播放入口，两侧等宽，保证播放按钮位于屏幕正中。 -->
+    <Grid ColumnDefinitions="*,48,*" IsEnabled="{Binding !IsLoadingProject}">
+        <ScrollViewer x:Name="LeadingActionsViewport" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button x:Name="RecordButton" Classes="TopBarBtn" Command="{Binding RecordCommand}"
+                    ToolTip.Tip="{DynamicResource Editor.Record}" AutomationProperties.Name="{DynamicResource Editor.Record}"
+                    Content="{icons:PhosphorIcons Record}" />
+                <Button Classes="TopBarBtn" Command="{Binding StopCommand}" HorizontalAlignment="Center"
+                    ToolTip.Tip="{DynamicResource Editor.Stop}" AutomationProperties.Name="{DynamicResource Editor.Stop}"
+                    Content="{icons:PhosphorIcons Stop}" />
+            </StackPanel>
+        </ScrollViewer>
+        <Button x:Name="PlayPauseButton" Grid.Column="1" Classes="icon filled" Command="{Binding PlayPauseCommand}" HorizontalAlignment="Center"
+            ToolTip.Tip="{DynamicResource Editor.PlayPause}" AutomationProperties.Name="{DynamicResource Editor.PlayPause}">
+            <Panel>
+                <icons:PackIconPhosphorIcons Kind="Play" IsVisible="{Binding !IsPlaying}" />
+                <icons:PackIconPhosphorIcons Kind="Pause" IsVisible="{Binding IsPlaying}" />
+            </Panel>
+        </Button>
+        <ScrollViewer x:Name="TrailingActionsViewport" Grid.Column="2" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button Classes="TopBarBtn" Command="{Binding UndoCommand}" IsEnabled="{Binding CanUndo}"
+                    HorizontalAlignment="Center" ToolTip.Tip="{DynamicResource Editor.Undo}"
+                    AutomationProperties.Name="{DynamicResource Editor.Undo}" Content="{icons:PhosphorIcons ArrowCounterClockwise}" />
+                <Button Classes="TopBarBtn" Command="{Binding RedoCommand}" IsEnabled="{Binding CanRedo}"
+                    HorizontalAlignment="Center" ToolTip.Tip="{DynamicResource Editor.Redo}"
+                    AutomationProperties.Name="{DynamicResource Editor.Redo}" Content="{icons:PhosphorIcons ArrowClockwise}" />
+                <Button Classes="TopBarBtn" Command="{Binding SaveCommand}" HorizontalAlignment="Center"
+                    ToolTip.Tip="{DynamicResource Editor.Save}" AutomationProperties.Name="{DynamicResource Editor.Save}"
+                    Content="{icons:PhosphorIcons FloppyDisk}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

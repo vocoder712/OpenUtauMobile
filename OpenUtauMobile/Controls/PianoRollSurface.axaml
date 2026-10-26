@@ -24,7 +24,7 @@
     </UserControl.Resources>
 
 
-            <Grid x:Name="PianoRollAreaGrid"
+            <Grid x:Name="PianoRollAreaGrid" ColumnDefinitions="*,Auto" ClipToBounds="True"
                   Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
                 <!-- 上下文为PianoRollViewModel，放大镜的Source -->
@@ -144,22 +144,6 @@
                                TextWrapping="Wrap"
                                IsHitTestVisible="False"
                                Text="{Binding EditingTip}" />
-                    <!-- 上下文操作面板（右上角悬浮，ZIndex 置顶） -->
-                    <Grid x:Name="FloatingActions" Grid.Row="1"
-                          Grid.Column="1"
-                          RowDefinitions="Auto,*"
-                          RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
-                          HorizontalAlignment="Right"
-                          Margin="{x:Static foundation:LayoutTokens.InsetM}"
-                          ZIndex="100"
-                          IsHitTestVisible="True">
-                        <!-- 编辑模式切换 -->
-                        <c:PianoRollEditModeSwitcher CurrentMode="{Binding EditMode, Mode=TwoWay}" />
-                        <!-- 上下文菜单 -->
-                        <c:CollapsibleContextMenu Grid.Row="1"
-                                                  Actions="{Binding PianoRollContextActions}"
-                                                  IsExpanded="{Binding IsContextMenuExpanded, Mode=TwoWay}" />
-                    </Grid>
                     <!-- 编辑中的分片名 -->
                     <StackPanel Grid.Column="1"
                                 Grid.Row="1"
@@ -266,5 +250,17 @@
                                    VerticalAlignment="Center" />
                     </Border>
                 </Grid>
+        <!-- 钢琴卷帘操作独立占用右侧列，音符及参数画布按实际剩余宽度测量。 -->
+        <Border x:Name="FloatingActions" Grid.Column="1" Width="{x:Static semantic:InteractionTokens.TouchTarget}"
+                DataContext="{ReflectionBinding PianoRollViewModel}" x:DataType="vm:PianoRollViewModel"
+                IsVisible="{Binding IsVoiceMode}"
+                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="1,0,0,0">
+            <Grid RowDefinitions="48,*">
+                <c:PianoRollEditModeSwitcher HorizontalAlignment="Center" VerticalAlignment="Center"
+                                             CurrentMode="{Binding EditMode, Mode=TwoWay}" />
+                <c:EditorContextActions Grid.Row="1" Actions="{Binding PianoRollContextActions}" />
+            </Grid>
+        </Border>
             </Grid>
 </UserControl>

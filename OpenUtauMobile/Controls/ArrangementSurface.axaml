@@ -24,95 +24,15 @@
     </UserControl.Resources>
 
 
+    <Grid RowDefinitions="*,Auto" ClipToBounds="True">
             <Grid
                   x:Name="TrackAreaGrid"
-                  RowDefinitions="Auto, 24, *"
+                  RowDefinitions="24, *"
                   ColumnDefinitions="64, *"
                   ClipToBounds="True">
 
-                <!-- 轨道编辑工具栏 -->
-                <Border x:Name="ArrangementToolbar" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"
-                        BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
-                        BorderThickness="0,0,0,1"
-                        Background="{DynamicResource Sem.Color.Surface}">
-                    <Panel x:Name="ProgressPanel">
-                        <!-- 进度条背景层（仅当有进度时显示） -->
-                        <Rectangle Fill="{DynamicResource Sem.Color.Success}"
-                                   Opacity="0.15"
-                                   HorizontalAlignment="Left"
-                                   IsVisible="{Binding ProgressValue, Converter={x:Static ObjectConverters.IsNotNull}}"
-                                   ClipToBounds="True">
-                            <Rectangle.Width>
-                                <MultiBinding Converter="{StaticResource ProgressToWidthConverter}">
-                                    <Binding Path="ProgressValue" />
-                                    <Binding Path="Bounds.Width" ElementName="ProgressPanel" />
-                                </MultiBinding>
-                            </Rectangle.Width>
-                            <Rectangle.Transitions>
-                                <Transitions>
-                                    <DoubleTransition Property="Width"
-                                                      Duration="{x:Static foundation:MotionTokens.DurationLargeMove}"
-                                                      Easing="QuadraticEaseOut" />
-                                </Transitions>
-                            </Rectangle.Transitions>
-                        </Rectangle>
-                        <!-- 工具栏内容层 -->
-                        <Grid ColumnDefinitions="Auto, *, Auto, Auto" VerticalAlignment="Center">
-                            <!-- 量化吸附选择器（走带编曲与钢琴卷帘共用） -->
-                            <Border Grid.Column="0" BorderBrush="{DynamicResource Sem.Color.OutlineVariant}"
-                                    BorderThickness="1,0,0,0"
-                                    ZIndex="1" Padding="8,0">
-                                <ComboBox ItemsSource="{x:Static local:ViewConstants.SnapDivOptions}"
-                                          SelectedItem="{Binding SnapDiv, Mode=TwoWay}"
-                                          MinWidth="64"
-                                          Height="32"
-                                          VerticalAlignment="Center"
-                                          ToolTip.Tip="{DynamicResource Editor.Quantize}">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate x:DataType="x:Int32">
-                                            <TextBlock
-                                                Text="{Binding Converter={StaticResource SnapDivToLabelConverter}}"
-                                                FontSize="13"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center" />
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </Border>
-                            <!-- 进度消息显示 -->
-                            <TextBlock Grid.Column="1" Text="{Binding ProgressMessage}"
-                                       FontSize="12"
-                                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                       VerticalAlignment="Center"
-                                       Margin="0"
-                                       IsVisible="{Binding ProgressMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                            <!-- 播放控制按钮 -->
-                            <StackPanel Grid.Column="3"
-                                        Orientation="Horizontal"
-                                        VerticalAlignment="Center"
-                                        Margin="0,0,12,0">
-                                <!-- 停止按钮 -->
-                                <Button Command="{Binding StopCommand}"
-                                        ToolTip.Tip="{DynamicResource Editor.Stop}"
-                                        Classes="TopBarBtn"
-                                        Content="{iconPacks:PhosphorIcons Stop}">
-                                </Button>
-                                <!-- 播放/暂停按钮 -->
-                                <Button Command="{Binding PlayPauseCommand}"
-                                        ToolTip.Tip="{DynamicResource Editor.PlayPause}"
-                                        Classes="TopBarBtn">
-                                    <Panel>
-                                        <iconPacks:PackIconPhosphorIcons Kind="Play" IsVisible="{Binding !IsPlaying}" />
-                                        <iconPacks:PackIconPhosphorIcons Kind="Pause" IsVisible="{Binding IsPlaying}" />
-                                    </Panel>
-                                </Button>
-                            </StackPanel>
-                        </Grid>
-                    </Panel>
-                </Border>
-
                 <!-- 左上：切换按钮 + 工程信息主键 -->
-                <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="64,*" ClipToBounds="True">
+                <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="64,*" ClipToBounds="True">
                     <!-- 展开/收起箭头按钮（始终可见） -->
                     <Button Grid.Column="0"
                             Command="{Binding ToggleTrackHeaderCommand}"
@@ -187,7 +107,7 @@
                 </Grid>
 
                 <!-- 左下：轨道头 -->
-                <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0"
+                <c:TrackHeaderCanvas Grid.Row="1" Grid.Column="0"
                                      ClipToBounds="True"
                                      IsExpanded="{Binding IsTrackHeaderExpanded}"
                                      TrackHeight="{Binding TrackHeight}"
@@ -198,7 +118,7 @@
                 </c:TrackHeaderCanvas>
 
                 <!-- 右下： 网格 + 分片 -->
-                <Panel Grid.Row="1" Grid.Column="1" Grid.RowSpan="2">
+                <Panel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
                     <c:TrackBackground
                         ClipToBounds="True"
                         Margin="0,24,0,0"
@@ -233,19 +153,20 @@
                         IsPlaying="{Binding IsPlaying}"
                         IsWaiting="{Binding IsWaitingRender}"
                         IsHitTestVisible="False" />
-                    <!-- 上下文操作面板（右上角悬浮，ZIndex 置顶） -->
-                    <Grid x:Name="FloatingActions" ZIndex="100"
-                          RowDefinitions="Auto,*"
-                          RowSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
-                          HorizontalAlignment="Right"
-                          Margin="{x:Static foundation:LayoutTokens.InsetM}">
-                        <c:TrackEditModeSwitcher CurrentMode="{Binding TrackEditMode}" />
-                        <c:CollapsibleContextMenu Grid.Row="1"
-                                                  Actions="{Binding TrackContextActions}"
-                                                  IsExpanded="{Binding IsContextMenuExpanded}" />
-                    </Grid>
 
                 </Panel>
-                <Border x:Name="ArrangementInputRuler" Grid.Row="1" Grid.Column="1" Background="Transparent" IsVisible="False" />
+                <Border x:Name="ArrangementInputRuler" Grid.Row="0" Grid.Column="1" Background="Transparent" IsVisible="False" />
             </Grid>
+        <!-- 走带工具在底部独立占位，画布尺寸不包含工具栏。 -->
+        <Border x:Name="ArrangementToolbar" Grid.Row="1" Height="{x:Static localTokens:EditorTokens.ToolbarExtent}"
+                Background="{DynamicResource Sem.Color.SurfaceContainer}"
+                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="0,1,0,0">
+            <Grid x:Name="FloatingActions" ColumnDefinitions="48,*">
+                <c:TrackEditModeSwitcher HorizontalAlignment="Center" VerticalAlignment="Center"
+                                         CurrentMode="{Binding TrackEditMode, Mode=TwoWay}" />
+                <c:EditorContextActions Grid.Column="1" Orientation="Horizontal"
+                                        Actions="{Binding TrackContextActions}" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

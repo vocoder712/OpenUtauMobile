@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             x:Class="OpenUtauMobile.Controls.EditorModeLayer"
+             IsVisible="False" ClipToBounds="True">
+    <UserControl.Styles>
+        <StyleInclude Source="/Controls/Styles/EditModeSwitcher.axaml" />
+    </UserControl.Styles>
+    <Canvas x:Name="ModeCanvas" Background="Transparent">
+        <!-- 外框的父容器、位置和尺寸在本次开关期间固定，动画只更新内部表面。 -->
+        <Border x:Name="ModeViewport" ClipToBounds="True">
+            <Border x:Name="ModeSurface" Padding="{DynamicResource FlyoutContentThemePadding}"
+                    Background="{DynamicResource FlyoutPresenterBackground}"
+                    BorderBrush="{DynamicResource FlyoutBorderThemeBrush}" BorderThickness="1"
+                    CornerRadius="{DynamicResource OverlayCornerRadius}" RenderTransformOrigin="50%,50%">
+                <ScrollViewer x:Name="ModeScroll" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="ModeContent" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock x:Name="ModeTitle" FontSize="{x:Static semantic:TypographyTokens.LabelLSize}"
+                                   FontWeight="SemiBold" TextWrapping="Wrap" />
+                        <WrapPanel x:Name="ModeItems" HorizontalAlignment="Left"
+                                   ItemSpacing="{x:Static foundation:LayoutTokens.SpaceXS}"
+                                   LineSpacing="{x:Static foundation:LayoutTokens.SpaceXS}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Border>
+    </Canvas>
+</UserControl>

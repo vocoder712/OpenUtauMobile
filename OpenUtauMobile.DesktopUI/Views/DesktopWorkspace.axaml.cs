@@ -334,8 +334,6 @@ namespace OpenUtauMobile.DesktopUI.Views
             menu.Opening += (_, _) =>
             {
                 _input.CancelEditorInput();
-                if (piano) _editor.PianoRollViewModel.IsContextMenuExpanded = true;
-                else _editor.IsContextMenuExpanded = true;
                 IReadOnlyList<ContextActionItem> actions = piano ? _editor.PianoRollViewModel.PianoRollContextActions : _editor.TrackContextActions;
                 List<MenuItem> items = actions.Where(action => action.Id != "batch-edits")
                     .Select(action => new MenuItem { Header = action.Tip, Command = action.Command }).ToList();

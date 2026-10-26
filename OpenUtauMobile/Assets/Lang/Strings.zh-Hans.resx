@@ -668,10 +668,10 @@
     <value>关闭</value>
   </data>
   <data name="Editor.NormalMode" xml:space="preserve">
-    <value>普通模式</value>
+    <value>普通</value>
   </data>
   <data name="Editor.MultiSelectMode" xml:space="preserve">
-    <value>多选模式</value>
+    <value>多选</value>
   </data>
   <data name="Editor.Stop" xml:space="preserve">
     <value>停止</value>
@@ -1662,16 +1662,16 @@
     <value>切换音素与参数编辑模式</value>
   </data>
   <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
-    <value>简易音素模式</value>
+    <value>简易音素</value>
   </data>
   <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
-    <value>高级音素模式</value>
+    <value>高级音素</value>
   </data>
   <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
-    <value>参数绘制模式</value>
+    <value>参数绘制</value>
   </data>
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
-    <value>参数擦除模式</value>
+    <value>参数擦除</value>
   </data>
   <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
     <value>简易音素模式</value>
@@ -2563,4 +2563,11 @@
   <data name="Sandbox.ContinueTask" xml:space="preserve"><value>继续任务</value></data>
   <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>中止并离开</value></data>
   <data name="Sandbox.Stopping" xml:space="preserve"><value>正在中止并清理…</value></data>
+  <data name="Editor.Modes.Track" xml:space="preserve"><value>走带编辑模式</value></data>
+  <data name="Editor.Modes.PianoRoll" xml:space="preserve"><value>钢琴卷帘编辑模式</value></data>
+  <data name="Editor.Modes.Parameters" xml:space="preserve"><value>音素与参数编辑模式</value></data>
+  <data name="Editor.Metronome" xml:space="preserve"><value>节拍器</value></data>
+  <data name="Editor.Repeat" xml:space="preserve"><value>重复</value></data>
+  <data name="Editor.Record" xml:space="preserve"><value>录制</value></data>
+  <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: 录制功能</value></data>
 </root>

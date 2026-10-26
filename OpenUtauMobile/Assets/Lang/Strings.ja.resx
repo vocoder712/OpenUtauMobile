@@ -668,10 +668,10 @@
     <value>オフ</value>
   </data>
   <data name="Editor.NormalMode" xml:space="preserve">
-    <value>通常モード</value>
+    <value>通常</value>
   </data>
   <data name="Editor.MultiSelectMode" xml:space="preserve">
-    <value>複数選択モード</value>
+    <value>複数選択</value>
   </data>
   <data name="Editor.Stop" xml:space="preserve">
     <value>停止</value>
@@ -1658,16 +1658,16 @@
     <value>音素・パラメータ編集モードの切替</value>
   </data>
   <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
-    <value>シンプル音素モード</value>
+    <value>シンプル音素</value>
   </data>
   <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
-    <value>詳細音素モード</value>
+    <value>詳細音素</value>
   </data>
   <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
-    <value>パラメータ描画モード</value>
+    <value>パラメータ描画</value>
   </data>
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
-    <value>パラメータ消しゴムモード</value>
+    <value>パラメータ消しゴム</value>
   </data>
   <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
     <value>シンプル音素モード</value>
@@ -2559,4 +2559,11 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.ContinueTask" xml:space="preserve"><value>処理を続ける</value></data>
   <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>中止して戻る</value></data>
   <data name="Sandbox.Stopping" xml:space="preserve"><value>中止して一時ファイルを削除中…</value></data>
+  <data name="Editor.Modes.Track" xml:space="preserve"><value>アレンジ編集モード</value></data>
+  <data name="Editor.Modes.PianoRoll" xml:space="preserve"><value>ピアノロール編集モード</value></data>
+  <data name="Editor.Modes.Parameters" xml:space="preserve"><value>音素・パラメーター編集モード</value></data>
+  <data name="Editor.Metronome" xml:space="preserve"><value>メトロノーム</value></data>
+  <data name="Editor.Repeat" xml:space="preserve"><value>リピート</value></data>
+  <data name="Editor.Record" xml:space="preserve"><value>録音</value></data>
+  <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: 録音機能</value></data>
 </root>

@@ -591,10 +591,10 @@
     <value>Вимкнено</value>
   </data>
   <data name="Editor.NormalMode" xml:space="preserve">
-    <value>Звичайний режим</value>
+    <value>Звичайний</value>
   </data>
   <data name="Editor.MultiSelectMode" xml:space="preserve">
-    <value>Режим мультивибору</value>
+    <value>Мультивибір</value>
   </data>
   <data name="Editor.Stop" xml:space="preserve">
     <value>Стоп</value>
@@ -1596,16 +1596,16 @@
     <value>Перемкнути режим редагування фонем і параметрів</value>
   </data>
   <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
-    <value>Простий режим фонем</value>
+    <value>Прості фонеми</value>
   </data>
   <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
-    <value>Розширений режим фонем</value>
+    <value>Розширені фонеми</value>
   </data>
   <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
-    <value>Режим малювання параметрів</value>
+    <value>Малювання параметрів</value>
   </data>
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
-    <value>Режим гумки параметрів</value>
+    <value>Гумка параметрів</value>
   </data>
   <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
     <value>Перемкнуто в простий режим фонем</value>
@@ -2518,4 +2518,11 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.ContinueTask" xml:space="preserve"><value>Продовжити завдання</value></data>
   <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>Зупинити й вийти</value></data>
   <data name="Sandbox.Stopping" xml:space="preserve"><value>Зупинення й очищення…</value></data>
+  <data name="Editor.Modes.Track" xml:space="preserve"><value>Режим редагування аранжування</value></data>
+  <data name="Editor.Modes.PianoRoll" xml:space="preserve"><value>Режим редагування піанорола</value></data>
+  <data name="Editor.Modes.Parameters" xml:space="preserve"><value>Режим редагування фонем і параметрів</value></data>
+  <data name="Editor.Metronome" xml:space="preserve"><value>Метроном</value></data>
+  <data name="Editor.Repeat" xml:space="preserve"><value>Повтор</value></data>
+  <data name="Editor.Record" xml:space="preserve"><value>Запис</value></data>
+  <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Запис</value></data>
 </root>

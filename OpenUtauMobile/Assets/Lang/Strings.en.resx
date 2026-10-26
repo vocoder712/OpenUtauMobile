@@ -668,10 +668,10 @@
     <value>Off</value>
   </data>
   <data name="Editor.NormalMode" xml:space="preserve">
-    <value>Normal Mode</value>
+    <value>Normal</value>
   </data>
   <data name="Editor.MultiSelectMode" xml:space="preserve">
-    <value>Multi-Select Mode</value>
+    <value>Multi-Select</value>
   </data>
   <data name="Editor.Stop" xml:space="preserve">
     <value>Stop</value>
@@ -1662,16 +1662,16 @@
     <value>Switch phoneme &amp; parameter edit mode</value>
   </data>
   <data name="PhonemePanel.Mode.Simple" xml:space="preserve">
-    <value>Simple phoneme mode</value>
+    <value>Simple phoneme</value>
   </data>
   <data name="PhonemePanel.Mode.Advanced" xml:space="preserve">
-    <value>Advanced phoneme mode</value>
+    <value>Advanced phoneme</value>
   </data>
   <data name="PhonemePanel.Mode.Draw" xml:space="preserve">
-    <value>Parameter draw mode</value>
+    <value>Parameter draw</value>
   </data>
   <data name="PhonemePanel.Mode.Erase" xml:space="preserve">
-    <value>Parameter erase mode</value>
+    <value>Parameter erase</value>
   </data>
   <data name="PhonemePanel.Toast.Simple" xml:space="preserve">
     <value>Simple phoneme mode</value>
@@ -2563,4 +2563,11 @@ Applying replaces the source of this input.</value></data>
   <data name="Sandbox.ContinueTask" xml:space="preserve"><value>Continue task</value></data>
   <data name="Sandbox.StopAndLeave" xml:space="preserve"><value>Stop and leave</value></data>
   <data name="Sandbox.Stopping" xml:space="preserve"><value>Stopping and cleaning up…</value></data>
+  <data name="Editor.Modes.Track" xml:space="preserve"><value>Arrangement editing mode</value></data>
+  <data name="Editor.Modes.PianoRoll" xml:space="preserve"><value>Piano roll editing mode</value></data>
+  <data name="Editor.Modes.Parameters" xml:space="preserve"><value>Phoneme and parameter editing mode</value></data>
+  <data name="Editor.Metronome" xml:space="preserve"><value>Metronome</value></data>
+  <data name="Editor.Repeat" xml:space="preserve"><value>Repeat</value></data>
+  <data name="Editor.Record" xml:space="preserve"><value>Record</value></data>
+  <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Recording</value></data>
 </root>
