@@ -68,8 +68,7 @@ namespace OpenUtauMobile
         public const double TrackHeightDefault = 104;
         public const double TrackHeightDelta = 20;
 
-        // Part 调整手柄
-        public const double ResizeHandleVisualWidth = 14.0; // 视觉宽度（px）
+        // Part 调整区外观由分片两侧边框构成，命中宽度独立于边框厚度。
         public const double ResizeHandleHitWidth = 24.0; // 命中测试宽度（px，大于视觉，便于移动端触碰）
 
         // Note 调整手柄（在音符矩形右侧外部绘制，带 gap）
