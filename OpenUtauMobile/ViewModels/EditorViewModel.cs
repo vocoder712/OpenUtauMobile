@@ -664,7 +664,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     PianoRollViewModel.InvalidateMaxOffsets();
                     ApplyViewportLimits();
                     RequestInvalidateVisual?.Invoke();
-                    // ResetTrackContextActionPlayPosCaches();
                 });
                 break;
             case TrackCommand:

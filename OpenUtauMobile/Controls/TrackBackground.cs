@@ -5,6 +5,7 @@ using Avalonia.Media;
 using OpenUtau.Core;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
+using OpenUtauMobile.ViewModels;
 using ReactiveUI;
 
 namespace OpenUtauMobile.Controls;
@@ -14,6 +15,10 @@ namespace OpenUtauMobile.Controls;
 /// </summary>
 public class TrackBackground : Control, ICmdSubscriber
 {
+    private EditorViewModel? _boundViewModel;
+    private IDisposable? _themeSubscription;
+    private bool _isAttached;
+
     public static readonly StyledProperty<double> TrackHeightProperty =
         AvaloniaProperty.Register<TrackBackground, double>(nameof(TrackHeight));
 
@@ -36,21 +41,51 @@ public class TrackBackground : Control, ICmdSubscriber
     {
         IsHitTestVisible = false;
         ClipToBounds = true;
-
-        MessageBus.Current.Listen<ThemeChangedEvent>()
-            .Subscribe(_ => InvalidateVisual());
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
+        _isAttached = true;
+        UpdateViewModelSubscription();
+        _themeSubscription = MessageBus.Current.Listen<ThemeChangedEvent>()
+            .Subscribe(_ => InvalidateVisual());
         DocManager.Inst.AddSubscriber(this);
+        InvalidateVisual();
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        base.OnDetachedFromVisualTree(e);
+        _isAttached = false;
+        UpdateViewModelSubscription();
+        _themeSubscription?.Dispose();
+        _themeSubscription = null;
         DocManager.Inst.RemoveSubscriber(this);
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    protected override void OnDataContextChanged(EventArgs e)
+    {
+        base.OnDataContextChanged(e);
+        UpdateViewModelSubscription();
+        InvalidateVisual();
+    }
+
+    /// <summary>
+    /// 仅在画布挂载时订阅当前编辑器，切换上下文或卸载时解除旧订阅。
+    /// </summary>
+    private void UpdateViewModelSubscription()
+    {
+        if (_boundViewModel != null)
+        {
+            _boundViewModel.RequestInvalidateVisual -= InvalidateVisual;
+        }
+
+        _boundViewModel = _isAttached ? DataContext as EditorViewModel : null;
+        if (_boundViewModel != null)
+        {
+            _boundViewModel.RequestInvalidateVisual += InvalidateVisual;
+        }
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
