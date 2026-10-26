@@ -85,8 +85,7 @@ public partial class EditorModeLayer : UserControl
             if (IsClosing) StartMotion(opening: true);
             return;
         }
-        Thickness safe = _topLevel.InsetsManager?.SafeAreaPadding ?? default;
-        Rect available = new Rect(_host.Bounds.Size).Deflate(safe).Deflate(8);
+        Rect available = new Rect(_host.Bounds.Size).Deflate(8);
         if (available.Width <= 0 || available.Height <= 0) return;
         Point? anchor = _trigger.TranslatePoint(default, _host);
         if (anchor == null) return;
