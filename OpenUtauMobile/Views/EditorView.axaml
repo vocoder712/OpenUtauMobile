@@ -48,7 +48,6 @@
         </Style>
     </UserControl.Styles>
 
-    <Border x:Name="EditorSafeArea">
     <DockPanel>
         <!-- 顶栏沿用全局规格；中间组在返回与页级操作之间居中。 -->
         <Border DockPanel.Dock="Top" Classes="TopBar">
@@ -286,5 +285,4 @@
                 Margin="12" />
         </Grid>
     </DockPanel>
-    </Border>
 </UserControl>

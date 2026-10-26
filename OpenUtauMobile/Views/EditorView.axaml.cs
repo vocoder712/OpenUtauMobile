@@ -3,7 +3,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Platform;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
@@ -39,7 +38,6 @@ public partial class EditorView : UserControl
     private bool _isLandscape;
     private bool _responsiveLayoutInitialized;
     private MixerPanel? _mixerPanel;
-    private IInsetsManager? _insets;
 
     public bool IsMixerOpen => _mixerPanel != null && DetailAreaHost.Children.Contains(_mixerPanel);
 
@@ -117,16 +115,11 @@ public partial class EditorView : UserControl
         PhonemeParamPanel.RequestMagnifierClose += OnMagnifierClose;
         AttachedToVisualTree += (_, _) =>
         {
-            _insets = TopLevel.GetTopLevel(this)?.InsetsManager;
-            if (_insets != null) _insets.SafeAreaChanged += OnSafeAreaChanged;
-            EditorSafeArea.Padding = _insets?.SafeAreaPadding ?? default;
             if (DataContext is EditorViewModel vm) BindViewModel(vm);
             InitializeResponsiveLayout();
         };
         DetachedFromVisualTree += (_, _) =>
         {
-            if (_insets != null) _insets.SafeAreaChanged -= OnSafeAreaChanged;
-            _insets = null;
             EditorModePicker.CloseOpenPicker();
             // 临时离开页面不销毁编辑状态，但旧视图不能继续订阅编辑器或放大镜事件。
             _viewModelSubscription?.Dispose();
@@ -272,6 +265,12 @@ public partial class EditorView : UserControl
 
         _responsiveLayoutInitialized = true;
 
+        if (_landscapeTrackExtent <= 0)
+        {
+            double width = Math.Max(Bounds.Width, EditorGrid.Bounds.Width);
+            _landscapeTrackExtent = width * ViewConstants.EditorSplitDefaultTrackRatioLandscape;
+        }
+
         _isLandscape = Bounds.Width > Bounds.Height;
         ApplyOrientationLayout();
     }
@@ -323,13 +322,6 @@ public partial class EditorView : UserControl
         TopToolbarGrid.ColumnDefinitions[3].Width = new GridLength(_isLandscape ? 1 : 0, GridUnitType.Star);
     }
 
-    /// <summary>系统安全区只影响页面边距，不重置用户的编辑分区。</summary>
-    private void OnSafeAreaChanged(object? sender, SafeAreaChangedArgs e)
-    {
-        EditorModePicker.CloseOpenPicker();
-        EditorSafeArea.Padding = e.SafeAreaPadding;
-    }
-
     private void UpdateSplitHandleOrientation()
     {
         SplitDragHandle.RenderTransform = _isLandscape
@@ -379,8 +371,7 @@ public partial class EditorView : UserControl
 
         if (_landscapeTrackExtent <= 0)
         {
-            double availableWidth = Math.Max(0, Bounds.Width - EditorSafeArea.Padding.Left - EditorSafeArea.Padding.Right);
-            _landscapeTrackExtent = availableWidth * ViewConstants.EditorSplitDefaultTrackRatioLandscape;
+            _landscapeTrackExtent = GetPrimaryTotalExtent() * ViewConstants.EditorSplitDefaultTrackRatioLandscape;
         }
 
         SetCurrentTrackExtent(_landscapeTrackExtent, remember: false);
