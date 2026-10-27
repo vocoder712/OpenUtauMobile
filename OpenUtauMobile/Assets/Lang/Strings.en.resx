@@ -515,7 +515,7 @@
     <value>Access to this folder is denied</value>
   </data>
   <data name="Ios.Document.ImportFailed" xml:space="preserve">
-    <value>OpenUtau Mobile could not import the selected USTX project.</value>
+    <value>Couldn't open the selected project.</value>
   </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>Go to parent folder</value>

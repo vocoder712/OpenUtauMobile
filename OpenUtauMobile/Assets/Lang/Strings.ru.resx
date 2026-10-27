@@ -444,7 +444,7 @@
     <value>Доступ к этой папке запрещён</value>
   </data>
   <data name="Ios.Document.ImportFailed" xml:space="preserve">
-    <value>Не удалось импортировать выбранный проект USTX.</value>
+    <value>Не удалось открыть выбранный проект.</value>
   </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>Перейти в родительскую папку</value>
