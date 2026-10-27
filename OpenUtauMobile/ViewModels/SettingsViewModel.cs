@@ -103,7 +103,7 @@ public class StopButtonBehaviorOption
     }
 }
 
-/// <summary>走带自动翻页行为选项（用于绑定到选择器）。</summary>
+/// <summary>回放自动滚动行为选项（用于绑定到选择器）。</summary>
 public class AutoScrollBehaviorOption
 {
     public int Value { get; }
@@ -482,6 +482,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>当前选中的走带自动翻页行为选项。</summary>
     [Reactive]
     public AutoScrollBehaviorOption? SelectedAutoScrollBehavior { get; set; }
+
+    /// <summary>可选回放纵向滚动行为列表。</summary>
+    public IReadOnlyList<AutoScrollBehaviorOption> AvailableVerticalScrollBehaviors { get; } =
+        new List<AutoScrollBehaviorOption>
+        {
+            new(0, L.S("Settings.VerticalScroll.Disabled")),
+            new(1, L.S("Settings.VerticalScroll.Boundary")),
+            new(2, L.S("Settings.VerticalScroll.Center"))
+        };
+
+    /// <summary>当前选中的回放纵向滚动行为。</summary>
+    [Reactive]
+    public AutoScrollBehaviorOption? SelectedVerticalScrollBehavior { get; set; }
 
     // ── Edit & Behaviour: Stop Button ──────────────────────────────
     /// <summary>List of available stop button actions.</summary>
@@ -1011,6 +1024,20 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .Subscribe(opt =>
             {
                 Preferences.Default.PlaybackAutoScroll = opt.Value;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        int verticalScrollVal = Preferences.Default.PlaybackVerticalScroll;
+        SelectedVerticalScrollBehavior = AvailableVerticalScrollBehaviors.FirstOrDefault(b => b.Value == verticalScrollVal)
+                                         ?? AvailableVerticalScrollBehaviors[0];
+        this.WhenAnyValue(x => x.SelectedVerticalScrollBehavior)
+            .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
+            .Subscribe(opt =>
+            {
+                Preferences.Default.PlaybackVerticalScroll = opt.Value;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);

@@ -367,6 +367,9 @@ namespace OpenUtau.Core.Util {
 
             public double PlaybackRefreshRate = 20.0;
 
+            /// <summary>回放时钢琴卷帘纵向滚动：0 = 关闭，1 = 边界滚动，2 = 保持居中。</summary>
+            public int PlaybackVerticalScroll = 0;
+
             /// <summary>
             /// Android 全屏模式：0 = 始终，1 = 仅编辑页，2 = 关闭。
             /// </summary>

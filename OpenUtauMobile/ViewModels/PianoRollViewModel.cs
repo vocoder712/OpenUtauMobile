@@ -376,6 +376,9 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     private double _noteAreaWidth;
     private double _noteAreaHeight;
 
+    /// <summary>扣除底部音素参数面板后，音符实际可见的高度。</summary>
+    private double VisibleNoteAreaHeight => Math.Max(0, _noteAreaHeight - (IsPhonemePanelVisible ? PhonemePanelHeight : 0));
+
     // 视口动态上限缓存（仿 EditorViewModel）
     private bool _maxOffsetsDirty = true;
     private double _cachedMaxTickOffset;
@@ -413,9 +416,9 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         // 当 tone=0 时，y = (MaxTone - 1 - 0 - KeyOffset) * KeyHeight = screenHeight
         // => KeyOffset = MaxTone - 1 - screenHeight / KeyHeight
         double visibleKeys = 0;
-        if (_noteAreaHeight > 0)
+        if (VisibleNoteAreaHeight > 0)
         {
-            visibleKeys = KeyHeight > 0 ? _noteAreaHeight / KeyHeight : 0;
+            visibleKeys = KeyHeight > 0 ? VisibleNoteAreaHeight / KeyHeight : 0;
         }
 
         _cachedMaxKeyOffset = Math.Max(0, ViewConstants.MaxTone - visibleKeys);
@@ -612,7 +615,9 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     public bool IsNoteSelected(UNote note) => _selectedNoteLookup.Contains(note);
 
     private readonly PlaybackViewportFollow _playbackFollow = new();
+    private readonly PianoRollPlaybackFollow _verticalPlaybackFollow = new();
 
+    /// <summary>同步权威播放状态，并在用户输入空闲时更新横向与纵向跟随。</summary>
     public void SyncPlaybackState(int tick, bool isPlaying, bool isWaitingRender)
     {
         if (IsPresentationSuspended) return;
@@ -632,6 +637,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             // 移动端保留固定标记与居中跟随。
             TickOffset = tick - PlayMarkerX / TickWidth;
         }
+        KeyOffset = _verticalPlaybackFollow.Update(Preferences.Default.PlaybackVerticalScroll, isPlaying,
+            _viewportInputActive || _desktopOperation != DesktopOperation.None || _inputState != PianoRollInputState.Idle || _panMotion.IsRunning,
+            EditingVoicePart, tick, KeyOffset, KeyHeight > 0 ? VisibleNoteAreaHeight / KeyHeight : 0,
+            1.0 / Math.Max(1, Preferences.Default.PlaybackRefreshRate));
         ApplyViewportLimits();
     }
 
@@ -645,6 +654,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         IsPresentationSuspended = suspended;
         if (suspended)
         {
+            _verticalPlaybackFollow.Reset();
             StopPreviewTone();
             _panMotion.Cancel();
             IsPlaying = false;
@@ -888,6 +898,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         this.WhenAnyValue(x => x.EditingVoicePart)
             .Subscribe(_ =>
             {
+                _verticalPlaybackFollow.Reset();
                 if (_pitchStrokePart != EditingVoicePart) EndPitchStroke();
                 RebuildPianoRollContextActions();
                 this.RaisePropertyChanged(nameof(IsVoiceMode));
@@ -904,6 +915,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             .Subscribe(_ =>
             {
                 this.RaisePropertyChanged(nameof(IsPhonemePanelVisible));
+                InvalidateMaxOffsets();
+                ApplyViewportLimits();
             })
             .DisposeWith(_disposables);
 

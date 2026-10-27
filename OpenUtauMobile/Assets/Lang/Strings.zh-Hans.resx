@@ -237,6 +237,21 @@
   <data name="Settings.Edit.SoundFontPath.NotLoaded" xml:space="preserve">
     <value>⚠ 未加载 - 请选择有效的 SF2 文件</value>
   </data>
+  <data name="Settings.Edit.VerticalScrollBehavior" xml:space="preserve">
+    <value>回放时自动纵向滚动</value>
+  </data>
+  <data name="Settings.Edit.VerticalScrollBehavior.Desc" xml:space="preserve">
+    <value>跟随当前播放音符。边界模式在音符越界后平滑移至对应边缘内侧 10%；中心模式平滑移至视口中央。</value>
+  </data>
+  <data name="Settings.VerticalScroll.Disabled" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Settings.VerticalScroll.Boundary" xml:space="preserve">
+    <value>在边界处滚动</value>
+  </data>
+  <data name="Settings.VerticalScroll.Center" xml:space="preserve">
+    <value>保持中心滚动</value>
+  </data>
   <data name="Settings.Edit.AutoScrollBehavior" xml:space="preserve">
     <value>走带自动翻页行为</value>
   </data>

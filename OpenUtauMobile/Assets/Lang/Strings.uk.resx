@@ -178,6 +178,21 @@
   <data name="Settings.Edit.SoundFontPath.NotLoaded" xml:space="preserve">
     <value>⚠ Не завантажено - виберіть коректний файл SF2</value>
   </data>
+  <data name="Settings.Edit.VerticalScrollBehavior" xml:space="preserve">
+    <value>Вертикальне прокручування під час відтворення</value>
+  </data>
+  <data name="Settings.Edit.VerticalScrollBehavior.Desc" xml:space="preserve">
+    <value>Стежити за поточною нотою. Після виходу за межі нота плавно переміщується на 10% усередину від відповідного краю; у режимі центру — у середину видимої області.</value>
+  </data>
+  <data name="Settings.VerticalScroll.Disabled" xml:space="preserve">
+    <value>Вимкнено</value>
+  </data>
+  <data name="Settings.VerticalScroll.Boundary" xml:space="preserve">
+    <value>Прокручувати біля меж</value>
+  </data>
+  <data name="Settings.VerticalScroll.Center" xml:space="preserve">
+    <value>Утримувати в центрі</value>
+  </data>
   <data name="Settings.Edit.AutoScrollBehavior" xml:space="preserve">
     <value>Поведінка автопрокручування</value>
   </data>
