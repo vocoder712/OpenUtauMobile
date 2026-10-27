@@ -443,6 +443,9 @@
   <data name="FilePicker.AccessDenied" xml:space="preserve">
     <value>Доступ до цієї теки заборонено</value>
   </data>
+  <data name="Ios.Document.ImportFailed" xml:space="preserve">
+    <value>Не вдалося імпортувати вибраний проєкт USTX.</value>
+  </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>Перейти до батьківської теки</value>
   </data>

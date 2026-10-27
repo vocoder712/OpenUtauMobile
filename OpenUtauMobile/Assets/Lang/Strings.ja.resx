@@ -514,6 +514,9 @@
   <data name="FilePicker.AccessDenied" xml:space="preserve">
     <value>このフォルダーへのアクセスが拒否されました</value>
   </data>
+  <data name="Ios.Document.ImportFailed" xml:space="preserve">
+    <value>選択した USTX プロジェクトを読み込めませんでした。</value>
+  </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>上のフォルダーへ移動</value>
   </data>

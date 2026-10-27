@@ -2,16 +2,16 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net10.0-ios</TargetFramework>
-        <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+        <SupportedOSPlatformVersion>15.1</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <!-- iOS 配置 -->
     <PropertyGroup>
-        <!-- 统一使用不带 LLVM 的 Mono AOT，并保留反射所需的托管元数据。 -->
+        <!-- 仅解释执行反射创建音素器的程序集，其余代码仍使用 Mono AOT。 -->
         <PublishAot>false</PublishAot>
         <MtouchUseLlvm>false</MtouchUseLlvm>
-        <UseInterpreter>false</UseInterpreter>
+        <MtouchInterpreter>OpenUtau.Plugin.Builtin,OpenUtau.Core</MtouchInterpreter>
         <TrimMode>partial</TrimMode>
         <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
         <!-- 避免将全部泛型实例聚合到过大的 aot-instances.dll。 -->

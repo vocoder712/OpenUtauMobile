@@ -34,7 +34,7 @@ This is a developer preview. The tables describe the current source and packagin
 | Android | ARM64 (`arm64-v8a`), x64 (`x86_64`) | Minimum Android 7 / API 24; ARM64 and x64 local APK builds verified. |
 | Linux | x64, ARM64 | Desktop host and release jobs configured; use a matching Linux build host. |
 | macOS | x64, ARM64 | Desktop host and release jobs configured; build on macOS. |
-| iOS | Simulator build configuration exists | Experimental host with AVAudioEngine audio and ONNX initialization; full feature parity is not established. Requires macOS/Xcode for development. |
+| iOS | ARM64 device IPA; ARM64 and x64 simulator builds configured | .NET 10 host and unsigned IPA build are configured with iOS 15.1 minimum. Full runtime and device behavior still need validation. Requires macOS/Xcode for development. |
 | Browser / WebAssembly | Browser host exists | Experimental; Dummy audio output, no complete singing synthesis runtime integration. |
 
 Windows x86 and Android x86/ARM32 have some project/toolchain mappings but are not part of the current release matrix.
@@ -50,20 +50,21 @@ is incomplete. **Unavailable** means the feature is not exposed or its required 
 | Feature | Windows | Android | Linux | macOS | iOS | Browser |
 | --- | --- | --- | --- | --- | --- | --- |
 | Shared project / piano-roll editor | Integrated | Integrated | Integrated | Integrated | Experimental | Experimental |
+| Built-in phonemizers | Integrated | Integrated | Integrated | Integrated | Experimental; Mono interpreter configured for reflection-created phonemizers, device validation pending | Experimental |
 | Desktop workspace, persistent inspectors and tool manager | Integrated; local checks below | Uses mobile presentation | Integrated; host verification pending | Integrated; host verification pending | Uses mobile presentation | Uses mobile presentation |
 | Audio playback | Integrated | Integrated | Integrated | Integrated | Experimental (AVAudioEngine) | Unavailable (Dummy output) |
-| Built-in worldline / WORLDLINE-R synthesis | Integrated | Integrated; page-size limitation below | Integrated | Integrated | Unavailable (worldline not bundled) | Unavailable |
+| Built-in worldline / WORLDLINE-R synthesis | Integrated | Integrated; page-size limitation below | Integrated | Integrated | Integrated in the native build; on-device synthesis still needs validation | Unavailable |
 | External UTAU resampler / wavtool programs | Conditional: matching Windows tools | No desktop executable compatibility guarantee | Native resamplers conditional; Windows tools experimental through Wine; native external wavtools unavailable | Native resamplers conditional; Windows tools experimental through Wine; native external wavtools unavailable | Unavailable | Unavailable |
-| ONNX Runtime CPU inference | Integrated | Integrated (Android AAR) | Integrated | Integrated | Experimental | Unavailable in the current host |
-| ONNX hardware acceleration | Conditional: DirectML | Conditional: NNAPI | Conditional: CUDA + cuDNN | Conditional: CoreML | Not exposed as an iOS accelerator by the current selector | Unavailable |
+| ONNX Runtime CPU inference | Integrated | Integrated (Android AAR) | Integrated | Integrated | iOS XCFramework is packaged; model inference still needs device validation | Unavailable in the current host |
+| ONNX hardware acceleration | Conditional: DirectML | Conditional: NNAPI | Conditional: CUDA + cuDNN | Conditional: CoreML | Conditional: CoreML; device validation pending | Unavailable |
 | DiffSinger / Vogen model-based synthesis | Conditional | Conditional | Conditional | Conditional | Experimental | Unavailable |
 | HifiSampler renderer | Conditional | Conditional | Conditional | Conditional | Experimental | Unavailable |
-| GAME note extraction: ONNX | Conditional | Conditional | Conditional | Conditional | Unavailable (entry hidden) | Unavailable (entry hidden) |
-| RMVPE pitch curve after note extraction | Conditional (`rmvpe`) | Conditional (`rmvpe`) | Conditional (`rmvpe`) | Conditional (`rmvpe`) | Unavailable | Unavailable |
-| GAME note extraction: GGML | Conditional, CPU | Conditional, CPU | Conditional, CPU | Conditional, CPU | Unavailable | Unavailable |
+| GAME note extraction: ONNX | Conditional | Conditional | Conditional | Conditional | Conditional, CPU/CoreML; device validation pending | Unavailable (entry hidden) |
+| RMVPE pitch curve after note extraction | Conditional (`rmvpe`) | Conditional (`rmvpe`) | Conditional (`rmvpe`) | Conditional (`rmvpe`) | Conditional (`rmvpe`); device validation pending | Unavailable |
+| GAME note extraction: GGML | Conditional, CPU | Conditional, CPU | Conditional, CPU | Conditional, CPU | Unavailable (native runtime not packaged) | Unavailable |
 | GGML Vulkan / CUDA / Metal acceleration | Not delivered by default | Not delivered by default | Not delivered by default | Not delivered by default | Unavailable | Unavailable |
 | Voicebank / `.oudep` dependency installation | Integrated | Integrated; storage permission required | Integrated | Integrated | Experimental | Experimental filesystem integration |
-| Additional Core engines (ENUNU, VOICEVOX, NEUTRINO) | Conditional; external engine required, not verified here | Not verified | Conditional; external engine required, not verified here | Conditional; external engine required, not verified here | Not verified | Not integrated |
+| Additional Core engines (ENUNU, VOICEVOX, NEUTRINO) | Conditional; external engine required, not verified here | Not verified | Conditional; external engine required, not verified here | Conditional; external engine required, not verified here | ENUNU/VOICEVOX unavailable (local server); NEUTRINO ONNX conditional, runtime validation pending | Not integrated |
 
 Model-based renderers require the appropriate voicebank and auxiliary models. HifiSampler additionally requires
 its vocoder dependency package. A renderer appearing in the registry does not certify an external engine's
@@ -111,7 +112,7 @@ See [desktop architecture and verification](docs/DESKTOP_UI.md) for implementati
 ### Hardware acceleration
 
 - **ONNX:** the current [provider selector](OpenUtau.Core/Util/Onnx.cs) offers DirectML on Windows,
-  NNAPI on Android, CoreML on macOS, and CUDA on Linux when CUDA and cuDNN are detected.
+  NNAPI on Android, CoreML on macOS and iOS, and CUDA on Linux when CUDA and cuDNN are detected.
   Availability also depends on the packaged ONNX Runtime, device drivers and model operators. Selecting a
   provider does not establish that every operation executes on the GPU/NPU or that it is faster than CPU.
 - **GAME ONNX:** uses this ONNX configuration. Its encoder explicitly uses CPU when CoreML is selected;
@@ -149,6 +150,11 @@ Windows x64 Release publish, actual GGUF inference, and Android ARM64/x64 APK bu
 Windows directories were also tested. Android APK checks confirm the expected GAME ABI is packaged.
 These checks do **not** establish Android device inference, debugger attachment, GPU performance, or successful
 execution of all GitHub-hosted jobs. Check the actual workflow runs for CI results.
+
+The iOS build workflow publishes an unsigned ARM64 IPA and verifies the package minimum OS, USTX document
+type, background-audio declaration, and statically linked WORLDLINE archive. It does not boot an iOS simulator;
+runtime behavior such as document import, audio routes, synthesis, and ONNX/CoreML inference must be checked
+on an iPhone.
 
 The new Android GAME libraries use 16 KB alignment. Existing dependencies can still emit `XA0141`:
 `libworldline.so` in the ARM64 build and `libSDL3.so` in the x64 build were observed with this warning.

@@ -514,6 +514,9 @@
   <data name="FilePicker.AccessDenied" xml:space="preserve">
     <value>无权访问此目录</value>
   </data>
+  <data name="Ios.Document.ImportFailed" xml:space="preserve">
+    <value>无法导入所选的 USTX 工程。</value>
+  </data>
   <data name="FilePicker.GoUp" xml:space="preserve">
     <value>返回上级目录</value>
   </data>
