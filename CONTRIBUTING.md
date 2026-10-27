@@ -196,7 +196,39 @@ dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -c Debug -r $a
 菜单名称可能随 Rider 版本变化，参见 [Rider Android 调试说明](https://www.jetbrains.com/help/rider/Run_Debug_Configuration_Xamarin_Android.html)。
 Debug 使用独立应用 ID 和本地调试签名，无需配置 CI 的发布签名密钥。
 
-### 6. 常见问题
+### 6. 构建 iOS（macOS）
+
+iOS 项目必须在 macOS 和 Xcode 上构建；Windows 本地构建不能替代 iOS SDK、模拟器或设备验证。
+当前 CI 固定使用 Xcode 27.0、.NET SDK 10.0.401 和 workload set 10.0.401.1。先在仓库根目录检查
+`xcodebuild -version` 与 `dotnet --version`，然后安装项目所需 workload：
+
+```bash
+export AVALONIA_TELEMETRY_OPTOUT=1
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+dotnet workload restore OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj --version 10.0.401.1
+```
+
+构建 ARM64 和 x64 模拟器宿主：
+
+```bash
+dotnet build OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj -c Release -f net10.0-ios -r iossimulator-arm64 -p:EnableCodeSigning=false
+dotnet build OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj -c Release -f net10.0-ios -r iossimulator-x64 -p:EnableCodeSigning=false
+```
+
+构建 ARM64 设备用的未签名 IPA：
+
+```bash
+dotnet publish OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj -c Release -f net10.0-ios -r ios-arm64 \
+  -p:EnableCodeSigning=false -p:BuildIpa=true -p:PublishAot=false -p:UseMonoRuntime=true \
+  -p:MtouchUseLlvm=false -p:TrimMode=partial -p:MtouchLink=SdkOnly \
+  -p:EnableAssemblyILStripping=false -p:_IsDedupEnabled=false
+```
+
+未签名 IPA 可检查打包内容，但必须使用 Apple 开发证书和 provisioning profile 签名后才能安装到设备。
+在模拟器或设备上检查文档导入、音频路由变化和系统中断后的播放恢复、WORLDLINE 合成及 ONNX 推理；
+构建成功只验证了编译和打包，不等同于运行时支持。
+
+### 7. 常见问题
 
 | 现象 | 检查与处理 |
 | --- | --- |

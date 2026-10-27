@@ -12,7 +12,7 @@
 - Android 使用 `../game/android-ndk-version.txt` 固定的 NDK r30，最低 API 24，支持四 ABI。
   静态链接 libc++，要求 ELF LOAD 对齐至少 16 KB。`AndroidNdkDirectory` 显式路径优先，否则使用 SDK 中的固定版本。
 - iOS 必须在 macOS 上安装完整 Xcode，支持 `ios-arm64`、`iossimulator-arm64`、`iossimulator-x64`。
-  使用所选 Xcode 的 Clang、ar 和对应 SDK；部署版本跟随宿主的 `SupportedOSPlatformVersion`（直接调用默认 15.0）。
+  使用所选 Xcode 的 Clang、ar 和对应 SDK；部署版本跟随宿主的 `SupportedOSPlatformVersion`（当前应用为 15.1，直接调用默认 15.0）。
 - Browser 支持 `browser-wasm`，使用当前 .NET `wasm-tools` 工作负载中的 Emscripten、LLVM、Node 和 sysroot。
   线程、SIMD 和异常模式由 MSBuild 传入，与最终 .NET WASM 链接配置一致，不额外安装独立 Emscripten。
 

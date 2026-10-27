@@ -132,7 +132,6 @@ jobs:
             -p:PublishAot=false \
             -p:UseMonoRuntime=true \
             -p:MtouchUseLlvm=false \
-            -p:UseInterpreter=false \
             -p:TrimMode=partial \
             -p:MtouchLink=SdkOnly \
             -p:EnableAssemblyILStripping=false \
@@ -171,6 +170,29 @@ jobs:
           BUILD_VERSION="$(plutil -extract CFBundleVersion raw "$INFO_PLIST")"
           PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
           ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
+          python - "$INFO_PLIST" <<'PY'
+          import plistlib
+          import sys
+
+          with open(sys.argv[1], "rb") as stream:
+              info = plistlib.load(stream)
+
+          minimum = tuple(int(part) for part in info.get("MinimumOSVersion", "0").split("."))
+          if minimum[:2] < (15, 1):
+              raise SystemExit(f"MinimumOSVersion is {info.get('MinimumOSVersion')}, expected at least 15.1")
+
+          project_uti = "pers.vocoder712.openutaumobile.ustx"
+          document_types = info.get("CFBundleDocumentTypes", [])
+          if not any(project_uti in item.get("LSItemContentTypes", []) for item in document_types):
+              raise SystemExit(f"IPA does not register the USTX document type {project_uti}")
+
+          if "audio" not in info.get("UIBackgroundModes", []):
+              raise SystemExit("IPA does not declare the audio background mode")
+
+          print(f"Minimum OS: {info['MinimumOSVersion']}")
+          print("USTX document type: registered")
+          print("Background audio: enabled")
+          PY
           python native/worldline/verify_static.py \
             artifacts/worldline-native/ios-arm64/libworldline.a ios-arm64 \
             --nm "$(xcrun --find nm)" --app-bundle "$APP_DIR"

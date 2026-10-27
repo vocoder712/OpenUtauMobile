@@ -152,6 +152,39 @@ If compilation fails, inspect the first error and resolved SDK/NDK/JDK paths. A 
 from a missing model; do not copy binaries from another RID. Use `GameBuildRoot` to isolate native build caches when needed. Check the [known limitations](../README.md#verification-and-known-limits), including Android
 16 KB alignment warnings in existing dependencies. See the Chinese guide for the full troubleshooting table.
 
+### 6. Build iOS on macOS
+
+The iOS project must be built on macOS with Xcode; a Windows build cannot replace the iOS SDK, simulator or
+device validation. CI currently pins Xcode 27.0, .NET SDK 10.0.401 and workload set 10.0.401.1. From the
+repository root, check `xcodebuild -version` and `dotnet --version`, then install the project workloads:
+
+```bash
+export AVALONIA_TELEMETRY_OPTOUT=1
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+dotnet workload restore OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj --version 10.0.401.1
+```
+
+Build the ARM64 and x64 simulator hosts:
+
+```bash
+dotnet build OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj -c Release -f net10.0-ios -r iossimulator-arm64 -p:EnableCodeSigning=false
+dotnet build OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj -c Release -f net10.0-ios -r iossimulator-x64 -p:EnableCodeSigning=false
+```
+
+Publish an unsigned ARM64 device IPA:
+
+```bash
+dotnet publish OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj -c Release -f net10.0-ios -r ios-arm64 \
+  -p:EnableCodeSigning=false -p:BuildIpa=true -p:PublishAot=false -p:UseMonoRuntime=true \
+  -p:MtouchUseLlvm=false -p:UseInterpreter=false -p:TrimMode=partial -p:MtouchLink=SdkOnly \
+  -p:EnableAssemblyILStripping=false -p:_IsDedupEnabled=false
+```
+
+An unsigned IPA is useful for checking package contents, but it cannot be installed on a device until signed with
+an Apple development identity and provisioning profile. Verify document import, playback through route changes
+and interruptions, WORLDLINE synthesis and ONNX inference on a simulator or device before claiming runtime
+support; a successful build only validates compilation and packaging.
+
 ---
 
 ## Branches

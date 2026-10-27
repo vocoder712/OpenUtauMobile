@@ -45,14 +45,18 @@ Do not infer capability parity merely because hosts share App.
   RID-native files beside the executable for P/Invoke lookup. Preserve this during
   packaging changes; an assembly-only output is insufficient.
 - [iOS AppDelegate](../OpenUtauMobile.iOS/AppDelegate.cs) registers AVAudioEngine audio
-  initialization (with a Dummy fallback) and probes ONNX Runtime at startup. It does
-  not establish complete desktop/mobile feature parity.
+  initialization (with a Dummy fallback), probes ONNX Runtime at startup and receives
+  imported USTX documents. ONNX CPU and CoreML providers are available through the shared
+  runner selector and packaged iOS XCFramework; model execution still needs device validation.
 - iOS and Browser import the [Worldline native build](../native/worldline/README.md).
   Bazel produces static archives: iOS links them through `NativeReference` and resolves
   Core's `worldline` imports to explicitly retained main-program symbols; Browser uses
-  `NativeFileReference` with the .NET workload's Emscripten toolchain. This does not
-  provide GAME/ggml, ONNX support or a Browser audio output backend. iOS still requires
-  validation on macOS/Xcode and devices.
+  `NativeFileReference` with the .NET workload's Emscripten toolchain. Neither host
+  packages GAME/ggml; iOS GAME uses ONNX CPU, and Browser has no ONNX support or audio
+  output backend. iOS still requires validation on macOS/Xcode and devices.
+- iOS excludes executable resamplers and wavtools that require `Process.Start`, and hides
+  ENUNU/VOICEVOX because they require a separate localhost server. In-process resamplers,
+  WORLDLINE and ONNX-based engines remain available subject to device validation.
 - [Browser Program](../OpenUtauMobile.Browser/Program.cs)
   uses silent Dummy audio and injects PathManager through private fields instead of
   its normal constructor. Core singleton/property changes therefore need browser
