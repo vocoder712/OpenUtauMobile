@@ -512,6 +512,28 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- 回放时自动纵向滚动 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.VerticalScrollBehavior}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.VerticalScrollBehavior.Desc}" />
+                                        </StackPanel>
+                                        <ComboBox HorizontalAlignment="Stretch"
+                                                  AutomationProperties.Name="{DynamicResource Settings.Edit.VerticalScrollBehavior}"
+                                                  ItemsSource="{Binding AvailableVerticalScrollBehaviors}"
+                                                  SelectedItem="{Binding SelectedVerticalScrollBehavior, Mode=TwoWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:AutoScrollBehaviorOption">
+                                                    <TextBlock Text="{Binding DisplayName}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- Stop Button Behavior -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">

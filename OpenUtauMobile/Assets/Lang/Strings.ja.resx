@@ -237,6 +237,21 @@
   <data name="Settings.Edit.SoundFontPath.NotLoaded" xml:space="preserve">
     <value>⚠ 未読み込み - 有効な SF2 ファイルを選択してください</value>
   </data>
+  <data name="Settings.Edit.VerticalScrollBehavior" xml:space="preserve">
+    <value>再生中の縦方向自動スクロール</value>
+  </data>
+  <data name="Settings.Edit.VerticalScrollBehavior.Desc" xml:space="preserve">
+    <value>再生中のノートを追従します。境界モードでは画面外のノートを対応する端から内側 10% の位置へ、中央モードでは画面中央へ滑らかに移動します。</value>
+  </data>
+  <data name="Settings.VerticalScroll.Disabled" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="Settings.VerticalScroll.Boundary" xml:space="preserve">
+    <value>境界でスクロール</value>
+  </data>
+  <data name="Settings.VerticalScroll.Center" xml:space="preserve">
+    <value>中央を維持</value>
+  </data>
   <data name="Settings.Edit.AutoScrollBehavior" xml:space="preserve">
     <value>自動スクロール動作</value>
   </data>
