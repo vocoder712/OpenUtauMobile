@@ -11,7 +11,7 @@
         <!-- 仅解释执行反射创建音素器的程序集，其余代码仍使用 Mono AOT。 -->
         <PublishAot>false</PublishAot>
         <MtouchUseLlvm>false</MtouchUseLlvm>
-        <MtouchInterpreter>OpenUtau.Plugin.Builtin</MtouchInterpreter>
+        <MtouchInterpreter>-all,OpenUtau.Plugin.Builtin</MtouchInterpreter>
         <TrimMode>partial</TrimMode>
         <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
         <!-- 避免将全部泛型实例聚合到过大的 aot-instances.dll。 -->
