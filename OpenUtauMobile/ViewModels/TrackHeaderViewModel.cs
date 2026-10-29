@@ -177,11 +177,11 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
                 URenderSettings settings = new();
                 DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
             }
-            else if (singer.SingerType != _track.RendererSettings.Renderer?.SingerType)
+            else if (!OpenUtauMobile.Services.ExternalSingerPluginService.GetSupportedRenderers(singer).Contains(_track.RendererSettings.renderer))
             {
                 URenderSettings settings = new()
                 {
-                    renderer = Renderers.GetDefaultRenderer(singer.SingerType), // 根据歌手类型
+                    renderer = OpenUtauMobile.Services.ExternalSingerPluginService.GetDefaultRenderer(singer), // 根据歌手类型
                 };
                 DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
             }
@@ -255,7 +255,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     public void SetRenderer(string renderer)
     {
         if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Singer is not { Found: true } singer ||
-            !Renderers.GetSupportedRenderers(singer.SingerType).Contains(renderer) || _track.RendererSettings.renderer == renderer) return;
+            !OpenUtauMobile.Services.ExternalSingerPluginService.GetSupportedRenderers(singer).Contains(renderer) || _track.RendererSettings.renderer == renderer) return;
         URenderSettings settings = _track.RendererSettings.Clone();
         settings.renderer = renderer;
         DocManager.Inst.StartUndoGroup();

@@ -229,7 +229,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
         }
         else if (singerChanged || IsRenderSettingsDirty)
         {
-            string[] supportedRenderers = CoreRenderers.GetSupportedRenderers(singer.SingerType);
+            string[] supportedRenderers = OpenUtauMobile.Services.ExternalSingerPluginService.GetSupportedRenderers(singer);
             if (supportedRenderers.Length == 0 || !supportedRenderers.Contains(DraftRenderer, StringComparer.Ordinal))
             {
                 error = L.S("TrackSettings.Error.Renderer");
@@ -294,7 +294,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     {
         Renderers.Clear();
         string[] supported = DraftSinger is { Found: true } singer
-            ? CoreRenderers.GetSupportedRenderers(singer.SingerType)
+            ? OpenUtauMobile.Services.ExternalSingerPluginService.GetSupportedRenderers(singer)
             : [];
         HasNoSupportedRenderers = DraftSinger is { Found: true } && supported.Length == 0;
         IsRendererEnabled = DraftSinger is { Found: true } && supported.Length > 0;
@@ -318,7 +318,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
             return;
         }
         string preferred;
-        try { preferred = CoreRenderers.GetDefaultRenderer(DraftSinger!.SingerType); }
+        try { preferred = OpenUtauMobile.Services.ExternalSingerPluginService.GetDefaultRenderer(DraftSinger!); }
         catch { preferred = string.Empty; }
         string fallback = supported.Contains(preferred, StringComparer.Ordinal) ? preferred : supported[0];
         DraftRenderer = fallback;

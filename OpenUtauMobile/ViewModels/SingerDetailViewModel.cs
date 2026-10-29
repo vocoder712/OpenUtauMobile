@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive;
@@ -148,6 +148,7 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
             {
                 ToastService.Enqueue(string.Format(L.S("SingerDetail.UninstallSucceeded"), SingerName));
             }
+            Services.ExternalSingerPluginService.RefreshSingers();
             SingerUninstalled?.Invoke(_singer);
             Navigator.NavigateBack(this);
         }

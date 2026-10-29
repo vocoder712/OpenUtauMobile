@@ -118,7 +118,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             phonemizer.CommandParameter = phonemizer;
             body.Children.Add(DesktopInspectorControls.FieldRow(DesktopUi.Label("TrackSettings.Phonemizer"), phonemizer));
             TrackHeaderViewModel rendererVm = _trackVm;
-            string[] renderers = track.Singer is { Found: true } singerModel ? Renderers.GetSupportedRenderers(singerModel.SingerType) : [];
+            string[] renderers = track.Singer is { Found: true } singerModel ? ExternalSingerPluginService.GetSupportedRenderers(singerModel) : [];
             ComboBox renderer = new() { Name = "TrackRendererPicker", ItemsSource = renderers, SelectedItem = track.RendererSettings.renderer, HorizontalAlignment = HorizontalAlignment.Stretch, IsEnabled = renderers.Length > 0 };
             renderer.Classes.Add("DesktopTrackChoice");
             renderer.SelectionChanged += (_, _) =>

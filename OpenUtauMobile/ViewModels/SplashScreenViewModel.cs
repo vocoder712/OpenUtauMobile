@@ -126,6 +126,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.SingerManager"); ProgressPercent = 85; });
                 SingerManager.Inst.Initialize();
+                ExternalSingerPluginService.Initialize();
                 Stopwatch avatarStopwatch = Stopwatch.StartNew();
                 int singerCount = 0;
                 foreach (List<USinger> group in SingerManager.Inst.SingerGroups.Values)

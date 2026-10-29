@@ -507,6 +507,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 break;
         }
         bool repairedPhonemizers = NotePhonemizerResolver.Normalize(project);
+        ExternalSingerPluginService.NormalizeProject(project);
         return new PreparedProject(project, repairedPhonemizers);
     }
 
