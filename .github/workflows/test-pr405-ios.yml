@@ -1,0 +1,20 @@
+name: PR 405 iOS IPA smoke test
+
+on:
+  push:
+    branches:
+      - test/pr405-ios-ipa
+
+permissions:
+  contents: read
+
+jobs:
+  ios-pr405:
+    name: Build PR 405 unsigned iOS IPA
+    uses: ./.github/workflows/build-ios.yml
+    with:
+      version: '2.0.9'
+      build_number: 40501
+      source_sha: ${{ github.sha }}
+      action_run_id: ${{ github.run_id }}
+      version_lyrics: 'PR405 iOS test'
