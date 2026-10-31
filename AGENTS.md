@@ -19,6 +19,8 @@
 - Follow `.editorconfig`. Write new code comments in Simplified Chinese; preserve upstream comments.
 - Newly added classes, public methods, hot private methods, and hot properties should use XML comments in Simplified Chinese whenever possible.
 - When newly added controls involve icons, you must use existing icons in the icon library and are prohibited from drawing icons yourself in forms such as PathGeometry. If necessary, stop and confirm.
+- Add comments to critical containers to explain their purpose when adding new controls in `.axaml` files.
+- Always use collection expressions instead of such as `ToList()` or `ToArray()` when constructing collections.
 
 ## Verification
 - Before `dotnet build`, set `$env:AVALONIA_TELEMETRY_OPTOUT='1';` (or the equivalent environment variable in another shell).

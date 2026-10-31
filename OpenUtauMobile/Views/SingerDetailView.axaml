@@ -160,7 +160,7 @@
                                            Opacity="0.7"
                                            TextWrapping="Wrap" />
                                 <Button Classes="destructive" HorizontalAlignment="Stretch"
-                                        Command="{Binding DeleteCommand}">
+                                        Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}">
                                     <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <Path Width="{x:Static semantic:IconTokens.Small}" Height="{x:Static semantic:IconTokens.Small}"
                                               Stretch="Uniform"

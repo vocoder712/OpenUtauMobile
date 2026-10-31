@@ -60,7 +60,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
         TaskScheduler mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
         DocManager.Inst.PostOnUIThread = action => Avalonia.Threading.Dispatcher.UIThread.Post(action);
 
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
             Log.Information("==========开始初始化OpenUtau后端==========");
 
@@ -130,6 +130,8 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 PostToUI(() => { InitState = L.S("Splash.SingerManager"); ProgressPercent = 85; });
                 SingerManager.Inst.Initialize();
                 ExternalSingerPluginService.Initialize();
+                SingerDiscoveryService.Instance.Initialize();
+                await SingerDiscoveryService.Instance.RefreshAsync(ct, scanBuiltins: false);
                 Stopwatch avatarStopwatch = Stopwatch.StartNew();
                 int singerCount = 0;
                 foreach (List<USinger> group in SingerManager.Inst.SingerGroups.Values)

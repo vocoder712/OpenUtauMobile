@@ -15,8 +15,8 @@
             <Border Classes="DialogBodyBorder">
                 <StackPanel Spacing="8">
                     <TextBlock Text="{Binding Message}" TextWrapping="Wrap" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
-                    <TextBox Text="{Binding Query, Mode=TwoWay}" PlaceholderText="{DynamicResource GraphTopology.Search}"
-                             AutomationProperties.Name="{DynamicResource GraphTopology.Search}" />
+                    <TextBox Text="{Binding Query, Mode=TwoWay}" PlaceholderText="{Binding SearchHint}"
+                             AutomationProperties.Name="{Binding SearchHint}" />
                     <TextBlock Text="{Binding CountHint}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" TextWrapping="Wrap" />
                     <TextBlock Text="{Binding Error}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}"
                                IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

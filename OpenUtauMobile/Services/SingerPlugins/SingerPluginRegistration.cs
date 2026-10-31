@@ -258,7 +258,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
         }
 
         /// <summary>在注册边界拒绝无法由宿主表单表达的字段描述。</summary>
-        private static void ValidateFields(IEnumerable<PluginFieldDescriptor> fields)
+        internal static void ValidateFields(IEnumerable<PluginFieldDescriptor> fields)
         {
             HashSet<string> ids = new(StringComparer.Ordinal);
             foreach (PluginFieldDescriptor field in fields)

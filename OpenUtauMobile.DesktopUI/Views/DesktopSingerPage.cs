@@ -30,7 +30,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             install.Classes.Add("tonal");
             TextBlock uninstallStatus = new() { IsVisible = false, VerticalAlignment = VerticalAlignment.Center, TextWrapping = Avalonia.Media.TextWrapping.Wrap };
             DesktopUi.Paint(uninstallStatus, TextBlock.ForegroundProperty, "Sem.Color.Success");
-            StackPanel actions = new() { Orientation = Orientation.Horizontal, Spacing = 12, VerticalAlignment = VerticalAlignment.Center, Children = { uninstallStatus, install } };
+            Button refresh = DesktopUi.Command("Common.Refresh", "RefreshCommand");
+            StackPanel actions = new() { Orientation = Orientation.Horizontal, Spacing = 12, VerticalAlignment = VerticalAlignment.Center, Children = { uninstallStatus, refresh, install } };
             Grid.SetColumn(actions, 1);
             toolbar.Children.Add(actions);
             root.Children.Add(toolbar);
@@ -48,7 +49,14 @@ namespace OpenUtauMobile.DesktopUI.Views
             noResults.TextWrapping = Avalonia.Media.TextWrapping.Wrap;
             noResults.IsHitTestVisible = false;
             noResults.IsVisible = false;
-            singerList.Children.Add(list);
+            DockPanel listWithCandidates = new();
+            ScrollViewer unavailable = new() { MaxHeight = 220 };
+            OpenUtauMobile.Controls.SingerCandidatesList candidates = new() { ItemsSource = singers.UnavailableCandidates };
+            unavailable.Content = candidates;
+            DockPanel.SetDock(unavailable, Dock.Bottom);
+            listWithCandidates.Children.Add(unavailable);
+            listWithCandidates.Children.Add(list);
+            singerList.Children.Add(listWithCandidates);
             singerList.Children.Add(noResults);
             ContentControl details = new() { ClipToBounds = true };
             SingerDetailViewModel? detailModel = null;
@@ -57,7 +65,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             void ShowDetail()
             {
                 USinger? selected = list.SelectedItem as USinger;
-                if (selected == selectedSinger) return;
+                if (ReferenceEquals(selected, selectedSinger)) return;
                 selectedSinger = selected;
                 if (detailModel != null) detailModel.SingerUninstalled -= OnSingerUninstalled;
                 detailModel?.Dispose();

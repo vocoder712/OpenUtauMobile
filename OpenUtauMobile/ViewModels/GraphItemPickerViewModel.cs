@@ -33,6 +33,8 @@ public sealed class GraphItemPickerViewModel : PopupViewModelBase, IDisposable
     private GraphPickerItem? _selected;
     public string Title { get; }
     public string Message { get; }
+    /// <summary>调用方可以为同类列表选择提供准确的搜索提示。</summary>
+    public string SearchHint { get; }
     [Reactive] public string Query { get; set; } = string.Empty;
     [Reactive] public IReadOnlyList<GraphPickerItem> Items { get; private set; } = [];
     [Reactive] public string Error { get; private set; } = string.Empty;
@@ -44,8 +46,9 @@ public sealed class GraphItemPickerViewModel : PopupViewModelBase, IDisposable
 
     /// <summary>确认回调在 UI 线程重新核对当前工程，成功才关闭弹窗。</summary>
     public GraphItemPickerViewModel(string title, string message, IReadOnlyList<GraphPickerItem> items,
-        Func<GraphPickerItem, string?> confirm, string? selectedKey = null)
+        Func<GraphPickerItem, string?> confirm, string? selectedKey = null, string? searchHint = null)
     {
+        SearchHint = searchHint ?? L.S("GraphTopology.Search");
         Title = title; Message = message; _items = items; _confirm = confirm;
         _selected = items.FirstOrDefault(item => item.Key == selectedKey);
         if (_selected != null) _selected.IsSelected = true;

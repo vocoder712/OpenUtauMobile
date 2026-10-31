@@ -31,7 +31,8 @@ public class TrackHeaderService : ITrackHeaderService
     public async Task<USinger?> PickSingerAsync(USinger? currentSinger = null)
     {
         if (ServiceHub.DesktopSingerPicker != null) return await ServiceHub.DesktopSingerPicker(currentSinger);
-        return await PopupService.Show<USinger?>(new SingerPickerPopup(), new SingerPickerViewModel());
+        using SingerPickerViewModel picker = new();
+        return await PopupService.Show<USinger?>(new SingerPickerPopup(), picker);
     }
 
     public Task<Phonemizer?> PickPhonemizerAsync() => PickPhonemizerAsync(null);

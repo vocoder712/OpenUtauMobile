@@ -24,16 +24,7 @@ public class SingerTypeToColorConverter : IValueConverter
     {
         if (value is USingerType singerType)
         {
-            return singerType switch
-            {
-                USingerType.Classic => ThemeResources.GetBrush("Sem.Color.Singer.Classic"),
-                USingerType.Enunu => ThemeResources.GetBrush("Sem.Color.Singer.Enunu"),
-                USingerType.DiffSinger => ThemeResources.GetBrush("Sem.Color.Singer.DiffSinger"),
-                USingerType.Vogen => ThemeResources.GetBrush("Sem.Color.Singer.Vogen"),
-                USingerType.Voicevox => ThemeResources.GetBrush("Sem.Color.Singer.Voicevox"),
-                USingerType.Neutrino => ThemeResources.GetBrush("Sem.Color.Singer.Neutrino"),
-                _ => ThemeResources.GetBrush("Sem.Color.Singer.Unknown"),
-            };
+            return Services.SingerPlugins.SingerTypePresentation.Brush(singerType);
         }
 
         return ThemeResources.GetBrush("Sem.Color.Singer.Unknown");
@@ -110,16 +101,7 @@ public class SingerTypeToLabelConverter : IValueConverter
     {
         if (value is USingerType singerType)
         {
-            return singerType switch
-            {
-                USingerType.Classic => "UTAU",
-                USingerType.Enunu => "ENUNU",
-                USingerType.DiffSinger => "DiffSinger",
-                USingerType.Vogen => "Vogen",
-                USingerType.Voicevox => "Voicevox",
-                USingerType.Neutrino => "NEUTRINO v3",
-                _ => "Unknown",
-            };
+            return Services.SingerPlugins.SingerTypePresentation.Name(singerType);
         }
 
         return "Unknown";

@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
+             xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Views.BuiltinSingerSetupView"
+             x:DataType="vm:BuiltinSingerSetupViewModel">
+    <UserControl.Resources>
+        <tools:EncodingNameConverter x:Key="EncodingName" />
+    </UserControl.Resources>
+    <!-- 页面本身不滚动，编码区和底部操作始终可见。 -->
+    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" Background="{DynamicResource Sem.Color.Surface}">
+        <Border Grid.Row="0" Classes="TopBar">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <Button Classes="TopBarBtn" Command="{Binding ExitCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
+                        ToolTip.Tip="{DynamicResource Common.Back}" />
+                <TextBlock x:Name="InstallerTitle" Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource SingerManagement.Install}" />
+                <TextBlock Grid.Column="2" Text="{Binding StepText}" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+        <!-- 两个编码步骤分别展示各自选择器，不混在长表单中。 -->
+        <Border Grid.Row="1" Padding="{x:Static foundation:LayoutTokens.InsetM}" IsVisible="{Binding !IsFinished}">
+            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" IsEnabled="{Binding !IsBusy}">
+                <TextBlock Text="{Binding FileName}" TextTrimming="CharacterEllipsis" />
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" IsVisible="{Binding ShowArchiveEncoding}">
+                    <TextBlock Text="{DynamicResource SingerSetup.Step1.ArchiveEncoding}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Encodings}" SelectedItem="{Binding ArchiveEncoding}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate><TextBlock Text="{Binding Converter={StaticResource EncodingName}}" /></DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" IsVisible="{Binding ShowTextEncoding}">
+                    <TextBlock Text="{DynamicResource SingerSetup.Step2.Title}" VerticalAlignment="Center" />
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate><TextBlock Text="{Binding Converter={StaticResource EncodingName}}" /></DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+        </Border>
+        <!-- 有限高度的列表拥有唯一预览滚动区域，保留列表虚拟化。 -->
+        <Grid Grid.Row="2" Margin="16,0" RowDefinitions="*">
+            <ListBox ItemsSource="{Binding TextItems}" IsVisible="{Binding ShowPreview}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <TextBlock Text="{Binding}" TextWrapping="NoWrap" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <!-- 结果仅在内容中央显示一次，图标与文字共同区分成功、取消和失败。 -->
+            <StackPanel x:Name="InstallResult" IsVisible="{Binding IsFinished}" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                <StackPanel IsVisible="{Binding IsSuccessful}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <icons:PackIconPhosphorIcons Kind="CheckCircle" Width="48" Height="48" HorizontalAlignment="Center"
+                                                Foreground="{DynamicResource Sem.Color.Success}" />
+                    <TextBlock Text="{Binding ResultTitle}" HorizontalAlignment="Center" FontWeight="SemiBold"
+                               Foreground="{DynamicResource Sem.Color.Success}" />
+                </StackPanel>
+                <StackPanel IsVisible="{Binding IsCancelled}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <icons:PackIconPhosphorIcons Kind="Prohibit" Width="48" Height="48" HorizontalAlignment="Center"
+                                                Foreground="{DynamicResource Sem.Color.Warning}" />
+                    <TextBlock Text="{Binding ResultTitle}" HorizontalAlignment="Center" FontWeight="SemiBold"
+                               Foreground="{DynamicResource Sem.Color.Warning}" />
+                </StackPanel>
+                <StackPanel IsVisible="{Binding HasFailed}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <icons:PackIconPhosphorIcons Kind="XCircle" Width="48" Height="48" HorizontalAlignment="Center"
+                                                Foreground="{DynamicResource Sem.Color.Error}" />
+                    <TextBlock Text="{Binding ResultTitle}" HorizontalAlignment="Center" FontWeight="SemiBold"
+                               Foreground="{DynamicResource Sem.Color.Error}" />
+                </StackPanel>
+                <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           MaxWidth="480" MaxHeight="120" TextWrapping="Wrap" TextAlignment="Center"
+                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+            </StackPanel>
+            <ProgressBar IsVisible="{Binding IsPreviewLoading}" IsIndeterminate="True" VerticalAlignment="Bottom" />
+        </Grid>
+        <!-- 状态区与预览分离，错误不会被挤到长列表末尾。 -->
+        <Border x:Name="TransientStatus" Grid.Row="3" Padding="{x:Static foundation:LayoutTokens.InsetM}" IsVisible="{Binding !IsFinished}">
+            <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <ProgressBar IsVisible="{Binding IsBusy}" IsIndeterminate="{Binding IsProgressIndeterminate}" Value="{Binding ProgressPercent}" />
+                <TextBlock Text="{Binding Message}" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           TextTrimming="CharacterEllipsis" />
+                <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" MaxHeight="96" />
+            </StackPanel>
+        </Border>
+        <!-- 与桌面一致提供前后步骤及直接安装，不增加准备摘要步骤。 -->
+        <Border Grid.Row="4" Padding="{x:Static foundation:LayoutTokens.InsetM}">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                <Button Classes="Secondary" Content="{DynamicResource Common.Previous}" Command="{Binding BackCommand}" IsVisible="{Binding CanBack}" />
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <Button Classes="Primary" Content="{DynamicResource Common.Next}" Command="{Binding NextCommand}" IsVisible="{Binding CanNext}" />
+                    <Button Classes="Primary" Content="{DynamicResource Common.Install}" Command="{Binding InstallCommand}" IsVisible="{Binding CanInstallAtStep}" />
+                    <Button Classes="Secondary" Content="{DynamicResource Common.Cancel}" Command="{Binding CancelCommand}" IsVisible="{Binding IsBusy}" />
+                    <Button Classes="Secondary" Content="{DynamicResource Common.Close}" Command="{Binding ExitCommand}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

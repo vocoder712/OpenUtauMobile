@@ -28,7 +28,7 @@ public class MainViewModel : ViewModelBase
         get
         {
             foreach (NavigateViewModelBase viewModel in _navigationStack)
-                if (viewModel is ClassicSingerSetupViewModel { IsInstalling: true }) return true;
+                if (viewModel is ISingerInstallationPage { IsBusy: true }) return true;
             return false;
         }
     }
@@ -131,6 +131,13 @@ public class MainViewModel : ViewModelBase
                 (vm as IDisposable)?.Dispose();
                 return;
             }
+            if (source is ISingerInstallationPage setup)
+            {
+                if (!setup.TryLeave()) { (vm as IDisposable)?.Dispose(); return; }
+                await setup.CloseSessionAsync();
+                if (CurrentViewModel != source) { (vm as IDisposable)?.Dispose(); return; }
+                if (!TryRemoveCurrentViewModel(source, false)) { (vm as IDisposable)?.Dispose(); return; }
+            }
             OnNavigate(vm);
         });
     }
@@ -158,6 +165,11 @@ public class MainViewModel : ViewModelBase
     {
         if (CurrentViewModel != caller) return;
         if (caller is SandboxFileManagerViewModel sandbox && !await sandbox.ConfirmLeaveAsync()) return;
+        if (caller is ISingerInstallationPage setup)
+        {
+            if (!setup.TryLeave()) return;
+            await setup.CloseSessionAsync();
+        }
         TryRemoveCurrentViewModel(caller, notifyRevealedViewModel: true);
     }
 
@@ -167,6 +179,7 @@ public class MainViewModel : ViewModelBase
         {
             return false;
         }
+        if (caller is ISingerInstallationPage { IsSessionClosed: false }) return false;
         // 同步导航调用不能直接移除仍有任务或弹窗的沙箱页。
         if (caller is SandboxFileManagerViewModel { CanDetach: false }) return false;
 
@@ -348,6 +361,11 @@ public class MainViewModel : ViewModelBase
     /// <returns>当前工程允许退出时返回 true。</returns>
     public async Task<bool> ConfirmCloseAsync()
     {
+        if (CurrentViewModel is ISingerInstallationPage setup)
+        {
+            if (!setup.TryLeave()) return false;
+            await setup.CloseSessionAsync();
+        }
         if (HasActiveSingerInstallation) return false;
         NavigateViewModelBase source = CurrentViewModel;
         if (source is SandboxFileManagerViewModel sandbox &&

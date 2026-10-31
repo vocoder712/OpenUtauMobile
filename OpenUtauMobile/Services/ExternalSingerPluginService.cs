@@ -71,6 +71,7 @@ public static class ExternalSingerPluginService
     /// <summary>在载入及轨道导入时补正外部 renderer，并重新校验快照。</summary>
     public static void NormalizeProject(UProject project)
     {
+        UnavailableSinger.PreserveReferences(project);
         bool changed = false;
         foreach (Func<UProject, bool> normalize in normalizers) changed |= normalize(project);
         if (changed) project.ValidateFull();

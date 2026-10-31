@@ -2588,4 +2588,23 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>Repeat</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>Record</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Recording</value></data>
+  <data name="SingerSetup.Review" xml:space="preserve"><value>Review installation</value></data>
+  <data name="SingerSetup.SelectInstaller" xml:space="preserve"><value>Select installer</value></data>
+  <data name="SingerSetup.SearchInstaller" xml:space="preserve"><value>Search installers</value></data>
+  <data name="SingerSetup.MoreInstallers" xml:space="preserve"><value>More installers</value></data>
+  <data name="SingerSetup.RequiredField" xml:space="preserve"><value>Required</value></data>
+  <data name="SingerSetup.InvalidValue" xml:space="preserve"><value>Invalid value</value></data>
+  <data name="SingerSetup.PartialFailure" xml:space="preserve"><value>Installed with errors</value></data>
+  <data name="SingerSetup.WrongInstaller" xml:space="preserve"><value>Wrong installer for this package.</value></data>
+  <data name="Common.Browse" xml:space="preserve"><value>Browse</value></data>
+  <data name="SingerAvailability.Unsupported" xml:space="preserve"><value>Unsupported</value></data>
+  <data name="SingerAvailability.Invalid" xml:space="preserve"><value>Invalid</value></data>
+  <data name="SingerAvailability.MissingResources" xml:space="preserve"><value>Missing resources</value></data>
+  <data name="SingerAvailability.Unavailable" xml:space="preserve"><value>Unavailable</value></data>
+  <data name="SingerSetup.TypeConflict" xml:space="preserve"><value>Selected {0}, but character.yaml declares {1}. Go back and select the matching installer.</value></data>
+  <data name="SingerSetup.Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="SingerSetup.RollingBack" xml:space="preserve"><value>Cancelling and rolling back…</value></data>
+  <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>Rollback failed</value></data>
+  <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>Installation is in progress. Cancel it before leaving.</value></data>
+  <data name="SingerSetup.TargetExists" xml:space="preserve"><value>The destination already exists.</value></data>
 </root>

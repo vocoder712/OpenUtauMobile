@@ -218,7 +218,8 @@ public sealed class ExpressionGraphLibraryViewModel : NavigateViewModelBase, ICm
         ];
         return
         [
-            .. Enum.GetValues<USingerType>().SelectMany(Renderers.GetSupportedRenderers)
+            .. Services.SingerPlugins.SingerPluginService.Registry.Snapshot.TypesByBridge.Keys
+                .SelectMany(Services.SingerPlugins.SingerPluginService.Registry.GetSupportedRenderers)
                 .Concat(_project.tracks.Select(track => track.RendererSettings?.renderer).OfType<string>())
                 .Select(Renderers.GetExpressionGraphSlot).Distinct(StringComparer.Ordinal)
                 .OrderBy(slot => used.Contains(slot) ? 0 : 1)

@@ -2584,4 +2584,23 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>リピート</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>録音</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: 録音機能</value></data>
+  <data name="SingerSetup.Review" xml:space="preserve"><value>インストールを確認</value></data>
+  <data name="SingerSetup.SelectInstaller" xml:space="preserve"><value>インストーラーを選択</value></data>
+  <data name="SingerSetup.SearchInstaller" xml:space="preserve"><value>インストーラーを検索</value></data>
+  <data name="SingerSetup.MoreInstallers" xml:space="preserve"><value>その他のインストーラー</value></data>
+  <data name="SingerSetup.RequiredField" xml:space="preserve"><value>必須</value></data>
+  <data name="SingerSetup.InvalidValue" xml:space="preserve"><value>無効な値</value></data>
+  <data name="SingerSetup.PartialFailure" xml:space="preserve"><value>インストール済み（エラーあり）</value></data>
+  <data name="SingerSetup.WrongInstaller" xml:space="preserve"><value>このインストーラーはこのパッケージに対応していません。</value></data>
+  <data name="Common.Browse" xml:space="preserve"><value>参照</value></data>
+  <data name="SingerAvailability.Unsupported" xml:space="preserve"><value>非対応</value></data>
+  <data name="SingerAvailability.Invalid" xml:space="preserve"><value>無効</value></data>
+  <data name="SingerAvailability.MissingResources" xml:space="preserve"><value>リソース不足</value></data>
+  <data name="SingerAvailability.Unavailable" xml:space="preserve"><value>利用不可</value></data>
+  <data name="SingerSetup.TypeConflict" xml:space="preserve"><value>{0} を選択しましたが、character.yaml は {1} を指定しています。戻って対応するインストーラーを選択してください。</value></data>
+  <data name="SingerSetup.Cancelled" xml:space="preserve"><value>キャンセルしました</value></data>
+  <data name="SingerSetup.RollingBack" xml:space="preserve"><value>キャンセルして元に戻しています…</value></data>
+  <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>復元に失敗しました</value></data>
+  <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>インストール中です。先にキャンセルしてください。</value></data>
+  <data name="SingerSetup.TargetExists" xml:space="preserve"><value>インストール先は既に存在します。</value></data>
 </root>

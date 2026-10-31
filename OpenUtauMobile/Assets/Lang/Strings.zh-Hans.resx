@@ -2588,4 +2588,23 @@
   <data name="Editor.Repeat" xml:space="preserve"><value>重复</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>录制</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: 录制功能</value></data>
+  <data name="SingerSetup.Review" xml:space="preserve"><value>检查安装</value></data>
+  <data name="SingerSetup.SelectInstaller" xml:space="preserve"><value>选择安装器</value></data>
+  <data name="SingerSetup.SearchInstaller" xml:space="preserve"><value>搜索安装器</value></data>
+  <data name="SingerSetup.MoreInstallers" xml:space="preserve"><value>更多安装器</value></data>
+  <data name="SingerSetup.RequiredField" xml:space="preserve"><value>必填</value></data>
+  <data name="SingerSetup.InvalidValue" xml:space="preserve"><value>值无效</value></data>
+  <data name="SingerSetup.PartialFailure" xml:space="preserve"><value>已安装，但发生错误</value></data>
+  <data name="SingerSetup.WrongInstaller" xml:space="preserve"><value>此安装器不支持该安装包。</value></data>
+  <data name="Common.Browse" xml:space="preserve"><value>浏览</value></data>
+  <data name="SingerAvailability.Unsupported" xml:space="preserve"><value>不支持</value></data>
+  <data name="SingerAvailability.Invalid" xml:space="preserve"><value>无效</value></data>
+  <data name="SingerAvailability.MissingResources" xml:space="preserve"><value>缺少资源</value></data>
+  <data name="SingerAvailability.Unavailable" xml:space="preserve"><value>不可用</value></data>
+  <data name="SingerSetup.TypeConflict" xml:space="preserve"><value>已选择 {0}，但 character.yaml 声明为 {1}。请返回选择对应安装器。</value></data>
+  <data name="SingerSetup.Cancelled" xml:space="preserve"><value>已取消</value></data>
+  <data name="SingerSetup.RollingBack" xml:space="preserve"><value>正在取消并回滚…</value></data>
+  <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>回滚失败</value></data>
+  <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>安装进行中，请先取消安装。</value></data>
+  <data name="SingerSetup.TargetExists" xml:space="preserve"><value>目标已存在。</value></data>
 </root>

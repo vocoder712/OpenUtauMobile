@@ -130,14 +130,14 @@ namespace OpenUtauMobile.DesktopUI.Views
             window.KeyDown += (_, e) =>
             {
                 if (EditorInputController.IsComposing(window.FocusManager?.GetFocusedElement() as Visual ?? e.Source as Visual)) return;
-                if (!e.Handled && (e.Key == Key.Escape || e.Key == Key.W && e.KeyModifiers == (OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control)) && !IsUtilityModalOpen && vm is not ClassicSingerSetupViewModel { IsInstalling: true }) { e.Handled = true; vm.OnBackRequested(); }
+                if (!e.Handled && (e.Key == Key.Escape || e.Key == Key.W && e.KeyModifiers == (OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control)) && !IsUtilityModalOpen) { e.Handled = true; vm.OnBackRequested(); }
             };
             window.Closing += (_, e) =>
             {
                 if (_closing) return;
                 SaveGeometry(window, _utilityKey);
                 e.Cancel = true;
-                if (!IsUtilityModalOpen && vm is not ClassicSingerSetupViewModel { IsInstalling: true }) vm.OnBackRequested();
+                if (!IsUtilityModalOpen) vm.OnBackRequested();
             };
             window.Activated += (_, _) => RegisterWindowProviders();
             window.Show(parent);

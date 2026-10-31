@@ -11,7 +11,7 @@ namespace OpenUtauMobile.Plugin.Abstractions
         /// <summary>恢复上一步；过期状态版本必须被拒绝。</summary>
         ValueTask<InstallView> BackAsync(long expectedRevision, CancellationToken cancellationToken);
         /// <summary>验证最终身份、目标和输入，生成可消费一次的安装计划。</summary>
-        ValueTask<PreparedInstall> PrepareAsync(InstallTargetSelection target, long expectedRevision,
+        ValueTask<PreparedInstall> PrepareAsync(InstallTargetSelection target, InstallSubmission submission,
             IProgress<InstallProgress> progress, CancellationToken cancellationToken);
         /// <summary>只提交已经校验的当前计划，不能重新解包替换预检内容。</summary>
         ValueTask<InstallResult> InstallAsync(Guid planId, IProgress<InstallProgress> progress,

@@ -37,7 +37,7 @@ namespace OpenUtauMobile.ViewModels;
 /// </summary>
 public enum PhonemePanelMode
 {
-    PhonemeSimple, // 简易音素 (SynthV 风格块状)
+    PhonemeSimple, // 简易音素卡片
     PhonemeAdvanced, // 高级音素 (OpenUtau 风格包络与控制点)
     ParameterDraw, // 参数绘制
     ParameterErase // 参数擦除

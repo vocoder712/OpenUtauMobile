@@ -1,6 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
@@ -8,155 +8,145 @@
              mc:Ignorable="d"
              x:Class="OpenUtauMobile.Controls.ArrangementSurface"
              xmlns:c="clr-namespace:OpenUtauMobile.Controls"
-             xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
-             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
              Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
-    <UserControl.Resources>
-        <tools:SnapDivToLabelConverter x:Key="SnapDivToLabelConverter" />
-        <tools:ProgressToWidthConverter x:Key="ProgressToWidthConverter" />
-        <tools:PathToFileNameConverter x:Key="PathToFileName" />
-        <tools:PathToDirectoryConverter x:Key="PathToDirectory" />
-        <tools:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter" />
-    </UserControl.Resources>
-
 
     <Grid RowDefinitions="*,Auto" ClipToBounds="True">
-            <Grid
-                  x:Name="TrackAreaGrid"
-                  RowDefinitions="24, *"
-                  ColumnDefinitions="64, *"
-                  ClipToBounds="True">
+        <Grid
+            x:Name="TrackAreaGrid"
+            RowDefinitions="24, *"
+            ColumnDefinitions="64, *"
+            ClipToBounds="True">
 
-                <!-- 左上：切换按钮 + 工程信息主键 -->
-                <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="64,*" ClipToBounds="True">
-                    <!-- 展开/收起箭头按钮（始终可见） -->
-                    <Button Grid.Column="0"
-                            Command="{Binding ToggleTrackHeaderCommand}"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Stretch"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            ToolTip.Tip="{DynamicResource Editor.ToggleTrackHeader}"
-                            Padding="0"
-                            ClipToBounds="True">
-                        <Panel ClipToBounds="True" Margin="0">
-                            <!-- 右箭头（收起时显示） -->
-                            <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
-                                                             Margin="{x:Static foundation:LayoutTokens.InsetXS}"
-                                                             IsVisible="{Binding !IsTrackHeaderExpanded}" />
-                            <!-- 左箭头（展开时显示） -->
-                            <iconPacks:PackIconPhosphorIcons Kind="CaretLeft"
-                                                             Margin="{x:Static foundation:LayoutTokens.InsetXS}"
-                                                             IsVisible="{Binding IsTrackHeaderExpanded}" />
-                        </Panel>
-                    </Button>
+            <!-- 左上：切换按钮 + 工程信息主键 -->
+            <Grid Grid.Row="0" Grid.Column="0" ColumnDefinitions="64,*" ClipToBounds="True">
+                <!-- 展开/收起箭头按钮（始终可见） -->
+                <Button Grid.Column="0"
+                        Command="{Binding ToggleTrackHeaderCommand}"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        ToolTip.Tip="{DynamicResource Editor.ToggleTrackHeader}"
+                        Padding="0"
+                        ClipToBounds="True">
+                    <Panel ClipToBounds="True" Margin="0">
+                        <!-- 右箭头（收起时显示） -->
+                        <iconPacks:PackIconPhosphorIcons Kind="CaretRight"
+                                                         Margin="{x:Static foundation:LayoutTokens.InsetXS}"
+                                                         IsVisible="{Binding !IsTrackHeaderExpanded}" />
+                        <!-- 左箭头（展开时显示） -->
+                        <iconPacks:PackIconPhosphorIcons Kind="CaretLeft"
+                                                         Margin="{x:Static foundation:LayoutTokens.InsetXS}"
+                                                         IsVisible="{Binding IsTrackHeaderExpanded}" />
+                    </Panel>
+                </Button>
 
-                    <!-- 工程信息区（仅展开时显示） -->
-                    <Border Grid.Column="1"
-                            IsVisible="{Binding IsTrackHeaderExpanded}"
-                            ClipToBounds="True"
-                            VerticalAlignment="Stretch">
-                        <StackPanel Orientation="Horizontal"
-                                    VerticalAlignment="Center"
-                                    Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
-                                    Margin="2,0,2,0">
-                            <!-- 曲速 BPM -->
-                            <Button x:Name="ProjectTempoButton" Width="56"
-                                    Classes="DesktopProjectValue"
-                                    Command="{Binding EditBpmCommand}"
-                                    Padding="0">
-                                <TextBlock Text="{Binding ProjectBpm}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           Foreground="{DynamicResource Sem.Color.OnSurface}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Button>
-                            <!-- 拍号 -->
-                            <Button Width="56"
-                                    Classes="DesktopProjectValue"
-                                    Command="{Binding EditTimeSignatureCommand}"
-                                    Padding="0">
-                                <TextBlock Text="{Binding ProjectTimeSignature}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           Foreground="{DynamicResource Sem.Color.OnSurface}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Button>
-                            <!-- 音名 -->
-                            <Button Width="56"
-                                    Classes="DesktopProjectValue"
-                                    Command="{Binding EditKeyCommand}"
-                                    Padding="0">
-                                <TextBlock Text="{Binding ProjectKey}"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           Foreground="{DynamicResource Sem.Color.OnSurface}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Button>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                <!-- 工程信息区（仅展开时显示） -->
+                <Border Grid.Column="1"
+                        IsVisible="{Binding IsTrackHeaderExpanded}"
+                        ClipToBounds="True"
+                        VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center"
+                                Spacing="{x:Static foundation:LayoutTokens.SpaceXS}"
+                                Margin="2,0,2,0">
+                        <!-- 曲速 BPM -->
+                        <Button x:Name="ProjectTempoButton" Width="56"
+                                Classes="DesktopProjectValue"
+                                Command="{Binding EditBpmCommand}"
+                                Padding="0">
+                            <TextBlock Text="{Binding ProjectBpm}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Button>
+                        <!-- 拍号 -->
+                        <Button Width="56"
+                                Classes="DesktopProjectValue"
+                                Command="{Binding EditTimeSignatureCommand}"
+                                Padding="0">
+                            <TextBlock Text="{Binding ProjectTimeSignature}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Button>
+                        <!-- 音名 -->
+                        <Button Width="56"
+                                Classes="DesktopProjectValue"
+                                Command="{Binding EditKeyCommand}"
+                                Padding="0">
+                            <TextBlock Text="{Binding ProjectKey}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource Sem.Color.OnSurface}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <!-- 右下： 网格 + 分片 -->
+            <Panel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
+                <c:TrackBackground
+                    ClipToBounds="True"
+                    Margin="0,24,0,0"
+                    TrackHeight="{Binding TrackHeight}"
+                    TrackOffset="{Binding TrackOffset}" />
 
-                <!-- 左下：轨道头 -->
-                <c:TrackHeaderCanvas Grid.Row="1" Grid.Column="0"
-                                     ClipToBounds="True"
+                <c:TickBackground
+                    TickWidth="{Binding TickWidth}"
+                    TickOffset="{Binding TickOffset}"
+                    SnapDiv="{Binding SnapDiv}"
+                    RulerHeight="{x:Static local:ViewConstants.TickRulerHeight}"
+                    MinTicklineWidth="{x:Static local:ViewConstants.TrackMinTicklineWidth}"
+                    ShowBarNumber="True"
+                    ShowTempoMarkers="True"
+                    ShowTimeSignatureMarkers="True" />
+
+                <c:PartsCanvas x:Name="PartsInputCanvas"
+                               ClipToBounds="True"
+                               Margin="0,24,0,0"
+                               SelectedParts="{Binding SelectedParts, Mode=TwoWay}"
+                               TrackEditMode="{Binding TrackEditMode}"
+                               TickWidth="{Binding TickWidth}"
+                               TrackHeight="{Binding TrackHeight}"
+                               TickOffset="{Binding TickOffset}"
+                               TrackOffset="{Binding TrackOffset}" />
+
+                <!-- 播放位置竖线置于顶层，并且对输入事件透明 -->
+                <c:PlayPosCanvas
+                    TickWidth="{Binding TickWidth}"
+                    TickOffset="{Binding TickOffset}"
+                    PlayPosTick="{Binding PlayPosTick}"
+                    IsPlaying="{Binding IsPlaying}"
+                    IsWaiting="{Binding IsWaitingRender}"
+                    IsHitTestVisible="False" />
+
+            </Panel>
+            
+            <!-- 固定轨道头侧栏承载统一阴影，内部裁剪滚动内容。 -->
+            <c:EditorRailSurface Grid.Row="1" Grid.Column="0"
+                                 ShadowColor="{DynamicResource Sem.Value.Shadow}">
+                <c:TrackHeaderCanvas ClipToBounds="True"
                                      IsExpanded="{Binding IsTrackHeaderExpanded}"
                                      TrackHeight="{Binding TrackHeight}"
-                                     TrackOffset="{Binding TrackOffset}">
-                    <!-- <c:TrackHeaderCanvas.Effect> -->
-                    <!--     <DropShadowEffect Color="{DynamicResource ShadowColor}" BlurRadius="12" OffsetX="4" OffsetY="4" Opacity="0.5"/> -->
-                    <!-- </c:TrackHeaderCanvas.Effect> -->
-                </c:TrackHeaderCanvas>
+                                     TrackOffset="{Binding TrackOffset}" />
+            </c:EditorRailSurface>
 
-                <!-- 右下： 网格 + 分片 -->
-                <Panel Grid.Row="0" Grid.Column="1" Grid.RowSpan="2">
-                    <c:TrackBackground
-                        ClipToBounds="True"
-                        Margin="0,24,0,0"
-                        TrackHeight="{Binding TrackHeight}"
-                        TrackOffset="{Binding TrackOffset}" />
-
-                    <c:TickBackground
-                        TickWidth="{Binding TickWidth}"
-                        TickOffset="{Binding TickOffset}"
-                        SnapDiv="{Binding SnapDiv}"
-                        RulerHeight="{x:Static local:ViewConstants.TickRulerHeight}"
-                        MinTicklineWidth="{x:Static local:ViewConstants.TrackMinTicklineWidth}"
-                        ShowBarNumber="True"
-                        ShowTempoMarkers="True"
-                        ShowTimeSignatureMarkers="True" />
-
-                    <c:PartsCanvas x:Name="PartsInputCanvas"
-                        ClipToBounds="True"
-                        Margin="0,24,0,0"
-                        SelectedParts="{Binding SelectedParts, Mode=TwoWay}"
-                        TrackEditMode="{Binding TrackEditMode}"
-                        TickWidth="{Binding TickWidth}"
-                        TrackHeight="{Binding TrackHeight}"
-                        TickOffset="{Binding TickOffset}"
-                        TrackOffset="{Binding TrackOffset}" />
-
-                    <!-- 播放位置竖线置于顶层，并且对输入事件透明 -->
-                    <c:PlayPosCanvas
-                        TickWidth="{Binding TickWidth}"
-                        TickOffset="{Binding TickOffset}"
-                        PlayPosTick="{Binding PlayPosTick}"
-                        IsPlaying="{Binding IsPlaying}"
-                        IsWaiting="{Binding IsWaitingRender}"
-                        IsHitTestVisible="False" />
-
-                </Panel>
-                <Border x:Name="ArrangementInputRuler" Grid.Row="0" Grid.Column="1" Background="Transparent" IsVisible="False" />
-            </Grid>
+            <Border x:Name="ArrangementInputRuler" Grid.Row="0" Grid.Column="1" Background="Transparent"
+                    IsVisible="False" />
+        </Grid>
         <!-- 走带工具在底部独立占位，画布尺寸不包含工具栏。 -->
         <Border x:Name="ArrangementToolbar" Grid.Row="1" Height="{x:Static localTokens:EditorTokens.ToolbarExtent}"
                 Background="{DynamicResource Sem.Color.SurfaceContainer}"

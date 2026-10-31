@@ -29,6 +29,9 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
     private readonly IDisposable _favoriteSubscription;
 
     // ── Basic Info ──
+    /// <summary>外部歌手维护由提供方声明，禁止套用目录递归删除。</summary>
+    public bool CanDelete => Services.SingerPlugins.BuiltinSingerMaintenance.CanUninstall(_singer);
+
     public string SingerName => _singer.LocalizedName;
     public string SingerId => _singer.Id ?? string.Empty;
     public string SingerType => GetSingerTypeDisplay();
@@ -61,7 +64,8 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
         _singer = singer;
 
         BackCommand = ReactiveCommand.Create(OnBack);
-        DeleteCommand = ReactiveCommand.CreateFromTask(OnDeleteAsync);
+        DeleteCommand = ReactiveCommand.CreateFromTask(OnDeleteAsync,
+            this.WhenAnyValue(_ => _.CanDelete));
 
         // Create OpenWebCommand - enabled only when HasWeb is true
         IObservable<bool> canOpenWeb = this.WhenAnyValue(x => x.HasWeb);
@@ -103,16 +107,7 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
 
     private string GetSingerTypeDisplay()
     {
-        return _singer.SingerType switch
-        {
-            USingerType.Classic => "UTAU",
-            USingerType.Enunu => "ENUNU",
-            USingerType.DiffSinger => "DiffSinger",
-            USingerType.Voicevox => "VOICEVOX",
-            USingerType.Vogen => "Vogen",
-            USingerType.Neutrino => "NEUTRINO v3",
-            _ => "Unknown"
-        };
+        return Services.SingerPlugins.SingerTypePresentation.Name(_singer.SingerType);
     }
 
     private void OnBack()
@@ -143,12 +138,11 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
         {
             await LoadingPopupService.RunAsync(
                 L.S("SingerDetail.Uninstalling"),
-                _ => Task.Run(() => SingerManager.Inst.UninstallSinger(_singer)));
+                _ => Services.SingerPlugins.BuiltinSingerMaintenance.UninstallAsync(_singer));
             if (Navigator.CurrentViewModel is not SingerManagementViewModel)
             {
                 ToastService.Enqueue(string.Format(L.S("SingerDetail.UninstallSucceeded"), SingerName));
             }
-            Services.ExternalSingerPluginService.RefreshSingers();
             SingerUninstalled?.Invoke(_singer);
             Navigator.NavigateBack(this);
         }

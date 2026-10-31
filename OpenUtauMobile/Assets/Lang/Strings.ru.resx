@@ -2543,4 +2543,23 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>Повтор</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>Запись</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Запись</value></data>
+  <data name="SingerSetup.Review" xml:space="preserve"><value>Проверить установку</value></data>
+  <data name="SingerSetup.SelectInstaller" xml:space="preserve"><value>Выбрать установщик</value></data>
+  <data name="SingerSetup.SearchInstaller" xml:space="preserve"><value>Поиск установщиков</value></data>
+  <data name="SingerSetup.MoreInstallers" xml:space="preserve"><value>Другие установщики</value></data>
+  <data name="SingerSetup.RequiredField" xml:space="preserve"><value>Обязательно</value></data>
+  <data name="SingerSetup.InvalidValue" xml:space="preserve"><value>Недопустимое значение</value></data>
+  <data name="SingerSetup.PartialFailure" xml:space="preserve"><value>Установлено с ошибками</value></data>
+  <data name="SingerSetup.WrongInstaller" xml:space="preserve"><value>Установщик не поддерживает этот пакет.</value></data>
+  <data name="Common.Browse" xml:space="preserve"><value>Обзор</value></data>
+  <data name="SingerAvailability.Unsupported" xml:space="preserve"><value>Не поддерживается</value></data>
+  <data name="SingerAvailability.Invalid" xml:space="preserve"><value>Повреждено</value></data>
+  <data name="SingerAvailability.MissingResources" xml:space="preserve"><value>Нет ресурсов</value></data>
+  <data name="SingerAvailability.Unavailable" xml:space="preserve"><value>Недоступно</value></data>
+  <data name="SingerSetup.TypeConflict" xml:space="preserve"><value>Выбран {0}, но в character.yaml указан {1}. Вернитесь и выберите соответствующий установщик.</value></data>
+  <data name="SingerSetup.Cancelled" xml:space="preserve"><value>Отменено</value></data>
+  <data name="SingerSetup.RollingBack" xml:space="preserve"><value>Отмена и восстановление…</value></data>
+  <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>Не удалось восстановить файлы</value></data>
+  <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>Идёт установка. Сначала отмените её.</value></data>
+  <data name="SingerSetup.TargetExists" xml:space="preserve"><value>Путь назначения уже существует.</value></data>
 </root>

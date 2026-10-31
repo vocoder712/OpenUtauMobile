@@ -130,7 +130,7 @@
                                            FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
                                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
                                            TextWrapping="Wrap" />
-                                <Button Classes="DesktopAction destructive" HorizontalAlignment="Stretch" Command="{Binding DeleteCommand}">
+                                <Button Classes="DesktopAction destructive" HorizontalAlignment="Stretch" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <iconPacks:PackIconPhosphorIcons Kind="Trash" Width="16" Height="16" VerticalAlignment="Center" />
                                         <TextBlock Text="{DynamicResource Common.Uninstall}" VerticalAlignment="Center" />
