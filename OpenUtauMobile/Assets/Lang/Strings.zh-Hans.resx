@@ -1394,7 +1394,7 @@
     <value>安装失败: {0}</value>
   </data>
   <data name="SingerSetup.StepFormat" xml:space="preserve">
-    <value>第 {0} 步 / 4</value>
+    <value>第 {0} 步 / {1}</value>
   </data>
   <data name="Splash.DocManager" xml:space="preserve">
     <value>文档管理器初始化中</value>
@@ -2607,4 +2607,8 @@
   <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>回滚失败</value></data>
   <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>安装进行中，请先取消安装。</value></data>
   <data name="SingerSetup.TargetExists" xml:space="preserve"><value>目标已存在。</value></data>
+  <data name="SingerSetup.PackageName" xml:space="preserve"><value>歌手名称</value></data>
+  <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>声库版本</value></data>
+  <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>正在读取元数据…</value></data>
+  <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>未能解析元数据</value></data>
 </root>

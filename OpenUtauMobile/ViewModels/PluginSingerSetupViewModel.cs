@@ -109,7 +109,7 @@ namespace OpenUtauMobile.ViewModels
             ClearContent();
             InstallStep step = view.Steps.Single(item => item.Id == view.CurrentStepId);
             Title = step.Title;
-            StepText = string.Format(L.S("SingerSetup.StepFormat"), view.Steps.IndexOf(step) + 1);
+            StepText = string.Format(L.S("SingerSetup.StepFormat"), view.Steps.IndexOf(step) + 1, view.Steps.Length);
             StepTitles = view.Steps.Select(item => item.Title).ToArray();
             Fields = (step.Fields.IsDefault ? ImmutableArray<PluginFieldDescriptor>.Empty : step.Fields)
                 .Select(item => new PluginFieldViewModel(item, Invalidate)).ToArray();

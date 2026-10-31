@@ -1317,7 +1317,7 @@
     <value>Не удалось выполнить установку: {0}</value>
   </data>
   <data name="SingerSetup.StepFormat" xml:space="preserve">
-    <value>Шаг {0} / 4</value>
+    <value>Шаг {0} / {1}</value>
   </data>
   <data name="Splash.DocManager" xml:space="preserve">
     <value>Инициализация менеджера документов</value>
@@ -2562,4 +2562,8 @@ Applying replaces the source of this input.</value></data>
   <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>Не удалось восстановить файлы</value></data>
   <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>Идёт установка. Сначала отмените её.</value></data>
   <data name="SingerSetup.TargetExists" xml:space="preserve"><value>Путь назначения уже существует.</value></data>
+  <data name="SingerSetup.PackageName" xml:space="preserve"><value>Имя певца</value></data>
+  <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>Версия голосового банка</value></data>
+  <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>Чтение метаданных…</value></data>
+  <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>Не удалось прочитать метаданные</value></data>
 </root>

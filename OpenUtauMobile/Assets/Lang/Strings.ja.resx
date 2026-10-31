@@ -1394,7 +1394,7 @@
     <value>インストール失敗: {0}</value>
   </data>
   <data name="SingerSetup.StepFormat" xml:space="preserve">
-    <value>ステップ {0} / 4</value>
+    <value>ステップ {0} / {1}</value>
   </data>
   <data name="Splash.DocManager" xml:space="preserve">
     <value>ドキュメントマネージャーを初期化中</value>
@@ -2603,4 +2603,8 @@ Applying replaces the source of this input.</value></data>
   <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>復元に失敗しました</value></data>
   <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>インストール中です。先にキャンセルしてください。</value></data>
   <data name="SingerSetup.TargetExists" xml:space="preserve"><value>インストール先は既に存在します。</value></data>
+  <data name="SingerSetup.PackageName" xml:space="preserve"><value>歌手名</value></data>
+  <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>音源バージョン</value></data>
+  <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>メタデータを読み込み中…</value></data>
+  <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>メタデータを解析できませんでした</value></data>
 </root>

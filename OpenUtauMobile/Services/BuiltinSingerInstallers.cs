@@ -24,6 +24,7 @@ namespace OpenUtauMobile.Services
             new("builtin:diffsinger", "DiffSinger", "diffsinger", [".zip", ".rar", ".uar"]),
             new("builtin:enunu", "ENUNU", "enunu", [".zip", ".rar", ".uar"]),
             new("builtin:vogen", "Vogen", null, [".vogeon"]),
+            new("builtin:neutrino", "NEUTRINO", "neutrino", [".zip", ".rar", ".uar"]),
         ];
 
         /// <summary>沿用桌面解包规则，通过会话暂存与文件变更记录提供取消和回滚。</summary>

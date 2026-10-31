@@ -12,6 +12,7 @@ using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.SingerInstallation;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using SharpCompress.Archives;
@@ -42,10 +43,11 @@ namespace OpenUtauMobile.ViewModels
         private static readonly string[] viewProperties =
         [
             nameof(CanInstallAtStep), nameof(CanNext), nameof(CanBack), nameof(ShowArchiveEncoding),
-            nameof(ShowTextEncoding), nameof(ShowPreview), nameof(ShowForm), nameof(IsSuccessful), nameof(ResultTitle), nameof(StepText),
+            nameof(ShowTextEncoding), nameof(ShowPreview), nameof(ShowPackageMetadata), nameof(ShowPackageMetadataError), nameof(ShowForm), nameof(IsSuccessful), nameof(ResultTitle), nameof(StepText),
         ];
 
-        private sealed record PreviewResult(IReadOnlyList<string> Items, string? TextEncoding);
+        private sealed record PreviewResult(IReadOnlyList<string> Items, string? TextEncoding,
+            (string Name, string Version)? Package = null);
         public string ArchiveFilePath { get; }
         public string FileName => Path.GetFileName(ArchiveFilePath);
         public string InstallerName => installer.DisplayName;
@@ -62,6 +64,10 @@ namespace OpenUtauMobile.ViewModels
         public string SingerType => installer.SingerType ?? "";
         [Reactive] public int Step { get; private set; }
         [Reactive] public IReadOnlyList<string> TextItems { get; private set; } = [];
+        /// <summary>单文件安装确认中的歌手名称，不与编码样例混用。</summary>
+        [Reactive] public string PackageName { get; private set; } = "";
+        /// <summary>安装包声明的声库版本，缺失时不显示对应信息行。</summary>
+        [Reactive] public string PackageVersion { get; private set; } = "";
         [Reactive] public bool IsPreviewLoading { get; private set; }
         [Reactive] public bool HasPreviewError { get; private set; }
         [Reactive] public bool IsBusy { get; private set; }
@@ -81,9 +87,13 @@ namespace OpenUtauMobile.ViewModels
         public bool ShowArchiveEncoding => ShowForm && IsArchive && Step == 0;
         public bool ShowTextEncoding => ShowForm && IsArchive && Step == 1;
         public bool ShowPreview => ShowForm && IsArchive;
+        /// <summary>单文件包读取成功后展示带标签的元数据确认区域。</summary>
+        public bool ShowPackageMetadata => ShowForm && !IsArchive && !IsPreviewLoading && !HasPreviewError;
+        /// <summary>元数据读取失败仅显示简短提示，不作为单文件安装的前置条件。</summary>
+        public bool ShowPackageMetadataError => ShowForm && !IsArchive && !IsPreviewLoading && HasPreviewError;
         /// <summary>结果页成功状态，与取消、失败状态互斥。</summary>
         public bool IsSuccessful => IsFinished && !IsCancelled && !HasFailed;
-        public string StepText => IsFinished ? "" : IsArchive ? string.Format(L.S("SingerSetup.StepFormat"), Step + 1) : "";
+        public string StepText => IsFinished ? "" : IsArchive ? string.Format(L.S("SingerSetup.StepFormat"), Step + 1, 2) : "";
         public string ResultTitle => L.S(IsCancelled ? "SingerSetup.Cancelled" : HasFailed ? "SingerSetup.Failed" : "SingerSetup.Success");
         public ReactiveCommand<Unit, Unit> NextCommand { get; }
         public ReactiveCommand<Unit, Unit> BackCommand { get; }
@@ -100,7 +110,7 @@ namespace OpenUtauMobile.ViewModels
             TextEncoding = Encodings[0];
             IObservable<bool> editable = this.WhenAnyValue(item => item.IsBusy, item => item.IsClosing,
                 item => item.IsFinished, item => item.IsPreviewLoading, item => item.HasPreviewError,
-                (busy, leaving, finished, loading, failed) => !busy && !leaving && !finished && !loading && !failed);
+                (busy, leaving, finished, loading, failed) => !busy && !leaving && !finished && !loading && (!IsArchive || !failed));
             NextCommand = ReactiveCommand.Create(() => { Step++; }, editable.CombineLatest(
                 this.WhenAnyValue(item => item.Step).Select(_ => Step == 0 && IsArchive), (ready, next) => ready && next));
             BackCommand = ReactiveCommand.Create(() => { if (TryLeave() && Step > 0) Step--; },
@@ -116,14 +126,15 @@ namespace OpenUtauMobile.ViewModels
                 installCancellation?.Cancel();
             }, this.WhenAnyValue(item => item.IsBusy, item => item.IsCancelling, (busy, canceling) => busy && !canceling));
             ExitCommand = ReactiveCommand.CreateFromTask(LeaveAsync);
-            this.WhenAnyValue(item => item.Step, item => item.IsFinished, item => item.IsBusy).Subscribe(_ =>
+            this.WhenAnyValue(item => item.Step, item => item.IsFinished, item => item.IsBusy,
+                item => item.IsPreviewLoading, item => item.HasPreviewError).Subscribe(_ =>
             {
                 foreach (string name in viewProperties) this.RaisePropertyChanged(name);
             }).DisposeWith(subscriptions);
             this.WhenAnyValue(item => item.Step, item => item.ArchiveEncoding, item => item.TextEncoding)
                 .Skip(1).Subscribe(_ =>
                 {
-                    if (initialized && !applyingEncoding && !IsBusy && !IsClosing && !IsFinished) StartPreview();
+                    if (initialized && IsArchive && !applyingEncoding && !IsBusy && !IsClosing && !IsFinished) StartPreview();
                 }).DisposeWith(subscriptions);
             this.WhenAnyValue(item => item.TextEncoding).Skip(1).Subscribe(_ =>
             {
@@ -136,7 +147,7 @@ namespace OpenUtauMobile.ViewModels
         {
             if (initialized) return;
             initialized = true;
-            if (IsArchive) StartPreview();
+            StartPreview();
         }
 
         private void StartPreview()
@@ -160,7 +171,7 @@ namespace OpenUtauMobile.ViewModels
             IsPreviewLoading = true;
             HasPreviewError = false;
             Error = "";
-            Message = L.S(step == 0 ? "SingerSetup.Step1.Preview" : "SingerSetup.Step2.Preview");
+            Message = L.S(!IsArchive ? "SingerSetup.ReadingMetadata" : step == 0 ? "SingerSetup.Step1.Preview" : "SingerSetup.Step2.Preview");
             try
             {
                 await previewGate.WaitAsync(token);
@@ -169,6 +180,9 @@ namespace OpenUtauMobile.ViewModels
                 finally { previewGate.Release(); }
                 if (version != previewVersion || IsClosing) return;
                 TextItems = result.Items;
+                PackageName = result.Package?.Name ?? "";
+                PackageVersion = result.Package?.Version ?? "";
+                HasPreviewError = !IsArchive && result.Package == null;
                 if (!textEncodingEdited && result.TextEncoding is { Length: > 0 } encoding)
                 {
                     try
@@ -185,7 +199,9 @@ namespace OpenUtauMobile.ViewModels
             catch (Exception exception)
             {
                 if (version != previewVersion || IsClosing) return;
-                Error = exception.Message;
+                Error = IsArchive ? exception.Message : "";
+                PackageName = "";
+                PackageVersion = "";
                 HasPreviewError = true;
             }
             finally
@@ -203,6 +219,10 @@ namespace OpenUtauMobile.ViewModels
         /// <summary>文件名和文本样例分别最多产生 50 项，达到上限就停止读取后续内容。</summary>
         private PreviewResult ReadPreview(int step, Encoding archiveEncoding, Encoding textEncoding, bool readEncoding, CancellationToken token)
         {
+            if (!IsArchive)
+            {
+                return new([], null, VogenPackage.ReadMetadata(ArchiveFilePath, token));
+            }
             using FileStream input = File.OpenRead(ArchiveFilePath);
             using IArchive archive = ArchiveFactory.OpenArchive(input, new ReaderOptions
             {

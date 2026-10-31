@@ -1394,7 +1394,7 @@
     <value>Installation failed: {0}</value>
   </data>
   <data name="SingerSetup.StepFormat" xml:space="preserve">
-    <value>Step {0} / 4</value>
+    <value>Step {0} / {1}</value>
   </data>
   <data name="Splash.DocManager" xml:space="preserve">
     <value>Initializing document manager</value>
@@ -2607,4 +2607,8 @@ Applying replaces the source of this input.</value></data>
   <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>Rollback failed</value></data>
   <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>Installation is in progress. Cancel it before leaving.</value></data>
   <data name="SingerSetup.TargetExists" xml:space="preserve"><value>The destination already exists.</value></data>
+  <data name="SingerSetup.PackageName" xml:space="preserve"><value>Singer name</value></data>
+  <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>Voicebank version</value></data>
+  <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>Reading metadata…</value></data>
+  <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>Could not parse metadata</value></data>
 </root>

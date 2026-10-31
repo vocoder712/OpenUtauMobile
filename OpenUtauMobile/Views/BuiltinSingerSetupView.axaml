@@ -52,6 +52,21 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <!-- 单文件包以带标签的信息行确认名称与版本，不使用编码样例列表。 -->
+            <Grid x:Name="PackageMetadata" IsVisible="{Binding ShowPackageMetadata}" VerticalAlignment="Top"
+                  ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto"
+                  ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" RowSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                <TextBlock Text="{DynamicResource SingerSetup.PackageName}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                <TextBlock x:Name="PackageNameValue" Grid.Column="1" Text="{Binding PackageName}" TextWrapping="Wrap" FontWeight="SemiBold" />
+                <TextBlock Grid.Row="1" Text="{DynamicResource SingerSetup.PackageVersion}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                           IsVisible="{Binding PackageVersion, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <TextBlock x:Name="PackageVersionValue" Grid.Row="1" Grid.Column="1" Text="{Binding PackageVersion}" TextWrapping="Wrap"
+                           IsVisible="{Binding PackageVersion, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </Grid>
+            <!-- 元数据预览失败只给出提示，不阻止单文件安装。 -->
+            <TextBlock x:Name="PackageMetadataError" IsVisible="{Binding ShowPackageMetadataError}"
+                       Text="{DynamicResource SingerSetup.MetadataUnavailable}" TextWrapping="Wrap"
+                       VerticalAlignment="Top" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
             <!-- 结果仅在内容中央显示一次，图标与文字共同区分成功、取消和失败。 -->
             <StackPanel x:Name="InstallResult" IsVisible="{Binding IsFinished}" VerticalAlignment="Center" HorizontalAlignment="Center"
                         Spacing="{x:Static foundation:LayoutTokens.SpaceM}">

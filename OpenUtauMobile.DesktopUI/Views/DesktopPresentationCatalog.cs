@@ -52,6 +52,8 @@ namespace OpenUtauMobile.DesktopUI.Views
                 (setup, _, _) => Utility("SingerSetup.Title", new DesktopSingerSetupPage(setup))),
             [typeof(EnunuSingerSetupViewModel)] = Route<EnunuSingerSetupViewModel>("SingerSetup.Title", DesktopWindowProfile.SingerSetup,
                 (setup, _, _) => Utility("SingerSetup.Title", new DesktopSingerSetupPage(setup))),
+            [typeof(NeutrinoSingerSetupViewModel)] = Route<NeutrinoSingerSetupViewModel>("SingerSetup.Title", DesktopWindowProfile.SingerSetup,
+                (setup, _, _) => Utility("SingerSetup.Title", new DesktopSingerSetupPage(setup))),
             [typeof(SingleFileSingerSetupViewModel)] = Route<SingleFileSingerSetupViewModel>("SingerSetup.Title", DesktopWindowProfile.SingerSetup,
                 (setup, _, _) => Utility("SingerSetup.Title", new DesktopSingerSetupPage(setup))),
             [typeof(PluginSingerSetupViewModel)] = Route<PluginSingerSetupViewModel>("SingerSetup.Title", DesktopWindowProfile.SingerSetup,

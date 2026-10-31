@@ -15,6 +15,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                 UtauSingerSetupViewModel => new UtauSingerSetupView(),
                 DiffSingerSetupViewModel => new DiffSingerSetupView(),
                 EnunuSingerSetupViewModel => new EnunuSingerSetupView(),
+                NeutrinoSingerSetupViewModel => new NeutrinoSingerSetupView(),
                 _ => new SingleFileSingerSetupView(),
             };
             view.DataContext = model;

@@ -151,6 +151,7 @@ namespace OpenUtauMobile.ViewModels
                     "builtin:utau" => new UtauSingerSetupViewModel(Navigator, path),
                     "builtin:diffsinger" => new DiffSingerSetupViewModel(Navigator, path),
                     "builtin:enunu" => new EnunuSingerSetupViewModel(Navigator, path),
+                    "builtin:neutrino" => new NeutrinoSingerSetupViewModel(Navigator, path),
                     _ => new SingleFileSingerSetupViewModel(Navigator, builtin, path),
                 };
                 Navigator.Navigate(setup);

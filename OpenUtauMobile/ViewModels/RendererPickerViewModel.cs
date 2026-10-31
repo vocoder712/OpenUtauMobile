@@ -94,7 +94,7 @@ public class RendererPickerViewModel : PopupViewModelBase, ICmdSubscriber, IDisp
         _originalGraph = track.ExpressionGraph;
         if (_original.renderer != null)
             _graphDrafts[RendererRegistry.GetExpressionGraphSlot(_original.renderer)] = _originalGraph;
-        if (_singer is { Found: true }) Renderers.Load(OpenUtauMobile.Services.ExternalSingerPluginService.GetSupportedRenderers(_singer));
+        if (_singer is { Found: true }) Renderers.Load(Services.ExternalSingerPluginService.GetSupportedRenderers(_singer));
         _selectedRenderer = _original.renderer != null && Renderers.Contains(_original.renderer) ? _original.renderer : null;
         _selectedResampler = _original.resampler;
         _selectedWavtool = _original.wavtool;
