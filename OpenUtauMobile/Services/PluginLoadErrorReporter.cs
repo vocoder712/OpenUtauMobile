@@ -42,6 +42,11 @@ public sealed class PluginLoadErrorReporter : ILogEventSink
             case "Failed to search plugins.":
                 _pendingErrors.Enqueue(new IOException(PathManager.Inst.PluginsPath, logEvent.Exception));
                 break;
+            case "Failed to initialize singer plugin {Assembly}":
+                string location = logEvent.Properties.TryGetValue("Assembly", out LogEventPropertyValue? assembly)
+                    && assembly is ScalarValue { Value: string path } ? path : PathManager.Inst.PluginsPath;
+                _pendingErrors.Enqueue(new IOException(location, logEvent.Exception));
+                break;
         }
     }
 

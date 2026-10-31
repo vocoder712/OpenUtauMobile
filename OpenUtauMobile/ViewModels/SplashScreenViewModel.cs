@@ -16,6 +16,7 @@ using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.SingerPlugins;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -106,6 +107,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.DocManager"); ProgressPercent = 42; });
                 int pendingDeletionFailures = PluginManagementService.ApplyPendingDeletions();
+                SingerPluginService.EnsureContractsLoaded();
                 DocManager.Inst.Initialize(mainThread, mainScheduler);
                 GlobalErrorSubscriber.Instance.Register();
                 Log.Information("DocManager初始化完成");
@@ -114,6 +116,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.Phonemizer"); ProgressPercent = 57; });
                 EnsureBuiltinLoaded();
+                SingerPluginService.Initialize();
                 Log.Information("插件加载完成");
 
                 // ---- 阶段 5：ToolManager ----

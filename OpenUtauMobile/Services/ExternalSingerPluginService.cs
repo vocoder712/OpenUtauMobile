@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Services.SingerPlugins;
 using Serilog;
 
 namespace OpenUtauMobile.Services;
@@ -18,6 +19,7 @@ public static class ExternalSingerPluginService
     /// <summary>在核心歌手首次扫描后、工程载入前调用插件的约定入口。</summary>
     public static void Initialize()
     {
+        SingerPluginService.Initialize();
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
             if (initialized.Contains(assembly)) continue;
@@ -54,14 +56,15 @@ public static class ExternalSingerPluginService
     {
         foreach (Func<USinger, string[]?> policy in policies)
             if (policy(singer) is { } options) return options;
-        return OpenUtau.Core.Render.Renderers.GetSupportedRenderers(singer.SingerType);
+        return SingerPluginService.Registry.GetSupportedRenderers(singer.SingerType);
     }
 
     /// <summary>返回具体歌手的默认渲染器。</summary>
     public static string GetDefaultRenderer(USinger singer)
     {
         string[] options = GetSupportedRenderers(singer);
-        string preferred = OpenUtau.Core.Render.Renderers.GetDefaultRenderer(singer.SingerType);
+        if (options.Length == 0) return string.Empty;
+        string preferred = SingerPluginService.Registry.GetDefaultRenderer(singer.SingerType);
         return options.Contains(preferred) ? preferred : options.FirstOrDefault() ?? string.Empty;
     }
 

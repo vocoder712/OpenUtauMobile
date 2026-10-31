@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtauMobile.Linux", "Ope
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtauMobile.DesktopUI", "OpenUtauMobile.DesktopUI\OpenUtauMobile.DesktopUI.csproj", "{65E3BDF7-152B-4109-A38C-4A7B9BF4C28B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtauMobile.Plugin.Abstractions", "OpenUtauMobile.Plugin.Abstractions\OpenUtauMobile.Plugin.Abstractions.csproj", "{CCE36B7B-66C7-4C10-A819-CB23490885B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,10 @@ Global
 		{65E3BDF7-152B-4109-A38C-4A7B9BF4C28B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65E3BDF7-152B-4109-A38C-4A7B9BF4C28B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65E3BDF7-152B-4109-A38C-4A7B9BF4C28B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCE36B7B-66C7-4C10-A819-CB23490885B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCE36B7B-66C7-4C10-A819-CB23490885B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCE36B7B-66C7-4C10-A819-CB23490885B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCE36B7B-66C7-4C10-A819-CB23490885B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,6 +11,7 @@
 - Place plans documents in `/plans` where git can ignore them. Do not place plans in the source tree or in the `docs` directory.
 
 ## Boundaries and style
+- Keep singer plugin infrastructure generic. Do not name or describe specific external plugins or add their dedicated behavior in host code, documentation, or UI. Keep README and UI text concise and actionable.
 - Forbid modifications to `OpenUtau.Core/Ustx`, which could break compatibility with universal USTX files.
 - Avoid unnecessary changes to upstream-derived `OpenUtau.Core`; keep application orchestration in the Mobile layer. Always ask for permission before modifying upstream-derived code.
 - `OpenUtau.Core/Util/Preferences.cs#OpenUtau Mobile特定选项` can be modified. 

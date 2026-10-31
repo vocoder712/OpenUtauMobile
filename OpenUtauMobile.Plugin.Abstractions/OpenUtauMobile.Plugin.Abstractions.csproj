@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Version>1.0.0</Version>
+        <AssemblyVersion>1.0.0.0</AssemblyVersion>
+        <Description>OPUM 歌手插件的类型、发现、安装和设置契约。</Description>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" Private="false" />
+    </ItemGroup>
+</Project>
