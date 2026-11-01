@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:c="clr-namespace:OpenUtauMobile.Controls"
@@ -8,61 +8,88 @@
              x:Class="OpenUtauMobile.Views.PluginSingerSetupView"
              x:DataType="vm:PluginSingerSetupViewModel">
     <Grid RowDefinitions="Auto,*,Auto" Background="{DynamicResource Sem.Color.Surface}">
-        <!-- 固定顶栏保留退出入口，退出时等待会话取消和清理。 -->
+        <!-- 顶栏只展示当前进度，退出时仍等待会话取消和清理。 -->
         <Border Grid.Row="0" Classes="TopBar">
             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                 <Button Classes="TopBarBtn" Command="{Binding ExitCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
                         ToolTip.Tip="{DynamicResource Common.Back}" />
-                <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource SingerSetup.Title}" />
-                <TextBlock Grid.Column="2" Text="{Binding StepText}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource SingerManagement.Install}" />
+                <TextBlock Grid.Column="2" Text="{Binding StepText}" IsVisible="{Binding !IsFinished}" VerticalAlignment="Center" />
             </Grid>
         </Border>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <!-- 动态步骤、预览与字段共用滚动区域，不限制安装器的步骤数量。 -->
+        <!-- 表单和终态互斥；只展示当前步骤，文本由外层唯一滚动区承载。 -->
+        <ScrollViewer Grid.Row="1" IsVisible="{Binding !IsFinished}" VerticalScrollBarVisibility="Auto">
             <Border Padding="{x:Static foundation:LayoutTokens.InsetM}">
                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
-                    <ItemsControl ItemsSource="{Binding StepTitles}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
-                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock x:Name="CurrentStepTitle" Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"
+                               IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
                     <ItemsControl ItemsSource="{Binding Previews}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:InstallPreviewViewModel">
                                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap" />
-                                    <Image Source="{Binding Image}" IsVisible="{Binding HasImage}" MaxHeight="320" Stretch="Uniform" />
-                                    <TextBox Text="{Binding Text, Mode=OneWay}" IsVisible="{Binding HasText}" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" />
+                                    <TextBlock Text="{Binding Title}" IsVisible="{Binding HasTitle}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                    <Image Source="{Binding Image}" IsVisible="{Binding HasImage}" MaxWidth="240" MaxHeight="160"
+                                           HorizontalAlignment="Left" Stretch="Uniform" />
+                                    <SelectableTextBlock Text="{Binding Text}" IsVisible="{Binding HasText}" TextWrapping="Wrap" />
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    <!-- 输入由宿主控件承载，插件只提供字段描述。 -->
+                    <!-- 字段和配置目标沿用通用控件，不把内部安装计划暴露为额外操作。 -->
                     <c:PluginFieldsPanel Fields="{Binding Fields}" IsEnabled="{Binding !IsBusy}" />
                     <ComboBox IsVisible="{Binding HasTargetChoices}" ItemsSource="{Binding Targets}" SelectedItem="{Binding SelectedTarget}" IsEnabled="{Binding !IsBusy}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="api:InstallTarget"><TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" /></DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <TextBlock Text="{Binding Summary}" IsVisible="{Binding Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
                     <ProgressBar IsIndeterminate="{Binding IsProgressIndeterminate}" Value="{Binding ProgressPercent}" IsVisible="{Binding IsBusy}" />
                     <TextBlock Text="{Binding Message}" IsVisible="{Binding Message, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" TextWrapping="Wrap" />
                     <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" Foreground="{DynamicResource Sem.Color.Error}" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
         </ScrollViewer>
+        <!-- 完成后只在中央显示结果，不残留步骤、许可证、内部摘要或进度。 -->
+        <StackPanel x:Name="InstallResult" Grid.Row="1" IsVisible="{Binding IsFinished}"
+                    VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16"
+                    Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+            <StackPanel IsVisible="{Binding IsSuccessful}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                <icons:PackIconPhosphorIcons Kind="CheckCircle" Width="48" Height="48" HorizontalAlignment="Center"
+                                            Foreground="{DynamicResource Sem.Color.Success}" />
+                <TextBlock Text="{Binding ResultTitle}" HorizontalAlignment="Center" FontWeight="SemiBold"
+                           Foreground="{DynamicResource Sem.Color.Success}" />
+            </StackPanel>
+            <StackPanel IsVisible="{Binding IsCancelled}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                <icons:PackIconPhosphorIcons Kind="Prohibit" Width="48" Height="48" HorizontalAlignment="Center"
+                                            Foreground="{DynamicResource Sem.Color.Warning}" />
+                <TextBlock Text="{Binding ResultTitle}" HorizontalAlignment="Center" FontWeight="SemiBold"
+                           Foreground="{DynamicResource Sem.Color.Warning}" />
+            </StackPanel>
+            <StackPanel IsVisible="{Binding IsPartiallyInstalled}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                <icons:PackIconPhosphorIcons Kind="Warning" Width="48" Height="48" HorizontalAlignment="Center"
+                                            Foreground="{DynamicResource Sem.Color.Warning}" />
+                <TextBlock Text="{Binding ResultTitle}" HorizontalAlignment="Center" FontWeight="SemiBold"
+                           Foreground="{DynamicResource Sem.Color.Warning}" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel IsVisible="{Binding HasFailed}" Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                <icons:PackIconPhosphorIcons Kind="XCircle" Width="48" Height="48" HorizontalAlignment="Center"
+                                            Foreground="{DynamicResource Sem.Color.Error}" />
+                <TextBlock Text="{Binding ResultTitle}" HorizontalAlignment="Center" FontWeight="SemiBold"
+                           Foreground="{DynamicResource Sem.Color.Error}" />
+            </StackPanel>
+            <TextBlock Text="{Binding Error}" IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       MaxWidth="480" MaxHeight="160" TextWrapping="Wrap" TextAlignment="Center"
+                       Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+        </StackPanel>
+        <!-- 固定操作区：末步直接安装，准备和提交在同一次命令内执行。 -->
         <Border Grid.Row="2" Padding="{x:Static foundation:LayoutTokens.InsetM}">
-            <!-- 固定操作区在窄屏换行，分析和提交期间禁止重复操作。 -->
-            <WrapPanel ItemSpacing="{x:Static foundation:LayoutTokens.SpaceS}" LineSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}">
                 <Button Classes="Secondary" Content="{DynamicResource Common.Previous}" Command="{Binding BackCommand}" IsVisible="{Binding CanBack}" />
-                <Button Classes="Primary" Content="{DynamicResource Common.Next}" Command="{Binding NextCommand}" IsVisible="{Binding CanNext}" />
-                <Button Classes="Primary" Content="{DynamicResource SingerSetup.Review}" Command="{Binding PrepareCommand}" IsVisible="{Binding CanPrepare}" />
-                <Button Classes="Primary" Content="{DynamicResource SingerSetup.ConfirmInstall}" Command="{Binding InstallCommand}" IsVisible="{Binding CanInstall}" />
-                <Button Classes="Secondary" Content="{DynamicResource Common.Close}" Command="{Binding ExitCommand}" />
-            </WrapPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <Button Classes="Primary" Content="{DynamicResource Common.Next}" Command="{Binding NextCommand}" IsVisible="{Binding CanNext}" />
+                    <Button Classes="Primary" Content="{DynamicResource Common.Install}" Command="{Binding InstallCommand}" IsVisible="{Binding CanInstall}" />
+                    <Button Classes="Secondary" Content="{DynamicResource Common.Close}" Command="{Binding ExitCommand}" IsEnabled="{Binding !IsClosing}" />
+                </StackPanel>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

@@ -29,24 +29,27 @@ namespace OpenUtauMobile.ViewModels
         [Reactive] public bool IsProgressIndeterminate { get; private set; } = true;
         [Reactive] public double ProgressPercent { get; private set; }
         [Reactive] public bool IsFinished { get; private set; }
+        [Reactive] public bool IsSuccessful { get; private set; }
+        [Reactive] public bool IsCancelled { get; private set; }
+        [Reactive] public bool IsPartiallyInstalled { get; private set; }
+        [Reactive] public bool HasFailed { get; private set; }
         [Reactive] public string Title { get; private set; } = "";
         [Reactive] public string StepText { get; private set; } = "";
         [Reactive] public string Message { get; private set; } = "";
         [Reactive] public string Error { get; private set; } = "";
-        [Reactive] public string Summary { get; private set; } = "";
         [Reactive] public bool CanBack { get; private set; }
         [Reactive] public bool CanNext { get; private set; }
-        [Reactive] public bool CanPrepare { get; private set; }
         [Reactive] public bool CanInstall { get; private set; }
         [Reactive] public IReadOnlyList<PluginFieldViewModel> Fields { get; private set; } = [];
         [Reactive] public IReadOnlyList<InstallPreviewViewModel> Previews { get; private set; } = [];
-        [Reactive] public IReadOnlyList<string> StepTitles { get; private set; } = [];
+        /// <summary>终态只显示一次明确结果，不保留安装步骤标题。</summary>
+        public string ResultTitle => L.S(IsCancelled ? "SingerSetup.Cancelled" : IsPartiallyInstalled
+            ? "SingerSetup.PartialFailure" : HasFailed ? "SingerSetup.Failed" : "SingerSetup.Success");
         [Reactive] public InstallTarget SelectedTarget { get; set; }
         public ImmutableArray<InstallTarget> Targets => controller.Targets;
         public bool HasTargetChoices => Targets.Length > 1;
         public ReactiveCommand<Unit, Unit> NextCommand { get; }
         public ReactiveCommand<Unit, Unit> BackCommand { get; }
-        public ReactiveCommand<Unit, Unit> PrepareCommand { get; }
         public ReactiveCommand<Unit, Unit> InstallCommand { get; }
         public ReactiveCommand<Unit, Unit> ExitCommand { get; }
         private readonly IDisposable targetSubscription;
@@ -67,28 +70,9 @@ namespace OpenUtauMobile.ViewModels
                 this.WhenAnyValue(item => item.CanNext, item => item.IsBusy, item => item.IsClosing, (ready, busy, closing) => ready && !busy && !closing));
             BackCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async () => Apply(await controller.BackAsync())),
                 this.WhenAnyValue(item => item.CanBack, item => item.IsBusy, item => item.IsClosing, (ready, busy, closing) => ready && !busy && !closing));
-            PrepareCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async () =>
-            {
-                PreparedInstall plan = await controller.PrepareAsync(Submission(), SelectedTarget.Id, progress);
-                Summary = string.Join("\n", new[] { plan.Summary }.Concat(plan.DestinationPaths)
-                    .Concat(plan.Diagnostics.IsDefault ? [] : plan.Diagnostics.Select(item => item.Message)));
-                CanInstall = true;
-            }), this.WhenAnyValue(item => item.CanPrepare, item => item.IsBusy, item => item.IsClosing, (ready, busy, closing) => ready && !busy && !closing));
-            InstallCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async () =>
-            {
-                try
-                {
-                    InstallResult result = await controller.InstallAsync(controller.Plan!.PlanId, progress);
-                    Message = L.S(result.Status == InstallResultStatus.Committed ? "SingerSetup.InstallComplete" : "SingerSetup.PartialFailure");
-                    Error = string.Join("\n", result.Diagnostics.IsDefault ? [] : result.Diagnostics.Select(item => item.Message));
-                }
-                finally
-                {
-                    IsFinished = true;
-                    CanBack = CanNext = CanPrepare = CanInstall = false;
-                    ClearContent();
-                }
-            }), this.WhenAnyValue(item => item.CanInstall, item => item.IsBusy, item => item.IsClosing, (ready, busy, closing) => ready && !busy && !closing));
+            InstallCommand = ReactiveCommand.CreateFromTask(() => RunAsync(InstallAsync),
+                this.WhenAnyValue(item => item.CanInstall, item => item.IsBusy, item => item.IsClosing,
+                    (ready, busy, closing) => ready && !busy && !closing));
             ExitCommand = ReactiveCommand.CreateFromTask(LeaveAsync);
             targetSubscription = this.WhenAnyValue(item => item.SelectedTarget).Subscribe(_ => Invalidate());
         }
@@ -110,21 +94,50 @@ namespace OpenUtauMobile.ViewModels
             InstallStep step = view.Steps.Single(item => item.Id == view.CurrentStepId);
             Title = step.Title;
             StepText = string.Format(L.S("SingerSetup.StepFormat"), view.Steps.IndexOf(step) + 1, view.Steps.Length);
-            StepTitles = view.Steps.Select(item => item.Title).ToArray();
-            Fields = (step.Fields.IsDefault ? ImmutableArray<PluginFieldDescriptor>.Empty : step.Fields)
-                .Select(item => new PluginFieldViewModel(item, Invalidate)).ToArray();
-            Previews = (step.Content.IsDefault ? ImmutableArray<InstallContent>.Empty : step.Content)
-                .Select(item => new InstallPreviewViewModel(item, controller)).ToArray();
+            Fields = [.. (step.Fields.IsDefault ? ImmutableArray<PluginFieldDescriptor>.Empty : step.Fields)
+                .Select(item => new PluginFieldViewModel(item, Invalidate))];
+            Previews = [.. (step.Content.IsDefault ? ImmutableArray<InstallContent>.Empty : step.Content)
+                .Select(item => new InstallPreviewViewModel(item.Title == step.Title ? item with { Title = "" } : item, controller))];
             foreach (PluginDiagnostic diagnostic in view.Diagnostics.IsDefault ? [] : view.Diagnostics)
                 Fields.FirstOrDefault(item => item.Descriptor.Id == diagnostic.FieldId)?.SetError(diagnostic.Message);
             Error = string.Join("\n", view.Diagnostics.IsDefault ? [] : view.Diagnostics.Select(item => item.Message));
             CanBack = view.CanGoBack;
             CanNext = view.CanGoNext;
-            CanPrepare = view.CanPrepare && (view.Diagnostics.IsDefault || view.Diagnostics.All(item => item.Severity != PluginDiagnosticSeverity.Error));
+            CanInstall = view.CanPrepare && (view.Diagnostics.IsDefault || view.Diagnostics.All(item => item.Severity != PluginDiagnosticSeverity.Error));
             Invalidate();
         }
 
-        private void Invalidate() { controller.InvalidatePlan(); CanInstall = false; Summary = ""; }
+        private void Invalidate() => controller.InvalidatePlan();
+
+        /// <summary>单次安装操作内部完成计划准备；准备失败保留输入，提交结束后只保留结果。</summary>
+        private async Task InstallAsync()
+        {
+            PreparedInstall plan = await controller.PrepareAsync(Submission(), SelectedTarget.Id, progress);
+            try
+            {
+                InstallResult result = await controller.InstallAsync(plan.PlanId, progress);
+                Finish(result.Status == InstallResultStatus.Committed, false,
+                    result.Status == InstallResultStatus.PartialFailure,
+                    string.Join("\n", result.Diagnostics.IsDefault ? [] : result.Diagnostics.Select(item => item.Message)));
+            }
+            catch (OperationCanceledException) { Finish(false, true, false, ""); }
+            catch (Exception exception) { Finish(false, false, false, exception.Message); }
+        }
+
+        /// <summary>清除步骤及操作状态，避免完成页残留许可证、进度或内部计划摘要。</summary>
+        private void Finish(bool successful, bool cancelled, bool partial, string error)
+        {
+            IsSuccessful = successful;
+            IsCancelled = cancelled;
+            IsPartiallyInstalled = partial;
+            HasFailed = !successful && !cancelled && !partial;
+            CanBack = CanNext = CanInstall = false;
+            Title = StepText = Message = "";
+            Error = error;
+            ClearContent();
+            IsFinished = true;
+            this.RaisePropertyChanged(nameof(ResultTitle));
+        }
 
         private async Task RunAsync(Func<Task> action)
         {
@@ -133,15 +146,17 @@ namespace OpenUtauMobile.ViewModels
             TaskCompletionSource completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
             operationCompletion = completion;
             Error = "";
+            Message = "";
             try { await action(); }
-            catch (OperationCanceledException) { Message = L.S("Common.Cancel"); }
+            catch (OperationCanceledException) { Finish(false, true, false, ""); }
             catch (Exception exception)
             {
                 Error = exception.Message;
                 if (exception is SingerInstallException failure)
                     Fields.FirstOrDefault(item => item.Descriptor.Id == failure.FieldId)?.SetError(failure.Message);
+                if (controller.View == null) Finish(false, false, false, exception.Message);
             }
-            finally { IsBusy = false; completion.SetResult(); }
+            finally { IsBusy = false; Message = ""; completion.SetResult(); }
         }
 
         /// <summary>导航和系统返回共用同一次取消收尾。</summary>
@@ -160,7 +175,7 @@ namespace OpenUtauMobile.ViewModels
             await controller.DisposeAsync();
             if (operationCompletion != null) await operationCompletion.Task;
             IsSessionClosed = true;
-            CanBack = CanNext = CanPrepare = CanInstall = false;
+            CanBack = CanNext = CanInstall = false;
             ClearContent();
         }
         public override void OnBackRequested() { _ = LeaveAsync(); }
@@ -175,7 +190,7 @@ namespace OpenUtauMobile.ViewModels
         {
             _ = controller.DisposeAsync();
             ClearContent(); targetSubscription.Dispose();
-            NextCommand.Dispose(); BackCommand.Dispose(); PrepareCommand.Dispose(); InstallCommand.Dispose(); ExitCommand.Dispose();
+            NextCommand.Dispose(); BackCommand.Dispose(); InstallCommand.Dispose(); ExitCommand.Dispose();
         }
     }
 
@@ -187,6 +202,7 @@ namespace OpenUtauMobile.ViewModels
         public Bitmap? Image { get; }
         public bool HasImage => Image != null;
         public bool HasText => !string.IsNullOrEmpty(Text);
+        public bool HasTitle => !string.IsNullOrWhiteSpace(Title);
         public InstallPreviewViewModel(InstallContent content, SingerInstallController controller)
         {
             Title = content.Title;
