@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
+using System.Runtime.InteropServices;
+using System.IO;
+using OpenUtau.Core;
 using OpenUtauMobile.Plugin.Abstractions;
 using Serilog;
 
@@ -91,6 +96,59 @@ namespace OpenUtauMobile.Services.SingerPlugins
                     Log.Error(error, "Failed to initialize singer plugin {Assembly}", diagnostic.Location);
                 }
             }
+            InspectUnloadedEntries();
+        }
+
+        /// <summary>只读检查未载入的声明入口，补充 Core 日志之外可在管理页定位的依赖及位数诊断。</summary>
+        private static void InspectUnloadedEntries()
+        {
+            string root = PathManager.Inst.PluginsPath;
+            if (!Directory.Exists(root)) return;
+            HashSet<string> loaded = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location)) loaded.Add(Path.GetFullPath(assembly.Location));
+            try
+            {
+                EnumerationOptions options = new() { RecurseSubdirectories = true, AttributesToSkip = FileAttributes.ReparsePoint, IgnoreInaccessible = false };
+                foreach (string path in Directory.EnumerateFiles(root, "*", options).Where(path => Path.GetExtension(path).Equals(".dll", StringComparison.OrdinalIgnoreCase)))
+                {
+                    if (loaded.Contains(Path.GetFullPath(path))) continue;
+                    try
+                    {
+                        using FileStream stream = File.OpenRead(path);
+                        using PEReader pe = new(stream);
+                        if (!pe.HasMetadata) continue;
+                        MetadataReader reader = pe.GetMetadataReader();
+                        if (!reader.IsAssembly) continue;
+                        bool entry = reader.GetAssemblyDefinition().GetCustomAttributes().Any(handle =>
+                        {
+                            CustomAttribute attribute = reader.GetCustomAttribute(handle);
+                            if (attribute.Constructor.Kind != HandleKind.MemberReference) return false;
+                            MemberReference constructor = reader.GetMemberReference((MemberReferenceHandle)attribute.Constructor);
+                            if (constructor.Parent.Kind != HandleKind.TypeReference) return false;
+                            TypeReference type = reader.GetTypeReference((TypeReferenceHandle)constructor.Parent);
+                            return reader.GetString(type.Namespace) == typeof(SingerPluginAttribute).Namespace
+                                && reader.GetString(type.Name) == nameof(SingerPluginAttribute);
+                        });
+                        if (!entry) continue;
+                        AddLoadDiagnostic(path, $"插件程序集未能载入，请检查依赖及进程架构（{RuntimeInformation.ProcessArchitecture}）。");
+                    }
+                    catch (Exception error) when (error is IOException or UnauthorizedAccessException or BadImageFormatException)
+                    { AddLoadDiagnostic(path, error.Message); }
+                }
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+            { AddLoadDiagnostic(root, error.Message); }
+        }
+
+        private static void AddLoadDiagnostic(string path, string message)
+        {
+            lock (gate)
+            {
+                if (diagnostics.Any(item => item.Location == path)) return;
+                diagnostics = diagnostics.Add(new("plugin.load.failed", message, Location: path));
+            }
+            Log.Error("Plugin assembly unavailable: {Location}: {Message}", path, message);
         }
     }
 }

@@ -42,7 +42,7 @@
 
             <!-- 不可用候选单独显示位置与错误，不进入工程歌手选择。 -->
             <ScrollViewer DockPanel.Dock="Bottom" MaxHeight="240">
-                <c:SingerCandidatesList ItemsSource="{Binding UnavailableCandidates}" />
+                <c:SingerCandidatesList ItemsSource="{Binding UnavailableCandidates}" DeleteCommand="{Binding DeleteCandidateCommand}" />
             </ScrollViewer>
             <!-- 歌手列表 -->
             <c:SingerList

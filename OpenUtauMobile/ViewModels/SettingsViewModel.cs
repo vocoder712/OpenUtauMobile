@@ -34,7 +34,8 @@ public enum SettingsCategory
     EditAndBehaviour,
     RenderAndPerformance,
     FileAndStorage,
-    AppearanceAndLanguage
+    AppearanceAndLanguage,
+    Plugins
 }
 
 /// <summary>
@@ -254,7 +255,7 @@ public class ThemeSeedPresetOption
     }
 }
 
-public class SettingsViewModel : NavigateViewModelBase, IDisposable
+public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
 {
     // ── 导航命令 ───────────────────────────────────────────────────
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
@@ -656,7 +657,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     public SettingsViewModel(MainViewModel navigator) : base(navigator)
     {
-        BackCommand = ReactiveCommand.Create(() => Navigator.NavigateBack(this));
+        BackCommand = ReactiveCommand.CreateFromTask(LeaveSettingsAsync);
+        InitializePluginSelection();
         ToggleNavCommand = ReactiveCommand.Create(OnToggleNav);
         SelectCategoryCommand = ReactiveCommand.Create<SettingsCategory>(OnSelectCategory);
     }
@@ -1650,6 +1652,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     private void OnSelectCategory(SettingsCategory category)
     {
         SelectedCategory = category;
+        this.RaisePropertyChanged(nameof(IsPluginTab));
         if (ArePreferencesInitialized && category == SettingsCategory.FileAndStorage)
         {
             _ = RefreshCacheSizeAsync();
@@ -1658,6 +1661,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     public void Dispose()
     {
+        DisposePluginSelection();
         disposed = true;
         ++_cacheSizeRefreshVersion;
         _disposables.Dispose();

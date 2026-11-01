@@ -26,6 +26,7 @@ namespace OpenUtauMobile.ViewModels
     {
         private const string moreId = "host:more-installers";
         private bool selecting;
+        private bool deleting;
         private readonly SemaphoreSlim refreshGate = new(1, 1);
         private readonly CancellationTokenSource lifetime = new();
         private bool disposed;
@@ -34,6 +35,8 @@ namespace OpenUtauMobile.ViewModels
         public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
         [Reactive] public bool IsRefreshing { get; private set; }
         public ReactiveCommand<USinger, Unit> OpenSingerCommand { get; }
+        /// <summary>不可用条目直接调用提供方的删除确认，不增加详情层级。</summary>
+        public ReactiveCommand<SingerCandidate, Unit> DeleteCandidateCommand { get; }
         public ObservableCollectionExtended<USinger> Singers { get; } = [];
         public ObservableCollectionExtended<SingerCandidate> UnavailableCandidates { get; } = [];
         [Reactive] public IReadOnlyList<FabMenuAction> InstallerActions { get; private set; } = [];
@@ -45,6 +48,7 @@ namespace OpenUtauMobile.ViewModels
             AddSingerCommand = ReactiveCommand.CreateFromTask(() => ChooseInstallerAsync());
             RefreshCommand = ReactiveCommand.CreateFromTask(ReloadSingersAsync, this.WhenAnyValue(item => item.IsRefreshing).Select(value => !value));
             OpenSingerCommand = ReactiveCommand.Create<USinger>(singer => Navigator.Navigate(new SingerDetailViewModel(Navigator, singer)));
+            DeleteCandidateCommand = ReactiveCommand.CreateFromTask<SingerCandidate>(DeleteCandidateAsync);
             SingerDiscoveryService.Instance.Changed += RefreshSnapshot;
             RefreshSnapshot();
         }
@@ -162,6 +166,15 @@ namespace OpenUtauMobile.ViewModels
             }
         }
 
+        private async Task DeleteCandidateAsync(SingerCandidate candidate)
+        {
+            if (deleting) return;
+            deleting = true;
+            try { await SingerDeletePopupService.ShowAsync(candidate); }
+            catch (Exception exception) { ShowError(exception); }
+            finally { deleting = false; }
+        }
+
         private static void ShowError(Exception exception) => ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
         public override void OnBackRequested()
         {
@@ -173,7 +186,7 @@ namespace OpenUtauMobile.ViewModels
             disposed = true;
             lifetime.Cancel();
             SingerDiscoveryService.Instance.Changed -= RefreshSnapshot;
-            BackCommand.Dispose(); AddSingerCommand.Dispose(); RefreshCommand.Dispose(); OpenSingerCommand.Dispose();
+            BackCommand.Dispose(); AddSingerCommand.Dispose(); RefreshCommand.Dispose(); OpenSingerCommand.Dispose(); DeleteCandidateCommand.Dispose();
         }
     }
 }

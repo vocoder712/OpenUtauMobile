@@ -149,7 +149,7 @@
                         <shared:SingerDetailInfo />
 
                         <!-- 鈹€鈹€ Danger Zone 鈹€鈹€ -->
-                        <Border Classes="InfoCard" Margin="0,12,0,0">
+                        <Border Classes="InfoCard" Margin="0,12,0,0" IsVisible="{Binding CanDelete}">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Text="{DynamicResource SingerDetail.DangerZone}"
                                            FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using OpenUtau.Core;
@@ -18,19 +17,9 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 string.Equals(Path.GetFullPath(path), Path.GetFullPath(PathManager.Inst.SingersInstallPath),
                     Installation.InstallPaths.Comparison))).ToImmutableArray();
 
-        /// <summary>设置存储接入前提供插件声明的默认值。</summary>
+        /// <summary>向发现和安装提供本进程已生效的只读设置。</summary>
         internal static IPluginSettingsReader Settings(string pluginId) =>
-            new DefaultSettings(SingerPluginService.Registry.Snapshot.Settings.GetValueOrDefault(pluginId)?.Descriptor);
-
-        private sealed class DefaultSettings(PluginSettingsDescriptor? descriptor) : IPluginSettingsReader
-        {
-            public int SchemaVersion => descriptor?.SchemaVersion ?? 0;
-            public bool TryGet(string key, out PluginValue? value)
-            {
-                value = descriptor?.Fields.FirstOrDefault(item => item.Field.Id == key)?.Field.DefaultValue;
-                return value != null;
-            }
-        }
+            PluginSettingsService.Effective(pluginId);
 
         /// <summary>将契约诊断写入宿主日志。</summary>
         internal sealed class PluginLog(string pluginId) : IPluginLog

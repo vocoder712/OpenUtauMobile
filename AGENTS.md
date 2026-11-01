@@ -32,3 +32,11 @@
 - Do not preload repository documentation or historical notes. Read source, docs, and repository-local skills only when relevant to the current task.
 - Current source is the primary source of truth; docs are references, not startup context.
 - Load repository-local skills when their scope matches the task. Historical migration notes are not active instructions.
+
+## Code editing rules
+
+- Prefer apply_patch for source code modifications.
+- Do not use Python str.replace(), PowerShell -replace, or whole-file rewriting for ordinary C# edits.
+- If apply_patch fails, report the exact error. Do not silently switch to string-based editing.
+- Search with rg and read only relevant code sections.
+- If an approach fails twice, reassess the root cause before retrying.

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
@@ -17,20 +16,20 @@ namespace OpenUtauMobile.ViewModels;
 
 public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
 {
-    private const string CancelUninstallOption = "cancel";
-    private const string ConfirmUninstallOption = "uninstall";
-
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
     public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
     public ReactiveCommand<Unit, Unit> OpenWebCommand { get; }
     public event Action<USinger>? SingerUninstalled;
 
-    private readonly USinger _singer;
+    private USinger _singer;
+    private readonly bool _isProviderSinger;
     private readonly IDisposable _favoriteSubscription;
 
     // ── Basic Info ──
     /// <summary>外部歌手维护由提供方声明，禁止套用目录递归删除。</summary>
-    public bool CanDelete => Services.SingerPlugins.BuiltinSingerMaintenance.CanUninstall(_singer);
+    public bool CanDelete => Services.SingerPlugins.BuiltinSingerMaintenance.CanUninstall(_singer)
+        || (Services.SingerPlugins.SingerDeletionService.Find(_singer) is { } candidate
+            && Services.SingerPlugins.SingerDeletionService.CanDelete(candidate));
 
     public string SingerName => _singer.LocalizedName;
     public string SingerId => _singer.Id ?? string.Empty;
@@ -62,6 +61,7 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
     public SingerDetailViewModel(MainViewModel navigator, USinger singer) : base(navigator)
     {
         _singer = singer;
+        _isProviderSinger = Services.SingerPlugins.SingerDeletionService.Find(singer) != null;
 
         BackCommand = ReactiveCommand.Create(OnBack);
         DeleteCommand = ReactiveCommand.CreateFromTask(OnDeleteAsync,
@@ -87,6 +87,29 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
         AvatarBitmap?.Dispose();
         AvatarBitmap = null;
         BackCommand.Dispose(); DeleteCommand.Dispose(); OpenWebCommand.Dispose();
+    }
+
+    /// <summary>重新进入详情时换用刷新后的实例；已删除的歌手返回管理页。</summary>
+    public override void OnNavigatedTo()
+    {
+        if (!_isProviderSinger) return;
+        Services.SingerPlugins.SingerCandidate? candidate = Services.SingerPlugins.SingerDeletionService.Find(_singer);
+        if (candidate?.Entry.Singer is not { } current)
+        {
+            Navigator.NavigateBack(this);
+            return;
+        }
+        if (ReferenceEquals(_singer, current)) return;
+        _singer = current;
+        IsFavorite = current.IsFavourite;
+        AvatarBitmap?.Dispose();
+        AvatarBitmap = null;
+        LoadAvatar();
+        string[] properties = [nameof(SingerName), nameof(SingerId), nameof(SingerType), nameof(Author), nameof(Voice),
+            nameof(Web), nameof(Version), nameof(OtherInfo), nameof(Location), nameof(DefaultPhonemizer), nameof(HasAuthor), nameof(HasVoice),
+            nameof(HasWeb), nameof(HasVersion), nameof(HasOtherInfo), nameof(HasLocation), nameof(HasDefaultPhonemizer), nameof(HasAvatar), nameof(CanDelete)];
+        foreach (string property in properties)
+            this.RaisePropertyChanged(property);
     }
     private void LoadAvatar()
     {
@@ -117,42 +140,10 @@ public class SingerDetailViewModel : NavigateViewModelBase, IDisposable
 
     private async Task OnDeleteAsync()
     {
-        List<OptionConfirmOption> options =
-        [
-            new(L.S("Common.Cancel"), CancelUninstallOption, isDefault: true),
-            new(
-                L.S("Common.Uninstall"),
-                ConfirmUninstallOption,
-                isDestructive: true),
-        ];
-        string? selectedOption = await OptionConfirmPopupService.ShowAsync(
-            L.S("SingerDetail.UninstallConfirmTitle"),
-            string.Format(L.S("SingerDetail.UninstallConfirmMessage"), SingerName),
-            options);
-        if (selectedOption != ConfirmUninstallOption)
+        if (await SingerDeletePopupService.ShowAsync(_singer))
         {
-            return;
-        }
-
-        try
-        {
-            await LoadingPopupService.RunAsync(
-                L.S("SingerDetail.Uninstalling"),
-                _ => Services.SingerPlugins.BuiltinSingerMaintenance.UninstallAsync(_singer));
-            if (Navigator.CurrentViewModel is not SingerManagementViewModel)
-            {
-                ToastService.Enqueue(string.Format(L.S("SingerDetail.UninstallSucceeded"), SingerName));
-            }
             SingerUninstalled?.Invoke(_singer);
             Navigator.NavigateBack(this);
-        }
-        catch (Exception exception)
-        {
-            Log.Error(exception, "Failed to uninstall singer {Singer}", _singer.Name);
-            ErrorMessageNotification notification = new(
-                string.Format(L.S("SingerDetail.UninstallFailed"), SingerName),
-                exception);
-            ErrorDialogService.Show(new ErrorDialogViewModel(notification));
         }
     }
 

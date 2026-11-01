@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
+using Avalonia.Data.Converters;
 using Avalonia.Layout;
 using OpenUtauMobile.Plugin.Abstractions;
 using OpenUtauMobile.ViewModels;
@@ -29,7 +30,8 @@ namespace OpenUtauMobile.Controls
                 PluginFieldDescriptor descriptor = field.Descriptor;
                 if (!descriptor.IsVisible) continue;
                 StackPanel row = new() { DataContext = field, Spacing = 8, IsEnabled = descriptor.IsEnabled };
-                row.Children.Add(new TextBlock { Text = descriptor.Label, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
+                if (descriptor.Kind != PluginFieldKind.Boolean)
+                    row.Children.Add(new TextBlock { Text = descriptor.Label, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
                 if (!string.IsNullOrEmpty(descriptor.Description))
                     row.Children.Add(new TextBlock { Text = descriptor.Description, TextWrapping = Avalonia.Media.TextWrapping.Wrap });
                 switch (descriptor.Kind)
@@ -57,9 +59,20 @@ namespace OpenUtauMobile.Controls
                     case PluginFieldKind.MultipleSelection:
                         foreach (PluginFieldOption option in descriptor.Options.IsDefault ? [] : descriptor.Options)
                         {
-                            CheckBox choice = new() { Content = option.Label, IsChecked = field.SelectedIds.Contains(option.Id) };
-                            choice.IsCheckedChanged += (_, _) => field.SelectedIds = choice.IsChecked == true
-                                ? field.SelectedIds.Add(option.Id) : field.SelectedIds.Remove(option.Id);
+                            CheckBox choice = new() { Content = option.Label };
+                            choice.Bind(CheckBox.IsCheckedProperty, new Binding(nameof(field.SelectedIds))
+                            {
+                                Source = field,
+                                Mode = BindingMode.OneWay,
+                                Converter = new FuncValueConverter<System.Collections.Immutable.ImmutableArray<string>, bool>(
+                                    ids => !ids.IsDefault && ids.Contains(option.Id))
+                            });
+                            choice.IsCheckedChanged += (_, _) =>
+                            {
+                                bool selected = field.SelectedIds.Contains(option.Id);
+                                if (choice.IsChecked == true && !selected) field.SelectedIds = field.SelectedIds.Add(option.Id);
+                                else if (choice.IsChecked != true && selected) field.SelectedIds = field.SelectedIds.Remove(option.Id);
+                            };
                             row.Children.Add(choice);
                         }
                         break;

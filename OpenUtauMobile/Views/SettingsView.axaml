@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
              xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
@@ -333,6 +334,65 @@
                                 </Panel>
                             </Button>
 
+                            <!-- 插件配置属于设置页第五个分类。 -->
+                            <Button Classes="NavItem"
+                                    Command="{Binding SelectCategoryCommand}"
+                                    CommandParameter="{x:Static vm:SettingsCategory.Plugins}">
+                                <Panel>
+                                    <Border Width="3"
+                                            CornerRadius="0,2,2,0"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Stretch"
+                                            Background="{DynamicResource Sem.Color.Primary}"
+                                            IsVisible="{Binding SelectedCategory,
+                                                Converter={StaticResource EnumEqual},
+                                                ConverterParameter=Plugins}" />
+                                    <Border Background="{DynamicResource Sem.Color.Primary}"
+                                            Opacity="0.08"
+                                            IsVisible="{Binding SelectedCategory,
+                                                Converter={StaticResource EnumEqual},
+                                                ConverterParameter=Plugins}" />
+                                    <Grid Classes="SettingsNavItemLayout" ColumnDefinitions="64,*" MinHeight="{DynamicResource SettingsNavItemMinHeight}">
+                                        <Panel Grid.Column="0" Width="64" HorizontalAlignment="Stretch">
+                                            <Border Width="36" Height="36"
+                                                    CornerRadius="{x:Static foundation:ShapeTokens.CornerL}"
+                                                    HorizontalAlignment="Center"
+                                                    Background="{DynamicResource Sem.Color.Primary}"
+                                                    Opacity="0.18"
+                                                    IsVisible="{Binding SelectedCategory,
+                                                        Converter={StaticResource EnumEqual},
+                                                        ConverterParameter=Plugins}" />
+                                            <iconPacks:PackIconPhosphorIcons
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Foreground="{DynamicResource Sem.Color.Primary}"
+                                                  Kind="PuzzlePiece"
+                                                  IsVisible="{Binding SelectedCategory,
+                                                      Converter={StaticResource EnumEqual},
+                                                      ConverterParameter=Plugins}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
+                                            <iconPacks:PackIconPhosphorIcons
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                                                  Kind="PuzzlePiece"
+                                                  IsVisible="{Binding SelectedCategory,
+                                                      Converter={StaticResource EnumNotEqual},
+                                                      ConverterParameter=Plugins}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
+                                        </Panel>
+                                        <Border Padding="0,0,12,0" Grid.Column="1" IsVisible="{Binding IsNavExpanded}">
+                                            <StackPanel
+                                                        VerticalAlignment="Center"
+                                                        Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                <TextBlock Text="{DynamicResource Settings.Nav.Plugins}"
+                                                           FontSize="14" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis" />
+
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Panel>
+                            </Button>
+
                         </StackPanel>
                     </DockPanel>
                 </Border>
@@ -342,7 +402,7 @@
                         Opacity="0.10"
                         Background="{DynamicResource Sem.Color.OnSurfaceVariant}" />
 
-                <ScrollViewer Grid.Column="2"
+                <ScrollViewer Grid.Column="2" IsVisible="{Binding !IsPluginTab}"
                               IsEnabled="{Binding ArePreferencesInitialized}"
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled"
@@ -1314,6 +1374,31 @@
                     </Border>
                 </ScrollViewer>
 
+                <!-- 选择器固定在字段上方；未选择时只展示空状态，不创建插件草稿。 -->
+                <Grid Grid.Column="2" RowDefinitions="Auto,*" IsVisible="{Binding IsPluginTab}">
+                    <Border Padding="24,20,24,0">
+                        <StackPanel>
+                            <TextBlock Classes="CategoryTitle" Text="{DynamicResource Settings.Nav.Plugins}" />
+                            <ComboBox x:Name="PluginSelector" ItemsSource="{Binding PluginOptions}" SelectedItem="{Binding SelectedPlugin, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch" IsEnabled="{Binding CanSelectPlugin}"
+                                      AutomationProperties.Name="{DynamicResource Settings.Nav.Plugins}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:SettingsPluginOption">
+                                        <Grid>
+                                            <TextBlock Text="{Binding DisplayName}" IsVisible="{Binding !IsUnselected}" TextWrapping="Wrap" />
+                                            <TextBlock Text="{DynamicResource PluginSettings.Unselected}" IsVisible="{Binding IsUnselected}" TextWrapping="Wrap" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                    </Border>
+                    <TextBlock x:Name="NoPluginSelected" Grid.Row="1" Margin="24,16" IsVisible="{Binding !HasSelectedPlugin}"
+                               Text="{DynamicResource PluginSettings.Empty}" TextWrapping="Wrap" />
+                    <Border Grid.Row="1" IsVisible="{Binding HasSelectedPlugin}">
+                        <c:PluginSettingsPanel DataContext="{Binding PluginSettings}" />
+                    </Border>
+                </Grid>
             </Grid>
         </DockPanel>
     </Panel>

@@ -119,15 +119,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
             {
                 throw new InvalidOperationException("设置包含未知生效方式。");
             }
-            ImmutableArray<PluginSettingsAction> actions = OrEmpty(descriptor.Actions);
-            RequireDistinct(actions.Select(action => action.Id), "设置操作");
-            foreach (PluginSettingsAction action in actions)
-            {
-                RequireId(action.Id);
-                RequireText(action.DisplayName, "设置操作名称");
-                ValidateFields(OrEmpty(action.Fields));
-            }
-            Settings = new(plugin.Id, descriptor with { Fields = fields, Actions = actions }, settings);
+            Settings = new(plugin.Id, descriptor with { Fields = fields }, settings);
         }
 
         internal void Close() => closed = true;

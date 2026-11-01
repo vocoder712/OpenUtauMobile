@@ -41,10 +41,10 @@ namespace OpenUtauMobile.Plugin.Abstractions
         IPluginSettingsReader Settings,
         IPluginLog Log);
 
-    /// <summary>一个由提供方明确允许的维护操作。</summary>
-    public sealed record SingerMaintenanceAction(string Id, string DisplayName, bool IsDestructive = false);
+    /// <summary>执行时重新读取根目录权限，不能沿用扫描时已过期的删除授权。</summary>
+    public sealed record SingerDeletionContext(ImmutableArray<SingerRoot> Roots, IPluginLog Log);
 
-    /// <summary>提供歌手发现和可选维护能力，不直接修改宿主歌手字典。</summary>
+    /// <summary>提供歌手发现和可选删除能力，不直接修改宿主歌手字典。</summary>
     public interface ISingerProvider
     {
         /// <summary>提供方稳定 ID，使用插件自己的命名空间。</summary>
@@ -54,10 +54,10 @@ namespace OpenUtauMobile.Plugin.Abstractions
         /// <summary>发现根目录中的条目，按项返回错误，响应取消。</summary>
         ValueTask<SingerDiscoveryResult> DiscoverAsync(SingerDiscoveryContext context,
             IProgress<SingerDiscoveryProgress> progress, CancellationToken cancellationToken);
-        /// <summary>声明当前条目的维护能力；默认不允许删除外部目录。</summary>
-        ImmutableArray<SingerMaintenanceAction> GetMaintenanceActions(SingerDiscoveryEntry entry) => [];
-        /// <summary>执行已由宿主确认的维护操作，默认不提供任何操作。</summary>
-        ValueTask ExecuteMaintenanceAsync(SingerDiscoveryEntry entry, string actionId,
-            CancellationToken cancellationToken) => ValueTask.FromException(new NotSupportedException("此提供方没有维护操作。"));
+        /// <summary>声明是否可删除当前条目；默认不允许删除。</summary>
+        bool CanDelete(SingerDiscoveryEntry entry) => false;
+        /// <summary>执行已由宿主确认的删除，提供方重新校验范围并决定具体文件处理。</summary>
+        ValueTask DeleteAsync(SingerDiscoveryEntry entry, SingerDeletionContext context, CancellationToken cancellationToken) =>
+            ValueTask.FromException(new NotSupportedException("此提供方不支持删除歌手。"));
     }
 }

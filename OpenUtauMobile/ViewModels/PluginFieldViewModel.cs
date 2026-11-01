@@ -49,7 +49,7 @@ namespace OpenUtauMobile.ViewModels
                 string path = Descriptor.Kind == PluginFieldKind.Directory
                     ? await FilePicker.PickFolderAsync(Descriptor.Label)
                     : await FilePicker.PickSingleFileAsync(Descriptor.Label,
-                        Descriptor.FileExtensions.IsDefault ? [] : Descriptor.FileExtensions.Select(extension => "*" + extension).ToArray());
+                        Descriptor.FileExtensions.IsDefault ? [] : [.. Descriptor.FileExtensions.Select(extension => "*" + extension)]);
                 if (!string.IsNullOrEmpty(path)) Text = path;
             }
             catch (Exception exception) { Error = exception.Message; }

@@ -2611,4 +2611,13 @@
   <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>声库版本</value></data>
   <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>正在读取元数据…</value></data>
   <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>未能解析元数据</value></data>
+  <data name="PluginSettings.Title" xml:space="preserve"><value>插件设置</value></data>
+  <data name="PluginSettings.Empty" xml:space="preserve"><value>没有正在配置的插件。</value></data>
+  <data name="PluginSettings.SavedRestart" xml:space="preserve"><value>已保存，重启后生效。</value></data>
+  <data name="PluginSettings.Saved" xml:space="preserve"><value>已保存。</value></data>
+  <data name="PluginSettings.Busy" xml:space="preserve"><value>正在处理，请稍候。</value></data>
+  <data name="SingerDiscovery.MissingReference" xml:space="preserve"><value>找不到歌手，请检查插件和歌手目录。</value></data>
+  <data name="SingerAvailability.Ready" xml:space="preserve"><value>可用</value></data>
+  <data name="Settings.Nav.Plugins" xml:space="preserve"><value>插件</value></data>
+  <data name="PluginSettings.Unselected" xml:space="preserve"><value>未选择</value></data>
 </root>

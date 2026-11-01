@@ -22,7 +22,8 @@ namespace OpenUtauMobile.Services.SingerPlugins
     {
         /// <summary>管理界面展示的定位和诊断信息。</summary>
         public string Details => string.Join("\n", new[] { Entry.Location }
-            .Concat(Entry.Diagnostics.IsDefault ? [] : Entry.Diagnostics.Select(item => item.Message)));
+            .Concat(Entry.Diagnostics.IsDefault ? [] : Entry.Diagnostics.Select(item => item.Code == "discovery.missing-reference"
+                ? Helpers.L.S("SingerDiscovery.MissingReference") : item.Message)));
     }
 
     /// <summary>串行发现、合并和发布歌手；工程引用更新后才释放被替换实例。</summary>
@@ -92,10 +93,12 @@ namespace OpenUtauMobile.Services.SingerPlugins
                     SingerPluginRuntime.PluginLog log = new(provider.PluginId);
                     try
                     {
-                        SingerDiscoveryContext context = new(roots, CultureInfo.CurrentUICulture,
-                            SingerPluginRuntime.Settings(provider.PluginId), log);
-                        SingerDiscoveryResult result = await Task.Run(async () => await provider.Instance.DiscoverAsync(
-                            context, new Progress<SingerDiscoveryProgress>(), cancellationToken), cancellationToken);
+                        CultureInfo culture = CultureInfo.CurrentUICulture;
+                        SingerDiscoveryResult result = await Task.Run(async () =>
+                        {
+                            SingerDiscoveryContext context = new(roots, culture, SingerPluginRuntime.Settings(provider.PluginId), log);
+                            return await provider.Instance.DiscoverAsync(context, new Progress<SingerDiscoveryProgress>(), cancellationToken);
+                        }, cancellationToken);
                         foreach (PluginDiagnostic diagnostic in result.Diagnostics.IsDefault ? [] : result.Diagnostics)
                         {
                             entries.Add(new(provider.Id, new(diagnostic.Location ?? provider.Id, provider.Id,
@@ -209,14 +212,23 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 ExternalSingerPluginService.RefreshSingers();
                 next = SingerManager.Inst.Singers.ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
             }
-            candidates = entries.ToImmutableArray();
+            foreach (PluginDiagnostic diagnostic in SingerPluginService.Diagnostics)
+                entries.Add(new("host:plugin-errors", new(diagnostic.Location ?? "", diagnostic.Location ?? "",
+                    SingerAvailability.Unavailable, Diagnostics: [diagnostic])));
             foreach (UTrack track in DocManager.Inst.Project.tracks)
             {
                 string? id = track.Singer?.Id ?? track.singer;
-                if (id == null) continue;
+                if (string.IsNullOrWhiteSpace(id)) continue;
                 if (next.TryGetValue(id, out USinger? replacement)) track.Singer = replacement;
-                else if (track.Singer?.Found == true) track.Singer = new UnavailableSinger(id, track.Singer.Name, track.Singer.SingerType);
+                else
+                {
+                    if (track.Singer?.Found == true) track.Singer = new UnavailableSinger(id, track.Singer.Name, track.Singer.SingerType);
+                    if (!entries.Any(item => item.Entry.Singer?.Id == id || (item.ProviderId == "host:missing-singer" && item.Entry.Location == id)))
+                        entries.Add(new("host:missing-singer", new(id, track.Singer?.Name ?? id, SingerAvailability.Unavailable,
+                            Diagnostics: [new("discovery.missing-reference", "找不到歌手，请检查插件和歌手目录。")])));
+                }
             }
+            candidates = [.. entries];
             HashSet<USinger> retained = next.Values.ToHashSet<USinger>(ReferenceEqualityComparer.Instance);
             try { DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification()); }
             finally { foreach (USinger singer in old) if (!retained.Contains(singer)) DisposeSinger(singer); }

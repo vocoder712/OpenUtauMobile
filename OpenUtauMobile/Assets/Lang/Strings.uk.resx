@@ -2566,4 +2566,13 @@ Applying replaces the source of this input.</value></data>
   <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>Версія голосового банку</value></data>
   <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>Читання метаданих…</value></data>
   <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>Не вдалося прочитати метадані</value></data>
+  <data name="PluginSettings.Title" xml:space="preserve"><value>Налаштування плагінів</value></data>
+  <data name="PluginSettings.Empty" xml:space="preserve"><value>Жоден плагін не вибрано для налаштування.</value></data>
+  <data name="PluginSettings.SavedRestart" xml:space="preserve"><value>Збережено. Перезапустіть застосунок.</value></data>
+  <data name="PluginSettings.Saved" xml:space="preserve"><value>Збережено.</value></data>
+  <data name="PluginSettings.Busy" xml:space="preserve"><value>Обробка. Зачекайте.</value></data>
+  <data name="SingerDiscovery.MissingReference" xml:space="preserve"><value>Співака не знайдено. Перевірте плагіни та папки співаків.</value></data>
+  <data name="SingerAvailability.Ready" xml:space="preserve"><value>Готовий</value></data>
+  <data name="Settings.Nav.Plugins" xml:space="preserve"><value>Плагіни</value></data>
+  <data name="PluginSettings.Unselected" xml:space="preserve"><value>Не вибрано</value></data>
 </root>
