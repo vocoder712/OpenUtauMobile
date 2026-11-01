@@ -7,7 +7,7 @@ public partial class ErrorDialogPopup : PopupDialogControl
 {
     private bool _detailExpanded;
 
-    protected override PopupDialogWidthPreset WidthPreset => PopupDialogWidthPreset.Regular;
+    protected override PopupDialogWidthPreset WidthPreset => PopupDialogWidthPreset.Wide;
 
     public ErrorDialogPopup()
     {
@@ -18,6 +18,7 @@ public partial class ErrorDialogPopup : PopupDialogControl
     {
         _detailExpanded = !_detailExpanded;
         DetailPanel.IsVisible = _detailExpanded;
+        MessagePanel.IsVisible = !_detailExpanded;
         DetailChevron.Kind = _detailExpanded
             ? PackIconPhosphorIconsKind.CaretUp
             : PackIconPhosphorIconsKind.CaretDown;

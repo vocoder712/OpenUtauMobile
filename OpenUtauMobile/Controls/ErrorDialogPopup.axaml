@@ -18,7 +18,10 @@
         <StyleInclude Source="/Controls/Styles/ErrorDialogPopup.axaml" />
     </UserControl.Styles>
 
-    <dialogs:DialogShell CloseCommand="{Binding CloseCommand}" Header="{Binding Title}">
+    <dialogs:DialogShell CloseCommand="{Binding CloseCommand}">
+        <dialogs:DialogShell.Header>
+            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
+        </dialogs:DialogShell.Header>
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActionRows>
                 <dialogs:DialogActionRow IsVisible="{Binding HasMissingPackage}">
@@ -47,42 +50,42 @@
                 </dialogs:DialogActionRow>
             </dialogs:DialogActionRows>
         </dialogs:DialogShell.Footer>
-        <Border Classes="DialogBodyBorder">
-            <Grid RowDefinitions="Auto,Auto,*">
-                <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
-                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
-                </ScrollViewer>
-                <Button
-                    Grid.Row="1"
-                    Classes="text"
-                    IsVisible="{Binding HasDetail}"
-                    x:Name="DetailToggleBtn"
-                    Click="OnDetailToggleClicked">
-                    <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                        <iconPacks:PackIconPhosphorIcons
-                            Width="{x:Static semantic:IconTokens.Compact}"
-                            Height="{x:Static semantic:IconTokens.Compact}"
-                            x:Name="DetailChevron"
-                            Kind="CaretDown"
-                            VerticalAlignment="Center"
-                            Foreground="{Binding Foreground, ElementName=DetailToggleBtn}" />
-                        <TextBlock Text="{DynamicResource Common.Details}" VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
-                <TextBox
-                    Grid.Row="2"
-                    x:Name="DetailPanel"
-                    Classes="ErrorDetail"
-                    IsVisible="False"
-                    IsReadOnly="True"
-                    AcceptsReturn="True"
-                    Text="{Binding Detail}"
-                    MaxHeight="280"
-                    Margin="0,6,0,0"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    TextWrapping="Wrap" />
-            </Grid>
-        </Border>
+        <!-- 摘要与完整报告共用一个滚动视口；标题和操作区由 DialogShell 固定。 -->
+        <ScrollViewer x:Name="BodyScroll"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto"
+            AllowAutoHide="False">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                    <SelectableTextBlock x:Name="MessagePanel" Text="{Binding Message}" TextWrapping="Wrap" />
+                    <Button
+                        Classes="text"
+                        IsVisible="{Binding HasDetail}"
+                        x:Name="DetailToggleBtn"
+                        Click="OnDetailToggleClicked">
+                        <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                            <iconPacks:PackIconPhosphorIcons
+                                Width="{x:Static semantic:IconTokens.Compact}"
+                                Height="{x:Static semantic:IconTokens.Compact}"
+                                x:Name="DetailChevron"
+                                Kind="CaretDown"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding Foreground, ElementName=DetailToggleBtn}" />
+                            <TextBlock Text="{DynamicResource Common.Details}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <!-- 完整报告可选择、自动换行，不使用带内部滚动条的输入框。 -->
+                    <Border
+                        x:Name="DetailPanel"
+                        Classes="ErrorDetail"
+                        IsVisible="False">
+                        <SelectableTextBlock x:Name="DetailText"
+                            Classes="ErrorReport"
+                            Text="{Binding ReportText, Mode=OneWay}"
+                            TextWrapping="Wrap" />
+                    </Border>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
     </dialogs:DialogShell>
 </UserControl>

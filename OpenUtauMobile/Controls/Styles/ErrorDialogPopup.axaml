@@ -1,14 +1,17 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Runtime">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
 
-    <Style Selector="TextBox.ErrorDetail">
+    <Style Selector="Border.ErrorDetail">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerLow}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurfaceVariant}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource Sem.Color.OutlineVariant}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerM}"/>
         <Setter Property="Padding" Value="{x:Static foundation:LayoutTokens.InsetSM}"/>
+    </Style>
+    <Style Selector="SelectableTextBlock.ErrorReport">
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}"/>
         <Setter Property="FontFamily" Value="Consolas, Courier New, monospace"/>
-        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodySSize}"/>
     </Style>
 </Styles>

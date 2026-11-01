@@ -24,10 +24,22 @@ public sealed class PluginLoadErrorReporter : ILogEventSink
 
     public void Emit(LogEvent logEvent)
     {
-        if (logEvent.Level < LogEventLevel.Warning || logEvent.Exception == null)
+        if (logEvent.Level < LogEventLevel.Warning)
         {
             return;
         }
+
+        // 仅元数据检查失败也应进入统一通知，不在歌手目录中生成错误条目。
+        if (logEvent.MessageTemplate.Text == "Plugin assembly unavailable: {Location}: {Message}"
+            && logEvent.Properties.TryGetValue("Location", out LogEventPropertyValue? source)
+            && source is ScalarValue { Value: string unavailable }
+            && logEvent.Properties.TryGetValue("Message", out LogEventPropertyValue? detail)
+            && detail is ScalarValue { Value: string message })
+        {
+            _pendingErrors.Enqueue(new IOException(unavailable, logEvent.Exception ?? new InvalidOperationException(message)));
+            return;
+        }
+        if (logEvent.Exception == null) return;
 
         // 上游没有公开逐文件加载结果；按结构化模板识别，不解析日志文件或本地化文本。
         switch (logEvent.MessageTemplate.Text)

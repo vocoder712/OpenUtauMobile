@@ -99,7 +99,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
             InspectUnloadedEntries();
         }
 
-        /// <summary>只读检查未载入的声明入口，补充 Core 日志之外可在管理页定位的依赖及位数诊断。</summary>
+        /// <summary>只读检查未载入的声明入口，补充启动错误通知中的依赖及位数诊断。</summary>
         private static void InspectUnloadedEntries()
         {
             string root = PathManager.Inst.PluginsPath;

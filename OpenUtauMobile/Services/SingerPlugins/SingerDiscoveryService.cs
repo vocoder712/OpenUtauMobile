@@ -212,9 +212,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 ExternalSingerPluginService.RefreshSingers();
                 next = SingerManager.Inst.Singers.ToDictionary(item => item.Key, item => item.Value, StringComparer.Ordinal);
             }
-            foreach (PluginDiagnostic diagnostic in SingerPluginService.Diagnostics)
-                entries.Add(new("host:plugin-errors", new(diagnostic.Location ?? "", diagnostic.Location ?? "",
-                    SingerAvailability.Unavailable, Diagnostics: [diagnostic])));
+            // 插件程序集错误由启动错误通知展示，不能伪装成不可用歌手占据管理列表。
             foreach (UTrack track in DocManager.Inst.Project.tracks)
             {
                 string? id = track.Singer?.Id ?? track.singer;
