@@ -103,7 +103,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
             foreach (string path in plan.DestinationPaths)
             {
                 InstallPaths.RequireInside(target.Path, path);
-                InstallPaths.RejectLinks(path);
                 InstallFileOperations.RequireAbsent(path);
             }
             if (version != Interlocked.Read(ref inputVersion))

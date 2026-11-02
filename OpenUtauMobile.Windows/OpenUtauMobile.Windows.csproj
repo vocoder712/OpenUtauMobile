@@ -14,7 +14,9 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
-        <PackageReference Include="NAudio" Version="2.2.1"/>
+        <PackageReference Include="NAudio.WinMM" Version="2.2.1"/>
+        <PackageReference Include="NAudio.WinForms" Version="2.2.1"/>
+        <PackageReference Include="SDL3-CS.Windows" Version="3.4.14"/>
         <PackageReference Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.24.4"/>
     </ItemGroup>
 

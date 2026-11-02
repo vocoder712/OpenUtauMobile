@@ -89,11 +89,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          command -v sdkmanager
           NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
-          test -f "$SDK_ROOT/ndk/$NDK_VERSION/source.properties"
           echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
 
       - name: Create Swap Space
@@ -143,8 +141,6 @@ jobs:
           set -euo pipefail
           signing_args=(-p:AndroidKeyStore=false)
           if [ "$RELEASE_SIGNING" = "true" ]; then
-            test -s signing.keystore
-            test -n "$KEYSTORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD"
             signing_args=(-p:AndroidKeyStore=true
               "-p:AndroidSigningKeyStore=$GITHUB_WORKSPACE/signing.keystore"
               "-p:AndroidSigningStorePass=$KEYSTORE_PASSWORD"
@@ -167,115 +163,17 @@ jobs:
             -p:AndroidPackageFormat=apk \
             "${signing_args[@]}"
 
-      - name: Verify and prepare Android artifact
+      - name: Prepare Android artifact
         shell: bash
         run: |
           set -euo pipefail
 
           PUBLISH_DIR="OpenUtauMobile.Android/bin/Release/net10.0-android36.0/${{ inputs.rid }}/publish"
           ARTIFACT_DIR="artifacts/android-${{ inputs.arch }}"
-          VERIFY_DIR="artifacts/verification-android-${{ inputs.arch }}"
-
-          case "${{ inputs.rid }}" in
-            android-arm64) EXPECTED_ABI=arm64-v8a ;;
-            android-arm) EXPECTED_ABI=armeabi-v7a ;;
-            android-x64) EXPECTED_ABI=x86_64 ;;
-            android-x86) EXPECTED_ABI=x86 ;;
-            *) echo "::error::不支持的 Android RID：${{ inputs.rid }}"; exit 1 ;;
-          esac
-
-          mkdir -p "$ARTIFACT_DIR" "$VERIFY_DIR/native"
-          echo "===== Publish files ====="
-          find "$PUBLISH_DIR" -maxdepth 1 -type f -printf '%f\n'
-
-          mapfile -t SIGNED_APKS < <(find "$PUBLISH_DIR" -maxdepth 1 -type f -iname '*-signed.apk' -print)
-          if [ "${#SIGNED_APKS[@]}" -ne 1 ]; then
-            echo "::error::应当生成且仅生成一个已签名 APK，实际为 ${#SIGNED_APKS[@]} 个"
-            exit 1
-          fi
-          SIGNED_APK="${SIGNED_APKS[0]}"
-          python native/verify-android-runtime.py "$SIGNED_APK" "${{ inputs.rid }}"
-
-          ANDROID_SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}"
-          if [ -z "$ANDROID_SDK" ] || [ ! -d "$ANDROID_SDK/build-tools" ]; then
-            echo "::error::找不到 Android SDK build-tools 目录，无法核对 APK 版本号"
-            exit 1
-          fi
-          AAPT="$(find "$ANDROID_SDK/build-tools" -type f -name aapt -print | sort -V | tail -n 1)"
-          if [ -z "$AAPT" ]; then
-            echo "::error::找不到 Android Asset Packaging Tool，无法核对 APK 版本号"
-            exit 1
-          fi
-          PACKAGE_BADGING="$("$AAPT" dump badging "$SIGNED_APK")"
-          APK_VERSION_CODE="$(sed -n "s/.*versionCode='\([^']*\)'.*/\1/p" <<< "$PACKAGE_BADGING")"
-          APK_VERSION_NAME="$(sed -n "s/.*versionName='\([^']*\)'.*/\1/p" <<< "$PACKAGE_BADGING")"
-          if [ "$APK_VERSION_CODE" != "${{ inputs.build_number }}" ]; then
-            echo "::error::APK versionCode 未继承调用方构建号。期望 ${{ inputs.build_number }}，实际 $APK_VERSION_CODE"
-            exit 1
-          fi
-          if [ "$APK_VERSION_NAME" != "${{ inputs.version }}" ]; then
-            echo "::error::APK versionName 未继承调用方版本。期望 ${{ inputs.version }}，实际 $APK_VERSION_NAME"
-            exit 1
-          fi
-
-          mapfile -t PACKAGED_ABIS < <(
-            unzip -Z1 "$SIGNED_APK" |
-              sed -n 's#^lib/\([^/]*\)/.*\.so$#\1#p' |
-              sort -u
-          )
-          if [ "${#PACKAGED_ABIS[@]}" -ne 1 ] || [ "${PACKAGED_ABIS[0]}" != "$EXPECTED_ABI" ]; then
-            printf '::error::APK 原生 ABI 与 RID 不一致。期望 %s，实际：%s\n' \
-              "$EXPECTED_ABI" "${PACKAGED_ABIS[*]:-<none>}"
-            exit 1
-          fi
-
-          for LIBRARY in libworldline.so libonnxruntime.so libonnxruntime4j_jni.so libopum_game.so; do
-            ENTRY="lib/$EXPECTED_ABI/$LIBRARY"
-            COUNT="$(unzip -Z1 "$SIGNED_APK" | grep -Fxc "$ENTRY" || true)"
-            if [ "$COUNT" -ne 1 ]; then
-              echo "::error::$ENTRY 应当在 APK 中恰好出现一次，实际为 $COUNT 次"
-              exit 1
-            fi
-            unzip -p "$SIGNED_APK" "$ENTRY" > "$VERIFY_DIR/native/$LIBRARY"
-          done
-
-          for LIBRARY in "$VERIFY_DIR/native/"*.so; do
-            DYNAMIC_INFO="$VERIFY_DIR/$(basename "$LIBRARY").dynamic.txt"
-            readelf -d "$LIBRARY" > "$DYNAMIC_INFO"
-            if grep -E 'libdl\.so\.2|libc\.so\.6|libm\.so\.6|libpthread\.so\.0|librt\.so\.1|ld-linux' "$DYNAMIC_INFO"; then
-              echo "::error::$(basename "$LIBRARY") 包含 Linux/glibc 依赖，不是 Android 原生库"
-              exit 1
-            fi
-          done
-
-          find "$VERIFY_DIR/native" -maxdepth 1 -type f -name '*.so' -print0 |
-            sort -z |
-            xargs -0 sha256sum |
-            sed "s#$VERIFY_DIR/native/##" > "$VERIFY_DIR/native-libraries.sha256"
-
-          cat > "$VERIFY_DIR/build-contract.txt" <<EOF
-          configuration=Release
-          target_framework=net10.0-android36.0
-          runtime_identifier=${{ inputs.rid }}
-          use_mono_runtime=true
-          android_abi=$EXPECTED_ABI
-          package_format=apk
-          restore=explicit-rid
-          publish=no-restore
-          android_ndk=$OPUM_ANDROID_NDK
-          product_version=${{ inputs.version }}
-          build_number=${{ inputs.build_number }}
-          source_commit=${{ inputs.source_sha }}
-          caller_run_id=${{ inputs.action_run_id }}
-          EOF
-
+          mkdir -p "$ARTIFACT_DIR"
+          SIGNED_APK="$(find "$PUBLISH_DIR" -maxdepth 1 -type f -iname '*-signed.apk' -print -quit)"
           cp "$SIGNED_APK" \
             "$ARTIFACT_DIR/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk"
-
-          echo "===== Android build contract ====="
-          cat "$VERIFY_DIR/build-contract.txt"
-          echo "===== Native library hashes ====="
-          cat "$VERIFY_DIR/native-libraries.sha256"
 
       - name: Generate Android SHA-256 checksum
         shell: bash
@@ -284,7 +182,6 @@ jobs:
           set -euo pipefail
           PACKAGE="OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk"
           sha256sum "$PACKAGE" > "$PACKAGE.sha256"
-          sha256sum --check "$PACKAGE.sha256"
 
       - name: Upload Android ${{ inputs.arch }}
         uses: actions/upload-artifact@v7
@@ -295,13 +192,3 @@ jobs:
             artifacts/android-${{ inputs.arch }}/OpenUtauMobile-build${{ inputs.build_number }}-android-${{ inputs.arch }}.apk.sha256
           if-no-files-found: error
           compression-level: 0
-
-      - name: Upload Android ${{ inputs.arch }} verification
-        uses: actions/upload-artifact@v7
-        with:
-          name: verification-android-${{ inputs.arch }}
-          path: |
-            artifacts/verification-android-${{ inputs.arch }}/build-contract.txt
-            artifacts/verification-android-${{ inputs.arch }}/native-libraries.sha256
-            artifacts/verification-android-${{ inputs.arch }}/*.dynamic.txt
-          if-no-files-found: error

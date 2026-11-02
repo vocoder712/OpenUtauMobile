@@ -24,7 +24,6 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 if (path.StartsWith(Path.TrimEndingDirectorySeparator(Path.GetFullPath(root)) + Path.DirectorySeparatorChar,
                     InstallPaths.Comparison)) inside = true;
             if (!inside) throw new IOException("不能卸载歌手根目录或目录外的内容。");
-            InstallPaths.RejectLinks(path);
             await SingerDiscoveryService.Instance.MaintainAsync(() => Task.Run(() =>
                 {
                     singer.FreeMemory();

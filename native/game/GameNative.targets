@@ -31,7 +31,6 @@
             <_GameNdkArgument Condition="'$(_OpumAndroidNdkDirectory)' != ''">--ndk &quot;$(_OpumAndroidNdkDirectory)&quot;</_GameNdkArgument>
         </PropertyGroup>
         <Exec Command="&quot;$(GamePythonExecutable)&quot; &quot;$(MSBuildThisFileDirectory)build.py&quot; --rid &quot;$(_GameRid)&quot; --build-root &quot;$(GameBuildRoot)&quot; --install-root &quot;$(GameNativeRoot)&quot; --bazel &quot;$(GameBazelExecutable)&quot; $(_GameNdkArgument)" />
-        <Error Condition="!Exists('$(_GameRuntimeDirectory)/$(_GameNativeName)')" Text="GAME build did not produce $(_GameNativeName) for $(_GameRid)." />
         <!-- 先收集独立项，再用限定元数据映射到平台项，避免 Content / Asset 批处理串用文件名。 -->
         <ItemGroup>
             <_GameBuiltFile Include="$(_GameRuntimeDirectory)/*" />

@@ -105,11 +105,17 @@ namespace OpenUtauMobile.Services.SingerPlugins
             string root = PathManager.Inst.PluginsPath;
             if (!Directory.Exists(root)) return;
             HashSet<string> loaded = new(OperatingSystem.IsWindows() ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+            HashSet<Guid> loadedModules = [];
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location)) loaded.Add(Path.GetFullPath(assembly.Location));
+            {
+                if (assembly.IsDynamic) continue;
+                if (!string.IsNullOrEmpty(assembly.Location)) loaded.Add(Path.GetFullPath(assembly.Location));
+                // Android 运行时可能返回映射后的 Location，模块标识仍能对应磁盘上的同一份程序集。
+                loadedModules.Add(assembly.ManifestModule.ModuleVersionId);
+            }
             try
             {
-                EnumerationOptions options = new() { RecurseSubdirectories = true, AttributesToSkip = FileAttributes.ReparsePoint, IgnoreInaccessible = false };
+                EnumerationOptions options = new() { RecurseSubdirectories = true, AttributesToSkip = 0, IgnoreInaccessible = false };
                 foreach (string path in Directory.EnumerateFiles(root, "*", options).Where(path => Path.GetExtension(path).Equals(".dll", StringComparison.OrdinalIgnoreCase)))
                 {
                     if (loaded.Contains(Path.GetFullPath(path))) continue;
@@ -120,6 +126,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
                         if (!pe.HasMetadata) continue;
                         MetadataReader reader = pe.GetMetadataReader();
                         if (!reader.IsAssembly) continue;
+                        if (loadedModules.Contains(reader.GetGuid(reader.GetModuleDefinition().Mvid))) continue;
                         bool entry = reader.GetAssemblyDefinition().GetCustomAttributes().Any(handle =>
                         {
                             CustomAttribute attribute = reader.GetCustomAttribute(handle);

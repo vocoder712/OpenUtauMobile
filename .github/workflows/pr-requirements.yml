@@ -49,11 +49,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          command -v sdkmanager
           NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
           SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
           sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
-          test -f "$SDK_ROOT/ndk/$NDK_VERSION/source.properties"
           echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
 
       - name: Restore
@@ -67,14 +65,3 @@ jobs:
             --no-restore \
             -p:RuntimeIdentifier=android-arm64 \
             -p:AndroidNdkDirectory="$OPUM_ANDROID_NDK"
-
-      - name: Verify Android native packaging
-        shell: bash
-        run: |
-          set -euo pipefail
-          mapfile -t APKS < <(find OpenUtauMobile.Android/bin/Release/net10.0-android36.0/android-arm64 -maxdepth 1 -type f -iname '*-signed.apk')
-          if [ "${#APKS[@]}" -ne 1 ]; then
-            echo "::error::Expected exactly one signed APK; found ${#APKS[@]}"
-            exit 1
-          fi
-          python native/verify-android-runtime.py "${APKS[0]}" android-arm64

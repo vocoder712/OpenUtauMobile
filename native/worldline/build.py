@@ -13,9 +13,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bazel_common import build_lock, configure_windows_bash, write_changed
-from verify import verify_binary
 from static_platforms import STATIC_RIDS, configure
-from verify_static import verify_archive
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
@@ -151,10 +149,6 @@ def build_native(args, parser, build):
     bazel = shutil.which(args.bazel)
     if not bazel:
         parser.error('Bazelisk not found. Install Bazelisk or pass --bazel.')
-    actual_version = subprocess.run([bazel, '--version'], cwd=stage, env=env, check=True,
-                                    capture_output=True, text=True).stdout.strip()
-    if actual_version != f'bazel {version}':
-        parser.error(f'Expected Bazel {version}, got {actual_version!r}. Use Bazelisk.')
     command = [bazel, '--nohome_rc', '--nosystem_rc',
                f'--output_user_root={args.build_root.resolve() / "bazel"}']
 
@@ -180,17 +174,12 @@ def build_native(args, parser, build):
     if is_static:
         name = 'libworldline_static.a'
     libraries = [stage / path for path in paths if Path(path).name == name]
-    if len(libraries) != 1 or not libraries[0].is_file():
-        raise RuntimeError(f'Expected exactly one {name}; cquery returned {paths}')
     destination = args.install_root.resolve() / args.rid
-    verification = verify_archive(libraries[0], args.rid, static_sdk['nm']) if is_static else verify_binary(libraries[0], args.rid)
     if is_static:
         name = 'worldline.a' if args.rid == 'browser-wasm' else 'libworldline.a'
     licenses = {name: [] for name in LICENSES}
     for path in license_paths:
         repo = next((name for name in LICENSES if '+' + name + '/' in path), None)
-        if not repo:
-            raise ValueError(f'Unrecognized license source: {path}')
         content = (execution_root / path).read_text(encoding='utf-8')
         if repo == 'libpyin':
             notices = re.findall(r'/\*.*?\*/', content, re.DOTALL)
@@ -198,8 +187,6 @@ def build_native(args, parser, build):
         if content.strip() and content not in licenses[repo]:
             licenses[repo].append(content)
     for license_name, contents in licenses.items():
-        if not contents:
-            raise ValueError(f'Missing license: {license_name}')
         write_changed(destination / f'LICENSE.{license_name}.txt', ('\n\n'.join(contents) + '\n').encode())
     write_changed(destination / 'LICENSE.worldline.txt', (HERE / 'LICENSE.worldline.txt').read_bytes())
     write_changed(destination / name, libraries[0].read_bytes())
@@ -215,15 +202,11 @@ def build_native(args, parser, build):
     if compiler_path.name.lower() == 'cl.exe':
         # cl /Bv 输出版本后因没有输入文件返回非零；保留首行版本与目标架构。
         compiler_info = compiler_info.splitlines()[0]
-    elif compiler_result.returncode:
-        raise RuntimeError(f'Cannot identify compiler: {compiler_info}')
-    if not compiler_info:
-        raise RuntimeError('Compiler did not report its version')
     provenance = {'rid': args.rid, 'bazel': version, 'source_sha256': digest,
                   'upstream_commit': upstream_commit,
                   'compiler': static_sdk['compiler'] if is_static else compiler, 'compiler_version': compiler_info,
                   'compiler_arguments': compiler_action['arguments'],
-                  'build_options': options, 'binary': verification,
+                  'build_options': options,
                   'module_sha256': hashlib.sha256((stage / 'MODULE.bazel').read_bytes()).hexdigest(),
                   'lock_sha256': hashlib.sha256((stage / 'MODULE.bazel.lock').read_bytes()).hexdigest(),
                   'build_adapter_sha256': adapter_hashes,

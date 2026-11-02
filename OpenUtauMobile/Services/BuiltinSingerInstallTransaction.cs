@@ -133,7 +133,6 @@ namespace OpenUtauMobile.Services
                 string relative = Path.GetRelativePath(payload, source);
                 string destination = Resolve(targetRoot, relative);
                 EnsureDirectory(Path.GetDirectoryName(destination)!);
-                RejectLinks(destination);
                 if (Directory.Exists(destination) || !overwrite && File.Exists(destination))
                     throw new IOException($"{L.S("SingerSetup.TargetExists")} {destination}");
                 string? original = null;
@@ -171,7 +170,6 @@ namespace OpenUtauMobile.Services
                 if (!change.Applied) continue;
                 try
                 {
-                    RejectLinks(change.Path);
                     if (File.Exists(change.Path)) File.SetAttributes(change.Path, File.GetAttributes(change.Path) & ~FileAttributes.ReadOnly);
                     if (change.Original == null)
                     {
@@ -199,7 +197,6 @@ namespace OpenUtauMobile.Services
             {
                 try
                 {
-                    RejectLinks(directory);
                     if (Directory.Exists(directory)) Directory.Delete(directory, false);
                 }
                 catch (Exception exception) { failures.Add(exception); }
@@ -211,20 +208,18 @@ namespace OpenUtauMobile.Services
         /// <summary>按父子顺序登记新目录，回滚仅删除本会话创建的空目录。</summary>
         private void EnsureDirectory(string path)
         {
-            RejectLinks(path);
             if (Directory.Exists(path)) return;
             if (!string.Equals(path, targetRoot, PathComparison)) EnsureDirectory(Path.GetDirectoryName(path)!);
             Directory.CreateDirectory(path);
             createdDirectories.Add(path);
         }
 
-        /// <summary>显式检查链接后递归，不沿链接枚举会话外文件。</summary>
+        /// <summary>递归收集会话文件和目录，支持取消。</summary>
         private static void Collect(string root, List<string> files, List<string> directories, CancellationToken token)
         {
             foreach (string path in Directory.EnumerateFileSystemEntries(root))
             {
                 token.ThrowIfCancellationRequested();
-                if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0) throw new IOException("安装内容包含符号链接。");
                 if (Directory.Exists(path))
                 {
                     directories.Add(path);
@@ -245,17 +240,6 @@ namespace OpenUtauMobile.Services
         }
 
         private static StringComparison PathComparison => OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-
-        /// <summary>检查目标根以内的现有路径，避免覆盖或删除链接所指向的内容。</summary>
-        private void RejectLinks(string path)
-        {
-            for (string? current = path; current != null; current = Path.GetDirectoryName(current))
-            {
-                if ((File.Exists(current) || Directory.Exists(current)) &&
-                    (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0) throw new IOException("安装目标包含符号链接。");
-                if (string.Equals(current, targetRoot, PathComparison)) break;
-            }
-        }
 
         /// <summary>异步复制支持在大文件中途取消，失败的临时文件由会话收尾清理。</summary>
         private static async Task CopyAsync(string source, string destination, CancellationToken token)

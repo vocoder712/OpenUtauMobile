@@ -39,7 +39,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
             RequireAbsent(destination);
             bool directory = request.Kind == InstallArtifactKind.Directory;
             if (directory ? !Directory.Exists(source) : !File.Exists(source)) throw new IOException("已校验的安装源不存在。");
-            CheckTree(source);
             cancellationToken.ThrowIfCancellationRequested();
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
             progress.Report(new(InstallPhase.Publishing, request.DestinationRelativePath));
@@ -77,17 +76,9 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
             if (File.Exists(path) || Directory.Exists(path)) throw new IOException($"安装目标已存在：{path}");
         }
 
-        private static void CheckTree(string path)
-        {
-            InstallPaths.RejectLinks(path);
-            if (!Directory.Exists(path)) return;
-            foreach (string child in Directory.EnumerateFileSystemEntries(path)) CheckTree(child);
-        }
-
         private static async Task CopyCheckedAsync(string source, string destination, bool directory, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();
-            InstallPaths.RejectLinks(source);
             if (directory)
             {
                 Directory.CreateDirectory(destination);
@@ -108,7 +99,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
         public void RegisterTemporaryPath(string path)
         {
             InstallPaths.RequireInside(workspace.RootPath, path);
-            InstallPaths.RejectLinks(path);
             // Workspace 统一清理，无需再保存可与正式目录混淆的额外列表。
         }
 
@@ -119,7 +109,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
             RequirePlanned(path);
             if (!targets.Any(target => path.StartsWith(Path.TrimEndingDirectorySeparator(Path.GetFullPath(target.Path)) + Path.DirectorySeparatorChar,
                 InstallPaths.Comparison))) throw new IOException("发布位置不属于配置的安装目标。");
-            InstallPaths.RejectLinks(path);
             if (location.Kind == InstallArtifactKind.Directory ? !Directory.Exists(path) : !File.Exists(path))
                 throw new IOException("正式发布内容不存在。");
             if (published.All(item => !string.Equals(item.Path, path, InstallPaths.Comparison))) published.Add(location with { Path = path });
@@ -137,7 +126,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
             foreach (string path in staging.Append(workspace.RootPath))
                 try
                 {
-                    InstallPaths.RejectLinks(path);
                     InstallPaths.DeleteTemporary(path);
                 }
                 catch (Exception exception) { Log.Warning(exception, "Failed to clean singer installation workspace {Path}", path); }

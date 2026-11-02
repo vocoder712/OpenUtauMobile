@@ -23,6 +23,10 @@
 - Always use collection expressions instead of such as `ToList()` or `ToArray()` when constructing collections.
 
 ## Verification
+- Do not introduce defensive validation layers in the build graph or CI.
+- Do not add non-temporary verification scripts unless explicitly requested.
+  Keep temporary investigation scripts outside the source tree and do not hook
+  them into normal builds or CI.
 - Before `dotnet build`, set `$env:AVALONIA_TELEMETRY_OPTOUT='1';` (or the equivalent environment variable in another shell).
 - Do not add new unit tests unless explicitly requested or the task requires them.
 - Run existing relevant tests when available and appropriate.

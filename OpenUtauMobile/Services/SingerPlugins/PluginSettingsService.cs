@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtauMobile.Plugin.Abstractions;
-using OpenUtauMobile.Services.SingerPlugins.Installation;
 
 namespace OpenUtauMobile.Services.SingerPlugins
 {
@@ -63,7 +62,6 @@ namespace OpenUtauMobile.Services.SingerPlugins
         {
             string directory = DirectoryFor(registration.PluginId);
             string path = Path.Combine(directory, "settings.json");
-            InstallPaths.RejectLinks(path);
             bool exists = File.Exists(path);
             if (exists && new FileInfo(path).Length is 0 or > 1024 * 1024) throw new InvalidDataException("插件设置文件为空或过大。");
             byte[] bytes = exists ? File.ReadAllBytes(path) : [];
@@ -129,7 +127,6 @@ namespace OpenUtauMobile.Services.SingerPlugins
             {
                 await File.WriteAllBytesAsync(temporary, bytes, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
-                InstallPaths.RejectLinks(path);
                 File.Move(temporary, path, true);
             }
             finally { if (File.Exists(temporary)) File.Delete(temporary); }

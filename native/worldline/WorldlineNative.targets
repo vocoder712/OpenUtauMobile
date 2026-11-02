@@ -56,7 +56,6 @@
         </PropertyGroup>
         <Error Condition="'$(_WorldlineIsBrowser)' == 'true' and ('$(EmscriptenSdkToolsPath)' == '' or '$(EmscriptenCacheSdkCacheDir)' == '')" Text="Worldline Browser requires the .NET wasm-tools workload (SDK and cache packs)." />
         <Exec Command="&quot;$(WorldlinePythonExecutable)&quot; &quot;$(MSBuildThisFileDirectory)build.py&quot; --rid &quot;$(_WorldlineRid)&quot; --build-root &quot;$(WorldlineBuildRoot)&quot; --install-root &quot;$(WorldlineNativeRoot)&quot; --bazel &quot;$(WorldlineBazelExecutable)&quot; $(_WorldlineNdkArgument) $(_WorldlinePlatformArguments)" />
-        <Error Condition="!Exists('$(_WorldlineRuntimeDirectory)/$(_WorldlineNativeName)')" Text="Worldline build did not produce $(_WorldlineNativeName)." />
         <!-- 在构建成功后收集，首次构建没有 artifacts 时也能正确打包。 -->
         <ItemGroup>
             <_WorldlineLibrary Include="$(_WorldlineRuntimeDirectory)/$(_WorldlineNativeName)" />

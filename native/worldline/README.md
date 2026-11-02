@@ -29,29 +29,22 @@ absl、gtest、re2、xxhash 的旧构建文件只在下载副本中适配，避�
 正常构建使用 `--lockfile_mode=error`；维护依赖时显式运行 `--update-lock`，审查本目录锁文件变更。
 用户与系统 `.bazelrc` 不参与此构建，平台选项由入口统一提供。
 
-产物安装到 `artifacts/worldline-native/<rid>`，在加入应用之前验证目标架构、20 个所需导出，
-以及 Android 的动态依赖和段对齐。`worldline-build.json` 记录冻结提交、CPP 指纹、依赖与补丁指纹、
+产物安装到 `artifacts/worldline-native/<rid>`。`worldline-build.json` 记录冻结提交、CPP 指纹、依赖与补丁指纹、
 编译器、NDK、Bazel、构建选项和库哈希。这是来源追踪，不表示不同编译器下能生成相同字节。
 许可证和来源清单进入应用的 `WorldlineLicenses`（Android 为 assets 下的同名目录）。
 
 更新冻结上游时，也需同步审查 `upstream-revision.txt`、许可证、Bzlmod 依赖和适配器。
-不执行 `publish --no-build` 来验证首次原生资产收集。
+首次构建使用正常 Build / Publish 收集原生资产。
 
-## 直接构建与验证
+## 直接构建
 
 ```powershell
 python native/worldline/build.py --rid win-x64 --test
-python native/worldline/verify.py artifacts/worldline-native/win-x64/worldline.dll win-x64 --run
 python native/worldline/build.py --rid android-arm64
 ```
 
 `--test` 运行上游已有的 worldline、effects、continuous_noise 测试，仅适用于宿主架构。
-音频设备测试需要硬件，不自动运行。`--run` 实际调用全部十个分析/合成导出：
-F0 四种模式、MGC/BAP 解码、AnalysisConfig 初始化、普通/R1.1 分析和合成。
-检查输出长度、有限数、缓冲区前后哨兵、编码/解码输入的一致性，以及连续噪声种子的高 32 位和输入不可变约定。
-`--run --report <path.json>` 可保存确定性输入输出，用于与实际 Core 托管调用比较。
-这些是小输入的 ABI 检查，不代替模型、真实音源渲染、内存压力或设备音频验收。
-Android ELF 检查不能替代设备上的渲染和音频播放验收。
+音频设备测试需要硬件，不自动运行。
 
 ## iOS / Browser 静态链接
 
@@ -63,21 +56,16 @@ python3 native/worldline/build.py --rid iossimulator-x64
 
 # 通过 .NET 提供精确的 Emscripten 工具和编译配置，生成 worldline.a。
 dotnet msbuild OpenUtauMobile.Browser/OpenUtauMobile.Browser.csproj -t:BuildWorldlineNative
-python3 native/worldline/verify_browser.py artifacts/worldline-native/browser-wasm
 ```
 
 `cc_static_library` 收集冻结上游的 Worldline、音频接口及传递依赖对象，生成独立归档。
-平台工具链只在新目标上注册，不改变桌面或 Android 工具链。归档检查包含每个对象的文件格式、
-iOS CPU 与真机/模拟器平台、全部 20 个 ABI 定义及重复定义；来源清单记录 SDK、目标三元组与选项。
+平台工具链按目标注册；来源清单记录 SDK、目标三元组与选项。
 
 iOS 使用 `NativeReference`、C++ 运行库和系统音频框架。宿主模块初始化器将 Core 的
 `DllImport("worldline")` 解析到主程序；链接选项显式保留并导出这些函数。
-IPA 验证还检查最终可执行文件导出和 `WorldlineLicenses`，避免仅归档成功而发布时被裁掉。
 
 Browser 使用文件名 `worldline.a` 配合 `NativeFileReference`，让 .NET 生成静态 P/Invoke 表，
 不修改 Core。许可证和来源清单位于 `wwwroot/licenses/Worldline`。
-`verify_browser.py` 使用同一 SDK 链接全部 ABI，并在 Node 中运行四种 F0 模式、缓冲区哨兵、
-AnalysisConfig 布局和合成长度检查。此检查不创建音频设备，也不验证 ONNX、模型渲染或浏览器播放。
 
 本机 Windows 已验证 Browser 原生构建、Debug 应用链接、Release 发布与 Node 中的 WASM 调用；iOS 配置需在 Mac/CI 实测，
 不能将 CI 任务定义视为构建或设备验收通过。现有 Browser Dummy 音频后端及 ONNX 能力边界不因静态库接入改变。
@@ -89,9 +77,7 @@ AnalysisConfig 布局和合成长度检查。此检查不创建音频设备，�
 可选 MSBuild 属性：`WorldlinePythonExecutable`、`WorldlineBazelExecutable`、`WorldlineBuildRoot`、
 `WorldlineNativeRoot`。DesignTimeBuild 不编译或下载。
 
-PR 工作流覆盖桌面六个 RID 的上游测试和实际 ABI 调用、Android 四 ABI 的源码构建。
-发布工作流通过相同 MSBuild 入口构建并检查最终发布目录或 APK；Linux/macOS 的实际验证结果以 CI 为准。
+PR 工作流覆盖桌面六个 RID 和 Android 四 ABI 的源码构建。
+发布工作流通过相同 MSBuild 入口构建、打包并上传产物。
 Linux x64/ARM64 的 CI 编译环境固定为 Ubuntu 24.04，避免浮动 runner 自动抬高系统库基线。
-实际所需的 glibc/libstdc++ 符号版本，以及 macOS 的依赖、部署版本和加载路径随 CI 验证产物保存；
-这些结果核验完成前，不声明更老系统兼容性。
 CI 暂不恢复或保存跨任务的 Bazel 编译缓存，每个矩阵任务独立构建；本地下载缓存与目标架构的编译目录分离。

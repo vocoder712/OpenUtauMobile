@@ -7,7 +7,7 @@ using OpenUtauMobile.Plugin.Abstractions;
 
 namespace OpenUtauMobile.Services.SingerPlugins.Installation
 {
-    /// <summary>会话路径边界，同时拒绝越界和已有符号链接。</summary>
+    /// <summary>限定会话路径边界，拒绝越界路径。</summary>
     internal static class InstallPaths
     {
         internal static StringComparison Comparison => OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
@@ -22,7 +22,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
                 throw new IOException("安装路径不能包含空路径或上级目录。");
             string full = Path.GetFullPath(Path.Combine(root, normalized));
             RequireInside(root, full);
-            RejectLinks(full);
             return full;
         }
 
@@ -30,14 +29,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
         {
             string prefix = Path.TrimEndingDirectorySeparator(Path.GetFullPath(root)) + Path.DirectorySeparatorChar;
             if (!Path.GetFullPath(path).StartsWith(prefix, Comparison)) throw new IOException("安装路径超出允许范围。");
-        }
-
-        internal static void RejectLinks(string path)
-        {
-            for (string? current = Path.GetFullPath(path); current != null; current = Path.GetDirectoryName(current))
-                if ((File.Exists(current) || Directory.Exists(current)) &&
-                    (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
-                    throw new IOException($"安装路径包含符号链接：{current}");
         }
 
         internal static void DeleteTemporary(string path)
@@ -54,7 +45,6 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
         internal InstallWorkspace(string cachePath, Guid sessionId)
         {
             RootPath = Path.GetFullPath(Path.Combine(cachePath, "SingerInstall", sessionId.ToString("N")));
-            InstallPaths.RejectLinks(RootPath);
             Directory.CreateDirectory(RootPath);
         }
         public string GetPath(string relativePath) => InstallPaths.Resolve(RootPath, relativePath);

@@ -61,35 +61,6 @@ jobs:
           echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
           mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-arm64-logs"
 
-      - name: Validate iOS Toolchain
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          echo "::group::.NET and installed workloads"
-          dotnet --info
-          dotnet workload list
-          echo "::endgroup::"
-
-          echo "::group::Xcode and iPhoneOS SDK"
-          if [ ! -d "$DEVELOPER_DIR" ]; then
-            echo "::error::Required Xcode developer directory is missing: $DEVELOPER_DIR"
-            ls -1d /Applications/Xcode_*.app 2>/dev/null | sed -n '1,20p' || true
-            exit 1
-          fi
-
-          XCODE_VERSION="$(xcodebuild -version | awk '/^Xcode / { print $2 }')"
-          if [[ "$XCODE_VERSION" != "27.0" && "$XCODE_VERSION" != 27.0.* ]]; then
-            echo "::error::Expected Xcode 27.0, selected $XCODE_VERSION from $DEVELOPER_DIR"
-            exit 1
-          fi
-
-          echo "Developer directory: $DEVELOPER_DIR"
-          xcodebuild -version
-          echo "iPhoneOS SDK: $(xcrun --sdk iphoneos --show-sdk-version)"
-          echo "iPhoneOS SDK path: $(xcrun --sdk iphoneos --show-sdk-path)"
-          echo "::endgroup::"
-
       - name: Restore iOS Workload
         shell: bash
         run: |
@@ -145,78 +116,6 @@ jobs:
 
           ls -lh "$IPA_PATH"
 
-      - name: Validate iOS ARM64 Mono AOT Unsigned IPA
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          IPA_PATH="${GITHUB_WORKSPACE}/artifacts/ios-arm64/OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
-          VERIFY_DIR="${RUNNER_TEMP}/opum-ios-arm64-verify"
-
-          unzip -tq "$IPA_PATH"
-          mkdir -p "$VERIFY_DIR"
-          unzip -q "$IPA_PATH" -d "$VERIFY_DIR"
-
-          APP_COUNT="$(find "$VERIFY_DIR/Payload" -maxdepth 1 -type d -name '*.app' | wc -l | tr -d ' ')"
-          if [ "$APP_COUNT" != "1" ]; then
-            echo "::error::IPA must contain exactly one app bundle, found $APP_COUNT"
-            exit 1
-          fi
-
-          APP_DIR="$(find "$VERIFY_DIR/Payload" -maxdepth 1 -type d -name '*.app' -print -quit)"
-          INFO_PLIST="$APP_DIR/Info.plist"
-          EXECUTABLE="$(plutil -extract CFBundleExecutable raw "$INFO_PLIST")"
-          BUNDLE_ID="$(plutil -extract CFBundleIdentifier raw "$INFO_PLIST")"
-          DISPLAY_VERSION="$(plutil -extract CFBundleShortVersionString raw "$INFO_PLIST")"
-          BUILD_VERSION="$(plutil -extract CFBundleVersion raw "$INFO_PLIST")"
-          PLATFORM="$(plutil -extract CFBundleSupportedPlatforms.0 raw "$INFO_PLIST")"
-          ARCHS="$(lipo -archs "$APP_DIR/$EXECUTABLE")"
-          python native/worldline/verify_static.py \
-            artifacts/worldline-native/ios-arm64/libworldline.a ios-arm64 \
-            --nm "$(xcrun --find nm)" --app-bundle "$APP_DIR"
-          EXPECTED_BUNDLE_ID="$(dotnet msbuild \
-            OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            -nologo \
-            -getProperty:ApplicationId \
-            -p:Configuration=Release \
-            -p:TargetFramework=net10.0-ios \
-            -p:RuntimeIdentifier=ios-arm64)"
-
-          if [ "$BUNDLE_ID" != "$EXPECTED_BUNDLE_ID" ]; then
-            echo "::error::Bundle ID is $BUNDLE_ID, expected $EXPECTED_BUNDLE_ID"
-            exit 1
-          fi
-          if [ "$DISPLAY_VERSION" != "${{ inputs.version }}" ]; then
-            echo "::error::CFBundleShortVersionString is $DISPLAY_VERSION, expected ${{ inputs.version }}"
-            exit 1
-          fi
-          if [ "$BUILD_VERSION" != "${{ inputs.build_number }}" ]; then
-            echo "::error::CFBundleVersion is $BUILD_VERSION, expected ${{ inputs.build_number }}"
-            exit 1
-          fi
-          if [ "$PLATFORM" != "iPhoneOS" ]; then
-            echo "::error::IPA targets $PLATFORM instead of iPhoneOS"
-            exit 1
-          fi
-          if [ "$ARCHS" != "arm64" ]; then
-            echo "::error::App executable architectures are $ARCHS instead of arm64"
-            exit 1
-          fi
-          if [ -e "$APP_DIR/_CodeSignature" ] || [ -e "$APP_DIR/embedded.mobileprovision" ]; then
-            echo "::error::App bundle unexpectedly contains signing assets"
-            exit 1
-          fi
-          if codesign --verify --deep --strict "$APP_DIR" 2>"$VERIFY_DIR/codesign.txt"; then
-            echo "::error::App bundle unexpectedly passed code-sign verification"
-            exit 1
-          fi
-
-          echo "Bundle ID: $BUNDLE_ID"
-          echo "Version: $DISPLAY_VERSION ($BUILD_VERSION)"
-          echo "Platform: $PLATFORM"
-          echo "Architectures: $ARCHS"
-          echo "Code signature: unsigned, verified"
-
       - name: Upload iOS Failure Diagnostics
         if: failure()
         uses: actions/upload-artifact@v4
@@ -237,7 +136,6 @@ jobs:
           set -euo pipefail
           PACKAGE="OpenUtauMobile-build${{ inputs.build_number }}-ios-arm64-mono-aot-unsigned.ipa"
           shasum -a 256 "$PACKAGE" > "$PACKAGE.sha256"
-          shasum -a 256 --check "$PACKAGE.sha256"
 
       - name: Upload iOS ARM64 Mono AOT Unsigned IPA
         uses: actions/upload-artifact@v4

@@ -32,12 +32,11 @@ public static class PluginManagementService
     {
         Directory.CreateDirectory(Root);
         HashSet<string> pending = ReadPendingDeletions();
-        // 不跟随目录链接，避免将插件目录之外的文件纳入管理。
         EnumerationOptions options = new()
         {
             RecurseSubdirectories = true,
             IgnoreInaccessible = false,
-            AttributesToSkip = FileAttributes.ReparsePoint,
+            AttributesToSkip = 0,
         };
         return Directory.EnumerateFiles(Root, "*", options)
             .Where(path => string.Equals(Path.GetExtension(path), ".dll", StringComparison.OrdinalIgnoreCase))

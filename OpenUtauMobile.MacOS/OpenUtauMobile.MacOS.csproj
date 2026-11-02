@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="SDL3-CS.MacOS" Version="3.4.14"/>
         <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0"/>
     </ItemGroup>
 

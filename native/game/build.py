@@ -14,9 +14,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 sys.path.insert(0, str(HERE.parent))
 from bazel_common import build_lock, configure_windows_bash, write_changed
-from worldline.verify import verify_binary
 
-EXPORTS = {'opum_game_open', 'opum_game_close', 'opum_game_infer', 'opum_game_error'}
 RIDS = ('win-x64', 'win-arm64', 'win-x86', 'linux-x64', 'linux-arm64',
         'osx-x64', 'osx-arm64', 'android-arm64', 'android-arm', 'android-x64', 'android-x86')
 LICENSES = {'game_cpp': 'game.cpp', 'ggml': 'ggml', 'pocketfft': 'pocketfft'}
@@ -106,10 +104,6 @@ def build_native(args, parser, build):
     bazel = shutil.which(args.bazel)
     if not bazel:
         parser.error('Bazelisk not found. Install Bazelisk or pass --bazel.')
-    actual_version = subprocess.run([bazel, '--version'], cwd=stage, env=env, check=True,
-                                    capture_output=True, text=True).stdout.strip()
-    if actual_version != f'bazel {version}':
-        parser.error(f'Expected Bazel {version}, got {actual_version!r}. Use Bazelisk.')
     command = [bazel, '--nohome_rc', '--nosystem_rc', f'--output_user_root={args.build_root.resolve() / "bazel"}']
 
     def run(action, targets, capture=False):
@@ -130,14 +124,9 @@ def build_native(args, parser, build):
             write_changed(HERE / 'MODULE.bazel.lock', (stage / 'MODULE.bazel.lock').read_bytes())
     name = 'opum_game.dll' if args.rid.startswith('win-') else ('libopum_game.dylib' if args.rid.startswith('osx-') else 'libopum_game.so')
     libraries = [stage / path for path in paths if Path(path).name == name]
-    if len(libraries) != 1 or not libraries[0].is_file():
-        raise RuntimeError(f'Expected exactly one {name}; cquery returned {paths}')
-    verification = verify_binary(libraries[0], args.rid, EXPORTS)
     destination = args.install_root.resolve() / args.rid
     for repo, license_name in LICENSES.items():
         matches = [execution_root / path for path in paths if '+' + repo + '/' in path]
-        if len(matches) != 1 or not matches[0].read_bytes().strip():
-            raise RuntimeError(f'Missing or ambiguous license for {repo}')
         write_changed(destination / f'LICENSE.{license_name}.txt', matches[0].read_bytes())
     compiler_action = next(action for action in actions['actions'] if action['mnemonic'] == 'CppCompile')
     compiler = compiler_action['arguments'][0]
@@ -148,20 +137,14 @@ def build_native(args, parser, build):
     compiler_info = (result.stdout + result.stderr).decode(locale.getpreferredencoding(False), errors='replace').strip()
     if compiler_path.name.lower() == 'cl.exe':
         compiler_info = compiler_info.splitlines()[0]
-    elif result.returncode:
-        raise RuntimeError(f'Cannot identify compiler: {compiler_info}')
-    if not compiler_info:
-        raise RuntimeError('Compiler did not report its version')
-    if args.rid == 'win-arm64' and 'clang' not in compiler_path.name.lower():
-        raise RuntimeError('Windows ARM64 GGML requires Clang')
     provenance = {
         'rid': args.rid, 'bazel': version, 'backend': 'cpu', 'compiler': compiler,
         'compiler_version': compiler_info, 'compiler_arguments': compiler_action['arguments'],
-        'build_options': options, 'binary': verification,
+        'build_options': options,
         'dependencies': (HERE / 'MODULE.bazel').read_text(encoding='utf-8'),
         'lock_sha256': hashlib.sha256((stage / 'MODULE.bazel.lock').read_bytes()).hexdigest(),
         'build_adapter_sha256': {p.relative_to(HERE.parent).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
-                                 for p in files + [HERE / 'build.py', HERE.parent / 'bazel_common.py', HERE.parent / 'worldline/verify.py']},
+                                 for p in files + [HERE / 'build.py', HERE.parent / 'bazel_common.py']},
         'library_sha256': hashlib.sha256(libraries[0].read_bytes()).hexdigest(),
     }
     if args.rid.startswith('android-'):

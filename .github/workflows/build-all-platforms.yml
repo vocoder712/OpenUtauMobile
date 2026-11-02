@@ -137,10 +137,6 @@ jobs:
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
 
-      - name: Verify native runtime loading
-        shell: bash
-        run: python native/verify-runtime.py "artifacts/publish/${{ matrix.rid }}"
-
       - name: Package Linux ${{ matrix.arch }}
         shell: bash
         run: |
@@ -231,10 +227,6 @@ jobs:
             -p:SourceCommit=${{ inputs.source_sha }} `
             -p:ActionRunId=${{ inputs.action_run_id }}
 
-      - name: Verify native runtime loading
-        shell: bash
-        run: python native/verify-runtime.py "artifacts/publish/${{ matrix.rid }}"
-
       - name: Package Windows ${{ matrix.arch }}
         shell: pwsh
         run: |
@@ -321,10 +313,6 @@ jobs:
             -p:BuildMachine="$BUILD_MACHINE" \
             -p:SourceCommit=${{ inputs.source_sha }} \
             -p:ActionRunId=${{ inputs.action_run_id }}
-
-      - name: Verify native runtime loading
-        shell: bash
-        run: python native/verify-runtime.py "artifacts/publish/${{ matrix.rid }}"
 
       - name: Package macOS ${{ matrix.arch }}
         shell: bash

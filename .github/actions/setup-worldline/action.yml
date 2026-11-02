@@ -2,7 +2,7 @@ name: Setup native Bazel build tools
 description: Install Python and the pinned Bazelisk for source builds
 inputs:
   architecture:
-    description: Python architecture for native ABI verification
+    description: Python architecture for native build tools
     default: x64
 runs:
   using: composite

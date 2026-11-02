@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFrameworks>net10.0;net10.0-windows</TargetFrameworks>
         <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <DebugType>embedded</DebugType>
@@ -41,7 +41,6 @@
              Compile assets stay private: its root "Json" namespace would hide OpenUtau.Core.Json in referencing projects. -->
         <PackageReference Include="JsonSchema.Net" Version="8.0.0" PrivateAssets="compile;contentfiles;analyzers;build"/>
         <PackageReference Include="NetMQ" Version="4.0.1.13"/>
-        <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.29.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -84,16 +83,16 @@
             <LastGenOutput>VogenRes.Designer.cs</LastGenOutput>
         </EmbeddedResource>
     </ItemGroup>
-    <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
-        <DefineConstants>WINDOWS</DefineConstants>
-    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="SDL3-CS" Version="3.4.14" />
-        <PackageReference Include="SDL3-CS.Linux" Version="3.4.14" />
-        <PackageReference Include="SDL3-CS.MacOS" Version="3.4.14" />
-        <PackageReference Include="SDL3-CS.Windows" Version="3.4.14" />
         <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.11" />
-        <PackageReference Include="Tmds.DBus.Protocol" Version="0.94.2" />
-        <PackageReference Include="NAudio" Version="2.2.1" />
+    </ItemGroup>
+    <!-- 目标框架选择 Windows 音频 API，并匹配入口的 DirectML 版本。 -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+        <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+        <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.24.4" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+        <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.29.0" />
     </ItemGroup>
 </Project>
