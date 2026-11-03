@@ -4,6 +4,7 @@
         <TargetFramework>net10.0-ios</TargetFramework>
         <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <!-- iOS 配置 -->

@@ -1117,6 +1117,7 @@
                                                     HorizontalAlignment="Left" />
                                             <ComboBox HorizontalAlignment="Stretch"
                                                       ItemsSource="{Binding AvailableAudioDevices}"
+                                                      IsVisible="{Binding !UsesSystemAudioRoutePicker}"
                                                       IsEnabled="{Binding !IsRefreshingDevices}"
                                                       SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}">
                                                 <ComboBox.ItemTemplate>
@@ -1126,6 +1127,18 @@
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>
+                                            <!-- 系统路由控件负责实际设备切换，旁边显示当前输出。 -->
+                                            <Grid ColumnDefinitions="Auto,*"
+                                                  ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                                                  IsVisible="{Binding UsesSystemAudioRoutePicker}">
+                                                <ContentControl x:Name="AudioDevicePickerHost"
+                                                                Loaded="OnAudioDevicePickerLoaded"
+                                                                VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding SelectedAudioDevice.DisplayName}"
+                                                           VerticalAlignment="Center"
+                                                           TextWrapping="Wrap" />
+                                            </Grid>
                                         </StackPanel>
 
                                         <TextBlock Classes="PlaceholderText"
