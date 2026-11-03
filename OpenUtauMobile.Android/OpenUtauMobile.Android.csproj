@@ -4,28 +4,23 @@
         <TargetFramework>net10.0-android36.0</TargetFramework>
         <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
-        <ApplicationId>$(BaseApplicationId)</ApplicationId>
         <ApplicationTitle>OpenUtau Mobile 预览版</ApplicationTitle>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <!-- 将程序集随 APK 部署，避免启动时逐个加载导致 ANR。 -->
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
         <!-- 大堆内存 -->
         <AndroidMaxHeapSize>2G</AndroidMaxHeapSize>
         <TieredPGO>true</TieredPGO>
+        <IsTrimmable>true</IsTrimmable>
     </PropertyGroup>
     <!-- 调试模式 -->
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <ApplicationId>$(BaseApplicationId).debug</ApplicationId>
-        <IsTrimmable>True</IsTrimmable>
-        <!-- 避免 Fast Deployment 在启动期逐个加载程序集导致 ANR -->
-        <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     </PropertyGroup>
     <!-- 发布模式 -->
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <IsTrimmable>True</IsTrimmable>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-        <!-- 分包 -->
-        <!-- 在命令行中单独制定需要哪些分包 -->
-        <!-- <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers> -->
     </PropertyGroup>
     <!-- 静态资源 -->
     <ItemGroup>
@@ -52,11 +47,5 @@
                         Bind="false"/>
     </ItemGroup>
 
-    <!-- 原生库 -->
-    <ItemGroup>
-        <!-- Worldline 由源码构建目标按当前 RID 添加。 -->
-        <AndroidNativeLibrary Remove="Libs\**\*.so"/>
-    </ItemGroup>
-    <Import Project="../native/worldline/WorldlineNative.targets" />
-    <Import Project="../native/game/GameNative.targets" />
+    <Import Project="../native/NativeBuild.targets" />
 </Project>

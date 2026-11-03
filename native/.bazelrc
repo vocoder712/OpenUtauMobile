@@ -1,0 +1,18 @@
+build --jobs=2
+build --compilation_mode=opt
+build --verbose_failures
+build --incompatible_strict_action_env
+build --lockfile_mode=error
+build:windows --cxxopt=/std:c++17 --copt=/utf-8 --features=static_link_msvcrt
+build:unix --cxxopt=-std=c++17
+build:worldline --define=absl=1
+build:game-unix --copt=-fno-associative-math
+build:android --extra_toolchains=@androidndk//:all --linkopt=-Wl,-z,max-page-size=16384 --features=static_link_cpp_runtimes
+build:worldline-linux --linkopt=-lm
+build:worldline-osx --macos_minimum_os=10.12
+build:game-osx --macos_minimum_os=10.15
+build:win-x86 --extra_toolchains=@local_config_cc//:cc-toolchain-x64_x86_windows
+build:game-win-arm64 --compiler=clang-cl --copt=--target=aarch64-pc-windows-msvc --extra_toolchains=@local_config_cc//:cc-toolchain-arm64_windows-clang-cl
+build:static --extra_toolchains=//sdk_toolchain:toolchain --copt=-O2 --copt=-DNDEBUG
+build:ios --per_file_copt=worldline/audio_output[.]cc@-x,objective-c++
+test --test_output=errors

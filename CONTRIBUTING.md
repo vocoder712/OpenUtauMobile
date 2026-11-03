@@ -107,15 +107,15 @@ dotnet run --project OpenUtauMobile.Windows/OpenUtauMobile.Windows.csproj -c Deb
 3. 启动前构建目标项目及其依赖；只调试 Windows 时，不要将构建整个解决方案作为启动前任务。
 4. 在 C# 代码行旁设置断点，点击虫子图标 **Debug**。需要执行到断点所在操作才会暂停。
 
-普通 Windows 调试不必设置 `RuntimeIdentifier` 或 `EnableGameGgml`。
-桌面入口和 UI 探针的 Debug/Release 构建默认只复制当前系统架构所需的 NuGet 运行库，
+普通 Windows 调试不必设置 `RuntimeIdentifier`。
+桌面入口的 Debug/Release 构建默认只复制当前系统架构所需的 NuGet 运行库，
 不会再输出所有平台的 `runtimes`。Windows、Linux、macOS 入口会使用各自平台的 RID；
 跨平台或跨架构构建请显式传入 `-r <RID>`。共享类库保持平台无关，Android、iOS 和浏览器仍由各自 SDK 选择 RID。
 NuGet 原生库附带的 PDB 默认不复制；需要调试这些第三方原生库时，传入
 `-p:CopyNuGetNativeSymbols=true`。应用自身的托管调试符号不受影响。
 构建会自动生成 `opum_game.dll`，并将对应架构的 worldline 放到输出目录。
-默认 Debug 输出位于 `OpenUtauMobile.Windows/bin/Debug/net10.0-windows/`。
-如果显式使用 `-r win-x64`，输出会多一层 `win-x64/`；启动时应使用此次构建的目录。
+默认 Debug 输出位于 `OpenUtauMobile.Windows/bin/Debug/net10.0-windows/<RID>/`。
+共同的原生构建参数与增量规则见[原生构建](native/README.md)。
 
 ### 4. 准备 Android 环境
 
@@ -127,7 +127,7 @@ Windows 已能启动后，再安装以下 Android 专用工具。Android 的 C++
 | JDK | 建议安装 [Microsoft OpenJDK 21](https://learn.microsoft.com/java/openjdk/download)。填写 JDK 根目录，不是 `bin`；Android Studio 自带 JBR 只有版本兼容时才可复用。 |
 | [Android Studio](https://developer.android.com/studio) | 用它的 SDK Manager 安装和管理 SDK，也可用 Device Manager 创建模拟器；C# 代码仍在 Rider 调试。 |
 | Android SDK | SDK Manager 中安装 Android API 36、Build-Tools 36.0.0、Platform-Tools、Command-line Tools (latest)。具体目标以 [Android 项目](OpenUtauMobile.Android/OpenUtauMobile.Android.csproj) 和安装的 .NET Android 工作负载为准。 |
-| Android NDK | 在 SDK Tools 中勾选 Show Package Details，安装 [android-ndk-version.txt](native/game/android-ndk-version.txt) 指定的版本，当前为 r30 LTS `30.0.16248370`。 |
+| Android NDK | 在 SDK Tools 中勾选 Show Package Details，安装 [android-ndk-version.txt](native/android-ndk-version.txt) 指定的版本。 |
 
 安装方法也可参考微软的 [.NET Android 依赖说明](https://learn.microsoft.com/dotnet/android/getting-started/installation/dependencies)。
 项目当前 CI 使用 JDK 17，本地 JDK 21 已通过构建；不要直接使用未经当前工作负载支持的更高版本。
@@ -136,7 +136,7 @@ Windows 已能启动后，再安装以下 Android 专用工具。Android 的 C++
 
 ```powershell
 $androidSdk = Join-Path $env:LOCALAPPDATA 'Android/Sdk'
-$androidNdkVersion = (Get-Content native/game/android-ndk-version.txt -Raw).Trim()
+$androidNdkVersion = (Get-Content native/android-ndk-version.txt -Raw).Trim()
 $androidNdk = Join-Path $androidSdk "ndk/$androidNdkVersion"
 $javaSdk = 'C:/替换为你的JDK21目录'
 $env:JAVA_HOME = $javaSdk
@@ -180,7 +180,7 @@ RID 是目标系统与 CPU 架构的标识；Android 应用按目标设备选择
 ```powershell
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
 $androidRid = 'android-arm64'
-dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -c Debug -r $androidRid "-p:AndroidSdkDirectory=$androidSdk" "-p:AndroidNdkDirectory=$androidNdk" "-p:JavaSdkDirectory=$javaSdk"
+dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -r $androidRid
 ```
 
 命令会自动恢复对应 RID 的依赖，签名 APK 位于

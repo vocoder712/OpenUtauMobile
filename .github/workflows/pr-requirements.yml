@@ -13,6 +13,8 @@ jobs:
     name: PR build test for Android ARM64
     env:
       AVALONIA_TELEMETRY_OPTOUT: "1"
+      Configuration: Release
+      RuntimeIdentifier: android-arm64
     runs-on: ubuntu-latest
 
     steps:
@@ -49,19 +51,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
-          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
-          sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
-          echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
-
-      - name: Restore
-        run: dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -r android-arm64 -p:Configuration=Release
+          sdkmanager "ndk;$(tr -d '\r\n' < native/android-ndk-version.txt)"
 
       - name: Build Android ARM64
         run: |
-          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
-            -c Release \
-            -f net10.0-android36.0 \
-            --no-restore \
-            -p:RuntimeIdentifier=android-arm64 \
-            -p:AndroidNdkDirectory="$OPUM_ANDROID_NDK"
+          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj

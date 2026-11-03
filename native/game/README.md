@@ -13,41 +13,29 @@ Core 与 USTX 数据结构不需要改动。
 
 ## 构建约定
 
-`GameNative.targets` 在正常 Build / Publish 中调用 `build.py`，以 Bazelisk 1.29.0 / Bazel 9.2.0 直接编译 C/C++ 源码。
-
-1. 在 `artifacts/game-bazel-build/<rid>/workspace` 准备独立构建入口，按 RID 选择工具链。每次由 Bazel 检查依赖图，同 RID 的构建由进程锁串行化。
-2. `MODULE.bazel` 固定 game.cpp `97f92770704c154e1af4a9b3066b7701041dbc38`、ggml `v0.19.0` 和 pocketfft `32424d2067c2e8043dc646a4e49754b2b40cc549`，归档均带 SHA256。dr_libs 仅供上游 WAV/CLI 测试，不进入应用库依赖图。
-3. 安装到 `artifacts/game-native/<rid>`，同时收集许可证及 `game-build.json` 来源记录。
-4. MSBuild 收集产物用于桌面输出或 Android 原生资产。缺少工具链、锁文件过时或下载失败会使构建失败。
-
-Worldline 由 [WorldlineNative.targets](../worldline/WorldlineNative.targets) 使用同一版本的 Bazel 构建。
-两者共用 Python 3.10+、Git、Bazelisk 和固定 Android NDK，不需要额外原生构建生成器。
-用户与系统 `.bazelrc` 不参与构建；CPU 发布库不使用构建机的 AVX 指令集。
+构建入口、参数与增量规则见[原生构建](../README.md)。GAME 与 Worldline 共用同一个 MSBuild 接入和 Python 执行脚本。
+`MODULE.bazel` 固定 game.cpp、ggml 和 pocketfft 的版本与归档；dr_libs 只参与上游 WAV/CLI 测试。
+正常 Build / Publish 按项目的配置和 RID 生成并打包 `opum_game`，不收集许可证或生成来源清单。
+CPU 发布库不使用构建机的 AVX 指令集。
 
 Windows x64/x86 使用 Visual Studio MSVC，ARM64 使用 ClangCL，因为 ggml 不支持 MSVC ARM。
 Windows ARM64 需要 ARM64 C++ 工具、Windows SDK 及 C++ Clang 编译器。
 Linux 使用本机 C/C++ 工具链；macOS 使用 Xcode Command Line Tools，CPU 后端保留 Accelerate。
 桌面 Linux/macOS 使用匹配目标架构的 runner。
 
-Android 先由 `AndroidNativeToolchain.targets` 解析工具链，显式 `AndroidNdkDirectory` 优先，
-否则使用 SDK 下 `android-ndk-version.txt` 指定的 r30 LTS（`30.0.16248370`）。
-NDK 路径通过 `--ndk` 传给脚本，并与 .NET 原生资产收集共用；Bazel 使用 NDK Clang，静态链接 libc++。
+Android 使用项目解析的 SDK 与 `../android-ndk-version.txt` 指定的 NDK。
+Bazel 使用 NDK Clang，静态链接 libc++。
 ARMv7 关闭不兼容的 llamafile，其他架构保留。工具链发生变化时 Bazel 重新编译受影响的目标。
-
-可选 MSBuild 属性：`GamePythonExecutable`、`GameBazelExecutable`、`GameBuildRoot`、`GameNativeRoot`。
-`EnableGameGgml=false` 可跳过构建和打包，但不会隐藏 UI 选项或删除旧输出。
-正常 Build / Publish 均包含原生构建。
 
 ## CI 与本地构建
 
-PR 矩阵包含桌面六个 RID、Android 四 ABI 的 Worldline 和 GAME 源码构建。
 手动使用 `--test` 可运行 19 项无需模型/参考数据的上游既有用例。其余 18 项数值对照/模型用例需要外部数据：
 其中 11 项在辅助函数中调用 `GTEST_SKIP` 后仍继续读缺失文件，不能当作自动跳过。
 完整目标 `@game_cpp//:core_tests` 仍可在准备好上游参考数据后单独运行。
 发布流程通过项目自身的 Build / Publish 规则收集库、打包并上传。
 
 ```sh
-python native/game/build.py --rid win-x64 --test
+python native/build.py artifacts/native/win-x64/game.inputs --test
 ```
 
 `--test` 只能用于匹配宿主架构的平台。

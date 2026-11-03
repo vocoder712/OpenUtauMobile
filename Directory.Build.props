@@ -30,9 +30,10 @@
     <!-- 启用预览语言特性 -->
     <PropertyGroup>
         <LangVersion>preview</LangVersion>
-        <!-- 在 SDK 推断架构和输出路径之前，为桌面入口及探针选择单一运行时。 -->
-        <_OpumPreviousBeforeMicrosoftNETSdkTargets>$(BeforeMicrosoftNETSdkTargets)</_OpumPreviousBeforeMicrosoftNETSdkTargets>
-        <BeforeMicrosoftNETSdkTargets>$(MSBuildThisFileDirectory)build/DesktopRuntime.props</BeforeMicrosoftNETSdkTargets>
+    </PropertyGroup>
+    <!-- 移动端 RID 的引用类库与应用入口共用 Mono，不依赖 CI 额外传入开关。 -->
+    <PropertyGroup Condition="$([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('android-')) or $([System.String]::Copy('$(RuntimeIdentifier)').StartsWith('ios'))">
+        <UseMonoRuntime Condition="'$(UseMonoRuntime)' == ''">true</UseMonoRuntime>
     </PropertyGroup>
     <!-- 元数据映射 -->
     <ItemGroup>

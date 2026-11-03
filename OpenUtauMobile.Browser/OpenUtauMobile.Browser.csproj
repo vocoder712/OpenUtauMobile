@@ -4,7 +4,6 @@
         <OutputType>Exe</OutputType>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>enable</Nullable>
-        <RuntimeIdentifiers>browser-wasm</RuntimeIdentifiers>
         <DefineConstants>BROWSER</DefineConstants>
         <WasmEnableThreads>true</WasmEnableThreads>
         <EmccExtraLDFlags>$(EmccExtraLDFlags) -lidbfs.js</EmccExtraLDFlags>
@@ -34,5 +33,5 @@
     <ItemGroup>
         <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
     </ItemGroup>
-    <Import Project="../native/worldline/WorldlineNative.targets" />
+    <Import Project="../native/NativeBuild.targets" />
 </Project>

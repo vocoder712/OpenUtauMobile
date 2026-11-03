@@ -34,6 +34,12 @@ jobs:
     runs-on: xcode-27
     timeout-minutes: 90
     env:
+      Configuration: Release
+      RuntimeIdentifier: ios-arm64
+      Version: ${{ inputs.version }}
+      BuildNumber: ${{ inputs.build_number }}
+      SourceCommit: ${{ inputs.source_sha }}
+      ActionRunId: ${{ inputs.action_run_id }}
       AVALONIA_TELEMETRY_OPTOUT: "1"
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       DOTNET_NOLOGO: "1"
@@ -57,8 +63,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
-          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
+          echo "BuildTimestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BuildMachine=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
           mkdir -p "${GITHUB_WORKSPACE}/artifacts/ios-arm64-logs"
 
       - name: Restore iOS Workload
@@ -90,24 +96,6 @@ jobs:
 
           dotnet publish \
             OpenUtauMobile.iOS/OpenUtauMobile.iOS.csproj \
-            --force \
-            -c Release \
-            -f net10.0-ios \
-            -r ios-arm64 \
-            -p:Version="${{ inputs.version }}" \
-            -p:BuildNumber=${{ inputs.build_number }} \
-            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
-            -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ inputs.source_sha }} \
-            -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:PublishAot=false \
-            -p:UseMonoRuntime=true \
-            -p:MtouchUseLlvm=false \
-            -p:UseInterpreter=false \
-            -p:TrimMode=partial \
-            -p:MtouchLink=SdkOnly \
-            -p:EnableAssemblyILStripping=false \
-            -p:_IsDedupEnabled=false \
             -p:EnableCodeSigning=false \
             -p:BuildIpa=true \
             -p:IpaPackagePath="$IPA_PATH" \

@@ -43,6 +43,11 @@ permissions:
 env:
   AVALONIA_TELEMETRY_OPTOUT: "1"
   VersionLyrics: ${{ inputs.version_lyrics }}
+  Configuration: Release
+  Version: ${{ inputs.version }}
+  BuildNumber: ${{ inputs.build_number }}
+  SourceCommit: ${{ inputs.source_sha }}
+  ActionRunId: ${{ inputs.action_run_id }}
 
 jobs:
   # ============================================================
@@ -82,6 +87,8 @@ jobs:
   linux:
     name: Linux ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
+    env:
+      RuntimeIdentifier: ${{ matrix.rid }}
 
     strategy:
       fail-fast: false
@@ -109,15 +116,11 @@ jobs:
         with:
           architecture: ${{ matrix.arch }}
 
-      - name: Build and test Worldline
-        shell: bash
-        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
-
       - name: Collect Build Metadata
         shell: bash
         run: |
-          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
-          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
+          echo "BuildTimestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BuildMachine=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
 
       - name: Publish Linux ${{ matrix.arch }}
         shell: bash
@@ -126,16 +129,7 @@ jobs:
 
           dotnet publish \
             OpenUtauMobile.Linux/OpenUtauMobile.Linux.csproj \
-            -c Release \
-            -r "${{ matrix.rid }}" \
-            --self-contained true \
-            -p:PublishDir="$PUBLISH_DIR/" \
-            -p:Version="${{ inputs.version }}" \
-            -p:BuildNumber=${{ inputs.build_number }} \
-            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
-            -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ inputs.source_sha }} \
-            -p:ActionRunId=${{ inputs.action_run_id }}
+            -o "$PUBLISH_DIR"
 
       - name: Package Linux ${{ matrix.arch }}
         shell: bash
@@ -143,7 +137,7 @@ jobs:
           PUBLISH_DIR="${GITHUB_WORKSPACE}/artifacts/publish/${{ matrix.rid }}"
           PACKAGE="${GITHUB_WORKSPACE}/artifacts/OpenUtauMobile-build${{ inputs.build_number }}-linux-${{ matrix.arch }}.tar.gz"
 
-          chmod +x "$PUBLISH_DIR/OpenUtauMobile.Linux" || true
+          chmod +x "$PUBLISH_DIR/OpenUtauMobile.Linux"
 
           tar \
             -C "$PUBLISH_DIR" \
@@ -167,6 +161,8 @@ jobs:
   windows:
     name: Windows ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
+    env:
+      RuntimeIdentifier: ${{ matrix.rid }}
 
     strategy:
       fail-fast: false
@@ -194,19 +190,15 @@ jobs:
         with:
           architecture: ${{ matrix.arch }}
 
-      - name: Build and test Worldline
-        shell: bash
-        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
-
       - name: Collect Build Metadata
         shell: pwsh
         run: |
           $timestamp = [DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
 
-          "BUILD_TIMESTAMP=$timestamp" |
+          "BuildTimestamp=$timestamp" |
             Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-          "BUILD_MACHINE=$env:RUNNER_OS / $env:PROCESSOR_ARCHITECTURE" |
+          "BuildMachine=$env:RUNNER_OS / $env:PROCESSOR_ARCHITECTURE" |
             Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Publish Windows ${{ matrix.arch }}
@@ -216,16 +208,7 @@ jobs:
 
           dotnet publish `
             OpenUtauMobile.Windows/OpenUtauMobile.Windows.csproj `
-            -c Release `
-            -r "${{ matrix.rid }}" `
-            --self-contained true `
-            -p:PublishDir="$publishDir/" `
-            -p:Version="${{ inputs.version }}" `
-            -p:BuildNumber=${{ inputs.build_number }} `
-            -p:BuildTimestamp="$env:BUILD_TIMESTAMP" `
-            -p:BuildMachine="$env:BUILD_MACHINE" `
-            -p:SourceCommit=${{ inputs.source_sha }} `
-            -p:ActionRunId=${{ inputs.action_run_id }}
+            -o "$publishDir"
 
       - name: Package Windows ${{ matrix.arch }}
         shell: pwsh
@@ -257,6 +240,8 @@ jobs:
   macos:
     name: macOS ${{ matrix.arch }}
     runs-on: ${{ matrix.runner }}
+    env:
+      RuntimeIdentifier: ${{ matrix.rid }}
 
     strategy:
       fail-fast: false
@@ -286,15 +271,11 @@ jobs:
         with:
           architecture: ${{ matrix.arch }}
 
-      - name: Build and test Worldline
-        shell: bash
-        run: python native/worldline/build.py --rid ${{ matrix.rid }} --test
-
       - name: Collect Build Metadata
         shell: bash
         run: |
-          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
-          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
+          echo "BuildTimestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BuildMachine=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
 
       - name: Publish macOS ${{ matrix.arch }}
         shell: bash
@@ -303,16 +284,7 @@ jobs:
 
           dotnet publish \
             OpenUtauMobile.MacOS/OpenUtauMobile.MacOS.csproj \
-            -c Release \
-            -r "${{ matrix.rid }}" \
-            --self-contained true \
-            -p:PublishDir="$PUBLISH_DIR/" \
-            -p:Version="${{ inputs.version }}" \
-            -p:BuildNumber=${{ inputs.build_number }} \
-            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
-            -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ inputs.source_sha }} \
-            -p:ActionRunId=${{ inputs.action_run_id }}
+            -o "$PUBLISH_DIR"
 
       - name: Package macOS ${{ matrix.arch }}
         shell: bash
@@ -320,7 +292,7 @@ jobs:
           PUBLISH_DIR="${GITHUB_WORKSPACE}/artifacts/publish/${{ matrix.rid }}"
           PACKAGE="${GITHUB_WORKSPACE}/artifacts/OpenUtauMobile-build${{ inputs.build_number }}-macos-${{ matrix.arch }}.tar.gz"
 
-          chmod +x "$PUBLISH_DIR/OpenUtauMobile.MacOS" || true
+          chmod +x "$PUBLISH_DIR/OpenUtauMobile.MacOS"
 
           tar \
             -C "$PUBLISH_DIR" \

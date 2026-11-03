@@ -52,6 +52,12 @@ permissions:
 env:
   AVALONIA_TELEMETRY_OPTOUT: "1"
   VersionLyrics: ${{ inputs.version_lyrics }}
+  Configuration: Release
+  RuntimeIdentifier: ${{ inputs.rid }}
+  Version: ${{ inputs.version }}
+  BuildNumber: ${{ inputs.build_number }}
+  SourceCommit: ${{ inputs.source_sha }}
+  ActionRunId: ${{ inputs.action_run_id }}
 
 jobs:
   build:
@@ -89,29 +95,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          NDK_VERSION="$(tr -d '\r\n' < native/game/android-ndk-version.txt)"
-          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:?Android SDK is required}}"
-          sdkmanager --sdk_root="$SDK_ROOT" "ndk;$NDK_VERSION"
-          echo "OPUM_ANDROID_NDK=$SDK_ROOT/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
+          sdkmanager "ndk;$(tr -d '\r\n' < native/android-ndk-version.txt)"
 
       - name: Create Swap Space
         shell: bash
         run: |
           SWAP_FILE=/runner-swapfile
-          if [ ! -f "$SWAP_FILE" ]; then
-            sudo fallocate -l 6G "$SWAP_FILE"
-            sudo chmod 600 "$SWAP_FILE"
-            sudo mkswap "$SWAP_FILE"
-          fi
-          sudo swapon "$SWAP_FILE" 2>/dev/null || true
-          free -h
-          swapon --show
+          sudo fallocate -l 6G "$SWAP_FILE"
+          sudo chmod 600 "$SWAP_FILE"
+          sudo mkswap "$SWAP_FILE"
+          sudo swapon "$SWAP_FILE"
 
       - name: Collect Build Metadata
         shell: bash
         run: |
-          echo "BUILD_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
-          echo "BUILD_MACHINE=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
+          echo "BuildTimestamp=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+          echo "BuildMachine=${RUNNER_OS} / $(uname -srm)" >> "$GITHUB_ENV"
 
       - name: Decode Android Keystore
         if: inputs.release_signing
@@ -119,16 +118,6 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > signing.keystore
-
-      # 必须按最终 RID 显式还原；发布阶段复用同一资产图，防止宿主平台原生资产混入 APK。
-      # 全局指定 Mono，让引用的普通 .NET 类库也使用 Mono，避免 armhf 请求不存在的 CoreCLR linux-bionic-arm 包。
-      - name: Restore Android ${{ inputs.arch }}
-        shell: bash
-        run: |
-          dotnet restore OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
-            -r "${{ inputs.rid }}" \
-            -p:UseMonoRuntime=true \
-            -p:Configuration=Release
 
       - name: Publish Android ${{ inputs.arch }}
         shell: bash
@@ -148,19 +137,6 @@ jobs:
               "-p:AndroidSigningKeyPass=$KEY_PASSWORD")
           fi
           dotnet publish OpenUtauMobile.Android/OpenUtauMobile.Android.csproj \
-            --no-restore \
-            -c Release \
-            -f net10.0-android36.0 \
-            -r "${{ inputs.rid }}" \
-            -p:UseMonoRuntime=true \
-            -p:Version="${{ inputs.version }}" \
-            -p:BuildNumber=${{ inputs.build_number }} \
-            -p:BuildTimestamp="$BUILD_TIMESTAMP" \
-            -p:BuildMachine="$BUILD_MACHINE" \
-            -p:SourceCommit=${{ inputs.source_sha }} \
-            -p:ActionRunId=${{ inputs.action_run_id }} \
-            -p:AndroidNdkDirectory="$OPUM_ANDROID_NDK" \
-            -p:AndroidPackageFormat=apk \
             "${signing_args[@]}"
 
       - name: Prepare Android artifact

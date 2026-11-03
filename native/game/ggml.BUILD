@@ -68,4 +68,3 @@ cc_library(
     }),
     linkstatic = True,
 )
-filegroup(name = "license", srcs = ["LICENSE"])

@@ -38,4 +38,3 @@ cc_test(
     }),
     deps = [":game", "@gtest//:gtest_main", "@dr_libs//:dr_wav"],
 )
-filegroup(name = "license", srcs = ["LICENSE"])

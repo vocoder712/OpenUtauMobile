@@ -9,8 +9,6 @@ def _frozen_archive_impl(ctx):
     if ctx.attr.build_file:
         ctx.file("BUILD.bazel", ctx.read(ctx.attr.build_file))
     python = ctx.os.environ.get("OPUM_WORLDLINE_PYTHON")
-    if not python:
-        fail("Use native/worldline/build.py to provide the Python build adapter.")
     result = ctx.execute([python, ctx.path(ctx.attr._adapter)], timeout = 60)
     if result.return_code:
         fail("Bazel build adaptation failed: " + result.stderr)

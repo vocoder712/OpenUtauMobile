@@ -28,6 +28,11 @@ jobs:
     env:
       AVALONIA_TELEMETRY_OPTOUT: "1"
       VersionLyrics: ${{ inputs.version_lyrics }}
+      Configuration: Release
+      Version: ${{ inputs.version }}
+      BuildNumber: ${{ inputs.build_number }}
+      SourceCommit: ${{ inputs.source_sha || github.sha }}
+      ActionRunId: ${{ inputs.action_run_id || github.run_id }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,18 +44,9 @@ jobs:
       - name: Install WebAssembly workload
         run: dotnet workload install wasm-tools
       - name: Publish Browser with Worldline
-        env:
-          PRODUCT_VERSION: ${{ inputs.version }}
-          BUILD_NUMBER: ${{ inputs.build_number }}
-          SOURCE_SHA: ${{ inputs.source_sha || github.sha }}
-          ACTION_RUN_ID: ${{ inputs.action_run_id || github.run_id }}
         run: |
-          args=()
-          if [ -n "$PRODUCT_VERSION" ]; then args+=("-p:Version=$PRODUCT_VERSION"); fi
           dotnet publish OpenUtauMobile.Browser/OpenUtauMobile.Browser.csproj \
-            -c Release -o artifacts/publish/browser-wasm \
-            -p:BuildNumber="$BUILD_NUMBER" -p:SourceCommit="$SOURCE_SHA" \
-            -p:ActionRunId="$ACTION_RUN_ID" "${args[@]}"
+            -o artifacts/publish/browser-wasm
       - name: Package Browser static files
         run: |
           tar -C artifacts/publish/browser-wasm/wwwroot -czf artifacts/OpenUtauMobile-browser-wasm.tar.gz .

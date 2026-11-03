@@ -14,4 +14,4 @@ runs:
     - uses: bazel-contrib/setup-bazel@0.19.0
       with:
         bazelisk-version: '1.29.0'
-        module-root: native/worldline
+        module-root: native

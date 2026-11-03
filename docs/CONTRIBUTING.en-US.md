@@ -89,14 +89,15 @@ In Rider, open `OpenUtauMobile.sln`, check the .NET CLI path, and select the Win
 run configuration and **Debug** build configuration. Build the target project and dependencies before launch,
 set a C# breakpoint, then click Debug. If necessary, create the configuration under **Run → Edit Configurations**.
 
-No explicit RID or `EnableGameGgml` flag is needed. GAME and worldline are placed in the correct output directory.
-Default output is `OpenUtauMobile.Windows/bin/Debug/net10.0-windows/`; an explicit RID adds a RID subdirectory.
+No explicit RID is needed for ordinary Windows builds. GAME and worldline are placed in the output directory.
+Default output is `OpenUtauMobile.Windows/bin/Debug/net10.0-windows/<RID>/`.
+Shared compiler settings and incremental behavior are described in [Native builds](../native/README.md).
 
 ### 4. Prepare Android
 
 Install `dotnet workload install android` from the repository root (use an elevated terminal if requested).
 Install JDK 21 and use Android Studio's SDK Manager to install API 36, Build-Tools 36.0.0, Platform-Tools,
-Command-line Tools (latest), and the NDK from [android-ndk-version.txt](../native/game/android-ndk-version.txt).
+Command-line Tools (latest), and the NDK from [android-ndk-version.txt](../native/android-ndk-version.txt).
 Android uses the NDK's Clang compiler through the same Bazel entry points.
 The Android project and installed workload remain the source of truth for SDK requirements.
 Current CI uses JDK 17; local builds have also passed with JDK 21.
@@ -105,7 +106,7 @@ Replace the JDK placeholder and SDK path with your installation:
 
 ```powershell
 $androidSdk = Join-Path $env:LOCALAPPDATA 'Android/Sdk'
-$androidNdkVersion = (Get-Content native/game/android-ndk-version.txt -Raw).Trim()
+$androidNdkVersion = (Get-Content native/android-ndk-version.txt -Raw).Trim()
 $androidNdk = Join-Path $androidSdk "ndk/$androidNdkVersion"
 $javaSdk = 'C:/replace-with-your-JDK21-directory'
 $env:JAVA_HOME = $javaSdk
@@ -139,7 +140,7 @@ To check the build before attaching a debugger:
 ```powershell
 $env:AVALONIA_TELEMETRY_OPTOUT='1'
 $androidRid = 'android-arm64'
-dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -c Debug -r $androidRid "-p:AndroidSdkDirectory=$androidSdk" "-p:AndroidNdkDirectory=$androidNdk" "-p:JavaSdkDirectory=$javaSdk"
+dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -r $androidRid
 ```
 
 The signed APK is under `OpenUtauMobile.Android/bin/Debug/net10.0-android36.0/<RID>/`.
@@ -149,7 +150,7 @@ Rider builds, installs, launches and attaches the debugger. No CI release-signin
 See [Rider's Android instructions](https://www.jetbrains.com/help/rider/Run_Debug_Configuration_Xamarin_Android.html).
 
 If compilation fails, inspect the first error and resolved SDK/NDK/JDK paths. A missing native library differs
-from a missing model; do not copy binaries from another RID. Use `GameBuildRoot` to isolate native build caches when needed. Check the [known limitations](../README.md#verification-and-known-limits), including Android
+from a missing model; do not copy binaries from another RID. Check the [known limitations](../README.md#verification-and-known-limits), including Android
 16 KB alignment warnings in existing dependencies. See the Chinese guide for the full troubleshooting table.
 
 ---
