@@ -368,7 +368,7 @@ namespace OpenUtau.Core.Util {
             public double PlaybackRefreshRate = 20.0;
 
             /// <summary>回放时钢琴卷帘纵向滚动：0 = 关闭，1 = 边界滚动，2 = 保持居中。</summary>
-            public int PlaybackVerticalScroll = 0;
+            public int PlaybackVerticalScroll = 2;
 
             /// <summary>
             /// Android 全屏模式：0 = 始终，1 = 仅编辑页，2 = 关闭。
@@ -380,8 +380,8 @@ namespace OpenUtau.Core.Util {
             /// </summary>
             public bool AndroidKeepScreenAwakeWhileEditing = true;
 
-/// <summary>
-            /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont
+            /// <summary>
+            /// 钢琴键行为：0=静音，1=正弦波，2=SoundFont采样
             /// </summary>
             public int PianoKeyBehavior = 1;
 
@@ -402,14 +402,14 @@ namespace OpenUtau.Core.Util {
             public string SoundFontPath = string.Empty;
 
             /// <summary>
-            /// Preferred audio backend. Empty string means auto-select based on platform.
+            /// 偏好的音频后端。空字符串表示根据平台自动选择。
             /// Supported values:
-            /// - "" or "Auto": Auto-select (default)
+            /// - "" or "Auto": 自动 (default)
             /// - "MiniAudio": Use MiniAudio (Windows/Linux/macOS/Android)
             /// - "NAudio": Use NAudio (Windows only)
             /// - "AudioTrack": Use Android AudioTrack (Android only)
             /// - "Dummy": Use dummy audio output (all platforms, no sound)
-            /// Platform-specific availability:
+            /// 特定平台的可用性：
             /// - Windows: MiniAudio, NAudio, Dummy
             /// - Linux/macOS: MiniAudio, Dummy
             /// - Android: MiniAudio, AudioTrack, Dummy
