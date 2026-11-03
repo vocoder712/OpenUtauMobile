@@ -8,6 +8,8 @@ build:unix --cxxopt=-std=c++17
 build:worldline --define=absl=1
 build:game-unix --copt=-fno-associative-math
 build:android --extra_toolchains=@androidndk//:all --linkopt=-Wl,-z,max-page-size=16384 --features=static_link_cpp_runtimes
+# NDK 使用本机安装的 SDK；头文件由 -MD 跟踪，编译动作直接访问 SDK，避免沙箱复制整棵目录。
+build:android --spawn_strategy=local
 build:worldline-linux --linkopt=-lm
 build:worldline-osx --macos_minimum_os=10.12
 build:game-osx --macos_minimum_os=10.15

@@ -48,7 +48,8 @@
     <Target Name="PrepareNativeBuild" DependsOnTargets="$(_NativeResolveSdk);SelectNativeRuntimes"
             Condition="'$(DesignTimeBuild)' != 'true' and '$(IsCrossTargetingBuild)' != 'true'">
         <ItemGroup>
-            <_NativeCommonSource Include="$(_NativeRoot)build.py;$(_NativeRoot)NativeBuild.targets;$(_NativeRoot).bazelrc;$(_NativeRoot).bazelversion;$(_NativeRoot)android-ndk-version.txt" />
+            <_NativeCommonSource Include="$(_NativeRoot)build.py;$(_NativeRoot)NativeBuild.targets;$(_NativeRoot).bazelrc;$(_NativeRoot).bazelversion" />
+            <_NativeCommonSource Include="$(_NativeRoot)android-ndk-version.txt;$(_NativeRoot)android-ndk-inputs.patch" Condition="'$(_NativePlatform)' == 'android'" />
             <_WorldlineSource Include="$(_NativeRoot)upstream_cpp/**/*;$(_NativeRoot)worldline/**/*"
                               Exclude="$(_NativeRoot)**/__pycache__/**;$(_NativeRoot)**/*.md;$(_NativeRoot)**/LICENSE*;$(_NativeRoot)worldline/WorldlineIosResolver.cs" />
             <_GameSource Include="$(_NativeRoot)game/**/*" Exclude="$(_NativeRoot)**/__pycache__/**;$(_NativeRoot)**/*.md" />

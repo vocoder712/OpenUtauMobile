@@ -8,6 +8,8 @@ Worldline 和 GAME 的源码与 Bazel 依赖分别位于各自目录；冻结的
 - 项目的 TFM、`RuntimeIdentifier(s)`、`Configuration` 和 SDK 解析结果决定构建目标。
 - 共同的 C/C++ 编译选项放在 `.bazelrc`，沿用原有的优化构建，Debug/Release 共用算法与浮点选项。
 - Android NDK 版本由 `android-ndk-version.txt` 指定。SDK 解析安装根目录，两个库使用同一路径。
+- 两库共用 `android-ndk-inputs.patch` 收窄 NDK 工具链输入；系统头文件由编译器 `-MD` 结果记录实际依赖，运行库按 ABI 和 API 选择。
+- Android 原生动作使用本地执行策略，直接访问所选 SDK；Linux 构建机同样无需把整个 SDK 头文件树复制进沙箱。
 - iOS、Browser 的静态工具链使用项目所选的系统 SDK 或 .NET 工作负载，最低系统版本与 WASM 特性跟随项目。
 - Python 读取 MSBuild 生成的 `.inputs` 文件，不另设 RID、SDK 路径或编译开关默认值。
 

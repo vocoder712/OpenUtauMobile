@@ -71,7 +71,7 @@ def stage_sources(library, destination):
     for source in (HERE / library).iterdir():
         if source.is_file() and (source.suffix in ('.bazel', '.BUILD', '.bzl', '.cpp', '.py') or source.name == 'MODULE.bazel.lock'):
             files[source.name] = source.read_bytes()
-    for name in ('.bazelrc', '.bazelversion'):
+    for name in ('.bazelrc', '.bazelversion', 'android-ndk-inputs.patch'):
         files[name] = (HERE / name).read_bytes()
     manifest = destination / '.opum-files.json'
     if manifest.is_file():
