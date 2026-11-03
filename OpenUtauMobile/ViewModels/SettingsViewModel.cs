@@ -1541,7 +1541,11 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
         List<AudioBackendOption> backends = [new("", L.S("Settings.Audio.AutoSelect"))];
 
         // 根据平台添加可用后端
-        if (OperatingSystem.IsIOS())
+        if (OperatingSystem.IsBrowser())
+        {
+            backends.Add(new AudioBackendOption("WebAudio", "Web Audio"));
+        }
+        else if (OperatingSystem.IsIOS())
         {
             backends.Add(new AudioBackendOption("AVAudioEngine", "AVAudioEngine"));
             backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
@@ -1561,7 +1565,6 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
         {
             backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
         }
-        // Browser 目前只支持 Dummy
 
         backends.Add(new AudioBackendOption("Dummy", L.S("Settings.Audio.Dummy")));
         return backends;
