@@ -2200,6 +2200,18 @@
   <data name="PluginManager.SelectFile" xml:space="preserve">
     <value>选择 DLL 插件</value>
   </data>
+  <data name="PluginManager.TrustTitle" xml:space="preserve">
+    <value>信任插件</value>
+  </data>
+  <data name="PluginManager.TrustQuestion" xml:space="preserve">
+    <value>是否信任插件“{0}”？</value>
+  </data>
+  <data name="PluginManager.TrustMessage" xml:space="preserve">
+    <value>插件拥有和本软件相同的权限，恶意插件可能会读取或泄露个人信息、修改或删除文件，或执行其他有害操作。&#10;&#10;OpenUtau Mobile 开发者不对插件的行为负责。请仅安装来自可信来源的插件。</value>
+  </data>
+  <data name="PluginManager.Continue" xml:space="preserve">
+    <value>继续</value>
+  </data>
   <data name="PluginManager.Checking" xml:space="preserve">
     <value>正在检查托管程序集…</value>
   </data>

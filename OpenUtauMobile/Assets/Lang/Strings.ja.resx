@@ -2196,6 +2196,18 @@
   <data name="PluginManager.SelectFile" xml:space="preserve">
     <value>DLL プラグインを選択</value>
   </data>
+  <data name="PluginManager.TrustTitle" xml:space="preserve">
+    <value>プラグインの信頼</value>
+  </data>
+  <data name="PluginManager.TrustQuestion" xml:space="preserve">
+    <value>プラグイン「{0}」を信頼しますか？</value>
+  </data>
+  <data name="PluginManager.TrustMessage" xml:space="preserve">
+    <value>プラグインは本アプリと同じ権限を持ちます。悪意のあるプラグインは、個人情報の読み取りや漏えい、ファイルの変更や削除、その他の有害な操作を行う可能性があります。&#10;&#10;OpenUtau Mobile の開発者はプラグインの動作に責任を負いません。信頼できる提供元のプラグインのみをインストールしてください。</value>
+  </data>
+  <data name="PluginManager.Continue" xml:space="preserve">
+    <value>続行</value>
+  </data>
   <data name="PluginManager.Checking" xml:space="preserve">
     <value>マネージドアセンブリを確認中…</value>
   </data>

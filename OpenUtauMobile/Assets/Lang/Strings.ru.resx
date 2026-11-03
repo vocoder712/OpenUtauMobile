@@ -2155,6 +2155,18 @@
   <data name="PluginManager.SelectFile" xml:space="preserve">
     <value>Выберите DLL-плагин</value>
   </data>
+  <data name="PluginManager.TrustTitle" xml:space="preserve">
+    <value>Доверие плагину</value>
+  </data>
+  <data name="PluginManager.TrustQuestion" xml:space="preserve">
+    <value>Вы доверяете плагину «{0}»?</value>
+  </data>
+  <data name="PluginManager.TrustMessage" xml:space="preserve">
+    <value>Плагины имеют те же разрешения, что и приложение. Вредоносные плагины могут читать или раскрывать личную информацию, изменять или удалять файлы либо выполнять другие вредоносные действия.&#10;&#10;Разработчики OpenUtau Mobile не несут ответственности за поведение плагинов. Устанавливайте плагины только из надёжных источников.</value>
+  </data>
+  <data name="PluginManager.Continue" xml:space="preserve">
+    <value>Продолжить</value>
+  </data>
   <data name="PluginManager.Checking" xml:space="preserve">
     <value>Проверка управляемой сборки…</value>
   </data>

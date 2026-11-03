@@ -47,24 +47,40 @@ public static class PluginManagementService
             .ToArray();
     }
 
-    public static async Task InstallAsync(string sourcePath, LoadingPopupViewModel loading)
+    /// <summary>在询问信任前检查安装条件，仅读取元数据，不加载程序集。</summary>
+    public static void ValidateForInstall(string sourcePath)
     {
-        // TODO：补充 iOS 外部程序集执行能力和 Web 导入、加载链路的专门适配。
+        using FileStream source = new(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        ValidateForInstall(sourcePath, source);
+    }
+
+    /// <summary>校验安装条件并返回目标路径，不写入插件目录。</summary>
+    private static string ValidateForInstall(string sourcePath, Stream source)
+    {
         string fileName = Path.GetFileName(sourcePath);
         if (!string.Equals(Path.GetExtension(fileName), ".dll", StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException(L.S("PluginManager.InvalidAssembly"));
         if (string.Equals(fileName, BuiltinFileName, StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException(L.S("PluginManager.BuiltinNotAllowed"));
 
-        await using FileStream source = new(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        loading.UpdateProgress(0, L.S("PluginManager.Checking"));
         ValidateAssembly(source);
-        source.Position = 0;
 
-        Directory.CreateDirectory(Root);
         string destination = ResolvePluginPath(fileName);
         if (File.Exists(destination) || ReadPendingDeletions().Contains(fileName))
             throw new IOException(L.S("PluginManager.AlreadyExists"));
+        return destination;
+    }
+
+    /// <summary>重新校验并复制已获用户信任的插件，不加载程序集。</summary>
+    public static async Task InstallAsync(string sourcePath, LoadingPopupViewModel loading)
+    {
+        // TODO：补充 iOS 外部程序集执行能力和 Web 导入、加载链路的专门适配。
+        await using FileStream source = new(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        loading.UpdateProgress(0, L.S("PluginManager.Checking"));
+        // 确认期间源文件或安装状态可能变化，复制前再次检查。
+        string destination = ValidateForInstall(sourcePath, source);
+        source.Position = 0;
+        Directory.CreateDirectory(Root);
 
         // 临时文件不使用 DLL 扩展名，只有完整复制后才进入插件列表。
         string temporaryPath = Path.Combine(Root, $".{Guid.NewGuid():N}.installing");

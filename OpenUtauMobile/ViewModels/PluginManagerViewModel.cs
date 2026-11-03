@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
 using DynamicData.Binding;
@@ -83,6 +84,17 @@ public class PluginManagerViewModel : NavigateViewModelBase
             {
                 string path = await FilePicker.PickSingleFileAsync(L.S("PluginManager.SelectFile"), ["*.dll"]);
                 if (string.IsNullOrEmpty(path)) return;
+                await LoadingPopupService.RunAsync(L.S("PluginManager.Checking"),
+                    _ => Task.Run(() => PluginManagementService.ValidateForInstall(path)));
+                string? answer = await OptionConfirmPopupService.ShowAsync(
+                    L.S("PluginManager.TrustTitle"),
+                    string.Format(L.S("PluginManager.TrustQuestion"), Path.GetFileName(path))
+                        + Environment.NewLine + Environment.NewLine + L.S("PluginManager.TrustMessage"),
+                    [
+                        new OptionConfirmOption(L.S("Common.Cancel"), "cancel", isDefault: true),
+                        new OptionConfirmOption(L.S("PluginManager.Continue"), "continue", isDestructive: true),
+                    ]);
+                if (answer != "continue") return;
                 await LoadingPopupService.RunAsync(L.S("PluginManager.Checking"), 0, async loading =>
                 {
                     await Task.Run(() => PluginManagementService.InstallAsync(path, loading));

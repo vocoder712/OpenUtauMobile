@@ -2200,6 +2200,18 @@
   <data name="PluginManager.SelectFile" xml:space="preserve">
     <value>Select DLL plugin</value>
   </data>
+  <data name="PluginManager.TrustTitle" xml:space="preserve">
+    <value>Trust plugin</value>
+  </data>
+  <data name="PluginManager.TrustQuestion" xml:space="preserve">
+    <value>Do you trust the plugin “{0}”?</value>
+  </data>
+  <data name="PluginManager.TrustMessage" xml:space="preserve">
+    <value>Plugins have the same permissions as this app. Malicious plugins may read or leak personal information, modify or delete files, or perform other harmful actions.&#10;&#10;The OpenUtau Mobile developers are not responsible for plugin behavior. Only install plugins from trusted sources.</value>
+  </data>
+  <data name="PluginManager.Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
   <data name="PluginManager.Checking" xml:space="preserve">
     <value>Checking managed assembly…</value>
   </data>

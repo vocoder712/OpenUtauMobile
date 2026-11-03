@@ -366,7 +366,7 @@
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.Primary}"
-                                                  Kind="PuzzlePiece"
+                                                  Kind="Plugs"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumEqual},
                                                       ConverterParameter=Plugins}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
@@ -374,7 +374,7 @@
                                                   HorizontalAlignment="Center"
                                                   VerticalAlignment="Center"
                                                   Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                                  Kind="PuzzlePiece"
+                                                  Kind="Plugs"
                                                   IsVisible="{Binding SelectedCategory,
                                                       Converter={StaticResource EnumNotEqual},
                                                       ConverterParameter=Plugins}"  Width="{x:Static semantic:IconTokens.Standard}"  Height="{x:Static semantic:IconTokens.Standard}" />
