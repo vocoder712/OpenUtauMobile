@@ -17,6 +17,8 @@
     <!-- 调试模式 -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <ApplicationId>$(BaseApplicationId).debug</ApplicationId>
+        <!-- 集中保存程序集和调试符号，减少打包时逐文件生成共享库的开销。 -->
+        <AndroidUseAssemblyStore>true</AndroidUseAssemblyStore>
     </PropertyGroup>
     <!-- 发布模式 -->
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
