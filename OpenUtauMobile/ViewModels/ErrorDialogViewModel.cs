@@ -47,14 +47,14 @@ public class ErrorDialogViewModel : PopupViewModelBase
             Message = HasMissingPackage
                 ? string.Format(L.S("ErrorDialog.MissingPackage"), string.Join(", ", packages))
                 : string.IsNullOrWhiteSpace(mce.Message) ? mce.SubstanceException.Message : mce.Message;
-            Detail = mce.SubstanceException.ToString();
+            Detail = mce.ShowStackTrace ? mce.SubstanceException.ToString() : string.Empty;
         }
         else if (notification.e != null)
         {
             Message = string.IsNullOrWhiteSpace(notification.message)
-                ? notification.e.Message
+                ? error!.Message
                 : notification.message;
-            Detail = notification.e.ToString();
+            Detail = error!.ToString();
         }
         else
         {
