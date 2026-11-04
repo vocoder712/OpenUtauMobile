@@ -39,10 +39,18 @@ namespace OpenUtauMobile.Plugin.Abstractions
         ImmutableArray<SingerRoot> Roots,
         CultureInfo Culture,
         PluginStorageContext Storage,
-        IPluginLog Log);
+        IPluginLog Log)
+    {
+        /// <summary>当前插件的用户通知入口。</summary>
+        public IPluginNotifications Notifications => (IPluginNotifications)Log;
+    }
 
     /// <summary>执行时重新读取根目录权限，不能沿用扫描时已过期的删除授权。</summary>
-    public sealed record SingerDeletionContext(ImmutableArray<SingerRoot> Roots, IPluginLog Log);
+    public sealed record SingerDeletionContext(ImmutableArray<SingerRoot> Roots, IPluginLog Log)
+    {
+        /// <summary>当前插件的用户通知入口。</summary>
+        public IPluginNotifications Notifications => (IPluginNotifications)Log;
+    }
 
     /// <summary>提供歌手发现和可选删除能力，不直接修改宿主歌手字典。</summary>
     public interface ISingerProvider

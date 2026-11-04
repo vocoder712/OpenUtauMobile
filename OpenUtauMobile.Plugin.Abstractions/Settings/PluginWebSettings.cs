@@ -8,7 +8,11 @@ namespace OpenUtauMobile.Plugin.Abstractions
     }
 
     /// <summary>每次查询和打开设置时提供的宿主上下文。</summary>
-    public sealed record PluginWebSettingsContext(PluginStorageContext Storage, IPluginLog Log);
+    public sealed record PluginWebSettingsContext(PluginStorageContext Storage, IPluginLog Log)
+    {
+        /// <summary>宿主服务同时实现日志与通知接口，保持既有构造参数不变。</summary>
+        public IPluginNotifications Notifications => (IPluginNotifications)Log;
+    }
 
     /// <summary>当前可用的 Web 设置声明；查询返回 null 表示此刻没有设置入口。</summary>
     public sealed record PluginWebSettingsDescriptor(string Title);

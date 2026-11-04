@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core;
@@ -13,9 +11,12 @@ namespace OpenUtauMobile.Services.SingerPlugins;
 /// <summary>按插件隔离存储；只在用户打开页面时创建插件网页会话。</summary>
 public static class PluginWebSettingsService
 {
-    /// <summary>保持已有插件目录映射，不读取或改写旧设置文件。</summary>
-    public static PluginStorageContext Storage(string pluginId) => new(Path.Combine(PathManager.Inst.DataPath,
-        "PluginData", Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(pluginId))).ToLowerInvariant()));
+    /// <summary>插件 ID 直接作为独占目录名，不迁移或读取旧哈希目录。</summary>
+    public static PluginStorageContext Storage(string pluginId)
+    {
+        SingerPluginContract.ValidatePluginId(pluginId);
+        return new(Path.Combine(PathManager.Inst.DataPath, "PluginData", pluginId));
+    }
 
     /// <summary>映射已成功登记的插件，不加载未激活的 DLL。</summary>
     public static RegisteredSingerPlugin? FindPlugin(string relativePath)

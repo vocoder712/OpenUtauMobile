@@ -9,6 +9,23 @@ namespace OpenUtauMobile.Plugin.Abstractions
         public const int Version = 2;
         /// <summary>外部类型数值的起点；数值只用于桥接，不作为位标志。</summary>
         public const int ExternalTypeMinimum = 0x10000000;
+
+        /// <summary>校验可直接作为跨平台单级目录名的插件 ID；能力 ID 另按命名空间规则校验。</summary>
+        public static void ValidatePluginId(string id)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(id);
+            if (id.Length > 160 || !char.IsAsciiLetterLower(id[0]) || id.EndsWith('.')
+                || id.StartsWith("opum.", StringComparison.Ordinal)
+                || id.Any(character => !char.IsAsciiLetterLower(character) && !char.IsAsciiDigit(character)
+                    && character is not '.' and not '-' and not '_'))
+                throw new ArgumentException("插件 ID 须以小写字母开头，仅含小写字母、数字、点、下划线和短横线，不能以点结尾或使用 opum. 前缀。", nameof(id));
+
+            string stem = id.Split('.')[0];
+            if (stem is "con" or "prn" or "aux" or "nul"
+                || (stem.Length == 4 && stem[3] is >= '1' and <= '9'
+                    && (stem.StartsWith("com", StringComparison.Ordinal) || stem.StartsWith("lpt", StringComparison.Ordinal))))
+                throw new ArgumentException("插件 ID 不能使用系统保留的设备名称。", nameof(id));
+        }
     }
 
     /// <summary>在程序集上声明歌手插件入口；宿主先检查版本，再创建入口实例。</summary>

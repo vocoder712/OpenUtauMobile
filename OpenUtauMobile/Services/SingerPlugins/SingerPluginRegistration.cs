@@ -26,12 +26,8 @@ namespace OpenUtauMobile.Services.SingerPlugins
 
         internal SingerPluginRegistration(SingerPluginDescriptor plugin, Assembly assembly)
         {
-            RequireId(plugin.Id);
+            SingerPluginContract.ValidatePluginId(plugin.Id);
             RequireText(plugin.DisplayName, "插件名称");
-            if (plugin.Id.Contains(':') || plugin.Id.StartsWith("opum.", StringComparison.Ordinal))
-            {
-                throw new InvalidOperationException("插件 ID 不能包含冒号或使用宿主保留前缀 opum.。");
-            }
             this.plugin = plugin;
             this.assembly = assembly;
         }

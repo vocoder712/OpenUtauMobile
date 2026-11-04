@@ -33,7 +33,7 @@ public async ValueTask<IPluginWebSettingsSession> OpenWebSettingsAsync(
 - `DisposeAsync` 负责关闭本地监听、轮询和临时资源。取消令牌在离开页面时取消；不要把监听器生命周期交给浏览器标签页。
 - `ReloadResourcesOnClose` 默认 true，释放会话后由宿主刷新歌手发现；不需要刷新时返回 false。
 - 右上角按钮使用系统浏览器打开会话地址。此时内嵌页面仍拥有会话；返回管理页会结束会话，本地网页在外部浏览器中也随之失效。
-- `context.Storage.DataDirectory` 是插件独占的稳定目录，沿用 `DataPath/PluginData/<插件 ID 的 SHA256>` 映射。`ResourceDirectory` 是其中的 `Resources` 子目录。
+- `context.Storage.DataDirectory` 是插件独占的稳定目录，直接使用 `DataPath/PluginData/<PluginId>`；契约校验插件 ID 为合法的跨平台单级目录名。不迁移或读取旧哈希目录。`ResourceDirectory` 是其中的 `Resources` 子目录。
 - 插件自行管理配置格式、凭据保护、读写并发和版本迁移；发现和安装上下文通过 `Storage` 提供相同目录。
 
 宿主不解释网页的表单或账户协议，不通过 JavaScript 接收账户 token，也不提供可执行宿主命令的脚本桥。运行平台的文件和网络限制仍然适用。

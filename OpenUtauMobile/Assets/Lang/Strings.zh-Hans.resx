@@ -2632,4 +2632,6 @@
   <data name="PluginWebSettings.OpenFailed" xml:space="preserve"><value>无法打开插件设置。</value></data>
   <data name="PluginWebSettings.BrowserFailed" xml:space="preserve"><value>无法打开系统浏览器。</value></data>
   <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>系统 WebView 无法加载页面，可使用右上角按钮在系统浏览器打开。</value></data>
+  <data name="Warning.Plugin.Title" xml:space="preserve"><value>{0}：{1}</value></data>
+  <data name="Warning.Plugin.Detail" xml:space="preserve"><value>{2}</value></data>
 </root>

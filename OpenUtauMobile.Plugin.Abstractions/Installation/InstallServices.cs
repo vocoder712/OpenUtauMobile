@@ -71,5 +71,9 @@ namespace OpenUtauMobile.Plugin.Abstractions
         IInstallWorkspace Workspace, ImmutableArray<SingerRoot> SingerRoots,
         ImmutableArray<InstallTarget> InstallTargets, string DefaultTargetId,
         IInstalledSingerLookup InstalledSingers, IInstallFileOperations Files,
-        PluginStorageContext Storage, IPluginLog Log);
+        PluginStorageContext Storage, IPluginLog Log)
+    {
+        /// <summary>当前插件的用户通知入口。</summary>
+        public IPluginNotifications Notifications => (IPluginNotifications)Log;
+    }
 }
