@@ -38,7 +38,7 @@ namespace OpenUtauMobile.Plugin.Abstractions
     public sealed record SingerDiscoveryContext(
         ImmutableArray<SingerRoot> Roots,
         CultureInfo Culture,
-        IPluginSettingsReader Settings,
+        PluginStorageContext Storage,
         IPluginLog Log);
 
     /// <summary>执行时重新读取根目录权限，不能沿用扫描时已过期的删除授权。</summary>

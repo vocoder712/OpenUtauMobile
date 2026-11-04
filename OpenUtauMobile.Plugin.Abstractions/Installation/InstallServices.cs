@@ -71,5 +71,5 @@ namespace OpenUtauMobile.Plugin.Abstractions
         IInstallWorkspace Workspace, ImmutableArray<SingerRoot> SingerRoots,
         ImmutableArray<InstallTarget> InstallTargets, string DefaultTargetId,
         IInstalledSingerLookup InstalledSingers, IInstallFileOperations Files,
-        IPluginSettingsReader Settings, IPluginLog Log);
+        PluginStorageContext Storage, IPluginLog Log);
 }

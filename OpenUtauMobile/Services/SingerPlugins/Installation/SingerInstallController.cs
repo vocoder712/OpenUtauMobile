@@ -43,13 +43,13 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
                 PathManager.Inst.SingersInstallPath)];
             string fullSource = Path.GetFullPath(sourcePath);
             ImmutableArray<SingerRoot> roots = SingerPluginRuntime.Roots();
-            // 设置读取或应用失败时尚未创建会话，避免构造失败遗留临时目录。
-            IPluginSettingsReader settings = SingerPluginRuntime.Settings(installer.PluginId);
+            // 只提供插件目录，配置格式和兼容性由插件负责。
+            PluginStorageContext storage = SingerPluginRuntime.Storage(installer.PluginId);
             InstallWorkspace workspace = new(PathManager.Inst.CachePath, id);
             files = new(workspace, targets, id);
             context = new(id, CultureInfo.CurrentUICulture, new InstallSource(fullSource, workspace),
                 workspace, roots, targets, targets[0].Id, new InstalledLookup(), files,
-                settings, new SingerPluginRuntime.PluginLog(installer.PluginId));
+                storage, new SingerPluginRuntime.PluginLog(installer.PluginId));
         }
 
         /// <summary>创建失败与分析失败均等待释放插件句柄，再清理缓存。</summary>

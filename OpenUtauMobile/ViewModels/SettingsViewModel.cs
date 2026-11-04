@@ -35,7 +35,6 @@ public enum SettingsCategory
     RenderAndPerformance,
     FileAndStorage,
     AppearanceAndLanguage,
-    Plugins
 }
 
 /// <summary>
@@ -660,8 +659,7 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     public SettingsViewModel(MainViewModel navigator) : base(navigator)
     {
-        BackCommand = ReactiveCommand.CreateFromTask(LeaveSettingsAsync);
-        InitializePluginSelection();
+        BackCommand = ReactiveCommand.Create(() => Navigator.NavigateBack(this));
         ToggleNavCommand = ReactiveCommand.Create(OnToggleNav);
         SelectCategoryCommand = ReactiveCommand.Create<SettingsCategory>(OnSelectCategory);
     }
@@ -1662,7 +1660,6 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
     private void OnSelectCategory(SettingsCategory category)
     {
         SelectedCategory = category;
-        this.RaisePropertyChanged(nameof(IsPluginTab));
         if (ArePreferencesInitialized && category == SettingsCategory.FileAndStorage)
         {
             _ = RefreshCacheSizeAsync();
@@ -1671,7 +1668,6 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     public void Dispose()
     {
-        DisposePluginSelection();
         disposed = true;
         ++_cacheSizeRefreshVersion;
         _disposables.Dispose();

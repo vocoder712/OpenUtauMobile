@@ -23,7 +23,6 @@ namespace OpenUtauMobile.Services.SingerPlugins
         internal IReadOnlyCollection<RegisteredSingerType> Types => types.Values;
         internal IReadOnlyCollection<RegisteredSingerProvider> Providers => providers.Values;
         internal IReadOnlyCollection<RegisteredSingerInstaller> Installers => installers.Values;
-        internal RegisteredPluginSettings? Settings { get; private set; }
 
         internal SingerPluginRegistration(SingerPluginDescriptor plugin, Assembly assembly)
         {
@@ -95,31 +94,6 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 }
             }
             Add(installers, descriptor.Id, new(plugin.Id, descriptor, installer));
-        }
-
-        /// <summary>每个插件登记一个设置分组；描述中没有任意控件或脚本。</summary>
-        public void RegisterSettings(IPluginSettingsHandler settings)
-        {
-            RequireOpen();
-            ArgumentNullException.ThrowIfNull(settings);
-            if (Settings != null)
-            {
-                throw new InvalidOperationException("同一插件只能登记一个设置分组。");
-            }
-            PluginSettingsDescriptor descriptor = settings.Descriptor
-                ?? throw new InvalidOperationException("设置缺少描述。");
-            RequireText(descriptor.DisplayName, "设置名称");
-            if (descriptor.SchemaVersion < 1)
-            {
-                throw new InvalidOperationException("设置数据版本必须为正整数。");
-            }
-            ImmutableArray<PluginSettingDescriptor> fields = OrEmpty(descriptor.Fields);
-            ValidateFields(fields.Select(field => field.Field));
-            if (fields.Any(field => !Enum.IsDefined(field.Application)))
-            {
-                throw new InvalidOperationException("设置包含未知生效方式。");
-            }
-            Settings = new(plugin.Id, descriptor with { Fields = fields }, settings);
         }
 
         internal void Close() => closed = true;

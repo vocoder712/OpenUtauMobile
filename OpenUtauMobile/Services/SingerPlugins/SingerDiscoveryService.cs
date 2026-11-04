@@ -96,7 +96,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
                         CultureInfo culture = CultureInfo.CurrentUICulture;
                         SingerDiscoveryResult result = await Task.Run(async () =>
                         {
-                            SingerDiscoveryContext context = new(roots, culture, SingerPluginRuntime.Settings(provider.PluginId), log);
+                            SingerDiscoveryContext context = new(roots, culture, SingerPluginRuntime.Storage(provider.PluginId), log);
                             return await provider.Instance.DiscoverAsync(context, new Progress<SingerDiscoveryProgress>(), cancellationToken);
                         }, cancellationToken);
                         foreach (PluginDiagnostic diagnostic in result.Diagnostics.IsDefault ? [] : result.Diagnostics)

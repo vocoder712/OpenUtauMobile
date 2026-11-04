@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             x:Class="OpenUtauMobile.Views.PluginWebSettingsView"
+             x:DataType="vm:PluginWebSettingsViewModel">
+    <!-- 网页与宿主工具栏分开，系统 WebView 不覆盖返回和外部浏览器入口。 -->
+    <Grid RowDefinitions="Auto,Auto,*" Background="{DynamicResource Sem.Color.Surface}">
+        <Border Classes="TopBar">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                <Button Classes="TopBarBtn" Command="{Binding BackCommand}" Content="{icons:PhosphorIcons ArrowLeft}"
+                        ToolTip.Tip="{DynamicResource Common.Back}" AutomationProperties.Name="{DynamicResource Common.Back}" />
+                <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{Binding Title}" />
+                <Button Grid.Column="2" Classes="TopBarBtn" Command="{Binding OpenBrowserCommand}"
+                        Content="{icons:PhosphorIcons ArrowSquareOut}" ToolTip.Tip="{DynamicResource PluginWebSettings.OpenBrowser}"
+                        AutomationProperties.Name="{DynamicResource PluginWebSettings.OpenBrowser}" />
+            </Grid>
+        </Border>
+        <!-- 状态使用宿主文字显示，不把 URL 或令牌写到错误栏。 -->
+        <StackPanel Grid.Row="1">
+            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
+            <TextBlock Text="{Binding Error}" Margin="16,8" TextWrapping="Wrap"
+                       IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                       Foreground="{DynamicResource Sem.Color.Error}" />
+        </StackPanel>
+        <ContentControl x:Name="WebViewHost" Grid.Row="2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+    </Grid>
+</UserControl>

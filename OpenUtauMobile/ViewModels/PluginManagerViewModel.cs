@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.SingerPlugins;
 using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -15,9 +17,11 @@ using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
 
-public class PluginManagerViewModel : NavigateViewModelBase
+public class PluginManagerViewModel : NavigateViewModelBase, IDisposable
 {
-    public ObservableCollectionExtended<PluginFileEntry> Plugins { get; } = [];
+    public ObservableCollectionExtended<PluginCardViewModel> Plugins { get; } = [];
+    private readonly SemaphoreSlim queryGate = new(1, 1);
+    private bool disposed;
     [Reactive] public bool IsBusy { get; private set; }
     [Reactive] public bool IsEmpty { get; private set; }
     [Reactive] public bool HasError { get; private set; }
@@ -26,8 +30,9 @@ public class PluginManagerViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
     public ReactiveCommand<Unit, Unit> InstallCommand { get; }
-    public ReactiveCommand<PluginFileEntry, Unit> DeleteCommand { get; }
-    public ReactiveCommand<PluginFileEntry, Unit> CancelDeletionCommand { get; }
+    public ReactiveCommand<PluginCardViewModel, Unit> DeleteCommand { get; }
+    public ReactiveCommand<PluginCardViewModel, Unit> CancelDeletionCommand { get; }
+    public ReactiveCommand<PluginCardViewModel, Unit> OpenSettingsCommand { get; }
 
     public PluginManagerViewModel(MainViewModel navigator) : base(navigator)
     {
@@ -35,8 +40,9 @@ public class PluginManagerViewModel : NavigateViewModelBase
         BackCommand = ReactiveCommand.Create(() => Navigator.NavigateBack(this), canOperate);
         RefreshCommand = ReactiveCommand.CreateFromTask(RefreshAsync, canOperate);
         InstallCommand = ReactiveCommand.CreateFromTask(InstallAsync, canOperate);
-        DeleteCommand = ReactiveCommand.CreateFromTask<PluginFileEntry>(DeleteAsync, canOperate);
-        CancelDeletionCommand = ReactiveCommand.CreateFromTask<PluginFileEntry>(CancelDeletionAsync, canOperate);
+        DeleteCommand = ReactiveCommand.CreateFromTask<PluginCardViewModel>(DeleteAsync, canOperate);
+        CancelDeletionCommand = ReactiveCommand.CreateFromTask<PluginCardViewModel>(CancelDeletionAsync, canOperate);
+        OpenSettingsCommand = ReactiveCommand.CreateFromTask<PluginCardViewModel>(OpenSettingsAsync, canOperate);
     }
 
     public override void OnNavigatedTo() => _ = RefreshAsync();
@@ -59,7 +65,8 @@ public class PluginManagerViewModel : NavigateViewModelBase
         try
         {
             IReadOnlyList<PluginFileEntry> entries = await Task.Run(PluginManagementService.ListFiles);
-            Plugins.Load(entries);
+            Plugins.Load([.. System.Linq.Enumerable.Select(entries, entry => new PluginCardViewModel(entry))]);
+            await QuerySettingsAsync(CancellationToken.None);
             IsEmpty = entries.Count == 0;
             HasError = false;
             ErrorMessage = string.Empty;
@@ -121,7 +128,7 @@ public class PluginManagerViewModel : NavigateViewModelBase
         finally { IsBusy = false; }
     }
 
-    private async Task DeleteAsync(PluginFileEntry entry)
+    private async Task DeleteAsync(PluginCardViewModel entry)
     {
         if (IsBusy) return;
         IsBusy = true;
@@ -151,7 +158,7 @@ public class PluginManagerViewModel : NavigateViewModelBase
         }
     }
 
-    private async Task CancelDeletionAsync(PluginFileEntry entry)
+    private async Task CancelDeletionAsync(PluginCardViewModel entry)
     {
         if (IsBusy) return;
         IsBusy = true;
@@ -176,5 +183,63 @@ public class PluginManagerViewModel : NavigateViewModelBase
     {
         Log.Error(exception, "Plugin management operation failed: {Operation}", key);
         ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(L.S(key), exception)));
+    }
+
+    private async Task QuerySettingsAsync(CancellationToken token)
+    {
+        await queryGate.WaitAsync(token);
+        try
+        {
+            PluginCardViewModel[] cards = [.. Plugins];
+            foreach (PluginCardViewModel card in cards)
+            {
+                if (disposed) return;
+                if (card.Plugin == null || card.IsPendingDeletion) { card.HasWebSettings = false; continue; }
+                using CancellationTokenSource query = CancellationTokenSource.CreateLinkedTokenSource(token);
+                query.CancelAfter(TimeSpan.FromSeconds(5));
+                try
+                {
+                    var descriptor = await Task.Run(async () => await PluginWebSettingsService.QueryAsync(card.Plugin, query.Token), query.Token)
+                        .WaitAsync(query.Token);
+                    token.ThrowIfCancellationRequested();
+                    if (disposed) return;
+                    card.SettingsTitle = descriptor?.Title ?? "";
+                    card.HasWebSettings = descriptor != null;
+                }
+                catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
+                catch (Exception exception)
+                {
+                    card.HasWebSettings = false;
+                    Log.Debug(exception, "Plugin web settings query failed {PluginId}", card.Plugin.PluginId);
+                }
+            }
+        }
+        finally { queryGate.Release(); }
+    }
+
+    private async Task OpenSettingsAsync(PluginCardViewModel card)
+    {
+        if (IsBusy || card.Plugin == null || card.IsPendingDeletion) return;
+        IsBusy = true;
+        try
+        {
+            using CancellationTokenSource query = new(TimeSpan.FromSeconds(5));
+            var descriptor = await Task.Run(async () => await PluginWebSettingsService.QueryAsync(card.Plugin, query.Token), query.Token)
+                .WaitAsync(query.Token);
+            if (disposed) return;
+            if (descriptor == null) { card.HasWebSettings = false; return; }
+            Navigator.Navigate(new PluginWebSettingsViewModel(Navigator, card.Plugin,
+                string.IsNullOrWhiteSpace(descriptor.Title) ? card.FileName : descriptor.Title));
+        }
+        catch (Exception exception) { ShowError("PluginWebSettings.OpenFailed", exception); }
+        finally { IsBusy = false; }
+    }
+
+    public void Dispose()
+    {
+        if (disposed) return;
+        disposed = true;
+        BackCommand.Dispose(); RefreshCommand.Dispose(); InstallCommand.Dispose();
+        DeleteCommand.Dispose(); CancelDeletionCommand.Dispose(); OpenSettingsCommand.Dispose();
     }
 }

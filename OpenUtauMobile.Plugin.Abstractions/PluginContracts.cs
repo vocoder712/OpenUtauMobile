@@ -6,7 +6,7 @@ namespace OpenUtauMobile.Plugin.Abstractions
     public static class SingerPluginContract
     {
         /// <summary>当前支持的契约版本。</summary>
-        public const int Version = 1;
+        public const int Version = 2;
         /// <summary>外部类型数值的起点；数值只用于桥接，不作为位标志。</summary>
         public const int ExternalTypeMinimum = 0x10000000;
     }
@@ -34,6 +34,15 @@ namespace OpenUtauMobile.Plugin.Abstractions
         SingerPluginDescriptor Descriptor { get; }
         /// <summary>提交本插件的能力描述；宿主验证全部登记后统一发布。</summary>
         void Register(ISingerPluginRegistrar registrar);
+
+        /// <summary>运行时动态查询 Web 设置能力；必须无副作用，不在查询时启动服务。</summary>
+        ValueTask<PluginWebSettingsDescriptor?> GetWebSettingsAsync(PluginWebSettingsContext context,
+            CancellationToken cancellationToken) => ValueTask.FromResult<PluginWebSettingsDescriptor?>(null);
+
+        /// <summary>用户点击设置后创建网页会话；服务生命周期由返回对象管理。</summary>
+        ValueTask<IPluginWebSettingsSession> OpenWebSettingsAsync(PluginWebSettingsContext context,
+            CancellationToken cancellationToken) => ValueTask.FromException<IPluginWebSettingsSession>(
+                new NotSupportedException("当前插件没有 Web 设置。"));
     }
 
     /// <summary>宿主收集插件本轮登记，不向插件公开宿主服务容器。</summary>
@@ -45,7 +54,5 @@ namespace OpenUtauMobile.Plugin.Abstractions
         void RegisterProvider(ISingerProvider provider);
         /// <summary>登记由用户手选的文件安装器，不自动探测包内容。</summary>
         void RegisterInstaller(ISingerPackageInstaller installer);
-        /// <summary>登记设置描述和设置操作处理器。</summary>
-        void RegisterSettings(IPluginSettingsHandler settings);
     }
 }

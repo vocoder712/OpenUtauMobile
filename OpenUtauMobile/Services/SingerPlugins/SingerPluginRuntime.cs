@@ -17,9 +17,9 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 string.Equals(Path.GetFullPath(path), Path.GetFullPath(PathManager.Inst.SingersInstallPath),
                     Installation.InstallPaths.Comparison))).ToImmutableArray();
 
-        /// <summary>向发现和安装提供本进程已生效的只读设置。</summary>
-        internal static IPluginSettingsReader Settings(string pluginId) =>
-            PluginSettingsService.Effective(pluginId);
+        /// <summary>发现和安装提供方使用插件独占目录，自行读取持久化配置。</summary>
+        internal static PluginStorageContext Storage(string pluginId) =>
+            PluginWebSettingsService.Storage(pluginId);
 
         /// <summary>将契约诊断写入宿主日志。</summary>
         internal sealed class PluginLog(string pluginId) : IPluginLog

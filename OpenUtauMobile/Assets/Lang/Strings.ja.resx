@@ -2619,13 +2619,13 @@ Applying replaces the source of this input.</value></data>
   <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>音源バージョン</value></data>
   <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>メタデータを読み込み中…</value></data>
   <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>メタデータを解析できませんでした</value></data>
-  <data name="PluginSettings.Title" xml:space="preserve"><value>プラグイン設定</value></data>
-  <data name="PluginSettings.Empty" xml:space="preserve"><value>設定中のプラグインはありません。</value></data>
-  <data name="PluginSettings.SavedRestart" xml:space="preserve"><value>保存しました。再起動後に適用されます。</value></data>
-  <data name="PluginSettings.Saved" xml:space="preserve"><value>保存しました。</value></data>
-  <data name="PluginSettings.Busy" xml:space="preserve"><value>処理中です。しばらくお待ちください。</value></data>
   <data name="SingerDiscovery.MissingReference" xml:space="preserve"><value>シンガーが見つかりません。プラグインとフォルダーを確認してください。</value></data>
   <data name="SingerAvailability.Ready" xml:space="preserve"><value>利用可能</value></data>
-  <data name="Settings.Nav.Plugins" xml:space="preserve"><value>プラグイン</value></data>
-  <data name="PluginSettings.Unselected" xml:space="preserve"><value>未選択</value></data>
+  <data name="PluginWebSettings.Title" xml:space="preserve"><value>プラグイン設定</value></data>
+  <data name="PluginWebSettings.OpenBrowser" xml:space="preserve"><value>システムブラウザーで開く</value></data>
+  <data name="PluginWebSettings.Unavailable" xml:space="preserve"><value>現在、Web 設定は利用できません。</value></data>
+  <data name="PluginWebSettings.InvalidAddress" xml:space="preserve"><value>プラグインの Web アドレスが無効です。</value></data>
+  <data name="PluginWebSettings.OpenFailed" xml:space="preserve"><value>プラグイン設定を開けませんでした。</value></data>
+  <data name="PluginWebSettings.BrowserFailed" xml:space="preserve"><value>システムブラウザーを開けませんでした。</value></data>
+  <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>システム WebView で読み込めません。右上のボタンからブラウザーで開いてください。</value></data>
 </root>

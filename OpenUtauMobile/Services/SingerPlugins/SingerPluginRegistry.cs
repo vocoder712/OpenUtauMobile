@@ -60,7 +60,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
                     current.TypesByBridge.AddRange(batch.Types.Select(type => new KeyValuePair<USingerType, RegisteredSingerType>(type.Descriptor.BridgeValue, type))),
                     current.Providers.AddRange(batch.Providers.Select(provider => new KeyValuePair<string, RegisteredSingerProvider>(provider.Id, provider))),
                     current.Installers.AddRange(batch.Installers.Select(installer => new KeyValuePair<string, RegisteredSingerInstaller>(installer.Descriptor.Id, installer))),
-                    batch.Settings is { } settings ? current.Settings.Add(descriptor.Id, settings) : current.Settings);
+                    current.Instances.Add(descriptor.Id, new(descriptor.Id, assembly, plugin)));
                 Volatile.Write(ref snapshot, next);
             }
         }
@@ -119,7 +119,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 types.ToImmutableDictionary(type => type.Descriptor.BridgeValue),
                 ImmutableDictionary<string, RegisteredSingerProvider>.Empty.WithComparers(StringComparer.Ordinal),
                 ImmutableDictionary<string, RegisteredSingerInstaller>.Empty.WithComparers(StringComparer.Ordinal),
-                ImmutableDictionary<string, RegisteredPluginSettings>.Empty.WithComparers(StringComparer.Ordinal));
+                ImmutableDictionary<string, RegisteredSingerPlugin>.Empty.WithComparers(StringComparer.Ordinal));
         }
     }
 }

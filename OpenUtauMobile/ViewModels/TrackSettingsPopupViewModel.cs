@@ -38,7 +38,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     private readonly URenderSettings originalRenderSettings;
     private readonly string? originalExpressionGraph;
     private readonly USinger? originalSinger;
-    private readonly Phonemizer originalPhonemizer;
+    private readonly Phonemizer? originalPhonemizer;
     private readonly UExpressionDescriptor[] originalTrackExpressions;
     private Phonemizer draftPhonemizer;
     private URenderSettings draftRenderSettings;
@@ -46,11 +46,11 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     private bool classicDraftInitialized;
 
     [Reactive] public USinger? DraftSinger { get; set; }
-    [Reactive] public string DraftSingerName { get; set; } = string.Empty;
-    [Reactive] public string DraftPhonemizerName { get; set; } = string.Empty;
-    [Reactive] public string DraftRenderer { get; set; } = string.Empty;
-    [Reactive] public string DraftResampler { get; set; } = string.Empty;
-    [Reactive] public string DraftWavtool { get; set; } = string.Empty;
+    [Reactive] public string DraftSingerName { get; set; }
+    [Reactive] public string DraftPhonemizerName { get; set; }
+    [Reactive] public string DraftRenderer { get; set; }
+    [Reactive] public string DraftResampler { get; set; }
+    [Reactive] public string DraftWavtool { get; set; }
     [Reactive] public string Error { get; set; } = string.Empty;
     [Reactive] public Vector ScrollOffset { get; set; }
     [Reactive] public bool IsRendererEnabled { get; set; }
@@ -76,11 +76,11 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
 
     public UProject Project => project;
     public UTrack Track => track;
-    public Type OriginalPhonemizerType => originalPhonemizer.GetType();
+    public Type? OriginalPhonemizerType => originalPhonemizer?.GetType();
     public string DraftPhonemizerIdentifier => draftPhonemizer.Name;
     public IReadOnlyList<UExpressionDescriptor> DraftTrackExpressions { get; private set; }
     public bool IsStale => !ReferenceEquals(DocManager.Inst.Project, project) || !project.tracks.Contains(track) ||
-        !ReferenceEquals(track.Singer, originalSinger) || track.Phonemizer?.GetType() != originalPhonemizer.GetType() ||
+        !ReferenceEquals(track.Singer, originalSinger) || track.Phonemizer?.GetType() != originalPhonemizer?.GetType() ||
         !SameRenderSettings(track.RendererSettings, originalRenderSettings) || track.ExpressionGraph != originalExpressionGraph ||
         !SameExpressions(track.TrackExpressions, originalTrackExpressions);
 

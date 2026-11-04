@@ -34,9 +34,9 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="services:PluginFileEntry">
+                                <DataTemplate x:DataType="vm:PluginCardViewModel">
                                     <Border Classes="card">
-                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
                                             <icons:PackIconPhosphorIcons Kind="Plugs" />
                                             <StackPanel Grid.Column="1" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
                                                 <TextBlock Text="{Binding FileName}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
@@ -48,12 +48,18 @@
                                                 <TextBlock IsVisible="{Binding IsPendingDeletion}" Text="{DynamicResource PluginManager.PendingDeletion}"
                                                            TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
                                             </StackPanel>
-                                            <Button Grid.Column="2" Classes="icon" IsVisible="{Binding !IsPendingDeletion}"
+                                            <!-- 齿轮来自现有图标库；可见性由运行时查询声明更新。 -->
+                                            <Button Grid.Column="2" Classes="icon" IsVisible="{Binding HasWebSettings}"
+                                                    Command="{Binding $parent[UserControl].((vm:PluginManagerViewModel)DataContext).OpenSettingsCommand}"
+                                                    CommandParameter="{Binding}" Content="{icons:PhosphorIcons GearSix}"
+                                                    ToolTip.Tip="{DynamicResource PluginWebSettings.Title}"
+                                                    AutomationProperties.Name="{DynamicResource PluginWebSettings.Title}" />
+                                            <Button Grid.Column="3" Classes="icon" IsVisible="{Binding !IsPendingDeletion}"
                                                     Command="{Binding $parent[UserControl].((vm:PluginManagerViewModel)DataContext).DeleteCommand}"
                                                     CommandParameter="{Binding}" Content="{icons:PhosphorIcons Trash}"
                                                     ToolTip.Tip="{DynamicResource Common.Delete}"
                                                     AutomationProperties.Name="{DynamicResource Common.Delete}" />
-                                            <Button Grid.Column="2" Classes="icon" IsVisible="{Binding IsPendingDeletion}"
+                                            <Button Grid.Column="3" Classes="icon" IsVisible="{Binding IsPendingDeletion}"
                                                     Command="{Binding $parent[UserControl].((vm:PluginManagerViewModel)DataContext).CancelDeletionCommand}"
                                                     CommandParameter="{Binding}" Content="{icons:PhosphorIcons ArrowCounterClockwise}"
                                                     ToolTip.Tip="{DynamicResource PluginManager.CancelDeletion}"

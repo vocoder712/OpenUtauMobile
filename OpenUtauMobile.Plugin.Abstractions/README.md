@@ -1,8 +1,8 @@
-# 歌手插件契约 v1
+# 歌手插件契约 v2
 
 插件引用本程序集与 `OpenUtau.Core` 时设置 `Private="false"`，安装包只携带插件自身文件。
 
-使用 `[assembly: SingerPlugin(typeof(PluginEntry))]` 声明实现 `ISingerPlugin` 的公开无参入口。在 `Register` 内同步登记类型、发现提供方、安装器和设置，不执行扫描或安装。
+使用 `[assembly: SingerPlugin(typeof(PluginEntry))]` 声明实现 `ISingerPlugin` 的公开无参入口。在 `Register` 内同步登记类型、发现提供方和安装器，不执行扫描或安装。设置通过运行时 WebUI 会话提供，详见 [Web 设置契约](../docs/PLUGIN_WEB_SETTINGS.md)。
 
 - 插件 ID 使用小写字母开头，允许数字、点、下划线和短横线；`opum.` 为保留前缀。能力 ID 使用 `<PluginId>:<名称>`。
 - 类型桥接值固定在 `0x10000000` 至 `int.MaxValue` 内，宿主检查冲突。

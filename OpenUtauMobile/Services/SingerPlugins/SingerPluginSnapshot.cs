@@ -15,9 +15,9 @@ namespace OpenUtauMobile.Services.SingerPlugins
     public sealed record RegisteredSingerInstaller(string PluginId, SingerInstallerDescriptor Descriptor,
         ISingerPackageInstaller Instance);
 
-    /// <summary>登记时固定描述的插件设置处理器。</summary>
-    public sealed record RegisteredPluginSettings(string PluginId, PluginSettingsDescriptor Descriptor,
-        IPluginSettingsHandler Instance);
+    /// <summary>已登记的插件入口，用于运行时查询 Web 设置能力。</summary>
+    public sealed record RegisteredSingerPlugin(string PluginId, System.Reflection.Assembly Assembly,
+        ISingerPlugin Instance);
 
     /// <summary>一次性发布的能力目录；消费者应持有同一快照完成查询。</summary>
     public sealed record SingerPluginSnapshot(
@@ -26,5 +26,5 @@ namespace OpenUtauMobile.Services.SingerPlugins
         ImmutableDictionary<USingerType, RegisteredSingerType> TypesByBridge,
         ImmutableDictionary<string, RegisteredSingerProvider> Providers,
         ImmutableDictionary<string, RegisteredSingerInstaller> Installers,
-        ImmutableDictionary<string, RegisteredPluginSettings> Settings);
+        ImmutableDictionary<string, RegisteredSingerPlugin> Instances);
 }
