@@ -13,6 +13,8 @@
         <AndroidMaxHeapSize>2G</AndroidMaxHeapSize>
         <TieredPGO>true</TieredPGO>
         <IsTrimmable>true</IsTrimmable>
+        <!-- 使用托管传输，保留动态插件所需的 HTTP/2 与 gRPC 响应尾部支持。 -->
+        <UseNativeHttpHandler>false</UseNativeHttpHandler>
     </PropertyGroup>
     <!-- 调试模式 -->
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -48,6 +50,16 @@
         <AndroidLibrary Include="$(PkgMicrosoft_ML_OnnxRuntime)/runtimes/android/native/onnxruntime.aar"
                         Bind="false"/>
     </ItemGroup>
+
+    <!-- 完整保留 .NET 基础框架的类型和成员，供动态调用使用；保留现有 AOT 配置。 -->
+    <Target Name="PreserveAndroidBaseFrameworkAssemblies" BeforeTargets="PrepareForILLink"
+            DependsOnTargets="ResolveReferences" Condition="'$(PublishTrimmed)' == 'true'">
+        <ItemGroup>
+            <TrimmerRootAssembly Include="@(ReferencePath->WithMetadataValue('FrameworkReferenceName', 'Microsoft.NETCore.App')->'%(Filename)')"
+                                 RootMode="All" />
+            <TrimmerRootAssembly Include="System.Private.CoreLib" RootMode="All" />
+        </ItemGroup>
+    </Target>
 
     <Import Project="../native/NativeBuild.targets" />
 </Project>
