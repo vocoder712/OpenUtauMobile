@@ -2628,4 +2628,12 @@ Applying replaces the source of this input.</value></data>
   <data name="PluginWebSettings.OpenFailed" xml:space="preserve"><value>プラグイン設定を開けませんでした。</value></data>
   <data name="PluginWebSettings.BrowserFailed" xml:space="preserve"><value>システムブラウザーを開けませんでした。</value></data>
   <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>システム WebView で読み込めません。右上のボタンからブラウザーで開いてください。</value></data>
+  <data name="ProjectSave.Capturing" xml:space="preserve"><value>プロジェクトのスナップショットを取得中…</value></data>
+  <data name="ProjectSave.Waiting" xml:space="preserve"><value>現在の保存処理を待機中…</value></data>
+  <data name="ProjectSave.Preparing" xml:space="preserve"><value>プロジェクトデータを準備中…</value></data>
+  <data name="ProjectSave.Serializing" xml:space="preserve"><value>プロジェクトをシリアライズ中…</value></data>
+  <data name="ProjectSave.Writing" xml:space="preserve"><value>プロジェクトファイルを書き込み中…</value></data>
+  <data name="ProjectSave.Replacing" xml:space="preserve"><value>プロジェクトファイルを置換中…</value></data>
+  <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>ストレージを同期中…</value></data>
+  <data name="ProjectSave.Confirming" xml:space="preserve"><value>保存したバージョンを確認中…</value></data>
 </root>

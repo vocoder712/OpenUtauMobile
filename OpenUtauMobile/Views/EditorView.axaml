@@ -13,6 +13,7 @@
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
+             IsEnabled="{Binding !IsSavingProject}"
              Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
     <UserControl.Resources>

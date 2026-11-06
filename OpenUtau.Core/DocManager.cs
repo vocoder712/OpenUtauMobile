@@ -195,7 +195,58 @@ namespace OpenUtau.Core {
         ValidateOptions? pendingValidate;
         UCommandGroup? savedPoint = null;
         UCommandGroup? autosavedPoint = null;
+        private object saveSession = new object();
         public bool Recovered { get; set; } = false; // Flag to not overwrite backup file
+
+        /// <summary>由宿主持有的保存检查点；不暴露或复制撤销队列。</summary>
+        public sealed class SaveCheckpoint {
+            internal readonly UProject Project;
+            internal readonly object Session;
+            internal readonly UCommandGroup? Point;
+
+            internal SaveCheckpoint(UProject project, object session, UCommandGroup? point) {
+                Project = project;
+                Session = session;
+                Point = point;
+            }
+        }
+
+        /// <summary>在 UI 线程捕获已结束编辑事务的保存检查点。</summary>
+        public SaveCheckpoint CaptureSaveCheckpoint() {
+            ThreadGuard.AssertUi();
+            return HasOpenUndoGroup ? throw new InvalidOperationException("Cannot capture a save checkpoint inside an undo group.") : new SaveCheckpoint(Project, saveSession, undoQueue.LastOrDefault());
+        }
+
+        /// <summary>核查工程引用及装载会话，拒绝旧保存任务提交至新文档。</summary>
+        public bool IsSaveCheckpointCurrent(SaveCheckpoint checkpoint) {
+            ThreadGuard.AssertUi();
+            return ReferenceEquals(Project, checkpoint.Project) && ReferenceEquals(saveSession, checkpoint.Session);
+        }
+
+        /// <summary>仅按持久化编辑检查点判断是否需要自动保存，不受渲染通知影响。</summary>
+        public bool NeedsAutoSave(SaveCheckpoint checkpoint) {
+            ThreadGuard.AssertUi();
+            return IsSaveCheckpointCurrent(checkpoint) && !ReferenceEquals(checkpoint.Point, autosavedPoint);
+        }
+
+        /// <summary>宿主确认写盘及平台同步成功后提交捕获点；此方法不执行文件读写。</summary>
+        public bool CompleteSave(SaveCheckpoint checkpoint, string path, bool autoSave) {
+            ThreadGuard.AssertUi();
+            if (!IsSaveCheckpointCurrent(checkpoint)) {
+                return false;
+            }
+            if (autoSave) {
+                autosavedPoint = checkpoint.Point;
+            } else {
+                Project.FilePath = path;
+                Project.Saved = true;
+                savedPoint = checkpoint.Point;
+                autosavedPoint = checkpoint.Point;
+                Recovered = false;
+                Publish(new SaveProjectNotification(path));
+            }
+            return true;
+        }
 
         public bool ChangesSaved {
             get {
@@ -302,6 +353,7 @@ namespace OpenUtau.Core {
                         Format.Ustx.Save(saveProjectNotif.Path, Project);
                     }
                 } else if (cmd is LoadProjectNotification notification) {
+                    saveSession = new object();
                     undoQueue.Clear();
                     redoQueue.Clear();
                     undoGroup = null;

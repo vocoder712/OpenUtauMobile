@@ -23,7 +23,6 @@ using OpenUtauMobile.Android.Services.Graphics;
 using OpenUtauMobile.Android.Services.Platform;
 using OpenUtauMobile.Android.Services.Performance;
 using OpenUtauMobile.Android.Services.Storage;
-using Serilog;
 using Environment = System.Environment;
 using Log = Serilog.Log;
 using Path = System.IO.Path;
@@ -123,6 +122,24 @@ public class MainActivity : AvaloniaMainActivity
         }
 
         base.OnDestroy();
+    }
+
+    /// <summary>离开前请求刷新合并的偏好，避免以同步磁盘等待阻塞 Android 生命周期。</summary>
+    protected override void OnPause()
+    {
+        base.OnPause();
+        _ = FlushPreferencesAsync();
+    }
+
+    /// <summary>异步刷新结束后记录异常，不在生命周期回调中等待磁盘。</summary>
+    private static async Task FlushPreferencesAsync()
+    {
+        try
+        {
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+                await OpenUtauMobile.Services.Projects.PreferencesWriter.Inst.FlushAsync());
+        }
+        catch (Exception error) { Log.Error(error, "暂停时刷新偏好失败"); }
     }
     /// <summary>
     /// 自动恢复沉浸模式
@@ -248,7 +265,7 @@ public class MainActivity : AvaloniaMainActivity
     /// </summary>
     private static void InitLogging()
     {
-        OpenUtauMobile.Services.AppLogging.Initialize(PathManager.Inst.LogFilePath);
+        AppLogging.Initialize(PathManager.Inst.LogFilePath);
         Log.Information("==========开始记录日志==========");
     }
 

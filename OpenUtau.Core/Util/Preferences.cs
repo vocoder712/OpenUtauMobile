@@ -14,12 +14,19 @@ namespace OpenUtau.Core.Util {
     public static class Preferences {
         public static SerializablePreferences Default { get; private set; }
 
+        /// <summary>可选宿主保存入口；由宿主捕获独立数据、合并请求并安排后台持久化。</summary>
+        public static Action? SaveOverride { get; set; }
+
         static Preferences() {
             Load();
         }
 
         public static void Save() {
             try {
+                if (SaveOverride != null) {
+                    SaveOverride();
+                    return;
+                }
                 File.WriteAllText(PathManager.Inst.PrefsFilePath,
                     Json.Serialize(Default, Json.WriteIndentedOptions),
                     Encoding.UTF8);

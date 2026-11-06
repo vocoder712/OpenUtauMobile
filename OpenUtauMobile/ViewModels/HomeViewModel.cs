@@ -174,6 +174,7 @@ public class HomeViewModel : NavigateViewModelBase
 
     private void DismissRecovery()
     {
+        Services.Projects.ProjectSaveCoordinator.Inst.DismissRecovery();
         RecoveryBannerDismissed = true;
         RecoveryBannerHeight = 0;
         Preferences.Default.RecoveryPath = string.Empty;

@@ -2587,4 +2587,12 @@ Applying replaces the source of this input.</value></data>
   <data name="PluginWebSettings.OpenFailed" xml:space="preserve"><value>Не удалось открыть настройки плагина.</value></data>
   <data name="PluginWebSettings.BrowserFailed" xml:space="preserve"><value>Не удалось открыть системный браузер.</value></data>
   <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>Системный WebView не смог загрузить страницу. Откройте её в браузере кнопкой справа вверху.</value></data>
+  <data name="ProjectSave.Capturing" xml:space="preserve"><value>Создание снимка проекта…</value></data>
+  <data name="ProjectSave.Waiting" xml:space="preserve"><value>Ожидание текущего сохранения…</value></data>
+  <data name="ProjectSave.Preparing" xml:space="preserve"><value>Подготовка данных проекта…</value></data>
+  <data name="ProjectSave.Serializing" xml:space="preserve"><value>Сериализация проекта…</value></data>
+  <data name="ProjectSave.Writing" xml:space="preserve"><value>Запись файла проекта…</value></data>
+  <data name="ProjectSave.Replacing" xml:space="preserve"><value>Замена файла проекта…</value></data>
+  <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>Синхронизация хранилища…</value></data>
+  <data name="ProjectSave.Confirming" xml:space="preserve"><value>Подтверждение сохранённой версии…</value></data>
 </root>

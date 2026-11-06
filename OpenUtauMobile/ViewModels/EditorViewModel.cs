@@ -21,6 +21,7 @@ using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Services.Editor;
+using OpenUtauMobile.Services.Projects;
 using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
@@ -64,6 +65,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     private readonly ProjectOpenOptions _projectOpenOptions;
     private bool _loadStarted;
     private bool _projectLoaded;
+    private DocManager.SaveCheckpoint? _saveOwner;
     private PreparedProject? _preparedProject;
     private bool _disposed;
     private readonly TaskCompletionSource<bool> _projectLoadCompletion =
@@ -71,6 +73,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     [Reactive]
     public bool IsLoadingProject { get; private set; } = true;
+
+    /// <summary>手动保存期间限制工程交互，进度由主窗口的模态弹窗显示。</summary>
+    [Reactive]
+    public bool IsSavingProject { get; private set; }
 
     #region 响应式命令
 
@@ -444,7 +450,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             {
                 Interval = TimeSpan.FromSeconds(Math.Max(Preferences.Default.AutoSaveInterval, 30))
             };
-            _autoSaveTimer.Tick += (_, _) => AutoSaveProject();
+            _autoSaveTimer.Tick += (_, _) => _ = AutoSaveProjectAsync();
         }
 
         // TrackHeight 变更时，MaxTrackOffset 依赖它，置脏并重新校验。目前设计下轨道高度不变，但预留了修改接口，保持逻辑完整性。
@@ -511,27 +517,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         return new PreparedProject(project, repairedPhonemizers);
     }
 
-    private static void AutoSaveProject()
+    private async Task AutoSaveProjectAsync()
     {
-        UProject project = DocManager.Inst.Project;
-        string originalProjectPath = project.FilePath;
-        if (!string.IsNullOrEmpty(originalProjectPath))
-        {
-            DocManager.Inst.AutoSave();
-            return;
-        }
-
-        // 未命名工程需要一个临时序列化基准目录，波形分片才能生成相对路径。
-        Directory.CreateDirectory(PathManager.Inst.BackupsPath);
-        project.FilePath = Path.Combine(PathManager.Inst.BackupsPath, "Untitled.ustx");
-        try
-        {
-            DocManager.Inst.AutoSave();
-        }
-        finally
-        {
-            project.FilePath = originalProjectPath;
-        }
+        if (!_disposed && _projectLoaded && !IsSavingProject && _saveOwner is { } owner)
+            await ProjectSaveCoordinator.Inst.AutoSaveAsync(owner);
     }
 
     /// <summary>
@@ -555,6 +544,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
             _projectLoaded = true;
+            _saveOwner = DocManager.Inst.CaptureSaveCheckpoint();
             loadSucceeded = true;
             PlaybackTimer.Start();
             _autoSaveTimer?.Start();
@@ -701,9 +691,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 RequestInvalidateVisual?.Invoke();
                 break;
             case SaveProjectNotification saveProjectNotification:
-                if (!OperatingSystem.IsBrowser()) ToastService.Enqueue(L.S("Editor.Saved"));
                 ProjectPath = DocManager.Inst.Project.FilePath;
-                Preferences.AddRecentFileIfEnabled(saveProjectNotification.Path);
+                this.RaisePropertyChanged(nameof(Saved));
                 break;
         }
     }
@@ -832,24 +821,17 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private async Task SaveAsTemplateAsync()
     {
-        UProject project = DocManager.Inst.Project;
-        string? file = await TextInputPopupService.ShowAsync(
-            L.S("EditorMore.SaveAsTemplate"), string.Empty,
-            L.S("ProjectTemplates.Name"), "default");
-        if (string.IsNullOrEmpty(file) || _disposed || DocManager.Inst.Project != project ||
-            (ServiceHub.UseDesktopFileWorkflows ? Navigator.ActiveEditor != this : Navigator.CurrentViewModel != this)) return;
-        try
+        await RunManualSaveAsync(async () =>
         {
-            file = Path.GetFileNameWithoutExtension(file);
-            file = Path.Combine(PathManager.Inst.TemplatesPath, $"{file}.ustx");
-            Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
-            Ustx.Save(file, project.CloneAsTemplate());
-            await ServiceHub.FlushFileSystemAsync();
-        }
-        catch (Exception exception)
-        {
-            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
-        }
+            if (!OwnsSaveDocument()) return false;
+            string? name = await TextInputPopupService.ShowAsync(
+                L.S("EditorMore.SaveAsTemplate"), string.Empty,
+                L.S("ProjectTemplates.Name"), "default");
+            if (string.IsNullOrWhiteSpace(name) || !OwnsSaveDocument()) return false;
+            name = Path.GetFileNameWithoutExtension(name);
+            if (string.IsNullOrWhiteSpace(name)) return false;
+            return await SaveWithProgressAsync(Path.Combine(PathManager.Inst.TemplatesPath, $"{name}.ustx"), template: true);
+        });
     }
 
     private static async Task ImportAudio()
@@ -1665,38 +1647,28 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <summary>
     /// 实际执行保存
     /// </summary>
-    /// <param name="fileName">置空表示保存到原位</param>
-    private static void SaveAs(string fileName)
-    {
-        DocManager.Inst.ExecuteCmd(new SaveProjectNotification(fileName));
-    }
-    /// <summary>
-    /// 判断直接保存还是另存为
-    /// </summary>
     private Task<bool> Save() => SaveFromInputAsync(false);
 
     private async Task<bool> SaveCore()
     {
+        if (!OwnsSaveDocument()) return false;
         if (ServiceHub.UseDesktopFileWorkflows ? string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) : !Saved) return await RequestSaveAs();
-        SaveAs(string.Empty);
-        return true;
+        return await SaveWithProgressAsync(DocManager.Inst.Project.FilePath, template: false);
     }
     /// <summary>
     /// 打开弹窗获取保存filename
     /// </summary>
     /// <returns>是否成功保存</returns>
-    private static async Task<bool> RequestSaveAs()
+    private async Task<bool> RequestSaveAs()
     {
+        if (!OwnsSaveDocument()) return false;
         if (ServiceHub.UseDesktopFileWorkflows || FilePickerWorkspace.IsSandboxed)
         {
             string destination = await FilePicker.SaveFileAsync(L.S("FilePicker.SaveProjectAs"), "ustx",
                 string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) ? L.S("FilePicker.DefaultProjectName") : Path.GetFileNameWithoutExtension(DocManager.Inst.Project.FilePath),
                 Preferences.Default.LastSaveProjectDirectory);
-            if (string.IsNullOrEmpty(destination)) return false;
-            SaveAs(destination);
-            Preferences.Default.LastSaveProjectDirectory = Path.GetDirectoryName(destination) ?? string.Empty;
-            Preferences.Save();
-            return true;
+            if (string.IsNullOrEmpty(destination) || !OwnsSaveDocument()) return false;
+            return await SaveWithProgressAsync(destination, template: false);
         }
         FilePickerPopup view = new();
         // TODO: 使用统一文件入口
@@ -1706,14 +1678,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             Preferences.Default.LastSaveProjectDirectory,
             L.S("FilePicker.DefaultProjectName"));
         string? fileName = await PopupService.Show<string>(view, vm);
-        if (string.IsNullOrEmpty(fileName))
+        if (string.IsNullOrEmpty(fileName) || !OwnsSaveDocument())
         {
             return false;
         }
-        SaveAs(fileName);
-        Preferences.Default.LastSaveProjectDirectory = Path.GetDirectoryName(fileName) ?? Preferences.Default.LastSaveProjectDirectory;
-        Preferences.Save();
-        return true;
+        return await SaveWithProgressAsync(fileName, template: false);
     }
 
     private static async Task<byte> ShowExitEditorConfirmPopupAsync()
@@ -2460,22 +2429,28 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <returns>已保存或用户确认退出时返回 true。</returns>
     public async Task<bool> ConfirmExitAsync()
     {
+        if (_manualSaveTask != null && !await _manualSaveTask) return false;
         // 同步格式读取器会继续运行；离开后丢弃结果，返回操作不等待读取。
         if (!_projectLoaded) return true;
+        if (!OwnsSaveDocument()) return false;
         if (DocManager.Inst.ChangesSaved)
         {
             return true;
         }
 
+        var revision = DocManager.Inst.Revision;
         byte actionRegister = await ShowExitEditorConfirmPopupAsync();
+        if (!OwnsSaveDocument() || revision != DocManager.Inst.Revision) return false;
         switch ((ExitEditorActionRegister)actionRegister)
         {
             case ExitEditorActionRegister.ExitWithoutSave:
+                ProjectSaveCoordinator.Inst.DismissRecovery();
                 Preferences.Default.RecoveryPath = string.Empty;
-                Preferences.Save();
-                return true;
+                await PreferencesWriter.Inst.SaveAsync();
+                await ServiceHub.FlushFileSystemAsync();
+                return OwnsSaveDocument() && revision == DocManager.Inst.Revision;
             case ExitEditorActionRegister.SaveAndExit:
-                return await Save();
+                return await Save() && OwnsSaveDocument() && DocManager.Inst.ChangesSaved;
             case ExitEditorActionRegister.Cancel:
             default:
                 return false;

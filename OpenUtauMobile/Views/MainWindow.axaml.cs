@@ -1,6 +1,8 @@
 using System;
 using Avalonia.Controls;
 using OpenUtauMobile.ViewModels;
+using OpenUtauMobile.Services.Projects;
+using OpenUtau.Core;
 using Serilog;
 
 namespace OpenUtauMobile.Views;
@@ -39,11 +41,15 @@ public partial class MainWindow : Window
         _closeRequestPending = true;
         try
         {
+            var project = DocManager.Inst.Project;
+            var revision = DocManager.Inst.Revision;
             if (!await mainViewModel.ConfirmCloseAsync())
             {
                 return;
             }
 
+            await PreferencesWriter.Inst.FlushAsync();
+            if (!ReferenceEquals(project, DocManager.Inst.Project) || revision != DocManager.Inst.Revision) return;
             _closeConfirmed = true;
             Close();
         }

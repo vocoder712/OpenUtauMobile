@@ -2634,4 +2634,12 @@ Applying replaces the source of this input.</value></data>
   <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>The system WebView could not load this page. Use the top-right button to open it in your browser.</value></data>
   <data name="Warning.Plugin.Title" xml:space="preserve"><value>{0}: {1}</value></data>
   <data name="Warning.Plugin.Detail" xml:space="preserve"><value>{2}</value></data>
+  <data name="ProjectSave.Capturing" xml:space="preserve"><value>Capturing project snapshot…</value></data>
+  <data name="ProjectSave.Waiting" xml:space="preserve"><value>Waiting for the current save…</value></data>
+  <data name="ProjectSave.Preparing" xml:space="preserve"><value>Preparing project data…</value></data>
+  <data name="ProjectSave.Serializing" xml:space="preserve"><value>Serializing project…</value></data>
+  <data name="ProjectSave.Writing" xml:space="preserve"><value>Writing project file…</value></data>
+  <data name="ProjectSave.Replacing" xml:space="preserve"><value>Replacing project file…</value></data>
+  <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>Synchronizing storage…</value></data>
+  <data name="ProjectSave.Confirming" xml:space="preserve"><value>Confirming saved version…</value></data>
 </root>
