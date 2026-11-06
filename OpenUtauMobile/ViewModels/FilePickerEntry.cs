@@ -12,6 +12,8 @@ public sealed class FilePickerEntry : ReactiveObject
 
     public FileSystemInfo Item { get; }
     public string Name => Item.Name;
+    /// <summary>目录读取阶段预取的大小；文件消失或无法读取时为空。</summary>
+    public long? Size { get; internal set; }
     public bool CanSelect => Item is FileInfo && selectionChanged != null;
 
     public bool IsSelected

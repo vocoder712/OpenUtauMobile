@@ -15,7 +15,6 @@
     <UserControl.Resources>
         <conv:SingerTypeToColorConverter x:Key="SingerTypeToColor" />
         <conv:SingerTypeToLabelConverter x:Key="SingerTypeToLabel" />
-        <conv:AvatarDataToBitmapConverter x:Key="AvatarDataToBitmap" />
         <conv:NullToBoolConverter x:Key="NullToBool" />
         <conv:StringToInitialConverter x:Key="StringToInitial" />
     </UserControl.Resources>
@@ -66,13 +65,10 @@
                                                 Foreground="{Binding SingerType, Converter={StaticResource SingerTypeToColor}}" />
                                             <Panel
                                                 IsVisible="{Binding AvatarData, Converter={StaticResource NullToBool}}">
-                                                <Ellipse Width="48" Height="48">
-                                                    <Ellipse.Fill>
-                                                        <ImageBrush
-                                                            Source="{Binding AvatarData, Converter={StaticResource AvatarDataToBitmap}}"
-                                                            Stretch="UniformToFill" />
-                                                    </Ellipse.Fill>
-                                                </Ellipse>
+                                                <!-- 头像异步解码；圆形容器保留原有裁剪和文字占位。 -->
+                                                <Border Width="48" Height="48" CornerRadius="24" ClipToBounds="True">
+                                                    <c:AsyncAvatarImage Data="{Binding AvatarData}" Stretch="UniformToFill" />
+                                                </Border>
                                             </Panel>
                                         </Panel>
 

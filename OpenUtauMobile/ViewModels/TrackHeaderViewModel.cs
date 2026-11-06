@@ -1,10 +1,9 @@
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -15,6 +14,7 @@ using OpenUtau.Core.ExpressionGraph;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
@@ -35,6 +35,8 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     private bool _isRefreshing;
     private byte[]? _avatarData;
     private bool _avatarInitialized;
+    private CancellationTokenSource? _avatarLoading;
+    private bool _disposed;
 
     [Reactive] public string TrackName { get; set; } = string.Empty;
     [Reactive] public bool Muted { get; set; }
@@ -382,33 +384,47 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         Refresh();
     }
 
+    /// <summary>只在头像数据变化时请求后台解码，避免刷新轨道头时阻塞 UI。</summary>
     private void RefreshAvatar()
     {
+        if (_disposed) return;
         byte[]? avatarData = _track.Singer?.AvatarData;
         if (_avatarInitialized && ReferenceEquals(_avatarData, avatarData)) return;
         _avatarInitialized = true;
         _avatarData = avatarData;
-        SingerIcon?.Dispose();
+        _avatarLoading?.Cancel();
+        _avatarLoading = null;
+        Bitmap? previous = SingerIcon;
         SingerIcon = null;
-        if (avatarData == null)
-        {
-            SingerIcon = null;
-            HasSingerAvatar = false;
-            return;
-        }
+        previous?.Dispose();
+        HasSingerAvatar = false;
+        if (avatarData is { Length: > 0 }) _ = LoadAvatarAsync(avatarData);
+    }
 
+    /// <summary>过时或已释放轨道头的解码结果不再进入绑定，并立即释放。</summary>
+    private async Task LoadAvatarAsync(byte[] avatarData)
+    {
+        using CancellationTokenSource loading = new();
+        _avatarLoading = loading;
         try
         {
-            using MemoryStream stream = new(avatarData);
-            SingerIcon = new Bitmap(stream);
+            Bitmap bitmap = await BitmapLoader.DecodeAsync(avatarData, loading.Token);
+            if (_disposed || loading.IsCancellationRequested || !ReferenceEquals(_avatarLoading, loading))
+            {
+                bitmap.Dispose();
+                return;
+            }
+            SingerIcon = bitmap;
             HasSingerAvatar = true;
         }
+        catch (OperationCanceledException) when (loading.IsCancellationRequested) { }
         catch (Exception e)
         {
-            SingerIcon = null;
-            HasSingerAvatar = false;
-            Debug.WriteLine(e);
             Log.Error(e, "Failed to decode avatar.");
+        }
+        finally
+        {
+            if (ReferenceEquals(_avatarLoading, loading)) _avatarLoading = null;
         }
     }
 
@@ -440,9 +456,13 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     public void Dispose()
     {
+        _disposed = true;
+        _avatarLoading?.Cancel();
+        _avatarLoading = null;
         _disposable.Dispose();
-        SingerIcon?.Dispose();
+        Bitmap? previous = SingerIcon;
         SingerIcon = null;
+        previous?.Dispose();
         _avatarData = null;
         GC.SuppressFinalize(this);
     }

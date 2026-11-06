@@ -1760,8 +1760,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 case ExportAudioMode.Mixdown:
                     await PlaybackManager.Inst.RenderMixdown(DocManager.Inst.Project, request.ExportPath);
                     await ServiceHub.FlushFileSystemAsync();
-                    success = File.Exists(request.ExportPath) &&
-                              File.GetLastWriteTimeUtc(request.ExportPath) >= startedAt.AddSeconds(-1);
+                    success = await Task.Run(() => File.Exists(request.ExportPath) &&
+                              File.GetLastWriteTimeUtc(request.ExportPath) >= startedAt.AddSeconds(-1));
                     ToastService.Enqueue(L.S(success
                         ? "ExportAudioPopup.Toast.Success.Mixdown"
                         : "ExportAudioPopup.Toast.Failed"));
@@ -1772,10 +1772,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     await ServiceHub.FlushFileSystemAsync();
                     string? trackDir = Path.GetDirectoryName(request.ExportPath);
                     string trackBase = Path.GetFileNameWithoutExtension(request.ExportPath);
-                    success = !string.IsNullOrWhiteSpace(trackDir) &&
+                    success = await Task.Run(() => !string.IsNullOrWhiteSpace(trackDir) &&
                               Directory.Exists(trackDir) &&
-                              Directory.GetFiles(trackDir, $"{trackBase}_*.wav")
-                                  .Any(file => File.GetLastWriteTimeUtc(file) >= startedAt.AddSeconds(-1));
+                              Directory.EnumerateFiles(trackDir, $"{trackBase}_*.wav")
+                                  .Any(file => File.GetLastWriteTimeUtc(file) >= startedAt.AddSeconds(-1)));
                     ToastService.Enqueue(L.S(success
                         ? "ExportAudioPopup.Toast.Success.Tracks"
                         : "ExportAudioPopup.Toast.Failed"));

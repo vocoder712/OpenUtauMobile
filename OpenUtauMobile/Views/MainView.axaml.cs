@@ -11,6 +11,8 @@ namespace OpenUtauMobile.Views;
 
 public partial class MainView : UserControl
 {
+    private DocumentValidationScheduler? _validationScheduler;
+
     public MainView()
     {
         InitializeComponent();
@@ -39,6 +41,11 @@ public partial class MainView : UserControl
         WarningOverlay.SetPresentationReady(PageHost.Content is ViewModelBase and not SplashScreenViewModel);
         // Android 的 Material You 色值在 TopLevel 建立后才可由平台设置读取。
         App.RefreshSystemThemeColor();
+        if (TopLevel.GetTopLevel(this) is { } validationHost)
+        {
+            _validationScheduler = new DocumentValidationScheduler(validationHost);
+        }
+
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested += OnBackRequested;
         ToastService.Register(ToastOverlay.ConsumeAsync);
@@ -55,6 +62,8 @@ public partial class MainView : UserControl
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _validationScheduler?.Dispose();
+        _validationScheduler = null;
         base.OnDetachedFromVisualTree(e);
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested -= OnBackRequested;

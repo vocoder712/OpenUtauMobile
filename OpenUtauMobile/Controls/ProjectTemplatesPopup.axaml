@@ -1,6 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
              xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
@@ -9,12 +8,14 @@
              x:Class="OpenUtauMobile.Controls.ProjectTemplatesPopup"
              x:DataType="vm:ProjectTemplatesViewModel"
              Classes="PopupDialogRoot">
-    <UserControl.Resources><conv:CountZeroToBoolConverter x:Key="CountZero" /></UserControl.Resources>
     <dialogs:DialogShell Header="{DynamicResource ProjectTemplates.Title}" CloseCommand="{Binding CancelCommand}">
         <ScrollViewer HorizontalScrollBarVisibility="Disabled">
             <Border Classes="DialogBodyBorder">
                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
-                    <TextBlock Text="{DynamicResource ProjectTemplates.Empty}" TextWrapping="Wrap" IsVisible="{Binding Items.Count, Converter={StaticResource CountZero}}" x:Name="EmptyLabel" />
+                    <!-- 目录后台读取时显示局部进度，允许立即关闭弹窗。 -->
+                    <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsLoading}" />
+                    <TextBlock Text="{DynamicResource ProjectTemplates.Empty}" TextWrapping="Wrap" IsVisible="{Binding ShowEmpty}" x:Name="EmptyLabel" />
+                    <TextBlock Text="{Binding LoadError}" TextWrapping="Wrap" IsVisible="{Binding HasLoadError}" />
                     <ItemsControl ItemsSource="{Binding Items}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:ProjectTemplateItem">

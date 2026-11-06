@@ -214,7 +214,7 @@
                                                     FontSize="14"
                                                     TextTrimming="CharacterEllipsis" />
                                                 <TextBlock
-                                                    Text="{Binding Item, Converter={StaticResource FileSize}}"
+                                                    Text="{Binding Size, Converter={StaticResource FileSize}}"
                                                     FontSize="11"
                                                     Opacity="0.45"
                                                     IsVisible="{Binding Item, Converter={StaticResource IsFile}}" />

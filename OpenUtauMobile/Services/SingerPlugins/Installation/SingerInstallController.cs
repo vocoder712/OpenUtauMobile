@@ -35,6 +35,10 @@ namespace OpenUtauMobile.Services.SingerPlugins.Installation
         /// <summary>预览资源只能从本会话缓存读取。</summary>
         public string PreviewPath(string relativePath) => context.Workspace.GetPath(relativePath);
 
+        /// <summary>在已有会话串行器内后台预读图片，清理缓存前完成文件访问。</summary>
+        public Task<byte[]> ReadPreviewAsync(string relativePath) => RunAsync(token =>
+            File.ReadAllBytesAsync(PreviewPath(relativePath), token));
+
         public SingerInstallController(RegisteredSingerInstaller installer, string sourcePath)
         {
             this.installer = installer;

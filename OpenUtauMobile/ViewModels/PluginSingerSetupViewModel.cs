@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Plugin.Abstractions;
+using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.SingerPlugins;
 using OpenUtauMobile.Services.SingerPlugins.Installation;
 using ReactiveUI;
@@ -66,9 +66,9 @@ namespace OpenUtauMobile.ViewModels
                 IsProgressIndeterminate = item.Total is not > 0;
                 ProgressPercent = item.Total is > 0 ? Math.Clamp(item.Completed * 100d / item.Total.Value, 0, 100) : 0;
             });
-            NextCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async () => Apply(await controller.NextAsync(Submission(), progress))),
+            NextCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async () => await ApplyAsync(await controller.NextAsync(Submission(), progress))),
                 this.WhenAnyValue(item => item.CanNext, item => item.IsBusy, item => item.IsClosing, (ready, busy, closing) => ready && !busy && !closing));
-            BackCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async () => Apply(await controller.BackAsync())),
+            BackCommand = ReactiveCommand.CreateFromTask(() => RunAsync(async () => await ApplyAsync(await controller.BackAsync())),
                 this.WhenAnyValue(item => item.CanBack, item => item.IsBusy, item => item.IsClosing, (ready, busy, closing) => ready && !busy && !closing));
             InstallCommand = ReactiveCommand.CreateFromTask(() => RunAsync(InstallAsync),
                 this.WhenAnyValue(item => item.CanInstall, item => item.IsBusy, item => item.IsClosing,
@@ -81,23 +81,39 @@ namespace OpenUtauMobile.ViewModels
         {
             if (initialized) return;
             initialized = true;
-            _ = RunAsync(async () => Apply(await controller.AnalyzeAsync(progress)));
+            _ = RunAsync(async () => await ApplyAsync(await controller.AnalyzeAsync(progress)));
         }
 
         private InstallSubmission Submission() => new(controller.View!.CurrentStepId, controller.View.Revision,
             Fields.Where(item => item.Descriptor.IsVisible && item.Descriptor.IsEnabled)
                 .ToImmutableDictionary(item => item.Descriptor.Id, item => item.Read(), StringComparer.Ordinal));
 
-        private void Apply(InstallView view)
+        /// <summary>预览先独立读取与解码，完成后才在当前页面发布控件数据。</summary>
+        private async Task ApplyAsync(InstallView view)
         {
             ClearContent();
             InstallStep step = view.Steps.Single(item => item.Id == view.CurrentStepId);
+            List<InstallPreviewViewModel> previews = [];
+            try
+            {
+                foreach (InstallContent item in step.Content.IsDefault ? ImmutableArray<InstallContent>.Empty : step.Content)
+                {
+                    previews.Add(await InstallPreviewViewModel.CreateAsync(
+                        item.Title == step.Title ? item with { Title = "" } : item, controller));
+                    if (IsClosing) return;
+                }
+                if (IsClosing) return;
+                Previews = [.. previews];
+                previews.Clear();
+            }
+            finally
+            {
+                foreach (InstallPreviewViewModel preview in previews) preview.Dispose();
+            }
             Title = step.Title;
             StepText = string.Format(L.S("SingerSetup.StepFormat"), view.Steps.IndexOf(step) + 1, view.Steps.Length);
             Fields = [.. (step.Fields.IsDefault ? ImmutableArray<PluginFieldDescriptor>.Empty : step.Fields)
                 .Select(item => new PluginFieldViewModel(item, Invalidate))];
-            Previews = [.. (step.Content.IsDefault ? ImmutableArray<InstallContent>.Empty : step.Content)
-                .Select(item => new InstallPreviewViewModel(item.Title == step.Title ? item with { Title = "" } : item, controller))];
             foreach (PluginDiagnostic diagnostic in view.Diagnostics.IsDefault ? [] : view.Diagnostics)
                 Fields.FirstOrDefault(item => item.Descriptor.Id == diagnostic.FieldId)?.SetError(diagnostic.Message);
             Error = string.Join("\n", view.Diagnostics.IsDefault ? [] : view.Diagnostics.Select(item => item.Message));
@@ -203,17 +219,24 @@ namespace OpenUtauMobile.ViewModels
         public bool HasImage => Image != null;
         public bool HasText => !string.IsNullOrEmpty(Text);
         public bool HasTitle => !string.IsNullOrWhiteSpace(Title);
-        public InstallPreviewViewModel(InstallContent content, SingerInstallController controller)
+        private InstallPreviewViewModel(string title, string text, Bitmap? image = null)
         {
-            Title = content.Title;
-            Text = content.Kind == InstallContentKind.Image ? "" : content.Value;
-            if (content.Kind != InstallContentKind.Image) return;
+            Title = title;
+            Text = text;
+            Image = image;
+        }
+
+        /// <summary>后台读取和解码预览，返回后由页面接管图片的释放责任。</summary>
+        public static async Task<InstallPreviewViewModel> CreateAsync(InstallContent content, SingerInstallController controller)
+        {
+            if (content.Kind != InstallContentKind.Image) return new(content.Title, content.Value);
             try
             {
-                using MemoryStream bytes = new(File.ReadAllBytes(controller.PreviewPath(content.Value)));
-                Image = new Bitmap(bytes);
+                byte[] bytes = await controller.ReadPreviewAsync(content.Value);
+                return new(content.Title, "", await BitmapLoader.DecodeAsync(bytes));
             }
-            catch (Exception exception) { Text = exception.Message; }
+            catch (OperationCanceledException) { throw; }
+            catch (Exception exception) { return new(content.Title, exception.Message); }
         }
         public void Dispose() => Image?.Dispose();
     }

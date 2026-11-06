@@ -6,7 +6,6 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
-using Avalonia.Media.Imaging;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
@@ -112,35 +111,6 @@ public class SingerTypeToLabelConverter : IValueConverter
 }
 
 /// <summary>
-/// byte[] => Bitmap (avatar image)
-/// </summary>
-public class AvatarDataToBitmapConverter : IValueConverter
-{
-    public static readonly AvatarDataToBitmapConverter Instance = new();
-
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is byte[] { Length: > 0 } data)
-        {
-            try
-            {
-                using MemoryStream ms = new MemoryStream(data);
-                return new Bitmap(ms);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        return null;
-    }
-
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => AvaloniaProperty.UnsetValue;
-}
-
-/// <summary>
 /// Returns true when the value is non-null — used to toggle avatar image visibility.
 /// </summary>
 public class NullToBoolConverter : IValueConverter
@@ -216,8 +186,7 @@ public class IsFileConverter : IValueConverter
 }
 
 /// <summary>
-/// FileSystemInfo => human-readable file size string (e.g. "1.2 MB").
-/// Returns empty string for directories.
+/// 预读的文件字节数转为可读大小；转换期间不访问磁盘。
 /// </summary>
 public class FileSizeConverter : IValueConverter
 {
@@ -225,8 +194,7 @@ public class FileSizeConverter : IValueConverter
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not FileInfo fi) return string.Empty;
-        long bytes = fi.Length;
+        if (value is not long bytes) return string.Empty;
         return bytes switch
         {
             < 1024 => $"{bytes} B",
