@@ -2642,4 +2642,9 @@ Applying replaces the source of this input.</value></data>
   <data name="ProjectSave.Replacing" xml:space="preserve"><value>Replacing project file…</value></data>
   <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>Synchronizing storage…</value></data>
   <data name="ProjectSave.Confirming" xml:space="preserve"><value>Confirming saved version…</value></data>
+    <data name="TrackPreparation.Singer" xml:space="preserve"><value>Loading singer resources…</value></data>
+    <data name="TrackPreparation.Phonemizer" xml:space="preserve"><value>Preparing phonemizer…</value></data>
+    <data name="TrackPreparation.Applying" xml:space="preserve"><value>Applying track settings…</value></data>
+    <data name="TrackPreparation.Mapping" xml:space="preserve"><value>Preparing voice color mapping…</value></data>
+    <data name="Editor.Phonemizing" xml:space="preserve"><value>Phonemizing: {0} of {1} parts pending · {2}s</value></data>
 </root>

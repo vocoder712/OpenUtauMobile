@@ -108,7 +108,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                     || originalSettings.renderer != track.RendererSettings.renderer
                     || originalSettings.resampler != track.RendererSettings.resampler
                     || originalSettings.wavtool != track.RendererSettings.wavtool) return;
-                singerVm.SetSinger(chosen);
+                await singerVm.SetSingerAsync(chosen);
             };
             ToolTip.SetTip(singer, DesktopUi.Label("TrackSettings.Singer"));
             body.Children.Add(singer);

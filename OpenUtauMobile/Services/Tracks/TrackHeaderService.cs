@@ -42,7 +42,14 @@ public class TrackHeaderService : ITrackHeaderService
         try
         {
             PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(CurrentName: currentName, Anchor: anchor));
-            return result?.Factory?.Create();
+            if (result?.Factory is not { } factory) return null;
+            Phonemizer? prepared = null;
+            await TrackPreparationService.Inst.RunAsync(async loading =>
+            {
+                loading.SetIndeterminate(L.S("TrackPreparation.Phonemizer"));
+                prepared = await Task.Run(factory.Create);
+            });
+            return prepared;
         }
         catch (System.Exception exception)
         {

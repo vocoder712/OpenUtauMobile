@@ -29,7 +29,7 @@ public sealed partial class EditorInputController
 
     private bool IsEditorInputActive => _inputRoot != null && TopLevel.GetTopLevel(_owner) == _inputRoot &&
         _owner.IsEffectivelyVisible && _owner.IsEffectivelyEnabled && !IsModalOpen && !HasInputPopup &&
-        _owner.DataContext is EditorViewModel { IsLoadingProject: false, IsSavingProject: false };
+        _owner.DataContext is EditorViewModel { IsLoadingProject: false, CanEditProject: true };
 
     private static bool IsWithin(Visual? source, Visual parent) =>
         source != null && source.GetSelfAndVisualAncestors().Contains(parent);

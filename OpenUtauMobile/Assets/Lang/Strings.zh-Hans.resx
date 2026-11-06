@@ -2642,4 +2642,9 @@
   <data name="ProjectSave.Replacing" xml:space="preserve"><value>正在替换工程文件…</value></data>
   <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>正在同步存储…</value></data>
   <data name="ProjectSave.Confirming" xml:space="preserve"><value>正在确认已保存版本…</value></data>
+    <data name="TrackPreparation.Singer" xml:space="preserve"><value>正在加载歌手资源…</value></data>
+    <data name="TrackPreparation.Phonemizer" xml:space="preserve"><value>正在准备音素器…</value></data>
+    <data name="TrackPreparation.Applying" xml:space="preserve"><value>正在应用轨道设置…</value></data>
+    <data name="TrackPreparation.Mapping" xml:space="preserve"><value>正在准备音色映射…</value></data>
+    <data name="Editor.Phonemizing" xml:space="preserve"><value>正在音素化：剩余 {0}/{1} 个片段 · 已等待 {2} 秒</value></data>
 </root>

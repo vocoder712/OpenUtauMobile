@@ -78,6 +78,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     [Reactive]
     public bool IsSavingProject { get; private set; }
 
+    /// <summary>资源准备及映射提交期间限制编辑，音素化运行期间仍可编辑。</summary>
+    [Reactive] public bool IsPreparingTrack { get; private set; }
+    public bool CanEditProject => !IsSavingProject && !IsPreparingTrack;
+
+    /// <summary>独立于渲染进度显示后台音素化，避免不同任务互相清空状态。</summary>
+    [Reactive] public bool IsPhonemizing { get; private set; }
+    [Reactive] public string PhonemizationMessage { get; private set; } = string.Empty;
+    public string DisplayProgressMessage => IsPhonemizing ? PhonemizationMessage : ProgressMessage;
+
     #region 响应式命令
 
     /// <summary>
@@ -274,6 +283,20 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         UndoCommand = ReactiveCommand.Create(Undo);
         RedoCommand = ReactiveCommand.Create(Redo);
         SaveCommand = ReactiveCommand.Create(Save);
+        TrackPreparationService.Inst.WhenAnyValue(service => service.IsBusy)
+            .Subscribe(busy => IsPreparingTrack = busy).DisposeWith(_disposables);
+        this.WhenAnyValue(vm => vm.IsSavingProject, vm => vm.IsPreparingTrack)
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(CanEditProject))).DisposeWith(_disposables);
+        this.WhenAnyValue(vm => vm.IsPhonemizing, vm => vm.PhonemizationMessage, vm => vm.ProgressMessage)
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(DisplayProgressMessage))).DisposeWith(_disposables);
+        new PhonemizationStatus(() => OwnsSaveDocument() ? DocManager.Inst.Project : null,
+            (pending, total, elapsed) =>
+            {
+                IsPhonemizing = pending > 0;
+                PhonemizationMessage = pending > 0
+                    ? string.Format(L.S("Editor.Phonemizing"), pending, total, (int)elapsed.TotalSeconds)
+                    : string.Empty;
+            }).DisposeWith(_disposables);
         InitializeEditorChrome();
         // 播放/暂停命令
         PlayPauseCommand = ReactiveCommand.Create(() =>
@@ -2470,6 +2493,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         ProgressValue = 0;
         ProgressMessage = string.Empty;
         PlaybackManager.Inst.StopPlayback(); // 停止回放
+        IsPhonemizing = false;
+        PhonemizationMessage = string.Empty;
         PlaybackTimer.Stop(); // 停止定时器
         _autoSaveTimer?.Stop(); // 停止自动保存定时器
         _panMotion.Dispose();

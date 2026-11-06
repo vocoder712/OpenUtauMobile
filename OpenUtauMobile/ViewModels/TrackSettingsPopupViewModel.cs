@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
 using Avalonia;
 using OpenUtau.Api;
 using OpenUtau.Classic;
@@ -11,6 +12,7 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Tracks;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using CoreRenderers = OpenUtau.Core.Render.Renderers;
@@ -35,13 +37,15 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
 {
     private readonly UProject project;
     private readonly UTrack track;
+    private readonly TrackPreparationOwner owner;
     private readonly URenderSettings originalRenderSettings;
     private readonly string? originalExpressionGraph;
     private readonly USinger? originalSinger;
-    private readonly Phonemizer? originalPhonemizer;
+    private readonly Phonemizer originalPhonemizer;
     private readonly UExpressionDescriptor[] originalTrackExpressions;
     private Phonemizer draftPhonemizer;
     private URenderSettings draftRenderSettings;
+    private URenderSettings? preparedRenderSettings;
     private bool changingSelection;
     private bool classicDraftInitialized;
 
@@ -79,7 +83,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     public Type? OriginalPhonemizerType => originalPhonemizer?.GetType();
     public string DraftPhonemizerIdentifier => draftPhonemizer.Name;
     public IReadOnlyList<UExpressionDescriptor> DraftTrackExpressions { get; private set; }
-    public bool IsStale => !ReferenceEquals(DocManager.Inst.Project, project) || !project.tracks.Contains(track) ||
+    public bool IsStale => !owner.IsCurrent ||
         !ReferenceEquals(track.Singer, originalSinger) || track.Phonemizer?.GetType() != originalPhonemizer?.GetType() ||
         !SameRenderSettings(track.RendererSettings, originalRenderSettings) || track.ExpressionGraph != originalExpressionGraph ||
         !SameExpressions(track.TrackExpressions, originalTrackExpressions);
@@ -88,6 +92,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
     {
         this.project = project;
         this.track = track;
+        owner = new(project, track);
         originalSinger = track.Singer;
         originalPhonemizer = track.Phonemizer!;
         originalRenderSettings = track.RendererSettings.Clone();
@@ -114,7 +119,8 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
         RebuildRendererChoices(false);
     }
 
-    public void SetSinger(USinger singer)
+    /// <summary>只更新 UI 草稿，歌手资源和默认音素器须已在后台准备。</summary>
+    public void SetSinger(USinger singer, Phonemizer? preparedPhonemizer)
     {
         if (ReferenceEquals(DraftSinger, singer)) return;
         changingSelection = true;
@@ -135,7 +141,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
             }
             else
             {
-                SelectSingerPhonemizer(singer);
+                if (preparedPhonemizer != null) SetPhonemizer(preparedPhonemizer);
             }
             UpdateDirtyState();
             RebuildRendererChoices(true);
@@ -207,8 +213,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
             return false;
         }
         USinger? singer = DraftSinger;
-        if (singerChanged && singer is { Found: true } && !SingerManager.Inst.Singers.Values.Any(candidate =>
-                ReferenceEquals(candidate, singer) || !string.IsNullOrEmpty(candidate.Id) && candidate.Id == singer.Id))
+        if (singerChanged && singer is { Found: true } && !TrackPreparationOwner.IsAvailable(singer))
         {
             error = L.S("TrackSettings.Error.SingerUnavailable");
             return false;
@@ -242,16 +247,12 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
             return false;
         }
 
-        URenderSettings renderSettings = draftRenderSettings.Clone();
+        URenderSettings renderSettings = preparedRenderSettings?.Clone() ?? draftRenderSettings.Clone();
         if (singer is { Found: true } && IsRenderSettingsDirty)
         {
-            try
+            if (preparedRenderSettings == null)
             {
-                renderSettings.Validate(new UTrack { Singer = singer });
-            }
-            catch (Exception exception)
-            {
-                error = string.IsNullOrWhiteSpace(exception.Message) ? L.S("TrackSettings.Error.Apply") : exception.Message;
+                error = L.S("TrackSettings.Error.Busy");
                 return false;
             }
         }
@@ -270,24 +271,15 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
         return true;
     }
 
-    private void SelectSingerPhonemizer(USinger singer)
+    /// <summary>在模态期间准备独立渲染设置；不把 ViewModel 或活动轨道交给后台。</summary>
+    public async Task PrepareApplyAsync()
     {
-        Phonemizer? selected = null;
-        if (!string.IsNullOrEmpty(singer.Id) && Preferences.Default.SingerPhonemizers.TryGetValue(singer.Id, out string? remembered))
-            selected = CreatePhonemizer(remembered);
-        selected ??= CreatePhonemizer(singer.DefaultPhonemizer);
-        if (selected != null)
-        {
-            draftPhonemizer = selected;
-            DraftPhonemizerName = selected.Tag;
-        }
-    }
-
-    private static Phonemizer? CreatePhonemizer(string? name)
-    {
-        if (string.IsNullOrWhiteSpace(name)) return null;
-        try { return PhonemizerFactory.Get(name)?.Create(); }
-        catch { return null; }
+        USinger? singer = DraftSinger;
+        URenderSettings settings = draftRenderSettings.Clone();
+        await TrackPreparationService.EnsureSingerAsync(singer);
+        if (singer is { Found: true })
+            await Task.Run(() => settings.Validate(new UTrack { Singer = singer }));
+        preparedRenderSettings = settings;
     }
 
     private void RebuildRendererChoices(bool chooseCompatibleDefault)
@@ -441,6 +433,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
 
     private void UpdateDirtyState()
     {
+        preparedRenderSettings = null;
         IsRenderSettingsDirty = !SameRenderSettings(draftRenderSettings, originalRenderSettings);
         if (!changingSelection) Error = string.Empty;
     }

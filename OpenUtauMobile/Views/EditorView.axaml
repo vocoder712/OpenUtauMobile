@@ -13,7 +13,7 @@
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
-             IsEnabled="{Binding !IsSavingProject}"
+             IsEnabled="{Binding CanEditProject}"
              Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
     <UserControl.Resources>
@@ -163,11 +163,14 @@
                     <TextBlock Text="{Binding ProjectPath, Converter={StaticResource PathToFileName}}"
                                ToolTip.Tip="{Binding ProjectPath}" TextTrimming="CharacterEllipsis"
                                FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="{Binding ProgressMessage}" ToolTip.Tip="{Binding ProgressMessage}"
+                    <TextBlock Grid.Column="1" Text="{Binding DisplayProgressMessage}" ToolTip.Tip="{Binding DisplayProgressMessage}"
                                TextTrimming="CharacterEllipsis" TextAlignment="Right"
                                FontSize="{x:Static semantic:TypographyTokens.LabelSSize}" VerticalAlignment="Center"
                                Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                 </Grid>
+                <!-- 音素化可能长时间等待模型或远程结果，持续动画保持任务状态可见。 -->
+                <ProgressBar IsVisible="{Binding IsPhonemizing}" IsIndeterminate="True"
+                             Height="2" MinHeight="0" VerticalAlignment="Bottom" IsHitTestVisible="False" />
             </Panel>
         </Border>
         <!-- 竖屏高频操作靠近拇指，横屏时同组操作由顶栏呈现。 -->

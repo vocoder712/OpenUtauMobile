@@ -2636,4 +2636,9 @@ Applying replaces the source of this input.</value></data>
   <data name="ProjectSave.Replacing" xml:space="preserve"><value>プロジェクトファイルを置換中…</value></data>
   <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>ストレージを同期中…</value></data>
   <data name="ProjectSave.Confirming" xml:space="preserve"><value>保存したバージョンを確認中…</value></data>
+    <data name="TrackPreparation.Singer" xml:space="preserve"><value>歌手のリソースを読み込み中…</value></data>
+    <data name="TrackPreparation.Phonemizer" xml:space="preserve"><value>音素変換器を準備中…</value></data>
+    <data name="TrackPreparation.Applying" xml:space="preserve"><value>トラック設定を適用中…</value></data>
+    <data name="TrackPreparation.Mapping" xml:space="preserve"><value>音色マッピングを準備中…</value></data>
+    <data name="Editor.Phonemizing" xml:space="preserve"><value>音素変換中：残り {0}/{1} パート · {2} 秒経過</value></data>
 </root>

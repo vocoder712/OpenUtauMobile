@@ -2595,4 +2595,9 @@ Applying replaces the source of this input.</value></data>
   <data name="ProjectSave.Replacing" xml:space="preserve"><value>Замена файла проекта…</value></data>
   <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>Синхронизация хранилища…</value></data>
   <data name="ProjectSave.Confirming" xml:space="preserve"><value>Подтверждение сохранённой версии…</value></data>
+    <data name="TrackPreparation.Singer" xml:space="preserve"><value>Загрузка ресурсов певца…</value></data>
+    <data name="TrackPreparation.Phonemizer" xml:space="preserve"><value>Подготовка фонемайзера…</value></data>
+    <data name="TrackPreparation.Applying" xml:space="preserve"><value>Применение настроек дорожки…</value></data>
+    <data name="TrackPreparation.Mapping" xml:space="preserve"><value>Подготовка сопоставления тембров…</value></data>
+    <data name="Editor.Phonemizing" xml:space="preserve"><value>Фонемизация: осталось {0} из {1} партий · {2} с</value></data>
 </root>

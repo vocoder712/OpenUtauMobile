@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -15,6 +16,7 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
@@ -121,26 +123,51 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
 
     private async Task SelectSinger()
     {
+        if (DocManager.Inst.HasOpenUndoGroup) return;
         UProject project = DocManager.Inst.Project;
+        TrackPreparationOwner pickerOwner = new(project, _track);
         USinger? originalSinger = _track.Singer;
         URenderSettings originalSettings = _track.RendererSettings.Clone();
         string? originalGraph = _track.ExpressionGraph;
         USinger? singer = await TrackHeaderService.Inst.PickSingerAsync(originalSinger);
-        if (singer == null || ReferenceEquals(singer, originalSinger)
+        if (singer == null || !pickerOwner.IsCurrent || ReferenceEquals(singer, originalSinger)
             || !ReferenceEquals(project, DocManager.Inst.Project) || !project.tracks.Contains(_track)
             || !ReferenceEquals(originalSinger, _track.Singer) || originalGraph != _track.ExpressionGraph
             || originalSettings.renderer != _track.RendererSettings.renderer
             || originalSettings.resampler != _track.RendererSettings.resampler
             || originalSettings.wavtool != _track.RendererSettings.wavtool || DocManager.Inst.HasOpenUndoGroup) return;
-        SetSinger(singer);
+        await SetSingerAsync(singer);
     }
 
     /// <summary>切换歌手，并在同一撤销事务中校验轨道的表情图。</summary>
-    public void SetSinger(USinger singer)
+    public async Task SetSingerAsync(USinger singer)
     {
         UProject project = DocManager.Inst.Project;
-        if (!project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || ReferenceEquals(_track.Singer, singer)) return;
-        ApplySinger(project, singer);
+        if (_disposed || !project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || ReferenceEquals(_track.Singer, singer)) return;
+        TrackPreparationOwner owner = new(project, _track);
+        bool applied = false;
+        try
+        {
+            await TrackPreparationService.Inst.RunAsync(async loading =>
+            {
+                Phonemizer? phonemizer = await TrackPreparationService.PrepareSingerAsync(singer, loading);
+                string[] supported = await Task.Run(() => ExternalSingerPluginService.GetSupportedRenderers(singer));
+                string renderer = supported.Contains(_track.RendererSettings.renderer)
+                    ? _track.RendererSettings.renderer : await Task.Run(() => ExternalSingerPluginService.GetDefaultRenderer(singer));
+                // 渲染器首次构造也可能加载资源，在提交前预热缓存。
+                await Task.Run(() => OpenUtau.Core.Render.Renderers.GetOrCreate(renderer));
+                if (_disposed || !owner.IsCurrent || !TrackPreparationOwner.IsAvailable(singer)) return;
+                loading.SetIndeterminate(OpenUtauMobile.Helpers.L.S("TrackPreparation.Applying"));
+                ApplySinger(project, singer, phonemizer, renderer);
+                applied = true;
+            });
+        }
+        catch (Exception error)
+        {
+            Log.Error(error, "Failed to prepare track singer");
+            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(error)));
+        }
+        if (!applied || !owner.IsSessionCurrent || !project.tracks.Contains(_track) || !ReferenceEquals(_track.Singer, singer)) return;
         // 保存最近使用的歌手；切换事务已经完成。
         if (!string.IsNullOrEmpty(singer.Id) && singer.Found)
         {
@@ -151,11 +178,14 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         }
         Preferences.Save();
         Refresh();
+        try { await VoiceColorMappingService.ValidateAsync(project, _track, true); }
+        catch (Exception error) { Log.Error(error, "Failed to remap track voice colors"); }
     }
 
     /// <summary>统一歌手、音素器、渲染设置和表情图的切换事务。</summary>
-    private void ApplySinger(UProject project, USinger singer)
+    private void ApplySinger(UProject project, USinger singer, Phonemizer? phonemizer, string renderer)
     {
+        Stopwatch commit = Stopwatch.StartNew();
         DocManager.Inst.StartUndoGroup("切换歌手");
         try
         {
@@ -163,15 +193,8 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             // 执行切换歌手命令
             DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, _track, singer));
             // 切音素器
-            if (!string.IsNullOrEmpty(singer.Id) &&
-                Preferences.Default.SingerPhonemizers.TryGetValue(singer.Id, out string? phonemizerName) &&
-                TryChangePhonemizer(phonemizerName))
-            {
-            }
-            else if (!string.IsNullOrEmpty(singer.DefaultPhonemizer))
-            {
-                TryChangePhonemizer(singer.DefaultPhonemizer);
-            }
+            if (phonemizer != null)
+                DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(project, _track, phonemizer));
 
             // 切渲染器
             if (!singer.Found) // 默认渲染器
@@ -179,25 +202,35 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
                 URenderSettings settings = new();
                 DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
             }
-            else if (!OpenUtauMobile.Services.ExternalSingerPluginService.GetSupportedRenderers(singer).Contains(_track.RendererSettings.renderer))
+            else if (renderer != _track.RendererSettings.renderer)
             {
                 URenderSettings settings = new()
                 {
-                    renderer = OpenUtauMobile.Services.ExternalSingerPluginService.GetDefaultRenderer(singer), // 根据歌手类型
+                    renderer = renderer,
                 };
                 DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, _track, settings));
             }
 
             TrackExpressionGraphSelection.Revalidate(project, _track);
-            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(_track.TrackNo, true));
         }
-        finally { DocManager.Inst.EndUndoGroup(); }
+        catch
+        {
+            DocManager.Inst.RollBackUndoGroup();
+            throw;
+        }
+        finally
+        {
+            try { if (DocManager.Inst.HasOpenUndoGroup) DocManager.Inst.EndUndoGroup(); }
+            finally { Log.Information("轨道提交 Singer：{Milliseconds:F2} ms", commit.Elapsed.TotalMilliseconds); }
+        }
     }
 
     private async Task SelectPhonemizer(Control? anchor)
     {
+        if (DocManager.Inst.HasOpenUndoGroup) return;
+        TrackPreparationOwner owner = new(DocManager.Inst.Project, _track);
         Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(_track.Phonemizer?.Name, anchor);
-        if (phonemizer != null) SetPhonemizer(phonemizer);
+        if (!_disposed && owner.IsCurrent && phonemizer != null) SetPhonemizer(phonemizer);
     }
 
     public void SetPhonemizer(Phonemizer phonemizer)
@@ -295,27 +328,6 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
         try { DocManager.Inst.ExecuteCmd(command); }
         finally { if (ownGroup) DocManager.Inst.EndUndoGroup(); }
         RefreshMix();
-    }
-
-    private bool TryChangePhonemizer(string phonemizerName)
-    {
-        try
-        {
-            PhonemizerFactory? factory = PhonemizerFactory.Get(phonemizerName);
-            Phonemizer? phonemizer = factory?.Create();
-            if (phonemizer != null)
-            {
-                DocManager.Inst.ExecuteCmd(
-                    new TrackChangePhonemizerCommand(DocManager.Inst.Project, _track, phonemizer));
-                return true;
-            }
-        }
-        catch (Exception e)
-        {
-            Log.Error(e, $"无法加载音素器 {phonemizerName}");
-        }
-
-        return false;
     }
 
     private void RemoveTrack()
