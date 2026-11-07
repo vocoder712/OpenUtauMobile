@@ -4,6 +4,8 @@ using Avalonia.Controls;
 using OpenUtauMobile.Services.Projects;
 using Serilog;
 using OpenUtau.Core;
+using OpenUtau.Core.Pipeline;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtauMobile.Services;
 
@@ -59,11 +61,18 @@ public static class AppService
     /// <summary>退出前异步刷新合并的偏好请求，主线程继续处理平台输入。</summary>
     private static async Task FlushAndExitAsync()
     {
-        var project = DocManager.Inst.Project;
-        var revision = DocManager.Inst.Revision;
+        UProject project = DocManager.Inst.Project;
+        DocRevision revision = DocManager.Inst.Revision;
         try { await PreferencesWriter.Inst.FlushAsync(); }
         catch (Exception error) { Log.Error(error, "退出时刷新偏好失败"); }
         if (!ReferenceEquals(project, DocManager.Inst.Project) || revision != DocManager.Inst.Revision) return;
-        Environment.Exit(0);
+        if (ServiceHub.PlatformExitApplication is { } exitApplication)
+        {
+            exitApplication();
+        }
+        else if (!OperatingSystem.IsAndroid())
+        {
+            Environment.Exit(0);
+        }
     }
 }

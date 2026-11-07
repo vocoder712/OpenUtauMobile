@@ -17,6 +17,8 @@ namespace OpenUtauMobile.Services;
 /// </summary>
 public static class ServiceHub
 {
+    /// <summary>通过平台生命周期退出应用，避免直接终止进程。</summary>
+    public static Action? PlatformExitApplication { get; set; }
     public static Func<ViewModels.MainViewModel, Avalonia.Controls.Window>? DesktopWindowFactory { get; set; }
     public static IDesktopWindowContext? DesktopWindowContext { get; set; }
     public static Func<Controls.PopupDialogWidthPreset, Avalonia.Size, Avalonia.Size>? DesktopPopupSizeProvider { get; set; }

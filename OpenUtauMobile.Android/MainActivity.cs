@@ -83,6 +83,7 @@ public class MainActivity : AvaloniaMainActivity
         ServiceHub.PlatformCrashLogService = crashLogService;
         _ = crashLogService.CollectPreviousExitAsync();
         ServiceHub.InitAudioOutput = InitAudioOutput; // 设置初始化音频输出的委托
+        ServiceHub.PlatformExitApplication = () => CurrentActivity?.FinishAffinity();
         ServiceHub.ExternalUrlLauncher = new AndroidExternalUrlLauncher(() => CurrentActivity);
         ServiceHub.ExternalStorageService =
             new AndroidExternalStorageService(() => CurrentActivity); // 设置外部存储服务
