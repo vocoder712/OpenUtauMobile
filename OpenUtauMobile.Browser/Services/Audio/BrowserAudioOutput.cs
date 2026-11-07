@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Threading;
 using Avalonia.Threading;
@@ -11,27 +10,21 @@ using Serilog;
 
 namespace OpenUtauMobile.Browser.Services.Audio;
 
-/// <summary>后台生产浮点采样，通过主线程有界搬运到浏览器音频线程。</summary>
+/// <summary>后台直接向 WASM 共享队列生产采样，浏览器音频线程独立消费。</summary>
 internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, IDisposable
 {
     private const int Channels = 2;
     private const int BlockSamples = 1024 * Channels;
-    private const int QueueBlockCount = 2;
     private static BrowserAudioOutput? active;
     private static int nextGeneration;
     private readonly object syncRoot = new();
-    private readonly Queue<AudioBlock> blocks = new();
-    private readonly byte[] transferBuffer = new byte[BlockSamples * sizeof(float)];
+    private BrowserAudioBuffer buffer = new();
     private ISampleProvider? sampleProvider;
-    private PlaybackState playbackState;
     private int generation = Interlocked.Increment(ref nextGeneration);
     private int requestedState;
-    private int queuedSamples;
-    private double consumedFrames;
     private double transportLatency;
     private bool inputEnded;
     private bool synchronizationPosted;
-    private bool pumpPosted;
     private bool disposed;
 
     /// <summary>原生音频线程不会进入托管运行时，由这个后台线程读取采样源。</summary>
@@ -63,20 +56,28 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
     /// <summary>读取已同步的传输状态；等待用户激活时保持可继续的暂停状态。</summary>
     public PlaybackState PlaybackState
     {
-        get { lock (syncRoot) return playbackState; }
+        get
+        {
+            lock (syncRoot)
+            {
+                if (requestedState == 0 || (inputEnded && buffer.QueuedFrames == 0)) return PlaybackState.Stopped;
+                return requestedState == 1 && buffer.IsRunning && buffer.IsPlaying
+                    ? PlaybackState.Playing : PlaybackState.Paused;
+            }
+        }
     }
 
     /// <summary>路由由浏览器选择器管理，不持久化枚举序号。</summary>
     public int DeviceNumber => 0;
 
-    /// <summary>包括托管队列、音频线程队列及浏览器可报告的设备延迟。</summary>
+    /// <summary>直接读取共享队列水位，并加上浏览器报告的设备延迟。</summary>
     public double? OutputLatencyMilliseconds
     {
         get
         {
             lock (syncRoot)
             {
-                return transportLatency + queuedSamples * 1000.0 / Channels / BrowserAudioInterop.SampleRate;
+                return transportLatency + buffer.QueuedFrames * 1000.0 / BrowserAudioInterop.SampleRate;
             }
         }
     }
@@ -119,7 +120,7 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
             ObjectDisposedException.ThrowIf(disposed, this);
             if (sampleProvider == null) return;
             requestedState = 1;
-            playbackState = PlaybackState.Paused;
+            buffer.IsPlaying = true;
             ScheduleSynchronizationLocked();
             Monitor.PulseAll(syncRoot);
         }
@@ -132,7 +133,7 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
         {
             if (requestedState == 0 || disposed) return;
             requestedState = 2;
-            playbackState = PlaybackState.Paused;
+            buffer.IsPlaying = false;
             ScheduleSynchronizationLocked();
         }
     }
@@ -153,7 +154,7 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
     {
         lock (syncRoot)
         {
-            return (long)(consumedFrames * 44100 / BrowserAudioInterop.SampleRate) * sizeof(float);
+            return (long)(buffer.ConsumedFrames * 44100.0 / BrowserAudioInterop.SampleRate) * sizeof(float);
         }
     }
 
@@ -171,16 +172,15 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
         }
     }
 
-    /// <summary>清空本代输入与队列，调用者须持有状态锁。</summary>
+    /// <summary>停止旧队列并切换独立内存，避免重置正在消费的读写指针。</summary>
     private void ResetLocked()
     {
+        buffer.IsPlaying = false;
+        buffer = new BrowserAudioBuffer();
         generation = Interlocked.Increment(ref nextGeneration);
         requestedState = 0;
-        playbackState = PlaybackState.Stopped;
         inputEnded = false;
-        consumedFrames = transportLatency = 0;
-        queuedSamples = 0;
-        while (blocks.TryDequeue(out AudioBlock block)) ArrayPool<float>.Shared.Return(block.Samples);
+        transportLatency = 0;
     }
 
     /// <summary>合并控制请求，主线程始终应用最新的播放意图。</summary>
@@ -194,38 +194,46 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
     /// <summary>不持有状态锁调用 JS，防止浏览器回调与后台生产相互等待。</summary>
     private void SynchronizeTransport()
     {
-        int version, state;
+        int version, state, address;
         lock (syncRoot)
         {
             synchronizationPosted = false;
             version = generation;
             state = requestedState;
+            address = disposed ? 0 : buffer.Retain(version);
         }
         try
         {
-            BrowserAudioInterop.SetPlayback(version, state);
-            Pump(version);
+            BrowserAudioInterop.SetPlayback(version, state, address);
         }
         catch (Exception exception) { Fail(version, exception, synchronize: false); }
         if (disposed) Interlocked.CompareExchange(ref active, null, this);
     }
 
-    /// <summary>在后台读取采样源；任何时刻最多保留两块尚未传输的音频。</summary>
+    /// <summary>后台直接发布样本；满队列时短暂休眠，唤醒不依赖浏览器主线程。</summary>
     private void ProduceSamples()
     {
+        float[] samples = new float[BlockSamples];
         while (true)
         {
             int version;
             ISampleProvider provider;
+            BrowserAudioBuffer target;
             lock (syncRoot)
             {
-                while (!disposed && (requestedState != 1 || inputEnded || blocks.Count >= QueueBlockCount))
+                while (!disposed && (requestedState != 1 || inputEnded))
                     Monitor.Wait(syncRoot);
                 if (disposed) return;
+                if (buffer.QueuedFrames > BrowserAudioBuffer.TargetFrames - BlockSamples / Channels)
+                {
+                    // Worklet 不进入托管运行时；有界休眠独立检查它发布的读指针。
+                    Monitor.Wait(syncRoot, 5);
+                    continue;
+                }
                 version = generation;
                 provider = sampleProvider!;
+                target = buffer;
             }
-            float[] samples = ArrayPool<float>.Shared.Rent(BlockSamples);
             try
             {
                 int count = provider.Read(samples, 0, BlockSamples);
@@ -235,72 +243,22 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
                     {
                         if (count > 0)
                         {
-                            blocks.Enqueue(new AudioBlock(samples, count));
-                            queuedSamples += count;
-                            samples = null!;
+                            target.WriteSamples(samples.AsSpan(0, count));
                         }
-                        else inputEnded = true;
-                        if (!pumpPosted)
+                        else
                         {
-                            pumpPosted = true;
-                            Dispatcher.UIThread.Post(PumpCurrentGeneration);
+                            inputEnded = true;
+                            target.EndInput();
                         }
                     }
                 }
             }
             catch (Exception exception) { Fail(version, exception); }
-            finally { if (samples != null) ArrayPool<float>.Shared.Return(samples); }
         }
     }
 
-    /// <summary>处理生产线程合并投递的数据通知。</summary>
-    private void PumpCurrentGeneration()
-    {
-        int version;
-        lock (syncRoot) { pumpPosted = false; version = generation; }
-        Pump(version);
-    }
-
-    /// <summary>每次仅批量搬运有空位的样本，不在音频回调中等待后台线程。</summary>
-    internal void Pump(int version)
-    {
-        try
-        {
-            for (int batch = 0; batch < 4; batch++)
-            {
-                int writable = BrowserAudioInterop.WritableFrames(version);
-                AudioBlock block;
-                bool ended;
-                lock (syncRoot)
-                {
-                    if (disposed || version != generation || requestedState != 1) return;
-                    ended = inputEnded && blocks.Count == 0;
-                    if (!blocks.TryPeek(out block))
-                    {
-                        if (!ended) return;
-                    }
-                    else
-                    {
-                        if (writable < block.Count / Channels) return;
-                        blocks.Dequeue();
-                        queuedSamples -= block.Count;
-                        Monitor.PulseAll(syncRoot);
-                    }
-                }
-                if (ended) { BrowserAudioInterop.EndInput(version); return; }
-                try
-                {
-                    Buffer.BlockCopy(block.Samples, 0, transferBuffer, 0, block.Count * sizeof(float));
-                    BrowserAudioInterop.WriteSamples(version, transferBuffer, block.Count);
-                }
-                finally { ArrayPool<float>.Shared.Return(block.Samples); }
-            }
-        }
-        catch (Exception exception) { Fail(version, exception); }
-    }
-
-    /// <summary>只接受本代消费时钟，输入结束须等浏览器排空后才进入停止状态。</summary>
-    internal void UpdateStatus(int version, double frames, int state, double latency)
+    /// <summary>只接受本代设备状态；采样水位和消费时钟直接读取共享内存。</summary>
+    internal void UpdateStatus(int version, int state, double latency)
     {
         lock (syncRoot)
         {
@@ -311,14 +269,10 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
                 sampleProvider = null;
                 return;
             }
-            consumedFrames = Math.Max(consumedFrames, frames);
             transportLatency = latency;
-            playbackState = requestedState == 0 ? PlaybackState.Stopped
-                : state == 1 && requestedState == 1 ? PlaybackState.Playing : PlaybackState.Paused;
-            if (state == 0 && inputEnded && blocks.Count == 0)
+            if (state == 0 && inputEnded && buffer.QueuedFrames == 0)
             {
                 requestedState = 0;
-                playbackState = PlaybackState.Stopped;
             }
         }
     }
@@ -336,7 +290,4 @@ internal sealed class BrowserAudioOutput : IAudioOutput, IAudioLatencySource, ID
         Log.Error(exception, "浏览器音频输出失败");
         Dispatcher.UIThread.Post(() => BrowserAudioInterop.ReportError(version, exception.Message));
     }
-
-    /// <summary>保存池化采样块及其有效交错样本数量。</summary>
-    private readonly record struct AudioBlock(float[] Samples, int Count);
 }

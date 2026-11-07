@@ -1,5 +1,5 @@
-// 主线程和音频线程共用的帧队列；每一代播放使用独立内存，避免重置时覆盖旧读指针。
-import { Read, Write, Playing, Ended, Consumed, Requested, headerLength, capacity, targetFrames } from './audio-output-buffer.js';
+// 后台生产者与音频线程直接共用 WASM 帧队列；主线程不参与持续供音。
+import { Read, Write, Playing, Ended, Consumed, headerLength, capacity } from './audio-output-buffer.js';
 
 class OpenUtauAudioProcessor extends AudioWorkletProcessor {
     constructor() {
@@ -9,10 +9,14 @@ class OpenUtauAudioProcessor extends AudioWorkletProcessor {
         this.framesSinceReport = 0;
         this.port.onmessage = ({ data }) => {
             if (data.type === "configure") {
+                const previousGeneration = this.generation;
+                const hadBuffer = this.header !== null;
                 this.generation = data.generation;
-                this.header = new Int32Array(data.buffer, 0, headerLength);
-                this.samples = new Float32Array(data.buffer, headerLength * 4);
+                this.header = data.buffer ? new Int32Array(data.buffer, data.address, headerLength) : null;
+                this.samples = data.buffer ? new Float32Array(data.buffer, data.address + headerLength * 4, capacity * 2) : null;
                 this.framesSinceReport = 0;
+                // 消息和 process 在同一音频线程串行执行，确认之后不再访问旧地址。
+                if (hadBuffer) this.port.postMessage({ type: "released", generation: previousGeneration });
             }
         };
     }
@@ -34,11 +38,10 @@ class OpenUtauAudioProcessor extends AudioWorkletProcessor {
         Atomics.store(header, Read, (read + count) | 0);
         Atomics.add(header, Consumed, count);
         const remaining = available - count;
-        if (remaining <= targetFrames / 2 && !Atomics.exchange(header, Requested, 1)) {
-            this.port.postMessage({ type: "need", generation: this.generation });
-        }
         this.framesSinceReport += output[0].length;
-        if (remaining === 0 && Atomics.load(header, Ended)) {
+        // 结束标记可能在本次写指针快照之后发布，须再次确认末块已经消费完。
+        if (remaining === 0 && Atomics.load(header, Ended)
+            && (Atomics.load(header, Write) >>> 0) === ((read + count) >>> 0)) {
             Atomics.store(header, Playing, 0);
             this.port.postMessage({ type: "ended", generation: this.generation });
         } else if (this.framesSinceReport >= sampleRate / 50) {

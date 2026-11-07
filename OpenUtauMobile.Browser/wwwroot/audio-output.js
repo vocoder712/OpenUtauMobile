@@ -1,9 +1,9 @@
 // 此模块只在浏览器主线程访问 AudioContext，音频线程只消费共享帧队列。
-import { Read, Write, Playing, Ended, Consumed, Requested, headerLength, capacity, targetFrames } from './audio-output-buffer.js';
+import { Read, Write, Playing, Consumed, Running, headerLength } from './audio-output-buffer.js';
 const deviceStorageKey = "OpenUtauMobile.AudioOutput.Device";
-let context, node, header, samples;
-let generation = -1, intent = 0, consumedBase = 0, lastConsumed = 0;
-let onNeedData, onStatus, onError, onDeviceChanged;
+let context, node, header, getHeap;
+let generation = -1, intent = 0;
+let onReleased, onStatus, onError, onDeviceChanged;
 let selectedId = "", selectedName = "", selectionVersion = 0;
 let resumePending = null;
 let failed = false;
@@ -11,11 +11,13 @@ let failed = false;
 export async function initialize(runtime) {
     const exports = await runtime.getAssemblyExports("OpenUtauMobile.Browser");
     const bridge = exports.OpenUtauMobile.Browser.Services.Audio.BrowserAudioInterop;
-    return initializeTransport(bridge.RequestData, bridge.UpdateStatus, bridge.ReceiveError, bridge.UpdateDevice);
+    return initializeTransport(bridge.ReleaseBuffer, bridge.UpdateStatus, bridge.ReceiveError, bridge.UpdateDevice,
+        () => runtime.localHeapViewU8());
 }
 
-export async function initializeTransport(needData, status, error, deviceChanged) {
-    onNeedData = needData;
+export async function initializeTransport(released, status, error, deviceChanged, heap) {
+    onReleased = released;
+    getHeap = heap;
     onStatus = status;
     onError = error;
     onDeviceChanged = deviceChanged;
@@ -35,8 +37,8 @@ export async function initializeTransport(needData, status, error, deviceChanged
         });
         node.connect(context.destination);
         node.port.onmessage = ({ data }) => {
+            if (data.type === "released") { notify(onReleased, data.generation); return; }
             if (data.generation !== generation) return;
-            if (data.type === "need") notify(onNeedData, generation);
             if (data.type === "ended") intent = 0;
             report();
         };
@@ -79,56 +81,40 @@ function resume(force = false) {
     }
 }
 
-export function setPlayback(nextGeneration, nextIntent) {
-    if (failed) throw new Error("Reload the page to restart the browser audio processor.");
+export function setPlayback(nextGeneration, nextIntent, address) {
+    if (failed) {
+        if (address && nextGeneration !== generation) notify(onReleased, nextGeneration);
+        throw new Error("Reload the page to restart the browser audio processor.");
+    }
     if (nextGeneration !== generation) {
-        if (header) Atomics.store(header, Playing, 0);
+        // 仅在控制操作时获取当前堆视图；已有固定范围在共享内存增长后仍指向原数据。
+        let nextHeader;
+        try {
+            const buffer = address ? getHeap().buffer : null;
+            if (buffer && !(buffer instanceof SharedArrayBuffer)) throw new Error("Browser audio requires shared WASM memory.");
+            nextHeader = buffer ? new Int32Array(buffer, address >>> 0, headerLength) : null;
+            node.port.postMessage({ type: "configure", generation: nextGeneration, buffer, address: address >>> 0 });
+        } catch (error) {
+            // 配置尚未送到音频线程，可以立即归还本次提交的固定缓冲。
+            if (address) notify(onReleased, nextGeneration);
+            throw error;
+        }
         generation = nextGeneration;
-        consumedBase = lastConsumed = 0;
-        const buffer = new SharedArrayBuffer(headerLength * 4 + capacity * 2 * 4);
-        header = new Int32Array(buffer, 0, headerLength);
-        samples = new Float32Array(buffer, headerLength * 4);
-        node.port.postMessage({ type: "configure", generation, buffer });
+        header = nextHeader;
     }
     intent = nextIntent;
-    Atomics.store(header, Playing, intent === 1 ? 1 : 0);
     if (intent === 1) resume();
     report();
 }
 
-export function writableFrames(expectedGeneration) {
-    if (!header || expectedGeneration !== generation || intent !== 1) return 0;
-    const queued = ((Atomics.load(header, Write) >>> 0) - (Atomics.load(header, Read) >>> 0)) >>> 0;
-    return Math.max(0, targetFrames - queued);
-}
-
-export function writeSamples(expectedGeneration, bytes, count) {
-    if (expectedGeneration !== generation || intent !== 1) return;
-    const data = new Float32Array(bytes.buffer, bytes.byteOffset, count);
-    const write = Atomics.load(header, Write) >>> 0;
-    for (let frame = 0; frame < count / 2; frame++) {
-        const offset = ((write + frame) % capacity) * 2;
-        samples[offset] = data[frame * 2];
-        samples[offset + 1] = data[frame * 2 + 1];
-    }
-    Atomics.store(header, Write, (write + count / 2) | 0);
-    Atomics.store(header, Requested, 0);
-    report();
-}
-
-export function endInput(expectedGeneration) {
-    if (expectedGeneration === generation) Atomics.store(header, Ended, 1);
-}
-
 function report() {
     if (!header || !onStatus) return;
+    Atomics.store(header, Running, context.state === "running" && !failed ? 1 : 0);
     const consumed = Atomics.load(header, Consumed) >>> 0;
-    if (consumed < lastConsumed) consumedBase += 0x100000000;
-    lastConsumed = consumed;
     const queued = ((Atomics.load(header, Write) >>> 0) - (Atomics.load(header, Read) >>> 0)) >>> 0;
     const state = failed ? 3 : intent === 0 ? 0
         : intent === 1 && context.state === "running" && (queued > 0 || consumed > 0) ? 1 : 2;
-    notify(onStatus, generation, consumedBase + consumed, state, latencyMilliseconds());
+    notify(onStatus, generation, state, ((context.baseLatency || 0) + (context.outputLatency || 0)) * 1000);
 }
 
 // .NET 多线程模式要求异步导出；通知不阻塞浏览器主线程，也不跨语言同步重入。
@@ -153,13 +139,11 @@ function fail(error) {
 function visibilityChanged() {
     if (document.hidden) context?.suspend().catch(fail);
     else if (intent === 1) {
-        if (header) Atomics.store(header, Playing, 1);
         resume();
     }
 }
 
 function pageHidden() {
-    if (header) Atomics.store(header, Playing, 0);
     context?.suspend().catch(fail);
 }
 
@@ -228,7 +212,10 @@ export async function dispose() {
     window.removeEventListener("pagehide", pageHidden);
     window.removeEventListener("pageshow", visibilityChanged);
     navigator.mediaDevices?.removeEventListener("devicechange", devicesChanged);
-    if (node) { node.port.onmessage = null; node.disconnect(); node.port.close(); }
+    if (node) node.disconnect();
     if (context) { context.onstatechange = null; await context.close(); }
-    context = node = header = samples = null;
+    // 关闭上下文后音频线程已停止，随后才可解除最后一块共享缓冲的固定。
+    if (header) notify(onReleased, generation);
+    if (node) { node.port.onmessage = null; node.port.close(); }
+    context = node = header = null;
 }

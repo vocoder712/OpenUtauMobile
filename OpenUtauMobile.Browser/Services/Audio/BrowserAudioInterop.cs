@@ -48,18 +48,19 @@ internal static partial class BrowserAudioInterop
         }
     }
 
-    /// <summary>音频线程通过主线程通知请求下一批样本。</summary>
+    /// <summary>浏览器已不再读取旧队列，允许回收其固定内存。</summary>
     [JSExport]
-    public static async Task RequestData(int generation)
+    public static Task ReleaseBuffer(int generation)
     {
-        await Dispatcher.UIThread.InvokeAsync(() => BrowserAudioOutput.Active?.Pump(generation));
+        BrowserAudioBuffer.Release(generation);
+        return Task.CompletedTask;
     }
 
     /// <summary>将消费时钟与上下文状态同步到托管快照。</summary>
     [JSExport]
-    public static async Task UpdateStatus(int generation, double frames, int state, double latency)
+    public static async Task UpdateStatus(int generation, int state, double latency)
     {
-        await Dispatcher.UIThread.InvokeAsync(() => BrowserAudioOutput.Active?.UpdateStatus(generation, frames, state, latency));
+        await Dispatcher.UIThread.InvokeAsync(() => BrowserAudioOutput.Active?.UpdateStatus(generation, state, latency));
     }
 
     /// <summary>异步接收浏览器错误，避免从 JS 主线程同步进入托管运行时。</summary>
@@ -105,16 +106,7 @@ internal static partial class BrowserAudioInterop
     private static partial bool CanSelectOutput();
 
     [JSImport("setPlayback", ModuleName)]
-    internal static partial void SetPlayback(int generation, int state);
-
-    [JSImport("writableFrames", ModuleName)]
-    internal static partial int WritableFrames(int generation);
-
-    [JSImport("writeSamples", ModuleName)]
-    internal static partial void WriteSamples(int generation, byte[] samples, int count);
-
-    [JSImport("endInput", ModuleName)]
-    internal static partial void EndInput(int generation);
+    internal static partial void SetPlayback(int generation, int state, int address);
 
     [JSImport("selectOutput", ModuleName)]
     internal static partial Task SelectOutputAsync();
