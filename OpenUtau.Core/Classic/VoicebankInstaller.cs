@@ -69,8 +69,19 @@ namespace OpenUtau.Classic {
                             using (var stream = File.Open(filePath, FileMode.Open)) {
                                 config = VoicebankConfig.Load(stream);
                             }
+                            bool changed = false;
                             if (string.IsNullOrEmpty(config.SingerType)) {
                                 config.SingerType = singerType;
+                                changed = true;
+                            }
+                            // Honor the text encoding chosen in the wizard. Without this, a
+                            // character.yaml lacking text_file_encoding keeps being read as
+                            // shift_jis even after the user picks another encoding.
+                            if (!string.Equals(config.TextFileEncoding, textEncoding.WebName, StringComparison.OrdinalIgnoreCase)) {
+                                config.TextFileEncoding = textEncoding.WebName;
+                                changed = true;
+                            }
+                            if (changed) {
                                 SaveConfigSafely(filePath, config);
                             }
                         }

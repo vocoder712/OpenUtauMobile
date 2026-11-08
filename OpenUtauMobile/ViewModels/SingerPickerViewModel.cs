@@ -2,8 +2,8 @@
 using System.Reactive;
 using System.Threading.Tasks;
 using DynamicData.Binding;
-using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Helpers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -38,23 +38,8 @@ public class SingerPickerViewModel : PopupViewModelBase
     private async Task LoadSingersAsync()
     {
         IsLoading = true;
-        List<USinger> list = await Task.Run(() =>
-        {
-            List<USinger> singers = [];
-            foreach (var group in SingerManager.Inst.SingerGroups.Values)
-            {
-                if (group == null) continue;
-                foreach (var singer in group)
-                {
-                    if (singer != null)
-                    {
-                        singers.Add(singer);
-                    }
-                }
-            }
-
-            return singers;
-        });
+        // 按歌手类型固定顺序展开，保证与歌手管理页顺序一致
+        List<USinger> list = await Task.Run(SingerListHelper.GetOrderedSingers);
         Singers.Load(list);
         IsLoading = false;
     }
