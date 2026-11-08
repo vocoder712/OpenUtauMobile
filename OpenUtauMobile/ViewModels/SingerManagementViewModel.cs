@@ -2,7 +2,6 @@
 using System.Reactive;
 using System.Threading.Tasks;
 using DynamicData.Binding;
-using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services.Dialogs;
@@ -80,23 +79,8 @@ public class SingerManagementViewModel : NavigateViewModelBase
 
     private async Task RefreshSingersAsync()
     {
-        List<USinger> list = await Task.Run(() =>
-        {
-            List<USinger> singers = [];
-            foreach (var group in SingerManager.Inst.SingerGroups.Values)
-            {
-                if (group == null) continue;
-                foreach (var singer in group)
-                {
-                    if (singer != null)
-                    {
-                        singers.Add(singer);
-                    }
-                }
-            }
-
-            return singers;
-        });
+        // 按歌手类型固定顺序展开，避免安装新歌手后分组顺序随目录枚举顺序变化
+        List<USinger> list = await Task.Run(SingerListHelper.GetOrderedSingers);
 
         Singers.Load(list);
     }
