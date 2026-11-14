@@ -87,7 +87,7 @@ public class NotesCanvas : Control, ICmdSubscriber
     private const int RenderPitchSampleInterval = 5; // 音高采样间隔（tick）
     private const double PitchHandleRadius = 5.0;
     private const double PitchHandleDiameter = PitchHandleRadius * 2;
-    private const double NoteBodyCornerRadius = 4;
+    private const double NoteBodyCornerRadius = 8;
 
     private readonly Geometry _pointGeometry = new EllipseGeometry(
         new Rect(-PitchHandleRadius, -PitchHandleRadius, PitchHandleDiameter, PitchHandleDiameter));
@@ -220,7 +220,7 @@ public class NotesCanvas : Control, ICmdSubscriber
             Size size = ViewModel.TickToneToSize(note.duration, 1);
             Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
             // 圆角矩形
-            Rect rect = new(leftTop, rightBottom);
+            Rect rect = new Rect(leftTop, rightBottom).Deflate(new Thickness(0, 4));
             RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
             // 边框：表示选中状态
             IPen borderPen = isSelected
@@ -379,7 +379,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
 
         // 圆角矩形
-        Rect rect = new(leftTop, rightBottom);
+        Rect rect = new Rect(leftTop, rightBottom).Deflate(new Thickness(0, 4));
         RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
 
         // 根据错误状态选择颜色
