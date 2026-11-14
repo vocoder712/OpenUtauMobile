@@ -403,6 +403,8 @@ namespace OpenUtau.Core.Pipeline {
         public readonly PhonemeSource[] Phonemes;
         /// <summary>Half-open [start, end) index ranges into <see cref="Phonemes"/>.</summary>
         public readonly (int Start, int End)[] PhraseGroups;
+        // 可选分组扩展：独占范围供表情图使用，共享上下文仅用于构造渲染输入。
+        private readonly RenderPhraseGroup[]? rendererPhraseGroups;
         // Shared by graph contexts for this immutable snapshot; unused graphs pay no indexing cost.
         internal readonly Lazy<int[][]> PhraseNoteIndex;
 
@@ -481,6 +483,25 @@ namespace OpenUtau.Core.Pipeline {
                     Phonemes.Select(p => p.Position).ToArray(),
                     numerical.ToDictionary(abbr => abbr, abbr => Phonemes.Select(p => p.Values![abbr]).ToArray()));
             }
+
+            // 保留默认分句路径；只有显式提供分组的渲染器才接管连续音素的切分。
+            // 延迟索引尚未求值，此时替换归属范围不会让表情图看到重叠的音符归属。
+            rendererPhraseGroups = Renderer.GetPhraseGroups(this);
+            if (rendererPhraseGroups != null)
+            {
+                int previousEnd = 0;
+                foreach (RenderPhraseGroup group in rendererPhraseGroups)
+                {
+                    if (group.Start < previousEnd || group.End <= group.Start
+                        || group.ContextStart < 0 || group.ContextStart > group.Start
+                        || group.ContextEnd < group.End || group.ContextEnd > Phonemes.Length)
+                    {
+                        throw new ArgumentException("渲染器返回了无效的乐句归属或上下文范围。");
+                    }
+                    previousEnd = group.End;
+                }
+                PhraseGroups = [.. rendererPhraseGroups.Select(group => (group.Start, group.End))];
+            }
         }
 
         /// <summary>
@@ -546,7 +567,8 @@ namespace OpenUtau.Core.Pipeline {
             var phonemes = DrivenPhonemes();
             var phrases = new RenderPhrase[PhraseGroups.Length];
             for (int i = 0; i < PhraseGroups.Length; ++i) {
-                phrases[i] = new RenderPhrase(this, phonemes, PhraseGroups[i].Start, PhraseGroups[i].End);
+                phrases[i] = new RenderPhrase(this, phonemes, PhraseGroups[i].Start, PhraseGroups[i].End,
+                    rendererPhraseGroups?[i]);
             }
             return phrases;
         }

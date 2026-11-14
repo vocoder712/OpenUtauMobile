@@ -91,6 +91,21 @@ namespace OpenUtau.Core.Render {
         }
     }
 
+    /// <summary>渲染器提供的只读乐句上下文；缓存键必须覆盖会影响音频的额外输入。</summary>
+    public interface IRenderPhraseContext
+    {
+        /// <summary>由渲染器提供的稳定缓存身份，不得包含账户凭据或可变对象标识。</summary>
+        string CacheKey { get; }
+    }
+
+    /// <summary>
+    /// 自定义乐句的音素索引范围，均为左闭右开。
+    /// Start/End 表示表情图的独占归属，必须有序且不重叠；ContextStart/ContextEnd
+    /// 表示实际渲染所需的上下文，须包含归属范围，允许相邻乐句共享上下文。
+    /// </summary>
+    public sealed record RenderPhraseGroup(int Start, int End, int ContextStart, int ContextEnd,
+        IRenderPhraseContext? Context = null);
+
     /// <summary>
     /// Interface of phrase-based renderer.
     /// </summary>
@@ -101,6 +116,12 @@ namespace OpenUtau.Core.Render {
         bool SupportsPhonemeEnvelope => true;
         bool SupportsExpression(UExpressionDescriptor descriptor);
         RenderResult Layout(RenderPhrase phrase);
+
+        /// <summary>
+        /// 在不可变快照建立后提供自定义分组，可切开连续音素；返回 null 沿用原有分句及合句上限。
+        /// 这是可选扩展，默认实现不改变现有渲染器；实现方仅可读取快照，不得修改工程或发起网络请求。
+        /// </summary>
+        RenderPhraseGroup[]? GetPhraseGroups(Pipeline.PhraseSource source) => null;
 
         /// <summary>
         /// How much (ms) this renderer pads the rendered audio before the first

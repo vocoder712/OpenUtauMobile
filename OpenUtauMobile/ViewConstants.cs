@@ -36,7 +36,7 @@ namespace OpenUtauMobile
         // 走带编曲区横向缩放（EditorViewModel.TickWidth，单位：像素/Tick）
         public const double TickWidthMax = 2;
         public const double TickWidthMin = 1.0 / 480.0;
-        public const double TickWidthDefault = 24.0 / 480.0;
+        public const double TickWidthDefault = 12.0 / 480.0;
 
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace OpenUtauMobile
         // 钢琴卷帘区横向缩放（PianoRollViewModel.TickWidth，单位：像素/Tick）
         public const double PianoRollTickWidthMax = 8;
         public const double PianoRollTickWidthMin = 8.0 / 480.0;
-        public const double PianoRollTickWidthDefault = 48.0 / 480.0;
+        public const double PianoRollTickWidthDefault = 96.0 / 480.0;
 
 
         public const double NoteHeightMax = 128;
