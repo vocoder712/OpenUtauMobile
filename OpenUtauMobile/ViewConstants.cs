@@ -83,7 +83,7 @@ namespace OpenUtauMobile
         // 钢琴卷帘区横向缩放（PianoRollViewModel.TickWidth，单位：像素/Tick）
         public const double PianoRollTickWidthMax = 8;
         public const double PianoRollTickWidthMin = 8.0 / 480.0;
-        public const double PianoRollTickWidthDefault = 96.0 / 480.0;
+        public const double PianoRollTickWidthDefault = 72.0 / 480.0;
 
 
         public const double NoteHeightMax = 128;

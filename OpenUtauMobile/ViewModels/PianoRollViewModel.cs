@@ -383,7 +383,19 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     private bool _maxOffsetsDirty = true;
     private double _cachedMaxTickOffset;
     private double _cachedMaxKeyOffset;
-    public double ContentEndTick;
+    private double _contentEndTick;
+
+    /// <summary>由编曲区从文档同步的内容末尾；边界变化时立即使视口缓存失效。</summary>
+    internal double ContentEndTick
+    {
+        get => _contentEndTick;
+        set
+        {
+            if (_contentEndTick == value) return;
+            _contentEndTick = value;
+            InvalidateMaxOffsets();
+        }
+    }
 
     #endregion
 

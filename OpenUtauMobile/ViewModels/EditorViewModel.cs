@@ -674,14 +674,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 {
                     ProjectPath = loadProjectNotification.project.FilePath;
                     RefreshProjectInfo();
-                    InvalidateMaxOffsets();
-                    PianoRollViewModel.InvalidateMaxOffsets();
-                    ApplyViewportLimits();
                     RequestInvalidateVisual?.Invoke();
                 });
-                break;
-            case TrackCommand:
-                InvalidateMaxOffsets();
                 break;
             case PartCommand:
                 RunOnUiThread(() =>
@@ -696,10 +690,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     {
                         ReplaceSelectedParts(remainingSelection);
                     }
-                    InvalidateMaxOffsets();
-                    ApplyViewportLimits();
-                    // 更新钢琴卷帘视口限制
-                    PianoRollViewModel.InvalidateMaxOffsets();
                     RequestInvalidateVisual?.Invoke();
                 });
                 break;
@@ -717,6 +707,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 ProjectPath = DocManager.Inst.Project.FilePath;
                 this.RaisePropertyChanged(nameof(Saved));
                 break;
+        }
+
+        // 文档命令执行后读取实际边界，涵盖音符命令隐式延长分片及撤销、重做。
+        // 校验可能延后到下一帧或命令组结束，相关通知到达时再同步最终结果。
+        if (cmd is not UNotification ||
+            cmd is LoadProjectNotification or ValidateProjectNotification or PreRenderNotification or
+                SingersRefreshedNotification or OtoChangedNotification)
+        {
+            RefreshDocumentViewportLimits();
         }
     }
 
@@ -999,6 +998,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// 应在 Parts/Tracks 内容变化、TickWidth/TrackHeight/画布尺寸变化时调用。
     /// </summary>
     private void InvalidateMaxOffsets() => _maxOffsetsDirty = true;
+
+    /// <summary>从权威文档同步内容边界，再统一刷新编曲区与钢琴卷帘的视口限制。</summary>
+    private void RefreshDocumentViewportLimits()
+    {
+        InvalidateMaxOffsets();
+        ApplyViewportLimits();
+        PianoRollViewModel.InvalidateMaxOffsets();
+        PianoRollViewModel.ApplyViewportLimits();
+        RequestInvalidateVisual?.Invoke();
+    }
 
     /// <summary>
     /// 若缓存有效直接返回（O(1)），否则遍历 Parts 重算并缓存（O(Parts.Count)）。
@@ -1553,7 +1562,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <param name="timestamp"></param>
     public void OnGestureDragEnd(Point point, ulong timestamp)
     {
-        bool completedResize = _inputState == TrackInputState.ResizingParts;
         if (_inputState == TrackInputState.MovingParts || _inputState == TrackInputState.ResizingParts)
         {
             DocManager.Inst.EndUndoGroup();
@@ -1569,14 +1577,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         _resizingReferencePartIndex = 0;
         _resizingEdge = PartResizeEdge.End;
         _resizingPointerTickOffset = 0;
-
-        if (completedResize)
-        {
-            InvalidateMaxOffsets();
-            ApplyViewportLimits();
-            PianoRollViewModel.InvalidateMaxOffsets();
-            RequestInvalidateVisual?.Invoke();
-        }
     }
 
     /// <summary>
