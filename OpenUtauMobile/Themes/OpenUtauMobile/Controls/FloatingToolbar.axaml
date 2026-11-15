@@ -9,12 +9,44 @@
     <ControlTheme x:Key="OpumFloatingToolbarAction" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
-        <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
-        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
+        <Setter Property="Height" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+        <Setter Property="MinHeight" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+        <Setter Property="CornerRadius" Value="0" />
         <Setter Property="Padding" Value="16,8" />
         <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
-        <Style Selector="^.icon">
-            <Setter Property="Padding" Value="12" />
+        <Style Selector="^.toolbarIcon">
+            <Setter Property="Width" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+            <Setter Property="MinWidth" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+            <Setter Property="Padding" Value="8" />
+        </Style>
+        <Style Selector="^.danger">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
+        </Style>
+        <!-- 零内边距内容会被容器圆角裁剪，焦点轮廓需完整落在按钮内部。 -->
+        <Style Selector="^ /template/ Border#PART_FocusRing">
+            <Setter Property="Margin" Value="1" />
+        </Style>
+    </ControlTheme>
+    <!-- 独立入口复用工具栏按钮，仅从父边框取得圆角和强调色。 -->
+    <ControlTheme x:Key="OpumFloatingToolbarLeadingAction" TargetType="Button" BasedOn="{StaticResource OpumFloatingToolbarAction}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnTertiaryContainer}" />
+    </ControlTheme>
+    <!-- 更多按钮继承标准开关按钮状态，矩形表面与 40 DIP 命中区重合。 -->
+    <ControlTheme x:Key="OpumFloatingToolbarMoreAction" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+        <Setter Property="Width" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+        <Setter Property="Height" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+        <Setter Property="MinWidth" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+        <Setter Property="MinHeight" Value="{x:Static tokens:FloatingToolbarTokens.ItemSize}" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Style Selector="^ /template/ Border#PART_FocusRing">
+            <Setter Property="Margin" Value="1" />
         </Style>
     </ControlTheme>
     <!-- 菜单项是整行透明操作，内容留白位于命中区域内部。 -->
@@ -31,26 +63,44 @@
             <ControlTemplate>
                 <!-- 页内覆盖层仅由两个面板命中，空白区域继续将输入交给编辑器。 -->
                 <Canvas>
+                    <!-- 固定纵向布局的独立入口，不随上下文操作的有无消失。 -->
+                    <Border Name="PART_LeadingPanel" Classes="FloatingToolbarSurface"
+                            Width="{x:Static tokens:FloatingToolbarTokens.ItemSize}"
+                            Height="{x:Static tokens:FloatingToolbarTokens.ItemSize}"
+                            Padding="0"
+                            Background="{DynamicResource Sem.Color.TertiaryContainer}"
+                            TextElement.Foreground="{DynamicResource Sem.Color.OnTertiaryContainer}"
+                            CornerRadius="10">
+                        <!-- 仅内部内容按外框圆角裁剪，外框阴影可绘制到边界之外。 -->
+                        <Border ClipToBounds="True"
+                                CornerRadius="{Binding CornerRadius, ElementName=PART_LeadingPanel}">
+                            <ContentControl Content="{TemplateBinding LeadingContent}" />
+                        </Border>
+                    </Border>
                     <!-- 主面板采用 MD3 浮动胶囊表面，实际操作宽度由控件测量。 -->
                     <Border Name="PART_MainPanel" Classes="FloatingToolbarSurface"
-                            Padding="{x:Static tokens:FloatingToolbarTokens.ContainerPadding}"
+                            Padding="0"
                             CornerRadius="{x:Static foundation:ShapeTokens.CornerFull}">
-                        <StackPanel Orientation="Horizontal">
-                            <StackPanel Name="PART_MainItems" Orientation="Horizontal" />
-                            <ToggleButton Name="PART_More" Classes="icon"
-                                          IsChecked="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                          ToolTip.Tip="{TemplateBinding MoreText}"
-                                          AutomationProperties.Name="{TemplateBinding MoreText}">
-                                <icons:PackIconPhosphorIcons Kind="DotsThreeVertical"
-                                    Width="{x:Static semantic:IconTokens.Standard}" Height="{x:Static semantic:IconTokens.Standard}" />
-                            </ToggleButton>
-                        </StackPanel>
+                        <!-- 裁剪操作状态层时保留外框的海拔阴影，不改变面板测量与定位。 -->
+                        <Border ClipToBounds="True"
+                                CornerRadius="{Binding CornerRadius, ElementName=PART_MainPanel}">
+                            <StackPanel Name="PART_MainLayout" Orientation="Horizontal">
+                                <StackPanel Name="PART_MainItems" Orientation="Horizontal" />
+                                <ToggleButton Name="PART_More" Theme="{StaticResource OpumFloatingToolbarMoreAction}"
+                                              IsChecked="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                              ToolTip.Tip="{TemplateBinding MoreText}"
+                                              AutomationProperties.Name="{TemplateBinding MoreText}">
+                                    <icons:PackIconPhosphorIcons Kind="DotsThreeVertical"
+                                        Width="{x:Static semantic:IconTokens.Standard}" Height="{x:Static semantic:IconTokens.Standard}" />
+                                </ToggleButton>
+                            </StackPanel>
+                        </Border>
                     </Border>
                     <!-- 溢出面板保持有限高度，超出可用空间时纵向滚动。 -->
                     <Border Name="PART_OverflowPanel" Classes="FloatingToolbarSurface"
                             CornerRadius="{x:Static foundation:ShapeTokens.CornerS}">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <Border Padding="0,8">
+                            <Border Padding="0">
                                 <StackPanel Name="PART_OverflowItems" />
                             </Border>
                         </ScrollViewer>
@@ -58,6 +108,9 @@
                 </Canvas>
             </ControlTemplate>
         </Setter>
+        <Style Selector="^ /template/ Border#PART_LeadingPanel Button">
+            <Setter Property="Theme" Value="{StaticResource OpumFloatingToolbarLeadingAction}" />
+        </Style>
         <Style Selector="^ /template/ Border.FloatingToolbarSurface">
             <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
             <Setter Property="TextElement.Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />

@@ -1,5 +1,4 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:localTokens="clr-namespace:OpenUtauMobile.Views.Tokens"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -14,7 +13,7 @@
              Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
 
-    <Grid RowDefinitions="*,Auto" ClipToBounds="True">
+    <Grid ClipToBounds="True">
         <Grid
             x:Name="TrackAreaGrid"
             RowDefinitions="24, *"
@@ -147,16 +146,11 @@
             <Border x:Name="ArrangementInputRuler" Grid.Row="0" Grid.Column="1" Background="Transparent"
                     IsVisible="False" />
         </Grid>
-        <!-- 走带工具在底部独立占位，画布尺寸不包含工具栏。 -->
-        <Border x:Name="ArrangementToolbar" Grid.Row="1" Height="{x:Static localTokens:EditorTokens.ToolbarExtent}"
-                Background="{DynamicResource Sem.Color.SurfaceContainer}"
-                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="0,1,0,0">
-            <Grid x:Name="FloatingActions" ColumnDefinitions="48,*">
-                <c:TrackEditModeSwitcher HorizontalAlignment="Center" VerticalAlignment="Center"
-                                         CurrentMode="{Binding TrackEditMode, Mode=TwoWay}" />
-                <c:EditorContextActions Grid.Column="1" Orientation="Horizontal"
-                                        Actions="{Binding TrackContextActions}" />
-            </Grid>
-        </Border>
+        <!-- 工具覆盖画布，固定在各自编辑区右上角，不再预留底栏空间。 -->
+        <c:EditorContextActions x:Name="FloatingActions" Actions="{Binding TrackContextActions}">
+            <c:EditorContextActions.ModeSwitch>
+                <c:TrackEditModeSwitcher CurrentMode="{Binding TrackEditMode, Mode=TwoWay}" />
+            </c:EditorContextActions.ModeSwitch>
+        </c:EditorContextActions>
     </Grid>
 </UserControl>

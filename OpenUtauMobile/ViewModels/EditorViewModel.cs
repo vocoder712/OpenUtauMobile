@@ -801,7 +801,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private async Task ShowMorePopupAsync()
     {
-        EditorMoreViewModel vm = new();
+        EditorMoreViewModel vm = new()
+        {
+            CanBatchEdit = PianoRollViewModel.EditingVoicePart != null
+        };
         EditorMoreAction action = await Dispatcher.UIThread.InvokeAsync(() =>
             PopupService.Show<EditorMoreAction>(new EditorMorePopup(), vm));
 
@@ -812,6 +815,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     {
         switch (action)
         {
+            case EditorMoreAction.BatchEdit:
+                await PianoRollViewModel.ShowBatchEditPopupAsync();
+                break;
             case EditorMoreAction.ExpressionGraphs:
                 if (_disposed || IsLoadingProject || Navigator.CurrentViewModel != this) break;
                 UProject graphProject = DocManager.Inst.Project;

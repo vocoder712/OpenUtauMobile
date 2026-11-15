@@ -155,7 +155,7 @@ public partial class EditorModePicker : UserControl
         foreach (EditorModeOption option in _options)
         {
             if (option.Value == SelectedValue)
-                SwitchButton.Content = new PackIconPhosphorIcons { Kind = option.Icon, Width = IconTokens.Small, Height = IconTokens.Small };
+                SwitchButton.Content = new PackIconPhosphorIcons { Classes = { "EditModeIcon" }, Kind = option.Icon };
         }
         foreach (Control item in _layer.Items.Children)
             item.Classes.Set("Selected", Equals(item.Tag, SelectedValue));

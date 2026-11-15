@@ -20,4 +20,7 @@ public sealed class FloatingToolbarAction
 
     /// <summary>始终收纳到溢出面板。</summary>
     public bool AlwaysInOverflow { get; init; }
+
+    /// <summary>危险操作使用语义错误色，仍沿用基础按钮交互。</summary>
+    public bool IsDanger { get; init; }
 }

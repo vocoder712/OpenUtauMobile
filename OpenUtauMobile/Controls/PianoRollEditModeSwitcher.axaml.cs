@@ -11,8 +11,7 @@ public partial class PianoRollEditModeSwitcher : UserControl
 {
     /// <summary>当前编辑模式。</summary>
     public static readonly StyledProperty<PianoRollEditMode> CurrentModeProperty =
-        AvaloniaProperty.Register<PianoRollEditModeSwitcher, PianoRollEditMode>(nameof(CurrentMode),
-            PianoRollEditMode.Hand, defaultBindingMode: BindingMode.TwoWay);
+        AvaloniaProperty.Register<PianoRollEditModeSwitcher, PianoRollEditMode>(nameof(CurrentMode), defaultBindingMode: BindingMode.TwoWay);
 
     /// <summary>当前编辑区使用的模式。</summary>
     public PianoRollEditMode CurrentMode
@@ -41,12 +40,12 @@ public partial class PianoRollEditModeSwitcher : UserControl
     private void UpdateOptions()
     {
         Picker.SetOptions([
-            new((int)PianoRollEditMode.Hand, PackIconPhosphorIconsKind.Hand, "PianoRoll.DragSelect"),
-            new((int)PianoRollEditMode.MultiSelect, PackIconPhosphorIconsKind.Selection, "PianoRoll.MultiSelect"),
-            new((int)PianoRollEditMode.Note, PackIconPhosphorIconsKind.MusicNoteSimple, "PianoRoll.NotePen"),
-            new((int)PianoRollEditMode.PitchPen, PackIconPhosphorIconsKind.Pencil, "PianoRoll.PitchPen"),
-            new((int)PianoRollEditMode.Anchor, PackIconPhosphorIconsKind.Cursor, "PianoRoll.Anchor"),
-            new((int)PianoRollEditMode.Vibrato, PackIconPhosphorIconsKind.WaveSine, "PianoRoll.Vibrato"),
+            new EditorModeOption((int)PianoRollEditMode.Hand, PackIconPhosphorIconsKind.Hand, "PianoRoll.DragSelect"),
+            new EditorModeOption((int)PianoRollEditMode.MultiSelect, PackIconPhosphorIconsKind.Selection, "PianoRoll.MultiSelect"),
+            new EditorModeOption((int)PianoRollEditMode.Note, PackIconPhosphorIconsKind.MusicNoteSimple, "PianoRoll.NotePen"),
+            new EditorModeOption((int)PianoRollEditMode.PitchPen, PackIconPhosphorIconsKind.Pencil, "PianoRoll.PitchPen"),
+            new EditorModeOption((int)PianoRollEditMode.Anchor, PackIconPhosphorIconsKind.Cursor, "PianoRoll.Anchor"),
+            new EditorModeOption((int)PianoRollEditMode.Vibrato, PackIconPhosphorIconsKind.WaveSine, "PianoRoll.Vibrato"),
         ]);
     }
 }

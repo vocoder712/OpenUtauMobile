@@ -44,3 +44,4 @@
 - If apply_patch fails, report the exact error. Do not silently switch to string-based editing.
 - Search with rg and read only relevant code sections.
 - If an approach fails twice, reassess the root cause before retrying.
+- IDE 报告的 InitializeComponent、命名控件等生成成员的解析错误若持续出现请忽略。

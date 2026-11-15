@@ -2393,7 +2393,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         bool hasSingleNote = SelectedNotes.Count == 1;
         bool hasAnchorSelection = SelectedAnchors.Count > 0;
         bool allVibratoDisabled = hasNoteSelection && SelectedNotes.All(note => note.vibrato.length <= 0f);
-        bool allVibratoEnabled = hasNoteSelection && SelectedNotes.All(note => note.vibrato.length > 0f);
 
         switch (EditMode)
         {
@@ -2409,8 +2408,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 {
                     // 笔模式选区操作由页内浮动栏承载，桌面菜单保留原入口。
                     if (!hasNoteSelection || UseDesktopMouseInput) items.Add(CreateBulkLyricEditAction());
-                    // 批量编辑
-                    items.Add(CreateBatchEditAction());
                 }
 
                 if (hasNoteSelection && UseDesktopMouseInput)
@@ -2477,7 +2474,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 if (EditingVoicePart != null)
                 {
                     items.Add(CreateBulkLyricEditAction());
-                    items.Add(CreateBatchEditAction());
                 }
                 if (hasNoteSelection)
                 {
@@ -2515,6 +2511,12 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 items.Add(new ContextActionItem
                 {
                     Label = PitchTargetLabel,
+                    Icon = PitchTarget switch
+                    {
+                        PitchEditTarget.Auto => PackIconPhosphorIconsKind.BezierCurve,
+                        PitchEditTarget.Deviation => PackIconPhosphorIconsKind.WaveSine,
+                        _ => PackIconPhosphorIconsKind.Pencil
+                    },
                     Tip = PitchTargetDescription,
                     Command = ReactiveCommand.Create(CyclePitchTarget)
                 });
@@ -2564,38 +2566,15 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 goto case PianoRollEditMode.Vibrato;
 
             case PianoRollEditMode.Vibrato:
-                if (hasNoteSelection)
+                if (hasNoteSelection && !allVibratoDisabled)
                 {
-                    if (allVibratoDisabled)
+                    items.Add(new ContextActionItem
                     {
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.Plus,
-                            Tip = L.S("PianoRoll.Action.AddVibrato"),
-                            Command = ReactiveCommand.Create(EnableVibrato)
-                        });
-                    }
-                    else
-                    {
-                        if (!allVibratoEnabled)
-                        {
-                            // Mixed selection: also offer "Add" for the disabled notes
-                            items.Add(new ContextActionItem
-                            {
-                                Icon = PackIconPhosphorIconsKind.Plus,
-                                Tip = L.S("PianoRoll.Action.AddVibrato"),
-                                Command = ReactiveCommand.Create(EnableVibratoForDisabled)
-                            });
-                        }
-
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.Trash,
-                            Tip = L.S(IsDesktopTuning ? "BatchEdit.Action.ClearVibratos" : "Common.Delete"),
-                            IsDanger = true,
-                            Command = ReactiveCommand.Create(DeleteVibrato)
-                        });
-                    }
+                        Icon = PackIconPhosphorIconsKind.Trash,
+                        Tip = L.S(IsDesktopTuning ? "BatchEdit.Action.ClearVibratos" : "Common.Delete"),
+                        IsDanger = true,
+                        Command = ReactiveCommand.Create(DeleteVibrato)
+                    });
                 }
 
                 break;
@@ -2655,17 +2634,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
         BulkLyricEditViewModel viewModel = new(part, SelectedNotes.ToList(), UseDesktopMouseInput);
         await PopupService.Show<object>(new BulkLyricEditPopup(), viewModel);
-    }
-
-    private ContextActionItem CreateBatchEditAction()
-    {
-        return new ContextActionItem
-        {
-            Id = "batch-edits",
-            Icon = PackIconPhosphorIconsKind.ListChecks,
-            Tip = L.S("BatchEdit.Title"),
-            Command = ReactiveCommand.CreateFromTask(ShowBatchEditPopupAsync),
-        };
     }
 
     public async Task ShowBatchEditPopupAsync()
@@ -3912,49 +3880,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     private static bool NearlyEqual(float left, float right)
     {
         return Math.Abs(left - right) < 0.01f;
-    }
-
-    private void EnableVibrato()
-    {
-        if (EditingVoicePart == null || SelectedNotes.Count == 0)
-        {
-            return;
-        }
-
-        DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
-        {
-            DocManager.Inst.ExecuteCmd(new SetVibratoCommand(
-                EditingVoicePart,
-                note,
-                CreateDefaultVibrato(NotePresets.Default.DefaultVibrato.VibratoLength)));
-        }
-
-        DocManager.Inst.EndUndoGroup();
-    }
-
-    private void EnableVibratoForDisabled()
-    {
-        if (EditingVoicePart == null || SelectedNotes.Count == 0)
-        {
-            return;
-        }
-
-        DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
-        {
-            if (note.vibrato.length > 0f)
-            {
-                continue;
-            }
-
-            DocManager.Inst.ExecuteCmd(new SetVibratoCommand(
-                EditingVoicePart,
-                note,
-                CreateDefaultVibrato(NotePresets.Default.DefaultVibrato.VibratoLength)));
-        }
-
-        DocManager.Inst.EndUndoGroup();
     }
 
     private void DeleteVibrato()

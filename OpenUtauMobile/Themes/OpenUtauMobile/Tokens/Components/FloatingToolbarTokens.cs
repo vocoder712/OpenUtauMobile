@@ -1,15 +1,10 @@
-using Avalonia;
-
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 /// <summary>浮动工具栏的容器尺寸与锚点布局契约，供模板和布局共同使用。</summary>
 public static class FloatingToolbarTokens
 {
-    /// <summary>48 DIP 操作命中区外侧的容器留白。</summary>
-    public const double ContainerInset = 8;
-
-    /// <summary>主面板的容器留白。</summary>
-    public static Thickness ContainerPadding => new(ContainerInset);
+    /// <summary>工具栏横截面、图标按钮命中区及独立入口共用的紧凑尺寸。</summary>
+    public const double ItemSize = 40;
 
     /// <summary>工具栏与锚点、主面板与溢出面板之间的间隔。</summary>
     public const double AnchorGap = 8;

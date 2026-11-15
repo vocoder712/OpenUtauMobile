@@ -10,7 +10,6 @@
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
-             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
              Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
@@ -19,7 +18,7 @@
     </UserControl.Resources>
 
 
-    <Grid x:Name="PianoRollAreaGrid" ColumnDefinitions="*,Auto" ClipToBounds="True"
+    <Grid x:Name="PianoRollAreaGrid" ClipToBounds="True"
           Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
         <!-- 上下文为PianoRollViewModel，放大镜的Source -->
@@ -244,17 +243,14 @@
                            VerticalAlignment="Center" />
             </Border>
         </Grid>
-        <!-- 钢琴卷帘操作独立占用右侧列，音符及参数画布按实际剩余宽度测量。 -->
-        <Border x:Name="FloatingActions" Grid.Column="1" Width="{x:Static semantic:InteractionTokens.TouchTarget}"
+        <!-- 工具在编辑区内浮动，移除侧栏占位并复用原有模式切换行为。 -->
+        <c:EditorContextActions x:Name="FloatingActions"
                 DataContext="{ReflectionBinding PianoRollViewModel}" x:DataType="vm:PianoRollViewModel"
                 IsVisible="{Binding IsVoiceMode}"
-                Background="{DynamicResource Sem.Color.SurfaceContainer}"
-                BorderBrush="{DynamicResource Sem.Color.OutlineVariant}" BorderThickness="1,0,0,0">
-            <Grid RowDefinitions="48,*">
-                <c:PianoRollEditModeSwitcher HorizontalAlignment="Center" VerticalAlignment="Center"
-                                             CurrentMode="{Binding EditMode, Mode=TwoWay}" />
-                <c:EditorContextActions Grid.Row="1" Actions="{Binding PianoRollContextActions}" />
-            </Grid>
-        </Border>
+                Actions="{Binding PianoRollContextActions}">
+            <c:EditorContextActions.ModeSwitch>
+                <c:PianoRollEditModeSwitcher CurrentMode="{Binding EditMode, Mode=TwoWay}" />
+            </c:EditorContextActions.ModeSwitch>
+        </c:EditorContextActions>
     </Grid>
 </UserControl>

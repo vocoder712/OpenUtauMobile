@@ -84,9 +84,16 @@ caller owns selection/session lifetime through `IsVisible` and supplies a new
   priority order; remaining space holds a prefix of the other operations.
 - `IconOnly` controls main-panel presentation. Overflow rows retain icon and label;
   all buttons retain accessible names, tooltips and command availability.
+- `IsFixedVertical` pins the toolbar to the host's top-right corner and places
+  overflow to its left. In this layout, `IconOnly` also applies to overflow buttons.
+  Optional `LeadingContent` provides a separate entry above the action capsule.
+  Available host height determines how many actions remain visible.
+- The toolbar cross-axis size and icon-button targets are 40 DIP. Rectangular
+  button state layers fill each target with zero container padding on all sides.
+  The independent entry is 40 × 40 DIP with a 10 DIP corner radius.
 - The main surface uses the shared `ShapeTokens.CornerFull` semantic token, a finite
   large radius normalized to its bounds rather than a fixed half-height. The overflow menu uses a
-  4 DIP radius and 8 DIP vertical insets. Its rows stretch across the menu width,
+  4 DIP radius and zero internal padding. Its rows stretch across the menu width,
   with transparent resting backgrounds and inherited button interaction states.
   Generated buttons explicitly select their derived ControlTheme.
 - The main panel prefers the anchor's upper side, falls below when necessary, and
@@ -96,7 +103,8 @@ caller owns selection/session lifetime through `IsVisible` and supplies a new
 
 The [MD3 toolbar](https://m3.material.io/components/toolbars/guidelines) and
 [menu](https://m3.material.io/components/menus/guidelines) guidelines inform the
-surface, shape, 48 DIP targets and overflow behavior. OPUM supplies dynamic semantic
+surface, shape and overflow behavior. The compact toolbar uses 40 DIP targets.
+OPUM supplies dynamic semantic
 colors, existing button states and page-local placement without a native popup.
 `Tokens/Components/FloatingToolbarTokens.cs` owns shared placement dimensions.
 The first consumer is the editor's note-pen selection: the last selected note is
