@@ -8,10 +8,12 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic;
 
 namespace OpenUtauMobile.Themes.OpenUtauMobile.Controls;
 
@@ -159,7 +161,14 @@ public sealed class FloatingToolbar : TemplatedControl
     /// <summary>按钮直接使用 ICommand，因此两个面板同步响应 CanExecute。</summary>
     private Button CreateActionButton(FloatingToolbarAction action, bool overflow)
     {
-        PackIconPhosphorIcons icon = new()
+        Control symbol = action.Label is { } label ? new TextBlock
+        {
+            Text = label,
+            FontSize = TypographyTokens.LabelSSize,
+            FontWeight = FontWeight.SemiBold,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        } : new PackIconPhosphorIcons
         {
             Kind = action.Icon,
             VerticalAlignment = VerticalAlignment.Center
@@ -175,7 +184,7 @@ public sealed class FloatingToolbar : TemplatedControl
         if (IconOnly && (!overflow || IsFixedVertical))
         {
             button.Classes.Add("toolbarIcon");
-            button.Content = icon;
+            button.Content = symbol;
         }
         else
         {
@@ -187,11 +196,11 @@ public sealed class FloatingToolbar : TemplatedControl
             TextBlock text = new()
             {
                 Text = action.Text,
-                TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                TextWrapping = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
             };
             Grid.SetColumn(text, 1);
-            content.Children.Add(icon);
+            content.Children.Add(symbol);
             content.Children.Add(text);
             button.Content = content;
         }

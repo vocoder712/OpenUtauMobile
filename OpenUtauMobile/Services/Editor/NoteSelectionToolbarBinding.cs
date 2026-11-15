@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Themes.OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
@@ -13,7 +12,7 @@ using ReactiveUI;
 
 namespace OpenUtauMobile.Services.Editor;
 
-/// <summary>在移动与桌面编辑页中，将音符选择映射到页级浮动工具栏。</summary>
+/// <summary>在移动与桌面编辑页中，将音符或锚点选择映射到页级浮动工具栏。</summary>
 public sealed class NoteSelectionToolbarBinding : IDisposable
 {
     private readonly FloatingToolbar _toolbar;
@@ -52,23 +51,20 @@ public sealed class NoteSelectionToolbarBinding : IDisposable
     /// <summary>选区工具栏的输入始终归属钢琴卷帘。</summary>
     private void OnToolbarPressed(object? sender, PointerPressedEventArgs e) => _activatePiano();
 
-    /// <summary>将最后选中音符的实际绘制矩形从音符画布转换到编辑页覆盖层。</summary>
+    /// <summary>将当前选区的画布锚点转换到编辑页覆盖层，覆盖音符笔、多选和锚点模式。</summary>
     private void UpdateNoteToolbarAnchor()
     {
         if (!_isPianoVisible() || _editor.IsLoadingProject ||
-            _editor.PianoRollViewModel is not { EditMode: PianoRollEditMode.Note, EditingVoicePart: { } part } piano ||
-            piano.SelectedNotes.Count == 0)
+            _editor.PianoRollViewModel.GetSelectionToolbarAnchorRect() is not { } anchor)
         {
             _toolbar.IsVisible = false;
             return;
         }
-        UNote note = piano.NoteToolbarAnchorNote!;
-        Point point = piano.TickPitchToPoint(part.position + note.position, note.AdjustedTone);
-        Point? origin = _notes.TranslatePoint(point, _viewport);
+        Point? origin = _notes.TranslatePoint(anchor.TopLeft, _viewport);
         _toolbar.IsVisible = origin.HasValue;
         if (origin.HasValue)
         {
-            _toolbar.AnchorRect = new Rect(origin.Value, piano.TickToneToSize(note.duration, 1));
+            _toolbar.AnchorRect = new Rect(origin.Value, anchor.Size);
         }
     }
 

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using Avalonia;
 using DynamicData;
 using OpenUtau.Core.Ustx;
 using IconPacks.Avalonia.PhosphorIcons;
@@ -13,7 +14,7 @@ namespace OpenUtauMobile.ViewModels;
 
 public partial class PianoRollViewModel
 {
-    /// <summary>音符笔模式的浮动操作，批量编辑歌词始终位于溢出面板。</summary>
+    /// <summary>音符与锚点选区共用的浮动操作；属性及批量编辑歌词始终收纳。</summary>
     [Reactive]
     public IReadOnlyList<FloatingToolbarAction> NoteToolbarActions { get; private set; } = [];
 
@@ -38,21 +39,31 @@ public partial class PianoRollViewModel
         }
     }
 
-    /// <summary>选择或模式变化时更新操作；与侧栏共用现有编辑命令及撤销事务。</summary>
+    /// <summary>选择或模式变化时更新操作，复用现有命令及撤销事务。</summary>
     private void RebuildNoteToolbarActions()
     {
-        if (EditMode != PianoRollEditMode.Note || SelectedNotes.Count == 0 || EditingVoicePart == null)
+        if (EditingVoicePart == null)
         {
             NoteToolbarActions = [];
             return;
         }
-        NoteToolbarActions =
+        if (EditMode == PianoRollEditMode.Anchor)
+        {
+            RebuildAnchorToolbarActions();
+            return;
+        }
+        if (EditMode is not (PianoRollEditMode.Note or PianoRollEditMode.MultiSelect) || SelectedNotes.Count == 0)
+        {
+            NoteToolbarActions = [];
+            return;
+        }
+        List<FloatingToolbarAction> actions =
         [
             new FloatingToolbarAction
             {
-                Text = L.S("Common.Delete"),
-                Icon = PackIconPhosphorIconsKind.Trash,
-                Command = ReactiveCommand.Create(DeleteSelectedNotes)
+                Text = L.S("Common.SelectAll"),
+                Icon = PackIconPhosphorIconsKind.SelectionAll,
+                Command = ReactiveCommand.Create(SelectAllNotes)
             },
             new FloatingToolbarAction
             {
@@ -62,24 +73,99 @@ public partial class PianoRollViewModel
             },
             new FloatingToolbarAction
             {
-                Text = L.S("LyricEdit.Title"),
-                Icon = PackIconPhosphorIconsKind.PencilSimple,
-                Command = ReactiveCommand.Create(EditLastSelectedNoteLyric)
+                Text = L.S("Common.Delete"),
+                Icon = PackIconPhosphorIconsKind.Trash,
+                Command = ReactiveCommand.Create(DeleteSelectedNotes),
+                IsDanger = true
+            },
+            new FloatingToolbarAction
+            {
+                Text = L.S("Common.Cut"),
+                Icon = PackIconPhosphorIconsKind.Scissors,
+                Command = ReactiveCommand.Create(CutSelectedNotes)
             },
             new FloatingToolbarAction
             {
                 Text = L.S("PianoRoll.Action.Split"),
                 Icon = PackIconPhosphorIconsKind.SplitHorizontal,
                 Command = ReactiveCommand.Create(SplitSelectedNotes)
+            }
+        ];
+        if (EditMode == PianoRollEditMode.Note)
+        {
+            actions.Add(new FloatingToolbarAction
+            {
+                Text = L.S("LyricEdit.Title"),
+                Icon = PackIconPhosphorIconsKind.PencilSimple,
+                Command = ReactiveCommand.Create(EditLastSelectedNoteLyric)
+            });
+        }
+        actions.Add(new FloatingToolbarAction
+        {
+            Text = L.S("BulkLyricEdit.Title"),
+            Icon = PackIconPhosphorIconsKind.TextAlignLeft,
+            Command = ReactiveCommand.CreateFromTask(ShowBulkLyricEditPopupAsync),
+            AlwaysInOverflow = true
+        });
+        actions.Add(new FloatingToolbarAction
+        {
+            Text = L.S("PianoRoll.Action.Properties"),
+            Icon = PackIconPhosphorIconsKind.Wrench,
+            Command = ReactiveCommand.CreateFromTask(EditNotePropertiesAsync),
+            AlwaysInOverflow = true
+        });
+        NoteToolbarActions = actions;
+    }
+
+    /// <summary>锚点选区承载形状切换与删除，仅单独选择首锚点时提供吸附。</summary>
+    private void RebuildAnchorToolbarActions()
+    {
+        if (SelectedAnchors.Count == 0)
+        {
+            NoteToolbarActions = [];
+            return;
+        }
+        List<FloatingToolbarAction> actions =
+        [
+            new FloatingToolbarAction
+            {
+                Text = L.S("PianoRoll.Action.ControlPointShape"),
+                Icon = PackIconPhosphorIconsKind.BezierCurve,
+                Command = ReactiveCommand.Create(CyclePitchPointShape)
             },
             new FloatingToolbarAction
             {
-                Text = L.S("BulkLyricEdit.Title"),
-                Icon = PackIconPhosphorIconsKind.TextAlignLeft,
-                Command = ReactiveCommand.CreateFromTask(ShowBulkLyricEditPopupAsync),
-                AlwaysInOverflow = true
+                Text = L.S("Common.Delete"),
+                Icon = PackIconPhosphorIconsKind.Trash,
+                Command = ReactiveCommand.Create(DeleteSelectedAnchors),
+                IsDanger = true
             }
         ];
+        if (GetSingleSelectedFirstAnchorNote() is { } note)
+        {
+            actions.Add(new FloatingToolbarAction
+            {
+                Text = L.S("PianoRoll.Action.ToggleFirstAnchorSnap"),
+                Icon = note.pitch.snapFirst ? PackIconPhosphorIconsKind.MagnetFill : PackIconPhosphorIconsKind.Magnet,
+                Command = ReactiveCommand.Create(ToggleFirstAnchorSnap)
+            });
+        }
+        NoteToolbarActions = actions;
+    }
+
+    /// <summary>将当前选区的工具栏锚点映射为音符画布坐标，锚点模式使用最后选中的控制点。</summary>
+    public Rect? GetSelectionToolbarAnchorRect()
+    {
+        if (EditingVoicePart == null || NoteToolbarActions.Count == 0) return null;
+        if (EditMode == PianoRollEditMode.Anchor)
+        {
+            PitchPoint? anchor = SelectedAnchors.LastOrDefault();
+            if (anchor == null) return null;
+            UNote? owner = SelectedNotes.FirstOrDefault(candidate => candidate.pitch.data.Contains(anchor)) ?? FindNoteForPitchPoint(anchor);
+            return owner == null ? null : new Rect(GetPitchPointCanvasPoint(owner, anchor), default(Size));
+        }
+        if (EditMode is not (PianoRollEditMode.Note or PianoRollEditMode.MultiSelect) || NoteToolbarAnchorNote is not { } note) return null;
+        return new Rect(TickPitchToPoint(EditingVoicePart.position + note.position, note.AdjustedTone), TickToneToSize(note.duration, 1));
     }
 
     /// <summary>编辑最后一个选中音符的歌词，沿用双击音符的弹窗流程。</summary>

@@ -33,7 +33,8 @@
         <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Padding" Value="8" />
         <Setter Property="CornerRadius" Value="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}" />
-        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnTertiaryContainer}" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
     </ControlTheme>
     <!-- 更多按钮继承标准开关按钮状态，矩形表面与 40 DIP 命中区重合。 -->
     <ControlTheme x:Key="OpumFloatingToolbarMoreAction" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
@@ -68,8 +69,8 @@
                             Width="{x:Static tokens:FloatingToolbarTokens.ItemSize}"
                             Height="{x:Static tokens:FloatingToolbarTokens.ItemSize}"
                             Padding="0"
-                            Background="{DynamicResource Sem.Color.TertiaryContainer}"
-                            TextElement.Foreground="{DynamicResource Sem.Color.OnTertiaryContainer}"
+                            Background="{DynamicResource Sem.Color.SecondaryContainer}"
+                            TextElement.Foreground="{DynamicResource Sem.Color.OnSecondaryContainer}"
                             CornerRadius="10">
                         <!-- 仅内部内容按外框圆角裁剪，外框阴影可绘制到边界之外。 -->
                         <Border ClipToBounds="True"

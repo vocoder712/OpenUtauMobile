@@ -12,6 +12,9 @@ public sealed class FloatingToolbarAction
     /// <summary>现有图标库中的操作图标。</summary>
     public required PackIconPhosphorIconsKind Icon { get; init; }
 
+    /// <summary>可选的短状态标记，设置后替代图标，不作为操作描述。</summary>
+    public string? Label { get; init; }
+
     /// <summary>主面板与溢出面板共用的命令。</summary>
     public required ICommand Command { get; init; }
 

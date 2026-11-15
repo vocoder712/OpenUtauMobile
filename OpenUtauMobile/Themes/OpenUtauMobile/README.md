@@ -80,6 +80,7 @@ caller owns selection/session lifetime through `IsVisible` and supplies a new
 `Actions` collection when its available operations change.
 
 - `FloatingToolbarAction` carries text, an IconPacks icon, a command and its parameter.
+  An optional short `Label` replaces the icon for state indicators.
   `AlwaysInOverflow` keeps an operation in the overflow panel. Collection order is
   priority order; remaining space holds a prefix of the other operations.
 - `IconOnly` controls main-panel presentation. Overflow rows retain icon and label;
@@ -107,8 +108,10 @@ surface, shape and overflow behavior. The compact toolbar uses 40 DIP targets.
 OPUM supplies dynamic semantic
 colors, existing button states and page-local placement without a native popup.
 `Tokens/Components/FloatingToolbarTokens.cs` owns shared placement dimensions.
-The first consumer is the editor's note-pen selection: the last selected note is
-the anchor, and splitting uses the existing playback-head split operation.
+The editor shares the selection toolbar between note-pen, note multiselect and
+pitch-anchor modes. It follows the last selected note or pitch anchor. Note
+properties and bulk lyric editing always remain in overflow; splitting uses the
+existing playback-head operation.
 `Services/Editor/NoteSelectionToolbarBinding.cs` shares selection coordinates and
 subscription lifetime between the mobile editor and desktop workspace.
 

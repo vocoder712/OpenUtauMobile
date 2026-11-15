@@ -53,6 +53,7 @@ public partial class EditorContextActions : UserControl
         {
             Text = action.Tip,
             Icon = action.Icon,
+            Label = action.Label,
             Command = action.Command,
             IsDanger = action.IsDanger
         })];
