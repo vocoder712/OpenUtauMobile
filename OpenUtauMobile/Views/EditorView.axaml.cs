@@ -148,7 +148,7 @@ public partial class EditorView : UserControl
         _viewModelSubscription?.Dispose();
         CompositeDisposable disp = new();
         _viewModelSubscription = disp;
-        new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, PianoSurface.NotesCanvas, vm,
+        new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, PianoSurface.NotesCanvas, PianoSurface.NoteCreationPreview, vm,
             () => !IsMixerOpen, () => _input.ActiveArea = EditorInputController.EditArea.PianoRoll).DisposeWith(disp);
 
         // 立即设置初始列宽，不动画

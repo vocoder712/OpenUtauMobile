@@ -11,6 +11,8 @@ namespace OpenUtauMobile.Controls
     {
         public Grid LayoutGrid => PART_PianoRollGrid;
         public NotesCanvas NotesCanvas => NotesInputCanvas;
+        /// <summary>待确认音符的入口，供页级输入绑定识别占位框内部点击。</summary>
+        public Button NoteCreationPreview => NoteCreationPreviewButton;
         public Border Ruler => PianoInputRuler;
         public PhonemeParamPanel ParameterPanel => PhonemeParamPanel;
         private bool _desktopResizeGrip;

@@ -796,6 +796,12 @@
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>消しゴムに切替</value>
   </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>ノートのクリップボードを空にしました</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>ノートを作成</value>
+  </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>再生位置にコントロールポイントを追加</value>
   </data>

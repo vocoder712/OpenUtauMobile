@@ -10,6 +10,7 @@
              xmlns:tools="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+             xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
              x:DataType="vm:EditorViewModel"
              Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
 
@@ -104,6 +105,34 @@
                            KeyHeight="{Binding KeyHeight}"
                            TickOffset="{Binding TickOffset}"
                            KeyOffset="{Binding KeyOffset}" />
+            <!-- 新建音符的确认占位框与画布同坐标；覆盖层空白不拦截手势。 -->
+            <Canvas Grid.Row="1" Grid.Column="1" ClipToBounds="True"
+                    IsVisible="{Binding IsNoteCreationPreviewVisible}">
+                <Button x:Name="NoteCreationPreviewButton"
+                        Canvas.Left="{Binding NoteCreationPreviewRect.X}"
+                        Canvas.Top="{Binding NoteCreationPreviewRect.Y}"
+                        Width="{Binding NoteCreationPreviewRect.Width}"
+                        Height="{Binding NoteCreationPreviewRect.Height}"
+                        Padding="0" MinWidth="0" MinHeight="0" CornerRadius="8" ClipToBounds="True"
+                        HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                        Background="{DynamicResource Sem.Color.PrimaryContainer}"
+                        Foreground="{DynamicResource Sem.Color.OnPrimaryContainer}"
+                        BorderThickness="0"
+                        Command="{Binding ConfirmNoteCreationCommand}"
+                        ToolTip.Tip="{DynamicResource PianoRoll.Action.CreateNote}"
+                        AutomationProperties.Name="{DynamicResource PianoRoll.Action.CreateNote}">
+                    <!-- 虚线框作为内容绘制，按钮继续复用基础主题的状态层与点击区域。 -->
+                    <Grid>
+                        <Rectangle Stroke="{DynamicResource Sem.Color.Primary}" StrokeThickness="1"
+                                   StrokeDashArray="4,3" RadiusX="8" RadiusY="8" Margin="0.5"
+                                   IsHitTestVisible="False" />
+                        <iconPacks:PackIconPhosphorIcons Kind="Plus"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Width="{x:Static semantic:IconTokens.Small}"
+                                                       Height="{x:Static semantic:IconTokens.Small}" />
+                    </Grid>
+                </Button>
+            </Canvas>
             <!-- 波形画布 -->
             <c:WaveCanvas Grid.Row="1" Grid.Column="1"
                           ClipToBounds="True"

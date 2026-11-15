@@ -796,6 +796,12 @@
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>切换为橡皮擦</value>
   </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>已清空音符剪贴板</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>创建音符</value>
+  </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>在播放标记处添加控制点</value>
   </data>

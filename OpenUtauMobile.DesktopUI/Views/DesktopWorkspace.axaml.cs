@@ -140,7 +140,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (_attached || _disposed) return;
                 _attached = true;
-                _noteToolbarBinding = new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, Piano.NotesCanvas,
+                _noteToolbarBinding = new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, Piano.NotesCanvas, Piano.NoteCreationPreview,
                     _editor, () => IsPianoRollVisible, () => SetActiveArea(EditorInputController.EditArea.PianoRoll));
                 PianoRollViewModel.BatchEditRunningChanged += OnBatchEditRunningChanged;
                 OnBatchEditRunningChanged(PianoRollViewModel.IsBatchEditRunning);

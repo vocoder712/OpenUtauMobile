@@ -719,6 +719,12 @@
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>Переключиться на ластик</value>
   </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>Буфер обмена нот очищен</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>Создать ноту</value>
+  </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>Добавить контрольную точку на позиции курсора</value>
   </data>

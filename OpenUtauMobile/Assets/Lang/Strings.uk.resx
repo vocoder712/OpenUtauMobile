@@ -719,6 +719,12 @@
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>Перемкнутися на гумку</value>
   </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>Буфер обміну нот очищено</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>Створити ноту</value>
+  </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>Додати контрольну точку на позиції курсора відтворення</value>
   </data>

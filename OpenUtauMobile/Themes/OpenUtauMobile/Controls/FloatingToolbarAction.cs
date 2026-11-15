@@ -18,6 +18,9 @@ public sealed class FloatingToolbarAction
     /// <summary>主面板与溢出面板共用的命令。</summary>
     public required ICommand Command { get; init; }
 
+    /// <summary>可选的长按操作，沿用 CommandParameter；触发后不再执行本次普通点击。</summary>
+    public ICommand? HoldCommand { get; init; }
+
     /// <summary>传递给命令的业务参数。</summary>
     public object? CommandParameter { get; init; }
 

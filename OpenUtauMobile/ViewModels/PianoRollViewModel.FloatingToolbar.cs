@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using Avalonia;
 using DynamicData;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using IconPacks.Avalonia.PhosphorIcons;
 using OpenUtauMobile.Helpers;
@@ -14,7 +15,7 @@ namespace OpenUtauMobile.ViewModels;
 
 public partial class PianoRollViewModel
 {
-    /// <summary>音符与锚点选区共用的浮动操作；属性及批量编辑歌词始终收纳。</summary>
+    /// <summary>音符、锚点选区及新建占位框共用的浮动操作；属性及批量编辑歌词始终收纳。</summary>
     [Reactive]
     public IReadOnlyList<FloatingToolbarAction> NoteToolbarActions { get; private set; } = [];
 
@@ -45,6 +46,19 @@ public partial class PianoRollViewModel
         if (EditingVoicePart == null)
         {
             NoteToolbarActions = [];
+            return;
+        }
+        if (EditMode == PianoRollEditMode.Note && IsNoteCreationPreviewVisible)
+        {
+            NoteToolbarActions = DocManager.Inst.NotesClipboard is { Count: > 0 }
+                ? [new FloatingToolbarAction
+                {
+                    Text = L.S("Common.Paste"),
+                    Icon = PackIconPhosphorIconsKind.Clipboard,
+                    Command = ReactiveCommand.Create(PasteNotesAtCreationPreview),
+                    HoldCommand = ReactiveCommand.Create(ClearNotesClipboard)
+                }]
+                : [];
             return;
         }
         if (EditMode == PianoRollEditMode.Anchor)
@@ -157,6 +171,7 @@ public partial class PianoRollViewModel
     public Rect? GetSelectionToolbarAnchorRect()
     {
         if (EditingVoicePart == null || NoteToolbarActions.Count == 0) return null;
+        if (IsNoteCreationPreviewVisible) return NoteCreationPreviewRect;
         if (EditMode == PianoRollEditMode.Anchor)
         {
             PitchPoint? anchor = SelectedAnchors.LastOrDefault();

@@ -23,6 +23,56 @@ namespace OpenUtauMobile.Themes.OpenUtauMobile.Controls;
 /// </summary>
 public sealed class FloatingToolbar : TemplatedControl
 {
+    /// <summary>沿用基础按钮外观，仅为带长按命令的操作排除松手后的普通点击。</summary>
+    private sealed class HoldActionButton : Button
+    {
+        private readonly FloatingToolbarAction _action;
+        private bool _holdTriggered;
+
+        /// <summary>启用平台长按识别，同时支持触屏与鼠标。</summary>
+        public HoldActionButton(FloatingToolbarAction action)
+        {
+            _action = action;
+            SetValue(IsHoldingEnabledProperty, true);
+            SetValue(IsHoldWithMouseEnabledProperty, true);
+            Holding += OnActionHolding;
+        }
+
+        protected override Type StyleKeyOverride => typeof(Button);
+
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        {
+            _holdTriggered = false;
+            // 长按开关不继承到模板或图标；捕获到按钮，确保框架在正确的目标上识别鼠标长按。
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                e.Pointer.Capture(this);
+            }
+            base.OnPointerPressed(e);
+        }
+
+        /// <summary>长按到达阈值即执行次操作，先标记以防命令同步重建工具栏。</summary>
+        private void OnActionHolding(object? sender, HoldingRoutedEventArgs e)
+        {
+            if (e.HoldingState != HoldingState.Started || !IsPressed || !IsEffectivelyEnabled ||
+                _action.HoldCommand?.CanExecute(CommandParameter) != true) return;
+            _holdTriggered = true;
+            e.Handled = true;
+            _action.HoldCommand.Execute(CommandParameter);
+        }
+
+        /// <summary>一次长按只执行长按命令，普通点击继续使用 Button 的命令及状态机。</summary>
+        protected override void OnClick()
+        {
+            if (_holdTriggered)
+            {
+                _holdTriggered = false;
+                return;
+            }
+            base.OnClick();
+        }
+    }
+
     /// <summary>按优先顺序排列的操作；替换集合以更新工具栏。</summary>
     public static readonly StyledProperty<IReadOnlyList<FloatingToolbarAction>> ActionsProperty =
         AvaloniaProperty.Register<FloatingToolbar, IReadOnlyList<FloatingToolbarAction>>(nameof(Actions), []);
@@ -173,13 +223,11 @@ public sealed class FloatingToolbar : TemplatedControl
             Kind = action.Icon,
             VerticalAlignment = VerticalAlignment.Center
         };
-        Button button = new()
-        {
-            Command = action.Command,
-            CommandParameter = action.CommandParameter,
-            Theme = (ControlTheme)this.FindResource(overflow && !IsFixedVertical
-                ? "OpumFloatingToolbarOverflowAction" : "OpumFloatingToolbarAction")!
-        };
+        Button button = action.HoldCommand == null ? new Button() : new HoldActionButton(action);
+        button.Command = action.Command;
+        button.CommandParameter = action.CommandParameter;
+        button.Theme = (ControlTheme)this.FindResource(overflow && !IsFixedVertical
+            ? "OpumFloatingToolbarOverflowAction" : "OpumFloatingToolbarAction")!;
         if (action.IsDanger) button.Classes.Add("danger");
         if (IconOnly && (!overflow || IsFixedVertical))
         {

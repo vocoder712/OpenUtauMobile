@@ -796,6 +796,12 @@
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>Switch to Eraser</value>
   </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>Note clipboard cleared</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>Create note</value>
+  </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>Add Control Point at Playhead</value>
   </data>

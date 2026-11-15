@@ -81,6 +81,7 @@ caller owns selection/session lifetime through `IsVisible` and supplies a new
 
 - `FloatingToolbarAction` carries text, an IconPacks icon, a command and its parameter.
   An optional short `Label` replaces the icon for state indicators.
+  An optional `HoldCommand` runs on long press and suppresses that contact's normal click.
   `AlwaysInOverflow` keeps an operation in the overflow panel. Collection order is
   priority order; remaining space holds a prefix of the other operations.
 - `IconOnly` controls main-panel presentation. Overflow rows retain icon and label;
