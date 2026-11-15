@@ -2606,4 +2606,7 @@ Applying replaces the source of this input.</value></data>
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>Показывать на фоне пианоролла ноты других дорожек, пересекающихся с текущим фрагментом.</value>
   </data>
+  <data name="Common.More" xml:space="preserve">
+    <value>Другие действия</value>
+  </data>
 </root>

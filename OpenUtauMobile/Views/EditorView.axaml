@@ -12,6 +12,7 @@
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             xmlns:themeControls="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Controls"
              x:DataType="vm:EditorViewModel"
              IsEnabled="{Binding CanEditProject}"
              Background="{DynamicResource Sem.Color.SurfaceContainerLow}">
@@ -49,6 +50,8 @@
         </Style>
     </UserControl.Styles>
 
+    <!-- 页级覆盖层容纳浮动操作，允许越过卷帘边界，裁剪范围限定为编辑页。 -->
+    <Grid x:Name="EditorPageLayer" ClipToBounds="True">
     <DockPanel>
         <!-- 顶栏沿用全局规格；中间组在返回与页级操作之间居中。 -->
         <Border DockPanel.Dock="Top" Classes="TopBar">
@@ -289,4 +292,9 @@
                 Margin="12" />
         </Grid>
     </DockPanel>
+        <!-- 选区工具栏高于编辑页所有内容，空白区域不阻断画布输入。 -->
+        <themeControls:FloatingToolbar x:Name="NoteToolbar" ZIndex="2000" IconOnly="True"
+                                       Actions="{Binding PianoRollViewModel.NoteToolbarActions}"
+                                       IsVisible="False" />
+    </Grid>
 </UserControl>

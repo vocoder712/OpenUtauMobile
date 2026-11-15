@@ -1026,8 +1026,9 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             .DisposeWith(_disposables);
 
         SelectedNotes.ObserveCollectionChanges()
-            .Subscribe(_ =>
+            .Subscribe(change =>
             {
+                UpdateNoteToolbarSelection(change.EventArgs);
                 _selectedNoteLookup.Clear();
                 _selectedNoteLookup.UnionWith(SelectedNotes);
                 RebuildPianoRollContextActions();
@@ -2386,6 +2387,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// </summary>
     private void RebuildPianoRollContextActions()
     {
+        RebuildNoteToolbarActions();
         List<ContextActionItem> items = [];
         bool hasNoteSelection = SelectedNotes.Count > 0;
         bool hasSingleNote = SelectedNotes.Count == 1;
@@ -2405,12 +2407,13 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             case PianoRollEditMode.Note:
                 if (EditingVoicePart != null)
                 {
-                    items.Add(CreateBulkLyricEditAction());
+                    // 笔模式选区操作由页内浮动栏承载，桌面菜单保留原入口。
+                    if (!hasNoteSelection || UseDesktopMouseInput) items.Add(CreateBulkLyricEditAction());
                     // 批量编辑
                     items.Add(CreateBatchEditAction());
                 }
 
-                if (hasNoteSelection)
+                if (hasNoteSelection && UseDesktopMouseInput)
                 {
                     // 删除音符
                     items.Add(new ContextActionItem

@@ -2606,4 +2606,7 @@ Applying replaces the source of this input.</value></data>
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>Показувати на тлі фортепіанного редактора ноти інших доріжок, що перетинаються з поточним фрагментом.</value>
   </data>
+  <data name="Common.More" xml:space="preserve">
+    <value>Інші дії</value>
+  </data>
 </root>

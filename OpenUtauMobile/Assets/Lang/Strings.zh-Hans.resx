@@ -2653,4 +2653,7 @@
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>在钢琴卷帘背景显示与当前片段重叠的其它轨道音符。</value>
   </data>
+  <data name="Common.More" xml:space="preserve">
+    <value>更多操作</value>
+  </data>
 </root>

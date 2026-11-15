@@ -1,0 +1,70 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="using:OpenUtauMobile.Themes.OpenUtauMobile.Controls"
+                    xmlns:tokens="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
+                    xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+                    xmlns:foundation="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+                    xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia">
+    <!-- 动态操作显式使用派生主题，避免跨模板选择器遗漏普通逻辑子控件。 -->
+    <ControlTheme x:Key="OpumFloatingToolbarAction" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+        <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
+        <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerFull}" />
+        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.LabelLSize}" />
+        <Style Selector="^.icon">
+            <Setter Property="Padding" Value="12" />
+        </Style>
+    </ControlTheme>
+    <!-- 菜单项是整行透明操作，内容留白位于命中区域内部。 -->
+    <ControlTheme x:Key="OpumFloatingToolbarOverflowAction" TargetType="Button" BasedOn="{StaticResource OpumFloatingToolbarAction}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="FontSize" Value="{x:Static semantic:TypographyTokens.BodyLSize}" />
+    </ControlTheme>
+    <ControlTheme x:Key="{x:Type controls:FloatingToolbar}" TargetType="controls:FloatingToolbar">
+        <Setter Property="MoreText" Value="{DynamicResource Common.More}" />
+        <Setter Property="ClipToBounds" Value="True" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- 页内覆盖层仅由两个面板命中，空白区域继续将输入交给编辑器。 -->
+                <Canvas>
+                    <!-- 主面板采用 MD3 浮动胶囊表面，实际操作宽度由控件测量。 -->
+                    <Border Name="PART_MainPanel" Classes="FloatingToolbarSurface"
+                            Padding="{x:Static tokens:FloatingToolbarTokens.ContainerPadding}"
+                            CornerRadius="{x:Static foundation:ShapeTokens.CornerFull}">
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Name="PART_MainItems" Orientation="Horizontal" />
+                            <ToggleButton Name="PART_More" Classes="icon"
+                                          IsChecked="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                          ToolTip.Tip="{TemplateBinding MoreText}"
+                                          AutomationProperties.Name="{TemplateBinding MoreText}">
+                                <icons:PackIconPhosphorIcons Kind="DotsThreeVertical"
+                                    Width="{x:Static semantic:IconTokens.Standard}" Height="{x:Static semantic:IconTokens.Standard}" />
+                            </ToggleButton>
+                        </StackPanel>
+                    </Border>
+                    <!-- 溢出面板保持有限高度，超出可用空间时纵向滚动。 -->
+                    <Border Name="PART_OverflowPanel" Classes="FloatingToolbarSurface"
+                            CornerRadius="{x:Static foundation:ShapeTokens.CornerS}">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <Border Padding="0,8">
+                                <StackPanel Name="PART_OverflowItems" />
+                            </Border>
+                        </ScrollViewer>
+                    </Border>
+                </Canvas>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^ /template/ Border.FloatingToolbarSurface">
+            <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainer}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource Sem.Color.OnSurface}" />
+            <Setter Property="Effect">
+                <DropShadowEffect BlurRadius="12" OffsetX="0" OffsetY="3"
+                                  Color="{DynamicResource Sem.Value.Shadow}" Opacity="0.2" />
+            </Setter>
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

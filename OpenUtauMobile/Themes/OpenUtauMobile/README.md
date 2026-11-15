@@ -71,6 +71,39 @@ Normal button padding is 16,10; content determines its height. This intentionall
 does not impose a new minimum on compact editor controls. Dialog actions retain
 their 48dp minimum. Shape/layout differences between component roles are deliberate.
 
+## Floating toolbar
+
+`Controls/FloatingToolbar.cs` and its local ControlTheme implement a cross-platform,
+page-contained selection toolbar. Place it last in a finite Grid overlay, stretched
+to the page, above the content. `AnchorRect` uses that overlay's coordinates; the
+caller owns selection/session lifetime through `IsVisible` and supplies a new
+`Actions` collection when its available operations change.
+
+- `FloatingToolbarAction` carries text, an IconPacks icon, a command and its parameter.
+  `AlwaysInOverflow` keeps an operation in the overflow panel. Collection order is
+  priority order; remaining space holds a prefix of the other operations.
+- `IconOnly` controls main-panel presentation. Overflow rows retain icon and label;
+  all buttons retain accessible names, tooltips and command availability.
+- The main surface uses the shared `ShapeTokens.CornerFull` semantic token, a finite
+  large radius normalized to its bounds rather than a fixed half-height. The overflow menu uses a
+  4 DIP radius and 8 DIP vertical insets. Its rows stretch across the menu width,
+  with transparent resting backgrounds and inherited button interaction states.
+  Generated buttons explicitly select their derived ControlTheme.
+- The main panel prefers the anchor's upper side, falls below when necessary, and
+  clamps to the page. Overflow opens above or below according to available room,
+  with a scrollable height limit. Blank overlay space passes input through. Outside
+  presses and Escape close overflow; arrow keys and Tab navigate the actions.
+
+The [MD3 toolbar](https://m3.material.io/components/toolbars/guidelines) and
+[menu](https://m3.material.io/components/menus/guidelines) guidelines inform the
+surface, shape, 48 DIP targets and overflow behavior. OPUM supplies dynamic semantic
+colors, existing button states and page-local placement without a native popup.
+`Tokens/Components/FloatingToolbarTokens.cs` owns shared placement dimensions.
+The first consumer is the editor's note-pen selection: the last selected note is
+the anchor, and splitting uses the existing playback-head split operation.
+`Services/Editor/NoteSelectionToolbarBinding.cs` shares selection coordinates and
+subscription lifetime between the mobile editor and desktop workspace.
+
 ## Verification and maintenance
 
 Build with `AVALONIA_TELEMETRY_OPTOUT=1`; no unit tests are created or run.

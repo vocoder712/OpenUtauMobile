@@ -33,6 +33,7 @@ namespace OpenUtauMobile.DesktopUI.Views
     {
         private readonly EditorViewModel _editor;
         private readonly EditorInputController _input;
+        private NoteSelectionToolbarBinding? _noteToolbarBinding;
         private readonly DesktopInspector _inspector;
         private readonly DesktopWorkspaceLayoutController _layoutController;
         private readonly DesktopInlineEditor _inline;
@@ -139,6 +140,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (_attached || _disposed) return;
                 _attached = true;
+                _noteToolbarBinding = new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, Piano.NotesCanvas,
+                    _editor, () => IsPianoRollVisible, () => SetActiveArea(EditorInputController.EditArea.PianoRoll));
                 PianoRollViewModel.BatchEditRunningChanged += OnBatchEditRunningChanged;
                 OnBatchEditRunningChanged(PianoRollViewModel.IsBatchEditRunning);
                 _editor.PropertyChanged += OnEditorChanged;
@@ -155,6 +158,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             };
             DetachedFromVisualTree += (_, _) =>
             {
+                _noteToolbarBinding?.Dispose();
+                _noteToolbarBinding = null;
                 SavePanels();
                 PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
                 _editor.PropertyChanged -= OnEditorChanged;
@@ -415,6 +420,8 @@ namespace OpenUtauMobile.DesktopUI.Views
         {
             if (_disposed) return;
             _disposed = true;
+            _noteToolbarBinding?.Dispose();
+            _noteToolbarBinding = null;
             PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
             _inspector.RequestShowParameters -= ShowParameters;
             _mixer.Dispose();

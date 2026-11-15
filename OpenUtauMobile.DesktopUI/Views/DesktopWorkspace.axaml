@@ -2,8 +2,9 @@
              xmlns:vm="using:OpenUtauMobile.ViewModels" xmlns:c="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile"
              xmlns:desktop="using:OpenUtauMobile.DesktopUI.Views"
              xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+             xmlns:themeControls="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Controls;assembly=OpenUtauMobile"
              x:Class="OpenUtauMobile.DesktopUI.Views.DesktopWorkspace" x:DataType="vm:EditorViewModel" Classes="DesktopWorkspace">
-    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="4" IsEnabled="{Binding !IsLoadingProject}">
+    <Grid x:Name="EditorPageLayer" RowDefinitions="Auto,*,Auto" RowSpacing="4" ClipToBounds="True" IsEnabled="{Binding !IsLoadingProject}">
         <Border Padding="8,4" Background="Transparent">
             <Grid ColumnDefinitions="*,Auto,*">
                 <StackPanel Orientation="Horizontal" Spacing="4">
@@ -47,5 +48,8 @@
         <Border x:Name="StatusHintHost" Grid.Row="2" Padding="8,3" Background="{DynamicResource Sem.Color.SurfaceContainer}">
             <TextBlock x:Name="InputHint" Text="{DynamicResource Desktop.InputHint}" FontSize="11" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         </Border>
+        <!-- 页级选区操作跨越卷帘裁剪边界，始终限制在当前编辑页面。 -->
+        <themeControls:FloatingToolbar x:Name="NoteToolbar" Grid.RowSpan="3" ZIndex="2000" IconOnly="True"
+                                       Actions="{Binding PianoRollViewModel.NoteToolbarActions}" IsVisible="False" />
     </Grid>
 </UserControl>

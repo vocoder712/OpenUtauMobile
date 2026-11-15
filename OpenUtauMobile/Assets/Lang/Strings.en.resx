@@ -2653,4 +2653,7 @@ Applying replaces the source of this input.</value></data>
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>Show notes from other tracks overlapping the current part in the piano roll background.</value>
   </data>
+  <data name="Common.More" xml:space="preserve">
+    <value>More actions</value>
+  </data>
 </root>
