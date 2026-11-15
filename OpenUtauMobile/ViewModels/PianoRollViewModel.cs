@@ -877,6 +877,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             .Subscribe(_ => RequestInvalidateVisual?.Invoke())
             .DisposeWith(_disposables);
 
+        MessageBus.Current.Listen<GhostNotesVisibilityChangedEvent>()
+            .Subscribe(_ => RequestInvalidateVisual?.Invoke())
+            .DisposeWith(_disposables);
+
         PlayPosTick = DocManager.Inst.playPosTick;
 
         Gesture.Tap = OnGestureTap;

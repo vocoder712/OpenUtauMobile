@@ -2647,4 +2647,10 @@ Applying replaces the source of this input.</value></data>
     <data name="TrackPreparation.Applying" xml:space="preserve"><value>Applying track settings…</value></data>
     <data name="TrackPreparation.Mapping" xml:space="preserve"><value>Preparing voice color mapping…</value></data>
     <data name="Editor.Phonemizing" xml:space="preserve"><value>Phonemizing: {0} of {1} parts pending · {2}s</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>Show other tracks’ notes</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>Show notes from other tracks overlapping the current part in the piano roll background.</value>
+  </data>
 </root>

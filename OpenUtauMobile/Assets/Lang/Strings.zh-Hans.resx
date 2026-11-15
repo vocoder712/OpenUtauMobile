@@ -2647,4 +2647,10 @@
     <data name="TrackPreparation.Applying" xml:space="preserve"><value>正在应用轨道设置…</value></data>
     <data name="TrackPreparation.Mapping" xml:space="preserve"><value>正在准备音色映射…</value></data>
     <data name="Editor.Phonemizing" xml:space="preserve"><value>正在音素化：剩余 {0}/{1} 个片段 · 已等待 {2} 秒</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>显示其它轨道音符</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>在钢琴卷帘背景显示与当前片段重叠的其它轨道音符。</value>
+  </data>
 </root>

@@ -494,6 +494,24 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- 背景音符显示开关，复用编辑设置卡片布局。 -->
+                                <Border Classes="SettingCard">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.ShowGhostNotes}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.ShowGhostNotes.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      IsChecked="{Binding ShowGhostNotes, Mode=TwoWay}"
+                                                      AutomationProperties.Name="{DynamicResource Settings.Edit.ShowGhostNotes}"
+                                                      OffContent="" OnContent="" />
+                                    </Grid>
+                                </Border>
+
                                 <!-- 走带自动翻页行为 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
@@ -711,11 +729,12 @@
                                                      FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                                             </TextBlock>
                                         </StackPanel>
-                                        <Slider Classes="SettingSlider" Minimum="1" Maximum="60"
-                                                Value="{Binding PlaybackRefreshRate, Mode=TwoWay}"
+                                        <Slider Classes="SettingSlider" Minimum="0" Maximum="{Binding PlaybackRefreshRateMaximumStep}"
+                                                Value="{Binding PlaybackRefreshRateStep, Mode=TwoWay}"
                                                 sliderTheme:SliderValueIndicator.ValueText="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
                                                 AutomationProperties.Name="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
                                                 TickFrequency="1"
+                                                SmallChange="1" LargeChange="1"
                                                 IsSnapToTickEnabled="True" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.PlaybackRefreshRate.Desc}"

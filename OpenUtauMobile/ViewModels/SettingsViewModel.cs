@@ -510,9 +510,19 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public StopButtonBehaviorOption? SelectedStopButtonBehavior { get; set; }
 
-    /// <summary>回放刷新率（1-60）。</summary>
+    /// <summary>回放刷新率档位，低帧率逐帧调整，高帧率使用常见刷新率。</summary>
+    private static readonly int[] PlaybackRefreshRates = [.. Enumerable.Range(1, 30), 40, 50, 60, 90, 120];
+
+    /// <summary>回放刷新率滑块的最大档位索引。</summary>
+    public int PlaybackRefreshRateMaximumStep => PlaybackRefreshRates.Length - 1;
+
+    /// <summary>当前选中的回放刷新率档位索引。</summary>
     [Reactive]
-    public int PlaybackRefreshRate { get; set; }
+    public int PlaybackRefreshRateStep { get; set; }
+
+    /// <summary>当前档位对应的实际回放刷新率。</summary>
+    [Reactive]
+    public int PlaybackRefreshRate { get; private set; }
 
     /// <summary>是否显示立绘。</summary>
     [Reactive]
@@ -529,6 +539,10 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>是否显示音高画笔命中区域。</summary>
     [Reactive]
     public bool ShowPitchPenHitArea { get; set; }
+
+    /// <summary>是否显示其它轨道的背景音符。</summary>
+    [Reactive]
+    public bool ShowGhostNotes { get; set; }
 
     /// <summary>扩展音符命中范围前后增加的 Tick 数。</summary>
     [Reactive]
@@ -1112,11 +1126,13 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
             .DisposeWith(_disposables);
 
         // 编辑与行为：回放刷新率 / 立绘开关 / 撤销上限 / 音高线拖拽
-        PlaybackRefreshRate = Math.Clamp((int)Math.Round(Preferences.Default.PlaybackRefreshRate), 1, 60);
+        PlaybackRefreshRate = PlaybackRefreshRates.MinBy(rate => Math.Abs(rate - Preferences.Default.PlaybackRefreshRate));
+        PlaybackRefreshRateStep = Array.IndexOf(PlaybackRefreshRates, PlaybackRefreshRate);
         ShowPortraitEnabled = Preferences.Default.ShowPortrait;
         UndoLimit = Math.Clamp(Preferences.Default.UndoLimit, 10, 100);
         PitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
         ShowPitchPenHitArea = Preferences.Default.ShowPitchPenHitArea;
+        ShowGhostNotes = Preferences.Default.PianoRollShowGhostNotes;
         MagnifierMagnificationFactor = MagnifierSettings.Normalize(Preferences.Default.MagnifierMagnificationFactor);
         MagnifierSliderValue = MagnifierSettings.Snap(MagnifierMagnificationFactor);
         this.WhenAnyValue(x => x.MagnifierSliderValue)
@@ -1144,18 +1160,19 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
             Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMinimum,
             Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMaximum);
 
-        this.WhenAnyValue(x => x.PlaybackRefreshRate)
+        this.WhenAnyValue(x => x.PlaybackRefreshRateStep)
             .Skip(1)
             .Subscribe(value =>
             {
-                int clamped = Math.Clamp(value, 1, 60);
+                int clamped = Math.Clamp(value, 0, PlaybackRefreshRateMaximumStep);
                 if (clamped != value)
                 {
-                    PlaybackRefreshRate = clamped;
+                    PlaybackRefreshRateStep = clamped;
                     return;
                 }
 
-                Preferences.Default.PlaybackRefreshRate = clamped;
+                PlaybackRefreshRate = PlaybackRefreshRates[clamped];
+                Preferences.Default.PlaybackRefreshRate = PlaybackRefreshRate;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
@@ -1201,6 +1218,16 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Default.ShowPitchPenHitArea = enabled;
                 Preferences.Save();
                 MessageBus.Current.SendMessage(new PitchPenHitAreaHintChangedEvent());
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.ShowGhostNotes)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.PianoRollShowGhostNotes = enabled;
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new GhostNotesVisibilityChangedEvent());
             })
             .DisposeWith(_disposables);
 

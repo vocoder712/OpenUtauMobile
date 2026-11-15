@@ -2600,4 +2600,10 @@ Applying replaces the source of this input.</value></data>
     <data name="TrackPreparation.Applying" xml:space="preserve"><value>Застосування налаштувань доріжки…</value></data>
     <data name="TrackPreparation.Mapping" xml:space="preserve"><value>Підготовка зіставлення тембрів…</value></data>
     <data name="Editor.Phonemizing" xml:space="preserve"><value>Фонемізація: залишилося {0} з {1} партій · {2} с</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>Показувати ноти інших доріжок</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>Показувати на тлі фортепіанного редактора ноти інших доріжок, що перетинаються з поточним фрагментом.</value>
+  </data>
 </root>

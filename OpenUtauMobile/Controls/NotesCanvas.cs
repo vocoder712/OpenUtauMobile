@@ -148,7 +148,8 @@ public class NotesCanvas : Control, ICmdSubscriber
         _renderViewSubscription?.Dispose();
         _renderViewSubscription = RenderView.Inst.Observe(projection =>
         {
-            if (ReferenceEquals(projection.Part, Part)) InvalidateVisual();
+            if (ReferenceEquals(projection.Part, Part) || Preferences.Default.PianoRollShowGhostNotes)
+                InvalidateVisual();
         });
         ViewModel = DataContext as PianoRollViewModel;
         if (ViewModel != null)
@@ -184,6 +185,7 @@ public class NotesCanvas : Control, ICmdSubscriber
         int rightTick = (int)(leftTick + Bounds.Width / TickWidth);
         SolidColorBrush brush = TrackPalette.GetTrackColor(DocManager.Inst.Project.tracks[Part.trackNo].TrackColor)
             .AccentColor;
+        RenderGhostNotes(context, leftTick, rightTick);
         RenderPitchPenHitArea(context);
         // ———— 绘制主体 ————
         foreach (UNote note in Part.notes)
@@ -216,17 +218,17 @@ public class NotesCanvas : Control, ICmdSubscriber
 
             bool isSelected = ViewModel.IsNoteSelected(note);
             // 定位
-            Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
+            Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone) + new Avalonia.Vector(1, 0);
             Size size = ViewModel.TickToneToSize(note.duration, 1);
             Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
             // 圆角矩形
             Rect rect = new Rect(leftTop, rightBottom).Deflate(new Thickness(0, 4));
             RoundedRect roundedRect = new(rect, new CornerRadius(NoteBodyCornerRadius));
             // 边框：表示选中状态
-            IPen borderPen = isSelected
-                ? ThemeResources.GetPen("Sem.Color.Primary", 1.5)
-                : ThemeResources.GetPen("Sem.Color.OutlineVariant", 0.5);
-            context.DrawRectangle(null, borderPen, roundedRect);
+            if (isSelected)
+            {
+                context.DrawRectangle(null, ThemeResources.GetPen("Sem.Color.Primary", 1.5), roundedRect);
+            }
 
             if ((ViewModel.EditMode != PianoRollEditMode.MultiSelect &&
                  ViewModel.EditMode != PianoRollEditMode.Note) ||
@@ -364,6 +366,43 @@ public class NotesCanvas : Control, ICmdSubscriber
         }
     }
 
+    /// <summary>绘制其它轨道中与当前片段重叠的背景音符，不参与编辑命中。</summary>
+    private void RenderGhostNotes(DrawingContext context, int leftTick, int rightTick)
+    {
+        if (!Preferences.Default.PianoRollShowGhostNotes || Part == null || ViewModel == null) return;
+
+        UProject project = DocManager.Inst.Project;
+        // 背景音符沿用上游的半行高度与内缩，保持在音高行中央。
+        double height = Math.Floor(KeyHeight * 0.2 - 2);
+        if (height <= 0) return;
+        using (context.PushClip(new Rect(Bounds.Size)))
+        using (context.PushOpacity(0.2))
+        {
+            foreach (UPart otherPart in project.parts)
+            {
+                if (otherPart is not UVoicePart voicePart || otherPart.trackNo == Part.trackNo ||
+                    otherPart.position >= Part.End || otherPart.End <= Part.position ||
+                    otherPart.position > rightTick || otherPart.End < leftTick)
+                    continue;
+
+                IBrush brush = TrackPalette.GetTrackColor(project.tracks[otherPart.trackNo].TrackColor).AccentColor;
+                foreach (UNote note in voicePart.notes)
+                {
+                    int position = voicePart.position + note.position;
+                    if (position > rightTick) break;
+                    if (voicePart.position + note.End < leftTick) continue;
+
+                    Point topLeft = ViewModel.TickPitchToPoint(position, note.AdjustedTone);
+                    double width = ViewModel.TickToneToSize(note.duration, 1).Width - 1;
+                    if (width <= 0) continue;
+                    Rect rect = new(topLeft.X + 1, Math.Round(topLeft.Y + 1 + Math.Floor(KeyHeight * 0.4)), width, height);
+                    if (rect.Bottom < 0 || rect.Top > Bounds.Height) continue;
+                    context.DrawRectangle(brush, null, rect, 2, 2);
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// 绘制音符主体（矩形 + 歌词）
     /// </summary>
@@ -374,7 +413,7 @@ public class NotesCanvas : Control, ICmdSubscriber
     {
         if (ViewModel == null || Part == null) return;
 
-        Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone);
+        Point leftTop = ViewModel.TickPitchToPoint(note.position + Part.position, note.AdjustedTone) + new Avalonia.Vector(1, 0);
         Size size = ViewModel.TickToneToSize(note.duration, 1);
         Point rightBottom = new(leftTop.X + size.Width, leftTop.Y + size.Height);
 
@@ -1122,6 +1161,8 @@ public class NotesCanvas : Control, ICmdSubscriber
         {
             case NoteCommand:
             case PartCommand:
+            case TrackCommand:
+            case LoadProjectNotification:
             case SetCurveCommand:
             case MaskedCurveCommand:
             case PhonemizedNotification:

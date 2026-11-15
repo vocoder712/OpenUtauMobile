@@ -2600,4 +2600,10 @@ Applying replaces the source of this input.</value></data>
     <data name="TrackPreparation.Applying" xml:space="preserve"><value>Применение настроек дорожки…</value></data>
     <data name="TrackPreparation.Mapping" xml:space="preserve"><value>Подготовка сопоставления тембров…</value></data>
     <data name="Editor.Phonemizing" xml:space="preserve"><value>Фонемизация: осталось {0} из {1} партий · {2} с</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>Показывать ноты других дорожек</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>Показывать на фоне пианоролла ноты других дорожек, пересекающихся с текущим фрагментом.</value>
+  </data>
 </root>

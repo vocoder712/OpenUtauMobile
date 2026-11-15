@@ -402,6 +402,9 @@ namespace OpenUtau.Core.Util {
             /// </summary>
             public bool ShowRenderWaveform = false;
 
+            /// <summary>是否在钢琴卷帘背景显示其它轨道中与当前片段重叠的音符。</summary>
+            public bool PianoRollShowGhostNotes = true;
+
             /// <summary>
             /// Path to SoundFont (SF2) file for piano key playback.
             /// If empty or file not found, falls back to SineWave.

@@ -2641,4 +2641,10 @@ Applying replaces the source of this input.</value></data>
     <data name="TrackPreparation.Applying" xml:space="preserve"><value>トラック設定を適用中…</value></data>
     <data name="TrackPreparation.Mapping" xml:space="preserve"><value>音色マッピングを準備中…</value></data>
     <data name="Editor.Phonemizing" xml:space="preserve"><value>音素変換中：残り {0}/{1} パート · {2} 秒経過</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>他のトラックのノートを表示</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>現在のパートと重なる他のトラックのノートをピアノロールの背景に表示します。</value>
+  </data>
 </root>
