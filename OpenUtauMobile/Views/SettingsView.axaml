@@ -40,6 +40,9 @@
                 </Grid>
             </Border>
 
+            <!-- 音频设备异步刷新时沿用页面顶栏加载指示。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading" IsVisible="{Binding IsRefreshingDevices}" />
+
             <Border DockPanel.Dock="Top" Padding="24,8" IsVisible="{Binding HasInitializationError}">
                 <ScrollViewer MaxHeight="160" HorizontalScrollBarVisibility="Disabled">
                     <TextBlock Text="{Binding InitializationError}" TextWrapping="Wrap"

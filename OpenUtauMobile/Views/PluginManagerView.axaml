@@ -20,6 +20,8 @@
                             AutomationProperties.Name="{DynamicResource Common.Refresh}" />
                 </Grid>
             </Border>
+            <!-- 页面加载状态固定在顶栏下方，不随插件列表滚动。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading" IsVisible="{Binding IsBusy}" />
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <Border Padding="20,16,20,108">
                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">

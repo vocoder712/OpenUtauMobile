@@ -16,9 +16,9 @@
                         AutomationProperties.Name="{DynamicResource PluginWebSettings.OpenBrowser}" />
             </Grid>
         </Border>
-        <!-- 状态使用宿主文字显示，不把 URL 或令牌写到错误栏。 -->
-        <StackPanel Grid.Row="1">
-            <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
+        <!-- 状态层覆盖网页上沿，确保零占位加载条可见；错误栏不显示 URL 或令牌。 -->
+        <StackPanel Grid.Row="1" ZIndex="1">
+            <ProgressBar Classes="TopBarLoading" IsVisible="{Binding IsBusy}" />
             <TextBlock Text="{Binding Error}" Margin="16,8" TextWrapping="Wrap"
                        IsVisible="{Binding Error, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
                        Foreground="{DynamicResource Sem.Color.Error}" />

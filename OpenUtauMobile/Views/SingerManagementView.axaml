@@ -40,6 +40,9 @@
                 </Grid>
             </Border>
 
+            <!-- 扫描期间在顶栏下方显示统一的页面加载进度。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading" IsVisible="{Binding IsRefreshing}" />
+
             <!-- 歌手列表 -->
             <c:SingerList
                           ClipToBounds="False"
