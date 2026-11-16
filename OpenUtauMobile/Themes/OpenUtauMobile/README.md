@@ -79,6 +79,9 @@ to the page, above the content. `AnchorRect` uses that overlay's coordinates; th
 caller owns selection/session lifetime through `IsVisible` and supplies a new
 `Actions` collection when its available operations change.
 
+`AnchorHorizontalAlignment` defaults to `Center`; arrangement part toolbars use
+`Left` to stay near the part's start even when its duration extends off screen.
+
 - `FloatingToolbarAction` carries text, an IconPacks icon, a command and its parameter.
   An optional short `Label` replaces the icon for state indicators.
   An optional `HoldCommand` runs on long press and suppresses that contact's normal click.
@@ -113,6 +116,12 @@ The editor shares the selection toolbar between note-pen, note multiselect and
 pitch-anchor modes. It follows the last selected note or pitch anchor. Note
 properties and bulk lyric editing always remain in overflow; splitting uses the
 existing playback-head operation.
+  Arrangement selections use the same toolbar in normal and multiselect modes,
+  following the last selected part. Single audio parts expose replacement and note
+  extraction; voice selections expose splitting and eligible same-track merges.
+  In normal mode, selecting a part keeps the toolbar hidden; subsequent clicks on
+  that selected part toggle it. Multiselect mode shows it whenever parts are selected.
+  The arrangement context menu only shows paste when the part clipboard has content.
 `Services/Editor/NoteSelectionToolbarBinding.cs` shares selection coordinates and
 subscription lifetime between the mobile editor and desktop workspace.
 

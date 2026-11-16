@@ -16,6 +16,8 @@ namespace OpenUtauMobile.Controls
         private DesktopPartOperation _desktopOperation;
         private Point _desktopPress, _desktopLast;
         private bool _desktopDragging;
+        private bool _desktopMultiSelectTap;
+        private bool _desktopTogglePartToolbar;
         private bool _lastDesktopPressWasLeft;
         private Rect? _desktopBox;
         private UPart[] _desktopSelection = [];
@@ -33,13 +35,22 @@ namespace OpenUtauMobile.Controls
             _desktopOwner = vm;
             _desktopPress = _desktopLast = e.GetPosition(this);
             _desktopDragging = false;
-            vm.TrackEditMode = TrackEditMode.Normal;
+            _desktopMultiSelectTap = false;
             bool toggle = e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Meta);
             bool additive = toggle || e.KeyModifiers.HasFlag(KeyModifiers.Shift);
             _desktopSelection = vm.SelectedParts.ToArray();
             // 先识别扩展到分片外的移动区域，避免误清选区或选中相邻分片。
             UPart? hit = vm.HitTestMoveHandle(_desktopPress) ?? vm.HitTestPart(_desktopPress);
+            // 在按下前记录是否已经选中，避免首次选中或拖动结束后误展开工具栏。
+            _desktopTogglePartToolbar = left && unmodified && vm.TrackEditMode == TrackEditMode.Normal &&
+                hit != null && vm.SelectedParts.Contains(hit);
             if (!left) { _desktopOperation = DesktopPartOperation.Pan; vm.BeginViewportInput(); }
+            else if (vm.TrackEditMode == TrackEditMode.MultiSelect && !additive)
+            {
+                // 单击在松手后反选；拖动交给共用逻辑，空白和主体平移，手柄仍可编辑选区。
+                _desktopMultiSelectTap = true;
+                _desktopOperation = DesktopPartOperation.Edit;
+            }
             else if (hit == null)
             {
                 if (!additive) vm.SelectedParts.Clear();
@@ -50,7 +61,7 @@ namespace OpenUtauMobile.Controls
             else
             {
                 if (!vm.SelectedParts.Contains(hit)) { if (!additive) vm.SelectedParts.Clear(); vm.SelectedParts.Add(hit); }
-                _desktopOperation = doubleClick ? DesktopPartOperation.None : DesktopPartOperation.Edit;
+                _desktopOperation = DesktopPartOperation.Edit;
             }
             _desktopPointer = e.Pointer;
             e.Pointer.Capture(this);
@@ -108,10 +119,14 @@ namespace OpenUtauMobile.Controls
                     vm.SelectedParts.Clear();
                     foreach (UPart part in _desktopSelection) vm.SelectedParts.Add(part);
                 }
+                if (!cancel && !_desktopDragging && _desktopMultiSelectTap) vm.OnGestureTap(point);
+                if (!cancel && !_desktopDragging && _desktopTogglePartToolbar) vm.TogglePartToolbar();
             }
             _desktopBox = null;
             _desktopSelection = [];
             _desktopOperation = DesktopPartOperation.None;
+            _desktopMultiSelectTap = false;
+            _desktopTogglePartToolbar = false;
             if (cancel) _lastDesktopPressWasLeft = false;
             pointer?.Capture(null);
             InvalidateVisual();

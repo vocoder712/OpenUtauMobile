@@ -2347,6 +2347,9 @@
   <data name="Desktop.NavigationHint" xml:space="preserve"><value>中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
   <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>ドラッグ: ピッチを消去 · 中ボタン: 移動 · Ctrl/Cmd＋ホイール: ズーム</value></data>
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>更新するノート数：{0}</value></data>
+  <data name="Editor.Clipboard.Cleared" xml:space="preserve">
+    <value>パートのクリップボードを空にしました</value>
+  </data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>{0} 個のパートをコピー</value>
   </data>

@@ -293,6 +293,10 @@
         </Grid>
     </DockPanel>
         <!-- 选区工具栏高于编辑页所有内容，空白区域不阻断画布输入。 -->
+        <themeControls:FloatingToolbar x:Name="PartToolbar" ZIndex="2000" IconOnly="True"
+                                       AnchorHorizontalAlignment="Left"
+                                       Actions="{Binding PartToolbarActions}"
+                                       IsVisible="False" />
         <themeControls:FloatingToolbar x:Name="NoteToolbar" ZIndex="2000" IconOnly="True"
                                        Actions="{Binding PianoRollViewModel.NoteToolbarActions}"
                                        IsVisible="False" />

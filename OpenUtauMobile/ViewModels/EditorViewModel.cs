@@ -487,11 +487,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         // 编辑模式改变时重建
         this.WhenAnyValue(x => x.TrackEditMode)
-            .Subscribe(_ => RebuildTrackContextActions())
+            .Subscribe(_ =>
+            {
+                IsPartToolbarExpanded = false;
+                RebuildTrackContextActions();
+            })
             .DisposeWith(_disposables);
         SelectedParts.ObserveCollectionChanges()
             .Subscribe(_ =>
             {
+                IsPartToolbarExpanded = false;
                 UPart? part = SelectedParts.Count == 1 || ServiceHub.UseDesktopFileWorkflows
                     ? SelectedParts.LastOrDefault()
                     : null;
@@ -1300,8 +1305,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(tick));
                 }
 
-                // 单选
-                ReplaceSelectedParts(hitTestPart != null ? [hitTestPart] : []);
+                // 首次选中只进入编辑；再次点击同一分片才切换选区工具栏。
+                if (hitTestPart != null && SelectedParts is [UPart selected] && ReferenceEquals(selected, hitTestPart))
+                {
+                    TogglePartToolbar();
+                }
+                else
+                {
+                    ReplaceSelectedParts(hitTestPart != null ? [hitTestPart] : []);
+                }
 
                 break;
             case TrackEditMode.MultiSelect:
@@ -1331,9 +1343,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
-                // 双击分片：进入编辑
+                // 双击的第二次点击同样参与显隐切换，快速连续点击不丢失一次切换。
                 if (hit != null)
                 {
+                    OnGestureTap(point);
                 }
                 // 双击空白：退出编辑，清空选择，创建新分片
                 else
@@ -1394,8 +1407,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        // 重叠区域优先命中已选中的分片，避免未选中的分片阻挡拖动。
-        UPart? hit = HitTestPart(point, SelectedParts) ?? HitTestPart(point);
         // 只有从顶部手柄开始的手势才能移动分片。
         if (moveHit != null)
         {
@@ -1413,15 +1424,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
         else
         {
-            switch (TrackEditMode)
-            {
-                case TrackEditMode.Normal:
-                    _inputState = TrackInputState.Panning; // 进入平移状态
-                    break;
-                case TrackEditMode.MultiSelect when hit == null:
-                    // TODO: 在多选模式下空白处拖拽进入框选状态
-                    break;
-            }
+            // 两种模式均允许在分片主体和空白区域平移，保留手柄的移动与缩放优先级。
+            _inputState = TrackInputState.Panning;
         }
     }
 
@@ -1810,149 +1814,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// </summary>
     private void RebuildTrackContextActions()
     {
-        List<ContextActionItem> items = [];
-        bool hasSelection = SelectedParts.Count > 0;
-
-        switch (TrackEditMode)
-        {
-            case TrackEditMode.Normal:
-                if (hasSelection)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Trash,
-                        Tip = L.S("Common.Delete"),
-                        IsDanger = true,
-                        Command = ReactiveCommand.Create(DeleteSelectedParts)
-                    });
-                    if (SelectedParts.Count == 1)
-                    {
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.Textbox,
-                            Tip = L.S("Editor.Action.Rename"),
-                            Command = ReactiveCommand.CreateFromTask(RenameSelectedPart)
-                        });
-                    }
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Copy,
-                        Tip = L.S("Common.Copy"),
-                        Command = ReactiveCommand.Create(CopySelectedParts)
-                    });
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Scissors,
-                        Tip = L.S("Common.Cut"),
-                        Command = ReactiveCommand.Create(CutSelectedParts)
-                    });
-                }
-
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.Clipboard,
-                    Tip = L.S("Common.Paste"),
-                    Command = ReactiveCommand.Create(PasteParts)
-                });
-                if (SelectedParts.Any(part => part is UVoicePart))
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.SplitHorizontal,
-                        Tip = L.S("Editor.Action.Split"),
-                        Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
-                    });
-                }
-                if (CanMergeSelectedParts)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Unite,
-                        Tip = L.S("Editor.Action.Merge"),
-                        Command = ReactiveCommand.Create(MergeSelectedParts)
-                    });
-                }
-                break;
-
-            case TrackEditMode.MultiSelect:
-                if (hasSelection)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Copy,
-                        Tip = L.S("Common.Copy"),
-                        Command = ReactiveCommand.Create(CopySelectedParts)
-                    });
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Scissors,
-                        Tip = L.S("Common.Cut"),
-                        Command = ReactiveCommand.Create(CutSelectedParts)
-                    });
-                }
-
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.Clipboard,
-                    Tip = L.S("Common.Paste"),
-                    Command = ReactiveCommand.Create(PasteParts)
-                });
-                if (hasSelection)
-                {
-                    if (SelectedParts.Any(part => part is UVoicePart))
-                    {
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.SplitHorizontal,
-                            Tip = L.S("Editor.Action.Split"),
-                            Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
-                        });
-                    }
-                    if (CanMergeSelectedParts) items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Unite,
-                        Tip = L.S("Editor.Action.Merge"),
-                        Command = ReactiveCommand.Create(MergeSelectedParts)
-                    });
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Trash,
-                        Tip = L.S("Common.Delete"),
-                        IsDanger = true,
-                        Command = ReactiveCommand.Create(DeleteSelectedParts)
-                    });
-                }
-
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.SelectionAll,
-                    Tip = L.S("Common.SelectAll"),
-                    Command = ReactiveCommand.Create(SelectAllParts)
-                });
-                break;
-        }
-
-        if (SelectedParts is [UWavePart])
-        {
-            items.Add(new ContextActionItem
+        RebuildPartToolbarActions();
+        TrackContextActions = DocManager.Inst.PartsClipboard is { Count: > 0 }
+            ? [new ContextActionItem
             {
-                Id = "replace-audio",
-                Icon = PackIconPhosphorIconsKind.ArrowsClockwise,
-                Tip = L.S("Editor.Action.ReplaceAudio"),
-                Command = ReactiveCommand.CreateFromTask(ReplaceSelectedAudioAsync)
-            });
-        }
-
-        if (SelectedParts is [UWavePart wavePart])
-        {
-            items.Add(new ContextActionItem
-            {
-                Icon = PackIconPhosphorIconsKind.MusicNotes,
-                Tip = L.S("NoteExtraction.Title"),
-                Command = ReactiveCommand.CreateFromTask(() => noteExtraction.RunAsync(wavePart))
-            });
-        }
-        TrackContextActions = items;
+                Icon = PackIconPhosphorIconsKind.Clipboard,
+                Tip = L.S("Common.Paste"),
+                Command = ReactiveCommand.Create(PasteParts),
+                HoldCommand = ReactiveCommand.Create(ClearPartsClipboard)
+            }]
+            : [];
     }
 
     // ── 操作方法存根 ──────────────────────────────────────────────────
@@ -2011,6 +1882,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
 
         DocManager.Inst.PartsClipboard = [.. SelectedParts.Select(p => p.Clone())];
+        RebuildTrackContextActions();
         if (!UseDesktopInput)
             ToastService.Enqueue(string.Format(L.S("Editor.Selection.Copied"), SelectedParts.Count), 1000);
     }
@@ -2037,6 +1909,14 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
         finally { DocManager.Inst.EndUndoGroup(); }
 
+    }
+
+    /// <summary>长按分片粘贴入口清空应用内分片剪贴板，并收起对应入口。</summary>
+    private void ClearPartsClipboard()
+    {
+        DocManager.Inst.PartsClipboard = null;
+        RebuildTrackContextActions();
+        ToastService.Enqueue(L.S("Editor.Clipboard.Cleared"));
     }
 
     public void PasteParts()

@@ -2351,6 +2351,9 @@
   <data name="Desktop.NavigationHint" xml:space="preserve"><value>中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
   <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>拖动：擦除音高 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>将更新的音符数：{0}</value></data>
+  <data name="Editor.Clipboard.Cleared" xml:space="preserve">
+    <value>已清空分片剪贴板</value>
+  </data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>已复制 {0} 个分片</value>
   </data>

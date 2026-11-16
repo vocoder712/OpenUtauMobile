@@ -81,6 +81,10 @@ public sealed class FloatingToolbar : TemplatedControl
     public static readonly StyledProperty<Rect> AnchorRectProperty =
         AvaloniaProperty.Register<FloatingToolbar, Rect>(nameof(AnchorRect));
 
+    /// <summary>锚点布局中的水平对齐方式，默认居中，长目标可使用左对齐贴近起点。</summary>
+    public static readonly StyledProperty<HorizontalAlignment> AnchorHorizontalAlignmentProperty =
+        AvaloniaProperty.Register<FloatingToolbar, HorizontalAlignment>(nameof(AnchorHorizontalAlignment), HorizontalAlignment.Center);
+
     /// <summary>主面板是否只显示图标；固定纵向布局的溢出面板也遵循此设置。</summary>
     public static readonly StyledProperty<bool> IconOnlyProperty =
         AvaloniaProperty.Register<FloatingToolbar, bool>(nameof(IconOnly));
@@ -113,6 +117,13 @@ public sealed class FloatingToolbar : TemplatedControl
     {
         get => GetValue(AnchorRectProperty);
         set => SetValue(AnchorRectProperty, value);
+    }
+
+    /// <summary>主面板相对锚点的水平对齐方式，不影响固定纵向工具栏。</summary>
+    public HorizontalAlignment AnchorHorizontalAlignment
+    {
+        get => GetValue(AnchorHorizontalAlignmentProperty);
+        set => SetValue(AnchorHorizontalAlignmentProperty, value);
     }
 
     /// <summary>主面板只显示图标。</summary>
@@ -184,7 +195,8 @@ public sealed class FloatingToolbar : TemplatedControl
             SetCurrentValue(IsOverflowOpenProperty, false);
             RebuildActions();
         }
-        if (change.Property == AnchorRectProperty || change.Property == IsOverflowOpenProperty || change.Property == LeadingContentProperty)
+        if (change.Property == AnchorRectProperty || change.Property == AnchorHorizontalAlignmentProperty ||
+            change.Property == IsOverflowOpenProperty || change.Property == LeadingContentProperty)
         {
             InvalidateMeasure();
         }
@@ -350,7 +362,12 @@ public sealed class FloatingToolbar : TemplatedControl
                 ? _leadingPanel.DesiredSize.Height + _verticalInset : 0;
             return new Point(Math.Max(inset, viewport.Width - inset - panel.Width), _verticalInset + leadingHeight);
         }
-        double x = AnchorRect.Center.X - panel.Width / 2;
+        double x = AnchorHorizontalAlignment switch
+        {
+            HorizontalAlignment.Left => AnchorRect.Left,
+            HorizontalAlignment.Right => AnchorRect.Right - panel.Width,
+            _ => AnchorRect.Center.X - panel.Width / 2
+        };
         double y = AnchorRect.Top - FloatingToolbarTokens.AnchorGap - panel.Height;
         if (y < inset) y = AnchorRect.Bottom + FloatingToolbarTokens.AnchorGap;
         return new Point(

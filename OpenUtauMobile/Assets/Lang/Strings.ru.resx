@@ -2306,6 +2306,9 @@
   <data name="Desktop.NavigationHint" xml:space="preserve"><value>Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
   <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>Перетаскивание: стереть питч · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Нот для обновления: {0}</value></data>
+  <data name="Editor.Clipboard.Cleared" xml:space="preserve">
+    <value>Буфер обмена фрагментов очищен</value>
+  </data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>Скопировано частей: {0}</value>
   </data>

@@ -148,6 +148,8 @@ public partial class EditorView : UserControl
         _viewModelSubscription?.Dispose();
         CompositeDisposable disp = new();
         _viewModelSubscription = disp;
+        new PartSelectionToolbarBinding(PartToolbar, EditorPageLayer, Arrangement.PartsCanvas, vm,
+            () => Arrangement.IsEffectivelyVisible, () => _input.ActiveArea = EditorInputController.EditArea.Tracks).DisposeWith(disp);
         new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, PianoSurface.NotesCanvas, PianoSurface.NoteCreationPreview, vm,
             () => !IsMixerOpen, () => _input.ActiveArea = EditorInputController.EditArea.PianoRoll).DisposeWith(disp);
 

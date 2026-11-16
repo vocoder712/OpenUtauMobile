@@ -2306,6 +2306,9 @@
   <data name="Desktop.NavigationHint" xml:space="preserve"><value>Середня кнопка: прокрутка · Ctrl/Cmd + коліщатко: масштаб</value></data>
   <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>Перетягування: стерти висоту · Середня кнопка: прокрутка · Ctrl/Cmd + коліщатко: масштаб</value></data>
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Нот для оновлення: {0}</value></data>
+  <data name="Editor.Clipboard.Cleared" xml:space="preserve">
+    <value>Буфер обміну фрагментів очищено</value>
+  </data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>Скопійовано частин: {0}</value>
   </data>

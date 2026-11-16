@@ -55,6 +55,7 @@ public partial class EditorContextActions : UserControl
             Icon = action.Icon,
             Label = action.Label,
             Command = action.Command,
+            HoldCommand = action.HoldCommand,
             IsDanger = action.IsDanger
         })];
         Toolbar.Actions = actions;

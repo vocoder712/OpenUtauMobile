@@ -49,6 +49,9 @@
             <TextBlock x:Name="InputHint" Text="{DynamicResource Desktop.InputHint}" FontSize="11" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         </Border>
         <!-- 页级选区操作跨越卷帘裁剪边界，始终限制在当前编辑页面。 -->
+        <themeControls:FloatingToolbar x:Name="PartToolbar" Grid.Row="0" Grid.RowSpan="3" ZIndex="2000" IconOnly="True"
+                                       AnchorHorizontalAlignment="Left"
+                                       Actions="{Binding PartToolbarActions}" IsVisible="False" />
         <themeControls:FloatingToolbar x:Name="NoteToolbar" Grid.RowSpan="3" ZIndex="2000" IconOnly="True"
                                        Actions="{Binding PianoRollViewModel.NoteToolbarActions}" IsVisible="False" />
     </Grid>
