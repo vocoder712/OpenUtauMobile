@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtau.Core;
@@ -20,6 +21,8 @@ public sealed class PreferencesWriter
     public static PreferencesWriter Inst { get; } = new();
     private static readonly ConcurrentDictionary<Type, (FieldInfo[] Fields, PropertyInfo[] Properties)> Members = new();
     private readonly List<(long Version, TaskCompletionSource Completion)> _waiters = [];
+    private readonly SemaphoreSlim _changeGate = new(1, 1);
+    private PendingChange? _change;
     private PendingSave? _pending;
     private Task? _pump;
     private long _version;
@@ -38,9 +41,16 @@ public sealed class PreferencesWriter
             Dispatcher.UIThread.Post(RequestSave);
             return;
         }
-        var snapshot = (Preferences.SerializablePreferences)CopyValue(Preferences.Default)!;
-        _pending = new(++_version, snapshot, PathManager.Inst.PrefsFilePath);
+        _pending = CapturePendingSave();
         _pump ??= PumpAsync();
+    }
+
+    /// <summary>复制已提交的偏好，并将尚未提交的事务叠加到每个后台快照。</summary>
+    private PendingSave CapturePendingSave()
+    {
+        var snapshot = (Preferences.SerializablePreferences)CopyValue(Preferences.Default)!;
+        _change?.Apply(snapshot);
+        return new(++_version, snapshot, PathManager.Inst.PrefsFilePath);
     }
 
     /// <summary>关键事务直接请求并等待持久化，捕获失败也向调用者传播。</summary>
@@ -49,6 +59,23 @@ public sealed class PreferencesWriter
         Dispatcher.UIThread.VerifyAccess();
         RequestSave();
         return FlushAsync();
+    }
+
+    /// <summary>串行暂存字段更新，落盘后才发布到内存；更新委托只能赋值偏好字段，不能产生外部副作用。</summary>
+    public async Task SaveAsync(Action<Preferences.SerializablePreferences> update)
+    {
+        Dispatcher.UIThread.VerifyAccess();
+        await _changeGate.WaitAsync();
+        try
+        {
+            _change = new(_version + 1, update);
+            await SaveAsync();
+        }
+        finally
+        {
+            _change = null;
+            _changeGate.Release();
+        }
     }
 
     /// <summary>等待调用时已请求的偏好版本持久化；失败向调用者传播，下一请求可重试。</summary>
@@ -114,12 +141,23 @@ public sealed class PreferencesWriter
                         _lastWrittenJson = json;
                         _lastWrittenPath = pending.Path;
                     });
+                    if (_change is { } change && change.Version <= pending.Version)
+                    {
+                        change.Apply(Preferences.Default);
+                        _change = null;
+                    }
                     _completedVersion = pending.Version;
                     FinishWaiters(pending.Version, null);
                 }
                 catch (Exception error)
                 {
                     _pending ??= pending;
+                    if (_change != null)
+                    {
+                        // 失败的事务不能随生命周期刷新重试；同时保留其他偏好的最新值。
+                        _change = null;
+                        _pending = CapturePendingSave();
+                    }
                     Log.Error(error, "偏好后台保存失败");
                     FinishWaiters(long.MaxValue, error);
                     break;
@@ -143,4 +181,5 @@ public sealed class PreferencesWriter
     }
 
     private sealed record PendingSave(long Version, Preferences.SerializablePreferences Snapshot, string Path);
+    private sealed record PendingChange(long Version, Action<Preferences.SerializablePreferences> Apply);
 }

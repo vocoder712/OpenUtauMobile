@@ -143,7 +143,7 @@ public class PluginManagerViewModel : NavigateViewModelBase, IDisposable
                     new(L.S("Common.Delete"), "delete", isDestructive: true),
                 });
             if (answer != "delete") return;
-            await Task.Run(() => PluginManagementService.ScheduleDeletion(entry.RelativePath));
+            await PluginManagementService.ScheduleDeletionAsync(entry.RelativePath);
             await ServiceHub.FlushFileSystemAsync();
             ToastService.Enqueue(L.S("PluginManager.PendingDeletion"));
         }
@@ -164,7 +164,7 @@ public class PluginManagerViewModel : NavigateViewModelBase, IDisposable
         IsBusy = true;
         try
         {
-            await Task.Run(() => PluginManagementService.CancelDeletion(entry.RelativePath));
+            await PluginManagementService.CancelDeletionAsync(entry.RelativePath);
             await ServiceHub.FlushFileSystemAsync();
             ToastService.Enqueue(L.S("PluginManager.DeletionCancelled"));
         }

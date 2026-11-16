@@ -106,7 +106,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 // ---- 阶段 3：DocManager ----
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.DocManager"); ProgressPercent = 42; });
-                int pendingDeletionFailures = PluginManagementService.ApplyPendingDeletions();
+                int pendingDeletionFailures = await PluginManagementService.ApplyPendingDeletionsAsync();
                 SingerPluginService.EnsureContractsLoaded();
                 DocManager.Inst.Initialize(mainThread, mainScheduler);
                 GlobalErrorSubscriber.Instance.Register();
