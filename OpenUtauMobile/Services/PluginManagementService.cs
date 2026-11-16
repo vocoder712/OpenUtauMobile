@@ -27,7 +27,7 @@ public static class PluginManagementService
 {
     private const string BuiltinFileName = "OpenUtau.Plugin.Builtin.dll";
     private static readonly SemaphoreSlim DeletionGate = new(1, 1);
-    private static string Root => Path.GetFullPath(PathManager.Inst.PluginsPath);
+    internal static string Root => Path.GetFullPath(PathManager.Inst.PluginsPath);
     private static StringComparer PathComparer => OperatingSystem.IsWindows()
         ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 
@@ -104,6 +104,16 @@ public static class PluginManagementService
                 await target.FlushAsync();
             }
             File.Move(temporaryPath, destination);
+            try
+            {
+                await PluginActivationService.SetEnabledAsync(Path.GetRelativePath(Root, destination), true);
+            }
+            catch
+            {
+                // 名单保存失败时撤销本次新文件，避免安装失败却残留无法再次安装的文件。
+                DeletePluginFile(destination);
+                throw;
+            }
             loading.UpdateProgress(95, L.S("PluginManager.Completed"));
         }
         finally
@@ -187,7 +197,15 @@ public static class PluginManagementService
             {
                 HashSet<string> snapshot = ReadPendingDeletions();
                 // 必须先确认队列已消费，再删除文件，避免保存失败后下次启动重复执行。
-                if (snapshot.Count > 0) await WritePendingDeletionsAsync([with(PathComparer)]);
+                if (snapshot.Count > 0)
+                {
+                    List<string> enabled = [.. Preferences.Default.EnabledPlugins.Where(path => !snapshot.Contains(path))];
+                    await PreferencesWriter.Inst.SaveAsync(preferences =>
+                    {
+                        preferences.PendingPluginDeletions = [];
+                        preferences.EnabledPlugins = [.. enabled];
+                    });
+                }
                 return snapshot;
             });
             if (pending.Count == 0) return 0;
@@ -232,7 +250,7 @@ public static class PluginManagementService
         return PreferencesWriter.Inst.SaveAsync(preferences => preferences.PendingPluginDeletions = [.. paths]);
     }
 
-    private static string ResolvePluginPath(string relativePath)
+    internal static string ResolvePluginPath(string relativePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(relativePath);
         string path = Path.GetFullPath(Path.Combine(Root, relativePath));

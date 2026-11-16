@@ -2615,4 +2615,61 @@ Applying replaces the source of this input.</value></data>
   <data name="Common.More" xml:space="preserve">
     <value>Другие действия</value>
   </data>
+  <data name="PluginDetails.Title" xml:space="preserve"><value>Сведения о плагине</value></data>
+  <data name="PluginDetails.BasicInfo" xml:space="preserve"><value>Основная информация</value></data>
+  <data name="PluginDetails.EnablePlugin" xml:space="preserve"><value>Включить плагин</value></data>
+  <data name="PluginDetails.Enabled" xml:space="preserve"><value>Включён</value></data>
+  <data name="PluginDetails.Disabled" xml:space="preserve"><value>Отключён</value></data>
+  <data name="PluginDetails.RestartDescription" xml:space="preserve"><value>Изменения вступят в силу после перезапуска приложения.</value></data>
+  <data name="PluginDetails.RestartRequired" xml:space="preserve"><value>Перезапустите приложение для применения состояния.</value></data>
+  <data name="PluginDetails.Loaded" xml:space="preserve"><value>Загружен</value></data>
+  <data name="PluginDetails.NotLoaded" xml:space="preserve"><value>Не загружен. Перезапустите приложение; если это не помогло, проверьте ошибку загрузки.</value></data>
+  <data name="PluginDetails.Capabilities" xml:space="preserve"><value>Возможности</value></data>
+  <data name="PluginDetails.CapabilitiesDescription" xml:space="preserve"><value>Показана последняя успешная регистрация. Динамические настройки проверяются при открытии страницы.</value></data>
+  <data name="PluginDetails.ConfigurationData" xml:space="preserve"><value>Настройки и данные</value></data>
+  <data name="PluginDetails.SettingsUnavailable" xml:space="preserve"><value>Настройки доступны у загруженного и включённого плагина с поддержкой настройки.</value></data>
+  <data name="PluginDetails.DataDirectory" xml:space="preserve"><value>Каталог данных · копировать путь</value></data>
+  <data name="PluginDetails.DataUnavailable" xml:space="preserve"><value>Доступен после успешной регистрации ID плагина.</value></data>
+  <data name="PluginDetails.ClearData" xml:space="preserve"><value>Очистить данные плагина</value></data>
+  <data name="PluginDetails.CancelDataClear" xml:space="preserve"><value>Отменить очистку данных</value></data>
+  <data name="PluginDetails.ClearDataDescription" xml:space="preserve"><value>После перезапуска удалит настройки и другие файлы в этом каталоге.</value></data>
+  <data name="PluginDetails.DataClearPending" xml:space="preserve"><value>Данные будут очищены до загрузки плагинов при следующем запуске. Нажмите для отмены.</value></data>
+  <data name="PluginDetails.ClearDataQuestion" xml:space="preserve"><value>Очистить все данные «{0}» при следующем запуске? Настройки также будут удалены. После очистки отмена невозможна.</value></data>
+  <data name="PluginDetails.UninstallQuestion" xml:space="preserve"><value>Удалить «{0}» при следующем запуске? Данные сохранятся; для их удаления используйте очистку данных.</value></data>
+  <data name="PluginDetails.UninstallDescription" xml:space="preserve"><value>Удалит файл плагина после перезапуска, сохранив данные.</value></data>
+  <data name="PluginDetails.PathCopied" xml:space="preserve"><value>Путь к каталогу данных скопирован.</value></data>
+  <data name="PluginDetails.OperationFailed" xml:space="preserve"><value>Ошибка операции с плагином: {0}</value></data>
+  <data name="PluginDetails.DataClearFailed" xml:space="preserve"><value>Не удалось очистить часть данных плагинов. Проверьте журнал и повторите действие в сведениях о плагине.</value></data>
+  <data name="PluginDetails.SignatureDescription" xml:space="preserve"><value>Флаги подписи и открытые ключи — лишь метаданные; личность издателя и действительность подписи не проверены.</value></data>
+  <data name="PluginDetails.SignaturePresent" xml:space="preserve"><value>Присутствует · не проверена</value></data>
+  <data name="PluginDetails.Unsigned" xml:space="preserve"><value>Нет</value></data>
+  <data name="PluginDetails.Assembly" xml:space="preserve"><value>Сборка</value></data>
+  <data name="PluginDetails.Version" xml:space="preserve"><value>Версия сборки</value></data>
+  <data name="PluginDetails.File" xml:space="preserve"><value>Файл плагина</value></data>
+  <data name="PluginDetails.Size" xml:space="preserve"><value>Размер файла</value></data>
+  <data name="PluginDetails.Architecture" xml:space="preserve"><value>Архитектура</value></data>
+  <data name="PluginDetails.Module" xml:space="preserve"><value>ID модуля</value></data>
+  <data name="PluginDetails.Name" xml:space="preserve"><value>Название</value></data>
+  <data name="PluginDetails.Description" xml:space="preserve"><value>Описание</value></data>
+  <data name="PluginDetails.Author" xml:space="preserve"><value>Компания / автор</value></data>
+  <data name="PluginDetails.Product" xml:space="preserve"><value>Продукт</value></data>
+  <data name="PluginDetails.Copyright" xml:space="preserve"><value>Авторские права</value></data>
+  <data name="PluginDetails.ProductVersion" xml:space="preserve"><value>Версия продукта</value></data>
+  <data name="PluginDetails.FileVersion" xml:space="preserve"><value>Версия файла</value></data>
+  <data name="PluginDetails.Framework" xml:space="preserve"><value>Целевая платформа</value></data>
+  <data name="PluginDetails.PublicKeyToken" xml:space="preserve"><value>Токен открытого ключа</value></data>
+  <data name="PluginDetails.PublicKey" xml:space="preserve"><value>Открытый ключ</value></data>
+  <data name="PluginDetails.StrongName" xml:space="preserve"><value>Флаг подписи строгого имени</value></data>
+  <data name="PluginDetails.Authenticode" xml:space="preserve"><value>Таблица сертификатов Authenticode</value></data>
+  <data name="PluginDetails.References" xml:space="preserve"><value>Ссылки на сборки</value></data>
+  <data name="PluginDetails.Hash" xml:space="preserve"><value>SHA-256</value></data>
+  <data name="PluginDetails.Id" xml:space="preserve"><value>ID плагина</value></data>
+  <data name="PluginDetails.SingerType" xml:space="preserve"><value>Тип исполнителя</value></data>
+  <data name="PluginDetails.Renderer" xml:space="preserve"><value>Рендерер</value></data>
+  <data name="PluginDetails.Provider" xml:space="preserve"><value>Провайдер обнаружения</value></data>
+  <data name="PluginDetails.Installer" xml:space="preserve"><value>Установщик</value></data>
+  <data name="PluginDetails.EntryPoint" xml:space="preserve"><value>Точка входа плагина</value></data>
+  <data name="PluginDetails.ContractVersion" xml:space="preserve"><value>Версия контракта</value></data>
+  <data name="PluginDetails.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
+  <data name="PluginDetails.BatchEdit" xml:space="preserve"><value>Инструмент пакетного редактирования</value></data>
 </root>

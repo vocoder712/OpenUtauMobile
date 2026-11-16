@@ -107,6 +107,9 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.DocManager"); ProgressPercent = 42; });
                 int pendingDeletionFailures = await PluginManagementService.ApplyPendingDeletionsAsync();
+                int pendingDataClearFailures = await PluginDataService.ApplyPendingAsync();
+                await PluginActivationService.PrepareStartupAsync();
+                DocManager.Inst.PluginFileFilter = PluginActivationService.ShouldLoadFile;
                 SingerPluginService.EnsureContractsLoaded();
                 DocManager.Inst.Initialize(mainThread, mainScheduler);
                 GlobalErrorSubscriber.Instance.Register();
@@ -117,6 +120,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 PostToUI(() => { InitState = L.S("Splash.Phonemizer"); ProgressPercent = 57; });
                 EnsureBuiltinLoaded();
                 SingerPluginService.Initialize();
+                await Task.Run(PluginInformationService.CacheRegistrations);
                 Log.Information("插件加载完成");
 
                 // ---- 阶段 5：ToolManager ----
@@ -177,6 +181,8 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                     PluginLoadErrorReporter.Instance.ShowPendingErrors();
                     if (pendingDeletionFailures > 0)
                         ToastService.Enqueue(L.S("PluginManager.PendingDeletionFailed"));
+                    if (pendingDataClearFailures > 0)
+                        ToastService.Enqueue(L.S("PluginDetails.DataClearFailed"));
                 });
             }
             catch (OperationCanceledException)

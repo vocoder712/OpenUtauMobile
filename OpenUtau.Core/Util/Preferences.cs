@@ -369,6 +369,12 @@ namespace OpenUtau.Core.Util {
             /// <summary>待下次启动删除的插件文件，保存相对于插件目录的路径。</summary>
             public List<string> PendingPluginDeletions = [];
 
+            /// <summary>启用插件的相对文件路径；仅加载名单内的外部插件。</summary>
+            public List<string> EnabledPlugins = [];
+
+            /// <summary>待下次启动清除数据的插件稳定 ID。</summary>
+            public List<string> PendingPluginDataClears = [];
+
             /// <summary>各平台的界面图形后端回退顺序；空列表使用 Avalonia 默认配置，重启后生效。</summary>
             public Dictionary<string, List<string>> GraphicsBackendFallbackOrders = new();
 

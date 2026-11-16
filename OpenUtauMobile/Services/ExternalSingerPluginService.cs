@@ -22,6 +22,7 @@ public static class ExternalSingerPluginService
         SingerPluginService.Initialize();
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
+            if (!PluginActivationService.ShouldInitialize(assembly)) continue;
             if (initialized.Contains(assembly)) continue;
             string? entry = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
                 .FirstOrDefault(attribute => attribute.Key == "OpumPluginStartup")?.Value;

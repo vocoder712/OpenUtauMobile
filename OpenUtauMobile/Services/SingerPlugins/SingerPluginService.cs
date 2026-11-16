@@ -47,7 +47,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
             EnsureContractsLoaded();
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (assembly.IsDynamic)
+                if (!PluginActivationService.ShouldInitialize(assembly))
                 {
                     continue;
                 }
@@ -118,6 +118,7 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 EnumerationOptions options = new() { RecurseSubdirectories = true, AttributesToSkip = 0, IgnoreInaccessible = false };
                 foreach (string path in Directory.EnumerateFiles(root, "*", options).Where(path => Path.GetExtension(path).Equals(".dll", StringComparison.OrdinalIgnoreCase)))
                 {
+                    if (!PluginActivationService.ShouldLoadFile(path)) continue;
                     if (loaded.Contains(Path.GetFullPath(path))) continue;
                     try
                     {

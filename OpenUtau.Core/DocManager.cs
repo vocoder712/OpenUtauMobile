@@ -120,6 +120,9 @@ namespace OpenUtau.Core {
             }
         }
 
+        /// <summary>宿主提供的外部插件文件筛选器；为空时保留默认加载行为。</summary>
+        public Func<string, bool>? PluginFileFilter { get; set; }
+
         public void SearchAllPlugins() {
             const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
@@ -141,6 +144,9 @@ namespace OpenUtau.Core {
             foreach (var file in files) {
                 Assembly assembly;
                 try {
+                    if (PluginFileFilter != null && !PluginFileFilter(file)) {
+                        continue;
+                    }
                     if (!LibraryLoader.IsManagedAssembly(file)) {
                         Log.Debug("Skipping {File}", file);
                         continue;
