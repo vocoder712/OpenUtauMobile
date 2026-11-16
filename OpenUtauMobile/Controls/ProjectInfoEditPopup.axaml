@@ -77,7 +77,7 @@
                             FontSize="22"
                             FontWeight="Bold"
                             TextAlignment="Center"
-                            Watermark="{DynamicResource ProjectEdit.TempoWatermark}" />
+                            PlaceholderText="{DynamicResource ProjectEdit.TempoWatermark}" />
                     </StackPanel>
                     <!-- 底部按钮 -->
                 </StackPanel>
@@ -109,7 +109,7 @@
                             FontSize="26"
                             FontWeight="Bold"
                             TextAlignment="Center"
-                            Watermark="4" />
+                            PlaceholderText="4" />
                         <TextBlock
                             Grid.Row="1"
                             Grid.Column="1"
@@ -125,7 +125,7 @@
                             FontSize="26"
                             FontWeight="Bold"
                             TextAlignment="Center"
-                            Watermark="4" />
+                            PlaceholderText="4" />
                     </Grid>
                     <!-- 底部按钮 -->
                 </StackPanel>

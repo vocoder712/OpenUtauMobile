@@ -85,7 +85,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="SDL3-CS" Version="3.4.14" />
-        <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.11" />
+        <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.13" />
     </ItemGroup>
     <!-- 目标框架选择 Windows 音频 API，并匹配入口的 DirectML 版本。 -->
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">

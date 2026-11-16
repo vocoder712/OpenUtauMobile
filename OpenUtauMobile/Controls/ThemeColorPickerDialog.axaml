@@ -88,7 +88,7 @@
                         <TextBox
                             Grid.Column="0"
                             Text="{Binding HexInput, Mode=TwoWay}"
-                            Watermark="#RRGGBB" />
+                            PlaceholderText="#RRGGBB" />
                         <Button
                             Grid.Column="1"
                             Classes="filled"

@@ -1252,7 +1252,7 @@
                                                         BorderThickness="1" />
                                                 <TextBox Grid.Column="1"
                                                          Text="{Binding ThemeSeedHexInput, Mode=TwoWay}"
-                                                         Watermark="#RRGGBB"
+                                                         PlaceholderText="#RRGGBB"
                                                          VerticalAlignment="Center" />
                                                 <Button Grid.Column="2"
                                                         Content="{DynamicResource Common.Apply}"
