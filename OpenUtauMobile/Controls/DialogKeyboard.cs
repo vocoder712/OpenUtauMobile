@@ -113,8 +113,14 @@ internal static class DialogKeyboard
         {
             if (e.Key != Key.Enter || e.KeyModifiers != KeyModifiers.None) return;
             _keyShell = Shells.LastOrDefault(s => s.IsEffectivelyVisible);
-            if (_keyShell == null && !_enterDown) return;
             Visual? source = e.Source as Visual;
+            // 浮于弹窗上方的提示拥有自己的按键处理，不触发下层弹窗默认动作。
+            if (_keyShell != null && !Within(source, _keyShell))
+            {
+                _keyShell = null;
+                return;
+            }
+            if (_keyShell == null && !_enterDown) return;
             // 多行输入的重复 Enter 仍由文本框处理。
             if (source?.GetSelfAndVisualAncestors().OfType<TextBox>().Any(t => t.AcceptsReturn) == true) return;
             if (_enterDown) { e.Handled = true; return; }
@@ -128,7 +134,7 @@ internal static class DialogKeyboard
             if (e.Key == Key.Escape && e.KeyModifiers == KeyModifiers.None && !IsComposing(e.Source as Visual))
             {
                 DialogShell? active = Shells.LastOrDefault(s => s.IsEffectivelyVisible);
-                if (active?.CloseCommand is { } cancel && cancel.CanExecute(null))
+                if (active?.CloseCommand is { } cancel && Within(e.Source as Visual, active) && cancel.CanExecute(null))
                 {
                     e.Handled = true;
                     cancel.Execute(null);
