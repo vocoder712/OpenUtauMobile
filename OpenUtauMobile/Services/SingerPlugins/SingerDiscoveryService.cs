@@ -17,14 +17,8 @@ using Serilog;
 
 namespace OpenUtauMobile.Services.SingerPlugins
 {
-    /// <summary>保留提供方归属的管理候选，不伪造无法确认的歌手身份。</summary>
-    public sealed record SingerCandidate(string ProviderId, SingerDiscoveryEntry Entry)
-    {
-        /// <summary>管理界面展示的定位和诊断信息。</summary>
-        public string Details => string.Join("\n", new[] { Entry.Location }
-            .Concat(Entry.Diagnostics.IsDefault ? [] : Entry.Diagnostics.Select(item => item.Code == "discovery.missing-reference"
-                ? Helpers.L.S("SingerDiscovery.MissingReference") : item.Message)));
-    }
+    /// <summary>保留提供方归属的发现候选，用于卸载及安装定位。</summary>
+    public sealed record SingerCandidate(string ProviderId, SingerDiscoveryEntry Entry);
 
     /// <summary>串行发现、合并和发布歌手；工程引用更新后才释放被替换实例。</summary>
     public sealed class SingerDiscoveryService : ICmdSubscriber
@@ -35,8 +29,8 @@ namespace OpenUtauMobile.Services.SingerPlugins
         private bool subscribed;
         private long legacyGeneration;
         private readonly ConditionalWeakTable<USinger, object> providerInstances = new();
-        /// <summary>最近一次完成的发现候选快照。</summary>
-        public ImmutableArray<SingerCandidate> Candidates => candidates;
+        /// <summary>仅供卸载及安装定位使用的内部发现快照，不向管理页发布诊断条目。</summary>
+        internal ImmutableArray<SingerCandidate> Candidates => candidates;
         /// <summary>仅在最终目录和工程引用都已更新后触发。</summary>
         public event Action? Changed;
 
@@ -99,12 +93,6 @@ namespace OpenUtauMobile.Services.SingerPlugins
                             SingerDiscoveryContext context = new(roots, culture, SingerPluginRuntime.Storage(provider.PluginId), log);
                             return await provider.Instance.DiscoverAsync(context, new Progress<SingerDiscoveryProgress>(), cancellationToken);
                         }, cancellationToken);
-                        foreach (PluginDiagnostic diagnostic in result.Diagnostics.IsDefault ? [] : result.Diagnostics)
-                        {
-                            entries.Add(new(provider.Id, new(diagnostic.Location ?? provider.Id, provider.Id,
-                                SingerAvailability.Unavailable, Diagnostics: [diagnostic])));
-                            log.Write(diagnostic);
-                        }
                         foreach (SingerDiscoveryEntry entry in result.Entries.IsDefault ? [] : result.Entries)
                         {
                             try
@@ -121,21 +109,21 @@ namespace OpenUtauMobile.Services.SingerPlugins
                                     if (seen || !validType || string.IsNullOrWhiteSpace(singer.Id) ||
                                         invalidReady)
                                     {
+                                        log.Write(new("discovery.invalid-singer", "歌手实例或渲染器不可用。", Location: entry.Location));
                                         checkedEntry = entry with
                                         {
                                             Singer = null,
-                                            Availability = SingerAvailability.Unavailable,
-                                            Diagnostics = [new("discovery.invalid-singer", "歌手实例或渲染器不可用。", Location: entry.Location)]
+                                            Availability = SingerAvailability.Unavailable
                                         };
                                     }
                                     else if (entry.Availability == SingerAvailability.Ready) found.Add(singer);
                                 }
                                 else if (entry.Availability == SingerAvailability.Ready)
                                 {
+                                    log.Write(new("discovery.missing-singer", "未返回歌手实例。", Location: entry.Location));
                                     checkedEntry = entry with
                                     {
-                                        Availability = SingerAvailability.Invalid,
-                                        Diagnostics = [new("discovery.missing-singer", "未返回歌手实例。", Location: entry.Location)]
+                                        Availability = SingerAvailability.Invalid
                                     };
                                 }
                                 entries.Add(new(provider.Id, checkedEntry));
@@ -147,20 +135,16 @@ namespace OpenUtauMobile.Services.SingerPlugins
                                 entries.Add(new(provider.Id, entry with
                                 {
                                     Singer = null,
-                                    Availability = SingerAvailability.Invalid,
-                                    Diagnostics = [diagnostic]
+                                    Availability = SingerAvailability.Invalid
                                 }));
                             }
                         }
-                        if (!result.IsComplete) entries.Add(new(provider.Id, new(provider.Id, provider.Id,
-                            SingerAvailability.Unavailable, Diagnostics: [new("discovery.incomplete", "部分目录未能完成扫描。")])));
                     }
                     catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { throw; }
                     catch (Exception exception)
                     {
                         PluginDiagnostic diagnostic = new("discovery.failed", exception.Message, Location: provider.Id);
                         log.Write(diagnostic, exception);
-                        entries.Add(new(provider.Id, new(provider.Id, provider.Id, SingerAvailability.Unavailable, Diagnostics: [diagnostic])));
                     }
                 }
                 cancellationToken.ThrowIfCancellationRequested();
@@ -221,9 +205,6 @@ namespace OpenUtauMobile.Services.SingerPlugins
                 else
                 {
                     if (track.Singer?.Found == true) track.Singer = new UnavailableSinger(id, track.Singer.Name, track.Singer.SingerType);
-                    if (!entries.Any(item => item.Entry.Singer?.Id == id || (item.ProviderId == "host:missing-singer" && item.Entry.Location == id)))
-                        entries.Add(new("host:missing-singer", new(id, track.Singer?.Name ?? id, SingerAvailability.Unavailable,
-                            Diagnostics: [new("discovery.missing-reference", "找不到歌手，请检查插件和歌手目录。")])));
                 }
             }
             candidates = [.. entries];

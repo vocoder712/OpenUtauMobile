@@ -49,14 +49,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             noResults.TextWrapping = Avalonia.Media.TextWrapping.Wrap;
             noResults.IsHitTestVisible = false;
             noResults.IsVisible = false;
-            DockPanel listWithCandidates = new();
-            ScrollViewer unavailable = new() { MaxHeight = 220 };
-            OpenUtauMobile.Controls.SingerCandidatesList candidates = new() { ItemsSource = singers.UnavailableCandidates };
-            unavailable.Content = candidates;
-            DockPanel.SetDock(unavailable, Dock.Bottom);
-            listWithCandidates.Children.Add(unavailable);
-            listWithCandidates.Children.Add(list);
-            singerList.Children.Add(listWithCandidates);
+            singerList.Children.Add(list);
             singerList.Children.Add(noResults);
             ContentControl details = new() { ClipToBounds = true };
             SingerDetailViewModel? detailModel = null;

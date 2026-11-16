@@ -1,4 +1,4 @@
-# 歌手插件契约 v2
+# 歌手插件契约 v3
 
 插件引用本程序集与 `OpenUtau.Core` 时设置 `Private="false"`，安装包只携带插件自身文件。
 
@@ -12,6 +12,7 @@
 - 插件安装使用独立的声明式页面；内置安装由宿主实现。
 - `PrepareAsync` 同时接收末步字段与目标；输入变化后须重新准备，计划只能提交一次。
 - 可选集合的默认值按空集合处理。登记失败不发布本批能力；替换插件需要重启。
+- 发现结果只返回条目；条目位置及状态供安装定位和卸载使用。v3 移除了发现条目、发现结果的 `Diagnostics` 及结果的 `IsComplete`，扫描诊断改用 `context.Log.Write(...)`。旧插件须适配并重新编译。
 
 发现、删除、安装和 Web 设置上下文通过 `Notifications` 提供用户警告：
 
@@ -21,6 +22,4 @@ context.Notifications.PublishWarning(new("catalog.fetch-failed", "获取歌手�
 context.Notifications.ClearWarning("catalog.fetch-failed");
 ```
 
-同插件同代码更新原警告，不重复堆积；宿主自动限定插件归属，允许后台线程调用。Message/Details 是插件本地化后的纯文本，不能包含凭据或认证 URL。`Log` 继续只负责诊断日志，发现结果的 Diagnostics 不会自动转成用户警告。
-
-`Notifications` 使用宿主既有服务的通知接口，操作上下文的构造参数与 v2 契约版本保持不变。
+同插件同代码更新原警告，不重复堆积；宿主自动限定插件归属，允许后台线程调用。Message/Details 是插件本地化后的纯文本，不能包含凭据或认证 URL。`Log` 只负责诊断日志。

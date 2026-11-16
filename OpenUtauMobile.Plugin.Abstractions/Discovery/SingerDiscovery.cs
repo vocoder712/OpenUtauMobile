@@ -17,19 +17,16 @@ namespace OpenUtauMobile.Plugin.Abstractions
         Unavailable,
     }
 
-    /// <summary>一次发现的条目；未知稳定身份时 Singer 可为空，但位置与诊断仍可展示。</summary>
+    /// <summary>一次发现的条目；位置及状态用于宿主内部的安装定位和卸载，不携带用户诊断。</summary>
     public sealed record SingerDiscoveryEntry(
         string Location,
         string DisplayName,
         SingerAvailability Availability,
-        USinger? Singer = null,
-        ImmutableArray<PluginDiagnostic> Diagnostics = default);
+        USinger? Singer = null);
 
-    /// <summary>提供方的一次完整或部分发现结果，不要求声库具有统一磁盘清单。</summary>
+    /// <summary>提供方返回的发现条目；扫描诊断通过日志记录，不通过发现结果发布。</summary>
     public sealed record SingerDiscoveryResult(
-        ImmutableArray<SingerDiscoveryEntry> Entries,
-        ImmutableArray<PluginDiagnostic> Diagnostics = default,
-        bool IsComplete = true);
+        ImmutableArray<SingerDiscoveryEntry> Entries);
 
     /// <summary>发现阶段的进度；总量未知时 Total 为空。</summary>
     public sealed record SingerDiscoveryProgress(string Message, long Completed = 0, long? Total = null);
@@ -59,7 +56,7 @@ namespace OpenUtauMobile.Plugin.Abstractions
         string Id { get; }
         /// <summary>该提供方可能返回的类型 ID。</summary>
         ImmutableArray<string> SingerTypeIds { get; }
-        /// <summary>发现根目录中的条目，按项返回错误，响应取消。</summary>
+        /// <summary>发现根目录中的条目并响应取消；诊断写入上下文日志。</summary>
         ValueTask<SingerDiscoveryResult> DiscoverAsync(SingerDiscoveryContext context,
             IProgress<SingerDiscoveryProgress> progress, CancellationToken cancellationToken);
         /// <summary>声明是否可删除当前条目；默认不允许删除。</summary>

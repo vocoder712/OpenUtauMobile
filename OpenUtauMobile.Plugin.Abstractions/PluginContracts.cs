@@ -6,7 +6,7 @@ namespace OpenUtauMobile.Plugin.Abstractions
     public static class SingerPluginContract
     {
         /// <summary>当前支持的契约版本。</summary>
-        public const int Version = 2;
+        public const int Version = 3;
         /// <summary>外部类型数值的起点；数值只用于桥接，不作为位标志。</summary>
         public const int ExternalTypeMinimum = 0x10000000;
 
