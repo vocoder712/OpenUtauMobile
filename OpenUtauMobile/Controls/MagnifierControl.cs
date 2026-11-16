@@ -49,6 +49,7 @@ namespace OpenUtauMobile.Controls
         private Visual? _source;
         private readonly VisualBrush _visualBrush = new();
         private bool _hasSample;
+        private Rect _sampleDestinationRect;
 
         private Point _focusPointInSource;
 
@@ -144,28 +145,26 @@ namespace OpenUtauMobile.Controls
 
             double factor = MagnificationFactor;
             Size size = Bounds.Size;
-            double width = Math.Min(size.Width / factor, _source.Bounds.Width);
-            double height = Math.Min(size.Height / factor, _source.Bounds.Height);
-            _hasSample = width > 0 && height > 0;
+            double width = size.Width / factor;
+            double height = size.Height / factor;
+            // 完整采样框始终以目标点为中心，不因触及源控件边界而停住。
+            SourceRect = new Rect(_focusPointInSource.X - width / 2,
+                _focusPointInSource.Y - height / 2, width, height);
+            Rect sampleRect = SourceRect.Intersect(new Rect(_source.Bounds.Size));
+            _hasSample = sampleRect.Width > 0 && sampleRect.Height > 0;
             if (!_hasSample)
             {
                 InvalidateVisual();
                 return;
             }
 
-            double x = Math.Clamp(_focusPointInSource.X - width / 2, 0, _source.Bounds.Width - width);
-            double y = Math.Clamp(_focusPointInSource.Y - height / 2, 0, _source.Bounds.Height - height);
-            SourceRect = new Rect(x, y, width, height);
-
-            // 用 VisualBrush.SourceRect 指定“源控件中被采样”的绝对区域。
-            // 目标区域按实际倍率计算，避免源区域不足时改变缩放比例。
-            _visualBrush.SourceRect = new RelativeRect(SourceRect, RelativeUnit.Absolute);
-
-            // 源区域小于镜片时居中留出主题背景，不把不足的内容拉伸到另一倍率。
-            _visualBrush.DestinationRect = new RelativeRect(new Rect(
-                (size.Width - width * factor) / 2,
-                (size.Height - height * factor) / 2,
-                width * factor, height * factor), RelativeUnit.Absolute);
+            // 只采样有效交集，并保留其相对完整采样框的偏移与倍率。
+            _visualBrush.SourceRect = new RelativeRect(sampleRect, RelativeUnit.Absolute);
+            _sampleDestinationRect = new Rect(
+                (sampleRect.X - SourceRect.X) * factor,
+                (sampleRect.Y - SourceRect.Y) * factor,
+                sampleRect.Width * factor, sampleRect.Height * factor);
+            _visualBrush.DestinationRect = new RelativeRect(_sampleDestinationRect, RelativeUnit.Absolute);
 
             // 设置笔刷源
             _visualBrush.Visual = _source;
@@ -192,13 +191,18 @@ namespace OpenUtauMobile.Controls
                 Color = Color.FromArgb((byte)(ShadowColor.A * 0.18), ShadowColor.R, ShadowColor.G, ShadowColor.B)
             });
 
-            // 阴影在裁切外绘制，镜片内容和背景共同使用圆角裁切。
-            context.DrawRectangle(Background, null, roundedRect, shadows);
+            // 阴影在裁切外绘制，透明底保留镜片中超出源控件边界的空白。
+            context.DrawRectangle(Brushes.Transparent, null, roundedRect, shadows);
             using (context.PushClip(roundedRect))
             {
                 if (_source != null && _hasSample)
                 {
-                    context.FillRectangle(_visualBrush, rect);
+                    // 背景与内容仅绘制到有效区域，边界外保持透明。
+                    using (context.PushClip(_sampleDestinationRect))
+                    {
+                        context.DrawRectangle(Background, null, _sampleDestinationRect);
+                        context.FillRectangle(_visualBrush, rect);
+                    }
                 }
             }
 
