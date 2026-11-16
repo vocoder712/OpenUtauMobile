@@ -643,9 +643,6 @@
   <data name="SingerDetail.DangerZone" xml:space="preserve">
     <value>Danger Zone</value>
   </data>
-  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
-    <value>Deleting this singer will permanently remove all related files. This action cannot be undone.</value>
-  </data>
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>Delete Singer</value>
   </data>

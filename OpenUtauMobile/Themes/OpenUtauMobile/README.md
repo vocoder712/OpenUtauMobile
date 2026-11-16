@@ -89,8 +89,10 @@ caller owns selection/session lifetime through `IsVisible` and supplies a new
   priority order; remaining space holds a prefix of the other operations.
 - `IconOnly` controls main-panel presentation. Overflow rows retain icon and label;
   all buttons retain accessible names, tooltips and command availability.
-- `IsFixedVertical` pins the toolbar to the host's top-right corner and places
-  overflow to its left. In this layout, `IconOnly` also applies to overflow buttons.
+- `IsFixedVertical` starts at the host's top-right corner. Drag its leading entry
+  within the host; release snaps to the nearest side with the standard inset.
+  Context actions expand upward when there is more room above the entry, and
+  overflow opens toward the host interior. `IconOnly` also applies to overflow buttons.
   Optional `LeadingContent` provides a separate entry above the action capsule.
   Available host height determines how many actions remain visible.
 - The toolbar cross-axis size and icon-button targets are 40 DIP. Rectangular

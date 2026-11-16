@@ -126,10 +126,6 @@
                                            FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.Error}" />
-                                <TextBlock Text="{DynamicResource SingerDetail.DeleteWarning}"
-                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
-                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
-                                           TextWrapping="Wrap" />
                                 <Button Classes="DesktopAction destructive" HorizontalAlignment="Stretch" Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}">
                                     <StackPanel Orientation="Horizontal" Spacing="8">
                                         <iconPacks:PackIconPhosphorIcons Kind="Trash" Width="16" Height="16" VerticalAlignment="Center" />

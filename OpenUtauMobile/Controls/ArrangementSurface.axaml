@@ -146,7 +146,7 @@
             <Border x:Name="ArrangementInputRuler" Grid.Row="0" Grid.Column="1" Background="Transparent"
                     IsVisible="False" />
         </Grid>
-        <!-- 工具覆盖画布，固定在各自编辑区右上角，不再预留底栏空间。 -->
+        <!-- 工具覆盖画布，仅在当前编辑区内拖拽贴边，不再预留底栏空间。 -->
         <c:EditorContextActions x:Name="FloatingActions" Actions="{Binding TrackContextActions}">
             <c:EditorContextActions.ModeSwitch>
                 <c:TrackEditModeSwitcher CurrentMode="{Binding TrackEditMode, Mode=TwoWay}" />

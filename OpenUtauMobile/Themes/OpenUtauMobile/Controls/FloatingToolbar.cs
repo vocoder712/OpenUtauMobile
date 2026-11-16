@@ -89,11 +89,11 @@ public sealed class FloatingToolbar : TemplatedControl
     public static readonly StyledProperty<bool> IconOnlyProperty =
         AvaloniaProperty.Register<FloatingToolbar, bool>(nameof(IconOnly));
 
-    /// <summary>固定在宿主右上角，纵向排列并向左展开纯图标溢出面板。</summary>
+    /// <summary>使用可从顶部入口拖拽、松手贴边的纵向布局，初始位于宿主右上角。</summary>
     public static readonly StyledProperty<bool> IsFixedVerticalProperty =
         AvaloniaProperty.Register<FloatingToolbar, bool>(nameof(IsFixedVertical));
 
-    /// <summary>固定纵向工具栏上方的独立入口。</summary>
+    /// <summary>纵向工具栏的独立入口，同时作为拖拽手柄。</summary>
     public static readonly StyledProperty<Control?> LeadingContentProperty =
         AvaloniaProperty.Register<FloatingToolbar, Control?>(nameof(LeadingContent));
 
@@ -133,7 +133,7 @@ public sealed class FloatingToolbar : TemplatedControl
         set => SetValue(IconOnlyProperty, value);
     }
 
-    /// <summary>使用固定的纵向布局，保留锚点布局作为默认行为。</summary>
+    /// <summary>使用可贴边拖拽的纵向布局，保留锚点布局作为默认行为。</summary>
     public bool IsFixedVertical
     {
         get => GetValue(IsFixedVerticalProperty);
@@ -170,7 +170,100 @@ public sealed class FloatingToolbar : TemplatedControl
     private ToggleButton _more = null!;
     private TopLevel? _inputRoot;
     private bool _expandUp;
-    private double _verticalInset = FloatingToolbarTokens.ViewportInset;
+    private readonly double _verticalInset = FloatingToolbarTokens.ViewportInset;
+    private bool _dockLeft;
+    private double _headTop = FloatingToolbarTokens.ViewportInset;
+    private IPointer? _dragPointer;
+    private Point _pressPosition;
+    private Point _pressHead;
+    private Point _dragHead;
+    private bool _isDragging;
+
+    /// <summary>在隧道路由中识别顶部入口拖拽，未超过阈值时保留子按钮的点击。</summary>
+    public FloatingToolbar()
+    {
+        AddHandler(PointerPressedEvent, OnHeadPointerPressed, RoutingStrategies.Tunnel, true);
+        AddHandler(PointerMovedEvent, OnHeadPointerMoved, RoutingStrategies.Tunnel, true);
+        AddHandler(PointerReleasedEvent, OnHeadPointerReleased, RoutingStrategies.Tunnel, true);
+    }
+
+    /// <summary>只允许从顶部入口开始移动，操作面板不参与拖拽。</summary>
+    private void OnHeadPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (!IsFixedVertical || !_leadingPanel.IsVisible || _dragPointer != null ||
+            !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed ||
+            e.Source is not Visual source || !source.GetSelfAndVisualAncestors().Contains(_leadingPanel)) return;
+        _dragPointer = e.Pointer;
+        _pressPosition = e.GetPosition(this);
+        _pressHead = GetLeadingPosition(Bounds.Size);
+    }
+
+    /// <summary>超过点击容差后接管捕获，坐标始终限制在当前编辑区内。</summary>
+    private void OnHeadPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (_dragPointer != e.Pointer) return;
+        Vector delta = e.GetPosition(this) - _pressPosition;
+        if (!_isDragging && Math.Abs(delta.X) < 4 && Math.Abs(delta.Y) < 4) return;
+        if (!_isDragging)
+        {
+            _isDragging = true;
+            e.Pointer.Capture(this);
+            SetCurrentValue(IsOverflowOpenProperty, false);
+        }
+        _dragHead = ClampLeadingPosition(_pressHead + delta, Bounds.Size);
+        _headTop = _dragHead.Y;
+        InvalidateMeasure();
+        e.Handled = true;
+    }
+
+    /// <summary>释放时吸附到最近的左右边缘；普通点击继续交给模式入口。</summary>
+    private void OnHeadPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (_dragPointer != e.Pointer) return;
+        bool dragged = _isDragging;
+        FinishHeadDrag();
+        if (dragged) e.Handled = true;
+    }
+
+    /// <summary>中断和正常释放共用贴边收尾，先清理状态以避免捕获丢失重入。</summary>
+    private void FinishHeadDrag()
+    {
+        IPointer? pointer = _dragPointer;
+        if (_isDragging)
+        {
+            _dockLeft = _dragHead.X + _leadingPanel.DesiredSize.Width / 2 < Bounds.Width / 2;
+            _headTop = _dragHead.Y;
+        }
+        _dragPointer = null;
+        _isDragging = false;
+        if (pointer != null && ReferenceEquals(pointer.Captured, this)) pointer.Capture(null);
+        InvalidateMeasure();
+    }
+
+    /// <summary>系统取消捕获时结束拖拽，避免工具栏继续跟随已经结束的手势。</summary>
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        base.OnPointerCaptureLost(e);
+        if (_dragPointer == e.Pointer && !ReferenceEquals(e.Pointer.Captured, this)) FinishHeadDrag();
+    }
+
+    /// <summary>顶部入口单独约束，保证面板可根据上下剩余空间反向展开。</summary>
+    private Point ClampLeadingPosition(Point position, Size viewport)
+    {
+        const double inset = FloatingToolbarTokens.ViewportInset;
+        return new Point(
+            Math.Clamp(position.X, inset, Math.Max(inset, viewport.Width - inset - _leadingPanel.DesiredSize.Width)),
+            Math.Clamp(position.Y, _verticalInset,
+                Math.Max(_verticalInset, viewport.Height - _verticalInset - _leadingPanel.DesiredSize.Height)));
+    }
+
+    /// <summary>拖拽时自由移动，其他时候保持左右标准间距。</summary>
+    private Point GetLeadingPosition(Size viewport)
+    {
+        return ClampLeadingPosition(_isDragging ? _dragHead : new Point(
+            _dockLeft ? FloatingToolbarTokens.ViewportInset : viewport.Width -
+                FloatingToolbarTokens.ViewportInset - _leadingPanel.DesiredSize.Width, _headTop), viewport);
+    }
 
     /// <summary>绑定模板中的两个面板，具体交互状态由基础按钮主题负责。</summary>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -202,6 +295,7 @@ public sealed class FloatingToolbar : TemplatedControl
         }
         if (change.Property == IsVisibleProperty && !IsVisible)
         {
+            FinishHeadDrag();
             SetCurrentValue(IsOverflowOpenProperty, false);
         }
     }
@@ -284,15 +378,18 @@ public sealed class FloatingToolbar : TemplatedControl
         if (_mainPanel == null) return base.MeasureOverride(availableSize);
         double width = Math.Max(0, availableSize.Width - FloatingToolbarTokens.ViewportInset * 2);
         _leadingPanel.IsVisible = IsFixedVertical && LeadingContent != null;
-        // 狭矮宿主仅压缩外侧留白，保留两个 40 DIP 入口的完整命中区。
-        _verticalInset = _leadingPanel.IsVisible && Actions.Count > 0
-            ? Math.Clamp((availableSize.Height - FloatingToolbarTokens.ItemSize * 2) / 3,
-                0, FloatingToolbarTokens.ViewportInset)
-            : FloatingToolbarTokens.ViewportInset;
         _leadingPanel.Measure(availableSize);
         double leadingHeight = _leadingPanel.IsVisible
             ? _leadingPanel.DesiredSize.Height + _verticalInset : 0;
         double height = Math.Max(0, availableSize.Height - _verticalInset * 2 - leadingHeight);
+        if (IsFixedVertical && _leadingPanel.IsVisible)
+        {
+            Point head = GetLeadingPosition(availableSize);
+            double above = Math.Max(0, head.Y - _verticalInset * 2);
+            double below = Math.Max(0, availableSize.Height - head.Y - leadingHeight - _verticalInset);
+            _expandUp = above > below;
+            height = _expandUp ? above : below;
+        }
         double availableLength = IsFixedVertical ? height : width;
         double requestedLength = 0;
         bool hasOverflow = false;
@@ -358,9 +455,11 @@ public sealed class FloatingToolbar : TemplatedControl
         const double inset = FloatingToolbarTokens.ViewportInset;
         if (IsFixedVertical)
         {
-            double leadingHeight = _leadingPanel.IsVisible
-                ? _leadingPanel.DesiredSize.Height + _verticalInset : 0;
-            return new Point(Math.Max(inset, viewport.Width - inset - panel.Width), _verticalInset + leadingHeight);
+            Point head = GetLeadingPosition(viewport);
+            if (!_leadingPanel.IsVisible) return new Point(head.X, _verticalInset);
+            return new Point(head.X, _expandUp
+                ? head.Y - _verticalInset - panel.Height
+                : head.Y + _leadingPanel.DesiredSize.Height + _verticalInset);
         }
         double x = AnchorHorizontalAlignment switch
         {
@@ -380,17 +479,21 @@ public sealed class FloatingToolbar : TemplatedControl
     {
         if (_mainPanel == null) return base.ArrangeOverride(finalSize);
         Point main = GetMainPosition(finalSize);
-        Canvas.SetLeft(_leadingPanel, Math.Max(FloatingToolbarTokens.ViewportInset,
-            finalSize.Width - FloatingToolbarTokens.ViewportInset - _leadingPanel.DesiredSize.Width));
-        Canvas.SetTop(_leadingPanel, _verticalInset);
+        Point head = GetLeadingPosition(finalSize);
+        Canvas.SetLeft(_leadingPanel, head.X);
+        Canvas.SetTop(_leadingPanel, head.Y);
         Canvas.SetLeft(_mainPanel, main.X);
         Canvas.SetTop(_mainPanel, main.Y);
         if (!_overflowPanel.IsVisible) return base.ArrangeOverride(finalSize);
         if (IsFixedVertical)
         {
-            Canvas.SetLeft(_overflowPanel, Math.Max(FloatingToolbarTokens.ViewportInset,
-                main.X - FloatingToolbarTokens.AnchorGap - _overflowPanel.DesiredSize.Width));
-            Canvas.SetTop(_overflowPanel, Math.Clamp(main.Y, FloatingToolbarTokens.ViewportInset,
+            bool openRight = main.X + _mainPanel.DesiredSize.Width / 2 < finalSize.Width / 2;
+            double overflowX = openRight ? main.X + _mainPanel.DesiredSize.Width + FloatingToolbarTokens.AnchorGap
+                : main.X - FloatingToolbarTokens.AnchorGap - _overflowPanel.DesiredSize.Width;
+            Canvas.SetLeft(_overflowPanel, Math.Clamp(overflowX, FloatingToolbarTokens.ViewportInset,
+                Math.Max(FloatingToolbarTokens.ViewportInset, finalSize.Width - FloatingToolbarTokens.ViewportInset - _overflowPanel.DesiredSize.Width)));
+            double overflowY = _expandUp ? main.Y + _mainPanel.DesiredSize.Height - _overflowPanel.DesiredSize.Height : main.Y;
+            Canvas.SetTop(_overflowPanel, Math.Clamp(overflowY, FloatingToolbarTokens.ViewportInset,
                 Math.Max(FloatingToolbarTokens.ViewportInset, finalSize.Height - FloatingToolbarTokens.ViewportInset - _overflowPanel.DesiredSize.Height)));
             return base.ArrangeOverride(finalSize);
         }
@@ -414,6 +517,7 @@ public sealed class FloatingToolbar : TemplatedControl
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        FinishHeadDrag();
         _inputRoot!.RemoveHandler(PointerPressedEvent, OnRootPointerPressed);
         _inputRoot.RemoveHandler(KeyDownEvent, OnRootKeyDown);
         _inputRoot = null;

@@ -643,9 +643,6 @@
   <data name="SingerDetail.DangerZone" xml:space="preserve">
     <value>危険ゾーン</value>
   </data>
-  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
-    <value>このシンガーを削除すると、関連するすべてのファイルが完全に削除されます。この操作は元に戻せません。</value>
-  </data>
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>シンガーを削除</value>
   </data>

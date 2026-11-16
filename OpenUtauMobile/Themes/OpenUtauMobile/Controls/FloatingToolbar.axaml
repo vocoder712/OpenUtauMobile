@@ -64,7 +64,7 @@
             <ControlTemplate>
                 <!-- 页内覆盖层仅由两个面板命中，空白区域继续将输入交给编辑器。 -->
                 <Canvas>
-                    <!-- 固定纵向布局的独立入口，不随上下文操作的有无消失。 -->
+                    <!-- 纵向布局的独立入口兼拖拽手柄，不随上下文操作的有无消失。 -->
                     <Border Name="PART_LeadingPanel" Classes="FloatingToolbarSurface"
                             Width="{x:Static tokens:FloatingToolbarTokens.ItemSize}"
                             Height="{x:Static tokens:FloatingToolbarTokens.ItemSize}"

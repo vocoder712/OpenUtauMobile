@@ -566,9 +566,6 @@
   <data name="SingerDetail.DangerZone" xml:space="preserve">
     <value>Опасная зона</value>
   </data>
-  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
-    <value>Удаление этого банка навсегда удалит все связанные файлы. Это действие нельзя отменить.</value>
-  </data>
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>Удалить банк</value>
   </data>

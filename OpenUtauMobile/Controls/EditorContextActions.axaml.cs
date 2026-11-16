@@ -7,7 +7,7 @@ using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.Controls;
 
-/// <summary>编辑区右上角的固定纵向浮动工具栏，复用公共工具栏的溢出和键盘行为。</summary>
+/// <summary>各编辑区内可拖拽贴边的纵向浮动工具栏，复用公共工具栏的溢出和键盘行为。</summary>
 public partial class EditorContextActions : UserControl
 {
     /// <summary>现有视图模型生成的上下文操作。</summary>
@@ -32,7 +32,7 @@ public partial class EditorContextActions : UserControl
         set => SetValue(ModeSwitchProperty, value);
     }
 
-    /// <summary>初始化固定在当前编辑区内的浮动层。</summary>
+    /// <summary>初始化限制在当前编辑区内的浮动层。</summary>
     public EditorContextActions()
     {
         InitializeComponent();

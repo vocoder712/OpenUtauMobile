@@ -643,9 +643,6 @@
   <data name="SingerDetail.DangerZone" xml:space="preserve">
     <value>危险操作</value>
   </data>
-  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
-    <value>删除歌手将永久移除所有相关文件，此操作不可撤销。</value>
-  </data>
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>删除歌手</value>
   </data>
