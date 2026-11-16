@@ -132,11 +132,21 @@ public partial class HomeView : UserControl
         ApplyResponsiveLayout();
     }
 
+    /// <summary>按横竖屏排列主页内容，并将品牌标识移入对应区域。</summary>
     private void ApplyResponsiveLayout()
     {
+        Grid brandHost = _isLandscape ? HeaderLayoutGrid : MainLayoutGrid;
+        if (FooterBrand.Parent is Grid currentHost && currentHost != brandHost)
+        {
+            currentHost.Children.Remove(FooterBrand);
+            brandHost.Children.Add(FooterBrand);
+        }
+        FooterBrand.Margin = _isLandscape ? new Thickness(0) : new Thickness(16, 24);
+        FooterBrand.HorizontalAlignment = _isLandscape ? HorizontalAlignment.Right : HorizontalAlignment.Center;
+
         if (_isLandscape)
         {
-            MainLayoutGrid.RowDefinitions = [with("Auto, *, Auto")];
+            MainLayoutGrid.RowDefinitions = [with("Auto, *")];
             MainLayoutGrid.ColumnDefinitions = [with("Auto, *")];
 
             Grid.SetRow(RecoveryHost, 0);
@@ -151,9 +161,9 @@ public partial class HomeView : UserControl
             Grid.SetColumn(SectionB, 1);
             Grid.SetColumnSpan(SectionB, 1);
 
-            Grid.SetRow(FooterBrand, 2);
-            Grid.SetColumn(FooterBrand, 0);
-            Grid.SetColumnSpan(FooterBrand, 2);
+            Grid.SetRow(FooterBrand, 0);
+            Grid.SetColumn(FooterBrand, 1);
+            Grid.SetColumnSpan(FooterBrand, 1);
 
             ActionButtonsPanel.Orientation = Orientation.Vertical;
             ActionButtonsScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
