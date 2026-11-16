@@ -113,7 +113,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             AddHandler(DragDrop.DropEvent, OnDrop);
             UpdateNavigation();
         }
-        private bool Ready => !_fileAction && !PianoRollViewModel.IsBatchEditRunning && _main.CurrentViewModel is not (SplashScreenViewModel or ClassicSingerSetupViewModel { IsInstalling: true }) && !_pages.IsUtilityModalOpen && !_dialogHost.IsOpen && _main.ActiveEditor is not { IsLoadingProject: true };
+        private bool Ready => !_fileAction && !PianoRollViewModel.IsBatchEditRunning && _main.CurrentViewModel is not (SplashScreenViewModel or ISingerInstallationPage { IsBusy: true }) && !_pages.IsUtilityModalOpen && !_dialogHost.IsOpen && _main.ActiveEditor is not { IsLoadingProject: true };
         public void CancelInput() => _pages.Workspace?.CancelInput();
         private void OnWindowActivated(object? sender, EventArgs e) => _pages.InitializeWindowProviders();
         public bool PrepareFileAction() => _pages.Workspace?.PrepareFileAction() != false;
@@ -266,7 +266,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             await RunAsync(action);
         }
         private static bool Supported(string path) => TrackImportService.FilePatterns.Any(p => Path.GetExtension(path).Equals(p[1..], StringComparison.OrdinalIgnoreCase)) || IsAudio(path) || IsArchive(path) || IsTool(path);
-        private static bool IsArchive(string path) => new[] { ".zip", ".rar", ".uar" }.Contains(Path.GetExtension(path).ToLowerInvariant());
+        private static bool IsArchive(string path) => SingerManagementViewModel.IsInstallPackagePath(path);
         private static bool IsTool(string path) => new[] { ".exe", ".bat", ".sh" }.Contains(Path.GetExtension(path).ToLowerInvariant()) || !OperatingSystem.IsWindows() && Path.GetExtension(path).Length == 0 && DesktopToolsService.IsExecutable(path);
         private static bool IsAudio(string path) => new[] { ".wav", ".mp3", ".flac", ".ogg", ".aac", ".aiff", ".aif", ".aifc" }.Contains(Path.GetExtension(path).ToLowerInvariant());
         private void OnDragOver(object? sender, DragEventArgs e)
@@ -295,7 +295,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             string? archive = paths.FirstOrDefault(IsArchive);
             if (archive != null)
             {
-                Show(new ClassicSingerSetupViewModel(_main) { ArchiveFilePath = archive });
+                using SingerManagementViewModel installers = new(_main);
+                await installers.ChooseInstallerAsync(archive);
                 return;
             }
             string? tool = paths.FirstOrDefault(IsTool);

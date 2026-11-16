@@ -14,7 +14,7 @@
     <!-- 弹窗容器，覆盖在导航页之上 -->
     <!-- 保留背景模糊并叠加共享遮罩，点击外部不关闭，支持多重弹窗。 -->
     <Panel>
-        <dialogHostAvalonia:DialogHost BlurBackground="True"
+        <dialogHostAvalonia:DialogHost x:Name="MainDialogHost" BlurBackground="True"
                                        CloseOnClickAway="False"
                                        Identifier="MainDialogHost"
                                        IsMultipleDialogsEnabled="True"
@@ -31,13 +31,14 @@
             <Panel>
                 <!-- 导航页的容器 -->
                 <ContentControl x:Name="PageHost" Content="{Binding CurrentViewModel}" />
+                <!-- 告警中心属于内容层，打开模态弹窗时保留显示并位于遮罩下方。 -->
                 <warnings:WarningOverlay x:Name="WarningOverlay" />
             </Panel>
         </dialogHostAvalonia:DialogHost>
-        <!-- 普通提示透传；错误变体仅在提示区域命中，并在模态打开时让出输入。 -->
-        <controls:ToastOverlay x:Name="ToastOverlay" />
         <Panel x:Name="PerformanceLayer" IsHitTestVisible="False">
             <controls:PerformanceMonitorOverlay />
         </Panel>
+        <!-- 提示始终位于模态弹窗和告警中心上方，仅错误详情按钮参与命中。 -->
+        <controls:ToastOverlay x:Name="ToastOverlay" />
     </Panel>
 </UserControl>

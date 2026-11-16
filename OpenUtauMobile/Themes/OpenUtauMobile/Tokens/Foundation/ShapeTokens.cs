@@ -5,7 +5,8 @@ namespace OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation;
 /// <summary>圆角刻度</summary>
 public static class ShapeTokens
 {
-    public static CornerRadius CornerFull => new(double.MaxValue);
+    /// <summary>MD3 全圆角令牌；有限大半径由绘制后端按边界归一化，避免浮点转换溢出。</summary>
+    public static CornerRadius CornerFull => new(9999);
     public static CornerRadius CornerS => new(4);
     public static CornerRadius CornerM => new(8);
     public static CornerRadius CornerL => new(12);

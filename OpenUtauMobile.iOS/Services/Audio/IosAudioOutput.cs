@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AudioToolbox;
+using Avalonia.Threading;
 using AVFoundation;
 using Foundation;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Audio;
+using OpenUtauMobile.Tools;
 using Serilog;
 
 namespace OpenUtauMobile.iOS.Services.Audio;
@@ -22,6 +24,7 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
     private readonly AVAudioEngine engine;
     private readonly AVAudioSourceNode sourceNode;
     private readonly AVAudioFormat outputFormat;
+    private readonly NSObject configurationChangeObserver;
     private ISampleProvider? sampleProvider;
     private PlaybackState playbackState = PlaybackState.Stopped;
     private float[] interleavedBuffer = Array.Empty<float>();
@@ -41,6 +44,8 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
         engine.AttachNode(sourceNode);
         engine.Connect(sourceNode, engine.MainMixerNode, outputFormat);
         engine.Prepare();
+        configurationChangeObserver = AVAudioEngine.Notifications.ObserveConfigurationChange(engine, (_, _) =>
+            Dispatcher.UIThread.Post(RestartAfterConfigurationChange));
         Log.Information("AVAudioEngine 音频后端初始化成功");
     }
 
@@ -57,18 +62,29 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
 
     public int DeviceNumber => 0;
 
+    /// <summary>读取当前系统路由的实际输出端口；可用路由由系统选择器展示。</summary>
     public List<AudioOutputDevice> GetOutputDevices()
     {
-        return
-        [
-            new AudioOutputDevice
+        return GetCurrentRouteOutputDevices();
+    }
+
+    /// <summary>为所有 iOS 音频后端提供同一份系统路由信息。</summary>
+    internal static List<AudioOutputDevice> GetCurrentRouteOutputDevices()
+    {
+        AVAudioSessionPortDescription[] outputs = AVAudioSession.SharedInstance().CurrentRoute.Outputs;
+        List<AudioOutputDevice> devices = [];
+        for (int index = 0; index < outputs.Length; index++)
+        {
+            AVAudioSessionPortDescription output = outputs[index];
+            devices.Add(new AudioOutputDevice
             {
-                api = "AVAudioEngine",
-                name = "iOS System Output",
-                deviceNumber = 0,
-                guid = Guid.Empty,
-            }
-        ];
+                api = "AVAudioSession",
+                name = output.PortName,
+                deviceNumber = index,
+                guid = GuidTools.CreateGuidFromStrings("AVAudioSession", output.UID),
+            });
+        }
+        return devices;
     }
 
     public long GetPosition()
@@ -102,7 +118,7 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
         ThrowIfDisposed();
         lock (syncRoot)
         {
-            if (sampleProvider == null || playbackState == PlaybackState.Playing)
+            if (sampleProvider == null || (playbackState == PlaybackState.Playing && engine.Running))
             {
                 return;
             }
@@ -143,9 +159,14 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
         }
     }
 
+    /// <summary>仅接受当前路由；切换路由必须由用户操作系统选择器。</summary>
     public void SelectDevice(Guid guid, int deviceNumber)
     {
-        // iOS 由系统统一管理输出路由，不允许应用按设备编号切换。
+        if (guid == Guid.Empty || GetOutputDevices().Exists(device => device.guid == guid))
+        {
+            return;
+        }
+        throw new NotSupportedException("Select an iOS audio route using the system route picker.");
     }
 
     public void Dispose()
@@ -155,11 +176,30 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
             return;
         }
         disposed = true;
+        configurationChangeObserver.Dispose();
         engine.Stop();
         engine.DetachNode(sourceNode);
         sourceNode.Dispose();
         outputFormat.Dispose();
         engine.Dispose();
+    }
+
+    /// <summary>设备格式变化会停止引擎，仅在仍需播放时恢复输出。</summary>
+    private void RestartAfterConfigurationChange()
+    {
+        if (disposed || PlaybackState != PlaybackState.Playing)
+        {
+            return;
+        }
+        try
+        {
+            Play();
+        }
+        catch (Exception exception)
+        {
+            Stop();
+            Log.Error(exception, "切换音频路由后恢复 AVAudioEngine 失败");
+        }
     }
 
     private int RenderAudio(
@@ -226,7 +266,8 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
         Marshal.Copy(rightBuffer, 0, right.Data, frameCount);
     }
 
-    private static void ConfigureAudioSession()
+    /// <summary>为原生音频后端启用系统播放会话。</summary>
+    internal static void ConfigureAudioSession()
     {
         AVAudioSession session = AVAudioSession.SharedInstance();
         NSString category = AVAudioSessionCategory.Playback.GetConstant()

@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
+using OpenUtauMobile.Services.Projects;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Platform;
 using OpenUtauMobile.ViewModels;
@@ -25,6 +26,7 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        PreferencesWriter.Inst.Install();
         // Load language preference before constructing any UI/view-models.
         LocalizationManager.LoadLanguage(Preferences.Default.Language);
 

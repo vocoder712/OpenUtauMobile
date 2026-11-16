@@ -21,6 +21,7 @@ using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Services.Editor;
+using OpenUtauMobile.Services.Projects;
 using OpenUtauMobile.Services.Tracks;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
@@ -64,6 +65,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     private readonly ProjectOpenOptions _projectOpenOptions;
     private bool _loadStarted;
     private bool _projectLoaded;
+    private DocManager.SaveCheckpoint? _saveOwner;
     private PreparedProject? _preparedProject;
     private bool _disposed;
     private readonly TaskCompletionSource<bool> _projectLoadCompletion =
@@ -71,6 +73,19 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     [Reactive]
     public bool IsLoadingProject { get; private set; } = true;
+
+    /// <summary>手动保存期间限制工程交互，进度由主窗口的模态弹窗显示。</summary>
+    [Reactive]
+    public bool IsSavingProject { get; private set; }
+
+    /// <summary>资源准备及映射提交期间限制编辑，音素化运行期间仍可编辑。</summary>
+    [Reactive] public bool IsPreparingTrack { get; private set; }
+    public bool CanEditProject => !IsSavingProject && !IsPreparingTrack;
+
+    /// <summary>独立于渲染进度显示后台音素化，避免不同任务互相清空状态。</summary>
+    [Reactive] public bool IsPhonemizing { get; private set; }
+    [Reactive] public string PhonemizationMessage { get; private set; } = string.Empty;
+    public string DisplayProgressMessage => IsPhonemizing ? PhonemizationMessage : ProgressMessage;
 
     #region 响应式命令
 
@@ -268,6 +283,20 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         UndoCommand = ReactiveCommand.Create(Undo);
         RedoCommand = ReactiveCommand.Create(Redo);
         SaveCommand = ReactiveCommand.Create(Save);
+        TrackPreparationService.Inst.WhenAnyValue(service => service.IsBusy)
+            .Subscribe(busy => IsPreparingTrack = busy).DisposeWith(_disposables);
+        this.WhenAnyValue(vm => vm.IsSavingProject, vm => vm.IsPreparingTrack)
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(CanEditProject))).DisposeWith(_disposables);
+        this.WhenAnyValue(vm => vm.IsPhonemizing, vm => vm.PhonemizationMessage, vm => vm.ProgressMessage)
+            .Subscribe(_ => this.RaisePropertyChanged(nameof(DisplayProgressMessage))).DisposeWith(_disposables);
+        new PhonemizationStatus(() => OwnsSaveDocument() ? DocManager.Inst.Project : null,
+            (pending, total, elapsed) =>
+            {
+                IsPhonemizing = pending > 0;
+                PhonemizationMessage = pending > 0
+                    ? string.Format(L.S("Editor.Phonemizing"), pending, total, (int)elapsed.TotalSeconds)
+                    : string.Empty;
+            }).DisposeWith(_disposables);
         InitializeEditorChrome();
         // 播放/暂停命令
         PlayPauseCommand = ReactiveCommand.Create(() =>
@@ -444,7 +473,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             {
                 Interval = TimeSpan.FromSeconds(Math.Max(Preferences.Default.AutoSaveInterval, 30))
             };
-            _autoSaveTimer.Tick += (_, _) => AutoSaveProject();
+            _autoSaveTimer.Tick += (_, _) => _ = AutoSaveProjectAsync();
         }
 
         // TrackHeight 变更时，MaxTrackOffset 依赖它，置脏并重新校验。目前设计下轨道高度不变，但预留了修改接口，保持逻辑完整性。
@@ -458,11 +487,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
         // 编辑模式改变时重建
         this.WhenAnyValue(x => x.TrackEditMode)
-            .Subscribe(_ => RebuildTrackContextActions())
+            .Subscribe(_ =>
+            {
+                IsPartToolbarExpanded = false;
+                RebuildTrackContextActions();
+            })
             .DisposeWith(_disposables);
         SelectedParts.ObserveCollectionChanges()
             .Subscribe(_ =>
             {
+                IsPartToolbarExpanded = false;
                 UPart? part = SelectedParts.Count == 1 || ServiceHub.UseDesktopFileWorkflows
                     ? SelectedParts.LastOrDefault()
                     : null;
@@ -507,30 +541,14 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 break;
         }
         bool repairedPhonemizers = NotePhonemizerResolver.Normalize(project);
+        ExternalSingerPluginService.NormalizeProject(project);
         return new PreparedProject(project, repairedPhonemizers);
     }
 
-    private static void AutoSaveProject()
+    private async Task AutoSaveProjectAsync()
     {
-        UProject project = DocManager.Inst.Project;
-        string originalProjectPath = project.FilePath;
-        if (!string.IsNullOrEmpty(originalProjectPath))
-        {
-            DocManager.Inst.AutoSave();
-            return;
-        }
-
-        // 未命名工程需要一个临时序列化基准目录，波形分片才能生成相对路径。
-        Directory.CreateDirectory(PathManager.Inst.BackupsPath);
-        project.FilePath = Path.Combine(PathManager.Inst.BackupsPath, "Untitled.ustx");
-        try
-        {
-            DocManager.Inst.AutoSave();
-        }
-        finally
-        {
-            project.FilePath = originalProjectPath;
-        }
+        if (!_disposed && _projectLoaded && !IsSavingProject && _saveOwner is { } owner)
+            await ProjectSaveCoordinator.Inst.AutoSaveAsync(owner);
     }
 
     /// <summary>
@@ -554,6 +572,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
             _projectLoaded = true;
+            _saveOwner = DocManager.Inst.CaptureSaveCheckpoint();
             loadSucceeded = true;
             PlaybackTimer.Start();
             _autoSaveTimer?.Start();
@@ -660,14 +679,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 {
                     ProjectPath = loadProjectNotification.project.FilePath;
                     RefreshProjectInfo();
-                    InvalidateMaxOffsets();
-                    PianoRollViewModel.InvalidateMaxOffsets();
-                    ApplyViewportLimits();
                     RequestInvalidateVisual?.Invoke();
                 });
-                break;
-            case TrackCommand:
-                InvalidateMaxOffsets();
                 break;
             case PartCommand:
                 RunOnUiThread(() =>
@@ -682,10 +695,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     {
                         ReplaceSelectedParts(remainingSelection);
                     }
-                    InvalidateMaxOffsets();
-                    ApplyViewportLimits();
-                    // 更新钢琴卷帘视口限制
-                    PianoRollViewModel.InvalidateMaxOffsets();
                     RequestInvalidateVisual?.Invoke();
                 });
                 break;
@@ -700,10 +709,18 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 RequestInvalidateVisual?.Invoke();
                 break;
             case SaveProjectNotification saveProjectNotification:
-                if (!OperatingSystem.IsBrowser()) ToastService.Enqueue(L.S("Editor.Saved"));
                 ProjectPath = DocManager.Inst.Project.FilePath;
-                Preferences.AddRecentFileIfEnabled(saveProjectNotification.Path);
+                this.RaisePropertyChanged(nameof(Saved));
                 break;
+        }
+
+        // 文档命令执行后读取实际边界，涵盖音符命令隐式延长分片及撤销、重做。
+        // 校验可能延后到下一帧或命令组结束，相关通知到达时再同步最终结果。
+        if (cmd is not UNotification ||
+            cmd is LoadProjectNotification or ValidateProjectNotification or PreRenderNotification or
+                SingersRefreshedNotification or OtoChangedNotification)
+        {
+            RefreshDocumentViewportLimits();
         }
     }
 
@@ -789,7 +806,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private async Task ShowMorePopupAsync()
     {
-        EditorMoreViewModel vm = new();
+        EditorMoreViewModel vm = new()
+        {
+            CanBatchEdit = PianoRollViewModel.EditingVoicePart != null
+        };
         EditorMoreAction action = await Dispatcher.UIThread.InvokeAsync(() =>
             PopupService.Show<EditorMoreAction>(new EditorMorePopup(), vm));
 
@@ -800,6 +820,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     {
         switch (action)
         {
+            case EditorMoreAction.BatchEdit:
+                await PianoRollViewModel.ShowBatchEditPopupAsync();
+                break;
             case EditorMoreAction.ExpressionGraphs:
                 if (_disposed || IsLoadingProject || Navigator.CurrentViewModel != this) break;
                 UProject graphProject = DocManager.Inst.Project;
@@ -831,24 +854,17 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private async Task SaveAsTemplateAsync()
     {
-        UProject project = DocManager.Inst.Project;
-        string? file = await TextInputPopupService.ShowAsync(
-            L.S("EditorMore.SaveAsTemplate"), string.Empty,
-            L.S("ProjectTemplates.Name"), "default");
-        if (string.IsNullOrEmpty(file) || _disposed || DocManager.Inst.Project != project ||
-            (ServiceHub.UseDesktopFileWorkflows ? Navigator.ActiveEditor != this : Navigator.CurrentViewModel != this)) return;
-        try
+        await RunManualSaveAsync(async () =>
         {
-            file = Path.GetFileNameWithoutExtension(file);
-            file = Path.Combine(PathManager.Inst.TemplatesPath, $"{file}.ustx");
-            Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
-            Ustx.Save(file, project.CloneAsTemplate());
-            await ServiceHub.FlushFileSystemAsync();
-        }
-        catch (Exception exception)
-        {
-            ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(exception)));
-        }
+            if (!OwnsSaveDocument()) return false;
+            string? name = await TextInputPopupService.ShowAsync(
+                L.S("EditorMore.SaveAsTemplate"), string.Empty,
+                L.S("ProjectTemplates.Name"), "default");
+            if (string.IsNullOrWhiteSpace(name) || !OwnsSaveDocument()) return false;
+            name = Path.GetFileNameWithoutExtension(name);
+            if (string.IsNullOrWhiteSpace(name)) return false;
+            return await SaveWithProgressAsync(Path.Combine(PathManager.Inst.TemplatesPath, $"{name}.ustx"), template: true);
+        });
     }
 
     private static async Task ImportAudio()
@@ -993,6 +1009,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// 应在 Parts/Tracks 内容变化、TickWidth/TrackHeight/画布尺寸变化时调用。
     /// </summary>
     private void InvalidateMaxOffsets() => _maxOffsetsDirty = true;
+
+    /// <summary>从权威文档同步内容边界，再统一刷新编曲区与钢琴卷帘的视口限制。</summary>
+    private void RefreshDocumentViewportLimits()
+    {
+        InvalidateMaxOffsets();
+        ApplyViewportLimits();
+        PianoRollViewModel.InvalidateMaxOffsets();
+        PianoRollViewModel.ApplyViewportLimits();
+        RequestInvalidateVisual?.Invoke();
+    }
 
     /// <summary>
     /// 若缓存有效直接返回（O(1)），否则遍历 Parts 重算并缓存（O(Parts.Count)）。
@@ -1279,8 +1305,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(tick));
                 }
 
-                // 单选
-                ReplaceSelectedParts(hitTestPart != null ? [hitTestPart] : []);
+                // 首次选中只进入编辑；再次点击同一分片才切换选区工具栏。
+                if (hitTestPart != null && SelectedParts is [UPart selected] && ReferenceEquals(selected, hitTestPart))
+                {
+                    TogglePartToolbar();
+                }
+                else
+                {
+                    ReplaceSelectedParts(hitTestPart != null ? [hitTestPart] : []);
+                }
 
                 break;
             case TrackEditMode.MultiSelect:
@@ -1310,9 +1343,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
-                // 双击分片：进入编辑
+                // 双击的第二次点击同样参与显隐切换，快速连续点击不丢失一次切换。
                 if (hit != null)
                 {
+                    OnGestureTap(point);
                 }
                 // 双击空白：退出编辑，清空选择，创建新分片
                 else
@@ -1373,8 +1407,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        // 重叠区域优先命中已选中的分片，避免未选中的分片阻挡拖动。
-        UPart? hit = HitTestPart(point, SelectedParts) ?? HitTestPart(point);
         // 只有从顶部手柄开始的手势才能移动分片。
         if (moveHit != null)
         {
@@ -1392,15 +1424,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
         else
         {
-            switch (TrackEditMode)
-            {
-                case TrackEditMode.Normal:
-                    _inputState = TrackInputState.Panning; // 进入平移状态
-                    break;
-                case TrackEditMode.MultiSelect when hit == null:
-                    // TODO: 在多选模式下空白处拖拽进入框选状态
-                    break;
-            }
+            // 两种模式均允许在分片主体和空白区域平移，保留手柄的移动与缩放优先级。
+            _inputState = TrackInputState.Panning;
         }
     }
 
@@ -1547,7 +1572,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <param name="timestamp"></param>
     public void OnGestureDragEnd(Point point, ulong timestamp)
     {
-        bool completedResize = _inputState == TrackInputState.ResizingParts;
         if (_inputState == TrackInputState.MovingParts || _inputState == TrackInputState.ResizingParts)
         {
             DocManager.Inst.EndUndoGroup();
@@ -1563,14 +1587,6 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         _resizingReferencePartIndex = 0;
         _resizingEdge = PartResizeEdge.End;
         _resizingPointerTickOffset = 0;
-
-        if (completedResize)
-        {
-            InvalidateMaxOffsets();
-            ApplyViewportLimits();
-            PianoRollViewModel.InvalidateMaxOffsets();
-            RequestInvalidateVisual?.Invoke();
-        }
     }
 
     /// <summary>
@@ -1664,38 +1680,28 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <summary>
     /// 实际执行保存
     /// </summary>
-    /// <param name="fileName">置空表示保存到原位</param>
-    private static void SaveAs(string fileName)
-    {
-        DocManager.Inst.ExecuteCmd(new SaveProjectNotification(fileName));
-    }
-    /// <summary>
-    /// 判断直接保存还是另存为
-    /// </summary>
     private Task<bool> Save() => SaveFromInputAsync(false);
 
     private async Task<bool> SaveCore()
     {
+        if (!OwnsSaveDocument()) return false;
         if (ServiceHub.UseDesktopFileWorkflows ? string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) : !Saved) return await RequestSaveAs();
-        SaveAs(string.Empty);
-        return true;
+        return await SaveWithProgressAsync(DocManager.Inst.Project.FilePath, template: false);
     }
     /// <summary>
     /// 打开弹窗获取保存filename
     /// </summary>
     /// <returns>是否成功保存</returns>
-    private static async Task<bool> RequestSaveAs()
+    private async Task<bool> RequestSaveAs()
     {
+        if (!OwnsSaveDocument()) return false;
         if (ServiceHub.UseDesktopFileWorkflows || FilePickerWorkspace.IsSandboxed)
         {
             string destination = await FilePicker.SaveFileAsync(L.S("FilePicker.SaveProjectAs"), "ustx",
                 string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) ? L.S("FilePicker.DefaultProjectName") : Path.GetFileNameWithoutExtension(DocManager.Inst.Project.FilePath),
                 Preferences.Default.LastSaveProjectDirectory);
-            if (string.IsNullOrEmpty(destination)) return false;
-            SaveAs(destination);
-            Preferences.Default.LastSaveProjectDirectory = Path.GetDirectoryName(destination) ?? string.Empty;
-            Preferences.Save();
-            return true;
+            if (string.IsNullOrEmpty(destination) || !OwnsSaveDocument()) return false;
+            return await SaveWithProgressAsync(destination, template: false);
         }
         FilePickerPopup view = new();
         // TODO: 使用统一文件入口
@@ -1705,14 +1711,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             Preferences.Default.LastSaveProjectDirectory,
             L.S("FilePicker.DefaultProjectName"));
         string? fileName = await PopupService.Show<string>(view, vm);
-        if (string.IsNullOrEmpty(fileName))
+        if (string.IsNullOrEmpty(fileName) || !OwnsSaveDocument())
         {
             return false;
         }
-        SaveAs(fileName);
-        Preferences.Default.LastSaveProjectDirectory = Path.GetDirectoryName(fileName) ?? Preferences.Default.LastSaveProjectDirectory;
-        Preferences.Save();
-        return true;
+        return await SaveWithProgressAsync(fileName, template: false);
     }
 
     private static async Task<byte> ShowExitEditorConfirmPopupAsync()
@@ -1759,8 +1762,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 case ExportAudioMode.Mixdown:
                     await PlaybackManager.Inst.RenderMixdown(DocManager.Inst.Project, request.ExportPath);
                     await ServiceHub.FlushFileSystemAsync();
-                    success = File.Exists(request.ExportPath) &&
-                              File.GetLastWriteTimeUtc(request.ExportPath) >= startedAt.AddSeconds(-1);
+                    success = await Task.Run(() => File.Exists(request.ExportPath) &&
+                              File.GetLastWriteTimeUtc(request.ExportPath) >= startedAt.AddSeconds(-1));
                     ToastService.Enqueue(L.S(success
                         ? "ExportAudioPopup.Toast.Success.Mixdown"
                         : "ExportAudioPopup.Toast.Failed"));
@@ -1771,10 +1774,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     await ServiceHub.FlushFileSystemAsync();
                     string? trackDir = Path.GetDirectoryName(request.ExportPath);
                     string trackBase = Path.GetFileNameWithoutExtension(request.ExportPath);
-                    success = !string.IsNullOrWhiteSpace(trackDir) &&
+                    success = await Task.Run(() => !string.IsNullOrWhiteSpace(trackDir) &&
                               Directory.Exists(trackDir) &&
-                              Directory.GetFiles(trackDir, $"{trackBase}_*.wav")
-                                  .Any(file => File.GetLastWriteTimeUtc(file) >= startedAt.AddSeconds(-1));
+                              Directory.EnumerateFiles(trackDir, $"{trackBase}_*.wav")
+                                  .Any(file => File.GetLastWriteTimeUtc(file) >= startedAt.AddSeconds(-1)));
                     ToastService.Enqueue(L.S(success
                         ? "ExportAudioPopup.Toast.Success.Tracks"
                         : "ExportAudioPopup.Toast.Failed"));
@@ -1811,149 +1814,16 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// </summary>
     private void RebuildTrackContextActions()
     {
-        List<ContextActionItem> items = [];
-        bool hasSelection = SelectedParts.Count > 0;
-
-        switch (TrackEditMode)
-        {
-            case TrackEditMode.Normal:
-                if (hasSelection)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Trash,
-                        Tip = L.S("Common.Delete"),
-                        IsDanger = true,
-                        Command = ReactiveCommand.Create(DeleteSelectedParts)
-                    });
-                    if (SelectedParts.Count == 1)
-                    {
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.Textbox,
-                            Tip = L.S("Editor.Action.Rename"),
-                            Command = ReactiveCommand.CreateFromTask(RenameSelectedPart)
-                        });
-                    }
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Copy,
-                        Tip = L.S("Common.Copy"),
-                        Command = ReactiveCommand.Create(CopySelectedParts)
-                    });
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Scissors,
-                        Tip = L.S("Common.Cut"),
-                        Command = ReactiveCommand.Create(CutSelectedParts)
-                    });
-                }
-
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.Clipboard,
-                    Tip = L.S("Common.Paste"),
-                    Command = ReactiveCommand.Create(PasteParts)
-                });
-                if (SelectedParts.Any(part => part is UVoicePart))
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.SplitHorizontal,
-                        Tip = L.S("Editor.Action.Split"),
-                        Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
-                    });
-                }
-                if (CanMergeSelectedParts)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Unite,
-                        Tip = L.S("Editor.Action.Merge"),
-                        Command = ReactiveCommand.Create(MergeSelectedParts)
-                    });
-                }
-                break;
-
-            case TrackEditMode.MultiSelect:
-                if (hasSelection)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Copy,
-                        Tip = L.S("Common.Copy"),
-                        Command = ReactiveCommand.Create(CopySelectedParts)
-                    });
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Scissors,
-                        Tip = L.S("Common.Cut"),
-                        Command = ReactiveCommand.Create(CutSelectedParts)
-                    });
-                }
-
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.Clipboard,
-                    Tip = L.S("Common.Paste"),
-                    Command = ReactiveCommand.Create(PasteParts)
-                });
-                if (hasSelection)
-                {
-                    if (SelectedParts.Any(part => part is UVoicePart))
-                    {
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.SplitHorizontal,
-                            Tip = L.S("Editor.Action.Split"),
-                            Command = ReactiveCommand.CreateFromTask(SplitSelectedParts)
-                        });
-                    }
-                    if (CanMergeSelectedParts) items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Unite,
-                        Tip = L.S("Editor.Action.Merge"),
-                        Command = ReactiveCommand.Create(MergeSelectedParts)
-                    });
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Trash,
-                        Tip = L.S("Common.Delete"),
-                        IsDanger = true,
-                        Command = ReactiveCommand.Create(DeleteSelectedParts)
-                    });
-                }
-
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.SelectionAll,
-                    Tip = L.S("Common.SelectAll"),
-                    Command = ReactiveCommand.Create(SelectAllParts)
-                });
-                break;
-        }
-
-        if (SelectedParts is [UWavePart])
-        {
-            items.Add(new ContextActionItem
+        RebuildPartToolbarActions();
+        TrackContextActions = DocManager.Inst.PartsClipboard is { Count: > 0 }
+            ? [new ContextActionItem
             {
-                Id = "replace-audio",
-                Icon = PackIconPhosphorIconsKind.ArrowsClockwise,
-                Tip = L.S("Editor.Action.ReplaceAudio"),
-                Command = ReactiveCommand.CreateFromTask(ReplaceSelectedAudioAsync)
-            });
-        }
-
-        if (SelectedParts is [UWavePart wavePart])
-        {
-            items.Add(new ContextActionItem
-            {
-                Icon = PackIconPhosphorIconsKind.MusicNotes,
-                Tip = L.S("NoteExtraction.Title"),
-                Command = ReactiveCommand.CreateFromTask(() => noteExtraction.RunAsync(wavePart))
-            });
-        }
-        TrackContextActions = items;
+                Icon = PackIconPhosphorIconsKind.Clipboard,
+                Tip = L.S("Common.Paste"),
+                Command = ReactiveCommand.Create(PasteParts),
+                HoldCommand = ReactiveCommand.Create(ClearPartsClipboard)
+            }]
+            : [];
     }
 
     // ── 操作方法存根 ──────────────────────────────────────────────────
@@ -2012,6 +1882,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
 
         DocManager.Inst.PartsClipboard = [.. SelectedParts.Select(p => p.Clone())];
+        RebuildTrackContextActions();
         if (!UseDesktopInput)
             ToastService.Enqueue(string.Format(L.S("Editor.Selection.Copied"), SelectedParts.Count), 1000);
     }
@@ -2038,6 +1909,14 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
         finally { DocManager.Inst.EndUndoGroup(); }
 
+    }
+
+    /// <summary>长按分片粘贴入口清空应用内分片剪贴板，并收起对应入口。</summary>
+    private void ClearPartsClipboard()
+    {
+        DocManager.Inst.PartsClipboard = null;
+        RebuildTrackContextActions();
+        ToastService.Enqueue(L.S("Editor.Clipboard.Cleared"));
     }
 
     public void PasteParts()
@@ -2459,22 +2338,28 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     /// <returns>已保存或用户确认退出时返回 true。</returns>
     public async Task<bool> ConfirmExitAsync()
     {
+        if (_manualSaveTask != null && !await _manualSaveTask) return false;
         // 同步格式读取器会继续运行；离开后丢弃结果，返回操作不等待读取。
         if (!_projectLoaded) return true;
+        if (!OwnsSaveDocument()) return false;
         if (DocManager.Inst.ChangesSaved)
         {
             return true;
         }
 
+        var revision = DocManager.Inst.Revision;
         byte actionRegister = await ShowExitEditorConfirmPopupAsync();
+        if (!OwnsSaveDocument() || revision != DocManager.Inst.Revision) return false;
         switch ((ExitEditorActionRegister)actionRegister)
         {
             case ExitEditorActionRegister.ExitWithoutSave:
+                ProjectSaveCoordinator.Inst.DismissRecovery();
                 Preferences.Default.RecoveryPath = string.Empty;
-                Preferences.Save();
-                return true;
+                await PreferencesWriter.Inst.SaveAsync();
+                await ServiceHub.FlushFileSystemAsync();
+                return OwnsSaveDocument() && revision == DocManager.Inst.Revision;
             case ExitEditorActionRegister.SaveAndExit:
-                return await Save();
+                return await Save() && OwnsSaveDocument() && DocManager.Inst.ChangesSaved;
             case ExitEditorActionRegister.Cancel:
             default:
                 return false;
@@ -2494,6 +2379,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         ProgressValue = 0;
         ProgressMessage = string.Empty;
         PlaybackManager.Inst.StopPlayback(); // 停止回放
+        IsPhonemizing = false;
+        PhonemizationMessage = string.Empty;
         PlaybackTimer.Stop(); // 停止定时器
         _autoSaveTimer?.Stop(); // 停止自动保存定时器
         _panMotion.Dispose();

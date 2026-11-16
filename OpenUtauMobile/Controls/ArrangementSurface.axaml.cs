@@ -9,7 +9,7 @@ namespace OpenUtauMobile.Controls
         public PartsCanvas PartsCanvas => PartsInputCanvas;
         public void SetHeaderExpanded(bool expanded) => TrackAreaGrid.ColumnDefinitions[0].Width = new Avalonia.Controls.GridLength(expanded ? ViewConstants.TrackHeaderWidthExpanded : ViewConstants.TrackHeaderWidthCollapsed);
 
-        public void SetDesktopChrome() { Ruler.IsVisible = true; FloatingActions.IsVisible = false; ArrangementToolbar.IsVisible = false; }
+        public void SetDesktopChrome() { Ruler.IsVisible = true; FloatingActions.IsVisible = false; }
         public ArrangementSurface()
         {
             InitializeComponent();

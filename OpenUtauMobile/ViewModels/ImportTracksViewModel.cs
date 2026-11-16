@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Reactive;
 using OpenUtau.Core.Ustx;
@@ -176,7 +175,7 @@ public sealed class ImportTrackViewModel : ReactiveObject
         }
         foreach (UWavePart part in parts.OfType<UWavePart>())
         {
-            if (!File.Exists(part.FilePath))
+            if (selection.Source.IsAudioMissing(part))
                 warnings.Add(string.Format(L.S("ImportTracks.MissingAudio"), part.FilePath));
             else if (part.Peaks is { IsCompleted: true } peaks &&
                 (!peaks.IsCompletedSuccessfully || peaks.Result == null && part.Samples == null))

@@ -81,8 +81,8 @@ public partial class EditorView : UserControl
         if (DataContext is EditorViewModel vm)
         {
             vm.PianoRollViewModel.SetPresentationSuspended(false);
-            if (vm.IsPlaying || vm.IsWaitingRender)
-                vm.PianoRollViewModel.SyncPlaybackState(vm.PlayPosTick, vm.IsPlaying, vm.IsWaitingRender);
+            // 暂停展示期间播放头仍可能移动，恢复时也需同步停止状态下的位置。
+            vm.PianoRollViewModel.SyncPlaybackState(vm.PlayPosTick, vm.IsPlaying, vm.IsWaitingRender);
         }
     }
 
@@ -148,6 +148,10 @@ public partial class EditorView : UserControl
         _viewModelSubscription?.Dispose();
         CompositeDisposable disp = new();
         _viewModelSubscription = disp;
+        new PartSelectionToolbarBinding(PartToolbar, EditorPageLayer, Arrangement.PartsCanvas, vm,
+            () => Arrangement.IsEffectivelyVisible, () => _input.ActiveArea = EditorInputController.EditArea.Tracks).DisposeWith(disp);
+        new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, PianoSurface.NotesCanvas, PianoSurface.NoteCreationPreview, vm,
+            () => !IsMixerOpen, () => _input.ActiveArea = EditorInputController.EditArea.PianoRoll).DisposeWith(disp);
 
         // 立即设置初始列宽，不动画
         SetColWidth(vm.IsTrackHeaderExpanded

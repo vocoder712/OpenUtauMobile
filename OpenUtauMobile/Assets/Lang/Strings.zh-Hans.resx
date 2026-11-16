@@ -643,9 +643,6 @@
   <data name="SingerDetail.DangerZone" xml:space="preserve">
     <value>危险操作</value>
   </data>
-  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
-    <value>删除歌手将永久移除所有相关文件，此操作不可撤销。</value>
-  </data>
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>删除歌手</value>
   </data>
@@ -795,6 +792,12 @@
   </data>
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>切换为橡皮擦</value>
+  </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>已清空音符剪贴板</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>创建音符</value>
   </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>在播放标记处添加控制点</value>
@@ -1394,7 +1397,7 @@
     <value>安装失败: {0}</value>
   </data>
   <data name="SingerSetup.StepFormat" xml:space="preserve">
-    <value>第 {0} 步 / 4</value>
+    <value>第 {0} 步 / {1}</value>
   </data>
   <data name="Splash.DocManager" xml:space="preserve">
     <value>文档管理器初始化中</value>
@@ -2200,6 +2203,18 @@
   <data name="PluginManager.SelectFile" xml:space="preserve">
     <value>选择 DLL 插件</value>
   </data>
+  <data name="PluginManager.TrustTitle" xml:space="preserve">
+    <value>信任插件</value>
+  </data>
+  <data name="PluginManager.TrustQuestion" xml:space="preserve">
+    <value>是否信任插件“{0}”？</value>
+  </data>
+  <data name="PluginManager.TrustMessage" xml:space="preserve">
+    <value>插件拥有和本软件相同的权限，恶意插件可能会读取或泄露个人信息、修改或删除文件，或执行其他有害操作。&#10;&#10;OpenUtau Mobile 开发者不对插件的行为负责。请仅安装来自可信来源的插件。</value>
+  </data>
+  <data name="PluginManager.Continue" xml:space="preserve">
+    <value>继续</value>
+  </data>
   <data name="PluginManager.Checking" xml:space="preserve">
     <value>正在检查托管程序集…</value>
   </data>
@@ -2333,6 +2348,9 @@
   <data name="Desktop.NavigationHint" xml:space="preserve"><value>中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
   <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>拖动：擦除音高 · 中键拖动：平移 · Ctrl/Cmd＋滚轮：缩放</value></data>
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>将更新的音符数：{0}</value></data>
+  <data name="Editor.Clipboard.Cleared" xml:space="preserve">
+    <value>已清空分片剪贴板</value>
+  </data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>已复制 {0} 个分片</value>
   </data>
@@ -2588,4 +2606,117 @@
   <data name="Editor.Repeat" xml:space="preserve"><value>重复</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>录制</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: 录制功能</value></data>
+  <data name="SingerSetup.Review" xml:space="preserve"><value>检查安装</value></data>
+  <data name="SingerSetup.SelectInstaller" xml:space="preserve"><value>选择安装器</value></data>
+  <data name="SingerSetup.SearchInstaller" xml:space="preserve"><value>搜索安装器</value></data>
+  <data name="SingerSetup.MoreInstallers" xml:space="preserve"><value>更多安装器</value></data>
+  <data name="SingerSetup.RequiredField" xml:space="preserve"><value>必填</value></data>
+  <data name="SingerSetup.InvalidValue" xml:space="preserve"><value>值无效</value></data>
+  <data name="SingerSetup.PartialFailure" xml:space="preserve"><value>已安装，但发生错误</value></data>
+  <data name="SingerSetup.WrongInstaller" xml:space="preserve"><value>此安装器不支持该安装包。</value></data>
+  <data name="Common.Browse" xml:space="preserve"><value>浏览</value></data>
+  <data name="SingerAvailability.Unsupported" xml:space="preserve"><value>不支持</value></data>
+  <data name="SingerAvailability.Invalid" xml:space="preserve"><value>无效</value></data>
+  <data name="SingerAvailability.MissingResources" xml:space="preserve"><value>缺少资源</value></data>
+  <data name="SingerAvailability.Unavailable" xml:space="preserve"><value>不可用</value></data>
+  <data name="SingerSetup.TypeConflict" xml:space="preserve"><value>已选择 {0}，但 character.yaml 声明为 {1}。请返回选择对应安装器。</value></data>
+  <data name="SingerSetup.Cancelled" xml:space="preserve"><value>已取消</value></data>
+  <data name="SingerSetup.RollingBack" xml:space="preserve"><value>正在取消并回滚…</value></data>
+  <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>回滚失败</value></data>
+  <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>安装进行中，请先取消安装。</value></data>
+  <data name="SingerSetup.TargetExists" xml:space="preserve"><value>目标已存在。</value></data>
+  <data name="SingerSetup.PackageName" xml:space="preserve"><value>歌手名称</value></data>
+  <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>声库版本</value></data>
+  <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>正在读取元数据…</value></data>
+  <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>未能解析元数据</value></data>
+  <data name="SingerDiscovery.MissingReference" xml:space="preserve"><value>找不到歌手，请检查插件和歌手目录。</value></data>
+  <data name="SingerAvailability.Ready" xml:space="preserve"><value>可用</value></data>
+  <data name="PluginWebSettings.Title" xml:space="preserve"><value>插件设置</value></data>
+  <data name="PluginWebSettings.OpenBrowser" xml:space="preserve"><value>在系统浏览器打开</value></data>
+  <data name="PluginWebSettings.Unavailable" xml:space="preserve"><value>当前插件没有可用的网页设置。</value></data>
+  <data name="PluginWebSettings.InvalidAddress" xml:space="preserve"><value>插件返回了无效的网页地址。</value></data>
+  <data name="PluginWebSettings.OpenFailed" xml:space="preserve"><value>无法打开插件设置。</value></data>
+  <data name="PluginWebSettings.BrowserFailed" xml:space="preserve"><value>无法打开系统浏览器。</value></data>
+  <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>系统 WebView 无法加载页面，可使用右上角按钮在系统浏览器打开。</value></data>
+  <data name="Warning.Plugin.Title" xml:space="preserve"><value>{0}：{1}</value></data>
+  <data name="Warning.Plugin.Detail" xml:space="preserve"><value>{2}</value></data>
+  <data name="ProjectSave.Capturing" xml:space="preserve"><value>正在捕获工程快照…</value></data>
+  <data name="ProjectSave.Waiting" xml:space="preserve"><value>正在等待当前保存完成…</value></data>
+  <data name="ProjectSave.Preparing" xml:space="preserve"><value>正在整理工程数据…</value></data>
+  <data name="ProjectSave.Serializing" xml:space="preserve"><value>正在序列化工程…</value></data>
+  <data name="ProjectSave.Writing" xml:space="preserve"><value>正在写入工程文件…</value></data>
+  <data name="ProjectSave.Replacing" xml:space="preserve"><value>正在替换工程文件…</value></data>
+  <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>正在同步存储…</value></data>
+  <data name="ProjectSave.Confirming" xml:space="preserve"><value>正在确认已保存版本…</value></data>
+    <data name="TrackPreparation.Singer" xml:space="preserve"><value>正在加载歌手资源…</value></data>
+    <data name="TrackPreparation.Phonemizer" xml:space="preserve"><value>正在准备音素器…</value></data>
+    <data name="TrackPreparation.Applying" xml:space="preserve"><value>正在应用轨道设置…</value></data>
+    <data name="TrackPreparation.Mapping" xml:space="preserve"><value>正在准备音色映射…</value></data>
+    <data name="Editor.Phonemizing" xml:space="preserve"><value>正在音素化：剩余 {0}/{1} 个片段 · 已等待 {2} 秒</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>显示其它轨道音符</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>在钢琴卷帘背景显示与当前片段重叠的其它轨道音符。</value>
+  </data>
+  <data name="Common.More" xml:space="preserve">
+    <value>更多操作</value>
+  </data>
+  <data name="PluginDetails.Title" xml:space="preserve"><value>插件详情</value></data>
+  <data name="PluginDetails.BasicInfo" xml:space="preserve"><value>基本信息</value></data>
+  <data name="PluginDetails.EnablePlugin" xml:space="preserve"><value>启用插件</value></data>
+  <data name="PluginDetails.Enabled" xml:space="preserve"><value>已启用</value></data>
+  <data name="PluginDetails.Disabled" xml:space="preserve"><value>已禁用</value></data>
+  <data name="PluginDetails.RestartDescription" xml:space="preserve"><value>更改在重启应用后生效。</value></data>
+  <data name="PluginDetails.RestartRequired" xml:space="preserve"><value>重启应用以应用启用状态。</value></data>
+  <data name="PluginDetails.Loaded" xml:space="preserve"><value>已加载</value></data>
+  <data name="PluginDetails.NotLoaded" xml:space="preserve"><value>未加载。请重启应用；若仍未加载，请查看插件加载错误。</value></data>
+  <data name="PluginDetails.Capabilities" xml:space="preserve"><value>能力</value></data>
+  <data name="PluginDetails.CapabilitiesDescription" xml:space="preserve"><value>显示上次成功注册的能力，动态配置能力在打开本页时查询。</value></data>
+  <data name="PluginDetails.ConfigurationData" xml:space="preserve"><value>配置与数据</value></data>
+  <data name="PluginDetails.SettingsUnavailable" xml:space="preserve"><value>插件需已加载、已启用且提供配置能力。</value></data>
+  <data name="PluginDetails.DataDirectory" xml:space="preserve"><value>插件数据目录 · 复制路径</value></data>
+  <data name="PluginDetails.DataUnavailable" xml:space="preserve"><value>插件成功注册 ID 后可用。</value></data>
+  <data name="PluginDetails.ClearData" xml:space="preserve"><value>清除插件数据</value></data>
+  <data name="PluginDetails.CancelDataClear" xml:space="preserve"><value>取消清除数据</value></data>
+  <data name="PluginDetails.ClearDataDescription" xml:space="preserve"><value>重启后清除该目录内的配置及其他文件。</value></data>
+  <data name="PluginDetails.DataClearPending" xml:space="preserve"><value>下次启动加载插件前清除数据，点击可取消。</value></data>
+  <data name="PluginDetails.ClearDataQuestion" xml:space="preserve"><value>下次启动时清除“{0}”的全部数据？其中包含插件配置，清除后无法恢复。</value></data>
+  <data name="PluginDetails.UninstallQuestion" xml:space="preserve"><value>下次启动时卸载“{0}”？插件数据会保留，可通过“清除插件数据”删除。</value></data>
+  <data name="PluginDetails.UninstallDescription" xml:space="preserve"><value>重启后删除插件文件，保留插件数据。</value></data>
+  <data name="PluginDetails.PathCopied" xml:space="preserve"><value>已复制数据目录路径。</value></data>
+  <data name="PluginDetails.OperationFailed" xml:space="preserve"><value>插件操作失败：{0}</value></data>
+  <data name="PluginDetails.DataClearFailed" xml:space="preserve"><value>部分插件数据未能清除，请查看日志并在插件详情中重试。</value></data>
+  <data name="PluginDetails.SignatureDescription" xml:space="preserve"><value>签名标志和公钥仅为元数据，未验证发布者身份或签名有效性。</value></data>
+  <data name="PluginDetails.SignaturePresent" xml:space="preserve"><value>存在 · 未验证</value></data>
+  <data name="PluginDetails.Unsigned" xml:space="preserve"><value>无</value></data>
+  <data name="PluginDetails.Assembly" xml:space="preserve"><value>程序集</value></data>
+  <data name="PluginDetails.Version" xml:space="preserve"><value>程序集版本</value></data>
+  <data name="PluginDetails.File" xml:space="preserve"><value>插件文件</value></data>
+  <data name="PluginDetails.Size" xml:space="preserve"><value>文件大小</value></data>
+  <data name="PluginDetails.Architecture" xml:space="preserve"><value>体系结构</value></data>
+  <data name="PluginDetails.Module" xml:space="preserve"><value>模块 ID</value></data>
+  <data name="PluginDetails.Name" xml:space="preserve"><value>名称</value></data>
+  <data name="PluginDetails.Description" xml:space="preserve"><value>描述</value></data>
+  <data name="PluginDetails.Author" xml:space="preserve"><value>公司 / 作者</value></data>
+  <data name="PluginDetails.Product" xml:space="preserve"><value>产品</value></data>
+  <data name="PluginDetails.Copyright" xml:space="preserve"><value>版权</value></data>
+  <data name="PluginDetails.ProductVersion" xml:space="preserve"><value>产品版本</value></data>
+  <data name="PluginDetails.FileVersion" xml:space="preserve"><value>文件版本</value></data>
+  <data name="PluginDetails.Framework" xml:space="preserve"><value>目标框架</value></data>
+  <data name="PluginDetails.PublicKeyToken" xml:space="preserve"><value>公钥标记</value></data>
+  <data name="PluginDetails.PublicKey" xml:space="preserve"><value>公钥</value></data>
+  <data name="PluginDetails.StrongName" xml:space="preserve"><value>强名称签名标志</value></data>
+  <data name="PluginDetails.Authenticode" xml:space="preserve"><value>Authenticode 证书表</value></data>
+  <data name="PluginDetails.References" xml:space="preserve"><value>程序集引用</value></data>
+  <data name="PluginDetails.Hash" xml:space="preserve"><value>SHA-256</value></data>
+  <data name="PluginDetails.Id" xml:space="preserve"><value>插件 ID</value></data>
+  <data name="PluginDetails.SingerType" xml:space="preserve"><value>歌手类型</value></data>
+  <data name="PluginDetails.Renderer" xml:space="preserve"><value>渲染器</value></data>
+  <data name="PluginDetails.Provider" xml:space="preserve"><value>发现提供方</value></data>
+  <data name="PluginDetails.Installer" xml:space="preserve"><value>安装器</value></data>
+  <data name="PluginDetails.EntryPoint" xml:space="preserve"><value>插件入口</value></data>
+  <data name="PluginDetails.ContractVersion" xml:space="preserve"><value>契约版本</value></data>
+  <data name="PluginDetails.Phonemizer" xml:space="preserve"><value>音素器</value></data>
+  <data name="PluginDetails.BatchEdit" xml:space="preserve"><value>批量编辑工具</value></data>
 </root>

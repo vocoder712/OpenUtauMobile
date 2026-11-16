@@ -6,7 +6,6 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Converters;
-using Avalonia.Media.Imaging;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
@@ -24,16 +23,7 @@ public class SingerTypeToColorConverter : IValueConverter
     {
         if (value is USingerType singerType)
         {
-            return singerType switch
-            {
-                USingerType.Classic => ThemeResources.GetBrush("Sem.Color.Singer.Classic"),
-                USingerType.Enunu => ThemeResources.GetBrush("Sem.Color.Singer.Enunu"),
-                USingerType.DiffSinger => ThemeResources.GetBrush("Sem.Color.Singer.DiffSinger"),
-                USingerType.Vogen => ThemeResources.GetBrush("Sem.Color.Singer.Vogen"),
-                USingerType.Voicevox => ThemeResources.GetBrush("Sem.Color.Singer.Voicevox"),
-                USingerType.Neutrino => ThemeResources.GetBrush("Sem.Color.Singer.Neutrino"),
-                _ => ThemeResources.GetBrush("Sem.Color.Singer.Unknown"),
-            };
+            return Services.SingerPlugins.SingerTypePresentation.Brush(singerType);
         }
 
         return ThemeResources.GetBrush("Sem.Color.Singer.Unknown");
@@ -110,48 +100,10 @@ public class SingerTypeToLabelConverter : IValueConverter
     {
         if (value is USingerType singerType)
         {
-            return singerType switch
-            {
-                USingerType.Classic => "UTAU",
-                USingerType.Enunu => "ENUNU",
-                USingerType.DiffSinger => "DiffSinger",
-                USingerType.Vogen => "Vogen",
-                USingerType.Voicevox => "Voicevox",
-                USingerType.Neutrino => "NEUTRINO v3",
-                _ => "Unknown",
-            };
+            return Services.SingerPlugins.SingerTypePresentation.Name(singerType);
         }
 
         return "Unknown";
-    }
-
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-        => AvaloniaProperty.UnsetValue;
-}
-
-/// <summary>
-/// byte[] => Bitmap (avatar image)
-/// </summary>
-public class AvatarDataToBitmapConverter : IValueConverter
-{
-    public static readonly AvatarDataToBitmapConverter Instance = new();
-
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is byte[] { Length: > 0 } data)
-        {
-            try
-            {
-                using MemoryStream ms = new MemoryStream(data);
-                return new Bitmap(ms);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        return null;
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
@@ -234,8 +186,7 @@ public class IsFileConverter : IValueConverter
 }
 
 /// <summary>
-/// FileSystemInfo => human-readable file size string (e.g. "1.2 MB").
-/// Returns empty string for directories.
+/// 预读的文件字节数转为可读大小；转换期间不访问磁盘。
 /// </summary>
 public class FileSizeConverter : IValueConverter
 {
@@ -243,8 +194,7 @@ public class FileSizeConverter : IValueConverter
 
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not FileInfo fi) return string.Empty;
-        long bytes = fi.Length;
+        if (value is not long bytes) return string.Empty;
         return bytes switch
         {
             < 1024 => $"{bytes} B",

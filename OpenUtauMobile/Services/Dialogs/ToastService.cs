@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using OpenUtauMobile.ViewModels;
+using Serilog;
 
 namespace OpenUtauMobile.Services.Dialogs
 {
@@ -105,10 +106,13 @@ namespace OpenUtauMobile.Services.Dialogs
                 {
                     if (registration != _registration) return;
                 }
+                bool completed = false;
                 try
                 {
                     await consume();
+                    completed = true;
                 }
+                catch (Exception exception) { Log.Error(exception, "提示浮层消费失败"); }
                 finally
                 {
                     lock (Gate)
@@ -116,7 +120,7 @@ namespace OpenUtauMobile.Services.Dialogs
                         if (registration == _registration)
                         {
                             _running = false;
-                            TryStartConsuming();
+                            if (completed) TryStartConsuming();
                         }
                     }
                 }

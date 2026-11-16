@@ -41,6 +41,12 @@
                                             Content="{DynamicResource ExpressionGraph.Title}" Command="{Binding ConfirmCommand}">
                                         <Button.CommandParameter><vm:EditorMoreAction>ExpressionGraphs</vm:EditorMoreAction></Button.CommandParameter>
                                     </Button>
+                                    <Button Classes="tonal" HorizontalAlignment="Stretch"
+                                            MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                            Content="{DynamicResource BatchEdit.Title}" IsEnabled="{Binding CanBatchEdit}"
+                                            Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter><vm:EditorMoreAction>BatchEdit</vm:EditorMoreAction></Button.CommandParameter>
+                                    </Button>
                                     <ToggleButton x:Name="MergeNearbyPhrasesRow" MinHeight="56"
                                                   HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                                                   Padding="0" CornerRadius="0" Background="Transparent"

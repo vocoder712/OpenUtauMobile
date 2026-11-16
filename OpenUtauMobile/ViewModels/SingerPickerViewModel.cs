@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using System.Reactive;
-using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -15,7 +15,7 @@ namespace OpenUtauMobile.ViewModels;
 /// 点取消时返回 <c>null</c>。
 /// 可被 <see cref="SingerManagementViewModel"/> 或任意需要选歌手的场景复用。
 /// </summary>
-public class SingerPickerViewModel : PopupViewModelBase
+public class SingerPickerViewModel : PopupViewModelBase, IDisposable
 {
     [Reactive] public ObservableCollectionExtended<USinger> Singers { get; set; } = [];
     [Reactive] public bool IsLoading { get; set; } = true;
@@ -28,35 +28,28 @@ public class SingerPickerViewModel : PopupViewModelBase
 
     public SingerPickerViewModel()
     {
-        SelectSingerCommand = ReactiveCommand.Create<USinger>(singer => { RaiseClose(singer); });
+        SelectSingerCommand = ReactiveCommand.Create<USinger>(singer =>
+        {
+            if (SingerManager.Inst.Singers.TryGetValue(singer.Id, out USinger? current)) RaiseClose(current);
+        });
 
         CancelCommand = ReactiveCommand.Create(() => { RaiseClose(null); });
 
-        _ = LoadSingersAsync();
+        Services.SingerPlugins.SingerDiscoveryService.Instance.Changed += LoadSingers;
+        LoadSingers();
     }
 
-    private async Task LoadSingersAsync()
+    /// <summary>在 UI 线程读取已完成的目录，避免后台枚举可变字典。</summary>
+    private void LoadSingers()
     {
-        IsLoading = true;
-        List<USinger> list = await Task.Run(() =>
-        {
-            List<USinger> singers = [];
-            foreach (var group in SingerManager.Inst.SingerGroups.Values)
-            {
-                if (group == null) continue;
-                foreach (var singer in group)
-                {
-                    if (singer != null)
-                    {
-                        singers.Add(singer);
-                    }
-                }
-            }
-
-            return singers;
-        });
-        Singers.Load(list);
+        Singers.Load(SingerManager.Inst.SingerGroups.Values.SelectMany(group => group));
         IsLoading = false;
+    }
+
+    public void Dispose()
+    {
+        Services.SingerPlugins.SingerDiscoveryService.Instance.Changed -= LoadSingers;
+        SelectSingerCommand.Dispose(); CancelCommand.Dispose();
     }
 
     public override void RequestBack()

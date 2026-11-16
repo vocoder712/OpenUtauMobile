@@ -37,6 +37,8 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         InitLogging();
         ProbeOnnxRuntime();
         ServiceHub.InitAudioOutput = InitAudioOutput;
+        ServiceHub.AudioDevicePickerFactory = onRouteChanged => new IosAudioRoutePicker(onRouteChanged);
+        ServiceHub.GetSystemAudioOutputDevices = IosAudioOutput.GetCurrentRouteOutputDevices;
         ServiceHub.ExternalUrlLauncher = new IosExternalUrlLauncher();
         ServiceHub.SandboxFileTransferService = new OpenUtauMobile.Storage.StorageProviderSandboxTransferService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
@@ -90,16 +92,56 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         }
     }
 
+    /// <summary>按保存的偏好初始化音频后端，失败时按平台顺序回退。</summary>
     private static void InitAudioOutput()
+    {
+        string preferredBackend = OpenUtau.Core.Util.Preferences.Default.AudioBackend;
+        if (!string.IsNullOrEmpty(preferredBackend)
+            && !preferredBackend.Equals("Auto", StringComparison.OrdinalIgnoreCase))
+        {
+            if (TryInitAudioBackend(preferredBackend))
+            {
+                return;
+            }
+            Log.Warning("首选音频后端 {Backend} 初始化失败，尝试回退", preferredBackend);
+        }
+
+        string[] fallbackOrder = ["AVAudioEngine", "MiniAudio", "Dummy"];
+        foreach (string backend in fallbackOrder)
+        {
+            if (TryInitAudioBackend(backend))
+            {
+                return;
+            }
+        }
+    }
+
+    /// <summary>尝试创建指定的 iOS 音频后端。</summary>
+    private static bool TryInitAudioBackend(string backend)
     {
         try
         {
-            PlaybackManager.Inst.AudioOutput = new IosAudioOutput();
+            switch (backend)
+            {
+                case "AVAudioEngine":
+                    PlaybackManager.Inst.AudioOutput = new IosAudioOutput();
+                    return true;
+                case "Dummy":
+                    PlaybackManager.Inst.AudioOutput = new DummyAudioOutput();
+                    Log.Information("使用 Dummy 音频后端（静音）");
+                    return true;
+                case "MiniAudio":
+                    PlaybackManager.Inst.AudioOutput = new IosMiniAudioOutput();
+                    return true;
+                default:
+                    Log.Warning("iOS 不支持音频后端 {Backend}", backend);
+                    return false;
+            }
         }
         catch (Exception exception)
         {
-            Log.Error(exception, "AVAudioEngine 初始化失败，回退到 Dummy 音频后端");
-            PlaybackManager.Inst.AudioOutput = new DummyAudioOutput();
+            Log.Error(exception, "音频后端 {Backend} 初始化失败", backend);
+            return false;
         }
     }
 

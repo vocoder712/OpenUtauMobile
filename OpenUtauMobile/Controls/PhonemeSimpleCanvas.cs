@@ -17,7 +17,7 @@ using OpenUtauMobile.ViewModels;
 namespace OpenUtauMobile.Controls;
 
 /// <summary>
-/// 简易音素画布，SynthV 风格：独立的圆角音素卡片，卡片之间有清晰间距与显著的垂直边界手柄。
+/// 显示音素卡片与可拖动的边界手柄。
 /// 双击音素卡片直接唤起音素别名编辑弹窗。
 /// </summary>
 public class PhonemeSimpleCanvas : Control, ICmdSubscriber
@@ -257,7 +257,7 @@ public class PhonemeSimpleCanvas : Control, ICmdSubscriber
             IBrush currentTextBrush = hasError ? errorText : isSelected ? selectedTextBrush : textBrush;
             IPen borderPen = hasError ? isSelected ? selectedErrorBorder : errorBorder : chipBorderPen;
 
-            // 1. 绘制音素卡片（SynthV 风格独立圆角药丸框）
+            // 1. 绘制音素卡片
             Rect blockRect = new Rect(chipLeft, topMargin, chipWidth, blockHeight);
             context.DrawRectangle(fillBrush, borderPen, blockRect, 4, 4);
 

@@ -17,6 +17,7 @@ using OpenUtauMobile.Services.Graphics;
 using OpenUtauMobile.Browser.Services.Graphics;
 using OpenUtauMobile.Browser.Services.Platform;
 using OpenUtauMobile.Browser.Services;
+using OpenUtauMobile.Browser.Services.Audio;
 using Serilog;
 
 internal sealed partial class Program
@@ -31,6 +32,12 @@ internal sealed partial class Program
                     reactiveUIBuilder.WithExceptionHandler(Observer.Create<Exception>(HandleReactiveException));
                 });
             await BrowserExternalUrlLauncher.InitializeAsync();
+            await BrowserAudioInterop.InitializeAsync();
+            if (BrowserAudioInterop.CanSelectDevice)
+            {
+                ServiceHub.AudioDevicePickerFactory = onRouteChanged => new BrowserAudioDevicePicker(onRouteChanged);
+                ServiceHub.GetSystemAudioOutputDevices = BrowserAudioInterop.GetCurrentDevices;
+            }
             BrowserGraphicsBackendPreferenceStore graphicsStore = await BrowserGraphicsBackendPreferenceStore.CreateAsync();
             BrowserGraphicsBackendProvider graphicsProvider = new();
             GraphicsBackendService graphicsService = new(graphicsProvider, graphicsStore);
@@ -133,7 +140,7 @@ internal sealed partial class Program
             Log.Warning("Preferred backend {Backend} failed to initialize; falling back.", pref);
         }
 
-        string[] fallbackOrder = ["Dummy"];
+        string[] fallbackOrder = ["WebAudio", "Dummy"];
 
         foreach (string backend in fallbackOrder)
         {
@@ -152,6 +159,10 @@ internal sealed partial class Program
         {
             switch (backend)
             {
+                case "WebAudio":
+                    PlaybackManager.Inst.AudioOutput = new BrowserAudioOutput();
+                    Log.Information("Using Web Audio output.");
+                    return true;
                 case "Dummy":
                     PlaybackManager.Inst.AudioOutput = new DummyAudioOutput();
                     Log.Information("Using Dummy audio backend (silent).");
