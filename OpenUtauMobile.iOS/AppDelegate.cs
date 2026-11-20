@@ -50,7 +50,7 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         ServiceHub.GraphicsBackendService = graphicsService;
         return base.CustomizeAppBuilder(builder)
             .With(IosGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
-            .AfterApplicationSetup(static appBuilder =>
+            .AfterSetup(static appBuilder =>
             {
                 if (appBuilder.Instance?.TryGetFeature<IActivatableLifetime>() is { } lifetime)
                 {
