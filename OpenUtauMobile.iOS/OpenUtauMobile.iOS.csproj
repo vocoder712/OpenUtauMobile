@@ -9,10 +9,10 @@
 
     <!-- iOS 配置 -->
     <PropertyGroup>
-        <!-- 仅解释执行反射创建音素器的程序集，其余代码仍使用 Mono AOT。 -->
+        <!-- 统一使用不带 LLVM 的 Mono AOT，并保留反射所需的托管元数据。 -->
         <PublishAot>false</PublishAot>
         <MtouchUseLlvm>false</MtouchUseLlvm>
-        <MtouchInterpreter>OpenUtau.Plugin.Builtin,OpenUtau.Core</MtouchInterpreter>
+        <UseInterpreter>false</UseInterpreter>
         <TrimMode>partial</TrimMode>
         <EnableAssemblyILStripping>false</EnableAssemblyILStripping>
         <!-- 避免将全部泛型实例聚合到过大的 aot-instances.dll。 -->

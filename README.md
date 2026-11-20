@@ -50,7 +50,7 @@ is incomplete. **Unavailable** means the feature is not exposed or its required 
 | Feature | Windows | Android | Linux | macOS | iOS | Browser |
 | --- | --- | --- | --- | --- | --- | --- |
 | Shared project / piano-roll editor | Integrated | Integrated | Integrated | Integrated | Experimental | Experimental |
-| Built-in phonemizers | Integrated | Integrated | Integrated | Integrated | Experimental; Mono interpreter configured for reflection-created phonemizers, device validation pending | Experimental |
+| Built-in phonemizers | Integrated | Integrated | Integrated | Integrated | Experimental; reflection-based creation under Mono AOT needs device validation | Experimental |
 | Desktop workspace, persistent inspectors and tool manager | Integrated; local checks below | Uses mobile presentation | Integrated; host verification pending | Integrated; host verification pending | Uses mobile presentation | Uses mobile presentation |
 | Audio playback | Integrated | Integrated | Integrated | Integrated | Experimental (AVAudioEngine) | Unavailable (Dummy output) |
 | Built-in worldline / WORLDLINE-R synthesis | Integrated | Integrated; page-size limitation below | Integrated | Integrated | Integrated in the native build; on-device synthesis still needs validation | Unavailable |
