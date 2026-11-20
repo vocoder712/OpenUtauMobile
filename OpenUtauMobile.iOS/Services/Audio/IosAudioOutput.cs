@@ -24,6 +24,8 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
     private readonly AVAudioEngine engine;
     private readonly AVAudioSourceNode sourceNode;
     private readonly AVAudioFormat outputFormat;
+    private readonly NSObject interruptionObserver;
+    private readonly NSObject routeChangeObserver;
     private readonly NSObject configurationChangeObserver;
     private ISampleProvider? sampleProvider;
     private PlaybackState playbackState = PlaybackState.Stopped;
@@ -31,6 +33,8 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
     private float[] leftBuffer = Array.Empty<float>();
     private float[] rightBuffer = Array.Empty<float>();
     private long playedFrames;
+    private bool interruptionActive;
+    private bool resumeAfterInterruption;
     private bool disposed;
 
     public IosAudioOutput()
@@ -44,8 +48,18 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
         engine.AttachNode(sourceNode);
         engine.Connect(sourceNode, engine.MainMixerNode, outputFormat);
         engine.Prepare();
+        interruptionObserver = AVAudioSession.Notifications.ObserveInterruption((_, args) =>
+        {
+            var type = (AVAudioSessionInterruptionType)GetNotificationNumber(
+                args.Notification, "AVAudioSessionInterruptionTypeKey");
+            var options = (AVAudioSessionInterruptionOptions)GetNotificationNumber(
+                args.Notification, "AVAudioSessionInterruptionOptionKey");
+            Dispatcher.UIThread.Post(() => OnAudioInterruption(type, options));
+        });
+        routeChangeObserver = AVAudioSession.Notifications.ObserveRouteChange(
+            (_, _) => Dispatcher.UIThread.Post(TryRestartAfterOutputChange));
         configurationChangeObserver = AVAudioEngine.Notifications.ObserveConfigurationChange(engine, (_, _) =>
-            Dispatcher.UIThread.Post(RestartAfterConfigurationChange));
+            Dispatcher.UIThread.Post(TryRestartAfterOutputChange));
         Log.Information("AVAudioEngine 音频后端初始化成功");
     }
 
@@ -110,43 +124,72 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
             sampleProvider = preparedProvider;
             playedFrames = 0;
             playbackState = PlaybackState.Stopped;
+            resumeAfterInterruption = false;
         }
     }
 
     public void Play()
     {
         ThrowIfDisposed();
+        PlaybackState previousState;
+        bool retryingInterruption;
         lock (syncRoot)
         {
             if (sampleProvider == null || (playbackState == PlaybackState.Playing && engine.Running))
             {
                 return;
             }
+            previousState = playbackState;
+            retryingInterruption = interruptionActive;
             playbackState = PlaybackState.Playing;
         }
 
-        if (!engine.Running)
+        try
         {
-            bool started = engine.StartAndReturnError(out NSError? error);
-            if (!started)
+            StartEngine();
+            if (retryingInterruption)
             {
                 lock (syncRoot)
                 {
-                    playbackState = PlaybackState.Stopped;
+                    interruptionActive = false;
+                    resumeAfterInterruption = false;
                 }
-                throw new InvalidOperationException(error?.LocalizedDescription ?? "AVAudioEngine failed to start.");
             }
+        }
+        catch (Exception exception)
+        {
+            lock (syncRoot)
+            {
+                playbackState = retryingInterruption ? previousState : PlaybackState.Stopped;
+            }
+            if (retryingInterruption && exception is InvalidOperationException)
+            {
+                Log.Warning(exception, "iOS 音频会话暂时无法恢复，保留中断前的播放请求");
+                return;
+            }
+            throw;
         }
     }
 
     public void Pause()
     {
+        bool pauseEngine = false;
         lock (syncRoot)
         {
+            if (interruptionActive)
+            {
+                resumeAfterInterruption = false;
+                return;
+            }
             if (playbackState == PlaybackState.Playing)
             {
                 playbackState = PlaybackState.Paused;
+                pauseEngine = true;
             }
+        }
+        if (pauseEngine)
+        {
+            engine.Pause();
         }
     }
 
@@ -156,7 +199,9 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
         {
             playbackState = PlaybackState.Stopped;
             playedFrames = 0;
+            resumeAfterInterruption = false;
         }
+        engine.Pause();
     }
 
     /// <summary>仅接受当前路由；切换路由必须由用户操作系统选择器。</summary>
@@ -176,30 +221,14 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
             return;
         }
         disposed = true;
+        interruptionObserver.Dispose();
+        routeChangeObserver.Dispose();
         configurationChangeObserver.Dispose();
         engine.Stop();
         engine.DetachNode(sourceNode);
         sourceNode.Dispose();
         outputFormat.Dispose();
         engine.Dispose();
-    }
-
-    /// <summary>设备格式变化会停止引擎，仅在仍需播放时恢复输出。</summary>
-    private void RestartAfterConfigurationChange()
-    {
-        if (disposed || PlaybackState != PlaybackState.Playing)
-        {
-            return;
-        }
-        try
-        {
-            Play();
-        }
-        catch (Exception exception)
-        {
-            Stop();
-            Log.Error(exception, "切换音频路由后恢复 AVAudioEngine 失败");
-        }
     }
 
     private int RenderAudio(
@@ -282,6 +311,119 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
             throw new InvalidOperationException(
                 activeError?.LocalizedDescription ?? "AVAudioSession activation failed.");
         }
+    }
+
+    /// <summary>
+    /// 启动或恢复 AVAudioEngine，并在系统中断结束后重新激活音频会话。
+    /// </summary>
+    private void StartEngine()
+    {
+        if (engine.Running)
+        {
+            return;
+        }
+
+        ConfigureAudioSession();
+        bool started = engine.StartAndReturnError(out NSError? error);
+        if (!started)
+        {
+            throw new InvalidOperationException(error?.LocalizedDescription ?? "AVAudioEngine failed to start.");
+        }
+    }
+
+    /// <summary>
+    /// 在通话等系统中断期间暂停播放，并仅在系统允许时恢复。
+    /// </summary>
+    private void OnAudioInterruption(AVAudioSessionInterruptionType type, AVAudioSessionInterruptionOptions options)
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        if (type == AVAudioSessionInterruptionType.Began)
+        {
+            lock (syncRoot)
+            {
+                interruptionActive = true;
+                resumeAfterInterruption = playbackState == PlaybackState.Playing;
+                if (resumeAfterInterruption)
+                {
+                    playbackState = PlaybackState.Paused;
+                }
+            }
+            engine.Pause();
+            Log.Information("iOS 音频会话被中断，已暂停回放");
+            return;
+        }
+
+        if (type != AVAudioSessionInterruptionType.Ended)
+        {
+            return;
+        }
+
+        bool resume;
+        lock (syncRoot)
+        {
+            interruptionActive = false;
+            resume = resumeAfterInterruption && (options & AVAudioSessionInterruptionOptions.ShouldResume) != 0;
+            resumeAfterInterruption = false;
+        }
+
+        if (resume)
+        {
+            try
+            {
+                Play();
+            }
+            catch (Exception exception)
+            {
+                lock (syncRoot)
+                {
+                    playbackState = PlaybackState.Paused;
+                }
+                Log.Warning(exception, "iOS 音频中断结束后无法恢复回放");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 输出路由或引擎配置变化后，仅在仍需播放时重启已停止的引擎。
+    /// </summary>
+    private void TryRestartAfterOutputChange()
+    {
+        lock (syncRoot)
+        {
+            if (disposed || interruptionActive || playbackState != PlaybackState.Playing || engine.Running)
+            {
+                return;
+            }
+        }
+
+        try
+        {
+            StartEngine();
+        }
+        catch (Exception exception)
+        {
+            lock (syncRoot)
+            {
+                if (playbackState == PlaybackState.Playing)
+                {
+                    playbackState = PlaybackState.Paused;
+                }
+            }
+            Log.Warning(exception, "iOS 音频输出变化后无法恢复 AVAudioEngine");
+        }
+    }
+
+    /// <summary>
+    /// 从系统音频通知中读取数值字段。
+    /// </summary>
+    private static long GetNotificationNumber(NSNotification notification, string key)
+    {
+        using NSString nativeKey = new(key);
+        return (notification.UserInfo?.ObjectForKey(nativeKey) as NSNumber)?.Int64Value ?? 0;
     }
 
     private void ThrowIfDisposed()

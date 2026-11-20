@@ -46,7 +46,7 @@ namespace OpenUtau.Core {
                     runners.Add("DirectML");
                 }
                 return runners;
-            } else if (OS.IsMacOS()) {
+            } else if (OS.IsMacOS() || OS.IsIOS()) {
                 return new List<string> {
                 "CPU",
                 "CoreML"
@@ -232,7 +232,7 @@ namespace OpenUtau.Core {
                 return new InferenceSession(model);
             } else {
                 // Try with CoreML subgraphs enabled first, fallback to default if it fails
-                if (OS.IsMacOS() && Preferences.Default.OnnxRunner == "CoreML") {
+                if ((OS.IsMacOS() || OS.IsIOS()) && Preferences.Default.OnnxRunner == "CoreML") {
                     try {
                         using var subgraphOptions = getOnnxSessionOptions(coremlEnableOnSubgraphs: true);
                         return new InferenceSession(model, subgraphOptions);
@@ -259,7 +259,7 @@ namespace OpenUtau.Core {
                 return new InferenceSession(modelPath);
             } else {
                 // Try with CoreML subgraphs enabled first, fallback to default if it fails
-                if (OS.IsMacOS() && Preferences.Default.OnnxRunner == "CoreML") {
+                if ((OS.IsMacOS() || OS.IsIOS()) && Preferences.Default.OnnxRunner == "CoreML") {
                     try {
                         using var subgraphOptions = getOnnxSessionOptions(coremlEnableOnSubgraphs: true);
                         return new InferenceSession(modelPath, subgraphOptions);

@@ -104,6 +104,34 @@ jobs:
 
           ls -lh "$IPA_PATH"
 
+          python - "$IPA_PATH" <<'PY'
+          import plistlib
+          import sys
+          from pathlib import PurePosixPath
+          from zipfile import ZipFile
+
+          with ZipFile(sys.argv[1]) as ipa:
+              plist_path = next(name for name in ipa.namelist()
+                                if PurePosixPath(name).match("Payload/*.app/Info.plist"))
+              info = plistlib.loads(ipa.read(plist_path))
+
+          minimum = tuple(int(part) for part in info.get("MinimumOSVersion", "0").split("."))
+          if minimum[:2] < (15, 1):
+              raise SystemExit(f"MinimumOSVersion is {info.get('MinimumOSVersion')}, expected at least 15.1")
+
+          project_uti = "pers.vocoder712.openutaumobile.ustx"
+          document_types = info.get("CFBundleDocumentTypes", [])
+          if not any(project_uti in item.get("LSItemContentTypes", []) for item in document_types):
+              raise SystemExit(f"IPA does not register the USTX document type {project_uti}")
+
+          if "audio" not in info.get("UIBackgroundModes", []):
+              raise SystemExit("IPA does not declare the audio background mode")
+
+          print(f"Minimum OS: {info['MinimumOSVersion']}")
+          print("USTX document type: registered")
+          print("Background audio: enabled")
+          PY
+
       - name: Upload iOS Failure Diagnostics
         if: failure()
         uses: actions/upload-artifact@v4

@@ -1,10 +1,13 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Foundation;
 using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.iOS;
 using ReactiveUI.Avalonia;
 using Microsoft.ML.OnnxRuntime;
@@ -47,15 +50,83 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         ServiceHub.GraphicsBackendService = graphicsService;
         return base.CustomizeAppBuilder(builder)
             .With(IosGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
+            .AfterApplicationSetup(static appBuilder =>
+            {
+                if (appBuilder.Instance?.TryGetFeature<IActivatableLifetime>() is { } lifetime)
+                {
+                    lifetime.Activated += OnAppActivated;
+                }
+            })
             .UseReactiveUI(_ =>
             {
             });
     }
 
+    /// <summary>
+    /// 接收 UIScene 在冷启动或运行期间交付的 USTX 工程。
+    /// </summary>
+    private static async void OnAppActivated(object? sender, ActivatedEventArgs activation)
+    {
+        if (activation is not FileActivatedEventArgs files)
+        {
+            return;
+        }
+
+        foreach (IStorageItem item in files.Files)
+        {
+            using (item)
+            {
+                if (item is IStorageFile file &&
+                    string.Equals(Path.GetExtension(file.Name), ".ustx", StringComparison.OrdinalIgnoreCase))
+                {
+                    await OpenProjectDocumentAsync(file);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 在安全作用域仍有效时复制外部工程，并交给共享导航队列打开。
+    /// </summary>
+    private static async Task OpenProjectDocumentAsync(IStorageFile file)
+    {
+        string importDirectory = Path.Combine(PathManager.Inst.CachePath, "DocumentImports");
+        string destinationPath = Path.Combine(importDirectory, $"{Guid.NewGuid():N}.ustx");
+        try
+        {
+            Directory.CreateDirectory(importDirectory);
+            await using (Stream source = await file.OpenReadAsync())
+            await using (FileStream destination = File.Create(destinationPath))
+            {
+                await source.CopyToAsync(destination);
+            }
+            ExternalProjectOpenService.Enqueue(new ExternalProjectOpenRequest(destinationPath, DeleteSourceAfterRead: true));
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "无法从 iOS 文件提供程序导入 USTX 工程");
+            try
+            {
+                if (File.Exists(destinationPath))
+                {
+                    File.Delete(destinationPath);
+                }
+            }
+            catch (Exception cleanupException) when (cleanupException is IOException or UnauthorizedAccessException)
+            {
+                Log.Warning(cleanupException, "无法清理 iOS 导入缓存 {Path}", destinationPath);
+            }
+            ExternalProjectOpenService.ReportFailure(new IOException(L.S("Ios.Document.ImportFailed"), exception));
+        }
+    }
+
     private static void InitPathManager()
     {
         string dataPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        string cachePath = Path.Combine(dataPath, "Cache");
+        string cachePath = NSFileManager.DefaultManager
+            .GetUrls(NSSearchPathDirectory.CachesDirectory, NSSearchPathDomain.User)
+            .FirstOrDefault()?.Path
+            ?? throw new InvalidOperationException("无法获取 iOS 缓存目录。");
         PathManagerInitialization.Initialize(
             rootPath: dataPath,
             dataPath: dataPath,

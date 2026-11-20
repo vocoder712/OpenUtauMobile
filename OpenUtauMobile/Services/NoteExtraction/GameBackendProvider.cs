@@ -18,7 +18,9 @@ internal sealed record GameDependency(string PackageId, string? Path, GameConfig
 
 internal static class GameBackendProvider
 {
-    public static bool IsSupported => !OperatingSystem.IsBrowser() && !OperatingSystem.IsIOS();
+    /// <summary>按平台与运行库检查 GAME 后端是否可用。</summary>
+    public static bool IsSupported(NoteExtractionBackend choice) =>
+        !OperatingSystem.IsBrowser() && (choice == NoteExtractionBackend.Onnx || !OperatingSystem.IsIOS());
 
     // 弹窗只读取模型文件与配置，不在 UI 线程创建推理会话。
     public static GameDependency Inspect(NoteExtractionBackend choice)
@@ -55,7 +57,7 @@ internal static class GameBackendProvider
 
     public static IGameBackend Create(NoteExtractionBackend choice)
     {
-        if (!IsSupported) throw new PlatformNotSupportedException(L.S("NoteExtraction.Unsupported"));
+        if (!IsSupported(choice)) throw new PlatformNotSupportedException(L.S("NoteExtraction.Unsupported"));
         GameDependency dependency = Inspect(choice);
         if (!dependency.IsInstalled)
         {
