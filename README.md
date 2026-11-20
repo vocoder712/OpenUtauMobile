@@ -151,10 +151,9 @@ Windows directories were also tested. Android APK checks confirm the expected GA
 These checks do **not** establish Android device inference, debugger attachment, GPU performance, or successful
 execution of all GitHub-hosted jobs. Check the actual workflow runs for CI results.
 
-The iOS build workflow publishes an unsigned ARM64 IPA and verifies the package minimum OS, USTX document
-type, background-audio declaration, and statically linked WORLDLINE archive. It does not boot an iOS simulator;
-runtime behavior such as document import, audio routes, synthesis, and ONNX/CoreML inference must be checked
-on an iPhone.
+The iOS build workflow publishes an unsigned ARM64 IPA and checks the minimum iOS version, USTX document
+registration, and background-audio declaration in its `Info.plist`. Document import, audio routes, synthesis,
+and ONNX/CoreML inference require device validation.
 
 The new Android GAME libraries use 16 KB alignment. Existing dependencies can still emit `XA0141`:
 `libworldline.so` in the ARM64 build and `libSDL3.so` in the x64 build were observed with this warning.

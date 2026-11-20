@@ -274,34 +274,26 @@ public class MainViewModel : ViewModelBase
         try
         {
             NavigateViewModelBase source = CurrentViewModel;
-            if (source is SandboxFileManagerViewModel sandbox &&
-                (!await sandbox.ConfirmLeaveAsync() || CurrentViewModel != source)) return;
             if (ServiceHub.UseDesktopFileWorkflows)
             {
+                if (source is SandboxFileManagerViewModel sandbox &&
+                    (!await sandbox.ConfirmLeaveAsync() || CurrentViewModel != source)) return;
                 ProjectOpenKind kind = request.DeleteSourceAfterRead || !Path.GetExtension(request.LocalPath).Equals(".ustx", StringComparison.OrdinalIgnoreCase)
                     ? ProjectOpenKind.ExternalCopy : ProjectOpenKind.Normal;
                 sourceTransferred = await OpenDesktopProjectAsync(new(request.LocalPath, kind, request.DeleteSourceAfterRead));
                 return;
             }
-            if (CurrentViewModel is EditorViewModel currentEditor)
-            {
-                bool canExit = await currentEditor.ConfirmExitAsync();
-                if (!canExit || CurrentViewModel != currentEditor)
-                {
-                    return;
-                }
+            ProjectOpenOptions options = new(request.LocalPath, ProjectOpenKind.ExternalCopy, request.DeleteSourceAfterRead);
+            EditorViewModel.PreparedProject prepared = await EditorViewModel.PrepareProjectAsync(options);
+            if (CurrentViewModel != source || !await ConfirmCloseAsync() || CurrentViewModel != source) return;
 
-                // 替换编辑器时不激活栈中页面，避免它在下一帧启动后台工作。
-                if (!TryRemoveCurrentViewModel(currentEditor, notifyRevealedViewModel: false))
-                {
-                    return;
-                }
+            // 连同覆盖在编辑器上的工具页一起移除，避免两个编辑器共用同一工程。
+            while (ActiveEditor != null || CurrentViewModel is ISingerInstallationPage)
+            {
+                if (!TryRemoveCurrentViewModel(CurrentViewModel, notifyRevealedViewModel: false)) return;
             }
 
-            EditorViewModel editor = new(this, new ProjectOpenOptions(
-                request.LocalPath,
-                ProjectOpenKind.ExternalCopy,
-                request.DeleteSourceAfterRead));
+            EditorViewModel editor = new(this, options, prepared);
             OnNavigate(editor);
             sourceTransferred = true;
             await editor.ProjectLoadCompletion;
@@ -356,18 +348,19 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 确认桌面窗口是否可以关闭。
+    /// 确认当前页面和工程是否可以关闭或被替换。
     /// </summary>
     /// <returns>当前工程允许退出时返回 true。</returns>
     public async Task<bool> ConfirmCloseAsync()
     {
-        if (CurrentViewModel is ISingerInstallationPage setup)
+        NavigateViewModelBase source = CurrentViewModel;
+        if (source is ISingerInstallationPage setup)
         {
             if (!setup.TryLeave()) return false;
             await setup.CloseSessionAsync();
+            if (CurrentViewModel != source) return false;
         }
         if (HasActiveSingerInstallation) return false;
-        NavigateViewModelBase source = CurrentViewModel;
         if (source is SandboxFileManagerViewModel sandbox &&
             (!await sandbox.ConfirmLeaveAsync() || CurrentViewModel != source)) return false;
         if (ActiveEditor is EditorViewModel editorViewModel)

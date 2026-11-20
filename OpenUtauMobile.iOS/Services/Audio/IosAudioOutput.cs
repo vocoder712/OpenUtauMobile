@@ -131,25 +131,41 @@ internal sealed class IosAudioOutput : IAudioOutput, IDisposable
     public void Play()
     {
         ThrowIfDisposed();
+        PlaybackState previousState;
+        bool retryingInterruption;
         lock (syncRoot)
         {
-            if (sampleProvider == null || interruptionActive ||
-                (playbackState == PlaybackState.Playing && engine.Running))
+            if (sampleProvider == null || (playbackState == PlaybackState.Playing && engine.Running))
             {
                 return;
             }
+            previousState = playbackState;
+            retryingInterruption = interruptionActive;
             playbackState = PlaybackState.Playing;
         }
 
         try
         {
             StartEngine();
+            if (retryingInterruption)
+            {
+                lock (syncRoot)
+                {
+                    interruptionActive = false;
+                    resumeAfterInterruption = false;
+                }
+            }
         }
-        catch
+        catch (Exception exception)
         {
             lock (syncRoot)
             {
-                playbackState = PlaybackState.Stopped;
+                playbackState = retryingInterruption ? previousState : PlaybackState.Stopped;
+            }
+            if (retryingInterruption && exception is InvalidOperationException)
+            {
+                Log.Warning(exception, "iOS 音频会话暂时无法恢复，保留中断前的播放请求");
+                return;
             }
             throw;
         }
