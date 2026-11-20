@@ -33,8 +33,15 @@
                     <TextBlock Grid.Column="1"
                                Classes="TopBarTitle"
                                Text="{DynamicResource SingerManagement.Title}" />
+                    <!-- 手动重新扫描歌手目录，与返回页面时使用相同刷新入口。 -->
+                    <Button Grid.Column="2" Classes="TopBarBtn" Command="{Binding RefreshCommand}"
+                            ToolTip.Tip="{DynamicResource Common.Refresh}"
+                            Content="{iconPacks:PhosphorIcons ArrowsClockwise}" />
                 </Grid>
             </Border>
+
+            <!-- 扫描期间在顶栏下方显示统一的页面加载进度。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading" IsVisible="{Binding IsRefreshing}" />
 
             <!-- 歌手列表 -->
             <c:SingerList
@@ -43,15 +50,9 @@
                           SelectSingerCommand="{Binding OpenSingerCommand}" />
         </DockPanel>
 
-        <!-- FAB 半透明悬浮按钮 -->
-        <Button Classes="FAB"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Margin="0,0,24,28"
-                Command="{Binding AddSingerCommand}"
-                ToolTip.Tip="{DynamicResource SingerManagement.Install}"
-                Content="{iconPacks:PhosphorIcons Plus}">
-        </Button>
+        <!-- 安装器先于文件选择；超出菜单容量时转入现有列表选择器。 -->
+        <c:FabMenu x:Name="InstallerMenu" Actions="{Binding InstallerActions}"
+                   IsExpanded="{Binding IsMenuExpanded}" OpenLabel="{DynamicResource SingerManagement.Install}" />
 
     </Panel>
 </UserControl>

@@ -20,6 +20,8 @@ public class ErrorDialogViewModel : PopupViewModelBase
     public string Title { get; } = L.S("ErrorDialog.Title");
     public string Message { get; }
     public string Detail { get; }
+    /// <summary>详情展示和复制共用的完整报告，保留所有内部异常与堆栈。</summary>
+    public string ReportText { get; }
     public bool HasDetail => !string.IsNullOrWhiteSpace(Detail);
     public bool HasMissingPackage { get; }
 
@@ -45,14 +47,14 @@ public class ErrorDialogViewModel : PopupViewModelBase
             Message = HasMissingPackage
                 ? string.Format(L.S("ErrorDialog.MissingPackage"), string.Join(", ", packages))
                 : string.IsNullOrWhiteSpace(mce.Message) ? mce.SubstanceException.Message : mce.Message;
-            Detail = mce.SubstanceException.ToString();
+            Detail = mce.ShowStackTrace ? mce.SubstanceException.ToString() : string.Empty;
         }
         else if (notification.e != null)
         {
             Message = string.IsNullOrWhiteSpace(notification.message)
-                ? notification.e.Message
+                ? error!.Message
                 : notification.message;
-            Detail = notification.e.ToString();
+            Detail = error!.ToString();
         }
         else
         {
@@ -61,6 +63,16 @@ public class ErrorDialogViewModel : PopupViewModelBase
                 : notification.message;
             Detail = string.Empty;
         }
+
+        StringBuilder report = new();
+        report.AppendLine(Title);
+        report.AppendLine(Message);
+        if (HasDetail)
+        {
+            report.AppendLine();
+            report.Append(Detail);
+        }
+        ReportText = report.ToString();
 
         CloseCommand = ReactiveCommand.Create(RequestBack);
         CopyCommand = ReactiveCommand.CreateFromTask(CopyErrorAsync);
@@ -72,18 +84,10 @@ public class ErrorDialogViewModel : PopupViewModelBase
         });
     }
 
+    /// <summary>复制与展开详情完全相同的报告，不另行拼接或截断。</summary>
     private async Task CopyErrorAsync()
     {
-        StringBuilder text = new();
-        text.AppendLine(Title);
-        text.AppendLine(Message);
-        if (HasDetail)
-        {
-            text.AppendLine();
-            text.Append(Detail);
-        }
-
-        bool copied = await ServiceHub.ClipboardService.SetTextAsync(text.ToString());
+        bool copied = await ServiceHub.ClipboardService.SetTextAsync(ReportText);
         ToastService.Enqueue(L.S(copied
             ? "ErrorDialog.CopySucceeded"
             : "ErrorDialog.CopyFailed"));

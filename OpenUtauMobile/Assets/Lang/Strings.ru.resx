@@ -178,6 +178,21 @@
   <data name="Settings.Edit.SoundFontPath.NotLoaded" xml:space="preserve">
     <value>⚠ Не загружено - выберите корректный файл SF2</value>
   </data>
+  <data name="Settings.Edit.VerticalScrollBehavior" xml:space="preserve">
+    <value>Вертикальная прокрутка при воспроизведении</value>
+  </data>
+  <data name="Settings.Edit.VerticalScrollBehavior.Desc" xml:space="preserve">
+    <value>Следовать за текущей нотой. При выходе за границы нота плавно перемещается на 10% внутрь от соответствующего края; в режиме центра — в середину видимой области.</value>
+  </data>
+  <data name="Settings.VerticalScroll.Disabled" xml:space="preserve">
+    <value>Выключено</value>
+  </data>
+  <data name="Settings.VerticalScroll.Boundary" xml:space="preserve">
+    <value>Прокрутка у границ</value>
+  </data>
+  <data name="Settings.VerticalScroll.Center" xml:space="preserve">
+    <value>Удерживать в центре</value>
+  </data>
   <data name="Settings.Edit.AutoScrollBehavior" xml:space="preserve">
     <value>Поведение автопрокрутки</value>
   </data>
@@ -554,9 +569,6 @@
   <data name="SingerDetail.DangerZone" xml:space="preserve">
     <value>Опасная зона</value>
   </data>
-  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
-    <value>Удаление этого банка навсегда удалит все связанные файлы. Это действие нельзя отменить.</value>
-  </data>
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>Удалить банк</value>
   </data>
@@ -706,6 +718,12 @@
   </data>
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>Переключиться на ластик</value>
+  </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>Буфер обмена нот очищен</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>Создать ноту</value>
   </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>Добавить контрольную точку на позиции курсора</value>
@@ -1305,7 +1323,7 @@
     <value>Не удалось выполнить установку: {0}</value>
   </data>
   <data name="SingerSetup.StepFormat" xml:space="preserve">
-    <value>Шаг {0} / 4</value>
+    <value>Шаг {0} / {1}</value>
   </data>
   <data name="Splash.DocManager" xml:space="preserve">
     <value>Инициализация менеджера документов</value>
@@ -2143,6 +2161,18 @@
   <data name="PluginManager.SelectFile" xml:space="preserve">
     <value>Выберите DLL-плагин</value>
   </data>
+  <data name="PluginManager.TrustTitle" xml:space="preserve">
+    <value>Доверие плагину</value>
+  </data>
+  <data name="PluginManager.TrustQuestion" xml:space="preserve">
+    <value>Вы доверяете плагину «{0}»?</value>
+  </data>
+  <data name="PluginManager.TrustMessage" xml:space="preserve">
+    <value>Плагины имеют те же разрешения, что и приложение. Вредоносные плагины могут читать или раскрывать личную информацию, изменять или удалять файлы либо выполнять другие вредоносные действия.&#10;&#10;Разработчики OpenUtau Mobile не несут ответственности за поведение плагинов. Устанавливайте плагины только из надёжных источников.</value>
+  </data>
+  <data name="PluginManager.Continue" xml:space="preserve">
+    <value>Продолжить</value>
+  </data>
   <data name="PluginManager.Checking" xml:space="preserve">
     <value>Проверка управляемой сборки…</value>
   </data>
@@ -2276,6 +2306,9 @@
   <data name="Desktop.NavigationHint" xml:space="preserve"><value>Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
   <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>Перетаскивание: стереть питч · Средняя кнопка: прокрутка · Ctrl/Cmd + колесо: масштаб</value></data>
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Нот для обновления: {0}</value></data>
+  <data name="Editor.Clipboard.Cleared" xml:space="preserve">
+    <value>Буфер обмена фрагментов очищен</value>
+  </data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>Скопировано частей: {0}</value>
   </data>
@@ -2531,4 +2564,115 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>Повтор</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>Запись</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Запись</value></data>
+  <data name="SingerSetup.Review" xml:space="preserve"><value>Проверить установку</value></data>
+  <data name="SingerSetup.SelectInstaller" xml:space="preserve"><value>Выбрать установщик</value></data>
+  <data name="SingerSetup.SearchInstaller" xml:space="preserve"><value>Поиск установщиков</value></data>
+  <data name="SingerSetup.MoreInstallers" xml:space="preserve"><value>Другие установщики</value></data>
+  <data name="SingerSetup.RequiredField" xml:space="preserve"><value>Обязательно</value></data>
+  <data name="SingerSetup.InvalidValue" xml:space="preserve"><value>Недопустимое значение</value></data>
+  <data name="SingerSetup.PartialFailure" xml:space="preserve"><value>Установлено с ошибками</value></data>
+  <data name="SingerSetup.WrongInstaller" xml:space="preserve"><value>Установщик не поддерживает этот пакет.</value></data>
+  <data name="Common.Browse" xml:space="preserve"><value>Обзор</value></data>
+  <data name="SingerAvailability.Unsupported" xml:space="preserve"><value>Не поддерживается</value></data>
+  <data name="SingerAvailability.Invalid" xml:space="preserve"><value>Повреждено</value></data>
+  <data name="SingerAvailability.MissingResources" xml:space="preserve"><value>Нет ресурсов</value></data>
+  <data name="SingerAvailability.Unavailable" xml:space="preserve"><value>Недоступно</value></data>
+  <data name="SingerSetup.TypeConflict" xml:space="preserve"><value>Выбран {0}, но в character.yaml указан {1}. Вернитесь и выберите соответствующий установщик.</value></data>
+  <data name="SingerSetup.Cancelled" xml:space="preserve"><value>Отменено</value></data>
+  <data name="SingerSetup.RollingBack" xml:space="preserve"><value>Отмена и восстановление…</value></data>
+  <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>Не удалось восстановить файлы</value></data>
+  <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>Идёт установка. Сначала отмените её.</value></data>
+  <data name="SingerSetup.TargetExists" xml:space="preserve"><value>Путь назначения уже существует.</value></data>
+  <data name="SingerSetup.PackageName" xml:space="preserve"><value>Имя певца</value></data>
+  <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>Версия голосового банка</value></data>
+  <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>Чтение метаданных…</value></data>
+  <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>Не удалось прочитать метаданные</value></data>
+  <data name="SingerDiscovery.MissingReference" xml:space="preserve"><value>Певец не найден. Проверьте плагины и папки певцов.</value></data>
+  <data name="SingerAvailability.Ready" xml:space="preserve"><value>Готов</value></data>
+  <data name="PluginWebSettings.Title" xml:space="preserve"><value>Настройки плагина</value></data>
+  <data name="PluginWebSettings.OpenBrowser" xml:space="preserve"><value>Открыть в системном браузере</value></data>
+  <data name="PluginWebSettings.Unavailable" xml:space="preserve"><value>Веб-настройки сейчас недоступны.</value></data>
+  <data name="PluginWebSettings.InvalidAddress" xml:space="preserve"><value>Плагин вернул недопустимый веб-адрес.</value></data>
+  <data name="PluginWebSettings.OpenFailed" xml:space="preserve"><value>Не удалось открыть настройки плагина.</value></data>
+  <data name="PluginWebSettings.BrowserFailed" xml:space="preserve"><value>Не удалось открыть системный браузер.</value></data>
+  <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>Системный WebView не смог загрузить страницу. Откройте её в браузере кнопкой справа вверху.</value></data>
+  <data name="ProjectSave.Capturing" xml:space="preserve"><value>Создание снимка проекта…</value></data>
+  <data name="ProjectSave.Waiting" xml:space="preserve"><value>Ожидание текущего сохранения…</value></data>
+  <data name="ProjectSave.Preparing" xml:space="preserve"><value>Подготовка данных проекта…</value></data>
+  <data name="ProjectSave.Serializing" xml:space="preserve"><value>Сериализация проекта…</value></data>
+  <data name="ProjectSave.Writing" xml:space="preserve"><value>Запись файла проекта…</value></data>
+  <data name="ProjectSave.Replacing" xml:space="preserve"><value>Замена файла проекта…</value></data>
+  <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>Синхронизация хранилища…</value></data>
+  <data name="ProjectSave.Confirming" xml:space="preserve"><value>Подтверждение сохранённой версии…</value></data>
+    <data name="TrackPreparation.Singer" xml:space="preserve"><value>Загрузка ресурсов певца…</value></data>
+    <data name="TrackPreparation.Phonemizer" xml:space="preserve"><value>Подготовка фонемайзера…</value></data>
+    <data name="TrackPreparation.Applying" xml:space="preserve"><value>Применение настроек дорожки…</value></data>
+    <data name="TrackPreparation.Mapping" xml:space="preserve"><value>Подготовка сопоставления тембров…</value></data>
+    <data name="Editor.Phonemizing" xml:space="preserve"><value>Фонемизация: осталось {0} из {1} партий · {2} с</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>Показывать ноты других дорожек</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>Показывать на фоне пианоролла ноты других дорожек, пересекающихся с текущим фрагментом.</value>
+  </data>
+  <data name="Common.More" xml:space="preserve">
+    <value>Другие действия</value>
+  </data>
+  <data name="PluginDetails.Title" xml:space="preserve"><value>Сведения о плагине</value></data>
+  <data name="PluginDetails.BasicInfo" xml:space="preserve"><value>Основная информация</value></data>
+  <data name="PluginDetails.EnablePlugin" xml:space="preserve"><value>Включить плагин</value></data>
+  <data name="PluginDetails.Enabled" xml:space="preserve"><value>Включён</value></data>
+  <data name="PluginDetails.Disabled" xml:space="preserve"><value>Отключён</value></data>
+  <data name="PluginDetails.RestartDescription" xml:space="preserve"><value>Изменения вступят в силу после перезапуска приложения.</value></data>
+  <data name="PluginDetails.RestartRequired" xml:space="preserve"><value>Перезапустите приложение для применения состояния.</value></data>
+  <data name="PluginDetails.Loaded" xml:space="preserve"><value>Загружен</value></data>
+  <data name="PluginDetails.NotLoaded" xml:space="preserve"><value>Не загружен. Перезапустите приложение; если это не помогло, проверьте ошибку загрузки.</value></data>
+  <data name="PluginDetails.Capabilities" xml:space="preserve"><value>Возможности</value></data>
+  <data name="PluginDetails.CapabilitiesDescription" xml:space="preserve"><value>Показана последняя успешная регистрация. Динамические настройки проверяются при открытии страницы.</value></data>
+  <data name="PluginDetails.ConfigurationData" xml:space="preserve"><value>Настройки и данные</value></data>
+  <data name="PluginDetails.SettingsUnavailable" xml:space="preserve"><value>Настройки доступны у загруженного и включённого плагина с поддержкой настройки.</value></data>
+  <data name="PluginDetails.DataDirectory" xml:space="preserve"><value>Каталог данных · копировать путь</value></data>
+  <data name="PluginDetails.DataUnavailable" xml:space="preserve"><value>Доступен после успешной регистрации ID плагина.</value></data>
+  <data name="PluginDetails.ClearData" xml:space="preserve"><value>Очистить данные плагина</value></data>
+  <data name="PluginDetails.CancelDataClear" xml:space="preserve"><value>Отменить очистку данных</value></data>
+  <data name="PluginDetails.ClearDataDescription" xml:space="preserve"><value>После перезапуска удалит настройки и другие файлы в этом каталоге.</value></data>
+  <data name="PluginDetails.DataClearPending" xml:space="preserve"><value>Данные будут очищены до загрузки плагинов при следующем запуске. Нажмите для отмены.</value></data>
+  <data name="PluginDetails.ClearDataQuestion" xml:space="preserve"><value>Очистить все данные «{0}» при следующем запуске? Настройки также будут удалены. После очистки отмена невозможна.</value></data>
+  <data name="PluginDetails.UninstallQuestion" xml:space="preserve"><value>Удалить «{0}» при следующем запуске? Данные сохранятся; для их удаления используйте очистку данных.</value></data>
+  <data name="PluginDetails.UninstallDescription" xml:space="preserve"><value>Удалит файл плагина после перезапуска, сохранив данные.</value></data>
+  <data name="PluginDetails.PathCopied" xml:space="preserve"><value>Путь к каталогу данных скопирован.</value></data>
+  <data name="PluginDetails.OperationFailed" xml:space="preserve"><value>Ошибка операции с плагином: {0}</value></data>
+  <data name="PluginDetails.DataClearFailed" xml:space="preserve"><value>Не удалось очистить часть данных плагинов. Проверьте журнал и повторите действие в сведениях о плагине.</value></data>
+  <data name="PluginDetails.SignatureDescription" xml:space="preserve"><value>Флаги подписи и открытые ключи — лишь метаданные; личность издателя и действительность подписи не проверены.</value></data>
+  <data name="PluginDetails.SignaturePresent" xml:space="preserve"><value>Присутствует · не проверена</value></data>
+  <data name="PluginDetails.Unsigned" xml:space="preserve"><value>Нет</value></data>
+  <data name="PluginDetails.Assembly" xml:space="preserve"><value>Сборка</value></data>
+  <data name="PluginDetails.Version" xml:space="preserve"><value>Версия сборки</value></data>
+  <data name="PluginDetails.File" xml:space="preserve"><value>Файл плагина</value></data>
+  <data name="PluginDetails.Size" xml:space="preserve"><value>Размер файла</value></data>
+  <data name="PluginDetails.Architecture" xml:space="preserve"><value>Архитектура</value></data>
+  <data name="PluginDetails.Module" xml:space="preserve"><value>ID модуля</value></data>
+  <data name="PluginDetails.Name" xml:space="preserve"><value>Название</value></data>
+  <data name="PluginDetails.Description" xml:space="preserve"><value>Описание</value></data>
+  <data name="PluginDetails.Author" xml:space="preserve"><value>Компания / автор</value></data>
+  <data name="PluginDetails.Product" xml:space="preserve"><value>Продукт</value></data>
+  <data name="PluginDetails.Copyright" xml:space="preserve"><value>Авторские права</value></data>
+  <data name="PluginDetails.ProductVersion" xml:space="preserve"><value>Версия продукта</value></data>
+  <data name="PluginDetails.FileVersion" xml:space="preserve"><value>Версия файла</value></data>
+  <data name="PluginDetails.Framework" xml:space="preserve"><value>Целевая платформа</value></data>
+  <data name="PluginDetails.PublicKeyToken" xml:space="preserve"><value>Токен открытого ключа</value></data>
+  <data name="PluginDetails.PublicKey" xml:space="preserve"><value>Открытый ключ</value></data>
+  <data name="PluginDetails.StrongName" xml:space="preserve"><value>Флаг подписи строгого имени</value></data>
+  <data name="PluginDetails.Authenticode" xml:space="preserve"><value>Таблица сертификатов Authenticode</value></data>
+  <data name="PluginDetails.References" xml:space="preserve"><value>Ссылки на сборки</value></data>
+  <data name="PluginDetails.Hash" xml:space="preserve"><value>SHA-256</value></data>
+  <data name="PluginDetails.Id" xml:space="preserve"><value>ID плагина</value></data>
+  <data name="PluginDetails.SingerType" xml:space="preserve"><value>Тип исполнителя</value></data>
+  <data name="PluginDetails.Renderer" xml:space="preserve"><value>Рендерер</value></data>
+  <data name="PluginDetails.Provider" xml:space="preserve"><value>Провайдер обнаружения</value></data>
+  <data name="PluginDetails.Installer" xml:space="preserve"><value>Установщик</value></data>
+  <data name="PluginDetails.EntryPoint" xml:space="preserve"><value>Точка входа плагина</value></data>
+  <data name="PluginDetails.ContractVersion" xml:space="preserve"><value>Версия контракта</value></data>
+  <data name="PluginDetails.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
+  <data name="PluginDetails.BatchEdit" xml:space="preserve"><value>Инструмент пакетного редактирования</value></data>
 </root>

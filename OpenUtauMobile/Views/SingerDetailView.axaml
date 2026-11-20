@@ -149,18 +149,14 @@
                         <shared:SingerDetailInfo />
 
                         <!-- 鈹€鈹€ Danger Zone 鈹€鈹€ -->
-                        <Border Classes="InfoCard" Margin="0,12,0,0">
+                        <Border Classes="InfoCard" Margin="0,12,0,0" IsVisible="{Binding CanDelete}">
                             <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
                                 <TextBlock Text="{DynamicResource SingerDetail.DangerZone}"
                                            FontSize="{x:Static semantic:TypographyTokens.BodyMSize}"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource Sem.Color.Error}" />
-                                <TextBlock Text="{DynamicResource SingerDetail.DeleteWarning}"
-                                           FontSize="{x:Static semantic:TypographyTokens.BodySSize}"
-                                           Opacity="0.7"
-                                           TextWrapping="Wrap" />
                                 <Button Classes="destructive" HorizontalAlignment="Stretch"
-                                        Command="{Binding DeleteCommand}">
+                                        Command="{Binding DeleteCommand}" IsVisible="{Binding CanDelete}">
                                     <StackPanel Orientation="Horizontal" Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
                                         <Path Width="{x:Static semantic:IconTokens.Small}" Height="{x:Static semantic:IconTokens.Small}"
                                               Stretch="Uniform"

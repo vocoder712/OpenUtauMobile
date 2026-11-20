@@ -217,19 +217,27 @@ namespace OpenUtau.Core.Render {
         /// </summary>
         public readonly PhraseLayout Layout;
 
+        /// <summary>可选分组扩展的只读上下文；宿主不解释具体渲染器的数据。</summary>
+        public IRenderPhraseContext? RendererContext { get; }
+
         private List<string> cacheFiles = new List<string>();
 
         /// <summary>
         /// The heavy phrase build over an immutable snapshot; pure over the
         /// snapshot, safe off the UI thread.
         /// </summary>
-        internal RenderPhrase(Pipeline.PhraseSource source, Pipeline.PhonemeSource[] phonemes, int phraseStart, int phraseEnd) {
+        internal RenderPhrase(Pipeline.PhraseSource source, Pipeline.PhonemeSource[] phonemes, int phraseStart, int phraseEnd,
+                RenderPhraseGroup? group = null) {
+            // 表情图仍以 phraseStart 定位独占归属，音素及音高输入可以包含相邻乐句共享的上下文。
+            RendererContext = group?.Context;
+            int contextStart = group?.ContextStart ?? phraseStart;
+            int contextEnd = group?.ContextEnd ?? phraseEnd;
             var phrasePhonemes = phonemes
-                .Skip(phraseStart)
-                .Take(phraseEnd - phraseStart)
+                .Skip(contextStart)
+                .Take(contextEnd - contextStart)
                 .ToList();
             var notesOf = source.Notes;
-            var uNotes = source.PhraseNotes(phraseStart, phraseEnd);
+            var uNotes = source.PhraseNotes(contextStart, contextEnd);
             if (notesOf[uNotes.First()].Prev != -1
                 && notesOf[notesOf[uNotes.First()].Prev].End == notesOf[uNotes.First()].Position) {
                 uNotes.Insert(0, notesOf[uNotes.First()].Prev);
@@ -581,6 +589,11 @@ namespace OpenUtau.Core.Render {
                     writer.Write(renderer?.ToString() ?? "");
                     writer.Write(wavtool ?? "");
                     writer.Write(timeAxis.Timestamp);
+                    // 自定义分组的淡化、补白等额外输入也必须参与缓存；默认路径保持原哈希格式。
+                    if (RendererContext != null)
+                    {
+                        writer.Write(RendererContext.CacheKey);
+                    }
                     // R1.1 用乐句哈希作为噪声种子，输入须与桌面一致。
                     if (renderer?.ToString() != Renderers.WORLDLINE_R11)
                     {

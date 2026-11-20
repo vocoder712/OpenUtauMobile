@@ -33,6 +33,8 @@ namespace OpenUtauMobile.DesktopUI.Views
     {
         private readonly EditorViewModel _editor;
         private readonly EditorInputController _input;
+        private NoteSelectionToolbarBinding? _noteToolbarBinding;
+        private PartSelectionToolbarBinding? _partToolbarBinding;
         private readonly DesktopInspector _inspector;
         private readonly DesktopWorkspaceLayoutController _layoutController;
         private readonly DesktopInlineEditor _inline;
@@ -77,8 +79,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             DesktopResizeGrip parameterGrip = new();
             Piano.SetDesktopChrome(parameterGrip);
             parameterGrip.AddHandler(PointerReleasedEvent, (_, _) => SavePanels(), RoutingStrategies.Bubble, true);
-            UPart? contextPart = null;
-            Arrangement.PartsCanvas.ContextMenu = CreateContextMenu(false, () => contextPart);
+            Arrangement.PartsCanvas.ContextMenu = CreateContextMenu(false);
             TrackHeaderCanvas header = Arrangement.LayoutGrid.Children.OfType<TrackHeaderCanvas>().Single();
             UTrack? contextTrack = null;
             header.AddHandler(PointerPressedEvent, (_, e) =>
@@ -97,8 +98,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             Arrangement.PartsCanvas.AddHandler(PointerPressedEvent, (_, e) =>
             {
                 if (e.GetCurrentPoint(Arrangement.PartsCanvas).Properties.PointerUpdateKind != PointerUpdateKind.RightButtonPressed) return;
-                contextPart = _editor.HitTestPart(e.GetPosition(Arrangement.PartsCanvas));
-                if (contextPart is { } part && !_editor.SelectedParts.Contains(part))
+                if (_editor.HitTestPart(e.GetPosition(Arrangement.PartsCanvas)) is { } part && !_editor.SelectedParts.Contains(part))
                 { _editor.SelectedParts.Clear(); _editor.SelectedParts.Add(part); }
             }, RoutingStrategies.Tunnel);
             Piano.NotesCanvas.AddHandler(PointerPressedEvent, (_, e) =>
@@ -139,6 +139,10 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (_attached || _disposed) return;
                 _attached = true;
+                _partToolbarBinding = new PartSelectionToolbarBinding(PartToolbar, EditorPageLayer, Arrangement.PartsCanvas,
+                    _editor, () => IsArrangementVisible, () => SetActiveArea(EditorInputController.EditArea.Tracks));
+                _noteToolbarBinding = new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, Piano.NotesCanvas, Piano.NoteCreationPreview,
+                    _editor, () => IsPianoRollVisible, () => SetActiveArea(EditorInputController.EditArea.PianoRoll));
                 PianoRollViewModel.BatchEditRunningChanged += OnBatchEditRunningChanged;
                 OnBatchEditRunningChanged(PianoRollViewModel.IsBatchEditRunning);
                 _editor.PropertyChanged += OnEditorChanged;
@@ -155,6 +159,10 @@ namespace OpenUtauMobile.DesktopUI.Views
             };
             DetachedFromVisualTree += (_, _) =>
             {
+                _partToolbarBinding?.Dispose();
+                _partToolbarBinding = null;
+                _noteToolbarBinding?.Dispose();
+                _noteToolbarBinding = null;
                 SavePanels();
                 PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
                 _editor.PropertyChanged -= OnEditorChanged;
@@ -328,10 +336,10 @@ namespace OpenUtauMobile.DesktopUI.Views
         {
             UpdateModes();
         }
-        private ContextMenu CreateContextMenu(bool piano, Func<UPart?>? targetPart = null)
+        private ContextMenu CreateContextMenu(bool piano)
         {
             ContextMenu menu = new();
-            menu.Opening += (_, _) =>
+            menu.Opening += (_, e) =>
             {
                 _input.CancelEditorInput();
                 IReadOnlyList<ContextActionItem> actions = piano ? _editor.PianoRollViewModel.PianoRollContextActions : _editor.TrackContextActions;
@@ -339,11 +347,8 @@ namespace OpenUtauMobile.DesktopUI.Views
                     .Select(action => new MenuItem { Header = action.Tip, Command = action.Command }).ToList();
                 if (actions.Any(action => action.Id == "batch-edits"))
                     items.Add(DesktopBatchEditMenu.Create(() => _editor.PianoRollViewModel, () => !_editor.IsLoadingProject));
-                UPart? target = targetPart?.Invoke();
-                int index = target != null && DocManager.Inst.Project.parts.Contains(target) ? target.trackNo : -1;
-                if (!piano && index >= 0 && index < DocManager.Inst.Project.tracks.Count && DocManager.Inst.Project.tracks[index].RendererSettings.renderer == Renderers.CLASSIC)
-                    items.AddRange(CreateClassicToolMenus(DocManager.Inst.Project.tracks[index]));
                 menu.ItemsSource = items;
+                if (items.Count == 0) e.Cancel = true;
             };
             return menu;
         }
@@ -415,6 +420,10 @@ namespace OpenUtauMobile.DesktopUI.Views
         {
             if (_disposed) return;
             _disposed = true;
+            _partToolbarBinding?.Dispose();
+            _partToolbarBinding = null;
+            _noteToolbarBinding?.Dispose();
+            _noteToolbarBinding = null;
             PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
             _inspector.RequestShowParameters -= ShowParameters;
             _mixer.Dispose();

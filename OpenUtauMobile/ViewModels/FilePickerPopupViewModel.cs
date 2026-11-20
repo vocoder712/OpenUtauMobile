@@ -21,6 +21,6 @@ public class FilePickerPopupViewModel : FilePickerBaseViewModel
         if (item is DirectoryInfo dir)
             CurrentPath = dir.FullName;
         else if (item is FileInfo file)
-            RaiseClose(file.FullName);
+            ClosePicker(file.FullName);
     }
 }

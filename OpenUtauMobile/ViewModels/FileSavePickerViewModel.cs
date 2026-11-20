@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reactive;
+using System.Threading.Tasks;
 using OpenUtauMobile.Helpers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -14,6 +15,7 @@ namespace OpenUtauMobile.ViewModels;
 /// </summary>
 public class FileSavePickerViewModel : FilePickerBaseViewModel
 {
+    private int _previewVersion;
     public override FilePickerMode Mode => FilePickerMode.SaveFile;
 
     /// <summary>用户输入的文件名（不含后缀）。</summary>
@@ -49,11 +51,11 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
 
         // 实时更新预览路径
         this.WhenAnyValue(x => x.CurrentPath, x => x.FileName)
-            .Subscribe(_ => UpdatePreviewPath());
+            .Subscribe(change => { _ = UpdatePreviewPathAsync(); });
 
-        IObservable<bool> canSave = this.WhenAnyValue(x => x.FileName, x => x.CurrentPath,
-            (name, path) => IsValidFileName(name) && Directory.Exists(path));
-        SaveCommand = ReactiveCommand.Create(Save, canSave);
+        IObservable<bool> canSave = this.WhenAnyValue(x => x.FileName, x => x.IsDirectoryAvailable, x => x.IsLoading,
+            (name, available, loading) => IsValidFileName(name) && available && !loading);
+        SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync, canSave);
     }
 
     protected override void SelectItem(FileSystemInfo item)
@@ -65,8 +67,10 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
             FileName = Path.GetFileNameWithoutExtension(file.Name);
     }
 
-    private void UpdatePreviewPath()
+    /// <summary>路径预览立即更新，磁盘存在性检查防抖后在后台执行。</summary>
+    private async Task UpdatePreviewPathAsync()
     {
+        int version = ++_previewVersion;
         if (!IsValidFileName(FileName))
         {
             PreviewFullPath = string.Empty;
@@ -79,7 +83,13 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
             ? FileName
             : FileName + Extension;
         PreviewFullPath = Path.Combine(CurrentPath, nameWithExt);
-        if (File.Exists(PreviewFullPath))
+        string previewPath = PreviewFullPath;
+        IsShowingWarningMessage = false;
+        await Task.Delay(150);
+        if (IsClosed || version != _previewVersion) return;
+        bool exists = await Task.Run(() => File.Exists(previewPath));
+        if (IsClosed || version != _previewVersion) return;
+        if (exists)
         {
             WarningMessage = L.S("FilePicker.OverwriteWarning");
             IsShowingWarningMessage = true;
@@ -90,10 +100,16 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
         }
     }
 
-    private void Save()
+    /// <summary>最终确认目录仍存在，等待期间路径变化或关闭则放弃本次提交。</summary>
+    private async Task SaveAsync()
     {
-        if (!IsValidFileName(FileName) || !Directory.Exists(CurrentPath)) return;
-        RaiseClose(PreviewFullPath);
+        if (!IsValidFileName(FileName) || IsClosed) return;
+        string directory = CurrentPath;
+        string previewPath = PreviewFullPath;
+        int version = _previewVersion;
+        bool exists = await Task.Run(() => Directory.Exists(directory));
+        if (!exists || IsClosed || version != _previewVersion) return;
+        ClosePicker(previewPath);
     }
 
     private static bool IsValidFileName(string name) =>

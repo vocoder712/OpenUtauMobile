@@ -88,6 +88,8 @@ public static class LoadingPopupService
 
         try
         {
+            if (popupTask.IsCompleted)
+                throw new InvalidOperationException("Loading dialog closed before the operation started.");
             await operation(viewModel);
         }
         finally

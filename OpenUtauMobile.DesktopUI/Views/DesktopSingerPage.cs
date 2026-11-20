@@ -30,7 +30,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             install.Classes.Add("tonal");
             TextBlock uninstallStatus = new() { IsVisible = false, VerticalAlignment = VerticalAlignment.Center, TextWrapping = Avalonia.Media.TextWrapping.Wrap };
             DesktopUi.Paint(uninstallStatus, TextBlock.ForegroundProperty, "Sem.Color.Success");
-            StackPanel actions = new() { Orientation = Orientation.Horizontal, Spacing = 12, VerticalAlignment = VerticalAlignment.Center, Children = { uninstallStatus, install } };
+            Button refresh = DesktopUi.Command("Common.Refresh", "RefreshCommand");
+            StackPanel actions = new() { Orientation = Orientation.Horizontal, Spacing = 12, VerticalAlignment = VerticalAlignment.Center, Children = { uninstallStatus, refresh, install } };
             Grid.SetColumn(actions, 1);
             toolbar.Children.Add(actions);
             root.Children.Add(toolbar);
@@ -57,7 +58,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             void ShowDetail()
             {
                 USinger? selected = list.SelectedItem as USinger;
-                if (selected == selectedSinger) return;
+                if (ReferenceEquals(selected, selectedSinger)) return;
                 selectedSinger = selected;
                 if (detailModel != null) detailModel.SingerUninstalled -= OnSingerUninstalled;
                 detailModel?.Dispose();

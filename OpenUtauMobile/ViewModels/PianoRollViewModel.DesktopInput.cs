@@ -48,6 +48,7 @@ namespace OpenUtauMobile.ViewModels
         private DesktopOperation _desktopOperation;
         private Point _desktopPress, _desktopLast;
         private bool _desktopDragging;
+        private bool _desktopPreviewClick;
         internal bool IsDesktopMouseDragging => _desktopDragging;
         private UNote? _desktopCreatedNote;
         private UNote[] _desktopSelection = [];
@@ -74,6 +75,7 @@ namespace OpenUtauMobile.ViewModels
             InterruptPanMotionIfRunning();
             _desktopPress = _desktopLast = point;
             _desktopDragging = false;
+            _desktopPreviewClick = false;
             DesktopSelectionRect = null;
             if (pan)
             {
@@ -84,6 +86,7 @@ namespace OpenUtauMobile.ViewModels
             bool toggle = modifiers.HasFlag(KeyModifiers.Control) || modifiers.HasFlag(KeyModifiers.Meta);
             bool additive = toggle || modifiers.HasFlag(KeyModifiers.Shift);
             UNote? hit = HitTestNote(point);
+            if (hit != null || EditMode != PianoRollEditMode.Note || additive) DismissNoteCreationPreview();
             if (IsDesktopTuning)
             {
                 if (HitDesktopVibratoToggle(point) is { } toggleNote)
@@ -136,7 +139,8 @@ namespace OpenUtauMobile.ViewModels
                 if (!additive) SelectedNotes.Clear();
                 SelectedAnchors.Clear();
                 _desktopOperation = DesktopOperation.Box;
-                if (clickCount == 2)
+                _desktopPreviewClick = EditMode == PianoRollEditMode.Note && !additive;
+                if (clickCount == 2 && EditMode != PianoRollEditMode.Note)
                 {
                     int tick = SnapToFloor(PointXToTick(point.X));
                     if (tick >= EditingVoicePart!.position && tick < EditingVoicePart.End)
@@ -181,10 +185,13 @@ namespace OpenUtauMobile.ViewModels
             if (!_desktopDragging)
             {
                 if (Math.Abs(total.X) < 3 && Math.Abs(total.Y) < 3) return;
+                DismissNoteCreationPreview();
                 _desktopDragging = true;
                 switch (_desktopOperation)
                 {
-                    case DesktopOperation.Move: StartToMoveNotes(); break;
+                    case DesktopOperation.Move:
+                        if (HitTestNote(_desktopPress) is { } moveNote) StartToMoveNotes(moveNote);
+                        break;
                     case DesktopOperation.ResizeEnd:
                         if (HitTestNote(_desktopPress) is { } resize) StartToResizeNotes(SelectedNotes.IndexOf(resize));
                         break;
@@ -251,8 +258,9 @@ namespace OpenUtauMobile.ViewModels
             }
             else if (operation == DesktopOperation.Curve && !cancel && HitTestPitchCurve(point) is { } curve) InsertAnchorAtCurveHit(curve);
             if (cancel && operation == DesktopOperation.Box) ReplaceSelectedNotes(_desktopSelection);
+            if (!cancel && operation == DesktopOperation.Box && !_desktopDragging && _desktopPreviewClick) OnGestureTap(point);
             DesktopSelectionRect = null;
-            _desktopSelection = []; _desktopStartOrigins = []; _desktopDragging = false;
+            _desktopSelection = []; _desktopStartOrigins = []; _desktopDragging = false; _desktopPreviewClick = false;
             RequestInvalidateVisual?.Invoke();
         }
 

@@ -4,28 +4,27 @@
         <TargetFramework>net10.0-android36.0</TargetFramework>
         <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
-        <ApplicationId>$(BaseApplicationId)</ApplicationId>
         <ApplicationTitle>OpenUtau Mobile 预览版</ApplicationTitle>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
+        <!-- 将程序集随 APK 部署，避免启动时逐个加载导致 ANR。 -->
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
         <!-- 大堆内存 -->
         <AndroidMaxHeapSize>2G</AndroidMaxHeapSize>
         <TieredPGO>true</TieredPGO>
+        <IsTrimmable>true</IsTrimmable>
+        <!-- 使用托管传输，保留动态插件所需的 HTTP/2 与 gRPC 响应尾部支持。 -->
+        <UseNativeHttpHandler>false</UseNativeHttpHandler>
     </PropertyGroup>
     <!-- 调试模式 -->
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
         <ApplicationId>$(BaseApplicationId).debug</ApplicationId>
-        <IsTrimmable>True</IsTrimmable>
-        <!-- 避免 Fast Deployment 在启动期逐个加载程序集导致 ANR -->
-        <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+        <!-- 集中保存程序集和调试符号，减少打包时逐文件生成共享库的开销。 -->
+        <AndroidUseAssemblyStore>true</AndroidUseAssemblyStore>
     </PropertyGroup>
     <!-- 发布模式 -->
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <IsTrimmable>True</IsTrimmable>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
         <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
-        <!-- 分包 -->
-        <!-- 在命令行中单独制定需要哪些分包 -->
-        <!-- <RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers> -->
     </PropertyGroup>
     <!-- 静态资源 -->
     <ItemGroup>
@@ -52,11 +51,15 @@
                         Bind="false"/>
     </ItemGroup>
 
-    <!-- 原生库 -->
-    <ItemGroup>
-        <!-- Worldline 由源码构建目标按当前 RID 添加。 -->
-        <AndroidNativeLibrary Remove="Libs\**\*.so"/>
-    </ItemGroup>
-    <Import Project="../native/worldline/WorldlineNative.targets" />
-    <Import Project="../native/game/GameNative.targets" />
+    <!-- 完整保留 .NET 基础框架的类型和成员，供动态调用使用；保留现有 AOT 配置。 -->
+    <Target Name="PreserveAndroidBaseFrameworkAssemblies" BeforeTargets="PrepareForILLink"
+            DependsOnTargets="ResolveReferences" Condition="'$(PublishTrimmed)' == 'true'">
+        <ItemGroup>
+            <TrimmerRootAssembly Include="@(ReferencePath->WithMetadataValue('FrameworkReferenceName', 'Microsoft.NETCore.App')->'%(Filename)')"
+                                 RootMode="All" />
+            <TrimmerRootAssembly Include="System.Private.CoreLib" RootMode="All" />
+        </ItemGroup>
+    </Target>
+
+    <Import Project="../native/NativeBuild.targets" />
 </Project>

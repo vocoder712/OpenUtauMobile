@@ -21,7 +21,7 @@ public sealed class MultiFilePickerViewModel : FilePickerBaseViewModel
 
     public MultiFilePickerViewModel(string title, string[] filters) : base(title, filters)
     {
-        ConfirmCommand = ReactiveCommand.Create(() => RaiseClose(selected.ToArray()),
+        ConfirmCommand = ReactiveCommand.Create(() => ClosePicker((string[])[.. selected]),
             this.WhenAnyValue(model => model.CanConfirm));
     }
 

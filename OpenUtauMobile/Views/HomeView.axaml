@@ -24,8 +24,12 @@
     <Border Background="{DynamicResource Sem.Color.Surface}" Padding="20">
         <DockPanel x:Name="Root">
             <Border Classes="TopBar" DockPanel.Dock="Top">
-                <TextBlock Classes="TopBarTitle" Text="{DynamicResource Home.Title}" FontWeight="Bold"
-                           FontSize="{x:Static semantic:TypographyTokens.HeadlineMSize}" />
+                <!-- 标题保留所需宽度，右侧剩余空间用于横屏品牌标识。 -->
+                <Grid x:Name="HeaderLayoutGrid" ColumnDefinitions="Auto,*"
+                      ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceL}">
+                    <TextBlock Classes="TopBarTitle" Text="{DynamicResource Home.Title}" FontWeight="Bold"
+                               FontSize="{x:Static semantic:TypographyTokens.HeadlineMSize}" />
+                </Grid>
             </Border>
 
             <!-- 主布局 -->
@@ -222,19 +226,20 @@
                         </Border>
                     </Grid>
                 </Border>
-                <!-- 页脚品牌 -->
-                <StackPanel x:Name="FooterBrand"
-                            Orientation="Vertical"
-                            Grid.Row="3"
-                            Margin="16,24"
-                            HorizontalAlignment="Center">
+                <!-- 品牌标识在横屏时移入顶栏，空间不足时仅等比例缩小。 -->
+                <Viewbox x:Name="FooterBrand"
+                         Grid.Row="3"
+                         Margin="16,24"
+                         Stretch="Uniform"
+                         StretchDirection="DownOnly"
+                         HorizontalAlignment="Center">
                     <Svg Path="avares://OpenUtauMobile/Assets/logotype.svg"
                          Css="{DynamicResource SvgCss}"
                          Width="256"
                          Stretch="Uniform"
                          PointerPressed="FooterLogotypePointerPressed"
                          HorizontalAlignment="Center" />
-                </StackPanel>
+                </Viewbox>
             </Grid>
         </DockPanel>
     </Border>

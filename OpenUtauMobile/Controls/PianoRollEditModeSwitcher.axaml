@@ -2,5 +2,5 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:c="clr-namespace:OpenUtauMobile.Controls"
              x:Class="OpenUtauMobile.Controls.PianoRollEditModeSwitcher">
-    <c:EditorModePicker x:Name="Picker" Title="{DynamicResource Editor.Modes.PianoRoll}" Placement="Left" />
+    <c:EditorModePicker x:Name="Picker" Classes="FloatingMode" Title="{DynamicResource Editor.Modes.PianoRoll}" Placement="Left" />
 </UserControl>

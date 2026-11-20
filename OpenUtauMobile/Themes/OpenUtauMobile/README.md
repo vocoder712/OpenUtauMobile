@@ -71,6 +71,62 @@ Normal button padding is 16,10; content determines its height. This intentionall
 does not impose a new minimum on compact editor controls. Dialog actions retain
 their 48dp minimum. Shape/layout differences between component roles are deliberate.
 
+## Floating toolbar
+
+`Controls/FloatingToolbar.cs` and its local ControlTheme implement a cross-platform,
+page-contained selection toolbar. Place it last in a finite Grid overlay, stretched
+to the page, above the content. `AnchorRect` uses that overlay's coordinates; the
+caller owns selection/session lifetime through `IsVisible` and supplies a new
+`Actions` collection when its available operations change.
+
+`AnchorHorizontalAlignment` defaults to `Center`; arrangement part toolbars use
+`Left` to stay near the part's start even when its duration extends off screen.
+
+- `FloatingToolbarAction` carries text, an IconPacks icon, a command and its parameter.
+  An optional short `Label` replaces the icon for state indicators.
+  An optional `HoldCommand` runs on long press and suppresses that contact's normal click.
+  `AlwaysInOverflow` keeps an operation in the overflow panel. Collection order is
+  priority order; remaining space holds a prefix of the other operations.
+- `IconOnly` controls main-panel presentation. Overflow rows retain icon and label;
+  all buttons retain accessible names, tooltips and command availability.
+- `IsFixedVertical` starts at the host's top-right corner. Drag its leading entry
+  within the host; release snaps to the nearest side with the standard inset.
+  Context actions expand upward when there is more room above the entry, and
+  overflow opens toward the host interior. `IconOnly` also applies to overflow buttons.
+  Optional `LeadingContent` provides a separate entry above the action capsule.
+  Available host height determines how many actions remain visible.
+- The toolbar cross-axis size and icon-button targets are 40 DIP. Rectangular
+  button state layers fill each target with zero container padding on all sides.
+  The independent entry is 40 × 40 DIP with a 10 DIP corner radius.
+- The main surface uses the shared `ShapeTokens.CornerFull` semantic token, a finite
+  large radius normalized to its bounds rather than a fixed half-height. The overflow menu uses a
+  4 DIP radius and zero internal padding. Its rows stretch across the menu width,
+  with transparent resting backgrounds and inherited button interaction states.
+  Generated buttons explicitly select their derived ControlTheme.
+- The main panel prefers the anchor's upper side, falls below when necessary, and
+  clamps to the page. Overflow opens above or below according to available room,
+  with a scrollable height limit. Blank overlay space passes input through. Outside
+  presses and Escape close overflow; arrow keys and Tab navigate the actions.
+
+The [MD3 toolbar](https://m3.material.io/components/toolbars/guidelines) and
+[menu](https://m3.material.io/components/menus/guidelines) guidelines inform the
+surface, shape and overflow behavior. The compact toolbar uses 40 DIP targets.
+OPUM supplies dynamic semantic
+colors, existing button states and page-local placement without a native popup.
+`Tokens/Components/FloatingToolbarTokens.cs` owns shared placement dimensions.
+The editor shares the selection toolbar between note-pen, note multiselect and
+pitch-anchor modes. It follows the last selected note or pitch anchor. Note
+properties and bulk lyric editing always remain in overflow; splitting uses the
+existing playback-head operation.
+  Arrangement selections use the same toolbar in normal and multiselect modes,
+  following the last selected part. Single audio parts expose replacement and note
+  extraction; voice selections expose splitting and eligible same-track merges.
+  In normal mode, selecting a part keeps the toolbar hidden; subsequent clicks on
+  that selected part toggle it. Multiselect mode shows it whenever parts are selected.
+  The arrangement context menu only shows paste when the part clipboard has content.
+`Services/Editor/NoteSelectionToolbarBinding.cs` shares selection coordinates and
+subscription lifetime between the mobile editor and desktop workspace.
+
 ## Verification and maintenance
 
 Build with `AVALONIA_TELEMETRY_OPTOUT=1`; no unit tests are created or run.

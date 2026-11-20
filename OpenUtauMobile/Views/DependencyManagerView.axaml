@@ -54,6 +54,16 @@
                 </Grid>
             </Border>
 
+            <!-- 两类依赖列表共用顶栏下方的加载指示，不受标签和滚动位置影响。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading">
+                <ProgressBar.IsVisible>
+                    <MultiBinding Converter="{x:Static BoolConverters.Or}">
+                        <Binding Path="IsLoadingRegistry" />
+                        <Binding Path="IsLoadingInstalled" />
+                    </MultiBinding>
+                </ProgressBar.IsVisible>
+            </ProgressBar>
+
             <TabControl SelectedIndex="{Binding SelectedTabIndex}"
                         Classes="DependencyTabs">
                 <!-- Tab 0: 可用 -->
@@ -115,18 +125,6 @@
                                     </Button>
 
                                 </Grid>
-
-                                <!-- 加载状态 -->
-                                <StackPanel IsVisible="{Binding IsLoadingRegistry}"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Spacing="{x:Static foundation:LayoutTokens.SpaceSM}"
-                                            Margin="0,60,0,0">
-                                    <ProgressBar IsIndeterminate="True" HorizontalAlignment="Stretch" />
-                                    <TextBlock Text="{DynamicResource DependencyManager.LoadingAvailable}"
-                                               Foreground="{DynamicResource Sem.Color.Outline}"
-                                               HorizontalAlignment="Center" />
-                                </StackPanel>
 
                                 <!-- 无可用包 -->
                                 <Border HorizontalAlignment="Center"
@@ -323,18 +321,6 @@
                                   HorizontalScrollBarVisibility="Disabled">
                         <Border Padding="24,16,24,24">
                             <StackPanel Classes="DependencyPageContent">
-                                <!-- Loading indicator -->
-                                <StackPanel IsVisible="{Binding IsLoadingInstalled}"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Spacing="{x:Static foundation:LayoutTokens.SpaceSM}"
-                                            Margin="0,60,0,0">
-                                    <ProgressBar IsIndeterminate="True" />
-                                    <TextBlock Text="{DynamicResource DependencyManager.LoadingInstalled}"
-                                               Foreground="{DynamicResource Sem.Color.Outline}"
-                                               HorizontalAlignment="Center" />
-                                </StackPanel>
-
                                 <!-- Empty state -->
                                 <Border HorizontalAlignment="Center"
                                         VerticalAlignment="Center"

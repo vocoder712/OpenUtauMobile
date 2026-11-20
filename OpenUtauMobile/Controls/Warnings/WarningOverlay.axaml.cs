@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Platform;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -17,10 +14,8 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using DialogHostAvalonia;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
-using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Services.Warnings;
 using Serilog;
 using SkiaSharp;
@@ -31,12 +26,9 @@ namespace OpenUtauMobile.Controls.Warnings
     public partial class WarningOverlay : UserControl
     {
         private readonly ObservableCollection<WarningItem> _centerItems = [];
-        private readonly Stopwatch _presentationClock = new();
         private WarningInbox? _inbox;
         private TopLevel? _top;
         private IInsetsManager? _insets;
-        private Window? _window;
-        private IActivatableLifetime? _activation;
         private ContentControl? _page;
         private CancellationTokenSource? _arrivalAnimation;
         private CancellationTokenSource? _orbAnimation;
@@ -49,16 +41,11 @@ namespace OpenUtauMobile.Controls.Warnings
         private Point _pressOrigin;
         private Point _orbPosition;
         private bool _dragging;
-        private bool _snapping;
         private bool _dockedVisible;
         private bool _right = true;
         private double _yRatio = 0.6;
         private bool _closing;
         private bool _clearing;
-        private bool _windowFocused = true;
-        private bool _applicationInBackground;
-        private bool _modalBlocked;
-        private bool _arrivalPressed;
         private bool _attached;
         private bool _presentationReady = true;
         private InputElement? _previousFocus;
@@ -74,8 +61,6 @@ namespace OpenUtauMobile.Controls.Warnings
         private double _elasticVelocity;
         private long _elasticLastInput;
         private bool _resourceRefreshQueued;
-        private int _modalGeneration;
-        private readonly HashSet<Key> _modalKeys = [];
         private Rect _lastUsable;
 
         /// <summary>包含开场、关闭与清除动画在内的完整模态会话。</summary>
@@ -93,9 +78,10 @@ namespace OpenUtauMobile.Controls.Warnings
             ArrivalCard.ShowCountdown = true;
             ArrivalCard.Ignore += IgnoreArrival;
             ArrivalCard.CloseRequested += CloseArrival;
-            ArrivalCard.AddHandler(PointerPressedEvent, (_, _) => _arrivalPressed = true, RoutingStrategies.Tunnel, true);
-            ArrivalCard.AddHandler(PointerReleasedEvent, (_, _) => _arrivalPressed = false, RoutingStrategies.Tunnel, true);
-            ArrivalCard.PointerCaptureLost += (_, _) => _arrivalPressed = false;
+            ArrivalCard.AddHandler(PointerPressedEvent, ResetArrivalCountdown, RoutingStrategies.Tunnel, true);
+            // 键盘处理只作用于中心自身，不拦截上层弹窗或提示的输入。
+            Center.AddHandler(KeyDownEvent, CenterKeyDown, RoutingStrategies.Bubble, true);
+            Center.AddHandler(KeyUpEvent, CenterKeyUp, RoutingStrategies.Bubble, true);
             Orb.AddHandler(PointerPressedEvent, OrbPressed, RoutingStrategies.Tunnel);
             Orb.AddHandler(PointerMovedEvent, OrbMoved, RoutingStrategies.Tunnel);
             Orb.AddHandler(PointerReleasedEvent, OrbReleased, RoutingStrategies.Tunnel);
@@ -131,26 +117,8 @@ namespace OpenUtauMobile.Controls.Warnings
             _attached = true;
             AttachCardAppearance();
             _top = TopLevel.GetTopLevel(this);
-            _window = _top as Window;
-            _activation = Application.Current?.TryGetFeature(typeof(IActivatableLifetime)) as IActivatableLifetime;
-            if (_activation != null)
-            {
-                _activation.Activated += ApplicationActivated;
-                _activation.Deactivated += ApplicationDeactivated;
-            }
             _insets = _top?.InsetsManager;
             if (_insets != null) _insets.SafeAreaChanged += SafeAreaChanged;
-            if (_window != null)
-            {
-                _window.Deactivated += WindowDeactivated;
-                _window.Activated += WindowActivated;
-                _window.PropertyChanged += WindowPropertyChanged;
-            }
-            if (!PresentationSuspended) _presentationClock.Start();
-            _top?.AddHandler(KeyDownEvent, PreviewKey, RoutingStrategies.Tunnel, true);
-            _top?.AddHandler(KeyUpEvent, PreviewKeyUp, RoutingStrategies.Tunnel, true);
-            _top?.AddHandler(GotFocusEvent, ConstrainFocus, RoutingStrategies.Bubble, true);
-            PopupService.Opening += ExternalModalOpening;
             if (Application.Current != null) Application.Current.ResourcesChanged += OnResourcesChanged;
             _right = Preferences.Default.WarningOrbDockSide != 0;
             _yRatio = double.IsFinite(Preferences.Default.WarningOrbDockYRatio)
@@ -168,29 +136,9 @@ namespace OpenUtauMobile.Controls.Warnings
             _attached = false;
             _clearShadowSubscription?.Dispose();
             _clearShadowSubscription = null;
-            _modalGeneration++;
-            _modalBlocked = false;
-            _modalKeys.Clear();
             if (_inbox != null) _inbox.Changed -= InboxChanged;
-            PopupService.Opening -= ExternalModalOpening;
             if (Application.Current != null) Application.Current.ResourcesChanged -= OnResourcesChanged;
             if (_insets != null) _insets.SafeAreaChanged -= SafeAreaChanged;
-            if (_activation != null)
-            {
-                _activation.Activated -= ApplicationActivated;
-                _activation.Deactivated -= ApplicationDeactivated;
-                _activation = null;
-            }
-            if (_window != null)
-            {
-                _window.Deactivated -= WindowDeactivated;
-                _window.Activated -= WindowActivated;
-                _window.PropertyChanged -= WindowPropertyChanged;
-            }
-            _presentationClock.Stop();
-            _top?.RemoveHandler(KeyDownEvent, PreviewKey);
-            _top?.RemoveHandler(KeyUpEvent, PreviewKeyUp);
-            _top?.RemoveHandler(GotFocusEvent, ConstrainFocus);
             StopArrival();
             CancelOrb();
             FinishCenter(false);
@@ -206,14 +154,7 @@ namespace OpenUtauMobile.Controls.Warnings
             old?.Dispose();
         }
 
-        private bool HostModal => _modalBlocked || DialogHost.IsDialogOpen("MainDialogHost");
         private bool HasWarnings => _inbox?.Items.Count > 0;
-
-        /// <summary>失去输入焦点不影响展示；真正进入后台或最小化才暂停前台时钟。</summary>
-        private bool PresentationSuspended => _applicationInBackground || _window?.WindowState == WindowState.Minimized;
-
-        /// <summary>所有顶部动画共用前台时间，避免恢复时计入后台经过的时间或重建会话。</summary>
-        private double PresentationTimestamp() => _presentationClock.Elapsed.TotalMilliseconds;
 
         private void InboxChanged()
         {
@@ -244,7 +185,6 @@ namespace OpenUtauMobile.Controls.Warnings
         private void UpdateOrb()
         {
             Orb.IsVisible = _presentationReady && HasWarnings && _dockedVisible && !IsCenterOpen;
-            Orb.IsEnabled = !HostModal && !PresentationSuspended;
             AutomationProperties.SetName(Orb, string.Format(LocalizationManager.Get("Warning.OrbName"), _inbox?.Items.Count ?? 0));
         }
 
@@ -279,11 +219,10 @@ namespace OpenUtauMobile.Controls.Warnings
         /// <summary>只有在球内开始的主指针可以建立拖动会话。</summary>
         private void OrbPressed(object? sender, PointerPressedEventArgs e)
         {
-            if (_orbPointer != null || HostModal || PresentationSuspended || IsCenterOpen ||
+            if (_orbPointer != null || IsCenterOpen ||
                 (e.Pointer.Type != PointerType.Touch && !e.GetCurrentPoint(Orb).Properties.IsLeftButtonPressed)) return;
             e.PreventGestureRecognition();
             Cancel(ref _orbAnimation);
-            _snapping = false;
             _orbPointer = e.Pointer;
             Orb.IsPointerHeld = true;
             _pressPoint = e.GetPosition(this);
@@ -339,7 +278,6 @@ namespace OpenUtauMobile.Controls.Warnings
             Point from = _orbPosition;
             double dockFrom = Orb.Dock;
             Point target = DockPoint();
-            _snapping = true;
             try
             {
                 await WarningMotion.Run(420, t =>
@@ -361,7 +299,6 @@ namespace OpenUtauMobile.Controls.Warnings
             {
                 if (_orbAnimation == session)
                 {
-                    _snapping = false;
                     Cancel(ref _orbAnimation);
                 }
             }
@@ -374,7 +311,7 @@ namespace OpenUtauMobile.Controls.Warnings
             _orbPointer = null;
             Orb.IsPointerHeld = false;
             pointer?.Capture(null);
-            _dragging = _snapping = false;
+            _dragging = false;
             PlaceOrb(DockPoint());
             Orb.Dock = _right ? 1 : -1;
         }
@@ -391,7 +328,7 @@ namespace OpenUtauMobile.Controls.Warnings
 
         private void OpenCenter()
         {
-            if (!_presentationReady || !HasWarnings || IsCenterOpen || HostModal || PresentationSuspended || _page == null || _inbox == null) return;
+            if (!_presentationReady || !HasWarnings || IsCenterOpen || _page == null || _inbox == null) return;
             WarningInbox.BeginCenter();
             _previousFocus = _top?.FocusManager?.GetFocusedElement() as InputElement;
             CancelOrb();
@@ -505,6 +442,7 @@ namespace OpenUtauMobile.Controls.Warnings
             ResetElastic();
             CancelCardInteractions();
             bool wasOpen = IsCenterOpen;
+            bool ownedFocus = IsKeyboardFocusWithin;
             Center.IsVisible = false;
             Center.Opacity = 1;
             CenterContent.IsEnabled = true;
@@ -521,7 +459,7 @@ namespace OpenUtauMobile.Controls.Warnings
             {
                 if (_page != null) _page.IsEnabled = _pageWasEnabled;
                 CenterVisibilityChanged?.Invoke(false);
-                if (restoreFocus && _previousFocus is { IsEffectivelyEnabled: true, IsEffectivelyVisible: true } previous &&
+                if (restoreFocus && ownedFocus && _previousFocus is { IsEffectivelyEnabled: true, IsEffectivelyVisible: true } previous &&
                     TopLevel.GetTopLevel(previous) == _top) previous.Focus();
             }
             _previousFocus = null;
@@ -577,54 +515,15 @@ namespace OpenUtauMobile.Controls.Warnings
 
         private double CardY(Control card) => card.TranslatePoint(default, WarningItems)?.Y ?? 0;
 
-        private void ExternalModalOpening()
+        /// <summary>中心只处理从自身内容冒泡的按键，保留上层浮层独立的焦点与返回行为。</summary>
+        private void CenterKeyDown(object? sender, KeyEventArgs e)
         {
-            _modalBlocked = true;
-            StopArrival();
-            CancelOrb();
-            if (IsCenterOpen) FinishCenter(true);
-            UpdateOrb();
-            _ = WaitForModalAsync(++_modalGeneration);
+            if (e.Key == Key.Escape && !e.Handled) RequestBack();
+            e.Handled = true;
         }
 
-        private async Task WaitForModalAsync(int generation)
-        {
-            // Opening 在 DialogHost.Show 之前发出，至少让出一轮以免过早恢复。
-            await Task.Delay(100);
-            while (_attached && generation == _modalGeneration && DialogHost.IsDialogOpen("MainDialogHost")) await Task.Delay(100);
-            if (!_attached || generation != _modalGeneration) return;
-            _modalBlocked = false;
-            UpdateOrb();
-            StartNextArrival();
-        }
-
-        private void PreviewKey(object? sender, KeyEventArgs e)
-        {
-            if (!IsCenterOpen && _modalKeys.Contains(e.Key)) { e.Handled = true; return; }
-            if (!IsCenterOpen || HostModal) return;
-            _modalKeys.Add(e.Key);
-            if (e.Key == Key.Escape)
-            {
-                RequestBack();
-                e.Handled = true;
-            }
-            else if (_clearing || _closing || e.Source is not Visual source ||
-                     !source.GetSelfAndVisualAncestors().Contains(Center)) e.Handled = true;
-        }
-
-        private void PreviewKeyUp(object? sender, KeyEventArgs e)
-        {
-            bool fromModal = _modalKeys.Remove(e.Key);
-            if (!IsCenterOpen && fromModal) { e.Handled = true; return; }
-            if (IsCenterOpen && !HostModal && (_clearing || _closing || e.Source is not Visual source ||
-                !source.GetSelfAndVisualAncestors().Contains(Center))) e.Handled = true;
-        }
-
-        private void ConstrainFocus(object? sender, FocusChangedEventArgs e)
-        {
-            if (IsCenterOpen && !HostModal && e.Source is Visual source &&
-                !source.GetSelfAndVisualAncestors().Contains(Center)) CloseButton.Focus();
-        }
+        /// <summary>中心内的按键释放不继续触发导航页快捷键。</summary>
+        private void CenterKeyUp(object? sender, KeyEventArgs e) => e.Handled = true;
 
         private void SafeAreaChanged(object? sender, SafeAreaChangedArgs e) => ViewportChanged();
 
@@ -677,59 +576,6 @@ namespace OpenUtauMobile.Controls.Warnings
                 _resourceRefreshQueued = false;
                 if (_attached) ViewportChanged();
             }, DispatcherPriority.Background);
-        }
-
-        private void WindowDeactivated(object? sender, EventArgs e)
-        {
-            _windowFocused = false;
-            CancelInputGestures();
-        }
-
-        /// <summary>激活变化只终止输入手势，不关闭卡片、不改已展示标记，也不重置展示时钟。</summary>
-        private void CancelInputGestures()
-        {
-            _modalKeys.Clear();
-            CancelOrb();
-            _arrivalPressed = false;
-            ResetElastic();
-            CancelCardInteractions();
-        }
-
-        private void WindowActivated(object? sender, EventArgs e)
-        {
-            _windowFocused = true;
-        }
-
-        private void WindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
-        {
-            if (e.Property != Window.WindowStateProperty) return;
-            UpdatePresentationState();
-        }
-
-        /// <summary>后台与最小化共用暂停门禁，已开始的展示保留原卡片、剩余时间及动画进度。</summary>
-        private void UpdatePresentationState()
-        {
-            if (PresentationSuspended)
-            {
-                _presentationClock.Stop();
-                CancelInputGestures();
-            }
-            else _presentationClock.Start();
-            UpdateOrb();
-            StartNextArrival();
-        }
-
-        private void ApplicationDeactivated(object? sender, ActivatedEventArgs e)
-        {
-            if (e.Kind != ActivationKind.Background) return;
-            _applicationInBackground = true;
-            UpdatePresentationState();
-        }
-
-        private void ApplicationActivated(object? sender, ActivatedEventArgs e)
-        {
-            _applicationInBackground = false;
-            UpdatePresentationState();
         }
     }
 }

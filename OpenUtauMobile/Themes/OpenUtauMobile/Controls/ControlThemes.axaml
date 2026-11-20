@@ -60,6 +60,7 @@
                 <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TabStripItem.axaml" />
                 <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TextBox.axaml" />
                 <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ToggleButton.axaml" />
+                <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/FloatingToolbar.axaml" />
                 <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ToggleSwitch.axaml" />
                 <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/ToolTip.axaml" />
                 <MergeResourceInclude Source="avares://OpenUtauMobile/Themes/OpenUtauMobile/Controls/TransitioningContentControl.axaml" />

@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using DialogHostAvalonia;
 using OpenUtauMobile.Controls;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
@@ -11,6 +10,8 @@ namespace OpenUtauMobile.Views;
 
 public partial class MainView : UserControl
 {
+    private DocumentValidationScheduler? _validationScheduler;
+
     public MainView()
     {
         InitializeComponent();
@@ -21,11 +22,7 @@ public partial class MainView : UserControl
             if (change.Property == ContentControl.ContentProperty)
                 WarningOverlay.SetPresentationReady(PageHost.Content is ViewModelBase and not SplashScreenViewModel);
         };
-        WarningOverlay.CenterVisibilityChanged += open =>
-        {
-            ToastOverlay.IsPaused = open;
-            PerformanceLayer.IsVisible = !open;
-        };
+        WarningOverlay.CenterVisibilityChanged += open => PerformanceLayer.IsVisible = !open;
     }
 
     public MainView(Avalonia.Controls.Templates.IDataTemplate pageTemplate) : this()
@@ -39,9 +36,13 @@ public partial class MainView : UserControl
         WarningOverlay.SetPresentationReady(PageHost.Content is ViewModelBase and not SplashScreenViewModel);
         // Android 的 Material You 色值在 TopLevel 建立后才可由平台设置读取。
         App.RefreshSystemThemeColor();
+        if (TopLevel.GetTopLevel(this) is { } validationHost)
+        {
+            _validationScheduler = new DocumentValidationScheduler(validationHost);
+        }
+
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested += OnBackRequested;
-        ToastService.Register(ToastOverlay.ConsumeAsync);
         ErrorDialogService.Register(
             async vm => { await PopupService.Show<object>(new ErrorDialogPopup(), vm); },
             () =>
@@ -55,28 +56,25 @@ public partial class MainView : UserControl
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
+        _validationScheduler?.Dispose();
+        _validationScheduler = null;
         base.OnDetachedFromVisualTree(e);
         TopLevel? topLevel = AppService.GetTopLevel();
         topLevel?.BackRequested -= OnBackRequested;
-        ToastService.Unregister();
         ErrorDialogService.Unregister();
     }
 
     private void OnBackRequested(object? sender, RoutedEventArgs e)
     {
-        if (DialogHost.IsDialogOpen(null))
+        if (MainDialogHost.CurrentSession is { IsEnded: false } session)
         {
-            DialogSession? session = DialogHost.GetDialogSession(null);
-            if (session != null)
+            IPopupContext? popup = session.Content switch
             {
-                IPopupContext? popup = session.Content switch
-                {
-                    IPopupContext context => context, // 使用ViewLocator解析的Dialog会直接是IDialogContext
-                    ContentControl { DataContext: IPopupContext pvm } => pvm, // 手动绑定
-                    _ => null
-                };
-                popup?.RequestBack();
-            }
+                IPopupContext context => context, // 使用ViewLocator解析的Dialog会直接是IDialogContext
+                ContentControl { DataContext: IPopupContext pvm } => pvm, // 手动绑定
+                _ => null
+            };
+            popup?.RequestBack();
 
             e.Handled = true;
             return;

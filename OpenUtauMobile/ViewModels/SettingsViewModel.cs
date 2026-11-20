@@ -34,7 +34,7 @@ public enum SettingsCategory
     EditAndBehaviour,
     RenderAndPerformance,
     FileAndStorage,
-    AppearanceAndLanguage
+    AppearanceAndLanguage,
 }
 
 /// <summary>
@@ -103,7 +103,7 @@ public class StopButtonBehaviorOption
     }
 }
 
-/// <summary>走带自动翻页行为选项（用于绑定到选择器）。</summary>
+/// <summary>回放自动滚动行为选项（用于绑定到选择器）。</summary>
 public class AutoScrollBehaviorOption
 {
     public int Value { get; }
@@ -254,7 +254,7 @@ public class ThemeSeedPresetOption
     }
 }
 
-public class SettingsViewModel : NavigateViewModelBase, IDisposable
+public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
 {
     // ── 导航命令 ───────────────────────────────────────────────────
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
@@ -483,6 +483,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public AutoScrollBehaviorOption? SelectedAutoScrollBehavior { get; set; }
 
+    /// <summary>可选回放纵向滚动行为列表。</summary>
+    public IReadOnlyList<AutoScrollBehaviorOption> AvailableVerticalScrollBehaviors { get; } =
+        new List<AutoScrollBehaviorOption>
+        {
+            new(0, L.S("Settings.VerticalScroll.Disabled")),
+            new(1, L.S("Settings.VerticalScroll.Boundary")),
+            new(2, L.S("Settings.VerticalScroll.Center"))
+        };
+
+    /// <summary>当前选中的回放纵向滚动行为。</summary>
+    [Reactive]
+    public AutoScrollBehaviorOption? SelectedVerticalScrollBehavior { get; set; }
+
     // ── Edit & Behaviour: Stop Button ──────────────────────────────
     /// <summary>List of available stop button actions.</summary>
     public IReadOnlyList<StopButtonBehaviorOption> AvailableStopButtonBehaviors { get; } =
@@ -497,9 +510,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public StopButtonBehaviorOption? SelectedStopButtonBehavior { get; set; }
 
-    /// <summary>回放刷新率（1-60）。</summary>
+    /// <summary>回放刷新率档位，低帧率逐帧调整，高帧率使用常见刷新率。</summary>
+    private static readonly int[] PlaybackRefreshRates = [.. Enumerable.Range(1, 30), 40, 50, 60, 90, 120];
+
+    /// <summary>回放刷新率滑块的最大档位索引。</summary>
+    public int PlaybackRefreshRateMaximumStep => PlaybackRefreshRates.Length - 1;
+
+    /// <summary>当前选中的回放刷新率档位索引。</summary>
     [Reactive]
-    public int PlaybackRefreshRate { get; set; }
+    public int PlaybackRefreshRateStep { get; set; }
+
+    /// <summary>当前档位对应的实际回放刷新率。</summary>
+    [Reactive]
+    public int PlaybackRefreshRate { get; private set; }
 
     /// <summary>是否显示立绘。</summary>
     [Reactive]
@@ -516,6 +539,10 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>是否显示音高画笔命中区域。</summary>
     [Reactive]
     public bool ShowPitchPenHitArea { get; set; }
+
+    /// <summary>是否显示其它轨道的背景音符。</summary>
+    [Reactive]
+    public bool ShowGhostNotes { get; set; }
 
     /// <summary>扩展音符命中范围前后增加的 Tick 数。</summary>
     [Reactive]
@@ -602,6 +629,9 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>当前选中的音频设备选项。</summary>
     [Reactive]
     public AudioDeviceOption? SelectedAudioDevice { get; set; }
+
+    /// <summary>当前平台是否通过系统控件管理音频输出路由。</summary>
+    public bool UsesSystemAudioRoutePicker => ServiceHub.AudioDevicePickerFactory != null;
 
     /// <summary>刷新音频设备列表命令。</summary>
     [Reactive]
@@ -1015,6 +1045,20 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             })
             .DisposeWith(_disposables);
 
+        int verticalScrollVal = Preferences.Default.PlaybackVerticalScroll;
+        SelectedVerticalScrollBehavior = AvailableVerticalScrollBehaviors.FirstOrDefault(b => b.Value == verticalScrollVal)
+                                         ?? AvailableVerticalScrollBehaviors[0];
+        this.WhenAnyValue(x => x.SelectedVerticalScrollBehavior)
+            .WhereNotNull()
+            .DistinctUntilChanged(option => option.Value)
+            .Skip(1)
+            .Subscribe(opt =>
+            {
+                Preferences.Default.PlaybackVerticalScroll = opt.Value;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
         // Initializing Stop Button Behavior
         int stopBehaviorVal = Preferences.Default.StopButtonBehavior;
         StopButtonBehavior stopBehavior = stopBehaviorVal is >= 1 and <= 3
@@ -1082,11 +1126,13 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .DisposeWith(_disposables);
 
         // 编辑与行为：回放刷新率 / 立绘开关 / 撤销上限 / 音高线拖拽
-        PlaybackRefreshRate = Math.Clamp((int)Math.Round(Preferences.Default.PlaybackRefreshRate), 1, 60);
+        PlaybackRefreshRate = PlaybackRefreshRates.MinBy(rate => Math.Abs(rate - Preferences.Default.PlaybackRefreshRate));
+        PlaybackRefreshRateStep = Array.IndexOf(PlaybackRefreshRates, PlaybackRefreshRate);
         ShowPortraitEnabled = Preferences.Default.ShowPortrait;
         UndoLimit = Math.Clamp(Preferences.Default.UndoLimit, 10, 100);
         PitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
         ShowPitchPenHitArea = Preferences.Default.ShowPitchPenHitArea;
+        ShowGhostNotes = Preferences.Default.PianoRollShowGhostNotes;
         MagnifierMagnificationFactor = MagnifierSettings.Normalize(Preferences.Default.MagnifierMagnificationFactor);
         MagnifierSliderValue = MagnifierSettings.Snap(MagnifierMagnificationFactor);
         this.WhenAnyValue(x => x.MagnifierSliderValue)
@@ -1114,18 +1160,19 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMinimum,
             Preferences.SerializablePreferences.PitchPenNoteHitToneExtensionMaximum);
 
-        this.WhenAnyValue(x => x.PlaybackRefreshRate)
+        this.WhenAnyValue(x => x.PlaybackRefreshRateStep)
             .Skip(1)
             .Subscribe(value =>
             {
-                int clamped = Math.Clamp(value, 1, 60);
+                int clamped = Math.Clamp(value, 0, PlaybackRefreshRateMaximumStep);
                 if (clamped != value)
                 {
-                    PlaybackRefreshRate = clamped;
+                    PlaybackRefreshRateStep = clamped;
                     return;
                 }
 
-                Preferences.Default.PlaybackRefreshRate = clamped;
+                PlaybackRefreshRate = PlaybackRefreshRates[clamped];
+                Preferences.Default.PlaybackRefreshRate = PlaybackRefreshRate;
                 Preferences.Save();
             })
             .DisposeWith(_disposables);
@@ -1171,6 +1218,16 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Default.ShowPitchPenHitArea = enabled;
                 Preferences.Save();
                 MessageBus.Current.SendMessage(new PitchPenHitAreaHintChangedEvent());
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.ShowGhostNotes)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.PianoRollShowGhostNotes = enabled;
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new GhostNotesVisibilityChangedEvent());
             })
             .DisposeWith(_disposables);
 
@@ -1361,7 +1418,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
             .DisposeWith(_disposables);
 
         // 初始化音频设备列表
-        AvailableAudioDevices = new List<AudioDeviceOption> { new(null, L.S("Settings.Audio.DefaultDevice")) };
+        AvailableAudioDevices = [new(null, L.S("Settings.Audio.DefaultDevice"))];
         SelectedAudioDevice = AvailableAudioDevices[0];
         RefreshAudioDevicesCommand = ReactiveCommand.CreateFromTask(RefreshAudioDevicesAsync);
 
@@ -1509,7 +1566,21 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         List<AudioBackendOption> backends = [new("", L.S("Settings.Audio.AutoSelect"))];
 
         // 根据平台添加可用后端
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (OperatingSystem.IsBrowser())
+        {
+            backends.Add(new AudioBackendOption("WebAudio", "Web Audio"));
+        }
+        else if (OperatingSystem.IsIOS())
+        {
+            backends.Add(new AudioBackendOption("AVAudioEngine", "AVAudioEngine"));
+            backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
+        }
+        else if (OperatingSystem.IsAndroid())
+        {
+            backends.Add(new AudioBackendOption("AudioTrack", "AudioTrack"));
+            backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
             backends.Add(new AudioBackendOption("NAudio", "NAudio"));
@@ -1519,16 +1590,6 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
         {
             backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
         }
-        else if (OperatingSystem.IsAndroid())
-        {
-            backends.Add(new AudioBackendOption("AudioTrack", "AudioTrack"));
-            backends.Add(new AudioBackendOption("MiniAudio", "MiniAudio"));
-        }
-        else if (OperatingSystem.IsIOS())
-        {
-            backends.Add(new AudioBackendOption("AVAudioEngine", "AVAudioEngine"));
-        }
-        // Browser 目前只支持 Dummy
 
         backends.Add(new AudioBackendOption("Dummy", L.S("Settings.Audio.Dummy")));
         return backends;
@@ -1537,7 +1598,7 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
     /// <summary>
     /// 刷新音频设备列表（异步）。
     /// </summary>
-    private async Task RefreshAudioDevicesAsync()
+    public async Task RefreshAudioDevicesAsync()
     {
         if (disposed || IsRefreshingDevices) return;
         IsRefreshingDevices = true;
@@ -1550,7 +1611,8 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 List<AudioDeviceOption> list = [new(null, L.S("Settings.Audio.DefaultDevice"))];
 
                 IAudioOutput audioOutput = PlaybackManager.Inst.AudioOutput;
-                List<AudioOutputDevice> outputDevices = audioOutput.GetOutputDevices();
+                List<AudioOutputDevice> outputDevices = ServiceHub.GetSystemAudioOutputDevices?.Invoke()
+                    ?? audioOutput.GetOutputDevices();
                 foreach (AudioOutputDevice device in outputDevices)
                 {
                     list.Add(new AudioDeviceOption(device,
@@ -1570,8 +1632,10 @@ public class SettingsViewModel : NavigateViewModelBase, IDisposable
                 {
                     AvailableAudioDevices = devices;
                     // 恢复显示值时不切换设备，也不回写偏好。
-                    SelectedAudioDevice = devices.FirstOrDefault(device =>
-                        device.Device?.name == Preferences.Default.PlaybackDevice) ?? devices[0];
+                    SelectedAudioDevice = UsesSystemAudioRoutePicker
+                        ? devices.FirstOrDefault(device => device.Device != null) ?? devices[0]
+                        : devices.FirstOrDefault(device =>
+                            device.Device?.name == Preferences.Default.PlaybackDevice) ?? devices[0];
                 }
                 finally
                 {

@@ -1,7 +1,15 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens">
-    <Style Selector="Button.EditModeBtn">
+        xmlns:localTokens="clr-namespace:OpenUtauMobile.Controls.Tokens"
+        xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
+        xmlns:c="using:OpenUtauMobile.Controls"
+        xmlns:semantic="using:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic">
+    <!-- 独立参数入口保留原有外观；浮动入口的外观由宿主工具栏提供。 -->
+    <Style Selector="c|EditorModePicker:not(.FloatingMode) icons|PackIconPhosphorIcons.EditModeIcon">
+        <Setter Property="Width" Value="{x:Static semantic:IconTokens.Small}" />
+        <Setter Property="Height" Value="{x:Static semantic:IconTokens.Small}" />
+    </Style>
+    <Style Selector="c|EditorModePicker:not(.FloatingMode) Button.EditModeBtn">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
         <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnSecondaryContainer}" />
         <Setter Property="BorderBrush" Value="Transparent" />

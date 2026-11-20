@@ -29,7 +29,7 @@ public sealed partial class EditorInputController
 
     private bool IsEditorInputActive => _inputRoot != null && TopLevel.GetTopLevel(_owner) == _inputRoot &&
         _owner.IsEffectivelyVisible && _owner.IsEffectivelyEnabled && !IsModalOpen && !HasInputPopup &&
-        _owner.DataContext is EditorViewModel { IsLoadingProject: false };
+        _owner.DataContext is EditorViewModel { IsLoadingProject: false, CanEditProject: true };
 
     private static bool IsWithin(Visual? source, Visual parent) =>
         source != null && source.GetSelfAndVisualAncestors().Contains(parent);
@@ -159,6 +159,8 @@ public sealed partial class EditorInputController
             return;
         }
         if (EditorShortcuts.IsTextInput(source)) return;
+        // 浮动工具栏的方向键、空格及 Escape 交给控件自身处理。
+        if (source?.GetSelfAndVisualAncestors().Any(node => node is Themes.OpenUtauMobile.Controls.FloatingToolbar) == true) return;
         if (e.Key == Key.Escape && vm.UseDesktopInput && _activeEditArea != EditArea.Mixer)
         {
             _piano.NotesCanvas.CancelTemporaryPitchErase();

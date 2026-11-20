@@ -68,7 +68,7 @@ public class HomeViewModel : NavigateViewModelBase
 
     public HomeViewModel(MainViewModel navigator) : base(navigator)
     {
-        NewCommand = ReactiveCommand.Create(New);
+        NewCommand = ReactiveCommand.CreateFromTask(NewAsync);
         OpenCommand = ReactiveCommand.Create(Open);
         SingersCommand = ReactiveCommand.Create(Singers);
         OptionsCommand = ReactiveCommand.Create(Options);
@@ -106,10 +106,13 @@ public class HomeViewModel : NavigateViewModelBase
         RecentProjects.Remove(path);
     }
 
-    private void New()
+    /// <summary>后台检查默认模板，页面已离开时不再触发导航。</summary>
+    private async Task NewAsync()
     {
         string defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
-        Navigator.Navigate(File.Exists(defaultTemplate)
+        bool exists = await Task.Run(() => File.Exists(defaultTemplate));
+        if (Navigator.CurrentViewModel != this) return;
+        Navigator.Navigate(exists
             ? new EditorViewModel(Navigator,
                 new ProjectOpenOptions(defaultTemplate, ProjectOpenKind.Template))
             : new EditorViewModel(Navigator));
@@ -171,6 +174,7 @@ public class HomeViewModel : NavigateViewModelBase
 
     private void DismissRecovery()
     {
+        Services.Projects.ProjectSaveCoordinator.Inst.DismissRecovery();
         RecoveryBannerDismissed = true;
         RecoveryBannerHeight = 0;
         Preferences.Default.RecoveryPath = string.Empty;
@@ -188,7 +192,9 @@ public class HomeViewModel : NavigateViewModelBase
         RecoveryBannerDismissed = false;
 
         string recPath = Preferences.Default.RecoveryPath;
-        if (!string.IsNullOrWhiteSpace(recPath) && File.Exists(recPath))
+        bool recoveryExists = !string.IsNullOrWhiteSpace(recPath) && await Task.Run(() => File.Exists(recPath));
+        if (Navigator.CurrentViewModel != this) return;
+        if (recoveryExists)
         {
             RecoveryPath = recPath;
             HasRecovery = true;

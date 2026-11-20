@@ -27,6 +27,20 @@
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
+    <!-- 负底边距抵消条带高度，使显隐不占布局空间；顶对齐并提高层级以覆盖内容上沿。 -->
+    <Style Selector="ProgressBar.TopBarLoading">
+        <Setter Property="Height" Value="3" />
+        <Setter Property="Margin" Value="0,0,0,-3" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="ZIndex" Value="1" />
+        <Setter Property="IsIndeterminate" Value="True" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
     <Style Selector="Button.TopBarBtn, ToggleButton.TopBarBtn">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />

@@ -237,6 +237,21 @@
   <data name="Settings.Edit.SoundFontPath.NotLoaded" xml:space="preserve">
     <value>⚠ Not loaded - Please select a valid SF2 file</value>
   </data>
+  <data name="Settings.Edit.VerticalScrollBehavior" xml:space="preserve">
+    <value>Vertical Auto-Scroll During Playback</value>
+  </data>
+  <data name="Settings.Edit.VerticalScrollBehavior.Desc" xml:space="preserve">
+    <value>Follow the current note. Boundary mode smoothly moves an offscreen note 10% inside the nearest edge; center mode keeps the note in the middle.</value>
+  </data>
+  <data name="Settings.VerticalScroll.Disabled" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Settings.VerticalScroll.Boundary" xml:space="preserve">
+    <value>Scroll at boundaries</value>
+  </data>
+  <data name="Settings.VerticalScroll.Center" xml:space="preserve">
+    <value>Keep centered</value>
+  </data>
   <data name="Settings.Edit.AutoScrollBehavior" xml:space="preserve">
     <value>Auto-Scroll Behavior</value>
   </data>
@@ -631,9 +646,6 @@
   <data name="SingerDetail.DangerZone" xml:space="preserve">
     <value>Danger Zone</value>
   </data>
-  <data name="SingerDetail.DeleteWarning" xml:space="preserve">
-    <value>Deleting this singer will permanently remove all related files. This action cannot be undone.</value>
-  </data>
   <data name="SingerDetail.Delete" xml:space="preserve">
     <value>Delete Singer</value>
   </data>
@@ -783,6 +795,12 @@
   </data>
   <data name="PianoRoll.Action.SwitchToEraser" xml:space="preserve">
     <value>Switch to Eraser</value>
+  </data>
+  <data name="PianoRoll.Clipboard.Cleared" xml:space="preserve">
+    <value>Note clipboard cleared</value>
+  </data>
+  <data name="PianoRoll.Action.CreateNote" xml:space="preserve">
+    <value>Create note</value>
   </data>
   <data name="PianoRoll.Action.AddControlPoint" xml:space="preserve">
     <value>Add Control Point at Playhead</value>
@@ -1382,7 +1400,7 @@
     <value>Installation failed: {0}</value>
   </data>
   <data name="SingerSetup.StepFormat" xml:space="preserve">
-    <value>Step {0} / 4</value>
+    <value>Step {0} / {1}</value>
   </data>
   <data name="Splash.DocManager" xml:space="preserve">
     <value>Initializing document manager</value>
@@ -2188,6 +2206,18 @@
   <data name="PluginManager.SelectFile" xml:space="preserve">
     <value>Select DLL plugin</value>
   </data>
+  <data name="PluginManager.TrustTitle" xml:space="preserve">
+    <value>Trust plugin</value>
+  </data>
+  <data name="PluginManager.TrustQuestion" xml:space="preserve">
+    <value>Do you trust the plugin “{0}”?</value>
+  </data>
+  <data name="PluginManager.TrustMessage" xml:space="preserve">
+    <value>Plugins have the same permissions as this app. Malicious plugins may read or leak personal information, modify or delete files, or perform other harmful actions.&#10;&#10;The OpenUtau Mobile developers are not responsible for plugin behavior. Only install plugins from trusted sources.</value>
+  </data>
+  <data name="PluginManager.Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
   <data name="PluginManager.Checking" xml:space="preserve">
     <value>Checking managed assembly…</value>
   </data>
@@ -2321,6 +2351,9 @@
   <data name="Desktop.NavigationHint" xml:space="preserve"><value>Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
   <data name="Desktop.PitchEraserHint" xml:space="preserve"><value>Drag: erase pitch · Middle drag: pan · Ctrl/Cmd + wheel: zoom</value></data>
   <data name="BulkLyricEdit.TargetCount" xml:space="preserve"><value>Notes to update: {0}</value></data>
+  <data name="Editor.Clipboard.Cleared" xml:space="preserve">
+    <value>Part clipboard cleared</value>
+  </data>
   <data name="Editor.Selection.Copied" xml:space="preserve">
     <value>{0} parts copied</value>
   </data>
@@ -2576,4 +2609,117 @@ Applying replaces the source of this input.</value></data>
   <data name="Editor.Repeat" xml:space="preserve"><value>Repeat</value></data>
   <data name="Editor.Record" xml:space="preserve"><value>Record</value></data>
   <data name="Editor.RecordTodo" xml:space="preserve"><value>TODO: Recording</value></data>
+  <data name="SingerSetup.Review" xml:space="preserve"><value>Review installation</value></data>
+  <data name="SingerSetup.SelectInstaller" xml:space="preserve"><value>Select installer</value></data>
+  <data name="SingerSetup.SearchInstaller" xml:space="preserve"><value>Search installers</value></data>
+  <data name="SingerSetup.MoreInstallers" xml:space="preserve"><value>More installers</value></data>
+  <data name="SingerSetup.RequiredField" xml:space="preserve"><value>Required</value></data>
+  <data name="SingerSetup.InvalidValue" xml:space="preserve"><value>Invalid value</value></data>
+  <data name="SingerSetup.PartialFailure" xml:space="preserve"><value>Installed with errors</value></data>
+  <data name="SingerSetup.WrongInstaller" xml:space="preserve"><value>Wrong installer for this package.</value></data>
+  <data name="Common.Browse" xml:space="preserve"><value>Browse</value></data>
+  <data name="SingerAvailability.Unsupported" xml:space="preserve"><value>Unsupported</value></data>
+  <data name="SingerAvailability.Invalid" xml:space="preserve"><value>Invalid</value></data>
+  <data name="SingerAvailability.MissingResources" xml:space="preserve"><value>Missing resources</value></data>
+  <data name="SingerAvailability.Unavailable" xml:space="preserve"><value>Unavailable</value></data>
+  <data name="SingerSetup.TypeConflict" xml:space="preserve"><value>Selected {0}, but character.yaml declares {1}. Go back and select the matching installer.</value></data>
+  <data name="SingerSetup.Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="SingerSetup.RollingBack" xml:space="preserve"><value>Cancelling and rolling back…</value></data>
+  <data name="SingerSetup.RollbackFailed" xml:space="preserve"><value>Rollback failed</value></data>
+  <data name="SingerSetup.InstallInProgress" xml:space="preserve"><value>Installation is in progress. Cancel it before leaving.</value></data>
+  <data name="SingerSetup.TargetExists" xml:space="preserve"><value>The destination already exists.</value></data>
+  <data name="SingerSetup.PackageName" xml:space="preserve"><value>Singer name</value></data>
+  <data name="SingerSetup.PackageVersion" xml:space="preserve"><value>Voicebank version</value></data>
+  <data name="SingerSetup.ReadingMetadata" xml:space="preserve"><value>Reading metadata…</value></data>
+  <data name="SingerSetup.MetadataUnavailable" xml:space="preserve"><value>Could not parse metadata</value></data>
+  <data name="SingerDiscovery.MissingReference" xml:space="preserve"><value>Singer not found. Check plugins and singer folders.</value></data>
+  <data name="SingerAvailability.Ready" xml:space="preserve"><value>Ready</value></data>
+  <data name="PluginWebSettings.Title" xml:space="preserve"><value>Plugin settings</value></data>
+  <data name="PluginWebSettings.OpenBrowser" xml:space="preserve"><value>Open in system browser</value></data>
+  <data name="PluginWebSettings.Unavailable" xml:space="preserve"><value>Web settings are currently unavailable.</value></data>
+  <data name="PluginWebSettings.InvalidAddress" xml:space="preserve"><value>The plugin returned an invalid web address.</value></data>
+  <data name="PluginWebSettings.OpenFailed" xml:space="preserve"><value>Could not open plugin settings.</value></data>
+  <data name="PluginWebSettings.BrowserFailed" xml:space="preserve"><value>Could not open the system browser.</value></data>
+  <data name="PluginWebSettings.WebViewFailed" xml:space="preserve"><value>The system WebView could not load this page. Use the top-right button to open it in your browser.</value></data>
+  <data name="Warning.Plugin.Title" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="Warning.Plugin.Detail" xml:space="preserve"><value>{2}</value></data>
+  <data name="ProjectSave.Capturing" xml:space="preserve"><value>Capturing project snapshot…</value></data>
+  <data name="ProjectSave.Waiting" xml:space="preserve"><value>Waiting for the current save…</value></data>
+  <data name="ProjectSave.Preparing" xml:space="preserve"><value>Preparing project data…</value></data>
+  <data name="ProjectSave.Serializing" xml:space="preserve"><value>Serializing project…</value></data>
+  <data name="ProjectSave.Writing" xml:space="preserve"><value>Writing project file…</value></data>
+  <data name="ProjectSave.Replacing" xml:space="preserve"><value>Replacing project file…</value></data>
+  <data name="ProjectSave.Synchronizing" xml:space="preserve"><value>Synchronizing storage…</value></data>
+  <data name="ProjectSave.Confirming" xml:space="preserve"><value>Confirming saved version…</value></data>
+    <data name="TrackPreparation.Singer" xml:space="preserve"><value>Loading singer resources…</value></data>
+    <data name="TrackPreparation.Phonemizer" xml:space="preserve"><value>Preparing phonemizer…</value></data>
+    <data name="TrackPreparation.Applying" xml:space="preserve"><value>Applying track settings…</value></data>
+    <data name="TrackPreparation.Mapping" xml:space="preserve"><value>Preparing voice color mapping…</value></data>
+    <data name="Editor.Phonemizing" xml:space="preserve"><value>Phonemizing: {0} of {1} parts pending · {2}s</value></data>
+  <data name="Settings.Edit.ShowGhostNotes" xml:space="preserve">
+    <value>Show other tracks’ notes</value>
+  </data>
+  <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
+    <value>Show notes from other tracks overlapping the current part in the piano roll background.</value>
+  </data>
+  <data name="Common.More" xml:space="preserve">
+    <value>More actions</value>
+  </data>
+  <data name="PluginDetails.Title" xml:space="preserve"><value>Plugin details</value></data>
+  <data name="PluginDetails.BasicInfo" xml:space="preserve"><value>Basic information</value></data>
+  <data name="PluginDetails.EnablePlugin" xml:space="preserve"><value>Enable plugin</value></data>
+  <data name="PluginDetails.Enabled" xml:space="preserve"><value>Enabled</value></data>
+  <data name="PluginDetails.Disabled" xml:space="preserve"><value>Disabled</value></data>
+  <data name="PluginDetails.RestartDescription" xml:space="preserve"><value>Changes apply after restarting the app.</value></data>
+  <data name="PluginDetails.RestartRequired" xml:space="preserve"><value>Restart the app to apply the enabled state.</value></data>
+  <data name="PluginDetails.Loaded" xml:space="preserve"><value>Loaded</value></data>
+  <data name="PluginDetails.NotLoaded" xml:space="preserve"><value>Not loaded. Restart the app; if this persists, check the plugin load error.</value></data>
+  <data name="PluginDetails.Capabilities" xml:space="preserve"><value>Capabilities</value></data>
+  <data name="PluginDetails.CapabilitiesDescription" xml:space="preserve"><value>Shows the last successful registration. Dynamic settings are queried when this page opens.</value></data>
+  <data name="PluginDetails.ConfigurationData" xml:space="preserve"><value>Configuration and data</value></data>
+  <data name="PluginDetails.SettingsUnavailable" xml:space="preserve"><value>Settings require a loaded, enabled plugin that provides configuration.</value></data>
+  <data name="PluginDetails.DataDirectory" xml:space="preserve"><value>Plugin data directory · copy path</value></data>
+  <data name="PluginDetails.DataUnavailable" xml:space="preserve"><value>Available after the plugin successfully registers its ID.</value></data>
+  <data name="PluginDetails.ClearData" xml:space="preserve"><value>Clear plugin data</value></data>
+  <data name="PluginDetails.CancelDataClear" xml:space="preserve"><value>Cancel data clear</value></data>
+  <data name="PluginDetails.ClearDataDescription" xml:space="preserve"><value>Clears settings and other files in this directory after restart.</value></data>
+  <data name="PluginDetails.DataClearPending" xml:space="preserve"><value>Data will be cleared before plugins load on the next start. Tap to cancel.</value></data>
+  <data name="PluginDetails.ClearDataQuestion" xml:space="preserve"><value>Clear all data for “{0}” on the next start? This includes its configuration and cannot be undone after clearing.</value></data>
+  <data name="PluginDetails.UninstallQuestion" xml:space="preserve"><value>Uninstall “{0}” on the next start? Plugin data is kept; use Clear plugin data to remove it.</value></data>
+  <data name="PluginDetails.UninstallDescription" xml:space="preserve"><value>Removes the plugin file after restart and keeps its data.</value></data>
+  <data name="PluginDetails.PathCopied" xml:space="preserve"><value>Data directory path copied.</value></data>
+  <data name="PluginDetails.OperationFailed" xml:space="preserve"><value>Plugin operation failed: {0}</value></data>
+  <data name="PluginDetails.DataClearFailed" xml:space="preserve"><value>Some plugin data could not be cleared. Check the log and try again from plugin details.</value></data>
+  <data name="PluginDetails.SignatureDescription" xml:space="preserve"><value>Signature flags and public keys are metadata only; publisher identity and signature validity have not been verified.</value></data>
+  <data name="PluginDetails.SignaturePresent" xml:space="preserve"><value>Present · not verified</value></data>
+  <data name="PluginDetails.Unsigned" xml:space="preserve"><value>None</value></data>
+  <data name="PluginDetails.Assembly" xml:space="preserve"><value>Assembly</value></data>
+  <data name="PluginDetails.Version" xml:space="preserve"><value>Assembly version</value></data>
+  <data name="PluginDetails.File" xml:space="preserve"><value>Plugin file</value></data>
+  <data name="PluginDetails.Size" xml:space="preserve"><value>File size</value></data>
+  <data name="PluginDetails.Architecture" xml:space="preserve"><value>Architecture</value></data>
+  <data name="PluginDetails.Module" xml:space="preserve"><value>Module ID</value></data>
+  <data name="PluginDetails.Name" xml:space="preserve"><value>Name</value></data>
+  <data name="PluginDetails.Description" xml:space="preserve"><value>Description</value></data>
+  <data name="PluginDetails.Author" xml:space="preserve"><value>Company / author</value></data>
+  <data name="PluginDetails.Product" xml:space="preserve"><value>Product</value></data>
+  <data name="PluginDetails.Copyright" xml:space="preserve"><value>Copyright</value></data>
+  <data name="PluginDetails.ProductVersion" xml:space="preserve"><value>Product version</value></data>
+  <data name="PluginDetails.FileVersion" xml:space="preserve"><value>File version</value></data>
+  <data name="PluginDetails.Framework" xml:space="preserve"><value>Target framework</value></data>
+  <data name="PluginDetails.PublicKeyToken" xml:space="preserve"><value>Public key token</value></data>
+  <data name="PluginDetails.PublicKey" xml:space="preserve"><value>Public key</value></data>
+  <data name="PluginDetails.StrongName" xml:space="preserve"><value>Strong-name signature flag</value></data>
+  <data name="PluginDetails.Authenticode" xml:space="preserve"><value>Authenticode certificate table</value></data>
+  <data name="PluginDetails.References" xml:space="preserve"><value>Assembly references</value></data>
+  <data name="PluginDetails.Hash" xml:space="preserve"><value>SHA-256</value></data>
+  <data name="PluginDetails.Id" xml:space="preserve"><value>Plugin ID</value></data>
+  <data name="PluginDetails.SingerType" xml:space="preserve"><value>Singer type</value></data>
+  <data name="PluginDetails.Renderer" xml:space="preserve"><value>Renderer</value></data>
+  <data name="PluginDetails.Provider" xml:space="preserve"><value>Discovery provider</value></data>
+  <data name="PluginDetails.Installer" xml:space="preserve"><value>Installer</value></data>
+  <data name="PluginDetails.EntryPoint" xml:space="preserve"><value>Plugin entry point</value></data>
+  <data name="PluginDetails.ContractVersion" xml:space="preserve"><value>Contract version</value></data>
+  <data name="PluginDetails.Phonemizer" xml:space="preserve"><value>Phonemizer</value></data>
+  <data name="PluginDetails.BatchEdit" xml:space="preserve"><value>Batch editing tool</value></data>
 </root>

@@ -14,20 +14,27 @@ public class ViewLocator : IDataTemplate
     private static readonly IReadOnlyDictionary<Type, Func<Control>> ViewFactories = new Dictionary<Type, Func<Control>>
     {
         [typeof(AboutViewModel)] = static () => new AboutView(),
-        [typeof(ClassicSingerSetupViewModel)] = static () => new ClassicSingerSetupView(),
         [typeof(DependencyManagerViewModel)] = static () => new DependencyManagerView(),
+        [typeof(DiffSingerSetupViewModel)] = static () => new DiffSingerSetupView(),
         [typeof(EditorViewModel)] = static () => new EditorView(),
+        [typeof(EnunuSingerSetupViewModel)] = static () => new EnunuSingerSetupView(),
         [typeof(ExportLogsViewModel)] = static () => new ExportLogsView(),
         [typeof(ExpressionGraphEditorViewModel)] = static () => new ExpressionGraphEditorView(),
         [typeof(ExpressionGraphLibraryViewModel)] = static () => new ExpressionGraphLibraryView(),
         [typeof(HomeViewModel)] = static () => new HomeView(),
+        [typeof(NeutrinoSingerSetupViewModel)] = static () => new NeutrinoSingerSetupView(),
         [typeof(OptionsViewModel)] = static () => new OptionsView(),
+        [typeof(PluginDetailsViewModel)] = static () => new PluginDetailsView(),
         [typeof(PluginManagerViewModel)] = static () => new PluginManagerView(),
+        [typeof(PluginSingerSetupViewModel)] = static () => new PluginSingerSetupView(),
+        [typeof(PluginWebSettingsViewModel)] = static () => new PluginWebSettingsView(),
         [typeof(SandboxFileManagerViewModel)] = static () => new SandboxFileManagerView(),
         [typeof(SettingsViewModel)] = static () => new SettingsView(),
         [typeof(SingerDetailViewModel)] = static () => new SingerDetailView(),
         [typeof(SingerManagementViewModel)] = static () => new SingerManagementView(),
+        [typeof(SingleFileSingerSetupViewModel)] = static () => new SingleFileSingerSetupView(),
         [typeof(SplashScreenViewModel)] = static () => new SplashScreenView(),
+        [typeof(UtauSingerSetupViewModel)] = static () => new UtauSingerSetupView(),
     };
 
     public Control? Build(object? data)
