@@ -2,8 +2,8 @@ name: Build APK Artifact
 
 on:
   push:
-    tags:
-      - 'custom-resampler-*'
+    branches:
+      - feature/custom-resampler-manager
 
 permissions:
   contents: write
@@ -65,10 +65,10 @@ jobs:
           if-no-files-found: error
 
       - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: contains(github.event.head_commit.message, '[release]')
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
+          TAG: custom-resampler-v0.1
         run: |
           set -euo pipefail
           apk=$(find OpenUtauMobile.Android/bin/Release -name '*-Signed.apk' | head -n1)
@@ -77,6 +77,7 @@ jobs:
           cp "$apk" OpenUtauMobile-custom-resampler-android-arm64.apk
           gh release create "$TAG" OpenUtauMobile-custom-resampler-android-arm64.apk \
             --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
             --title "Custom resamplers (Android ARM64 test build)" \
             --notes-file .github/release-notes/custom-resampler.md \
             --prerelease
