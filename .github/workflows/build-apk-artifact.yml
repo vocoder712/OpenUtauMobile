@@ -73,16 +73,16 @@ jobs:
         if: contains(github.event.head_commit.message, '[release]')
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: custom-resampler-v0.2
+          TAG: custom-resampler-v0.3
         run: |
           set -euo pipefail
           apk=$(find OpenUtauMobile.Android/bin/Release -name '*-Signed.apk' | head -n1)
           if [ -z "$apk" ]; then apk=$(find OpenUtauMobile.Android/bin/Release -name '*.apk' | head -n1); fi
           test -n "$apk"
-          cp "$apk" OpenUtauMobile-custom-resampler-v0.2-android-arm64.apk
-          gh release create "$TAG" OpenUtauMobile-custom-resampler-v0.2-android-arm64.apk \
+          cp "$apk" OpenUtauMobile-custom-resampler-v0.3-android-arm64.apk
+          gh release create "$TAG" OpenUtauMobile-custom-resampler-v0.3-android-arm64.apk \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Custom resamplers v0.2 (separate app, Android ARM64)" \
+            --title "Custom resamplers v0.3 (separate app, target API 28)" \
             --notes-file .github/release-notes/custom-resampler.md \
             --prerelease
