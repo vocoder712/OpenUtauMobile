@@ -2275,6 +2275,99 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>取消删除标记失败</value>
   </data>
+  <data name="Options.ResamplerManager" xml:space="preserve">
+    <value>自定义重采样器</value>
+  </data>
+  <data name="Options.ResamplerManager.Desc" xml:space="preserve">
+    <value>添加和移除外部重采样器</value>
+  </data>
+  <data name="ResamplerManager.Title" xml:space="preserve">
+    <value>自定义重采样器</value>
+  </data>
+  <data name="ResamplerManager.Add" xml:space="preserve">
+    <value>添加重采样器</value>
+  </data>
+  <data name="ResamplerManager.Empty" xml:space="preserve">
+    <value>还没有自定义重采样器，点按 + 添加。</value>
+  </data>
+  <data name="ResamplerManager.Hint" xml:space="preserve">
+    <value>支持的文件：{0}。添加后可在轨道渲染设置中选用。列入此处不代表程序一定能在本设备上运行。</value>
+  </data>
+  <data name="ResamplerManager.NoExtension" xml:space="preserve">
+    <value>无扩展名</value>
+  </data>
+  <data name="ResamplerManager.SelectFile" xml:space="preserve">
+    <value>选择重采样器</value>
+  </data>
+  <data name="ResamplerManager.RefreshFailed" xml:space="preserve">
+    <value>读取重采样器失败：{0}</value>
+  </data>
+  <data name="ResamplerManager.Available" xml:space="preserve">
+    <value>可在轨道渲染设置中选用</value>
+  </data>
+  <data name="ResamplerManager.Unavailable" xml:space="preserve">
+    <value>本设备未能加载</value>
+  </data>
+  <data name="ResamplerManager.UnsupportedFile" xml:space="preserve">
+    <value>本设备无法加载此类型的文件。</value>
+  </data>
+  <data name="ResamplerManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>该名称已被内置重采样器占用，请重命名文件后重试。</value>
+  </data>
+  <data name="ResamplerManager.AlreadyInstalled" xml:space="preserve">
+    <value>该文件已位于重采样器目录中。</value>
+  </data>
+  <data name="ResamplerManager.TrustTitle" xml:space="preserve">
+    <value>添加重采样器？</value>
+  </data>
+  <data name="ResamplerManager.TrustQuestion" xml:space="preserve">
+    <value>要添加“{0}”吗？</value>
+  </data>
+  <data name="ResamplerManager.TrustMessage" xml:space="preserve">
+    <value>重采样器是会在你的设备上运行的外部程序，请仅添加来源可信的文件。</value>
+  </data>
+  <data name="ResamplerManager.Continue" xml:space="preserve">
+    <value>添加</value>
+  </data>
+  <data name="ResamplerManager.ReplaceTitle" xml:space="preserve">
+    <value>替换重采样器？</value>
+  </data>
+  <data name="ResamplerManager.ReplaceMessage" xml:space="preserve">
+    <value>“{0}”已存在，要用所选文件替换吗？</value>
+  </data>
+  <data name="ResamplerManager.Replace" xml:space="preserve">
+    <value>替换</value>
+  </data>
+  <data name="ResamplerManager.Installing" xml:space="preserve">
+    <value>正在添加重采样器…</value>
+  </data>
+  <data name="ResamplerManager.Completed" xml:space="preserve">
+    <value>完成</value>
+  </data>
+  <data name="ResamplerManager.InstallFailed" xml:space="preserve">
+    <value>添加重采样器失败</value>
+  </data>
+  <data name="ResamplerManager.Installed" xml:space="preserve">
+    <value>已添加重采样器</value>
+  </data>
+  <data name="ResamplerManager.DeleteTitle" xml:space="preserve">
+    <value>移除重采样器？</value>
+  </data>
+  <data name="ResamplerManager.DeleteMessage" xml:space="preserve">
+    <value>要移除“{0}”及其清单吗？使用它的工程将回退到默认重采样器。</value>
+  </data>
+  <data name="ResamplerManager.DeleteFailed" xml:space="preserve">
+    <value>移除重采样器失败</value>
+  </data>
+  <data name="ResamplerManager.Removing" xml:space="preserve">
+    <value>正在移除重采样器…</value>
+  </data>
+  <data name="ResamplerManager.Removed" xml:space="preserve">
+    <value>已移除重采样器</value>
+  </data>
+  <data name="ResamplerManager.CloseProjectFirst" xml:space="preserve">
+    <value>请先关闭当前打开的工程，再修改重采样器。</value>
+  </data>
   <data name="Desktop.Workspace" xml:space="preserve"><value>工作区</value></data>
   <data name="Desktop.Arrangement" xml:space="preserve"><value>编曲</value></data>
   <data name="Desktop.PianoRoll" xml:space="preserve"><value>钢琴卷帘</value></data>

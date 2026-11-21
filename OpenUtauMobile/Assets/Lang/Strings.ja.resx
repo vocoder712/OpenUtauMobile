@@ -2271,6 +2271,99 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>削除予定の取り消しに失敗しました</value>
   </data>
+  <data name="Options.ResamplerManager" xml:space="preserve">
+    <value>カスタムリサンプラー</value>
+  </data>
+  <data name="Options.ResamplerManager.Desc" xml:space="preserve">
+    <value>外部リサンプラーの追加と削除</value>
+  </data>
+  <data name="ResamplerManager.Title" xml:space="preserve">
+    <value>カスタムリサンプラー</value>
+  </data>
+  <data name="ResamplerManager.Add" xml:space="preserve">
+    <value>リサンプラーを追加</value>
+  </data>
+  <data name="ResamplerManager.Empty" xml:space="preserve">
+    <value>カスタムリサンプラーはまだありません。+ をタップして追加します。</value>
+  </data>
+  <data name="ResamplerManager.Hint" xml:space="preserve">
+    <value>対応ファイル：{0}。追加したリサンプラーはトラックのレンダリング設定で選べます。一覧に表示されても、このデバイスで実行できるとは限りません。</value>
+  </data>
+  <data name="ResamplerManager.NoExtension" xml:space="preserve">
+    <value>拡張子なし</value>
+  </data>
+  <data name="ResamplerManager.SelectFile" xml:space="preserve">
+    <value>リサンプラーを選択</value>
+  </data>
+  <data name="ResamplerManager.RefreshFailed" xml:space="preserve">
+    <value>リサンプラーを読み込めませんでした：{0}</value>
+  </data>
+  <data name="ResamplerManager.Available" xml:space="preserve">
+    <value>トラックのレンダリング設定で選択できます</value>
+  </data>
+  <data name="ResamplerManager.Unavailable" xml:space="preserve">
+    <value>このデバイスでは読み込まれていません</value>
+  </data>
+  <data name="ResamplerManager.UnsupportedFile" xml:space="preserve">
+    <value>このデバイスでは、この種類のファイルを読み込めません。</value>
+  </data>
+  <data name="ResamplerManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>この名前は内蔵リサンプラーが使用しています。ファイル名を変更してもう一度お試しください。</value>
+  </data>
+  <data name="ResamplerManager.AlreadyInstalled" xml:space="preserve">
+    <value>このファイルはすでにリサンプラーのフォルダーにあります。</value>
+  </data>
+  <data name="ResamplerManager.TrustTitle" xml:space="preserve">
+    <value>リサンプラーを追加しますか？</value>
+  </data>
+  <data name="ResamplerManager.TrustQuestion" xml:space="preserve">
+    <value>「{0}」を追加しますか？</value>
+  </data>
+  <data name="ResamplerManager.TrustMessage" xml:space="preserve">
+    <value>リサンプラーはデバイス上で実行される外部プログラムです。信頼できる入手元のファイルだけを追加してください。</value>
+  </data>
+  <data name="ResamplerManager.Continue" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="ResamplerManager.ReplaceTitle" xml:space="preserve">
+    <value>リサンプラーを置き換えますか？</value>
+  </data>
+  <data name="ResamplerManager.ReplaceMessage" xml:space="preserve">
+    <value>「{0}」はすでに追加されています。選択したファイルで置き換えますか？</value>
+  </data>
+  <data name="ResamplerManager.Replace" xml:space="preserve">
+    <value>置き換え</value>
+  </data>
+  <data name="ResamplerManager.Installing" xml:space="preserve">
+    <value>リサンプラーを追加しています…</value>
+  </data>
+  <data name="ResamplerManager.Completed" xml:space="preserve">
+    <value>完了</value>
+  </data>
+  <data name="ResamplerManager.InstallFailed" xml:space="preserve">
+    <value>リサンプラーを追加できませんでした</value>
+  </data>
+  <data name="ResamplerManager.Installed" xml:space="preserve">
+    <value>リサンプラーを追加しました</value>
+  </data>
+  <data name="ResamplerManager.DeleteTitle" xml:space="preserve">
+    <value>リサンプラーを削除しますか？</value>
+  </data>
+  <data name="ResamplerManager.DeleteMessage" xml:space="preserve">
+    <value>「{0}」とそのマニフェストを削除しますか？使用しているプロジェクトは既定のリサンプラーに戻ります。</value>
+  </data>
+  <data name="ResamplerManager.DeleteFailed" xml:space="preserve">
+    <value>リサンプラーを削除できませんでした</value>
+  </data>
+  <data name="ResamplerManager.Removing" xml:space="preserve">
+    <value>リサンプラーを削除しています…</value>
+  </data>
+  <data name="ResamplerManager.Removed" xml:space="preserve">
+    <value>リサンプラーを削除しました</value>
+  </data>
+  <data name="ResamplerManager.CloseProjectFirst" xml:space="preserve">
+    <value>リサンプラーを変更する前に、開いているプロジェクトを閉じてください。</value>
+  </data>
   <data name="Desktop.Workspace" xml:space="preserve"><value>ワークスペース</value></data>
   <data name="Desktop.Arrangement" xml:space="preserve"><value>アレンジ</value></data>
   <data name="Desktop.PianoRoll" xml:space="preserve"><value>ピアノロール</value></data>

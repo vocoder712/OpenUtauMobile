@@ -2275,6 +2275,99 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>Failed to undo deletion</value>
   </data>
+  <data name="Options.ResamplerManager" xml:space="preserve">
+    <value>Custom resamplers</value>
+  </data>
+  <data name="Options.ResamplerManager.Desc" xml:space="preserve">
+    <value>Add and remove external resamplers</value>
+  </data>
+  <data name="ResamplerManager.Title" xml:space="preserve">
+    <value>Custom resamplers</value>
+  </data>
+  <data name="ResamplerManager.Add" xml:space="preserve">
+    <value>Add resampler</value>
+  </data>
+  <data name="ResamplerManager.Empty" xml:space="preserve">
+    <value>No custom resamplers yet. Tap + to add one.</value>
+  </data>
+  <data name="ResamplerManager.Hint" xml:space="preserve">
+    <value>Supported files: {0}. Added resamplers appear in track render settings. Being listed doesn't guarantee a program runs on this device.</value>
+  </data>
+  <data name="ResamplerManager.NoExtension" xml:space="preserve">
+    <value>no extension</value>
+  </data>
+  <data name="ResamplerManager.SelectFile" xml:space="preserve">
+    <value>Select a resampler</value>
+  </data>
+  <data name="ResamplerManager.RefreshFailed" xml:space="preserve">
+    <value>Failed to read resamplers: {0}</value>
+  </data>
+  <data name="ResamplerManager.Available" xml:space="preserve">
+    <value>Available in track render settings</value>
+  </data>
+  <data name="ResamplerManager.Unavailable" xml:space="preserve">
+    <value>Not loaded on this device</value>
+  </data>
+  <data name="ResamplerManager.UnsupportedFile" xml:space="preserve">
+    <value>This device can't load this file type.</value>
+  </data>
+  <data name="ResamplerManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>This name is reserved by a built-in resampler. Rename the file and try again.</value>
+  </data>
+  <data name="ResamplerManager.AlreadyInstalled" xml:space="preserve">
+    <value>This file is already in the resampler folder.</value>
+  </data>
+  <data name="ResamplerManager.TrustTitle" xml:space="preserve">
+    <value>Add resampler?</value>
+  </data>
+  <data name="ResamplerManager.TrustQuestion" xml:space="preserve">
+    <value>Add “{0}”?</value>
+  </data>
+  <data name="ResamplerManager.TrustMessage" xml:space="preserve">
+    <value>Resamplers are external programs that run on your device. Only add files from sources you trust.</value>
+  </data>
+  <data name="ResamplerManager.Continue" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="ResamplerManager.ReplaceTitle" xml:space="preserve">
+    <value>Replace resampler?</value>
+  </data>
+  <data name="ResamplerManager.ReplaceMessage" xml:space="preserve">
+    <value>“{0}” is already added. Replace it with the selected file?</value>
+  </data>
+  <data name="ResamplerManager.Replace" xml:space="preserve">
+    <value>Replace</value>
+  </data>
+  <data name="ResamplerManager.Installing" xml:space="preserve">
+    <value>Adding resampler…</value>
+  </data>
+  <data name="ResamplerManager.Completed" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="ResamplerManager.InstallFailed" xml:space="preserve">
+    <value>Failed to add the resampler</value>
+  </data>
+  <data name="ResamplerManager.Installed" xml:space="preserve">
+    <value>Resampler added</value>
+  </data>
+  <data name="ResamplerManager.DeleteTitle" xml:space="preserve">
+    <value>Remove resampler?</value>
+  </data>
+  <data name="ResamplerManager.DeleteMessage" xml:space="preserve">
+    <value>Remove “{0}” and its manifest? Projects that use it will fall back to the default resampler.</value>
+  </data>
+  <data name="ResamplerManager.DeleteFailed" xml:space="preserve">
+    <value>Failed to remove the resampler</value>
+  </data>
+  <data name="ResamplerManager.Removing" xml:space="preserve">
+    <value>Removing resampler…</value>
+  </data>
+  <data name="ResamplerManager.Removed" xml:space="preserve">
+    <value>Resampler removed</value>
+  </data>
+  <data name="ResamplerManager.CloseProjectFirst" xml:space="preserve">
+    <value>Close the open project before changing resamplers.</value>
+  </data>
   <data name="Desktop.Workspace" xml:space="preserve"><value>Workspace</value></data>
   <data name="Desktop.Arrangement" xml:space="preserve"><value>Arrangement</value></data>
   <data name="Desktop.PianoRoll" xml:space="preserve"><value>Piano roll</value></data>
