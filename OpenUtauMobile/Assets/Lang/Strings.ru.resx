@@ -2230,6 +2230,99 @@
   <data name="PluginManager.CancelDeletionFailed" xml:space="preserve">
     <value>Не удалось отменить удаление</value>
   </data>
+  <data name="Options.ResamplerManager" xml:space="preserve">
+    <value>Пользовательские ресемплеры</value>
+  </data>
+  <data name="Options.ResamplerManager.Desc" xml:space="preserve">
+    <value>Добавление и удаление внешних ресемплеров</value>
+  </data>
+  <data name="ResamplerManager.Title" xml:space="preserve">
+    <value>Пользовательские ресемплеры</value>
+  </data>
+  <data name="ResamplerManager.Add" xml:space="preserve">
+    <value>Добавить ресемплер</value>
+  </data>
+  <data name="ResamplerManager.Empty" xml:space="preserve">
+    <value>Пользовательских ресемплеров пока нет. Нажмите +, чтобы добавить.</value>
+  </data>
+  <data name="ResamplerManager.Hint" xml:space="preserve">
+    <value>Поддерживаемые файлы: {0}. Добавленные ресемплеры доступны в настройках рендеринга дорожки. Наличие в списке не гарантирует, что программа запустится на этом устройстве.</value>
+  </data>
+  <data name="ResamplerManager.NoExtension" xml:space="preserve">
+    <value>без расширения</value>
+  </data>
+  <data name="ResamplerManager.SelectFile" xml:space="preserve">
+    <value>Выберите ресемплер</value>
+  </data>
+  <data name="ResamplerManager.RefreshFailed" xml:space="preserve">
+    <value>Не удалось прочитать ресемплеры: {0}</value>
+  </data>
+  <data name="ResamplerManager.Available" xml:space="preserve">
+    <value>Доступен в настройках рендеринга дорожки</value>
+  </data>
+  <data name="ResamplerManager.Unavailable" xml:space="preserve">
+    <value>Не загружен на этом устройстве</value>
+  </data>
+  <data name="ResamplerManager.UnsupportedFile" xml:space="preserve">
+    <value>Это устройство не может загрузить файл такого типа.</value>
+  </data>
+  <data name="ResamplerManager.BuiltinNotAllowed" xml:space="preserve">
+    <value>Это имя занято встроенным ресемплером. Переименуйте файл и повторите попытку.</value>
+  </data>
+  <data name="ResamplerManager.AlreadyInstalled" xml:space="preserve">
+    <value>Этот файл уже находится в папке ресемплеров.</value>
+  </data>
+  <data name="ResamplerManager.TrustTitle" xml:space="preserve">
+    <value>Добавить ресемплер?</value>
+  </data>
+  <data name="ResamplerManager.TrustQuestion" xml:space="preserve">
+    <value>Добавить «{0}»?</value>
+  </data>
+  <data name="ResamplerManager.TrustMessage" xml:space="preserve">
+    <value>Ресемплеры — это внешние программы, которые запускаются на вашем устройстве. Добавляйте только файлы из надёжных источников.</value>
+  </data>
+  <data name="ResamplerManager.Continue" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="ResamplerManager.ReplaceTitle" xml:space="preserve">
+    <value>Заменить ресемплер?</value>
+  </data>
+  <data name="ResamplerManager.ReplaceMessage" xml:space="preserve">
+    <value>«{0}» уже добавлен. Заменить его выбранным файлом?</value>
+  </data>
+  <data name="ResamplerManager.Replace" xml:space="preserve">
+    <value>Заменить</value>
+  </data>
+  <data name="ResamplerManager.Installing" xml:space="preserve">
+    <value>Добавление ресемплера…</value>
+  </data>
+  <data name="ResamplerManager.Completed" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="ResamplerManager.InstallFailed" xml:space="preserve">
+    <value>Не удалось добавить ресемплер</value>
+  </data>
+  <data name="ResamplerManager.Installed" xml:space="preserve">
+    <value>Ресемплер добавлен</value>
+  </data>
+  <data name="ResamplerManager.DeleteTitle" xml:space="preserve">
+    <value>Удалить ресемплер?</value>
+  </data>
+  <data name="ResamplerManager.DeleteMessage" xml:space="preserve">
+    <value>Удалить «{0}» и его манифест? Проекты, которые его используют, перейдут на ресемплер по умолчанию.</value>
+  </data>
+  <data name="ResamplerManager.DeleteFailed" xml:space="preserve">
+    <value>Не удалось удалить ресемплер</value>
+  </data>
+  <data name="ResamplerManager.Removing" xml:space="preserve">
+    <value>Удаление ресемплера…</value>
+  </data>
+  <data name="ResamplerManager.Removed" xml:space="preserve">
+    <value>Ресемплер удалён</value>
+  </data>
+  <data name="ResamplerManager.CloseProjectFirst" xml:space="preserve">
+    <value>Закройте открытый проект, прежде чем менять ресемплеры.</value>
+  </data>
   <data name="Desktop.Workspace" xml:space="preserve"><value>Рабочая область</value></data>
   <data name="Desktop.Arrangement" xml:space="preserve"><value>Аранжировка</value></data>
   <data name="Desktop.PianoRoll" xml:space="preserve"><value>Пианоролл</value></data>
