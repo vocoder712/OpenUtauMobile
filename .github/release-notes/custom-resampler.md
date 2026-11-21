@@ -1,5 +1,7 @@
 ## Custom resamplers (test build)
 
+> **Vibe-coded with AI.** The Custom resamplers feature in this build was written by [Claude](https://claude.com/claude-code) (Anthropic's AI, Claude Sonnet 5.5), directed by sparky-commits1637. The code has not been hand-reviewed or tested on a device yet, so please treat it as experimental.
+
 Adds a **Custom resamplers** page to OpenUtau Mobile so you can use your own external resamplers.
 
 ### What's new
