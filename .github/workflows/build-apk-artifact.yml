@@ -53,9 +53,14 @@ jobs:
           set -euo pipefail
           sdkmanager "ndk;$(tr -d '\r\n' < native/android-ndk-version.txt)"
 
+      - name: Give the build its own app name (CI only, repo files stay unchanged)
+        run: |
+          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">OpenUtau Mobile (Custom Resampler)</string>|' OpenUtauMobile.Android/Resources/values/strings.xml
+          grep -n app_name OpenUtauMobile.Android/Resources/values/strings.xml
+
       - name: Build Android ARM64
         run: |
-          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj
+          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -p:ApplicationId=pers.vocoder712.openutaumobile.canary.resampler
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -68,16 +73,16 @@ jobs:
         if: contains(github.event.head_commit.message, '[release]')
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: custom-resampler-v0.1
+          TAG: custom-resampler-v0.2
         run: |
           set -euo pipefail
           apk=$(find OpenUtauMobile.Android/bin/Release -name '*-Signed.apk' | head -n1)
           if [ -z "$apk" ]; then apk=$(find OpenUtauMobile.Android/bin/Release -name '*.apk' | head -n1); fi
           test -n "$apk"
-          cp "$apk" OpenUtauMobile-custom-resampler-android-arm64.apk
-          gh release create "$TAG" OpenUtauMobile-custom-resampler-android-arm64.apk \
+          cp "$apk" OpenUtauMobile-custom-resampler-v0.2-android-arm64.apk
+          gh release create "$TAG" OpenUtauMobile-custom-resampler-v0.2-android-arm64.apk \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Custom resamplers (Android ARM64 test build)" \
+            --title "Custom resamplers v0.2 (separate app, Android ARM64)" \
             --notes-file .github/release-notes/custom-resampler.md \
             --prerelease

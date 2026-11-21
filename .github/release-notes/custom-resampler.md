@@ -1,4 +1,4 @@
-## Custom resamplers (test build)
+## Custom resamplers v0.2 (separate app)
 
 > **Vibe-coded with AI.** The Custom resamplers feature in this build was written by [Claude](https://claude.com/claude-code) (Anthropic's AI, Claude Sonnet 5.5), directed by sparky-commits1637. The code has not been hand-reviewed or tested on a device yet, so please treat it as experimental.
 
@@ -20,6 +20,7 @@ Adds a **Custom resamplers** page to OpenUtau Mobile so you can use your own ext
 - Not offered on iOS or in the browser.
 
 ### About this build
-- Android **ARM64** only, **debug-signed**. If you have another build installed with a different signature, uninstall it first (this removes its app data, so back up your projects).
+- Installs as a **separate app** named *OpenUtau Mobile (Custom Resampler)* (package `pers.vocoder712.openutaumobile.canary.resampler`), so it can sit next to the official build without replacing it. It has its own settings, singers and plugins. Projects saved in shared folders can be opened from either app.
+- Android **ARM64** only, **debug-signed**.
 - Built from upstream `dev` (`e7cd451`) plus the custom resampler feature. It compiles, but has not been tested on a device yet.
 - Please report problems with the log from **Options → Export Log**.
