@@ -1,0 +1,65 @@
+name: Build APK Artifact
+
+on:
+  push:
+    branches:
+      - feature/custom-resampler-manager
+
+permissions:
+  contents: read
+
+jobs:
+  android-build:
+    name: Build Android ARM64 APK
+    env:
+      AVALONIA_TELEMETRY_OPTOUT: "1"
+      Configuration: Release
+      RuntimeIdentifier: android-arm64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK command-line tools
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+          log-accepted-android-sdk-licenses: false
+
+      - name: Install Android workload
+        run: dotnet workload install android
+
+      - name: Setup native Bazel build tools
+        uses: ./.github/actions/setup-worldline
+
+      - name: Install Android native toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager "ndk;$(tr -d '\r\n' < native/android-ndk-version.txt)"
+
+      - name: Build Android ARM64
+        run: |
+          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenUtauMobile-android-arm64-debug
+          path: OpenUtauMobile.Android/bin/Release/**/*.apk
+          if-no-files-found: error
