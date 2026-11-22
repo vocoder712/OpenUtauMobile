@@ -1642,6 +1642,12 @@
   <data name="BatchEdit.Action.AutoPitch" xml:space="preserve">
     <value>オートピッチ</value>
   </data>
+  <data name="BatchEdit.Action.HarmonyGenerator" xml:space="preserve">
+    <value>ハーモニー生成</value>
+  </data>
+  <data name="BatchEdit.Parameter.Voices" xml:space="preserve">
+    <value>声部数</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>Bake pitch</value>
   </data>

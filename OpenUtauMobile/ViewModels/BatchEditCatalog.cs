@@ -185,6 +185,10 @@ public static class BatchEditCatalog
         NoParameter("auto-pitch", BatchEditCategory.Notes,
             "BatchEdit.Action.AutoPitch", PackIconPhosphorIconsKind.WaveSine,
             _ => new AutoPitchEdit(), supportsCancellation: true),
+        IntegerParameter("harmony-generator", BatchEditCategory.Notes,
+            "BatchEdit.Action.HarmonyGenerator", "BatchEdit.Parameter.Voices",
+            PackIconPhosphorIconsKind.WaveSine, 2, 1, 8,
+            value => new HarmGenCurrentTrackEdit(value)),
 
         NoParameter("reset-pitch-bends", BatchEditCategory.Reset,
             "BatchEdit.Action.ResetPitchBends", PackIconPhosphorIconsKind.ArrowCounterClockwise,

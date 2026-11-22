@@ -1562,6 +1562,12 @@
   <data name="BatchEdit.Action.AutoPitch" xml:space="preserve">
     <value>Авто-питч</value>
   </data>
+  <data name="BatchEdit.Action.HarmonyGenerator" xml:space="preserve">
+    <value>Генератор гармонии</value>
+  </data>
+  <data name="BatchEdit.Parameter.Voices" xml:space="preserve">
+    <value>Голоса</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>Запечь питч</value>
   </data>
