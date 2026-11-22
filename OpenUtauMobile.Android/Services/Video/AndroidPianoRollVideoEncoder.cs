@@ -412,8 +412,7 @@ internal sealed class AndroidPianoRollVideoEncoder : IPianoRollVideoEncoder
             int audioOut = muxer.AddTrack(audioExtractor.GetTrackFormat(audioIndex)!);
             muxer.Start();
             ByteBuffer buffer = ByteBuffer.Allocate(4 * 1024 * 1024)!;
-            CopySamples(videoExtractor, muxer, videoOut, buffer);
-            CopySamples(audioExtractor, muxer, audioOut, buffer);
+            CopySamplesInterleaved(videoExtractor, videoOut, audioExtractor, audioOut, muxer, buffer);
             muxer.Stop();
         }
         finally
@@ -439,17 +438,31 @@ internal sealed class AndroidPianoRollVideoEncoder : IPianoRollVideoEncoder
         throw new InvalidDataException($"没有找到 {mimePrefix} 轨道");
     }
 
-    private static void CopySamples(MediaExtractor extractor, MediaMuxer muxer, int track, ByteBuffer buffer)
+    /// <summary>按时间戳交替写入视频与音频样本；先写完一条轨道会让 muxer 把另一条轨道的数据长时间缓存在内存里。</summary>
+    private static void CopySamplesInterleaved(MediaExtractor videoExtractor, int videoTrack,
+        MediaExtractor audioExtractor, int audioTrack, MediaMuxer muxer, ByteBuffer buffer)
     {
         MediaCodec.BufferInfo info = new();
         while (true)
         {
+            long videoTime = videoExtractor.SampleTime;
+            long audioTime = audioExtractor.SampleTime;
+            // SampleTime 在没有后续样本时返回 -1。
+            if (videoTime < 0 && audioTime < 0) return;
+            bool useVideo = videoTime >= 0 && (audioTime < 0 || videoTime <= audioTime);
+            MediaExtractor extractor = useVideo ? videoExtractor : audioExtractor;
             buffer.Clear();
             int size = extractor.ReadSampleData(buffer, 0);
-            if (size < 0) return;
+            if (size < 0)
+            {
+                // 读取失败时让该轨道结束，避免死循环。
+                if (useVideo) videoExtractor.UnselectTrack(0); else audioExtractor.UnselectTrack(0);
+                continue;
+            }
+
             // MediaExtractor 的样本标志位与 MediaCodec 的缓冲区标志位对关键帧都是 1。
             info.Set(0, size, extractor.SampleTime, (MediaCodecBufferFlags)(int)extractor.SampleFlags);
-            muxer.WriteSampleData(track, buffer, info);
+            muxer.WriteSampleData(useVideo ? videoTrack : audioTrack, buffer, info);
             extractor.Advance();
         }
     }

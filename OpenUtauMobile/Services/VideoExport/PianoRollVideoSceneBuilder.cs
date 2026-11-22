@@ -36,14 +36,17 @@ public static class PianoRollVideoSceneBuilder
     /// <param name="project">当前工程。</param>
     /// <param name="part">要录制的人声分片。</param>
     /// <param name="includePortrait">是否读取立绘。</param>
-    public static PianoRollVideoScene Build(UProject project, UVoicePart part, bool includePortrait)
+    /// <param name="coverWholeProject">为真时画面一直持续到工程最后一个分片结束，使网格覆盖比人声更长的背景音乐。</param>
+    public static PianoRollVideoScene Build(UProject project, UVoicePart part, bool includePortrait,
+        bool coverWholeProject = false)
     {
         TimeAxis axis = project.timeAxis;
         UTrack track = project.tracks[part.trackNo];
         USinger? singer = track.Singer;
 
         double startMs = Math.Max(0, axis.TickPosToMsPos(part.position) - PaddingMs);
-        double endMs = axis.TickPosToMsPos(part.End) + PaddingMs;
+        int endTick = coverWholeProject ? Math.Max(part.End, project.EndTick) : part.End;
+        double endMs = axis.TickPosToMsPos(endTick) + PaddingMs;
         double windowStart = startMs - ViewMarginMs;
         double windowEnd = endMs + ViewMarginMs;
 

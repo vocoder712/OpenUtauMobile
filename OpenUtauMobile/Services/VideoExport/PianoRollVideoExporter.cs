@@ -36,7 +36,8 @@ public static class PianoRollVideoExporter
         try
         {
             progress?.Report(0.01);
-            PianoRollVideoScene scene = PianoRollVideoSceneBuilder.Build(project, part, options.ShowPortrait);
+            PianoRollVideoScene scene = PianoRollVideoSceneBuilder.Build(project, part, options.ShowPortrait,
+                coverWholeProject: options.IncludeAudio);
 
             if (options.IncludeAudio)
             {
