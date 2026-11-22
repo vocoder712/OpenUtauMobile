@@ -327,7 +327,7 @@ internal sealed class AndroidPianoRollVideoEncoder : IPianoRollVideoEncoder
     }
 
     /// <summary>读取至多 want 字节的 16 位 PCM；float32 源会在这里转换。返回写入 pcm 的字节数。</summary>
-    private static int ReadPcm16(Stream stream, byte[] chunk, byte[] pcm, int want, bool isFloat, ref long remaining)
+    private static int ReadPcm16(System.IO.Stream stream, byte[] chunk, byte[] pcm, int want, bool isFloat, ref long remaining)
     {
         if (remaining <= 0 || want <= 0) return 0;
         if (!isFloat)
@@ -353,7 +353,7 @@ internal sealed class AndroidPianoRollVideoEncoder : IPianoRollVideoEncoder
     }
 
     /// <summary>解析 RIFF/WAVE 头，仅支持 16 位 PCM 与 32 位浮点。</summary>
-    private static (int Channels, int SampleRate, bool IsFloat, long DataStart, long DataLength) ReadWavHeader(Stream stream)
+    private static (int Channels, int SampleRate, bool IsFloat, long DataStart, long DataLength) ReadWavHeader(System.IO.Stream stream)
     {
         using BinaryReader reader = new(stream, System.Text.Encoding.ASCII, true);
         if (new string(reader.ReadChars(4)) != "RIFF") throw new InvalidDataException("不是 RIFF 文件");
