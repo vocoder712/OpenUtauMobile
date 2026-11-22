@@ -58,9 +58,38 @@ jobs:
           sed -i 's|<string name="app_name">.*</string>|<string name="app_name">OpenUtau Mobile (Custom Resampler)</string>|' OpenUtauMobile.Android/Resources/values/strings.xml
           grep -n app_name OpenUtauMobile.Android/Resources/values/strings.xml
 
-      - name: Build Android ARM64
+      - name: Prepare signing key
+        id: signing
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -p:ApplicationId=pers.vocoder712.openutaumobile.canary.resampler
+          # With the repo secrets set, every build is signed with the same key, so new APKs
+          # install over older ones (no uninstall, no data loss). Without them the build falls
+          # back to a random debug key, like before.
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "Using the fixed signing key."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::ANDROID_KEYSTORE_BASE64 is not set - falling back to a random debug key (updates will need an uninstall)."
+          fi
+
+      - name: Build Android ARM64
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KS_FILE: ${{ runner.temp }}/release.keystore
+        run: |
+          SIGN=()
+          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
+            SIGN=(-p:AndroidKeyStore=true "-p:AndroidSigningKeyStore=$KS_FILE" -p:AndroidSigningKeyAlias=openutau
+                  -p:AndroidSigningStorePass=env:KS_PASS -p:AndroidSigningKeyPass=env:KS_PASS)
+          fi
+          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -p:ApplicationId=pers.vocoder712.openutaumobile.canary.resampler "${SIGN[@]}"
+
+      - name: Remove signing key from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.keystore"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
