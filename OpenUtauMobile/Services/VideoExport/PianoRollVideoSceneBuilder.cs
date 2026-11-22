@@ -252,7 +252,7 @@ public static class PianoRollVideoSceneBuilder
             lock (part)
             {
                 notes = [.. part.notes.OrderBy(n => n.position)];
-                pitd = part.curves.Find(c => c.abbr == Format.Ustx.PITD);
+                pitd = part.curves.Find(c => c.abbr == OpenUtau.Core.Format.Ustx.PITD);
             }
 
             if (notes.Length == 0) continue;
