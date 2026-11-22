@@ -16,7 +16,8 @@ public enum EditorMoreAction
     Undo,
     Redo,
     ExpressionGraphs,
-    BatchEdit
+    BatchEdit,
+    ExportPianoRollVideo // 导出钢琴卷帘视频
 }
 
 public class EditorMoreViewModel : PopupViewModelBase
@@ -26,6 +27,9 @@ public class EditorMoreViewModel : PopupViewModelBase
 
     /// <summary>只有当前正在编辑音符分片时才提供批量编辑入口。</summary>
     public bool CanBatchEdit { get; init; }
+
+    /// <summary>只有当前正在编辑音符分片时才提供钢琴卷帘视频导出入口。</summary>
+    public bool CanExportPianoRollVideo { get; init; }
 
     private bool _mergeNearbyPhrases = Preferences.Default.DiffSingerMergeNearbyPhrases;
 

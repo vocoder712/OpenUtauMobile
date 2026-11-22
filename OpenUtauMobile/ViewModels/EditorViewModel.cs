@@ -23,6 +23,7 @@ using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Services.Editor;
 using OpenUtauMobile.Services.Projects;
 using OpenUtauMobile.Services.Tracks;
+using OpenUtauMobile.Services.VideoExport;
 using OpenUtauMobile.Storage;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using ReactiveUI;
@@ -808,7 +809,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     {
         EditorMoreViewModel vm = new()
         {
-            CanBatchEdit = PianoRollViewModel.EditingVoicePart != null
+            CanBatchEdit = PianoRollViewModel.EditingVoicePart != null,
+            CanExportPianoRollVideo = PianoRollViewModel.EditingVoicePart != null
         };
         EditorMoreAction action = await Dispatcher.UIThread.InvokeAsync(() =>
             PopupService.Show<EditorMoreAction>(new EditorMorePopup(), vm));
@@ -842,6 +844,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 break;
             case EditorMoreAction.ExportAudio:
                 _ = ShowExportAudioPopupAsync();
+                break;
+            case EditorMoreAction.ExportPianoRollVideo:
+                _ = ShowExportPianoRollVideoPopupAsync();
                 break;
             case EditorMoreAction.SaveAsTemplate:
                 await SaveAsTemplateAsync();
@@ -1802,6 +1807,78 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             Log.Error(ex, "Failed to export audio. mode={Mode}, path={Path}", request.Mode, request.ExportPath);
             ToastService.Enqueue(L.S("ExportAudioPopup.Toast.Failed"));
             return false;
+        }
+    }
+
+    /// <summary>
+    /// 打开钢琴卷帘视频导出弹窗。录制对象是钢琴卷帘当前正在编辑的人声分片。
+    /// </summary>
+    private async Task ShowExportPianoRollVideoPopupAsync()
+    {
+        if (PianoRollViewModel.EditingVoicePart == null)
+        {
+            return;
+        }
+
+        string projectFilePath = DocManager.Inst.Project.FilePath;
+        string defaultFileName = string.IsNullOrWhiteSpace(projectFilePath)
+            ? "piano_roll"
+            : Path.GetFileNameWithoutExtension(projectFilePath) + "_piano_roll";
+
+        string initialDirectory = Preferences.Default.LastSaveProjectDirectory;
+        if (string.IsNullOrWhiteSpace(initialDirectory) && !string.IsNullOrWhiteSpace(projectFilePath))
+        {
+            initialDirectory = Path.GetDirectoryName(projectFilePath) ?? string.Empty;
+        }
+
+        ExportPianoRollVideoPopupViewModel vm = new(defaultFileName, initialDirectory, ExecutePianoRollVideoExportAsync);
+        await PopupService.Show<object?>(new ExportPianoRollVideoPopup(), vm);
+    }
+
+    /// <summary>
+    /// 渲染并导出钢琴卷帘视频。必须在 UI 线程调用：场景快照要读取工程与歌手，逐帧渲染由导出器自行切到后台线程。
+    /// </summary>
+    private async Task<bool> ExecutePianoRollVideoExportAsync(
+        ExportPianoRollVideoRequest request, IProgress<double> progress, System.Threading.CancellationToken ct)
+    {
+        UVoicePart? part = PianoRollViewModel.EditingVoicePart;
+        if (part == null)
+        {
+            return false;
+        }
+
+        // 离线渲染耗时较长，导出期间强制常亮，避免锁屏后系统限制后台算力。
+        ServiceHub.PlatformDisplayService?.SetKeepScreenOnOverride(true);
+        try
+        {
+            await PianoRollVideoExporter.ExportAsync(
+                DocManager.Inst.Project, part, request.Options, request.ExportPath, progress, ct);
+            await ServiceHub.FlushFileSystemAsync();
+            ToastService.Enqueue(L.S("ExportVideoPopup.Toast.Success"));
+
+            string? directory = Path.GetDirectoryName(request.ExportPath);
+            if (!string.IsNullOrWhiteSpace(directory))
+            {
+                Preferences.Default.LastSaveProjectDirectory = directory;
+                Preferences.Save();
+            }
+
+            return true;
+        }
+        catch (OperationCanceledException)
+        {
+            ToastService.Enqueue(L.S("ExportVideoPopup.Toast.Cancelled"));
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to export piano roll video. path={Path}", request.ExportPath);
+            ToastService.Enqueue(L.S("ExportVideoPopup.Toast.Failed"));
+            return false;
+        }
+        finally
+        {
+            ServiceHub.PlatformDisplayService?.SetKeepScreenOnOverride(false);
         }
     }
 

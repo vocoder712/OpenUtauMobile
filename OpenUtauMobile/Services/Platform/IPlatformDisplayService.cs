@@ -8,4 +8,7 @@ public interface IPlatformDisplayService
 
     /// <summary>重新应用当前显示偏好。</summary>
     void Refresh();
+
+    /// <summary>临时强制屏幕常亮（例如视频导出期间），不受“编辑时常亮”偏好影响；传 false 恢复偏好行为。</summary>
+    void SetKeepScreenOnOverride(bool keepOn);
 }

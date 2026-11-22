@@ -1,0 +1,139 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+    xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
+    mc:Ignorable="d"
+    x:Class="OpenUtauMobile.Controls.ExportPianoRollVideoPopup"
+    x:DataType="vm:ExportPianoRollVideoPopupViewModel"
+    Classes="PopupDialogRoot">
+    <UserControl.Styles>
+        <!-- 复用导出音频弹窗的路径预览与单选卡片样式 -->
+        <StyleInclude Source="/Controls/Styles/ExportAudioPopup.axaml" />
+    </UserControl.Styles>
+
+    <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource ExportVideoPopup.Title}">
+        <dialogs:DialogShell.Footer>
+            <dialogs:DialogActions>
+                <Button
+                    Classes="DialogAction"
+                    Content="{DynamicResource Common.Cancel}"
+                    Command="{Binding CancelCommand}" />
+                <Button dialogs:DialogShell.IsDefaultAction="True"
+                    Classes="DialogAction DialogPrimary"
+                    Content="{DynamicResource ExportVideoPopup.Start}"
+                    Command="{Binding StartCommand}" />
+            </dialogs:DialogActions>
+        </dialogs:DialogShell.Footer>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <Border Classes="DialogBodyBorder">
+                <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                    <!-- 平台没有编码器时的提示 -->
+                    <TextBlock
+                        Text="{DynamicResource ExportVideoPopup.NoEncoder}"
+                        IsVisible="{Binding !IsEncoderAvailable}"
+                        TextWrapping="Wrap"
+                        Foreground="{DynamicResource Sem.Color.Error}" />
+                    <!-- 保存位置 -->
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock
+                            Text="{DynamicResource ExportVideoPopup.PathLabel}"
+                            FontSize="12"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <Border Classes="ExportPathPreview">
+                            <TextBlock Text="{Binding ExportPath}" TextWrapping="Wrap" MinHeight="20" />
+                        </Border>
+                        <Button
+                            Classes="tonal"
+                            Content="{DynamicResource ExportVideoPopup.SelectPath}"
+                            IsEnabled="{Binding !IsExporting}"
+                            Command="{Binding PickPathCommand}" />
+                    </StackPanel>
+                    <!-- 画幅：横屏 / 竖屏 / 自定义 -->
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                        <TextBlock
+                            Text="{DynamicResource ExportVideoPopup.AspectLabel}"
+                            FontSize="12"
+                            Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                        <Grid ColumnDefinitions="*,10,*,10,*">
+                            <RadioButton
+                                Grid.Column="0"
+                                GroupName="VideoAspect"
+                                Classes="ExportModeCard"
+                                IsEnabled="{Binding !IsExporting}"
+                                IsChecked="{Binding IsLandscapeSelected, Mode=TwoWay}"
+                                Content="{DynamicResource ExportVideoPopup.Aspect.Landscape}" />
+                            <RadioButton
+                                Grid.Column="2"
+                                GroupName="VideoAspect"
+                                Classes="ExportModeCard"
+                                IsEnabled="{Binding !IsExporting}"
+                                IsChecked="{Binding IsPortraitSelected, Mode=TwoWay}"
+                                Content="{DynamicResource ExportVideoPopup.Aspect.Portrait}" />
+                            <RadioButton
+                                Grid.Column="4"
+                                GroupName="VideoAspect"
+                                Classes="ExportModeCard"
+                                IsEnabled="{Binding !IsExporting}"
+                                IsChecked="{Binding IsCustomSelected, Mode=TwoWay}"
+                                Content="{DynamicResource ExportVideoPopup.Aspect.Custom}" />
+                        </Grid>
+                        <!-- 自定义宽高，仅在选择“自定义”时出现 -->
+                        <Grid ColumnDefinitions="*,10,*" IsVisible="{Binding IsCustomSelected}">
+                            <NumericUpDown Grid.Column="0"
+                                           Minimum="240" Maximum="3840" Increment="2" FormatString="0"
+                                           IsEnabled="{Binding !IsExporting}"
+                                           Value="{Binding CustomWidth, Mode=TwoWay}"
+                                           Watermark="{DynamicResource ExportVideoPopup.Width}" />
+                            <NumericUpDown Grid.Column="2"
+                                           Minimum="240" Maximum="3840" Increment="2" FormatString="0"
+                                           IsEnabled="{Binding !IsExporting}"
+                                           Value="{Binding CustomHeight, Mode=TwoWay}"
+                                           Watermark="{DynamicResource ExportVideoPopup.Height}" />
+                        </Grid>
+                    </StackPanel>
+                    <!-- 开关项 -->
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                   Text="{DynamicResource ExportVideoPopup.ShowPortrait}" />
+                        <ToggleSwitch Grid.Column="1" OnContent="" OffContent=""
+                                      IsEnabled="{Binding !IsExporting}"
+                                      IsChecked="{Binding ShowPortrait, Mode=TwoWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                   Text="{DynamicResource ExportVideoPopup.IncludeAudio}" />
+                        <ToggleSwitch Grid.Column="1" OnContent="" OffContent=""
+                                      IsEnabled="{Binding !IsExporting}"
+                                      IsChecked="{Binding IncludeAudio, Mode=TwoWay}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                                   Text="{DynamicResource ExportVideoPopup.Fps60}" />
+                        <ToggleSwitch Grid.Column="1" OnContent="" OffContent=""
+                                      IsEnabled="{Binding !IsExporting}"
+                                      IsChecked="{Binding Use60Fps, Mode=TwoWay}" />
+                    </Grid>
+                    <TextBlock
+                        Text="{DynamicResource ExportVideoPopup.Hint}"
+                        FontSize="11"
+                        Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}"
+                        TextWrapping="Wrap" />
+                    <!-- 渲染进度 -->
+                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}" IsVisible="{Binding IsExporting}">
+                        <ProgressBar Minimum="0" Maximum="1" Value="{Binding Progress}" Height="6" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Foreground="{DynamicResource Sem.Color.Primary}">
+                            <Run Text="{DynamicResource ExportVideoPopup.Exporting}" />
+                            <Run Text="{Binding ProgressText}" />
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </dialogs:DialogShell>
+</UserControl>

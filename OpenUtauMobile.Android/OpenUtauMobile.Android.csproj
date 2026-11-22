@@ -4,6 +4,8 @@
         <TargetFramework>net10.0-android36.0</TargetFramework>
         <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
         <Nullable>enable</Nullable>
+        <!-- 视频编码器直接写入 MediaCodec 输入图像的原生内存。 -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <ApplicationTitle>OpenUtau Mobile 预览版</ApplicationTitle>
         <AndroidPackageFormat>apk</AndroidPackageFormat>
         <!-- 将程序集随 APK 部署，避免启动时逐个加载导致 ANR。 -->

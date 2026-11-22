@@ -137,6 +137,18 @@
                                             <vm:EditorMoreAction>ExportAudio</vm:EditorMoreAction>
                                         </Button.CommandParameter>
                                     </Button>
+                                    <!-- 导出钢琴卷帘视频：需要正在编辑的音符分片 -->
+                                    <Button
+                                        Classes="tonal"
+                                        HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource EditorMore.ExportPianoRollVideo}"
+                                        IsEnabled="{Binding CanExportPianoRollVideo}"
+                                        Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter>
+                                            <vm:EditorMoreAction>ExportPianoRollVideo</vm:EditorMoreAction>
+                                        </Button.CommandParameter>
+                                    </Button>
                                 </StackPanel>
                             </Border>
                         </ScrollViewer>

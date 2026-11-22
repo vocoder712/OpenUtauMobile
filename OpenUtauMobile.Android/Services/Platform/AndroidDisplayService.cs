@@ -11,6 +11,7 @@ internal sealed class AndroidDisplayService : IPlatformDisplayService
 {
     private readonly Func<MainActivity?> _getActivity;
     private bool _isEditorActive;
+    private bool _keepScreenOnOverride;
 
     public AndroidDisplayService(Func<MainActivity?> getActivity)
     {
@@ -20,6 +21,12 @@ internal sealed class AndroidDisplayService : IPlatformDisplayService
     public void SetEditorActive(bool isEditorActive)
     {
         _isEditorActive = isEditorActive;
+        Refresh();
+    }
+
+    public void SetKeepScreenOnOverride(bool keepOn)
+    {
+        _keepScreenOnOverride = keepOn;
         Refresh();
     }
 
@@ -66,8 +73,8 @@ internal sealed class AndroidDisplayService : IPlatformDisplayService
             }
         }
 
-        bool keepScreenAwake =
-            _isEditorActive && Preferences.Default.AndroidKeepScreenAwakeWhileEditing;
+        bool keepScreenAwake = _keepScreenOnOverride ||
+            (_isEditorActive && Preferences.Default.AndroidKeepScreenAwakeWhileEditing);
         if (keepScreenAwake)
         {
             window.AddFlags(WindowManagerFlags.KeepScreenOn);

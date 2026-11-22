@@ -2824,4 +2824,70 @@
   <data name="PluginDetails.ContractVersion" xml:space="preserve"><value>契约版本</value></data>
   <data name="PluginDetails.Phonemizer" xml:space="preserve"><value>音素器</value></data>
   <data name="PluginDetails.BatchEdit" xml:space="preserve"><value>批量编辑工具</value></data>
+  <data name="EditorMore.ExportPianoRollVideo" xml:space="preserve">
+    <value>导出钢琴卷帘视频</value>
+  </data>
+  <data name="ExportVideoPopup.Title" xml:space="preserve">
+    <value>钢琴卷帘视频</value>
+  </data>
+  <data name="ExportVideoPopup.PathLabel" xml:space="preserve">
+    <value>保存位置</value>
+  </data>
+  <data name="ExportVideoPopup.SelectPath" xml:space="preserve">
+    <value>选择文件…</value>
+  </data>
+  <data name="ExportVideoPopup.SaveDialogTitle" xml:space="preserve">
+    <value>保存钢琴卷帘视频</value>
+  </data>
+  <data name="ExportVideoPopup.PathRequired" xml:space="preserve">
+    <value>请先选择视频的保存位置。</value>
+  </data>
+  <data name="ExportVideoPopup.AspectLabel" xml:space="preserve">
+    <value>画幅</value>
+  </data>
+  <data name="ExportVideoPopup.Aspect.Landscape" xml:space="preserve">
+    <value>横屏 1920×1080</value>
+  </data>
+  <data name="ExportVideoPopup.Aspect.Portrait" xml:space="preserve">
+    <value>竖屏 1080×1920</value>
+  </data>
+  <data name="ExportVideoPopup.Aspect.Custom" xml:space="preserve">
+    <value>自定义</value>
+  </data>
+  <data name="ExportVideoPopup.Width" xml:space="preserve">
+    <value>宽度</value>
+  </data>
+  <data name="ExportVideoPopup.Height" xml:space="preserve">
+    <value>高度</value>
+  </data>
+  <data name="ExportVideoPopup.ShowPortrait" xml:space="preserve">
+    <value>显示歌手立绘</value>
+  </data>
+  <data name="ExportVideoPopup.IncludeAudio" xml:space="preserve">
+    <value>包含工程音频</value>
+  </data>
+  <data name="ExportVideoPopup.Fps60" xml:space="preserve">
+    <value>60 帧（渲染更慢）</value>
+  </data>
+  <data name="ExportVideoPopup.Hint" xml:space="preserve">
+    <value>视频为离线逐帧渲染，较长的歌曲需要一些时间，请在完成前保持应用打开。</value>
+  </data>
+  <data name="ExportVideoPopup.Start" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="ExportVideoPopup.Exporting" xml:space="preserve">
+    <value>正在渲染视频…</value>
+  </data>
+  <data name="ExportVideoPopup.NoEncoder" xml:space="preserve">
+    <value>当前平台不支持视频导出。</value>
+  </data>
+  <data name="ExportVideoPopup.Toast.Success" xml:space="preserve">
+    <value>钢琴卷帘视频已保存。</value>
+  </data>
+  <data name="ExportVideoPopup.Toast.Cancelled" xml:space="preserve">
+    <value>已取消视频导出。</value>
+  </data>
+  <data name="ExportVideoPopup.Toast.Failed" xml:space="preserve">
+    <value>视频导出失败。</value>
+  </data>
 </root>

@@ -53,9 +53,9 @@ jobs:
           set -euo pipefail
           sdkmanager "ndk;$(tr -d '\r\n' < native/android-ndk-version.txt)"
 
-      - name: Give the build its own app name (CI only, repo files stay unchanged)
+      - name: Set the app name (CI only, repo files stay unchanged)
         run: |
-          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">OpenUtau Mobile (Custom Resampler)</string>|' OpenUtauMobile.Android/Resources/values/strings.xml
+          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">OpenUtau Mobile</string>|' OpenUtauMobile.Android/Resources/values/strings.xml
           grep -n app_name OpenUtauMobile.Android/Resources/values/strings.xml
 
       - name: Prepare signing key
@@ -85,7 +85,9 @@ jobs:
             SIGN=(-p:AndroidKeyStore=true "-p:AndroidSigningKeyStore=$KS_FILE" -p:AndroidSigningKeyAlias=openutau
                   -p:AndroidSigningStorePass=env:KS_PASS -p:AndroidSigningKeyPass=env:KS_PASS)
           fi
-          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -p:ApplicationId=pers.vocoder712.openutaumobile.canary.resampler "${SIGN[@]}"
+          dotnet build OpenUtauMobile.Android/OpenUtauMobile.Android.csproj -p:ApplicationId=pers.vocoder712.openutaumobile.canary.resampler \
+            -p:Version=1.0.0 -p:BuildNumber=$((20000 + GITHUB_RUN_NUMBER)) \
+            -p:SourceCommit="${GITHUB_SHA::7}" -p:ActionRunId="$GITHUB_RUN_ID" "${SIGN[@]}"
 
       - name: Remove signing key from the runner
         if: always()
@@ -102,16 +104,16 @@ jobs:
         if: contains(github.event.head_commit.message, '[release]')
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: custom-resampler-v0.4
+          TAG: v1.0.0
         run: |
           set -euo pipefail
           apk=$(find OpenUtauMobile.Android/bin/Release -name '*-Signed.apk' | head -n1)
           if [ -z "$apk" ]; then apk=$(find OpenUtauMobile.Android/bin/Release -name '*.apk' | head -n1); fi
           test -n "$apk"
-          cp "$apk" OpenUtauMobile-custom-resampler-v0.4-android-arm64.apk
-          gh release create "$TAG" OpenUtauMobile-custom-resampler-v0.4-android-arm64.apk \
+          cp "$apk" OpenUtauMobile-v1.0.0-android-arm64.apk
+          gh release create "$TAG" OpenUtauMobile-v1.0.0-android-arm64.apk \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Custom resamplers v0.4 + Auto pitch + Harmony generator" \
-            --notes-file .github/release-notes/custom-resampler.md \
-            --prerelease
+            --title "OpenUtau Mobile 1.0.0" \
+            --notes-file .github/release-notes/v1.0.0.md \
+            --latest

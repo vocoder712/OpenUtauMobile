@@ -2777,4 +2777,70 @@ Applying replaces the source of this input.</value></data>
   <data name="PluginDetails.ContractVersion" xml:space="preserve"><value>Версия контракта</value></data>
   <data name="PluginDetails.Phonemizer" xml:space="preserve"><value>Фонемайзер</value></data>
   <data name="PluginDetails.BatchEdit" xml:space="preserve"><value>Инструмент пакетного редактирования</value></data>
+  <data name="EditorMore.ExportPianoRollVideo" xml:space="preserve">
+    <value>Export piano roll video</value>
+  </data>
+  <data name="ExportVideoPopup.Title" xml:space="preserve">
+    <value>Piano roll video</value>
+  </data>
+  <data name="ExportVideoPopup.PathLabel" xml:space="preserve">
+    <value>Save to</value>
+  </data>
+  <data name="ExportVideoPopup.SelectPath" xml:space="preserve">
+    <value>Choose file…</value>
+  </data>
+  <data name="ExportVideoPopup.SaveDialogTitle" xml:space="preserve">
+    <value>Save piano roll video</value>
+  </data>
+  <data name="ExportVideoPopup.PathRequired" xml:space="preserve">
+    <value>Choose where to save the video first.</value>
+  </data>
+  <data name="ExportVideoPopup.AspectLabel" xml:space="preserve">
+    <value>Frame size</value>
+  </data>
+  <data name="ExportVideoPopup.Aspect.Landscape" xml:space="preserve">
+    <value>Landscape 1920×1080</value>
+  </data>
+  <data name="ExportVideoPopup.Aspect.Portrait" xml:space="preserve">
+    <value>Portrait 1080×1920</value>
+  </data>
+  <data name="ExportVideoPopup.Aspect.Custom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
+  <data name="ExportVideoPopup.Width" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="ExportVideoPopup.Height" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="ExportVideoPopup.ShowPortrait" xml:space="preserve">
+    <value>Show singer portrait</value>
+  </data>
+  <data name="ExportVideoPopup.IncludeAudio" xml:space="preserve">
+    <value>Include project audio</value>
+  </data>
+  <data name="ExportVideoPopup.Fps60" xml:space="preserve">
+    <value>60 fps (slower to render)</value>
+  </data>
+  <data name="ExportVideoPopup.Hint" xml:space="preserve">
+    <value>The video is rendered offline, frame by frame, so long songs take a while. Keep the app open until it finishes.</value>
+  </data>
+  <data name="ExportVideoPopup.Start" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="ExportVideoPopup.Exporting" xml:space="preserve">
+    <value>Rendering video…</value>
+  </data>
+  <data name="ExportVideoPopup.NoEncoder" xml:space="preserve">
+    <value>Video export is not available on this platform.</value>
+  </data>
+  <data name="ExportVideoPopup.Toast.Success" xml:space="preserve">
+    <value>Piano roll video saved.</value>
+  </data>
+  <data name="ExportVideoPopup.Toast.Cancelled" xml:space="preserve">
+    <value>Video export cancelled.</value>
+  </data>
+  <data name="ExportVideoPopup.Toast.Failed" xml:space="preserve">
+    <value>Video export failed.</value>
+  </data>
 </root>

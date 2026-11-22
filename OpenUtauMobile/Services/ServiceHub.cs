@@ -50,4 +50,6 @@ public static class ServiceHub
     public static IPlatformPerformanceProvider? PlatformPerformanceProvider { get; set; }
     public static IPlatformDisplayService? PlatformDisplayService { get; set; }
     public static IPlatformCrashLogService? PlatformCrashLogService { get; set; }
+    /// <summary>创建钢琴卷帘视频编码器；Android 注册 MediaCodec 实现，桌面未注册时回退到 ffmpeg 管道。</summary>
+    public static Func<VideoExport.IPianoRollVideoEncoder>? PianoRollVideoEncoderFactory { get; set; }
 }

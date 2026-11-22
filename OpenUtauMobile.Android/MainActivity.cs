@@ -23,6 +23,7 @@ using OpenUtauMobile.Android.Services.Graphics;
 using OpenUtauMobile.Android.Services.Platform;
 using OpenUtauMobile.Android.Services.Performance;
 using OpenUtauMobile.Android.Services.Storage;
+using OpenUtauMobile.Android.Services.Video;
 using Environment = System.Environment;
 using Log = Serilog.Log;
 using Path = System.IO.Path;
@@ -90,6 +91,7 @@ public class MainActivity : AvaloniaMainActivity
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
         ServiceHub.PlatformPerformanceProvider = new AndroidPerformanceProvider();
         ServiceHub.PlatformDisplayService = new AndroidDisplayService(() => CurrentActivity);
+        ServiceHub.PianoRollVideoEncoderFactory = () => new AndroidPianoRollVideoEncoder(); // 钢琴卷帘视频导出的编码器
         AndroidGraphicsBackendProvider graphicsProvider = new();
         GraphicsBackendService graphicsService = new(graphicsProvider);
         ServiceHub.GraphicsBackendService = graphicsService;
