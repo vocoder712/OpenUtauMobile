@@ -1639,6 +1639,9 @@
   <data name="BatchEdit.Action.LoadRenderedPitch" xml:space="preserve">
     <value>Load rendered pitch</value>
   </data>
+  <data name="BatchEdit.Action.AutoPitch" xml:space="preserve">
+    <value>Auto pitch</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>Bake pitch</value>
   </data>

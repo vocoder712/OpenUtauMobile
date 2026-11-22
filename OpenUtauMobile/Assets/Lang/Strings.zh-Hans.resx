@@ -1639,6 +1639,9 @@
   <data name="BatchEdit.Action.LoadRenderedPitch" xml:space="preserve">
     <value>载入渲染音高</value>
   </data>
+  <data name="BatchEdit.Action.AutoPitch" xml:space="preserve">
+    <value>自动音高</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>烘焙音高</value>
   </data>

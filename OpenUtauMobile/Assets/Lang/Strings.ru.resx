@@ -1559,6 +1559,9 @@
   <data name="BatchEdit.Action.LoadRenderedPitch" xml:space="preserve">
     <value>Загрузить отрендеренный питч</value>
   </data>
+  <data name="BatchEdit.Action.AutoPitch" xml:space="preserve">
+    <value>Авто-питч</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>Запечь питч</value>
   </data>

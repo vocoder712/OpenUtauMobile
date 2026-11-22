@@ -182,6 +182,9 @@ public static class BatchEditCatalog
         NoParameter("refresh-real-curves", BatchEditCategory.Notes,
             "BatchEdit.Action.RefreshRealCurves", PackIconPhosphorIconsKind.ArrowsClockwise,
             _ => new RefreshRealCurves(), supportsCancellation: true),
+        NoParameter("auto-pitch", BatchEditCategory.Notes,
+            "BatchEdit.Action.AutoPitch", PackIconPhosphorIconsKind.WaveSine,
+            _ => new AutoPitchEdit(), supportsCancellation: true),
 
         NoParameter("reset-pitch-bends", BatchEditCategory.Reset,
             "BatchEdit.Action.ResetPitchBends", PackIconPhosphorIconsKind.ArrowCounterClockwise,
