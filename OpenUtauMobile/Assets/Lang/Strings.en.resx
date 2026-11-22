@@ -1648,6 +1648,18 @@
   <data name="BatchEdit.Parameter.Voices" xml:space="preserve">
     <value>Voices</value>
   </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Pop" xml:space="preserve">
+    <value>Harmony generator: Pop</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Choir" xml:space="preserve">
+    <value>Harmony generator: Choir</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Cinematic" xml:space="preserve">
+    <value>Harmony generator: Cinematic</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Human" xml:space="preserve">
+    <value>Harmony generator: Human</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>Bake pitch</value>
   </data>

@@ -1568,6 +1568,18 @@
   <data name="BatchEdit.Parameter.Voices" xml:space="preserve">
     <value>Голоса</value>
   </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Pop" xml:space="preserve">
+    <value>Генератор гармонии: поп</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Choir" xml:space="preserve">
+    <value>Генератор гармонии: хор</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Cinematic" xml:space="preserve">
+    <value>Генератор гармонии: кино</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Human" xml:space="preserve">
+    <value>Генератор гармонии: живой</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>Запечь питч</value>
   </data>

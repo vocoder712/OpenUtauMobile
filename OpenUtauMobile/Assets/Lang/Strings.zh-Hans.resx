@@ -1648,6 +1648,18 @@
   <data name="BatchEdit.Parameter.Voices" xml:space="preserve">
     <value>声部数</value>
   </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Pop" xml:space="preserve">
+    <value>和声生成：流行</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Choir" xml:space="preserve">
+    <value>和声生成：合唱</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Cinematic" xml:space="preserve">
+    <value>和声生成：电影感</value>
+  </data>
+  <data name="BatchEdit.Action.HarmonyGenerator.Human" xml:space="preserve">
+    <value>和声生成：真人随机</value>
+  </data>
   <data name="BatchEdit.Action.BakePitch" xml:space="preserve">
     <value>烘焙音高</value>
   </data>
