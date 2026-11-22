@@ -52,7 +52,14 @@ public static class PianoRollVideoExporter
 
             progress?.Report(0.15);
             string? audio = wavPath;
-            await Task.Run(() => RenderFrames(scene, options, encoder, outputPath, audio, progress, ct), ct);
+            // 背景音乐等非人声内容可能比人声分片更长：有音频时，视频至少要和混音一样长，否则音频会被截断。
+            double endMs = scene.EndMs;
+            if (audio != null)
+            {
+                double mixMs = TryGetWavDurationMs(audio);
+                if (mixMs > endMs) endMs = mixMs;
+            }
+            await Task.Run(() => RenderFrames(scene, options, encoder, outputPath, audio, endMs, progress, ct), ct);
             progress?.Report(1);
         }
         catch
@@ -69,13 +76,13 @@ public static class PianoRollVideoExporter
     }
 
     private static void RenderFrames(PianoRollVideoScene scene, PianoRollVideoOptions options,
-        IPianoRollVideoEncoder encoder, string outputPath, string? wavPath, IProgress<double>? progress, CancellationToken ct)
+        IPianoRollVideoEncoder encoder, string outputPath, string? wavPath, double endMs, IProgress<double>? progress, CancellationToken ct)
     {
         using PianoRollVideoRenderer renderer = new(scene, options);
         SKImageInfo info = new(renderer.Width, renderer.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
         using SKSurface surface = SKSurface.Create(info);
         double startMs = scene.StartMs;
-        int frameCount = Math.Max(1, (int)Math.Ceiling((scene.EndMs - startMs) / 1000.0 * options.Fps));
+        int frameCount = Math.Max(1, (int)Math.Ceiling((endMs - startMs) / 1000.0 * options.Fps));
         double dt = 1.0 / options.Fps;
         // 视频实际时长；音频会被截到这个长度。
         double durationMs = frameCount * 1000.0 / options.Fps;
@@ -94,6 +101,51 @@ public static class PianoRollVideoExporter
         }
 
         encoder.Finish();
+    }
+
+    /// <summary>读取 WAV 文件的时长（毫秒）；无法解析时返回 0。</summary>
+    private static double TryGetWavDurationMs(string path)
+    {
+        try
+        {
+            using FileStream fs = File.OpenRead(path);
+            using BinaryReader reader = new(fs);
+            if (fs.Length < 12 || reader.ReadUInt32() != 0x46464952 /* RIFF */) return 0;
+            reader.ReadUInt32();
+            if (reader.ReadUInt32() != 0x45564157 /* WAVE */) return 0;
+            uint byteRate = 0;
+            while (fs.Position + 8 <= fs.Length)
+            {
+                uint id = reader.ReadUInt32();
+                uint size = reader.ReadUInt32();
+                if (id == 0x20746D66 /* fmt  */)
+                {
+                    long next = fs.Position + size + (size & 1);
+                    reader.ReadUInt32(); // 格式、声道数
+                    reader.ReadUInt32(); // 采样率
+                    byteRate = reader.ReadUInt32();
+                    fs.Position = next;
+                }
+                else if (id == 0x61746164 /* data */)
+                {
+                    if (byteRate == 0) return 0;
+                    long dataBytes = size == 0 || size == uint.MaxValue || fs.Position + size > fs.Length
+                        ? fs.Length - fs.Position
+                        : size;
+                    return dataBytes * 1000.0 / byteRate;
+                }
+                else
+                {
+                    fs.Position += size + (size & 1);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "钢琴卷帘视频：读取混音时长失败");
+        }
+
+        return 0;
     }
 
     private static void TryDelete(string path)
