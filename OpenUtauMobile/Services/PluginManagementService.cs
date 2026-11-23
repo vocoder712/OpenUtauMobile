@@ -4,11 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Reflection.PortableExecutable;
-using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Projects;
 using OpenUtauMobile.ViewModels;
 using Serilog;
 
@@ -24,7 +26,8 @@ public sealed record PluginFileEntry(string RelativePath, long Size, bool IsPend
 public static class PluginManagementService
 {
     private const string BuiltinFileName = "OpenUtau.Plugin.Builtin.dll";
-    private static string Root => Path.GetFullPath(PathManager.Inst.PluginsPath);
+    private static readonly SemaphoreSlim DeletionGate = new(1, 1);
+    internal static string Root => Path.GetFullPath(PathManager.Inst.PluginsPath);
     private static StringComparer PathComparer => OperatingSystem.IsWindows()
         ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
 
@@ -32,12 +35,11 @@ public static class PluginManagementService
     {
         Directory.CreateDirectory(Root);
         HashSet<string> pending = ReadPendingDeletions();
-        // 不跟随目录链接，避免将插件目录之外的文件纳入管理。
         EnumerationOptions options = new()
         {
             RecurseSubdirectories = true,
             IgnoreInaccessible = false,
-            AttributesToSkip = FileAttributes.ReparsePoint,
+            AttributesToSkip = 0,
         };
         return Directory.EnumerateFiles(Root, "*", options)
             .Where(path => string.Equals(Path.GetExtension(path), ".dll", StringComparison.OrdinalIgnoreCase))
@@ -48,24 +50,40 @@ public static class PluginManagementService
             .ToArray();
     }
 
-    public static async Task InstallAsync(string sourcePath, LoadingPopupViewModel loading)
+    /// <summary>在询问信任前检查安装条件，仅读取元数据，不加载程序集。</summary>
+    public static void ValidateForInstall(string sourcePath)
     {
-        // TODO：补充 iOS 外部程序集执行能力和 Web 导入、加载链路的专门适配。
+        using FileStream source = new(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        ValidateForInstall(sourcePath, source);
+    }
+
+    /// <summary>校验安装条件并返回目标路径，不写入插件目录。</summary>
+    private static string ValidateForInstall(string sourcePath, Stream source)
+    {
         string fileName = Path.GetFileName(sourcePath);
         if (!string.Equals(Path.GetExtension(fileName), ".dll", StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException(L.S("PluginManager.InvalidAssembly"));
         if (string.Equals(fileName, BuiltinFileName, StringComparison.OrdinalIgnoreCase))
             throw new InvalidDataException(L.S("PluginManager.BuiltinNotAllowed"));
 
-        await using FileStream source = new(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        loading.UpdateProgress(0, L.S("PluginManager.Checking"));
         ValidateAssembly(source);
-        source.Position = 0;
 
-        Directory.CreateDirectory(Root);
         string destination = ResolvePluginPath(fileName);
         if (File.Exists(destination) || ReadPendingDeletions().Contains(fileName))
             throw new IOException(L.S("PluginManager.AlreadyExists"));
+        return destination;
+    }
+
+    /// <summary>重新校验并复制已获用户信任的插件，不加载程序集。</summary>
+    public static async Task InstallAsync(string sourcePath, LoadingPopupViewModel loading)
+    {
+        // TODO：补充 iOS 外部程序集执行能力和 Web 导入、加载链路的专门适配。
+        await using FileStream source = new(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        loading.UpdateProgress(0, L.S("PluginManager.Checking"));
+        // 确认期间源文件或安装状态可能变化，复制前再次检查。
+        string destination = ValidateForInstall(sourcePath, source);
+        source.Position = 0;
+        Directory.CreateDirectory(Root);
 
         // 临时文件不使用 DLL 扩展名，只有完整复制后才进入插件列表。
         string temporaryPath = Path.Combine(Root, $".{Guid.NewGuid():N}.installing");
@@ -86,6 +104,16 @@ public static class PluginManagementService
                 await target.FlushAsync();
             }
             File.Move(temporaryPath, destination);
+            try
+            {
+                await PluginActivationService.SetEnabledAsync(Path.GetRelativePath(Root, destination), true);
+            }
+            catch
+            {
+                // 名单保存失败时撤销本次新文件，避免安装失败却残留无法再次安装的文件。
+                DeletePluginFile(destination);
+                throw;
+            }
             loading.UpdateProgress(95, L.S("PluginManager.Completed"));
         }
         finally
@@ -111,31 +139,37 @@ public static class PluginManagementService
         }
     }
 
-    /// <summary>仅登记删除任务，插件文件统一在下次启动加载前删除。</summary>
-    public static void ScheduleDeletion(string relativePath)
+    /// <summary>等待删除任务持久化，插件文件统一在下次启动加载前删除。</summary>
+    public static Task ScheduleDeletionAsync(string relativePath)
     {
-        string path = ResolvePluginPath(relativePath);
-        HashSet<string> pending = ReadPendingDeletions();
-        pending.Add(Path.GetRelativePath(Root, path));
-        WritePendingDeletions(pending);
+        return UpdatePendingDeletionAsync(relativePath, delete: true);
     }
 
-    /// <summary>取消待删除标记，不修改插件文件。</summary>
-    public static void CancelDeletion(string relativePath)
+    /// <summary>等待取消标记持久化，不修改插件文件。</summary>
+    public static Task CancelDeletionAsync(string relativePath)
     {
-        string path = ResolvePluginPath(relativePath);
-        HashSet<string> pending = ReadPendingDeletions();
-        pending.Remove(Path.GetRelativePath(Root, path));
-        List<string> previous = Preferences.Default.PendingPluginDeletions;
+        return UpdatePendingDeletionAsync(relativePath, delete: false);
+    }
+
+    /// <summary>串行读取和修改删除队列，避免并发登记或取消覆盖彼此。</summary>
+    private static async Task UpdatePendingDeletionAsync(string relativePath, bool delete)
+    {
+        await DeletionGate.WaitAsync();
         try
         {
-            WritePendingDeletions(pending);
+            await Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                string path = ResolvePluginPath(relativePath);
+                HashSet<string> pending = ReadPendingDeletions();
+                string normalized = Path.GetRelativePath(Root, path);
+                if (delete) pending.Add(normalized);
+                else pending.Remove(normalized);
+                await WritePendingDeletionsAsync(pending);
+            });
         }
-        catch
+        finally
         {
-            // 取消未能保存时仍显示待删除标记，避免误认为下次启动不会删除。
-            Preferences.Default.PendingPluginDeletions = previous;
-            throw;
+            DeletionGate.Release();
         }
     }
 
@@ -153,42 +187,54 @@ public static class PluginManagementService
         File.Delete(path);
     }
 
-    /// <summary>必须在启动时的插件扫描之前调用，任务只消费一次，失败也不保留。</summary>
-    public static int ApplyPendingDeletions()
+    /// <summary>在插件扫描前等待队列消费持久化；文件删除只尝试一次，消费保存失败则不删除。</summary>
+    public static async Task<int> ApplyPendingDeletionsAsync()
     {
+        await DeletionGate.WaitAsync();
         try
         {
-            HashSet<string> pending = ReadPendingDeletions();
+            HashSet<string> pending = await Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                HashSet<string> snapshot = ReadPendingDeletions();
+                // 必须先确认队列已消费，再删除文件，避免保存失败后下次启动重复执行。
+                if (snapshot.Count > 0)
+                {
+                    List<string> enabled = [.. Preferences.Default.EnabledPlugins.Where(path => !snapshot.Contains(path))];
+                    await PreferencesWriter.Inst.SaveAsync(preferences =>
+                    {
+                        preferences.PendingPluginDeletions = [];
+                        preferences.EnabledPlugins = [.. enabled];
+                    });
+                }
+                return snapshot;
+            });
             if (pending.Count == 0) return 0;
-            int failures = 0;
-            // 先清空并保存队列，再执行删除，避免失败或中途退出后反复重试。
-            try
+            return await Task.Run(() =>
             {
-                WritePendingDeletions([with(PathComparer)]);
-            }
-            catch (Exception exception)
-            {
-                Log.Error(exception, "Failed to consume pending plugin deletions.");
-                failures++;
-            }
-            foreach (string relativePath in pending)
-            {
-                try
+                int failures = 0;
+                foreach (string relativePath in pending)
                 {
-                    DeletePluginFile(ResolvePluginPath(relativePath));
+                    try
+                    {
+                        DeletePluginFile(ResolvePluginPath(relativePath));
+                    }
+                    catch (Exception exception)
+                    {
+                        failures++;
+                        Log.Warning(exception, "Failed to delete pending plugin {Plugin}", relativePath);
+                    }
                 }
-                catch (Exception exception)
-                {
-                    failures++;
-                    Log.Warning(exception, "Failed to delete pending plugin {Plugin}", relativePath);
-                }
-            }
-            return failures;
+                return failures;
+            });
         }
         catch (Exception exception)
         {
             Log.Error(exception, "Failed to process pending plugin deletions");
             return 1;
+        }
+        finally
+        {
+            DeletionGate.Release();
         }
     }
 
@@ -197,22 +243,14 @@ public static class PluginManagementService
         return [with(Preferences.Default.PendingPluginDeletions ?? [], PathComparer)];
     }
 
-    private static void WritePendingDeletions(HashSet<string> pending)
+    /// <summary>仅在保存成功后发布新列表，保存失败保留原有状态并传播实际异常。</summary>
+    private static Task WritePendingDeletionsAsync(HashSet<string> pending)
     {
-        Preferences.Default.PendingPluginDeletions = pending.OrderBy(path => path, PathComparer).ToList();
-        Preferences.Save();
-
-        // 保存方法会自行捕获异常，回读字段以免将未持久化的任务提示为成功。
-        using JsonDocument saved = JsonDocument.Parse(File.ReadAllText(PathManager.Inst.PrefsFilePath));
-        string[] persisted = saved.RootElement.GetProperty(nameof(Preferences.SerializablePreferences.PendingPluginDeletions))
-            .EnumerateArray().Select(value => value.GetString()!).ToArray();
-        if (!pending.SetEquals(persisted))
-        {
-            throw new IOException("Failed to save pending plugin deletions in preferences.");
-        }
+        List<string> paths = [.. pending.OrderBy(path => path, PathComparer)];
+        return PreferencesWriter.Inst.SaveAsync(preferences => preferences.PendingPluginDeletions = [.. paths]);
     }
 
-    private static string ResolvePluginPath(string relativePath)
+    internal static string ResolvePluginPath(string relativePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(relativePath);
         string path = Path.GetFullPath(Path.Combine(Root, relativePath));

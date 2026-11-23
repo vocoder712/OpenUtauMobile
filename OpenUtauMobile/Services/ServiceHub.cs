@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Media;
+using OpenUtau.Audio;
 using OpenUtauMobile.Services.Graphics;
 using OpenUtauMobile.Services.Performance;
 using OpenUtauMobile.Services.Platform;
@@ -15,6 +17,8 @@ namespace OpenUtauMobile.Services;
 /// </summary>
 public static class ServiceHub
 {
+    /// <summary>通过平台生命周期退出应用，避免直接终止进程。</summary>
+    public static Action? PlatformExitApplication { get; set; }
     public static Func<ViewModels.MainViewModel, Avalonia.Controls.Window>? DesktopWindowFactory { get; set; }
     public static IDesktopWindowContext? DesktopWindowContext { get; set; }
     public static Func<Controls.PopupDialogWidthPreset, Avalonia.Size, Avalonia.Size>? DesktopPopupSizeProvider { get; set; }
@@ -28,6 +32,10 @@ public static class ServiceHub
     public static IGraphicsBackendService? GraphicsBackendService { get; set; }
     public static Controls.Gestures.IViewportInputPlatform? ViewportInputPlatform { get; set; }
     public static Action? InitAudioOutput { get; set; }
+    /// <summary>创建系统管理的音频路由选择控件，路由变化时通知设置页刷新。</summary>
+    public static Func<Action, Avalonia.Controls.Control>? AudioDevicePickerFactory { get; set; }
+    /// <summary>读取系统路由的实际输出端口，独立于当前音频后端的设备枚举。</summary>
+    public static Func<List<AudioOutputDevice>>? GetSystemAudioOutputDevices { get; set; }
     public static IClipboardService ClipboardService { get; set; } = new AvaloniaClipboardService();
     public static IExternalUrlLauncher? ExternalUrlLauncher { get; set; }
     public static IExternalStorageService? ExternalStorageService { get; set; }

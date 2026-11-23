@@ -1,0 +1,186 @@
+diff --git a/BUILD.ndk_clang.tpl b/BUILD.ndk_clang.tpl
+--- a/BUILD.ndk_clang.tpl
++++ b/BUILD.ndk_clang.tpl
+@@ -18,7 +18,7 @@
+ 
+ [cc_toolchain(
+     name = "cc_toolchain_%s" % target_system_name,
+-    all_files = ":all_files",
++    all_files = ":all_files_%s" % target_system_name,
+     ar_files = ":ar_files",
+     as_files = ":as_files",
+     compiler_files = ":compiler_files_%s" % target_system_name,
+@@ -44,24 +44,36 @@
+     toolchain_identifier = "toolchain_identifier_%s" % target_system_name,
+ ) for target_system_name in TARGET_SYSTEM_NAMES]
+ 
++# 只登记工具链实际调用的程序及其宿主动态库，不扫描包装脚本、调试器和 Python。
+ filegroup(
+     name = "all_binaries",
+-    srcs = glob(
+-        [
+-            "bin/*",
+-            "lib64/**/*",
+-            "lib/**/*",
+-        ],
+-        # Need to allow_empty here because previous NDK versions had 
+-        # "lib" & "lib64" directories but recent ones only have "lib".
+-        allow_empty = True,
+-    ),
++    srcs = [
++        "bin/clang{executable_extension}",
++        "bin/clang++{executable_extension}",
++        "bin/ld{executable_extension}",
++        "bin/ld.lld{executable_extension}",
++        "bin/llvm-ar{executable_extension}",
++        "bin/llvm-dwp{executable_extension}",
++        "bin/llvm-nm{executable_extension}",
++        "bin/llvm-objcopy{executable_extension}",
++        "bin/llvm-objdump{executable_extension}",
++        "bin/llvm-strip{executable_extension}",
++    ] + glob([
++        "bin/libwinpthread-1.dll",
++        "lib/*.so*",
++        "lib/*.dylib",
++        "lib64/*.so*",
++    ], allow_empty = True),
+ )
+ 
+-filegroup(
+-    name = "all_files",
+-    srcs = glob(["**/*"]) + ["//{sysroot_directory}:all_files"],
+-)
++[filegroup(
++    name = "all_files_%s" % target_system_name,
++    srcs = [
++        ":compiler_files_%s" % target_system_name,
++        ":linker_files_%s" % target_system_name,
++        ":strip_files",
++    ],
++) for target_system_name in TARGET_SYSTEM_NAMES]
+ 
+ filegroup(
+     name = "ar_files",
+@@ -75,24 +87,12 @@
+     output_licenses = ["unencumbered"],
+ )
+ 
++# 系统头文件由编译器 -MD 结果加入实际输入，不将整个 SDK 头文件树设为每个动作的强制输入。
+ [filegroup(
+     name = "compiler_files_%s" % target_system_name,
+     srcs = [
+-        "bin/clang{executable_extension}",
+-        ":ar_files",
+-        ":as_files",
+-        ":objcopy_files",
+-        "//{sysroot_directory}:sysroot_includes",
+-    ] + glob(
+-        [
+-            "prebuilt_include/**",
+-            "include/**",
+-            "lib/gcc/%s/**" % target_system_name,
+-            "lib64/**/*",
+-            "lib/**/*",
+-        ],
+-        allow_empty = True,
+-    ),
++        ":all_binaries",
++    ],
+     output_licenses = ["unencumbered"],
+ ) for target_system_name in TARGET_SYSTEM_NAMES]
+ 
+@@ -118,19 +118,17 @@
+     srcs = ["//{sysroot_directory}:libc_top_%s" % target_system_name],
+ ) for target_system_name in TARGET_SYSTEM_NAMES]
+ 
++# 链接只依赖当前 ABI 的运行库及所选 API 的存根，不纳入其他 API 目录。
+ [filegroup(
+     name = "linker_files_%s" % target_system_name,
+     srcs = [
+         ":all_binaries",
+-        ":static_runtime_lib_%s" % target_system_name,
+-    ] + glob(
+-        [
+-            "lib/gcc/%s/**" % target_system_name,
+-            "lib64/**",
+-            "lib/**",
+-        ],
+-        allow_empty = True,
+-    ),
++        "//{sysroot_directory}:libraries_%s" % target_system_name,
++    ] + glob([
++        "{clang_resource_directory}/lib/linux/libclang_rt.*-%s-android*" % target_system_name.split("-")[0],
++        "{clang_resource_directory}/lib/linux/liborc_rt-%s-android.a" % target_system_name.split("-")[0],
++        "{clang_resource_directory}/lib/linux/%s/*" % {"i686": "i386"}.get(target_system_name.split("-")[0], target_system_name.split("-")[0]),
++    ], allow_empty = True),
+ ) for target_system_name in TARGET_SYSTEM_NAMES]
+ 
+ filegroup(
+@@ -146,6 +144,6 @@
+ 
+ filegroup(
+     name = "strip_files",
+-    srcs = [":all_files"],
++    srcs = [":all_binaries"],
+     output_licenses = ["unencumbered"],
+ )
+diff --git a/BUILD.ndk_sysroot.tpl b/BUILD.ndk_sysroot.tpl
+--- a/BUILD.ndk_sysroot.tpl
++++ b/BUILD.ndk_sysroot.tpl
+@@ -4,11 +4,13 @@
+ 
+ load("//:target_systems.bzl", "TARGET_SYSTEM_NAMES")
+ 
+-filegroup(
+-    name = "all_files",
+-    srcs = glob(["**/*"]),
+-    visibility = ["//visibility:public"],
+-)
++[filegroup(
++    name = "libraries_%s" % target_system_name,
++    srcs = glob([
++        "usr/lib/%s/*" % target_system_name,
++        "usr/lib/%s/{api_level}/*" % target_system_name,
++    ]),
++) for target_system_name in TARGET_SYSTEM_NAMES]
+ 
+ [filegroup(
+     name = "libc_top_%s" % target_system_name,
+@@ -21,10 +23,7 @@
+ 
+ [filegroup(
+     name = "dynamic_runtime_lib_%s" % target_system_name,
+-    srcs = glob([
+-        # "usr/lib/%s/**/*.so" % target_system_name,
+-        # "usr/lib/%s/**/*.a" % target_system_name,
+-    ], allow_empty = True),
++    srcs = [],
+ ) for target_system_name in TARGET_SYSTEM_NAMES]
+ 
+ [filegroup(
+@@ -32,24 +31,5 @@
+     srcs = [
+         "usr/lib/%s/libc++_static.a" % target_system_name,
+         "usr/lib/%s/libc++abi.a" % target_system_name,
+-    ] + {
+-        # libandroid_support was removed in NDK 26, so use a glob
+-        # for backward compatibility.
+-        "arm-linux-androideabi": glob([
+-            "usr/lib/arm-linux-androideabi/libandroid_support.a",
+-        ], allow_empty = True),
+-        "i686-linux-android": glob([
+-            "usr/lib/i686-linux-android/libandroid_support.a",
+-        ], allow_empty = True),
+-    }.get(
+-        target_system_name,
+-        [],
+-    ),
++    ],
+ ) for target_system_name in TARGET_SYSTEM_NAMES]
+-
+-filegroup(
+-    name = "sysroot_includes",
+-    srcs = glob([
+-        "**/include/**/*",
+-    ]),
+-)

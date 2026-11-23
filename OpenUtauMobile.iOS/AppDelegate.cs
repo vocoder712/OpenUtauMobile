@@ -1,10 +1,13 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Foundation;
 using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.iOS;
 using ReactiveUI.Avalonia;
 using Microsoft.ML.OnnxRuntime;
@@ -37,6 +40,8 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         InitLogging();
         ProbeOnnxRuntime();
         ServiceHub.InitAudioOutput = InitAudioOutput;
+        ServiceHub.AudioDevicePickerFactory = onRouteChanged => new IosAudioRoutePicker(onRouteChanged);
+        ServiceHub.GetSystemAudioOutputDevices = IosAudioOutput.GetCurrentRouteOutputDevices;
         ServiceHub.ExternalUrlLauncher = new IosExternalUrlLauncher();
         ServiceHub.SandboxFileTransferService = new OpenUtauMobile.Storage.StorageProviderSandboxTransferService();
         ServiceHub.TryGetPlatformAccentFallback = TryGetPlatformAccentFallback;
@@ -45,15 +50,83 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         ServiceHub.GraphicsBackendService = graphicsService;
         return base.CustomizeAppBuilder(builder)
             .With(IosGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder))
+            .AfterSetup(static appBuilder =>
+            {
+                if (appBuilder.Instance?.TryGetFeature<IActivatableLifetime>() is { } lifetime)
+                {
+                    lifetime.Activated += OnAppActivated;
+                }
+            })
             .UseReactiveUI(_ =>
             {
             });
     }
 
+    /// <summary>
+    /// 接收 UIScene 在冷启动或运行期间交付的 USTX 工程。
+    /// </summary>
+    private static async void OnAppActivated(object? sender, ActivatedEventArgs activation)
+    {
+        if (activation is not FileActivatedEventArgs files)
+        {
+            return;
+        }
+
+        foreach (IStorageItem item in files.Files)
+        {
+            using (item)
+            {
+                if (item is IStorageFile file &&
+                    string.Equals(Path.GetExtension(file.Name), ".ustx", StringComparison.OrdinalIgnoreCase))
+                {
+                    await OpenProjectDocumentAsync(file);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 在安全作用域仍有效时复制外部工程，并交给共享导航队列打开。
+    /// </summary>
+    private static async Task OpenProjectDocumentAsync(IStorageFile file)
+    {
+        string importDirectory = Path.Combine(PathManager.Inst.CachePath, "DocumentImports");
+        string destinationPath = Path.Combine(importDirectory, $"{Guid.NewGuid():N}.ustx");
+        try
+        {
+            Directory.CreateDirectory(importDirectory);
+            await using (Stream source = await file.OpenReadAsync())
+            await using (FileStream destination = File.Create(destinationPath))
+            {
+                await source.CopyToAsync(destination);
+            }
+            ExternalProjectOpenService.Enqueue(new ExternalProjectOpenRequest(destinationPath, DeleteSourceAfterRead: true));
+        }
+        catch (Exception exception)
+        {
+            Log.Error(exception, "无法从 iOS 文件提供程序导入 USTX 工程");
+            try
+            {
+                if (File.Exists(destinationPath))
+                {
+                    File.Delete(destinationPath);
+                }
+            }
+            catch (Exception cleanupException) when (cleanupException is IOException or UnauthorizedAccessException)
+            {
+                Log.Warning(cleanupException, "无法清理 iOS 导入缓存 {Path}", destinationPath);
+            }
+            ExternalProjectOpenService.ReportFailure(new IOException(L.S("Ios.Document.ImportFailed"), exception));
+        }
+    }
+
     private static void InitPathManager()
     {
         string dataPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        string cachePath = Path.Combine(dataPath, "Cache");
+        string cachePath = NSFileManager.DefaultManager
+            .GetUrls(NSSearchPathDirectory.CachesDirectory, NSSearchPathDomain.User)
+            .FirstOrDefault()?.Path
+            ?? throw new InvalidOperationException("无法获取 iOS 缓存目录。");
         PathManagerInitialization.Initialize(
             rootPath: dataPath,
             dataPath: dataPath,
@@ -90,16 +163,56 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
         }
     }
 
+    /// <summary>按保存的偏好初始化音频后端，失败时按平台顺序回退。</summary>
     private static void InitAudioOutput()
+    {
+        string preferredBackend = OpenUtau.Core.Util.Preferences.Default.AudioBackend;
+        if (!string.IsNullOrEmpty(preferredBackend)
+            && !preferredBackend.Equals("Auto", StringComparison.OrdinalIgnoreCase))
+        {
+            if (TryInitAudioBackend(preferredBackend))
+            {
+                return;
+            }
+            Log.Warning("首选音频后端 {Backend} 初始化失败，尝试回退", preferredBackend);
+        }
+
+        string[] fallbackOrder = ["AVAudioEngine", "MiniAudio", "Dummy"];
+        foreach (string backend in fallbackOrder)
+        {
+            if (TryInitAudioBackend(backend))
+            {
+                return;
+            }
+        }
+    }
+
+    /// <summary>尝试创建指定的 iOS 音频后端。</summary>
+    private static bool TryInitAudioBackend(string backend)
     {
         try
         {
-            PlaybackManager.Inst.AudioOutput = new IosAudioOutput();
+            switch (backend)
+            {
+                case "AVAudioEngine":
+                    PlaybackManager.Inst.AudioOutput = new IosAudioOutput();
+                    return true;
+                case "Dummy":
+                    PlaybackManager.Inst.AudioOutput = new DummyAudioOutput();
+                    Log.Information("使用 Dummy 音频后端（静音）");
+                    return true;
+                case "MiniAudio":
+                    PlaybackManager.Inst.AudioOutput = new IosMiniAudioOutput();
+                    return true;
+                default:
+                    Log.Warning("iOS 不支持音频后端 {Backend}", backend);
+                    return false;
+            }
         }
         catch (Exception exception)
         {
-            Log.Error(exception, "AVAudioEngine 初始化失败，回退到 Dummy 音频后端");
-            PlaybackManager.Inst.AudioOutput = new DummyAudioOutput();
+            Log.Error(exception, "音频后端 {Backend} 初始化失败", backend);
+            return false;
         }
     }
 

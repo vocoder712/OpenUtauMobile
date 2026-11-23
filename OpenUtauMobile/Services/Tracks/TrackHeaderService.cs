@@ -31,7 +31,8 @@ public class TrackHeaderService : ITrackHeaderService
     public async Task<USinger?> PickSingerAsync(USinger? currentSinger = null)
     {
         if (ServiceHub.DesktopSingerPicker != null) return await ServiceHub.DesktopSingerPicker(currentSinger);
-        return await PopupService.Show<USinger?>(new SingerPickerPopup(), new SingerPickerViewModel());
+        using SingerPickerViewModel picker = new();
+        return await PopupService.Show<USinger?>(new SingerPickerPopup(), picker);
     }
 
     public Task<Phonemizer?> PickPhonemizerAsync() => PickPhonemizerAsync(null);
@@ -41,7 +42,14 @@ public class TrackHeaderService : ITrackHeaderService
         try
         {
             PhonemizerPickerResult? result = await PhonemizerPickerService.PickAsync(new(CurrentName: currentName, Anchor: anchor));
-            return result?.Factory?.Create();
+            if (result?.Factory is not { } factory) return null;
+            Phonemizer? prepared = null;
+            await TrackPreparationService.Inst.RunAsync(async loading =>
+            {
+                loading.SetIndeterminate(L.S("TrackPreparation.Phonemizer"));
+                prepared = await Task.Run(factory.Create);
+            });
+            return prepared;
         }
         catch (System.Exception exception)
         {

@@ -16,6 +16,7 @@ using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
+using OpenUtauMobile.Services.SingerPlugins;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -59,7 +60,7 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
         TaskScheduler mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
         DocManager.Inst.PostOnUIThread = action => Avalonia.Threading.Dispatcher.UIThread.Post(action);
 
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
             Log.Information("==========开始初始化OpenUtau后端==========");
 
@@ -105,7 +106,11 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 // ---- 阶段 3：DocManager ----
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.DocManager"); ProgressPercent = 42; });
-                int pendingDeletionFailures = PluginManagementService.ApplyPendingDeletions();
+                int pendingDeletionFailures = await PluginManagementService.ApplyPendingDeletionsAsync();
+                int pendingDataClearFailures = await PluginDataService.ApplyPendingAsync();
+                await PluginActivationService.PrepareStartupAsync();
+                DocManager.Inst.PluginFileFilter = PluginActivationService.ShouldLoadFile;
+                SingerPluginService.EnsureContractsLoaded();
                 DocManager.Inst.Initialize(mainThread, mainScheduler);
                 GlobalErrorSubscriber.Instance.Register();
                 Log.Information("DocManager初始化完成");
@@ -114,6 +119,8 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.Phonemizer"); ProgressPercent = 57; });
                 EnsureBuiltinLoaded();
+                SingerPluginService.Initialize();
+                await Task.Run(PluginInformationService.CacheRegistrations);
                 Log.Information("插件加载完成");
 
                 // ---- 阶段 5：ToolManager ----
@@ -126,6 +133,9 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                 ct.ThrowIfCancellationRequested();
                 PostToUI(() => { InitState = L.S("Splash.SingerManager"); ProgressPercent = 85; });
                 SingerManager.Inst.Initialize();
+                ExternalSingerPluginService.Initialize();
+                SingerDiscoveryService.Instance.Initialize();
+                await SingerDiscoveryService.Instance.RefreshAsync(ct, scanBuiltins: false);
                 Stopwatch avatarStopwatch = Stopwatch.StartNew();
                 int singerCount = 0;
                 foreach (List<USinger> group in SingerManager.Inst.SingerGroups.Values)
@@ -171,6 +181,8 @@ public class SplashScreenViewModel : NavigateViewModelBase, IDisposable
                     PluginLoadErrorReporter.Instance.ShowPendingErrors();
                     if (pendingDeletionFailures > 0)
                         ToastService.Enqueue(L.S("PluginManager.PendingDeletionFailed"));
+                    if (pendingDataClearFailures > 0)
+                        ToastService.Enqueue(L.S("PluginDetails.DataClearFailed"));
                 });
             }
             catch (OperationCanceledException)

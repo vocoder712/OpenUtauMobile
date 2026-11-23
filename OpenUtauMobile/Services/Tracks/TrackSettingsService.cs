@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -23,7 +23,7 @@ public sealed class TrackSettingsService
 
     public async Task ShowAsync(UTrack track)
     {
-        if (sessionOpen || !DocManager.Inst.Project.tracks.Contains(track)) return;
+        if (sessionOpen || TrackPreparationService.Inst.IsBusy || DocManager.Inst.HasOpenUndoGroup || !DocManager.Inst.Project.tracks.Contains(track)) return;
         sessionOpen = true;
         TrackSettingsPopupViewModel? sessionViewModel = null;
         try
@@ -31,13 +31,29 @@ public sealed class TrackSettingsService
             TrackSettingsPopupViewModel viewModel = sessionViewModel = new(DocManager.Inst.Project, track);
             while (true)
             {
+                if (viewModel.IsStale) return;
                 TrackSettingsAction action = await PopupService.Show<TrackSettingsAction>(new TrackSettingsPopup(), viewModel);
                 switch (action)
                 {
                     case TrackSettingsAction.PickSinger:
                     {
                         USinger? singer = await TrackHeaderService.Inst.PickSingerAsync(viewModel.DraftSinger);
-                        if (singer != null) viewModel.SetSinger(singer);
+                        if (singer != null)
+                        {
+                            try
+                            {
+                                await TrackPreparationService.Inst.RunAsync(async loading =>
+                                {
+                                    Phonemizer? prepared = await TrackPreparationService.PrepareSingerAsync(singer, loading);
+                                    if (!viewModel.IsStale && TrackPreparationOwner.IsAvailable(singer)) viewModel.SetSinger(singer, prepared);
+                                });
+                            }
+                            catch (Exception exception)
+                            {
+                                Serilog.Log.Error(exception, "Failed to prepare track settings singer");
+                                viewModel.Error = exception.Message;
+                            }
+                        }
                         break;
                     }
                     case TrackSettingsAction.PickPhonemizer:
@@ -48,8 +64,14 @@ public sealed class TrackSettingsService
                     }
                     case TrackSettingsAction.PickRenderer:
                     {
-                        string? renderer = await TrackHeaderService.Inst.PickRendererNameAsync(viewModel.Renderers.ToArray());
-                        if (renderer != null) viewModel.SetRenderer(renderer);
+                        string? renderer = await TrackHeaderService.Inst.PickRendererNameAsync([.. viewModel.Renderers]);
+                        if (renderer != null)
+                            await TrackPreparationService.Inst.RunAsync(async loading =>
+                            {
+                                loading.SetIndeterminate(L.S("TrackPreparation.Applying"));
+                                await Task.Run(() => OpenUtau.Core.Render.Renderers.GetOrCreate(renderer));
+                                if (!viewModel.IsStale) viewModel.SetRenderer(renderer);
+                            });
                         break;
                     }
                     case TrackSettingsAction.EditExpressions:
@@ -64,7 +86,21 @@ public sealed class TrackSettingsService
                     case TrackSettingsAction.Apply:
                     {
                         bool singerChanged = false;
-                        bool applied = await Dispatcher.UIThread.InvokeAsync(() => TryApply(viewModel, out singerChanged));
+                        bool applied = false;
+                        try
+                        {
+                            await TrackPreparationService.Inst.RunAsync(async loading =>
+                            {
+                                await viewModel.PrepareApplyAsync();
+                                loading.SetIndeterminate(L.S("TrackPreparation.Applying"));
+                                applied = TryApply(viewModel, out singerChanged);
+                            });
+                        }
+                        catch (Exception exception)
+                        {
+                            Serilog.Log.Error(exception, "Failed to prepare mobile track settings");
+                            viewModel.Error = exception.Message;
+                        }
                         if (applied)
                         {
                             if (singerChanged)
@@ -110,10 +146,12 @@ public sealed class TrackSettingsService
         }
         if (commands.Count == 0) return true;
         DocManager manager = DocManager.Inst;
+        Stopwatch commit = Stopwatch.StartNew();
         bool ownsUndoGroup = false;
         try
         {
-            manager.StartUndoGroup("TrackSettings.Apply", deferValidate: true);
+            // 复用 Mobile 的帧合并校验；避免全量校验在 UI 释放刚换下的歌手，令撤销时再次同步加载。
+            manager.StartUndoGroup("TrackSettings.Apply");
             ownsUndoGroup = true;
             foreach (UCommand command in commands) manager.ExecuteCmd(command);
             // 使用最终轨道设置校验图引用，并与设置修改一起撤销。
@@ -136,6 +174,7 @@ public sealed class TrackSettingsService
                 ? L.S("TrackSettings.Error.Apply") : exception.Message;
             return false;
         }
+        Serilog.Log.Information("轨道提交 Settings：{Milliseconds:F2} ms", commit.Elapsed.TotalMilliseconds);
         try
         {
             SavePreferences(viewModel, singerChanged,

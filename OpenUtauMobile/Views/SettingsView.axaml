@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
+             xmlns:c="clr-namespace:OpenUtauMobile.Controls"
              xmlns:conv="clr-namespace:OpenUtauMobile.Tools"
              xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
@@ -38,6 +39,9 @@
                     <TextBlock Grid.Column="1" Classes="TopBarTitle" Text="{DynamicResource Settings.Title}" />
                 </Grid>
             </Border>
+
+            <!-- 音频设备异步刷新时沿用页面顶栏加载指示。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading" IsVisible="{Binding IsRefreshingDevices}" />
 
             <Border DockPanel.Dock="Top" Padding="24,8" IsVisible="{Binding HasInitializationError}">
                 <ScrollViewer MaxHeight="160" HorizontalScrollBarVisibility="Disabled">
@@ -333,6 +337,8 @@
                                 </Panel>
                             </Button>
 
+
+
                         </StackPanel>
                     </DockPanel>
                 </Border>
@@ -489,6 +495,24 @@
                                                        Text="{DynamicResource Settings.Edit.SoundFontPath.NotLoaded}" />
                                         </StackPanel>
                                     </StackPanel>
+                                </Border>
+
+                                <!-- 背景音符显示开关，复用编辑设置卡片布局。 -->
+                                <Border Classes="SettingCard">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.ShowGhostNotes}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.ShowGhostNotes.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      IsChecked="{Binding ShowGhostNotes, Mode=TwoWay}"
+                                                      AutomationProperties.Name="{DynamicResource Settings.Edit.ShowGhostNotes}"
+                                                      OffContent="" OnContent="" />
+                                    </Grid>
                                 </Border>
 
                                 <!-- 走带自动翻页行为 -->
@@ -708,11 +732,12 @@
                                                      FontSize="{x:Static semantic:TypographyTokens.BodyLSize}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
                                             </TextBlock>
                                         </StackPanel>
-                                        <Slider Classes="SettingSlider" Minimum="1" Maximum="60"
-                                                Value="{Binding PlaybackRefreshRate, Mode=TwoWay}"
+                                        <Slider Classes="SettingSlider" Minimum="0" Maximum="{Binding PlaybackRefreshRateMaximumStep}"
+                                                Value="{Binding PlaybackRefreshRateStep, Mode=TwoWay}"
                                                 sliderTheme:SliderValueIndicator.ValueText="{Binding PlaybackRefreshRate, StringFormat='{}{0} FPS'}"
                                                 AutomationProperties.Name="{DynamicResource Settings.Edit.PlaybackRefreshRate}"
                                                 TickFrequency="1"
+                                                SmallChange="1" LargeChange="1"
                                                 IsSnapToTickEnabled="True" />
                                         <TextBlock Classes="PlaceholderText"
                                                    Text="{DynamicResource Settings.Edit.PlaybackRefreshRate.Desc}"
@@ -1057,6 +1082,7 @@
                                                     HorizontalAlignment="Left" />
                                             <ComboBox HorizontalAlignment="Stretch"
                                                       ItemsSource="{Binding AvailableAudioDevices}"
+                                                      IsVisible="{Binding !UsesSystemAudioRoutePicker}"
                                                       IsEnabled="{Binding !IsRefreshingDevices}"
                                                       SelectedItem="{Binding SelectedAudioDevice, Mode=TwoWay}">
                                                 <ComboBox.ItemTemplate>
@@ -1066,6 +1092,18 @@
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>
+                                            <!-- 系统路由控件负责实际设备切换，旁边显示当前输出。 -->
+                                            <Grid ColumnDefinitions="Auto,*"
+                                                  ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceS}"
+                                                  IsVisible="{Binding UsesSystemAudioRoutePicker}">
+                                                <ContentControl x:Name="AudioDevicePickerHost"
+                                                                Loaded="OnAudioDevicePickerLoaded"
+                                                                VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding SelectedAudioDevice.DisplayName}"
+                                                           VerticalAlignment="Center"
+                                                           TextWrapping="Wrap" />
+                                            </Grid>
                                         </StackPanel>
 
                                         <TextBlock Classes="PlaceholderText"
@@ -1214,7 +1252,7 @@
                                                         BorderThickness="1" />
                                                 <TextBox Grid.Column="1"
                                                          Text="{Binding ThemeSeedHexInput, Mode=TwoWay}"
-                                                         Watermark="#RRGGBB"
+                                                         PlaceholderText="#RRGGBB"
                                                          VerticalAlignment="Center" />
                                                 <Button Grid.Column="2"
                                                         Content="{DynamicResource Common.Apply}"
@@ -1313,6 +1351,7 @@
                         </ContentControl>
                     </Border>
                 </ScrollViewer>
+
 
             </Grid>
         </DockPanel>

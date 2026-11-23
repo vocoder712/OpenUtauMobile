@@ -52,6 +52,7 @@ public partial class PianoRollViewModel
 
     public void BeginViewportInput()
     {
+        DismissNoteCreationPreview();
         EndPitchStroke();
         _panMotion.Cancel();
         _inputState = PianoRollInputState.Idle;

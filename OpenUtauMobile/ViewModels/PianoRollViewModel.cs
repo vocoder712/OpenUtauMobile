@@ -37,7 +37,7 @@ namespace OpenUtauMobile.ViewModels;
 /// </summary>
 public enum PhonemePanelMode
 {
-    PhonemeSimple, // 简易音素 (SynthV 风格块状)
+    PhonemeSimple, // 简易音素卡片
     PhonemeAdvanced, // 高级音素 (OpenUtau 风格包络与控制点)
     ParameterDraw, // 参数绘制
     ParameterErase // 参数擦除
@@ -383,7 +383,19 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     private bool _maxOffsetsDirty = true;
     private double _cachedMaxTickOffset;
     private double _cachedMaxKeyOffset;
-    public double ContentEndTick;
+    private double _contentEndTick;
+
+    /// <summary>由编曲区从文档同步的内容末尾；边界变化时立即使视口缓存失效。</summary>
+    internal double ContentEndTick
+    {
+        get => _contentEndTick;
+        set
+        {
+            if (_contentEndTick == value) return;
+            _contentEndTick = value;
+            InvalidateMaxOffsets();
+        }
+    }
 
     #endregion
 
@@ -654,6 +666,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         IsPresentationSuspended = suspended;
         if (suspended)
         {
+            DismissNoteCreationPreview();
             _verticalPlaybackFollow.Reset();
             StopPreviewTone();
             _panMotion.Cancel();
@@ -811,6 +824,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public PianoRollViewModel()
     {
+        InitializeNoteCreationPreview();
         ShowRenderWaveform = Preferences.Default.ShowRenderWaveform;
         this.WhenAnyValue(x => x.ShowRenderWaveform)
             .Skip(1)
@@ -865,6 +879,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             .Subscribe(_ => RequestInvalidateVisual?.Invoke())
             .DisposeWith(_disposables);
 
+        MessageBus.Current.Listen<GhostNotesVisibilityChangedEvent>()
+            .Subscribe(_ => RequestInvalidateVisual?.Invoke())
+            .DisposeWith(_disposables);
+
         PlayPosTick = DocManager.Inst.playPosTick;
 
         Gesture.Tap = OnGestureTap;
@@ -898,6 +916,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         this.WhenAnyValue(x => x.EditingVoicePart)
             .Subscribe(_ =>
             {
+                DismissNoteCreationPreview();
                 _verticalPlaybackFollow.Reset();
                 if (_pitchStrokePart != EditingVoicePart) EndPitchStroke();
                 RebuildPianoRollContextActions();
@@ -973,6 +992,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         this.WhenAnyValue(x => x.EditMode, x => x.IsPitchEraserMode)
             .Subscribe(_ =>
             {
+                DismissNoteCreationPreview();
                 EndPitchStroke();
                 if (EditMode != PianoRollEditMode.PitchPen)
                 {
@@ -1010,8 +1030,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             .DisposeWith(_disposables);
 
         SelectedNotes.ObserveCollectionChanges()
-            .Subscribe(_ =>
+            .Subscribe(change =>
             {
+                if (SelectedNotes.Count > 0) DismissNoteCreationPreview();
+                UpdateNoteToolbarSelection(change.EventArgs);
                 _selectedNoteLookup.Clear();
                 _selectedNoteLookup.UnionWith(SelectedNotes);
                 RebuildPianoRollContextActions();
@@ -1618,6 +1640,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     private PianoRollInputState _inputState = PianoRollInputState.Idle; // 当前输入状态机状态
     private (int tick, int tone)[] _movingNotesOrigins = []; // 拖拽开始时所有选中音符的位置快照，长度与 SelectedNotes 保持一致
+    /// <summary>实际按住的音符在拖拽开始时的音高，用于让整个选区跟随指针所在音高。</summary>
+    private int _movingReferenceNoteTone;
     private double? _lastPitch; // 音高画笔上次采样的音高，用于计算增量
     private int _lastTick; // 音高画笔上次采样的 Tick，用于计算增量，相对 Part.position
 
@@ -1750,6 +1774,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         InterruptPanMotionIfRunning();
         if (EditingVoicePart == null) return;
         UNote? hit = HitTestNote(point);
+        if (hit != null) DismissNoteCreationPreview();
 
         switch (EditMode)
         {
@@ -1777,31 +1802,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             case PianoRollEditMode.Note:
                 if (hit == null) // 空白处点击
                 {
-                    if (SelectedNotes.Count == 0)
-                    {
-                        SelectedNotes.Clear();
-                        int tick = PointXToTick(point.X); // 绝对 Tick
-                        tick = SnapToFloor(tick);
-
-                        if (tick < EditingVoicePart.position)
-                        {
-                            return;
-                        }
-
-                        int tone = PointYToToneInt(point.Y);
-
-                        int snapUnit = ResolveSnapUnit();
-                        if (snapUnit <= 0) snapUnit = DocManager.Inst.Project.resolution; // 关闭吸附时默认四分音符
-                        UNote newNote =
-                            DocManager.Inst.Project.CreateNote(tone, tick - EditingVoicePart.position, snapUnit);
-                        AddCreatedNote(EditingVoicePart, newNote);
-                        PlayCreatedNotePreview(newNote); // 播放测试音
-                        SelectedNotes.Add(newNote);
-                    }
-                    else
-                    {
-                        SelectedNotes.Clear();
-                    }
+                    ShowNoteCreationPreview(point);
                 }
                 else if (!SelectedNotes.Contains(hit))
                 {
@@ -1860,6 +1861,11 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// <param name="point"></param>
     public void OnGestureDoubleTap(Point point)
     {
+        if (IsNoteCreationPreviewVisible)
+        {
+            OnGestureTap(point);
+            return;
+        }
         InterruptPanMotionIfRunning();
         if (EditingVoicePart == null)
         {
@@ -1900,6 +1906,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// <param name="point"></param>
     public void OnGestureDragBegin(Point point)
     {
+        DismissNoteCreationPreview();
         // 新手势进入时先打断惯性。
         InterruptPanMotionIfRunning();
         if (WasPanMotionInterrupted)
@@ -1928,7 +1935,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
                 if (hit != null && SelectedNotes.Contains(hit)) // 拖拽已选中的音符
                 {
-                    StartToMoveNotes();
+                    StartToMoveNotes(hit);
                 }
                 else // 移动画布
                 {
@@ -1992,10 +1999,11 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     }
 
     /// <summary>
-    /// 准备开始拖拽音符：记录初始位置，进入 MovingNotes 状态
+    /// 准备开始拖拽音符：记录初始位置及实际按住的音符音高，进入 MovingNotes 状态。
     /// </summary>
-    private void StartToMoveNotes()
+    private void StartToMoveNotes(UNote referenceNote)
     {
+        _movingReferenceNoteTone = referenceNote.tone;
         // 对选中的音符排序，按 position 升序（与 Part.notes 中的顺序一致），确保拖拽过程中位置关系不变。
         UNote[] sorted = [.. SelectedNotes.OrderBy(n => n.position)];
         ReplaceSelectedNotes(sorted);
@@ -2044,7 +2052,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 }
 
                 int tickTotal = (int)(totalOffset.X / TickWidth);
-                int toneTotal = (int)(-totalOffset.Y / KeyHeight);
+                // 纵向直接对齐当前指针所在的音高行，横向仍按起点累计位移计算。
+                int toneTotal = PointYToToneInt(currentPoint.Y) - _movingReferenceNoteTone;
                 // 将第一个音符吸附到格点（SnapToRound 在关闭吸附时直通，无需额外判断）
                 int newPos0 = _movingNotesOrigins[0].tick + tickTotal + EditingVoicePart.position;
                 newPos0 = SnapToRound(newPos0);
@@ -2279,6 +2288,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public void OnGesturePinch(double scaleX, double scaleY, Point center, Vector panDelta)
     {
+        DismissNoteCreationPreview();
         EndPitchStroke();
         InterruptPanMotionIfRunning();
 
@@ -2370,66 +2380,18 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     /// </summary>
     private void RebuildPianoRollContextActions()
     {
+        RebuildNoteToolbarActions();
         List<ContextActionItem> items = [];
         bool hasNoteSelection = SelectedNotes.Count > 0;
-        bool hasSingleNote = SelectedNotes.Count == 1;
-        bool hasAnchorSelection = SelectedAnchors.Count > 0;
         bool allVibratoDisabled = hasNoteSelection && SelectedNotes.All(note => note.vibrato.length <= 0f);
-        bool allVibratoEnabled = hasNoteSelection && SelectedNotes.All(note => note.vibrato.length > 0f);
 
         switch (EditMode)
         {
             case PianoRollEditMode.Hand:
-                if (EditingVoicePart != null)
-                {
-                    items.Add(CreateBulkLyricEditAction());
-                }
-                break;
-
             case PianoRollEditMode.Note:
-                if (EditingVoicePart != null)
-                {
-                    items.Add(CreateBulkLyricEditAction());
-                    // 批量编辑
-                    items.Add(CreateBatchEditAction());
-                }
-
-                if (hasNoteSelection)
-                {
-                    // 删除音符
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Trash,
-                        Tip = L.S("Common.Delete"),
-                        IsDanger = true,
-                        Command = ReactiveCommand.Create(DeleteSelectedNotes)
-                    });
-                    items.Add(CreateSplitNotesAction());
-                }
-
-                if (hasSingleNote || UseDesktopMouseInput && hasNoteSelection)
-                {
-                    // 音符属性
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Wrench,
-                        Tip = L.S("PianoRoll.Action.Properties"),
-                        Command = ReactiveCommand.CreateFromTask(EditNotePropertiesAsync)
-                    });
-                }
-
                 break;
 
             case PianoRollEditMode.MultiSelect:
-                if (hasNoteSelection)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Wrench,
-                        Tip = L.S("PianoRoll.Action.Properties"),
-                        Command = ReactiveCommand.CreateFromTask(EditNotePropertiesAsync)
-                    });
-                }
                 if (IsSelecting)
                 {
                     items.Add(new ContextActionItem
@@ -2446,41 +2408,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                         Icon = PackIconPhosphorIconsKind.Flag,
                         Tip = L.S("PianoRoll.Action.SelectionStart"),
                         Command = ReactiveCommand.Create(BeginSelection)
-                    });
-                }
-
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.SelectionAll,
-                    Tip = L.S("Common.SelectAll"),
-                    Command = ReactiveCommand.Create(SelectAllNotes)
-                });
-                if (EditingVoicePart != null)
-                {
-                    items.Add(CreateBulkLyricEditAction());
-                    items.Add(CreateBatchEditAction());
-                }
-                if (hasNoteSelection)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Trash,
-                        Tip = L.S("Common.Delete"),
-                        IsDanger = true,
-                        Command = ReactiveCommand.Create(DeleteSelectedNotes)
-                    });
-                    items.Add(CreateSplitNotesAction());
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Copy,
-                        Tip = L.S("Common.Copy"),
-                        Command = ReactiveCommand.Create(CopySelectedNotes)
-                    });
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Scissors,
-                        Tip = L.S("Common.Cut"),
-                        Command = ReactiveCommand.Create(CutSelectedNotes)
                     });
                 }
 
@@ -2510,73 +2437,19 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 break;
 
             case PianoRollEditMode.Anchor:
-                if (hasAnchorSelection)
-                {
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.BezierCurve,
-                        Tip = L.S("PianoRoll.Action.ControlPointShape"),
-                        Command = ReactiveCommand.Create(CyclePitchPointShape)
-                    });
-
-                    UNote? firstAnchorNote = GetSingleSelectedFirstAnchorNote();
-                    if (firstAnchorNote != null)
-                    {
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = firstAnchorNote.pitch.snapFirst
-                                ? PackIconPhosphorIconsKind.MagnetFill
-                                : PackIconPhosphorIconsKind.Magnet,
-                            Tip = L.S("PianoRoll.Action.ToggleFirstAnchorSnap"),
-                            Command = ReactiveCommand.Create(ToggleFirstAnchorSnap)
-                        });
-                    }
-
-                    items.Add(new ContextActionItem
-                    {
-                        Icon = PackIconPhosphorIconsKind.Trash,
-                        Tip = L.S("Common.Delete"),
-                        IsDanger = true,
-                        Command = ReactiveCommand.Create(DeleteSelectedAnchors)
-                    });
-                }
-
                 if (!IsDesktopTuning) break;
                 goto case PianoRollEditMode.Vibrato;
 
             case PianoRollEditMode.Vibrato:
-                if (hasNoteSelection)
+                if (hasNoteSelection && !allVibratoDisabled)
                 {
-                    if (allVibratoDisabled)
+                    items.Add(new ContextActionItem
                     {
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.Plus,
-                            Tip = L.S("PianoRoll.Action.AddVibrato"),
-                            Command = ReactiveCommand.Create(EnableVibrato)
-                        });
-                    }
-                    else
-                    {
-                        if (!allVibratoEnabled)
-                        {
-                            // Mixed selection: also offer "Add" for the disabled notes
-                            items.Add(new ContextActionItem
-                            {
-                                Icon = PackIconPhosphorIconsKind.Plus,
-                                Tip = L.S("PianoRoll.Action.AddVibrato"),
-                                Command = ReactiveCommand.Create(EnableVibratoForDisabled)
-                            });
-                        }
-
-                        items.Add(new ContextActionItem
-                        {
-                            Icon = PackIconPhosphorIconsKind.Trash,
-                            Tip = L.S(IsDesktopTuning ? "BatchEdit.Action.ClearVibratos" : "Common.Delete"),
-                            IsDanger = true,
-                            Command = ReactiveCommand.Create(DeleteVibrato)
-                        });
-                    }
+                        Icon = PackIconPhosphorIconsKind.Trash,
+                        Tip = L.S(IsDesktopTuning ? "BatchEdit.Action.ClearVibratos" : "Common.Delete"),
+                        IsDanger = true,
+                        Command = ReactiveCommand.Create(DeleteVibrato)
+                    });
                 }
 
                 break;
@@ -2586,27 +2459,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         {
             items.Add(new ContextActionItem
             {
-                Icon = PackIconPhosphorIconsKind.SelectionAll,
-                Tip = L.S("Common.SelectAll"),
-                Command = ReactiveCommand.Create(SelectAllNotes)
-            });
-            if (hasNoteSelection)
-            {
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.Copy,
-                    Tip = L.S("Common.Copy"),
-                    Command = ReactiveCommand.Create(CopySelectedNotes)
-                });
-                items.Add(new ContextActionItem
-                {
-                    Icon = PackIconPhosphorIconsKind.Scissors,
-                    Tip = L.S("Common.Cut"),
-                    Command = ReactiveCommand.Create(CutSelectedNotes)
-                });
-            }
-            items.Add(new ContextActionItem
-            {
                 Icon = PackIconPhosphorIconsKind.Clipboard,
                 Tip = L.S("Common.Paste"),
                 Command = ReactiveCommand.Create(PasteNotes)
@@ -2614,16 +2466,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         }
 
         PianoRollContextActions = items;
-    }
-
-    private ContextActionItem CreateBulkLyricEditAction()
-    {
-        return new ContextActionItem
-        {
-            Icon = PackIconPhosphorIconsKind.TextAa,
-            Tip = L.S("BulkLyricEdit.Title"),
-            Command = ReactiveCommand.CreateFromTask(ShowBulkLyricEditPopupAsync),
-        };
     }
 
     public async Task ShowBulkLyricEditPopupAsync()
@@ -2636,17 +2478,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
         BulkLyricEditViewModel viewModel = new(part, SelectedNotes.ToList(), UseDesktopMouseInput);
         await PopupService.Show<object>(new BulkLyricEditPopup(), viewModel);
-    }
-
-    private ContextActionItem CreateBatchEditAction()
-    {
-        return new ContextActionItem
-        {
-            Id = "batch-edits",
-            Icon = PackIconPhosphorIconsKind.ListChecks,
-            Tip = L.S("BatchEdit.Title"),
-            Command = ReactiveCommand.CreateFromTask(ShowBatchEditPopupAsync),
-        };
     }
 
     public async Task ShowBatchEditPopupAsync()
@@ -3115,16 +2946,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         if (!UseDesktopMouseInput) ToastService.Enqueue(string.Format(L.S("PianoRoll.Selection.Cut"), selected.Length));
     }
 
-    private ContextActionItem CreateSplitNotesAction()
-    {
-        return new ContextActionItem
-        {
-            Icon = PackIconPhosphorIconsKind.SplitHorizontal,
-            Tip = L.S("PianoRoll.Action.Split"),
-            Command = ReactiveCommand.Create(SplitSelectedNotes),
-        };
-    }
-
     private void SplitSelectedNotes()
     {
         UVoicePart? part = EditingVoicePart;
@@ -3222,15 +3043,20 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public void PasteNotes()
     {
+        DismissNoteCreationPreview();
+        PasteNotesAtTick(PlayPosTick);
+    }
+
+    /// <summary>以指定的工程绝对 Tick 粘贴音符，复用同一撤销事务和分片扩展逻辑。</summary>
+    private void PasteNotesAtTick(int left)
+    {
         if (EditingVoicePart == null || DocManager.Inst.NotesClipboard == null || DocManager.Inst.NotesClipboard.Count == 0)
         {
             return;
         }
 
         UProject project = DocManager.Inst.Project;
-        List<UNote> notes = DocManager.Inst.NotesClipboard.Select(n => n.Clone()).ToList();
-
-        int left = PlayPosTick;
+        List<UNote> notes = [.. DocManager.Inst.NotesClipboard.Select(n => n.Clone())];
         int minPosition = notes.Min(n => n.position);
         if (left < EditingVoicePart.position)
         {
@@ -3895,49 +3721,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
         return Math.Abs(left - right) < 0.01f;
     }
 
-    private void EnableVibrato()
-    {
-        if (EditingVoicePart == null || SelectedNotes.Count == 0)
-        {
-            return;
-        }
-
-        DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
-        {
-            DocManager.Inst.ExecuteCmd(new SetVibratoCommand(
-                EditingVoicePart,
-                note,
-                CreateDefaultVibrato(NotePresets.Default.DefaultVibrato.VibratoLength)));
-        }
-
-        DocManager.Inst.EndUndoGroup();
-    }
-
-    private void EnableVibratoForDisabled()
-    {
-        if (EditingVoicePart == null || SelectedNotes.Count == 0)
-        {
-            return;
-        }
-
-        DocManager.Inst.StartUndoGroup(deferValidate: true);
-        foreach (UNote note in SelectedNotes)
-        {
-            if (note.vibrato.length > 0f)
-            {
-                continue;
-            }
-
-            DocManager.Inst.ExecuteCmd(new SetVibratoCommand(
-                EditingVoicePart,
-                note,
-                CreateDefaultVibrato(NotePresets.Default.DefaultVibrato.VibratoLength)));
-        }
-
-        DocManager.Inst.EndUndoGroup();
-    }
-
     private void DeleteVibrato()
     {
         if (EditingVoicePart == null || SelectedNotes.Count == 0 || SelectedNotes.All(note => note.vibrato.length <= 0f))
@@ -3975,6 +3758,8 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
+        // 工程变更、撤销或重新加载后，待确认位置不再继续沿用。
+        if (cmd is not UNotification || cmd is LoadProjectNotification) DismissNoteCreationPreview();
         switch (cmd)
         {
             case LoadProjectNotification:
@@ -4008,6 +3793,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             case AddPitchPointCommand:
                 ValidateSelectedAnchors();
                 break;
+            case SnapPitchPointCommand:
             case VibratoCommand:
                 RebuildPianoRollContextActions();
                 RequestInvalidateVisual?.Invoke();

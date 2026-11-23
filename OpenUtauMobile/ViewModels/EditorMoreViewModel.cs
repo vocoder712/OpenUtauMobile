@@ -15,13 +15,17 @@ public enum EditorMoreAction
     SaveAs, // 另存为
     Undo,
     Redo,
-    ExpressionGraphs
+    ExpressionGraphs,
+    BatchEdit
 }
 
 public class EditorMoreViewModel : PopupViewModelBase
 {
     public bool CanUndo => !DocManager.Inst.HasOpenUndoGroup && DocManager.Inst.GetUndoState(out _);
     public bool CanRedo => !DocManager.Inst.HasOpenUndoGroup && DocManager.Inst.GetRedoState(out _);
+
+    /// <summary>只有当前正在编辑音符分片时才提供批量编辑入口。</summary>
+    public bool CanBatchEdit { get; init; }
 
     private bool _mergeNearbyPhrases = Preferences.Default.DiffSingerMergeNearbyPhrases;
 

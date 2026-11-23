@@ -108,7 +108,7 @@ namespace OpenUtauMobile.DesktopUI.Views
                     || originalSettings.renderer != track.RendererSettings.renderer
                     || originalSettings.resampler != track.RendererSettings.resampler
                     || originalSettings.wavtool != track.RendererSettings.wavtool) return;
-                singerVm.SetSinger(chosen);
+                await singerVm.SetSingerAsync(chosen);
             };
             ToolTip.SetTip(singer, DesktopUi.Label("TrackSettings.Singer"));
             body.Children.Add(singer);
@@ -118,7 +118,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             phonemizer.CommandParameter = phonemizer;
             body.Children.Add(DesktopInspectorControls.FieldRow(DesktopUi.Label("TrackSettings.Phonemizer"), phonemizer));
             TrackHeaderViewModel rendererVm = _trackVm;
-            string[] renderers = track.Singer is { Found: true } singerModel ? Renderers.GetSupportedRenderers(singerModel.SingerType) : [];
+            string[] renderers = track.Singer is { Found: true } singerModel ? ExternalSingerPluginService.GetSupportedRenderers(singerModel) : [];
             ComboBox renderer = new() { Name = "TrackRendererPicker", ItemsSource = renderers, SelectedItem = track.RendererSettings.renderer, HorizontalAlignment = HorizontalAlignment.Stretch, IsEnabled = renderers.Length > 0 };
             renderer.Classes.Add("DesktopTrackChoice");
             renderer.SelectionChanged += (_, _) =>

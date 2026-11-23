@@ -58,6 +58,9 @@
                 </Grid>
             </Border>
 
+            <!-- 日志扫描状态固定在顶栏下方，不占用列表或空状态区域。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading" IsVisible="{Binding IsLoading}" />
+
             <Border DockPanel.Dock="Bottom"
                     Classes="ExportFooter"
                     IsVisible="{Binding HasLogs}">
@@ -142,15 +145,6 @@
                         </StackPanel>
                     </Border>
                 </ScrollViewer>
-
-                <StackPanel IsVisible="{Binding IsLoading}"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
-                    <ProgressBar Width="160" IsIndeterminate="True" />
-                    <TextBlock Text="{DynamicResource ExportLogs.Loading}"
-                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                </StackPanel>
 
                 <StackPanel IsVisible="{Binding HasError}"
                             HorizontalAlignment="Center"

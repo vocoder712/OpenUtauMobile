@@ -4,20 +4,16 @@
              xmlns:services="clr-namespace:OpenUtauMobile.Services"
              xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
              xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
+             xmlns:components="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components"
              xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
              x:Class="OpenUtauMobile.Views.PluginManagerView"
              x:DataType="vm:PluginManagerViewModel">
     <UserControl.Styles>
-        <Style Selector="Border.TopBar icons|PackIconPhosphorIcons, Border.card icons|PackIconPhosphorIcons">
-            <Setter Property="Width" Value="{x:Static semantic:IconTokens.Standard}" />
-            <Setter Property="Height" Value="{x:Static semantic:IconTokens.Standard}" />
+        <Style Selector="TextBlock.PluginStatus">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Error}" />
         </Style>
-        <Style Selector="Button.PluginFileAction">
-            <Setter Property="Width" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
-            <Setter Property="Height" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
-            <Setter Property="CornerRadius" Value="{x:Static foundation:ShapeTokens.CornerXXXL}" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
+        <Style Selector="TextBlock.PluginStatus.enabled">
+            <Setter Property="Foreground" Value="{DynamicResource Sem.Color.Primary}" />
         </Style>
     </UserControl.Styles>
     <Panel Background="{DynamicResource Sem.Color.Surface}">
@@ -33,6 +29,8 @@
                             AutomationProperties.Name="{DynamicResource Common.Refresh}" />
                 </Grid>
             </Border>
+            <!-- 页面加载状态固定在顶栏下方，不随插件列表滚动。 -->
+            <ProgressBar DockPanel.Dock="Top" Classes="TopBarLoading" IsVisible="{Binding IsBusy}" />
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <Border Padding="20,16,20,108">
                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
@@ -47,33 +45,31 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="services:PluginFileEntry">
-                                    <Border Classes="card">
-                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
-                                            <icons:PackIconPhosphorIcons Kind="PuzzlePiece" VerticalAlignment="Center"
-                                                                          Foreground="{DynamicResource Sem.Color.Primary}" />
-                                            <StackPanel Grid.Column="1" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
-                                                <TextBlock Text="{Binding FileName}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
-                                                           FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FileName}" />
-                                                <TextBlock Text="{Binding RelativePath}" TextTrimming="CharacterEllipsis"
-                                                           ToolTip.Tip="{Binding RelativePath}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                                                <TextBlock Text="{Binding SizeText}" FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
-                                                           Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
-                                                <TextBlock IsVisible="{Binding IsPendingDeletion}" Text="{DynamicResource PluginManager.PendingDeletion}"
-                                                           TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
-                                            </StackPanel>
-                                            <Button Grid.Column="2" Classes="text PluginFileAction" IsVisible="{Binding !IsPendingDeletion}"
-                                                    Command="{Binding $parent[UserControl].((vm:PluginManagerViewModel)DataContext).DeleteCommand}"
-                                                    CommandParameter="{Binding}" Content="{icons:PhosphorIcons Trash}"
-                                                    Foreground="{DynamicResource Sem.Color.Error}" ToolTip.Tip="{DynamicResource Common.Delete}"
-                                                    AutomationProperties.Name="{DynamicResource Common.Delete}" />
-                                            <Button Grid.Column="2" Classes="text PluginFileAction" IsVisible="{Binding IsPendingDeletion}"
-                                                    Command="{Binding $parent[UserControl].((vm:PluginManagerViewModel)DataContext).CancelDeletionCommand}"
-                                                    CommandParameter="{Binding}" Content="{icons:PhosphorIcons ArrowCounterClockwise}"
-                                                    Foreground="{DynamicResource Sem.Color.Primary}"
-                                                    ToolTip.Tip="{DynamicResource PluginManager.CancelDeletion}"
-                                                    AutomationProperties.Name="{DynamicResource PluginManager.CancelDeletion}" />
-                                        </Grid>
+                                <DataTemplate x:DataType="vm:PluginCardViewModel">
+                                    <!-- 外层卡片承载表面，内部按钮保留公共状态层和键盘焦点。 -->
+                                    <Border Classes="card" Padding="0">
+                                        <Button Classes="OptionEntry"
+                                                Padding="{x:Static components:CardTokens.Padding}"
+                                                CornerRadius="{x:Static components:CardTokens.CornerRadius}"
+                                                Command="{Binding $parent[UserControl].((vm:PluginManagerViewModel)DataContext).OpenDetailsCommand}"
+                                                CommandParameter="{Binding}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                                <icons:PackIconPhosphorIcons Kind="Plugs" />
+                                                <StackPanel Grid.Column="1" Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                                    <TextBlock Text="{Binding FileName}" FontSize="{x:Static semantic:TypographyTokens.BodyLSize}"
+                                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding FileName}" />
+                                                    <TextBlock Text="{Binding RelativePath}" TextTrimming="CharacterEllipsis"
+                                                               ToolTip.Tip="{Binding RelativePath}" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                    <TextBlock Text="{Binding SizeText}" FontSize="{x:Static semantic:TypographyTokens.LabelSSize}"
+                                                               Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
+                                                    <TextBlock Classes="PluginStatus" Classes.enabled="{Binding IsEnabled}"
+                                                               Text="{Binding EnabledText}" />
+                                                    <TextBlock IsVisible="{Binding IsPendingDeletion}" Text="{DynamicResource PluginManager.PendingDeletion}"
+                                                               TextWrapping="Wrap" Foreground="{DynamicResource Sem.Color.Error}" />
+                                                </StackPanel>
+                                                <icons:PackIconPhosphorIcons Grid.Column="2" Kind="CaretRight" />
+                                            </Grid>
+                                        </Button>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

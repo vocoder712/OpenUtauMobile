@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -42,6 +43,10 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     [Reactive]
     public bool IsLoading { get; set; }
 
+    /// <summary>后台检查确认当前目录存在，供选择和保存命令使用。</summary>
+    [Reactive]
+    public bool IsDirectoryAvailable { get; private set; }
+
     /// <summary>是否显示空状态面板（无内容或异常时）</summary>
     [Reactive]
     public bool ShowEmptyState { get; set; }
@@ -71,6 +76,12 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
 
     protected readonly string[] Filters;
     private CancellationTokenSource _cts = new();
+    private Dictionary<FileSystemInfo, long> _fileSizes = [];
+    private bool _initialPathPending = true;
+    private bool _publishingPath;
+
+    /// <summary>选择器关闭后不再接收晚到的磁盘查询结果。</summary>
+    protected bool IsClosed { get; private set; }
 
     /// <summary>
     /// 仅供设计器使用
@@ -80,29 +91,24 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     protected FilePickerBaseViewModel(string title, string[] filters, string initialPath = "")
     {
         Title = title;
-        Filters = filters;
+        Filters = [.. filters];
         AllItems.CollectionChanged += (_, _) =>
         {
             Entries.Clear();
             foreach (FileSystemInfo item in AllItems)
             {
-                Entries.Add(CreateEntry(item));
+                FilePickerEntry entry = CreateEntry(item);
+                entry.Size = _fileSizes.TryGetValue(item, out long size) ? size : null;
+                Entries.Add(entry);
             }
         };
-
-        if (FilePickerWorkspace.IsSandboxed)
-            initialPath = FilePickerWorkspace.NormalizeDirectory(initialPath);
-        if (!Directory.Exists(initialPath))
-            initialPath = string.Empty;
 
         if (!string.IsNullOrEmpty(initialPath))
             CurrentPath = initialPath;
         else
-            CurrentPath = FilePickerWorkspace.IsSandboxed ? FilePickerWorkspace.Root : OperatingSystem.IsAndroid()
-                ? "/sdcard"
-                : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            CurrentPath = DefaultDirectory;
 
-        // 构造时先置为加载中，等 View 附加到视觉树后再真正开始 I/O
+        // 构造时立即显示加载状态，目录 I/O 由下方异步请求在后台执行。
         IsLoading = true;
 
         this.WhenAnyValue(x => x.IsLoading)
@@ -112,76 +118,54 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
             });
 
         this.WhenAnyValue(x => x.CurrentPath)
-            .Subscribe(_ => RefreshItemsAsync().ConfigureAwait(false));
+            .Subscribe(path =>
+            {
+                if (!_publishingPath) _ = RefreshItemsAsync();
+            });
 
         SelectItemCommand = ReactiveCommand.Create<FileSystemInfo>(SelectItem);
         GoUpCommand = ReactiveCommand.Create(GoUp);
         CloseCommand = ReactiveCommand.Create(RequestBack);
     }
 
+    /// <summary>在后台完成路径检查、枚举和文件元数据读取，UI 仅发布当前请求。</summary>
     public async Task RefreshItemsAsync()
     {
+        if (IsClosed) return;
         // 先取消旧目录请求，路径无效时也不能让旧列表重新出现。
         CancellationTokenSource previous = _cts;
         _cts = new CancellationTokenSource();
         CancellationToken token = _cts.Token;
+        string requestedPath = CurrentPath;
+        bool initialPath = _initialPathPending;
+        _initialPathPending = false;
+        bool showFiles = ShowFiles;
+        IsLoading = true;
+        IsDirectoryAvailable = false;
+        IsAccessDenied = false;
         await previous.CancelAsync();
         previous.Dispose();
         if (token.IsCancellationRequested) return;
 
-        if (FilePickerWorkspace.IsSandboxed)
-        {
-            string allowedPath = FilePickerWorkspace.NormalizeDirectory(CurrentPath);
-            if (allowedPath != CurrentPath)
-            {
-                CurrentPath = allowedPath;
-                return;
-            }
-        }
-        if (!Directory.Exists(CurrentPath))
-        {
-            AllItems.Clear();
-            IsLoading = false;
-            return;
-        }
-
-        IsLoading = true;
-        IsAccessDenied = false;
-
         try
         {
-            DirectoryInfo currentDir = new(CurrentPath);
+            // 后台排序使用本次请求的文化快照，不读取随后可能变化的全局偏好。
+            string sortingOrder = Preferences.Default.SortingOrder
+                ?? LocalizationManager.ResolveLanguagePreference(Preferences.Default.Language);
+            LocalizedComparer comparer = new(CultureInfo.GetCultureInfo(sortingOrder));
+            DirectorySnapshot snapshot = await Task.Run(
+                () => ReadDirectory(requestedPath, initialPath, showFiles, comparer, token), token);
+            if (token.IsCancellationRequested || IsClosed) return;
+            _publishingPath = true;
+            try { CurrentPath = snapshot.Path; }
+            finally { _publishingPath = false; }
+            IsDirectoryAvailable = snapshot.Exists;
+            _fileSizes = snapshot.Sizes;
+            AllItems.Load(snapshot.Items);
 
-            List<FileSystemInfo> items = await Task.Run(() =>
+            if (snapshot.Items.Length == 0)
             {
-                token.ThrowIfCancellationRequested();
-                IEnumerable<DirectoryInfo> dirs = currentDir.GetDirectories()
-                    .LocalizedOrderBy(d => d.Name);
-                IEnumerable<FileSystemInfo> result = dirs;
-                if (ShowFiles)
-                {
-                    IEnumerable<FileInfo> files = currentDir.GetFiles()
-                        .Where(f => MatchesFilter(f.Name))
-                        .LocalizedOrderBy(f => f.Name);
-                    result = result.Concat(files);
-                }
-
-                return result.ToList();
-            }, token);
-
-            if (token.IsCancellationRequested) return;
-
-            AllItems.Load(items);
-
-            if (items.Count == 0)
-            {
-                bool hasAnyContent = await Task.Run(() =>
-                        currentDir.GetFiles().Length > 0 || currentDir.GetDirectories().Length > 0,
-                    token);
-
-                if (token.IsCancellationRequested) return;
-
-                EmptyStateMessage = hasAnyContent
+                EmptyStateMessage = snapshot.HasAnyContent
                     ? L.S("FilePicker.NoMatch")
                     : L.S("FilePicker.Empty");
                 ShowEmptyState = true;
@@ -197,7 +181,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         }
         catch (UnauthorizedAccessException)
         {
-            if (token.IsCancellationRequested) return;
+            if (token.IsCancellationRequested || IsClosed) return;
             AllItems.Clear();
             EmptyStateMessage = L.S("FilePicker.AccessDenied");
             IsAccessDenied = true;
@@ -206,7 +190,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         }
         catch (Exception ex)
         {
-            if (token.IsCancellationRequested) return;
+            if (token.IsCancellationRequested || IsClosed) return;
             AllItems.Clear();
             EmptyStateMessage = L.S("FilePicker.AccessDenied");
             IsAccessDenied = true;
@@ -215,10 +199,67 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         }
         finally
         {
-            if (!token.IsCancellationRequested)
+            if (!token.IsCancellationRequested && !IsClosed)
                 IsLoading = false;
         }
     }
+
+    /// <summary>后台读取目录快照，避免行绑定再次访问文件系统。</summary>
+    private DirectorySnapshot ReadDirectory(string path, bool initialPath, bool showFiles,
+        IComparer<string> comparer, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        if (FilePickerWorkspace.IsSandboxed) path = FilePickerWorkspace.NormalizeDirectory(path);
+        if (initialPath && !Directory.Exists(path)) path = DefaultDirectory;
+        bool exists = Directory.Exists(path);
+        if (!exists) return new(path, false, [], [], false);
+
+        DirectoryInfo directory = new(path);
+        List<DirectoryInfo> directories = [];
+        foreach (DirectoryInfo child in directory.EnumerateDirectories())
+        {
+            token.ThrowIfCancellationRequested();
+            directories.Add(child);
+        }
+        List<FileInfo> files = [];
+        Dictionary<FileSystemInfo, long> sizes = [];
+        bool hasAnyContent = directories.Count > 0;
+        foreach (FileInfo file in directory.EnumerateFiles())
+        {
+            token.ThrowIfCancellationRequested();
+            hasAnyContent = true;
+            if (!showFiles) break;
+            if (!MatchesFilter(file.Name)) continue;
+            files.Add(file);
+            try { sizes[file] = file.Length; }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
+        }
+        token.ThrowIfCancellationRequested();
+        return new(path, true,
+            [.. directories.OrderBy(item => item.Name, comparer), .. files.OrderBy(item => item.Name, comparer)],
+            sizes, hasAnyContent);
+    }
+
+    /// <summary>默认浏览目录仅做路径计算，不在 UI 检查磁盘。</summary>
+    private static string DefaultDirectory => FilePickerWorkspace.IsSandboxed ? FilePickerWorkspace.Root
+        : OperatingSystem.IsAndroid() ? "/sdcard"
+        : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+    /// <summary>目录内容及预读的文件大小，交给 UI 时不再依赖文件句柄。</summary>
+    private sealed record DirectorySnapshot(string Path, bool Exists, FileSystemInfo[] Items,
+        Dictionary<FileSystemInfo, long> Sizes, bool HasAnyContent);
+
+    /// <summary>关闭选择器并停止发布正在读取的目录结果。</summary>
+    protected void ClosePicker(object? result)
+    {
+        if (IsClosed) return;
+        IsClosed = true;
+        _cts.Cancel();
+        RaiseClose(result);
+    }
+
+    public override void RequestBack() => ClosePicker(null);
 
     /// <summary>
     /// 子类可重写此属性以控制列表中是否显示文件。

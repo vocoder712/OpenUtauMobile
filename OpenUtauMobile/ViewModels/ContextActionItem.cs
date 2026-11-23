@@ -23,6 +23,9 @@ public class ContextActionItem
     /// <summary>按钮点击时执行的命令</summary>
     public ICommand Command { get; init; } = null!;
 
+    /// <summary>可选的长按命令，交给浮动工具栏识别，并阻止本次松手触发普通点击。</summary>
+    public ICommand? HoldCommand { get; init; }
+
     /// <summary>
     /// 是否为危险操作（删除等），true 时显示红色样式。
     /// </summary>

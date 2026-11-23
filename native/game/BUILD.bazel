@@ -1,6 +1,6 @@
 load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 package(default_visibility = ["//visibility:public"])
-exports_files(["game.BUILD", "ggml.BUILD", "pocketfft.BUILD", "gtest.BUILD", "dr_libs.BUILD"])
+exports_files(["game.BUILD", "ggml.BUILD", "pocketfft.BUILD", "gtest.BUILD", "dr_libs.BUILD", "android-ndk-inputs.patch"])
 cc_binary(
     name = "opum_game",
     srcs = ["game_bridge.cpp"],

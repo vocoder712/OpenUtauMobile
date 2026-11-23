@@ -1,0 +1,32 @@
+using System.Windows.Input;
+using IconPacks.Avalonia.PhosphorIcons;
+
+namespace OpenUtauMobile.Themes.OpenUtauMobile.Controls;
+
+/// <summary>浮动工具栏的一项操作；修改操作集合时向工具栏赋予新的集合。</summary>
+public sealed class FloatingToolbarAction
+{
+    /// <summary>操作名称，同时用于溢出菜单、提示和无障碍朗读。</summary>
+    public required string Text { get; init; }
+
+    /// <summary>现有图标库中的操作图标。</summary>
+    public required PackIconPhosphorIconsKind Icon { get; init; }
+
+    /// <summary>可选的短状态标记，设置后替代图标，不作为操作描述。</summary>
+    public string? Label { get; init; }
+
+    /// <summary>主面板与溢出面板共用的命令。</summary>
+    public required ICommand Command { get; init; }
+
+    /// <summary>可选的长按操作，沿用 CommandParameter；触发后不再执行本次普通点击。</summary>
+    public ICommand? HoldCommand { get; init; }
+
+    /// <summary>传递给命令的业务参数。</summary>
+    public object? CommandParameter { get; init; }
+
+    /// <summary>始终收纳到溢出面板。</summary>
+    public bool AlwaysInOverflow { get; init; }
+
+    /// <summary>危险操作使用语义错误色，仍沿用基础按钮交互。</summary>
+    public bool IsDanger { get; init; }
+}

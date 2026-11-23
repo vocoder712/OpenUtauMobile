@@ -35,10 +35,10 @@ public sealed class NoteExtractionPopupViewModel : PopupViewModelBase
         && BatchSize is >= 1 and <= 32 && BatchSize == decimal.Truncate(BatchSize.Value)
         && MaxBatchDuration is >= 0 and <= 600 && (!ExtractPitch || RmvpeAvailable);
     public bool HasInvalidSettings => !Valid;
-    public bool CanUseOnnx => GameBackendProvider.IsSupported && Valid && onnx.IsInstalled && onnx.SupportsLanguage(Language?.Code);
-    public bool CanUseGgml => GameBackendProvider.IsSupported && Valid && ggml.IsInstalled && ggml.SupportsLanguage(Language?.Code);
-    public string OnnxStatus => Status("ONNX", onnx);
-    public string GgmlStatus => Status("GGML", ggml);
+    public bool CanUseOnnx => GameBackendProvider.IsSupported(NoteExtractionBackend.Onnx) && Valid && onnx.IsInstalled && onnx.SupportsLanguage(Language?.Code);
+    public bool CanUseGgml => GameBackendProvider.IsSupported(NoteExtractionBackend.Ggml) && Valid && ggml.IsInstalled && ggml.SupportsLanguage(Language?.Code);
+    public string OnnxStatus => Status("ONNX", onnx, NoteExtractionBackend.Onnx);
+    public string GgmlStatus => Status("GGML", ggml, NoteExtractionBackend.Ggml);
     public ReactiveCommand<Unit, Unit> OnnxCommand { get; }
     public ReactiveCommand<Unit, Unit> GgmlCommand { get; }
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
@@ -74,8 +74,8 @@ public sealed class NoteExtractionPopupViewModel : PopupViewModelBase
         };
     }
 
-    private string Status(string name, GameDependency dependency) => string.Format(L.S("NoteExtraction.BackendStatus"),
-        name, dependency.PackageId, L.S(!GameBackendProvider.IsSupported ? "NoteExtraction.Unsupported"
+    private string Status(string name, GameDependency dependency, NoteExtractionBackend backend) => string.Format(L.S("NoteExtraction.BackendStatus"),
+        name, dependency.PackageId, L.S(!GameBackendProvider.IsSupported(backend) ? "NoteExtraction.Unsupported"
             : !dependency.IsInstalled ? "NoteExtraction.NotInstalled"
             : dependency.SupportsLanguage(Language?.Code) ? "Common.Installed" : "NoteExtraction.LanguageUnavailable"));
 

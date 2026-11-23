@@ -24,17 +24,20 @@ public static class TrackImportService
             {
                 UProject project = Formats.ReadProject([path]) ?? throw new InvalidDataException("Empty project.");
                 NotePhonemizerResolver.Normalize(project);
+                ExternalSingerPluginService.NormalizeProject(project);
                 if (project.parts.Any(part => part.trackNo < 0 || part.trackNo >= project.tracks.Count))
                 {
                     throw new InvalidDataException("Invalid source track index.");
                 }
                 // 来源读取在后台执行，等音频加载终止后再展示确认页，避免遗漏晚到的解码失败。
+                List<UWavePart> missingAudio = [];
                 foreach (UWavePart part in project.parts.OfType<UWavePart>())
                 {
                     try { part.Peaks?.GetAwaiter().GetResult(); }
                     catch (Exception) { /* 片段保留；确认页根据 Peaks 终态显示不可读提示。 */ }
+                    if (!File.Exists(part.FilePath)) missingAudio.Add(part);
                 }
-                sources.Add(new TrackImportSource(path, project));
+                sources.Add(new TrackImportSource(path, project, missingAudio: missingAudio));
             }
             catch (Exception exception)
             {

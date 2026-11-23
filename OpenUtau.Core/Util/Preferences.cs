@@ -14,12 +14,19 @@ namespace OpenUtau.Core.Util {
     public static class Preferences {
         public static SerializablePreferences Default { get; private set; }
 
+        /// <summary>可选宿主保存入口；由宿主捕获独立数据、合并请求并安排后台持久化。</summary>
+        public static Action? SaveOverride { get; set; }
+
         static Preferences() {
             Load();
         }
 
         public static void Save() {
             try {
+                if (SaveOverride != null) {
+                    SaveOverride();
+                    return;
+                }
                 File.WriteAllText(PathManager.Inst.PrefsFilePath,
                     Json.Serialize(Default, Json.WriteIndentedOptions),
                     Encoding.UTF8);
@@ -362,13 +369,19 @@ namespace OpenUtau.Core.Util {
             /// <summary>待下次启动删除的插件文件，保存相对于插件目录的路径。</summary>
             public List<string> PendingPluginDeletions = [];
 
+            /// <summary>启用插件的相对文件路径；仅加载名单内的外部插件。</summary>
+            public List<string> EnabledPlugins = [];
+
+            /// <summary>待下次启动清除数据的插件稳定 ID。</summary>
+            public List<string> PendingPluginDataClears = [];
+
             /// <summary>各平台的界面图形后端回退顺序；空列表使用 Avalonia 默认配置，重启后生效。</summary>
             public Dictionary<string, List<string>> GraphicsBackendFallbackOrders = new();
 
             public double PlaybackRefreshRate = 20.0;
 
             /// <summary>回放时钢琴卷帘纵向滚动：0 = 关闭，1 = 边界滚动，2 = 保持居中。</summary>
-            public int PlaybackVerticalScroll = 0;
+            public int PlaybackVerticalScroll = 2;
 
             /// <summary>
             /// Android 全屏模式：0 = 始终，1 = 仅编辑页，2 = 关闭。
@@ -380,8 +393,8 @@ namespace OpenUtau.Core.Util {
             /// </summary>
             public bool AndroidKeepScreenAwakeWhileEditing = true;
 
-/// <summary>
-            /// Piano key behavior: 0=Silent, 1=SineWave, 2=SoundFont
+            /// <summary>
+            /// 钢琴键行为：0=静音，1=正弦波，2=SoundFont采样
             /// </summary>
             public int PianoKeyBehavior = 1;
 
@@ -395,6 +408,9 @@ namespace OpenUtau.Core.Util {
             /// </summary>
             public bool ShowRenderWaveform = false;
 
+            /// <summary>是否在钢琴卷帘背景显示其它轨道中与当前片段重叠的音符。</summary>
+            public bool PianoRollShowGhostNotes = true;
+
             /// <summary>
             /// Path to SoundFont (SF2) file for piano key playback.
             /// If empty or file not found, falls back to SineWave.
@@ -402,14 +418,14 @@ namespace OpenUtau.Core.Util {
             public string SoundFontPath = string.Empty;
 
             /// <summary>
-            /// Preferred audio backend. Empty string means auto-select based on platform.
+            /// 偏好的音频后端。空字符串表示根据平台自动选择。
             /// Supported values:
-            /// - "" or "Auto": Auto-select (default)
+            /// - "" or "Auto": 自动 (default)
             /// - "MiniAudio": Use MiniAudio (Windows/Linux/macOS/Android)
             /// - "NAudio": Use NAudio (Windows only)
             /// - "AudioTrack": Use Android AudioTrack (Android only)
             /// - "Dummy": Use dummy audio output (all platforms, no sound)
-            /// Platform-specific availability:
+            /// 特定平台的可用性：
             /// - Windows: MiniAudio, NAudio, Dummy
             /// - Linux/macOS: MiniAudio, Dummy
             /// - Android: MiniAudio, AudioTrack, Dummy

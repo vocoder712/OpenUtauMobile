@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reactive;
 using System.Threading.Tasks;
 using DynamicData.Binding;
@@ -14,9 +15,10 @@ using Serilog;
 
 namespace OpenUtauMobile.ViewModels;
 
-public class PluginManagerViewModel : NavigateViewModelBase
+public class PluginManagerViewModel : NavigateViewModelBase, IDisposable
 {
-    public ObservableCollectionExtended<PluginFileEntry> Plugins { get; } = [];
+    public ObservableCollectionExtended<PluginCardViewModel> Plugins { get; } = [];
+    private bool disposed;
     [Reactive] public bool IsBusy { get; private set; }
     [Reactive] public bool IsEmpty { get; private set; }
     [Reactive] public bool HasError { get; private set; }
@@ -25,8 +27,7 @@ public class PluginManagerViewModel : NavigateViewModelBase
     public ReactiveCommand<Unit, Unit> BackCommand { get; }
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
     public ReactiveCommand<Unit, Unit> InstallCommand { get; }
-    public ReactiveCommand<PluginFileEntry, Unit> DeleteCommand { get; }
-    public ReactiveCommand<PluginFileEntry, Unit> CancelDeletionCommand { get; }
+    public ReactiveCommand<PluginCardViewModel, Unit> OpenDetailsCommand { get; }
 
     public PluginManagerViewModel(MainViewModel navigator) : base(navigator)
     {
@@ -34,8 +35,8 @@ public class PluginManagerViewModel : NavigateViewModelBase
         BackCommand = ReactiveCommand.Create(() => Navigator.NavigateBack(this), canOperate);
         RefreshCommand = ReactiveCommand.CreateFromTask(RefreshAsync, canOperate);
         InstallCommand = ReactiveCommand.CreateFromTask(InstallAsync, canOperate);
-        DeleteCommand = ReactiveCommand.CreateFromTask<PluginFileEntry>(DeleteAsync, canOperate);
-        CancelDeletionCommand = ReactiveCommand.CreateFromTask<PluginFileEntry>(CancelDeletionAsync, canOperate);
+        OpenDetailsCommand = ReactiveCommand.Create<PluginCardViewModel>(
+            card => Navigator.Navigate(new PluginDetailsViewModel(Navigator, card.RelativePath)), canOperate);
     }
 
     public override void OnNavigatedTo() => _ = RefreshAsync();
@@ -58,7 +59,7 @@ public class PluginManagerViewModel : NavigateViewModelBase
         try
         {
             IReadOnlyList<PluginFileEntry> entries = await Task.Run(PluginManagementService.ListFiles);
-            Plugins.Load(entries);
+            Plugins.Load([.. System.Linq.Enumerable.Select(entries, entry => new PluginCardViewModel(entry))]);
             IsEmpty = entries.Count == 0;
             HasError = false;
             ErrorMessage = string.Empty;
@@ -83,6 +84,17 @@ public class PluginManagerViewModel : NavigateViewModelBase
             {
                 string path = await FilePicker.PickSingleFileAsync(L.S("PluginManager.SelectFile"), ["*.dll"]);
                 if (string.IsNullOrEmpty(path)) return;
+                await LoadingPopupService.RunAsync(L.S("PluginManager.Checking"),
+                    _ => Task.Run(() => PluginManagementService.ValidateForInstall(path)));
+                string? answer = await OptionConfirmPopupService.ShowAsync(
+                    L.S("PluginManager.TrustTitle"),
+                    string.Format(L.S("PluginManager.TrustQuestion"), Path.GetFileName(path))
+                        + Environment.NewLine + Environment.NewLine + L.S("PluginManager.TrustMessage"),
+                    [
+                        new OptionConfirmOption(L.S("Common.Cancel"), "cancel", isDefault: true),
+                        new OptionConfirmOption(L.S("PluginManager.Continue"), "continue", isDestructive: true),
+                    ]);
+                if (answer != "continue") return;
                 await LoadingPopupService.RunAsync(L.S("PluginManager.Checking"), 0, async loading =>
                 {
                     await Task.Run(() => PluginManagementService.InstallAsync(path, loading));
@@ -103,66 +115,23 @@ public class PluginManagerViewModel : NavigateViewModelBase
             {
                 await OptionConfirmPopupService.ShowAsync(
                     L.S("PluginManager.InstallSucceeded"), L.S("PluginManager.RestartToActivate"),
-                    new OptionConfirmOption[] { new(L.S("Common.Confirm"), "ok", isPrimary: true, isDefault: true) });
+                    [new OptionConfirmOption(L.S("Common.Confirm"), "ok", isPrimary: true, isDefault: true)]);
             }
         }
         finally { IsBusy = false; }
-    }
-
-    private async Task DeleteAsync(PluginFileEntry entry)
-    {
-        if (IsBusy) return;
-        IsBusy = true;
-        try
-        {
-            string? answer = await OptionConfirmPopupService.ShowAsync(
-                L.S("PluginManager.DeleteTitle"),
-                string.Format(L.S("PluginManager.DeleteMessage"), entry.RelativePath),
-                new OptionConfirmOption[]
-                {
-                    new(L.S("Common.Cancel"), "cancel", isDefault: true),
-                    new(L.S("Common.Delete"), "delete", isDestructive: true),
-                });
-            if (answer != "delete") return;
-            await Task.Run(() => PluginManagementService.ScheduleDeletion(entry.RelativePath));
-            await ServiceHub.FlushFileSystemAsync();
-            ToastService.Enqueue(L.S("PluginManager.PendingDeletion"));
-        }
-        catch (Exception exception)
-        {
-            ShowError("PluginManager.DeleteFailed", exception);
-        }
-        finally
-        {
-            await RefreshEntriesAsync();
-            IsBusy = false;
-        }
-    }
-
-    private async Task CancelDeletionAsync(PluginFileEntry entry)
-    {
-        if (IsBusy) return;
-        IsBusy = true;
-        try
-        {
-            await Task.Run(() => PluginManagementService.CancelDeletion(entry.RelativePath));
-            await ServiceHub.FlushFileSystemAsync();
-            ToastService.Enqueue(L.S("PluginManager.DeletionCancelled"));
-        }
-        catch (Exception exception)
-        {
-            ShowError("PluginManager.CancelDeletionFailed", exception);
-        }
-        finally
-        {
-            await RefreshEntriesAsync();
-            IsBusy = false;
-        }
     }
 
     private static void ShowError(string key, Exception exception)
     {
         Log.Error(exception, "Plugin management operation failed: {Operation}", key);
         ErrorDialogService.Show(new ErrorDialogViewModel(new ErrorMessageNotification(L.S(key), exception)));
+    }
+
+    public void Dispose()
+    {
+        if (disposed) return;
+        disposed = true;
+        BackCommand.Dispose(); RefreshCommand.Dispose(); InstallCommand.Dispose();
+        OpenDetailsCommand.Dispose();
     }
 }

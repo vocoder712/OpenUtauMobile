@@ -24,7 +24,7 @@ namespace OpenUtau.Core.Vogen {
         public string misc;
     }
 
-    class VogenSingerLoader {
+    public class VogenSingerLoader {
         readonly string basePath;
 
         public static IEnumerable<USinger> FindAllSingers() {

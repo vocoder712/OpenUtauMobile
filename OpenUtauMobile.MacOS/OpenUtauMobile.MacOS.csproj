@@ -5,11 +5,11 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <DefineConstants>MACOS</DefineConstants>
-        <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
+        <PackageReference Include="SDL3-CS.MacOS" Version="3.4.14"/>
         <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0"/>
     </ItemGroup>
 
@@ -18,6 +18,5 @@
         <ProjectReference Include="..\OpenUtauMobile.DesktopUI\OpenUtauMobile.DesktopUI.csproj"/>
     </ItemGroup>
 
-    <Import Project="../native/DesktopNative.targets" />
-    <Import Project="../native/game/GameNative.targets" />
+    <Import Project="../native/NativeBuild.targets" />
 </Project>
