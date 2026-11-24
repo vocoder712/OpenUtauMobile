@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicData.Binding;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Storage;
@@ -32,10 +30,6 @@ public enum FilePickerMode
 public abstract class FilePickerBaseViewModel : PopupViewModelBase
 {
     [Reactive] public string Title { get; set; }
-
-    /// <summary>当前路径下经过过滤的文件和文件夹</summary>
-    [Reactive]
-    public ObservableCollectionExtended<FileSystemInfo> AllItems { get; set; } = [];
 
     [Reactive] public string CurrentPath { get; set; }
 
@@ -67,8 +61,9 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     public virtual string SelectionSummary => string.Empty;
     public virtual ReactiveCommand<Unit, Unit>? ConfirmCommand => null;
 
-    /// <summary>单选与多选共用的文件行，多选子类附加勾选状态。</summary>
-    public ObservableCollection<FilePickerEntry> Entries { get; } = [];
+    /// <summary>后台准备并一次性发布的当前目录文件行。</summary>
+    [Reactive]
+    public IReadOnlyList<FilePickerEntry> Entries { get; private set; } = [];
 
     public ReactiveCommand<FileSystemInfo, Unit> SelectItemCommand { get; }
     public ReactiveCommand<Unit, Unit> GoUpCommand { get; }
@@ -76,7 +71,6 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
 
     protected readonly string[] Filters;
     private CancellationTokenSource _cts = new();
-    private Dictionary<FileSystemInfo, long> _fileSizes = [];
     private bool _initialPathPending = true;
     private bool _publishingPath;
 
@@ -92,16 +86,6 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     {
         Title = title;
         Filters = [.. filters];
-        AllItems.CollectionChanged += (_, _) =>
-        {
-            Entries.Clear();
-            foreach (FileSystemInfo item in AllItems)
-            {
-                FilePickerEntry entry = CreateEntry(item);
-                entry.Size = _fileSizes.TryGetValue(item, out long size) ? size : null;
-                Entries.Add(entry);
-            }
-        };
 
         if (!string.IsNullOrEmpty(initialPath))
             CurrentPath = initialPath;
@@ -128,7 +112,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         CloseCommand = ReactiveCommand.Create(() => ClosePicker(null));
     }
 
-    /// <summary>在后台完成路径检查、枚举和文件元数据读取，UI 仅发布当前请求。</summary>
+    /// <summary>在后台准备排序后的目录行，UI 仅发布当前请求的结果。</summary>
     public async Task RefreshItemsAsync()
     {
         if (IsClosed) return;
@@ -152,18 +136,16 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
             // 后台排序使用本次请求的文化快照，不读取随后可能变化的全局偏好。
             string sortingOrder = Preferences.Default.SortingOrder
                 ?? LocalizationManager.ResolveLanguagePreference(Preferences.Default.Language);
-            LocalizedComparer comparer = new(CultureInfo.GetCultureInfo(sortingOrder));
             DirectorySnapshot snapshot = await Task.Run(
-                () => ReadDirectory(requestedPath, initialPath, showFiles, comparer, token), token);
+                () => ReadDirectory(requestedPath, initialPath, showFiles, sortingOrder, token), token);
             if (token.IsCancellationRequested || IsClosed) return;
             _publishingPath = true;
             try { CurrentPath = snapshot.Path; }
             finally { _publishingPath = false; }
             IsDirectoryAvailable = snapshot.Exists;
-            _fileSizes = snapshot.Sizes;
-            AllItems.Load(snapshot.Items);
+            Entries = snapshot.Entries;
 
-            if (snapshot.Items.Length == 0)
+            if (snapshot.Entries.Length == 0)
             {
                 EmptyStateMessage = snapshot.HasAnyContent
                     ? L.S("FilePicker.NoMatch")
@@ -182,7 +164,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         catch (UnauthorizedAccessException)
         {
             if (token.IsCancellationRequested || IsClosed) return;
-            AllItems.Clear();
+            Entries = [];
             EmptyStateMessage = L.S("FilePicker.AccessDenied");
             IsAccessDenied = true;
             ShowEmptyState = true;
@@ -191,7 +173,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         catch (Exception ex)
         {
             if (token.IsCancellationRequested || IsClosed) return;
-            AllItems.Clear();
+            Entries = [];
             EmptyStateMessage = L.S("FilePicker.AccessDenied");
             IsAccessDenied = true;
             ShowEmptyState = true;
@@ -204,41 +186,48 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         }
     }
 
-    /// <summary>后台读取目录快照，避免行绑定再次访问文件系统。</summary>
+    /// <summary>后台遍历目录并准备文件行，避免行绑定再次访问文件系统。</summary>
     private DirectorySnapshot ReadDirectory(string path, bool initialPath, bool showFiles,
-        IComparer<string> comparer, CancellationToken token)
+        string sortingOrder, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
         if (FilePickerWorkspace.IsSandboxed) path = FilePickerWorkspace.NormalizeDirectory(path);
-        if (initialPath && !Directory.Exists(path)) path = DefaultDirectory;
         bool exists = Directory.Exists(path);
-        if (!exists) return new(path, false, [], [], false);
-
-        DirectoryInfo directory = new(path);
-        List<DirectoryInfo> directories = [];
-        foreach (DirectoryInfo child in directory.EnumerateDirectories())
+        if (initialPath && !exists)
         {
-            token.ThrowIfCancellationRequested();
-            directories.Add(child);
+            path = DefaultDirectory;
+            exists = Directory.Exists(path);
         }
-        List<FileInfo> files = [];
-        Dictionary<FileSystemInfo, long> sizes = [];
-        bool hasAnyContent = directories.Count > 0;
-        foreach (FileInfo file in directory.EnumerateFiles())
+        if (!exists) return new(path, false, [], false);
+
+        List<FilePickerEntry> directories = [];
+        List<FilePickerEntry> files = [];
+        bool hasAnyContent = false;
+        foreach (FileSystemInfo item in new DirectoryInfo(path).EnumerateFileSystemInfos())
         {
             token.ThrowIfCancellationRequested();
             hasAnyContent = true;
-            if (!showFiles) break;
-            if (!MatchesFilter(file.Name)) continue;
-            files.Add(file);
-            try { sizes[file] = file.Length; }
+            if (item is DirectoryInfo)
+            {
+                directories.Add(CreateEntry(item, null));
+                continue;
+            }
+            if (!showFiles || item is not FileInfo file || !MatchesFilter(file.Name)) continue;
+
+            long? size = null;
+            try { size = file.Length; }
             catch (IOException) { }
             catch (UnauthorizedAccessException) { }
+            files.Add(CreateEntry(file, size));
         }
         token.ThrowIfCancellationRequested();
-        return new(path, true,
-            [.. directories.OrderBy(item => item.Name, comparer), .. files.OrderBy(item => item.Name, comparer)],
-            sizes, hasAnyContent);
+        LocalizedComparer comparer = new(CultureInfo.GetCultureInfo(sortingOrder));
+        FilePickerEntry[] entries =
+        [
+            .. directories.OrderBy(entry => entry.Name, comparer),
+            .. files.OrderBy(entry => entry.Name, comparer),
+        ];
+        return new(path, true, entries, hasAnyContent);
     }
 
     /// <summary>默认浏览目录仅做路径计算，不在 UI 检查磁盘。</summary>
@@ -246,9 +235,8 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         : OperatingSystem.IsAndroid() ? "/sdcard"
         : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-    /// <summary>目录内容及预读的文件大小，交给 UI 时不再依赖文件句柄。</summary>
-    private sealed record DirectorySnapshot(string Path, bool Exists, FileSystemInfo[] Items,
-        Dictionary<FileSystemInfo, long> Sizes, bool HasAnyContent);
+    /// <summary>准备完毕并可直接绑定的目录快照。</summary>
+    private sealed record DirectorySnapshot(string Path, bool Exists, FilePickerEntry[] Entries, bool HasAnyContent);
 
     /// <summary>关闭选择器并停止发布正在读取的目录结果。</summary>
     protected void ClosePicker(object? result)
@@ -321,7 +309,8 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     /// <summary>点击条目时的确认逻辑，由子类实现。</summary>
     protected abstract void SelectItem(FileSystemInfo item);
 
-    protected virtual FilePickerEntry CreateEntry(FileSystemInfo item) => new(item);
+    /// <summary>在后台创建文件行。勾选状态只在 UI 绑定时读取。</summary>
+    protected virtual FilePickerEntry CreateEntry(FileSystemInfo item, long? size) => new(item, size);
 
 
     /// <summary>导航到上级目录，并返回是否成功切换路径。</summary>

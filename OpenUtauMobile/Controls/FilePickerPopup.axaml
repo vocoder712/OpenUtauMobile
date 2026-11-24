@@ -172,14 +172,15 @@
                         <ItemsControl ItemsSource="{Binding Entries}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}" />
+                                    <VirtualizingStackPanel />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:FilePickerEntry">
                                     <Button
                                         Classes="FileEntry"
-                                        Command="{Binding DataContext.SelectItemCommand, ElementName=Root}"
+                                        Margin="0,0,0,4"
+                                        Command="{Binding #Root.((vm:FilePickerBaseViewModel)DataContext).SelectItemCommand}"
                                         CommandParameter="{Binding Item}">
                                         <Grid
                                             ColumnDefinitions="38,*,Auto,Auto"
