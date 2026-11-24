@@ -14,7 +14,7 @@
     Name="Root"
     d:DataContext="vm:FilePickerBaseViewModel"
     x:DataType="vm:FilePickerBaseViewModel"
-    Classes="PopupDialogRoot">
+    Classes="PopupDialogRoot DialogHeightExpanded">
     <UserControl.Styles>
         <StyleInclude Source="/Controls/Styles/FilePickerPopup.axaml" />
     </UserControl.Styles>
@@ -164,6 +164,7 @@
                 </StackPanel>
                 <!-- 文件列表（加载中时隐藏，避免空列表在 Spinner 下方撑开空间） -->
                 <ScrollViewer
+                    x:Name="FileListScroll"
                     IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}"
                     VerticalScrollBarVisibility="Auto"
                     HorizontalScrollBarVisibility="Disabled">

@@ -124,8 +124,8 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
             });
 
         SelectItemCommand = ReactiveCommand.Create<FileSystemInfo>(SelectItem);
-        GoUpCommand = ReactiveCommand.Create(GoUp);
-        CloseCommand = ReactiveCommand.Create(RequestBack);
+        GoUpCommand = ReactiveCommand.Create(() => { TryGoUp(); });
+        CloseCommand = ReactiveCommand.Create(() => ClosePicker(null));
     }
 
     /// <summary>在后台完成路径检查、枚举和文件元数据读取，UI 仅发布当前请求。</summary>
@@ -259,7 +259,12 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         RaiseClose(result);
     }
 
-    public override void RequestBack() => ClosePicker(null);
+    /// <summary>Android 系统返回优先导航到上级目录。</summary>
+    public override void RequestBack()
+    {
+        if (OperatingSystem.IsAndroid() && TryGoUp()) return;
+        ClosePicker(null);
+    }
 
     /// <summary>
     /// 子类可重写此属性以控制列表中是否显示文件。
@@ -319,11 +324,15 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     protected virtual FilePickerEntry CreateEntry(FileSystemInfo item) => new(item);
 
 
-    private void GoUp()
+    /// <summary>导航到上级目录，并返回是否成功切换路径。</summary>
+    private bool TryGoUp()
     {
-        if (FilePickerWorkspace.IsSandboxed && CurrentPath == FilePickerWorkspace.Root) return;
+        if (string.IsNullOrWhiteSpace(CurrentPath) ||
+            (FilePickerWorkspace.IsSandboxed && CurrentPath == FilePickerWorkspace.Root)) return false;
         DirectoryInfo? parentDir = Directory.GetParent(CurrentPath);
-        if (parentDir != null)
-            CurrentPath = parentDir.FullName;
+        if (parentDir == null) return false;
+
+        CurrentPath = parentDir.FullName;
+        return true;
     }
 }
