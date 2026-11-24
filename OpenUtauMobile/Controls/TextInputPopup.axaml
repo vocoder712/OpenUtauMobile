@@ -4,7 +4,7 @@
              xmlns:c="clr-namespace:OpenUtauMobile.Controls"
              x:Class="OpenUtauMobile.Controls.TextInputPopup"
              x:DataType="vm:TextInputPopupViewModel"
-             Classes="PopupDialogRoot DialogHeightCompact">
+             Classes="PopupDialogRoot">
     <c:DialogShell Header="{Binding Title}" CloseCommand="{Binding CancelCommand}">
         <c:DialogShell.Footer>
             <c:DialogActionRow>

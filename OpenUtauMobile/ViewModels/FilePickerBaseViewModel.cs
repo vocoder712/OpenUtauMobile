@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Storage;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -58,6 +59,7 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
 
     public virtual bool IsMultiSelect => false;
     public bool HasFooter => IsMultiSelect || Mode != FilePickerMode.OpenFile;
+    public bool SupportsCreateFolder => Mode is FilePickerMode.OpenFolder or FilePickerMode.SaveFile;
     public virtual string SelectionSummary => string.Empty;
     public virtual ReactiveCommand<Unit, Unit>? ConfirmCommand => null;
 
@@ -68,6 +70,15 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     public ReactiveCommand<FileSystemInfo, Unit> SelectItemCommand { get; }
     public ReactiveCommand<Unit, Unit> GoUpCommand { get; }
     public ReactiveCommand<Unit, Unit> CloseCommand { get; }
+
+    /// <summary>在当前目录新建文件夹。</summary>
+    public ReactiveCommand<Unit, Unit> CreateFolderCommand { get; }
+
+    /// <summary>目录已加载且没有正在处理的保存或新建操作。</summary>
+    protected IObservable<bool> DirectoryActionsAvailable { get; }
+
+    [Reactive]
+    private bool IsHandlingDirectoryAction { get; set; }
 
     protected readonly string[] Filters;
     private CancellationTokenSource _cts = new();
@@ -110,6 +121,63 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
         SelectItemCommand = ReactiveCommand.Create<FileSystemInfo>(SelectItem);
         GoUpCommand = ReactiveCommand.Create(() => { TryGoUp(); });
         CloseCommand = ReactiveCommand.Create(() => ClosePicker(null));
+        DirectoryActionsAvailable = this.WhenAnyValue(x => x.IsDirectoryAvailable, x => x.IsLoading,
+            x => x.IsHandlingDirectoryAction, (available, loading, handling) => available && !loading && !handling);
+        CreateFolderCommand = ReactiveCommand.CreateFromTask(
+            () => RunDirectoryActionAsync(CreateFolderAsync), DirectoryActionsAvailable);
+    }
+
+    /// <summary>同一选择器内的保存与新建依次处理，确保子弹窗只响应各自的确认。</summary>
+    protected async Task RunDirectoryActionAsync(Func<Task> action)
+    {
+        if (IsClosed || IsHandlingDirectoryAction) return;
+        IsHandlingDirectoryAction = true;
+        try { await action(); }
+        finally { IsHandlingDirectoryAction = false; }
+    }
+
+    /// <summary>接收单级目录名，在后台创建后刷新原目录。</summary>
+    private async Task CreateFolderAsync()
+    {
+        string directory = CurrentPath;
+        string? name = await TextInputPopupService.ShowAsync(L.S("Sandbox.NewFolder"), string.Empty,
+            L.S("Sandbox.Name"), validate: SandboxFileService.ValidateName);
+        if (name == null || IsClosed || CurrentPath != directory) return;
+
+        string? error = null;
+        try
+        {
+            if (!await Task.Run(() => TryCreateFolder(directory, name)))
+                error = L.S("Sandbox.AlreadyExists");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            error = ex.Message;
+        }
+
+        if (error != null)
+        {
+            if (!IsClosed)
+                await OptionConfirmPopupService.ShowAsync(L.S("FilePicker.CreateFolderFailed"), error,
+                    [new OptionConfirmOption(L.S("Common.Confirm"), "ok", isPrimary: true, isDefault: true)]);
+            return;
+        }
+
+        ToastService.Enqueue(string.Format(L.S("FilePicker.FolderCreated"), name));
+        if (!IsClosed && CurrentPath == directory) await RefreshItemsAsync();
+    }
+
+    /// <summary>检查文件和目录的同名冲突，再创建单级子目录。</summary>
+    private static bool TryCreateFolder(string directory, string name)
+    {
+        if (FilePickerWorkspace.IsSandboxed) directory = new SandboxFileService(() => false).Resolve(directory);
+        if (!Directory.Exists(directory)) throw new DirectoryNotFoundException(directory);
+
+        string path = Path.Combine(directory, name);
+        if (Path.Exists(path)) return false;
+        try { Directory.CreateDirectory(path); }
+        catch (IOException) when (Path.Exists(path)) { return false; }
+        return true;
     }
 
     /// <summary>在后台准备排序后的目录行，UI 仅发布当前请求的结果。</summary>
@@ -299,11 +367,8 @@ public abstract class FilePickerBaseViewModel : PopupViewModelBase
     /// <summary>SaveFile 模式：强制后缀（含点）。</summary>
     public virtual string Extension => string.Empty;
 
-    /// <summary>SaveFile 模式：覆盖同名文件时显示的警告消息。</summary>
-    public virtual string WarningMessage { get; set; } = string.Empty;
-
-    /// <summary>SaveFile 模式：是否显示覆盖警告。</summary>
-    public virtual bool IsShowingWarningMessage { get; set; }
+    /// <summary>SaveFile 模式：是否提示文件名格式无效。</summary>
+    public virtual bool HasInvalidFileName { get; protected set; }
 
     // ── 点击条目时的确认逻辑，由子类实现 ────────────────────────────────
     /// <summary>点击条目时的确认逻辑，由子类实现。</summary>

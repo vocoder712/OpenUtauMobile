@@ -563,7 +563,16 @@
     <value>新工程</value>
   </data>
   <data name="FilePicker.OverwriteWarning" xml:space="preserve">
-    <value>当前目录已存在同名文件，将覆盖</value>
+    <value>当前目录已存在“{0}”。要覆盖这个文件吗？</value>
+  </data>
+  <data name="FilePicker.Overwrite" xml:space="preserve">
+    <value>覆盖文件</value>
+  </data>
+  <data name="FilePicker.CreateFolderFailed" xml:space="preserve">
+    <value>新建文件夹失败</value>
+  </data>
+  <data name="FilePicker.FolderCreated" xml:space="preserve">
+    <value>已创建文件夹“{0}”</value>
   </data>
   <data name="FilePicker.ImportAudio" xml:space="preserve">
     <value>导入音频</value>

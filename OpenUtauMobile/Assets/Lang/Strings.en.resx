@@ -563,7 +563,16 @@
     <value>New Project</value>
   </data>
   <data name="FilePicker.OverwriteWarning" xml:space="preserve">
-    <value>A file with the same name already exists in this folder and will be overwritten.</value>
+    <value>“{0}” already exists in this folder. Do you want to overwrite it?</value>
+  </data>
+  <data name="FilePicker.Overwrite" xml:space="preserve">
+    <value>Overwrite file</value>
+  </data>
+  <data name="FilePicker.CreateFolderFailed" xml:space="preserve">
+    <value>Could not create folder</value>
+  </data>
+  <data name="FilePicker.FolderCreated" xml:space="preserve">
+    <value>Created folder “{0}”</value>
   </data>
   <data name="FilePicker.ImportAudio" xml:space="preserve">
     <value>Import Audio</value>

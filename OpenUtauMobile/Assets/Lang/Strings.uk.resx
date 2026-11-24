@@ -492,7 +492,16 @@
     <value>Новий проєкт</value>
   </data>
   <data name="FilePicker.OverwriteWarning" xml:space="preserve">
-    <value>У цій теці вже є файл із такою назвою. Його буде перезаписано.</value>
+    <value>У цій теці вже є файл «{0}». Перезаписати його?</value>
+  </data>
+  <data name="FilePicker.Overwrite" xml:space="preserve">
+    <value>Перезаписати файл</value>
+  </data>
+  <data name="FilePicker.CreateFolderFailed" xml:space="preserve">
+    <value>Не вдалося створити теку</value>
+  </data>
+  <data name="FilePicker.FolderCreated" xml:space="preserve">
+    <value>Теку «{0}» створено</value>
   </data>
   <data name="FilePicker.ImportAudio" xml:space="preserve">
     <value>Імпорт аудіо</value>

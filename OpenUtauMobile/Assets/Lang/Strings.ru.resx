@@ -492,7 +492,16 @@
     <value>Новый проект</value>
   </data>
   <data name="FilePicker.OverwriteWarning" xml:space="preserve">
-    <value>В этой папке уже есть файл с таким именем. Он будет перезаписан.</value>
+    <value>В этой папке уже есть файл «{0}». Перезаписать его?</value>
+  </data>
+  <data name="FilePicker.Overwrite" xml:space="preserve">
+    <value>Перезаписать файл</value>
+  </data>
+  <data name="FilePicker.CreateFolderFailed" xml:space="preserve">
+    <value>Не удалось создать папку</value>
+  </data>
+  <data name="FilePicker.FolderCreated" xml:space="preserve">
+    <value>Папка «{0}» создана</value>
   </data>
   <data name="FilePicker.ImportAudio" xml:space="preserve">
     <value>Импорт аудио</value>

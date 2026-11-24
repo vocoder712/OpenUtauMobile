@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using OpenUtauMobile.Helpers;
+using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -15,7 +17,6 @@ namespace OpenUtauMobile.ViewModels;
 /// </summary>
 public class FileSavePickerViewModel : FilePickerBaseViewModel
 {
-    private int _previewVersion;
     public override FilePickerMode Mode => FilePickerMode.SaveFile;
 
     /// <summary>用户输入的文件名（不含后缀）。</summary>
@@ -25,13 +26,8 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
     /// <summary>强制后缀（含点，如 ".ustx"），由调用方传入，用户不可更改。</summary>
     public override string Extension { get; }
 
-    /// <summary>组合预览路径（CurrentPath + FileName + Extension），用于在 UI 中回显。</summary>
     [Reactive]
-    public string PreviewFullPath { get; private set; } = string.Empty;
-    [Reactive]
-    public override string WarningMessage { get; set; } = string.Empty;
-    [Reactive]
-    public override bool IsShowingWarningMessage { get; set; }
+    public override bool HasInvalidFileName { get; protected set; }
 
     /// <summary>保存命令，仅在 FileName 非空时可用。绑定到底部"保存"按钮。</summary>
     public override ReactiveCommand<Unit, Unit> SaveCommand { get; }
@@ -49,13 +45,11 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
         // ReSharper disable once VirtualMemberCallInConstructor
         FileName = defaultFileName;
 
-        // 实时更新预览路径
-        this.WhenAnyValue(x => x.CurrentPath, x => x.FileName)
-            .Subscribe(change => { _ = UpdatePreviewPathAsync(); });
-
-        IObservable<bool> canSave = this.WhenAnyValue(x => x.FileName, x => x.IsDirectoryAvailable, x => x.IsLoading,
-            (name, available, loading) => IsValidFileName(name) && available && !loading);
-        SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync, canSave);
+        IObservable<string> fileNames = this.WhenAnyValue(x => x.FileName);
+        fileNames.Subscribe(name => HasInvalidFileName = !string.IsNullOrEmpty(name) && !IsValidFileName(name));
+        IObservable<bool> canSave = DirectoryActionsAvailable.CombineLatest(fileNames,
+            (available, name) => available && IsValidFileName(name));
+        SaveCommand = ReactiveCommand.CreateFromTask(() => RunDirectoryActionAsync(SaveAsync), canSave);
     }
 
     protected override void SelectItem(FileSystemInfo item)
@@ -67,49 +61,36 @@ public class FileSavePickerViewModel : FilePickerBaseViewModel
             FileName = Path.GetFileNameWithoutExtension(file.Name);
     }
 
-    /// <summary>路径预览立即更新，磁盘存在性检查防抖后在后台执行。</summary>
-    private async Task UpdatePreviewPathAsync()
+    /// <summary>提交时检查目标路径，同名文件需确认后才返回保存路径。</summary>
+    private async Task SaveAsync()
     {
-        int version = ++_previewVersion;
-        if (!IsValidFileName(FileName))
+        string directory = CurrentPath;
+        string name = FileName;
+        string nameWithExtension = name.EndsWith(Extension, StringComparison.OrdinalIgnoreCase) ? name : name + Extension;
+        string path = Path.Combine(directory, nameWithExtension);
+        var destination = await Task.Run(() => (
+            ParentExists: Directory.Exists(directory),
+            FileExists: File.Exists(path),
+            DirectoryExists: Directory.Exists(path)));
+        if (!destination.ParentExists || IsClosed || CurrentPath != directory || FileName != name) return;
+
+        if (destination.DirectoryExists)
         {
-            PreviewFullPath = string.Empty;
-            WarningMessage = L.S("FilePicker.InvalidFileName");
-            IsShowingWarningMessage = !string.IsNullOrEmpty(FileName);
+            await OptionConfirmPopupService.ShowAsync(L.S("FilePicker.Save"), L.S("Sandbox.AlreadyExists"),
+                [new OptionConfirmOption(L.S("Common.Confirm"), "ok", isPrimary: true, isDefault: true)]);
             return;
         }
 
-        string nameWithExt = FileName.EndsWith(Extension, StringComparison.OrdinalIgnoreCase)
-            ? FileName
-            : FileName + Extension;
-        PreviewFullPath = Path.Combine(CurrentPath, nameWithExt);
-        string previewPath = PreviewFullPath;
-        IsShowingWarningMessage = false;
-        await Task.Delay(150);
-        if (IsClosed || version != _previewVersion) return;
-        bool exists = await Task.Run(() => File.Exists(previewPath));
-        if (IsClosed || version != _previewVersion) return;
-        if (exists)
+        if (destination.FileExists)
         {
-            WarningMessage = L.S("FilePicker.OverwriteWarning");
-            IsShowingWarningMessage = true;
+            string? choice = await OptionConfirmPopupService.ShowAsync(L.S("FilePicker.Overwrite"),
+                string.Format(L.S("FilePicker.OverwriteWarning"), nameWithExtension),
+                [new OptionConfirmOption(L.S("Common.Cancel"), "cancel", isDefault: true),
+                    new(L.S("FilePicker.Overwrite"), "overwrite", isDestructive: true)]);
+            if (choice != "overwrite") return;
         }
-        else
-        {
-            IsShowingWarningMessage = false;
-        }
-    }
 
-    /// <summary>最终确认目录仍存在，等待期间路径变化或关闭则放弃本次提交。</summary>
-    private async Task SaveAsync()
-    {
-        if (!IsValidFileName(FileName) || IsClosed) return;
-        string directory = CurrentPath;
-        string previewPath = PreviewFullPath;
-        int version = _previewVersion;
-        bool exists = await Task.Run(() => Directory.Exists(directory));
-        if (!exists || IsClosed || version != _previewVersion) return;
-        ClosePicker(previewPath);
+        if (CurrentPath == directory && FileName == name) ClosePicker(path);
     }
 
     private static bool IsValidFileName(string name) =>

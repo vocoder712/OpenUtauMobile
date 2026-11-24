@@ -83,13 +83,13 @@
                             Command="{Binding SaveCommand}"
                             VerticalAlignment="Bottom"
                             Classes="DialogAction DialogPrimary" />
-                        <!-- 警告消息 -->
+                        <!-- 文件名格式提示 -->
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
-                            Text="{Binding WarningMessage}"
-                            IsVisible="{Binding IsShowingWarningMessage}"
+                            Text="{DynamicResource FilePicker.InvalidFileName}"
+                            IsVisible="{Binding HasInvalidFileName}"
                             FontSize="12"
                             Foreground="{DynamicResource Sem.Color.Warning}"
                             TextWrapping="Wrap" />
@@ -98,9 +98,9 @@
             </StackPanel>
         </dialogs:DialogShell.Footer>
         <DockPanel>
-            <!-- ── Header ── -->
+            <!-- 当前目录路径和目录操作 -->
             <Border Classes="DialogBodyBorder" DockPanel.Dock="Top">
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <Grid ColumnDefinitions="Auto,*,Auto">
                     <Button Grid.Column="0"
                             Classes="DialogNavigation"
                             Command="{Binding GoUpCommand}"
@@ -115,7 +115,15 @@
                              TextWrapping="NoWrap"
                              AcceptsReturn="False"
                              Background="{DynamicResource Sem.Color.SurfaceContainerLow}"
-                             Grid.Column="1" Padding="12,0" />
+                             Grid.Column="1" Margin="8,0,0,0" Padding="12,0" />
+                    <Button Grid.Column="2"
+                            Classes="DialogNavigation"
+                            Margin="8,0,0,0"
+                            IsVisible="{Binding SupportsCreateFolder}"
+                            Command="{Binding CreateFolderCommand}"
+                            ToolTip.Tip="{DynamicResource Sandbox.NewFolder}"
+                            AutomationProperties.Name="{DynamicResource Sandbox.NewFolder}"
+                            Content="{iconPacks:PhosphorIcons FolderPlus}" />
                 </Grid>
             </Border>
             <!-- OpenFolder 模式：选择此文件夹 -->

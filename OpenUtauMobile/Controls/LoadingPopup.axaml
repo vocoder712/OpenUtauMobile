@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
@@ -12,7 +11,7 @@
     x:Class="OpenUtauMobile.Controls.LoadingPopup"
     x:DataType="vm:LoadingPopupViewModel"
     d:DataContext="{d:DesignInstance Type=vm:LoadingPopupViewModel, IsDesignTimeCreatable=False}"
-    Classes="PopupDialogRoot DialogHeightCompact">
+    Classes="PopupDialogRoot">
     <dialogs:DialogShell Header="{DynamicResource LoadingPopup.Title}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActions IsVisible="{Binding CanCancel}">

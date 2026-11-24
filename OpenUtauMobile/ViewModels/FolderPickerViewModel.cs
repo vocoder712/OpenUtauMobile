@@ -21,9 +21,7 @@ public class FolderPickerViewModel : FilePickerBaseViewModel
     public FolderPickerViewModel(string title, string initialPath = "")
         : base(title, filters: [], initialPath)
     {
-        SelectCurrentFolderCommand = ReactiveCommand.Create(SelectCurrentFolder,
-            this.WhenAnyValue(model => model.IsDirectoryAvailable, model => model.IsLoading,
-                (available, loading) => available && !loading));
+        SelectCurrentFolderCommand = ReactiveCommand.Create(SelectCurrentFolder, DirectoryActionsAvailable);
     }
 
     protected override void SelectItem(FileSystemInfo item)
