@@ -25,8 +25,8 @@ public sealed class MultiFilePickerViewModel : FilePickerBaseViewModel
             this.WhenAnyValue(model => model.CanConfirm));
     }
 
-    protected override FilePickerEntry CreateEntry(FileSystemInfo item) =>
-        new(item, selected.Contains(item.FullName), Toggle);
+    protected override FilePickerEntry CreateEntry(FileSystemInfo item, long? size) =>
+        item is FileInfo ? new(item, size, selected.Contains, Toggle) : base.CreateEntry(item, size);
 
     private void Toggle(string path, bool isSelected)
     {

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Reactive;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
@@ -116,15 +118,20 @@ internal sealed partial class Program
 
     private static void InitLogging()
     {
-        AppLogging.Initialize();
         // 浏览器控制台输出需要跨线程代理，避免逐条输出拖动命令及已捕获异常。
-        Log.Logger = new LoggerConfiguration()
+        LoggerConfiguration configuration = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .WriteTo.Sink(new BrowserConsoleLogSink())
-            .WriteTo.Sink(PluginLoadErrorReporter.Instance)
-            .CreateLogger();
-        Log.Information("==========Start logging==========");
+            .WriteTo.Sink(new BrowserConsoleLogSink());
+        AppLogging.Initialize(logPlatformInfo: logger =>
+        {
+            logger.Information("运行平台：浏览器");
+            logger.Information("进程架构：{ProcessArchitecture:l}", RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant());
+            AppLogging.LogOperatingSystem(logger, GetHostOsType(), null, null, null, null);
+        }, configuration: configuration);
     }
+
+    [JSImport("getHostOsType", "OpenUtauMobileStartupInfo")]
+    private static partial string? GetHostOsType();
 
     private static void InitAudioOutput()
     {

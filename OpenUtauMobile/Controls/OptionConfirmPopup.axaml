@@ -5,8 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
-    xmlns:iconPacks="https://github.com/MahApps/IconPacks.Avalonia"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
     mc:Ignorable="d"

@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:OpenUtauMobile.ViewModels"
-    xmlns:theme="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens"
     xmlns:dialogs="clr-namespace:OpenUtauMobile.Controls"
     xmlns:foundation="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Foundation"
     xmlns:semantic="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Semantic"
@@ -24,7 +23,8 @@
                     Classes="DialogAction" />
             </dialogs:DialogActions>
         </dialogs:DialogShell.Footer>
-        <DockPanel>
+        <!-- 进度说明过长时在正文区滚动。 -->
+        <ScrollViewer>
             <Border Classes="DialogBodyBorder">
                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">
                     <TextBlock
@@ -45,6 +45,6 @@
                         HorizontalAlignment="Center" />
                 </StackPanel>
             </Border>
-        </DockPanel>
+        </ScrollViewer>
     </dialogs:DialogShell>
 </UserControl>

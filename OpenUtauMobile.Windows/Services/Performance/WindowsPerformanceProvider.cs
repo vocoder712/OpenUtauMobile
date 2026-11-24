@@ -16,8 +16,7 @@ internal sealed class WindowsPerformanceProvider : IPlatformPerformanceProvider
     {
         long? totalMemoryBytes = null;
         long? availableMemoryBytes = null;
-        MemoryStatusEx memoryStatus = new MemoryStatusEx();
-        if (GlobalMemoryStatusEx(ref memoryStatus))
+        if (TryGetMemoryStatus(out MemoryStatusEx memoryStatus))
         {
             totalMemoryBytes = checked((long)memoryStatus.TotalPhysical);
             availableMemoryBytes = checked((long)memoryStatus.AvailablePhysical);
@@ -29,6 +28,19 @@ internal sealed class WindowsPerformanceProvider : IPlatformPerformanceProvider
             totalMemoryBytes,
             availableMemoryBytes,
             systemCpuUsage);
+    }
+
+    /// <summary>读取系统报告的总物理内存字节数。</summary>
+    internal static ulong? GetTotalPhysicalMemoryBytes()
+    {
+        return TryGetMemoryStatus(out MemoryStatusEx memoryStatus) ? memoryStatus.TotalPhysical : null;
+    }
+
+    /// <summary>使用相同的 Win32 查询读取启动和性能监控所需的内存数据。</summary>
+    private static bool TryGetMemoryStatus(out MemoryStatusEx memoryStatus)
+    {
+        memoryStatus = new MemoryStatusEx();
+        return GlobalMemoryStatusEx(ref memoryStatus);
     }
 
     private double? CaptureSystemCpuUsage()

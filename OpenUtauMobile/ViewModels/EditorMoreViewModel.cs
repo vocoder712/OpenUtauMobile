@@ -12,6 +12,7 @@ public enum EditorMoreAction
     ImportTrack, // 导入轨道
     ExportAudio, // 导出音频
     SaveAsTemplate, // 保存为模板
+    Save, // 保存
     SaveAs, // 另存为
     Undo,
     Redo,

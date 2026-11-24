@@ -16,7 +16,7 @@ public enum PopupDialogWidthPreset
 }
 
 /// <summary>
-/// 统一弹窗宽度预设与视口限高，保留各弹窗声明的尺寸值。
+/// 统一弹窗预设尺寸，并按宿主可用空间约束布局。
 /// </summary>
 public abstract class PopupDialogControl : UserControl
 {
@@ -31,10 +31,34 @@ public abstract class PopupDialogControl : UserControl
             coerce: (control, value) => Math.Min(value, ((PopupDialogControl)control)._availableHeight)));
         MinHeightProperty.OverrideMetadata<PopupDialogControl>(new StyledPropertyMetadata<double>(
             coerce: (control, value) => Math.Min(value, ((PopupDialogControl)control).MaxHeight)));
+        HeightProperty.OverrideMetadata<PopupDialogControl>(new StyledPropertyMetadata<double>(
+            coerce: (control, value) =>
+            {
+                var popup = (PopupDialogControl)control;
+                if (popup._host == null)
+                {
+                    return value;
+                }
+                if (popup.IsDesktopWindowHosted)
+                {
+                    return double.NaN;
+                }
+                // 固定预设使用有效上限，自适应预设保留自动测量。
+                double limit = popup.MaxHeight;
+                double height = double.IsNaN(value) && !popup.UsesAdaptiveHeight ? limit : value;
+                return double.IsFinite(limit) ? Math.Min(height, limit) : value;
+            }));
     }
 
     protected virtual PopupDialogWidthPreset WidthPreset => PopupDialogWidthPreset.Regular;
     public PopupDialogWidthPreset DialogWidthPreset => WidthPreset;
+
+    /// <summary>自适应是默认高度预设，由弹窗内容决定外框高度。</summary>
+    public bool UsesAdaptiveHeight => Classes.Contains("DialogHeightAdaptive") ||
+        !(Classes.Contains("DialogHeightCompact") || Classes.Contains("DialogHeightRegular") ||
+          Classes.Contains("DialogHeightList") || Classes.Contains("DialogHeightExpanded"));
+
+    private bool IsDesktopWindowHosted => _host != null && _dialogHost == null && ServiceHub.DesktopWindowContext != null;
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
@@ -43,6 +67,7 @@ public abstract class PopupDialogControl : UserControl
         {
             // 最小高度不能突破有效上限；放大窗口后从原始预设自动恢复。
             CoerceValue(MinHeightProperty);
+            CoerceValue(HeightProperty);
         }
     }
 
@@ -61,6 +86,7 @@ public abstract class PopupDialogControl : UserControl
             _host.SizeChanged += OnHostSizeChanged;
             UpdateResponsiveSize(_host);
         }
+        CoerceValue(HeightProperty);
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
@@ -78,6 +104,7 @@ public abstract class PopupDialogControl : UserControl
         base.OnDetachedFromVisualTree(e);
         _availableHeight = double.PositiveInfinity;
         CoerceValue(MaxHeightProperty);
+        CoerceValue(HeightProperty);
     }
 
     private void OnHostSizeChanged(object? sender, SizeChangedEventArgs e)
@@ -91,12 +118,9 @@ public abstract class PopupDialogControl : UserControl
     /// <summary>更新响应式宽度与有效限高，不覆盖原始高度配置。</summary>
     protected virtual void UpdateResponsiveSize(TopLevel host)
     {
-        if (ServiceHub.DesktopWindowContext != null && _dialogHost == null)
+        if (IsDesktopWindowHosted)
         {
-            // 独立桌面窗口由宿主限制尺寸，内容铺满客户区。
-            _availableHeight = host is Window { SizeToContent: SizeToContent.Height or SizeToContent.WidthAndHeight } window
-                ? window.MaxHeight : host.ClientSize.Height;
-            CoerceValue(MaxHeightProperty);
+            // 桌面窗口约束测量空间，自适应内容可以超过上一轮的客户区高度。
             Width = double.NaN;
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch;
             return;

@@ -39,8 +39,8 @@ namespace OpenUtauMobile.Controls
             bool toggle = e.KeyModifiers.HasFlag(KeyModifiers.Control) || e.KeyModifiers.HasFlag(KeyModifiers.Meta);
             bool additive = toggle || e.KeyModifiers.HasFlag(KeyModifiers.Shift);
             _desktopSelection = vm.SelectedParts.ToArray();
-            // 先识别扩展到分片外的移动区域，避免误清选区或选中相邻分片。
-            UPart? hit = vm.HitTestMoveHandle(_desktopPress) ?? vm.HitTestPart(_desktopPress);
+            // 标签绘制在分片内容上方，重叠时优先命中标签。
+            UPart? hit = vm.HitTestMoveLabel(_desktopPress) ?? vm.HitTestPart(_desktopPress);
             // 在按下前记录是否已经选中，避免首次选中或拖动结束后误展开工具栏。
             _desktopTogglePartToolbar = left && unmodified && vm.TrackEditMode == TrackEditMode.Normal &&
                 hit != null && vm.SelectedParts.Contains(hit);

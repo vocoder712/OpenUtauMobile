@@ -563,7 +563,16 @@
     <value>新しいプロジェクト</value>
   </data>
   <data name="FilePicker.OverwriteWarning" xml:space="preserve">
-    <value>このフォルダーに同名ファイルが存在するため、上書きされます。</value>
+    <value>このフォルダーには「{0}」が既にあります。上書きしますか？</value>
+  </data>
+  <data name="FilePicker.Overwrite" xml:space="preserve">
+    <value>ファイルを上書き</value>
+  </data>
+  <data name="FilePicker.CreateFolderFailed" xml:space="preserve">
+    <value>フォルダーを作成できませんでした</value>
+  </data>
+  <data name="FilePicker.FolderCreated" xml:space="preserve">
+    <value>フォルダー「{0}」を作成しました</value>
   </data>
   <data name="FilePicker.ImportAudio" xml:space="preserve">
     <value>オーディオをインポート</value>
@@ -1089,6 +1098,9 @@
   </data>
   <data name="EditorMore.Title" xml:space="preserve">
     <value>その他の操作</value>
+  </data>
+  <data name="EditorMore.Save" xml:space="preserve">
+    <value>保存</value>
   </data>
   <data name="EditorMore.SaveAs" xml:space="preserve">
     <value>名前を付けて保存</value>

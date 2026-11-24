@@ -229,6 +229,8 @@ namespace OpenUtau.Core {
         ValidateOptions? pendingValidate;
         UCommandGroup? savedPoint = null;
         UCommandGroup? autosavedPoint = null;
+        private bool hasUnsavedChangesOutsideUndo;
+        private bool hasChangesOutsideUndoPendingAutoSave;
         private object saveSession = new object();
         public bool Recovered { get; set; } = false; // Flag to not overwrite backup file
 
@@ -251,16 +253,25 @@ namespace OpenUtau.Core {
             return HasOpenUndoGroup ? throw new InvalidOperationException("Cannot capture a save checkpoint inside an undo group.") : new SaveCheckpoint(Project, saveSession, undoQueue.LastOrDefault());
         }
 
-        /// <summary>核查工程引用及装载会话，拒绝旧保存任务提交至新文档。</summary>
+        /// <summary>核查工程引用及保存会话，拒绝历史重置前的保存任务提交结果。</summary>
         public bool IsSaveCheckpointCurrent(SaveCheckpoint checkpoint) {
             ThreadGuard.AssertUi();
             return ReferenceEquals(Project, checkpoint.Project) && ReferenceEquals(saveSession, checkpoint.Session);
         }
 
+        /// <summary>工程内容变更并通过加载通知重置历史后，登记无法由撤销点表示的修改。</summary>
+        public void MarkReloadedProjectDirty()
+        {
+            ThreadGuard.AssertUi();
+            hasUnsavedChangesOutsideUndo = true;
+            hasChangesOutsideUndoPendingAutoSave = true;
+        }
+
         /// <summary>仅按持久化编辑检查点判断是否需要自动保存，不受渲染通知影响。</summary>
         public bool NeedsAutoSave(SaveCheckpoint checkpoint) {
             ThreadGuard.AssertUi();
-            return IsSaveCheckpointCurrent(checkpoint) && !ReferenceEquals(checkpoint.Point, autosavedPoint);
+            return IsSaveCheckpointCurrent(checkpoint) &&
+                (hasChangesOutsideUndoPendingAutoSave || !ReferenceEquals(checkpoint.Point, autosavedPoint));
         }
 
         /// <summary>宿主确认写盘及平台同步成功后提交捕获点；此方法不执行文件读写。</summary>
@@ -269,6 +280,7 @@ namespace OpenUtau.Core {
             if (!IsSaveCheckpointCurrent(checkpoint)) {
                 return false;
             }
+            hasChangesOutsideUndoPendingAutoSave = false;
             if (autoSave) {
                 autosavedPoint = checkpoint.Point;
             } else {
@@ -276,6 +288,7 @@ namespace OpenUtau.Core {
                 Project.Saved = true;
                 savedPoint = checkpoint.Point;
                 autosavedPoint = checkpoint.Point;
+                hasUnsavedChangesOutsideUndo = false;
                 Recovered = false;
                 Publish(new SaveProjectNotification(path));
             }
@@ -284,7 +297,8 @@ namespace OpenUtau.Core {
 
         public bool ChangesSaved {
             get {
-                return (Project.Saved || (Project.tracks.Count <= 1 && Project.parts.Count == 0)) &&
+                return !hasUnsavedChangesOutsideUndo &&
+                    (Project.Saved || (Project.tracks.Count <= 1 && Project.parts.Count == 0)) &&
                     (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null) &&
                     !Recovered;
             }
@@ -394,6 +408,8 @@ namespace OpenUtau.Core {
                     pendingValidate = null;
                     savedPoint = null;
                     autosavedPoint = null;
+                    hasUnsavedChangesOutsideUndo = false;
+                    hasChangesOutsideUndoPendingAutoSave = false;
                     Project = notification.project;
                     playPosTick = 0;
                     rangeStartTick = 0;

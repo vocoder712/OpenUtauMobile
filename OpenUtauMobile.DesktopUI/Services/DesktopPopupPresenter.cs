@@ -52,44 +52,44 @@ namespace OpenUtauMobile.DesktopUI.Services
             StyleInclude popupStyles = new StyleInclude(new Uri("avares://OpenUtauMobile.DesktopUI/")) { Source = new Uri("avares://OpenUtauMobile.DesktopUI/Views/DesktopStyles.axaml") };
             view.Styles.Add(popupStyles);
             using IDisposable minimumHeight = view.Bind(Control.MinHeightProperty, Observable.Return(0d), BindingPriority.LocalValue);
+            bool usesAdaptiveHeight = view is PopupDialogControl { UsesAdaptiveHeight: true };
             double preferredWidth = profile.Width;
-            Size screen = parent.Screens.ScreenFromWindow(parent) is { } monitor
-                ? new Size(monitor.WorkingArea.Width / monitor.Scaling, monitor.WorkingArea.Height / monitor.Scaling)
-                : new Size(parent.Bounds.Width, parent.Bounds.Height);
-            double safeWidth = Math.Max(1, screen.Width - 24);
-            double safeHeight = Math.Max(1, screen.Height - 24);
+            Size available = GetAvailableSize(parent);
+            double preferredHeight = double.IsNaN(view.Height) ? profile.MaxHeight : view.Height;
             Window window = new()
             {
-                Width = Math.Min(safeWidth, preferredWidth),
-                Height = Math.Min(safeHeight, 600),
-                MaxHeight = Math.Min(safeHeight, profile.MaxHeight),
-                SizeToContent = profile.Scrolls ? SizeToContent.Manual : SizeToContent.Height,
-                MinWidth = Math.Min(safeWidth, profile.MinWidth),
-                MinHeight = Math.Min(safeHeight, 80),
+                Width = Math.Min(available.Width, preferredWidth),
+                SizeToContent = usesAdaptiveHeight ? SizeToContent.Height : SizeToContent.Manual,
+                CanResize = !usesAdaptiveHeight,
+                MinWidth = Math.Min(available.Width, profile.MinWidth),
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ShowInTaskbar = false,
                 Content = view,
                 DataContext = vm
             };
+            ApplyHeight(available.Height);
+            void ApplyHeight(double availableHeight)
+            {
+                double maxHeight = Math.Min(availableHeight, profile.MaxHeight);
+                double minHeight = Math.Min(maxHeight, 80);
+                window.MinHeight = minHeight;
+                window.MaxHeight = maxHeight;
+                if (!usesAdaptiveHeight)
+                    window.Height = Math.Clamp(preferredHeight, minHeight, maxHeight);
+            }
             DesktopDensity.Apply(window);
             window.Classes.Add("DesktopDialog");
             window.Styles.Add(new StyleInclude(new Uri("avares://OpenUtauMobile.DesktopUI/")) { Source = new Uri("avares://OpenUtauMobile.DesktopUI/Views/DesktopStyles.axaml") });
             DesktopUi.Paint(window, Window.BackgroundProperty, "Sem.Color.SurfaceContainerLow");
             if (shell != null) window.Bind(Window.TitleProperty, shell.GetObservable(DialogShell.HeaderProperty));
-            // 显示前按内容确定初始高度，使屏幕居中使用最终尺寸。
-            window.Measure(new Size(window.Width, window.MaxHeight));
-            view.Measure(new Size(window.Width, window.MaxHeight));
-            view.Measure(new Size(window.Width, window.MaxHeight));
+            // 短消息弹窗仍可按内容收窄。
             if (view is OptionConfirmPopup or ExitEditorConfirmPopup or LoadingPopup)
             {
+                Size constraint = new(window.Width, usesAdaptiveHeight ? window.MaxHeight : window.Height);
+                window.Measure(constraint);
+                view.Measure(constraint);
                 window.Width = Math.Clamp(view.DesiredSize.Width, window.MinWidth, window.Width);
-                view.Measure(new Size(window.Width, Math.Min(screen.Height, 600)));
             }
-            if (profile.Scrolls)
-                window.MinHeight = Math.Min(safeHeight, profile.PreferredHeight.HasValue ? 480 : Math.Min(360, Math.Max(160, view.DesiredSize.Height)));
-            window.Height = profile.Scrolls ? Math.Clamp(profile.PreferredHeight ?? view.DesiredSize.Height, window.MinHeight, Math.Min(safeHeight, profile.MaxHeight))
-                : Math.Min(screen.Height, Math.Clamp(view.DesiredSize.Height, Math.Min(80, window.MaxHeight), window.MaxHeight));
-            if (!profile.Scrolls) window.MinHeight = window.Height;
             bool acceptedClose = false;
             EventHandler<object?> close = (_, result) => { acceptedClose = true; window.Close(result); };
             vm.ClosingEvent += close;
@@ -104,16 +104,29 @@ namespace OpenUtauMobile.DesktopUI.Services
                 if (!e.Handled && e.Key == Key.Escape && !DialogShell.IsTextInputComposing(e.Source as Visual))
                 { e.Handled = true; vm.RequestBack(); }
             }, RoutingStrategies.Bubble);
+            Screens screens = window.Screens;
+            void OnScreensChanged(object? sender, EventArgs e) => ApplyHeight(GetAvailableSize(window).Height);
+            screens.Changed += OnScreensChanged;
             _windows.Add(window);
             try { return await window.ShowDialog<object?>(parent); }
             finally
             {
+                screens.Changed -= OnScreensChanged;
                 vm.ClosingEvent -= close;
                 _windows.Remove(window);
                 window.Content = null;
                 view.Styles.Remove(popupStyles); view.Classes.Remove("DesktopPopup");
                 if (shell != null) shell.IsWindowHosted = false;
             }
+        }
+
+        /// <summary>获取扣除屏幕外边距后的桌面弹窗可用尺寸。</summary>
+        private static Size GetAvailableSize(Window window)
+        {
+            Size workingArea = window.Screens.ScreenFromWindow(window) is { } monitor
+                ? new Size(monitor.WorkingArea.Width / monitor.Scaling, monitor.WorkingArea.Height / monitor.Scaling)
+                : window.Bounds.Size;
+            return new Size(Math.Max(1, workingArea.Width - 24), Math.Max(1, workingArea.Height - 24));
         }
 
         public void Dispose()

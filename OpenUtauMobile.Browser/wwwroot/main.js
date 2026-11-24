@@ -15,6 +15,9 @@ try {
 
     await initialize(dotnetRuntime);
     await initializeFileTransfer(dotnetRuntime);
+    dotnetRuntime.setModuleImports("OpenUtauMobileStartupInfo", {
+        getHostOsType: () => navigator.userAgentData?.platform || null,
+    });
     await dotnetRuntime.runMain(config.mainAssemblyName, [globalThis.location.href]);
 } catch (error) {
     console.error("Browser startup failed:", error);

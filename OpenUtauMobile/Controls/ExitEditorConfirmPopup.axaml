@@ -32,7 +32,8 @@
                 </dialogs:DialogActionRow>
             </dialogs:DialogActionRows>
         </dialogs:DialogShell.Footer>
-        <DockPanel>
+        <!-- 矮屏时正文可以滚动，确认操作保留在底栏。 -->
+        <ScrollViewer>
             <Border Classes="DialogBodyBorder">
                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceL}">
                     <TextBlock
@@ -41,6 +42,6 @@
                         FontSize="14" />
                 </StackPanel>
             </Border>
-        </DockPanel>
+        </ScrollViewer>
     </dialogs:DialogShell>
 </UserControl>

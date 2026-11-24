@@ -266,8 +266,7 @@ public class MainActivity : AvaloniaMainActivity
     /// </summary>
     private static void InitLogging()
     {
-        AppLogging.Initialize(PathManager.Inst.LogFilePath);
-        Log.Information("==========开始记录日志==========");
+        AppLogging.Initialize(PathManager.Inst.LogFilePath, AndroidStartupInfo.Write);
     }
 
     private static void InitExceptionHandler()

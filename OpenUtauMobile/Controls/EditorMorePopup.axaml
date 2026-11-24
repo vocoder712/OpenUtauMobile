@@ -12,7 +12,7 @@
     d:DesignHeight="500"
     x:Class="OpenUtauMobile.Controls.EditorMorePopup"
     x:DataType="vm:EditorMoreViewModel"
-    Classes="PopupDialogRoot DialogHeightExpanded">
+    Classes="PopupDialogRoot DialogHeightRegular">
 
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource EditorMore.Title}">
         <DockPanel>
@@ -20,6 +20,7 @@
             <!-- Tab 区域 -->
             <Border Classes="DialogBodyBorder">
                 <TabControl>
+                    <!-- 编辑 -->
                     <TabItem Header="{DynamicResource Common.Edit}">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <Border Padding="0,16,0,0">
@@ -68,11 +69,23 @@
                             </Border>
                         </ScrollViewer>
                     </TabItem>
-                    <!-- 导出 -->
+                    <!-- 文件 -->
                     <TabItem Header="{DynamicResource Common.File}">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <Border Padding="0,16,0,0">
                                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                    <!-- 保存 -->
+                                    <Button
+                                        Classes="tonal"
+                                        HorizontalAlignment="Stretch"
+                                        MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
+                                        Content="{DynamicResource EditorMore.Save}"
+                                        Command="{Binding ConfirmCommand}">
+                                        <Button.CommandParameter>
+                                            <vm:EditorMoreAction>Save</vm:EditorMoreAction>
+                                        </Button.CommandParameter>
+                                    </Button>
+                                    <!-- 另存为 -->
                                     <Button
                                         Classes="tonal"
                                         HorizontalAlignment="Stretch"
@@ -83,6 +96,7 @@
                                             <vm:EditorMoreAction>SaveAs</vm:EditorMoreAction>
                                         </Button.CommandParameter>
                                     </Button>
+                                    <!-- 另存为模板 -->
                                     <Button Classes="tonal" HorizontalAlignment="Stretch"
                                             MinHeight="{x:Static semantic:InteractionTokens.TouchTarget}"
                                             Content="{DynamicResource EditorMore.SaveAsTemplate}"
@@ -98,6 +112,7 @@
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <Border Padding="0,16,0,0">
                                 <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                    <!-- 导入音频 -->
                                     <Button
                                         Classes="tonal"
                                         HorizontalAlignment="Stretch"
@@ -108,6 +123,7 @@
                                             <vm:EditorMoreAction>ImportAudio</vm:EditorMoreAction>
                                         </Button.CommandParameter>
                                     </Button>
+                                    <!-- 导入轨道 -->
                                     <Button
                                         Classes="tonal"
                                         HorizontalAlignment="Stretch"
