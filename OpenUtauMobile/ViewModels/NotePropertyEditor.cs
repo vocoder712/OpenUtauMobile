@@ -75,7 +75,7 @@ namespace OpenUtauMobile.ViewModels
 
             UTrack currentTrack = project.tracks[part.trackNo];
             string DraftLyric(UNote note) => lyric.IsEdited ? lyric.Text ?? note.lyric : note.lyric;
-            string trackDefaultLabel = $"{L.S("NoteProperties.TrackDefault")} ({PhonemizerFactory.Get(currentTrack.Phonemizer.GetType())?.ToString() ?? currentTrack.Phonemizer.Name})";
+            string trackDefaultLabel = $"{L.S("NoteProperties.TrackDefault")} ({PhonemizerFactory.Get(currentTrack.Phonemizer.Id)?.ToString() ?? currentTrack.Phonemizer.Name})";
             NotePropertyField phonemizer = PhonemizerField = NotePropertyField.CreatePhonemizer(
                 L.S("NoteProperties.Phonemizer"), trackDefaultLabel,
                 notes.Where(n => !DraftLyric(n).StartsWith("+", StringComparison.Ordinal)).Select(n => n.PhonemizerOverride));

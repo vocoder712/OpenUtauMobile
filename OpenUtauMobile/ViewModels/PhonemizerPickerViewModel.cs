@@ -43,7 +43,9 @@ public sealed class PhonemizerPickerViewModel : PopupViewModelBase, IDisposable
         {
             Groups.Add(new(group, string.IsNullOrEmpty(group.Key) ? "General" : group.Key));
         }
-        PhonemizerFactory? current = NotePhonemizerResolver.Resolve(request.CurrentName);
+        PhonemizerFactory? current = request.AllowTrackDefault
+            ? NotePhonemizerResolver.Resolve(request.CurrentName)
+            : PhonemizerFactory.Get(request.CurrentName ?? string.Empty);
         if (Groups.Count > 0)
             CurrentGroup = Groups.FirstOrDefault(g => g.Key.Contains(current!), Groups[0]);
         this.WhenAnyValue(x => x.CurrentGroup).Subscribe(group =>

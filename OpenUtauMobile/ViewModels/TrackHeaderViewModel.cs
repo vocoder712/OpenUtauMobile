@@ -229,19 +229,19 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
     {
         if (DocManager.Inst.HasOpenUndoGroup) return;
         TrackPreparationOwner owner = new(DocManager.Inst.Project, _track);
-        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(_track.Phonemizer?.Name, anchor);
+        Phonemizer? phonemizer = await TrackHeaderService.Inst.PickPhonemizerAsync(_track.Phonemizer?.Id, anchor);
         if (!_disposed && owner.IsCurrent && phonemizer != null) SetPhonemizer(phonemizer);
     }
 
     public void SetPhonemizer(Phonemizer phonemizer)
     {
-        if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Phonemizer?.GetType() == phonemizer.GetType()) return;
+        if (!DocManager.Inst.Project.tracks.Contains(_track) || DocManager.Inst.HasOpenUndoGroup || _track.Phonemizer?.Id == phonemizer.Id) return;
         Log.Information("正在为轨道 {TrackName} 选择音素器 {PhonemizerName}", TrackName, phonemizer.Name);
 
         DocManager.Inst.StartUndoGroup("切换音素器");
         DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, _track, phonemizer));
         DocManager.Inst.EndUndoGroup();
-        string? name = phonemizer.GetType().FullName;
+        string? name = phonemizer.Id;
         if (string.IsNullOrEmpty(name))
         {
             return;

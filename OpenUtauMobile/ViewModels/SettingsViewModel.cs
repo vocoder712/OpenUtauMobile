@@ -13,6 +13,7 @@ using Avalonia.Styling;
 using Avalonia.Threading;
 using OpenUtau.Audio;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Audio;
 using OpenUtauMobile.Controls;
@@ -924,6 +925,10 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
                     Directory.CreateDirectory(PathManager.Inst.CachePath);
                     PathManager.Inst.ClearCache();
                 });
+                foreach (UVoicePart part in DocManager.Inst.Project.parts.OfType<UVoicePart>())
+                {
+                    DocManager.Inst.ExecuteCmd(new PhraseRenderStateNotification(part, part.position, part.End, false));
+                }
             }
             finally
             {
@@ -1555,7 +1560,7 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
 
     private static bool SupportsOnnxDeviceSelection(string runner)
     {
-        return runner is "DirectML" or "CUDA";
+        return runner is "DirectML" or "CUDA" or "WebGPU";
     }
 
     /// <summary>

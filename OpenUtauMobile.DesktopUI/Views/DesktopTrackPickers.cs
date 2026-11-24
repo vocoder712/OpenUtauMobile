@@ -254,7 +254,9 @@ namespace OpenUtauMobile.DesktopUI.Views
                 try
                 {
                     list.ItemsSource = items;
-                    list.SelectedItem = items.OfType<PhonemizerFactory>().FirstOrDefault(factory => factory.name == request.CurrentName || factory.type.FullName == request.CurrentName);
+                    list.SelectedItem = request.AllowTrackDefault
+                        ? NotePhonemizerResolver.Resolve(request.CurrentName)
+                        : PhonemizerFactory.Get(request.CurrentName ?? string.Empty);
                     bool hasFactories = items.OfType<PhonemizerFactory>().Any();
                     bool hasChoices = items.Any(item => item is PhonemizerFactory or PhonemizerTrackDefault);
                     list.IsVisible = hasChoices;
@@ -264,7 +266,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             }
             static int RecentRank(PhonemizerFactory factory)
             {
-                int index = Preferences.Default.RecentPhonemizers.IndexOf(factory.type.FullName ?? "");
+                int index = Preferences.Default.RecentPhonemizers.IndexOf(factory.Id);
                 return index >= 0 && index < 10 ? index : int.MaxValue;
             }
             search.TextChanged += (_, _) => Refresh(); language.SelectionChanged += (_, _) => Refresh();

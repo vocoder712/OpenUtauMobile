@@ -178,7 +178,7 @@ public sealed class TrackSettingsService
         try
         {
             SavePreferences(viewModel, singerChanged,
-                viewModel.Track.Phonemizer.GetType() != viewModel.OriginalPhonemizerType);
+                viewModel.Track.Phonemizer.Id != viewModel.OriginalPhonemizerId);
         }
         catch (Exception exception)
         {
@@ -199,18 +199,18 @@ public sealed class TrackSettingsService
                 Preferences.Default.RecentSingers.RemoveRange(16, Preferences.Default.RecentSingers.Count - 16);
             changed = true;
         }
-        string? phonemizerName = viewModel.Track.Phonemizer.GetType().FullName;
-        if ((singerChanged || phonemizerChanged) && !string.IsNullOrEmpty(viewModel.Track.Singer?.Id) && !string.IsNullOrEmpty(phonemizerName) &&
-            Preferences.Default.SingerPhonemizers.GetValueOrDefault(viewModel.Track.Singer.Id) != phonemizerName)
+        string phonemizerId = viewModel.Track.Phonemizer.Id;
+        if ((singerChanged || phonemizerChanged) && !string.IsNullOrEmpty(viewModel.Track.Singer?.Id) &&
+            Preferences.Default.SingerPhonemizers.GetValueOrDefault(viewModel.Track.Singer.Id) != phonemizerId)
         {
-            Preferences.Default.SingerPhonemizers[viewModel.Track.Singer.Id] = phonemizerName;
+            Preferences.Default.SingerPhonemizers[viewModel.Track.Singer.Id] = phonemizerId;
             changed = true;
         }
-        if (phonemizerChanged && !string.IsNullOrEmpty(phonemizerName) &&
-            (Preferences.Default.RecentPhonemizers.FirstOrDefault() != phonemizerName || Preferences.Default.RecentPhonemizers.Count > 10))
+        if (phonemizerChanged &&
+            (Preferences.Default.RecentPhonemizers.FirstOrDefault() != phonemizerId || Preferences.Default.RecentPhonemizers.Count > 10))
         {
-            Preferences.Default.RecentPhonemizers.Remove(phonemizerName);
-            Preferences.Default.RecentPhonemizers.Insert(0, phonemizerName);
+            Preferences.Default.RecentPhonemizers.Remove(phonemizerId);
+            Preferences.Default.RecentPhonemizers.Insert(0, phonemizerId);
             if (Preferences.Default.RecentPhonemizers.Count > 10)
                 Preferences.Default.RecentPhonemizers.RemoveRange(10, Preferences.Default.RecentPhonemizers.Count - 10);
             changed = true;
