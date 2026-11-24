@@ -14,7 +14,9 @@ using Avalonia.Platform;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using OpenUtauMobile.Controls.Gestures;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Generation;
 using OpenUtauMobile.Themes.OpenUtauMobile.Runtime.Resources;
@@ -118,6 +120,9 @@ public partial class PartsCanvas : Control, ICmdSubscriber
 
     private readonly Dictionary<UVoicePart, ToneRangeEntry>
         _toneRangeCache = []; // 缓存 UVoicePart 的音符 tone 范围，避免每帧扫描所有音符计算范围
+
+    /// <summary>由上游通知更新的分片乐句块，仅用于编曲区绘制。</summary>
+    private readonly Dictionary<UVoicePart, (RenderPhrase Phrase, bool Rendered)[]> _phraseBlocks = [];
 
     /// <summary>
     /// UWavePart 的波形位图缓存。
@@ -258,6 +263,7 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         _pendingPeakLoads.Clear();
         ClearSelectedLabelCache();
         _toneRangeCache.Clear();
+        _phraseBlocks.Clear();
     }
 
     #endregion
@@ -345,12 +351,40 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         switch (cmd)
         {
             case LoadProjectNotification:
+                _phraseBlocks.Clear();
                 ClearSelectedLabelCache();
                 foreach (UPart part in DocManager.Inst.Project.parts)
                     RegisterPeaksCallback(part);
                 InvalidateVisual();
                 break;
+            case RebuildPhraseBlocksNotification rebuild:
+                RebuildPhraseBlocks(rebuild.Part);
+                InvalidateVisual();
+                break;
+            case PhraseRenderStateNotification state:
+                UpdatePhraseRenderState(state);
+                break;
+            case TrackChangeSingerCommand singer:
+                foreach (UPart part in singer.project.parts)
+                {
+                    if (part is UVoicePart voicePart && part.trackNo == singer.track.TrackNo)
+                        _phraseBlocks.Remove(voicePart);
+                }
+                InvalidateVisual();
+                break;
+            case RemoveTrackCommand removeTrack when !isUndo:
+                foreach (UPart part in removeTrack.removedParts)
+                {
+                    if (part is UVoicePart voicePart) _phraseBlocks.Remove(voicePart);
+                }
+                InvalidateVisual();
+                break;
             case TrackCommand:
+                InvalidateVisual();
+                break;
+            case PartCommand { part: UVoicePart voicePart }
+                when cmd is MovePartCommand || (isUndo ? cmd is AddPartCommand : cmd is RemovePartCommand):
+                _phraseBlocks.Remove(voicePart);
                 InvalidateVisual();
                 break;
             case PartCommand { part: UWavePart wp }:
@@ -370,6 +404,45 @@ public partial class PartsCanvas : Control, ICmdSubscriber
                 });
                 break;
         }
+    }
+
+    /// <summary>用当前分句重建显示块，沿用哈希一致的已渲染状态。</summary>
+    private void RebuildPhraseBlocks(UVoicePart part)
+    {
+        if (!DocManager.Inst.Project.parts.Contains(part)) return;
+        HashSet<ulong> rendered = [];
+        if (_phraseBlocks.TryGetValue(part, out var oldBlocks))
+        {
+            foreach (var block in oldBlocks)
+            {
+                if (block.Rendered) rendered.Add(block.Phrase.hash);
+            }
+        }
+        var blocks = new (RenderPhrase Phrase, bool Rendered)[part.renderPhrases.Count];
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            RenderPhrase phrase = part.renderPhrases[i];
+            blocks[i] = (phrase, rendered.Contains(phrase.hash));
+        }
+        _phraseBlocks[part] = blocks;
+    }
+
+    /// <summary>根据上游通知更新匹配的乐句块，状态变化时重绘。</summary>
+    private void UpdatePhraseRenderState(PhraseRenderStateNotification state)
+    {
+        if (!_phraseBlocks.TryGetValue(state.Part, out var blocks)) return;
+        bool changed = false;
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            var block = blocks[i];
+            bool matches = state.Phrase is { } phrase
+                ? ReferenceEquals(block.Phrase, phrase)
+                : block.Phrase.position < state.EndTick && block.Phrase.end > state.StartTick;
+            if (!matches || block.Rendered == state.Rendered) continue;
+            blocks[i] = (block.Phrase, state.Rendered);
+            changed = true;
+        }
+        if (changed) InvalidateVisual();
     }
 
     #endregion
@@ -408,8 +481,13 @@ public partial class PartsCanvas : Control, ICmdSubscriber
                     context.DrawRectangle(ThemeResources.GetBrush("Sem.Color.Primary"), null, layout.Frame,
                         radiusX: PartCornerRadius, radiusY: PartCornerRadius);
                 if (layout.Fill.Width > 0)
-                    context.DrawRectangle(brush, null, layout.Fill,
-                        radiusX: PartCornerRadius, radiusY: PartCornerRadius);
+                {
+                    if (part is UVoicePart { notes.Count: > 0 } voicePart && Preferences.Default.RenderStatusInTrackBar)
+                        DrawPhraseProgress(context, voicePart, layout.Fill, brush);
+                    else
+                        context.DrawRectangle(brush, null, layout.Fill,
+                            radiusX: PartCornerRadius, radiusY: PartCornerRadius);
+                }
             }
 
             // 2. 缩略图按完整主体绘制在宽侧边框之上，两侧的音符和波形不被背景内缩裁掉。
@@ -442,6 +520,30 @@ public partial class PartsCanvas : Control, ICmdSubscriber
             DrawResizeGripLines(context, layout);
         }
         if (_desktopBox is { } box) context.DrawRectangle(null, ThemeResources.GetPen("Sem.Color.Primary", 1), box);
+    }
+
+    /// <summary>用淡色底和已完成乐句的轨道色绘制分片进度。</summary>
+    private void DrawPhraseProgress(DrawingContext context, UVoicePart part, Rect fill, IBrush brush)
+    {
+        using var clip = context.PushClip(new RoundedRect(fill, PartCornerRadius));
+        using (context.PushOpacity(0.5))
+        {
+            context.FillRectangle(brush, fill);
+        }
+        if (!_phraseBlocks.TryGetValue(part, out var blocks)) return;
+
+        double left = fill.Left;
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            var block = blocks[i];
+            // 与桌面分片一样，乐句块覆盖到其结束位置，末块延伸到分片末尾。
+            double right = i == blocks.Length - 1
+                ? fill.Right
+                : Math.Clamp((block.Phrase.end - TickOffset) * TickWidth, left, fill.Right);
+            if (block.Rendered && right > left)
+                context.FillRectangle(brush, new Rect(left, fill.Top, right - left, fill.Height));
+            left = right;
+        }
     }
 
     /// <summary>

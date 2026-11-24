@@ -220,6 +220,9 @@ namespace OpenUtau.Core.Util {
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public string ThemeName = "System";
+            public string UiFontPath = string.Empty;
+            public string UiFontFamily = string.Empty;
+            public bool UseUiFontForNotes = false;
             public int DegreeStyle;
             public bool UseTrackColor = false;
             public bool ClearCacheOnQuit = false;
@@ -281,6 +284,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowPlaybackNoteBounce = false;
             public EditTool EditTool = new EditTool();
             public bool PlayTone = true;
+            public bool PlaySineWhenNoSinger = true;
             /// <summary>Legacy; migrated to <see cref="RealTimePitchMode"/> on load.</summary>
             public bool RealTimePitchGeneration = false;
             public int RealTimePitchMode = (int)LivePitchMode.Off;
@@ -296,6 +300,7 @@ namespace OpenUtau.Core.Util {
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
             public string LyricHelper = string.Empty;
             public bool LyricsHelperBrackets = false;
+            public bool RenderStatusInTrackBar = true;
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
             public string SetParamPath = string.Empty;
@@ -402,11 +407,6 @@ namespace OpenUtau.Core.Util {
             /// 钢琴键标签：0 = 音高标签，1 = 仅主音音高标签，2 = 简谱。
             /// </summary>
             public int PianoKeyLabelMode = 1;
-
-            /// <summary>
-            /// 钢琴卷帘顶部时间标尺是否显示渲染波形；关闭时显示渲染进度。
-            /// </summary>
-            public bool ShowRenderWaveform = false;
 
             /// <summary>是否在钢琴卷帘背景显示其它轨道中与当前片段重叠的音符。</summary>
             public bool PianoRollShowGhostNotes = true;

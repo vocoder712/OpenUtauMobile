@@ -62,7 +62,7 @@ internal static class ProjectSaveSnapshot
     private static UTrack CopyTrack(UTrack source) => new()
     {
         singer = source.Singer?.Id!,
-        phonemizer = source.Phonemizer.GetType().FullName!,
+        phonemizer = source.Phonemizer.Id,
         RendererSettings = new URenderSettings
         {
             renderer = source.RendererSettings.renderer,

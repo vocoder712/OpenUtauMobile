@@ -80,11 +80,11 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
 
     public UProject Project => project;
     public UTrack Track => track;
-    public Type? OriginalPhonemizerType => originalPhonemizer?.GetType();
-    public string DraftPhonemizerIdentifier => draftPhonemizer.Name;
+    public string OriginalPhonemizerId => originalPhonemizer.Id;
+    public string DraftPhonemizerIdentifier => draftPhonemizer.Id;
     public IReadOnlyList<UExpressionDescriptor> DraftTrackExpressions { get; private set; }
     public bool IsStale => !owner.IsCurrent ||
-        !ReferenceEquals(track.Singer, originalSinger) || track.Phonemizer?.GetType() != originalPhonemizer?.GetType() ||
+        !ReferenceEquals(track.Singer, originalSinger) || track.Phonemizer?.Id != originalPhonemizer.Id ||
         !SameRenderSettings(track.RendererSettings, originalRenderSettings) || track.ExpressionGraph != originalExpressionGraph ||
         !SameExpressions(track.TrackExpressions, originalTrackExpressions);
 
@@ -218,8 +218,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
             error = L.S("TrackSettings.Error.SingerUnavailable");
             return false;
         }
-        if (draftPhonemizer.GetType() != originalPhonemizer.GetType() &&
-            PhonemizerFactory.Get(draftPhonemizer.GetType().FullName ?? string.Empty) == null)
+        if (draftPhonemizer.Id != originalPhonemizer.Id && PhonemizerFactory.Get(draftPhonemizer.Id) == null)
         {
             error = L.S("TrackSettings.Error.PhonemizerUnavailable");
             return false;
@@ -258,7 +257,7 @@ public sealed class TrackSettingsPopupViewModel : PopupViewModelBase, IDisposabl
         }
 
         if (singerChanged) commands.Add(new TrackChangeSingerCommand(project, track, DraftSinger!));
-        if (draftPhonemizer.GetType() != originalPhonemizer.GetType())
+        if (draftPhonemizer.Id != originalPhonemizer.Id)
             commands.Add(new TrackChangePhonemizerCommand(project, track, draftPhonemizer));
         bool renderChanged = !SameRenderSettings(renderSettings, originalRenderSettings);
         if (renderChanged && singer is { Found: true })

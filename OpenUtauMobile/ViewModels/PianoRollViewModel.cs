@@ -110,7 +110,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     #region 绑定属性
 
     [Reactive] public UVoicePart? EditingVoicePart { get; set; }
-    [Reactive] public bool ShowRenderWaveform { get; set; }
     [Reactive] public UWavePart? EditingWavePart { get; set; }
     public bool IsVoiceMode => EditingVoicePart != null;
     public bool IsWaveMode => EditingWavePart != null;
@@ -825,16 +824,6 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
     public PianoRollViewModel()
     {
         InitializeNoteCreationPreview();
-        ShowRenderWaveform = Preferences.Default.ShowRenderWaveform;
-        this.WhenAnyValue(x => x.ShowRenderWaveform)
-            .Skip(1)
-            .Subscribe(showWaveform =>
-            {
-                Preferences.Default.ShowRenderWaveform = showWaveform;
-                Preferences.Save();
-            })
-            .DisposeWith(_disposables);
-
         ProjectKey = PianoKeyLabelFormatter.NormalizePitchClass(DocManager.Inst.Project.key);
         PianoKeyLabelMode = PianoKeyLabelFormatter.NormalizeMode(Preferences.Default.PianoKeyLabelMode);
         IsPitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;

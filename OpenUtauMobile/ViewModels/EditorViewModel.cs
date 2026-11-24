@@ -611,6 +611,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
+        if (cmd is PhraseRenderStateNotification or RebuildPhraseBlocksNotification) return;
         if (cmd is not SetPlayPosTickNotification and not SeekPlayPosTickNotification and not ProgressBarNotification)
             RunOnUiThread(RefreshHistoryState);
         // TODO: 一定要发到UI线程吗？:不需要！docman已经做了
