@@ -10,6 +10,11 @@
     <ItemGroup>
         <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)"/>
         <PackageReference Include="SDL3-CS.MacOS" Version="3.4.14"/>
+        <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.29.0" Condition="'$(RuntimeIdentifier)' != 'osx-arm64'"/>
+    </ItemGroup>
+
+    <!-- WebGPU 包的 macOS 原生资产仅支持 Apple Silicon。 -->
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-arm64'">
         <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.31.0"/>
         <PackageReference Include="Microsoft.ML.OnnxRuntime.EP.WebGpu" Version="0.4.0"/>
     </ItemGroup>
