@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Reactive;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtauMobile.Helpers;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -42,7 +42,7 @@ public class SingerPickerViewModel : PopupViewModelBase, IDisposable
     /// <summary>在 UI 线程读取已完成的目录，避免后台枚举可变字典。</summary>
     private void LoadSingers()
     {
-        Singers.Load(SingerManager.Inst.SingerGroups.Values.SelectMany(group => group));
+        Singers.Load(SingerListHelper.GetOrderedSingers());
         IsLoading = false;
     }
 

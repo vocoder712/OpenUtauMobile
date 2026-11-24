@@ -91,7 +91,7 @@ namespace OpenUtauMobile.ViewModels
 
         private void RefreshSnapshot()
         {
-            Singers.Load(SingerManager.Inst.SingerGroups.Values.SelectMany(group => group));
+            Singers.Load(SingerListHelper.GetOrderedSingers());
             InstallChoice[] installers = Installers();
             List<FabMenuAction> actions = [.. installers.Take(installers.Length > 6 ? 5 : 6).Select(item =>
                 new FabMenuAction(item.Id, item.DisplayName,

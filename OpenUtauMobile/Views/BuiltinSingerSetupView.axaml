@@ -33,7 +33,7 @@
                 </Grid>
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}" IsVisible="{Binding ShowTextEncoding}">
                     <TextBlock Text="{DynamicResource SingerSetup.Step2.Title}" VerticalAlignment="Center" />
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}">
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding TextEncodings}" SelectedItem="{Binding TextEncoding}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate><TextBlock Text="{Binding Converter={StaticResource EncodingName}}" /></DataTemplate>
                         </ComboBox.ItemTemplate>

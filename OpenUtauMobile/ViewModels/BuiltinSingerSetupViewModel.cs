@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -18,6 +19,7 @@ using ReactiveUI.Fody.Helpers;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
+using YamlDotNet.Core;
 
 namespace OpenUtauMobile.ViewModels
 {
@@ -37,7 +39,6 @@ namespace OpenUtauMobile.ViewModels
         private bool initialized;
         private bool textEncodingEdited;
         private bool applyingEncoding;
-        private bool configuredEncodingLoaded;
         private bool disposed;
         private long previewVersion;
         private static readonly string[] viewProperties =
@@ -46,7 +47,7 @@ namespace OpenUtauMobile.ViewModels
             nameof(ShowTextEncoding), nameof(ShowPreview), nameof(ShowPackageMetadata), nameof(ShowPackageMetadataError), nameof(ShowForm), nameof(IsSuccessful), nameof(ResultTitle), nameof(StepText),
         ];
 
-        private sealed record PreviewResult(IReadOnlyList<string> Items, string? TextEncoding,
+        private sealed record PreviewResult(IReadOnlyList<string> Items, Encoding? TextEncoding,
             (string Name, string Version)? Package = null);
         public string ArchiveFilePath { get; }
         public string FileName => Path.GetFileName(ArchiveFilePath);
@@ -59,6 +60,8 @@ namespace OpenUtauMobile.ViewModels
             Encoding.GetEncoding("Windows-1252"), Encoding.GetEncoding("macintosh"),
         ];
         [Reactive] public Encoding ArchiveEncoding { get; set; }
+        /// <summary>包含声库声明的编码，即使它不在内置选项里。</summary>
+        [Reactive] public IReadOnlyList<Encoding> TextEncodings { get; private set; }
         [Reactive] public Encoding TextEncoding { get; set; }
         /// <summary>预选类型不接受配置文件触发的切换。</summary>
         public string SingerType => installer.SingerType ?? "";
@@ -107,6 +110,7 @@ namespace OpenUtauMobile.ViewModels
             this.installer = installer;
             ArchiveFilePath = sourcePath;
             ArchiveEncoding = Encodings[0];
+            TextEncodings = Encodings;
             TextEncoding = Encodings[0];
             IObservable<bool> editable = this.WhenAnyValue(item => item.IsBusy, item => item.IsClosing,
                 item => item.IsFinished, item => item.IsPreviewLoading, item => item.HasPreviewError,
@@ -142,7 +146,7 @@ namespace OpenUtauMobile.ViewModels
             }).DisposeWith(subscriptions);
         }
 
-        /// <summary>直接进入页面，仅异步生成有限预览，不先校验声库类型或遍历所有内容。</summary>
+        /// <summary>直接进入页面，在后台读取编码声明并生成有限预览。</summary>
         public override void OnNavigatedTo()
         {
             if (initialized) return;
@@ -167,7 +171,7 @@ namespace OpenUtauMobile.ViewModels
             int step = Step;
             Encoding archiveEncoding = ArchiveEncoding;
             Encoding textEncoding = TextEncoding;
-            bool readEncoding = !textEncodingEdited && !configuredEncodingLoaded;
+            bool readEncoding = IsArchive && step == 0 && !textEncodingEdited;
             IsPreviewLoading = true;
             HasPreviewError = false;
             Error = "";
@@ -183,15 +187,16 @@ namespace OpenUtauMobile.ViewModels
                 PackageName = result.Package?.Name ?? "";
                 PackageVersion = result.Package?.Version ?? "";
                 HasPreviewError = !IsArchive && result.Package == null;
-                if (!textEncodingEdited && result.TextEncoding is { Length: > 0 } encoding)
+                if (readEncoding && !textEncodingEdited)
                 {
+                    Encoding encoding = result.TextEncoding ?? Encodings[0];
+                    Encoding? preset = Encodings.FirstOrDefault(item => item.CodePage == encoding.CodePage);
                     try
                     {
                         applyingEncoding = true;
-                        TextEncoding = Encoding.GetEncoding(encoding);
-                        configuredEncodingLoaded = true;
+                        TextEncodings = preset == null ? [.. Encodings, encoding] : Encodings;
+                        TextEncoding = preset ?? encoding;
                     }
-                    catch (ArgumentException) { }
                     finally { applyingEncoding = false; }
                 }
             }
@@ -216,7 +221,7 @@ namespace OpenUtauMobile.ViewModels
             }
         }
 
-        /// <summary>文件名和文本样例分别最多产生 50 项，达到上限就停止读取后续内容。</summary>
+        /// <summary>文件名和文本样例分别最多产生 50 项，编码声明单独从归档中查找。</summary>
         private PreviewResult ReadPreview(int step, Encoding archiveEncoding, Encoding textEncoding, bool readEncoding, CancellationToken token)
         {
             if (!IsArchive)
@@ -229,8 +234,8 @@ namespace OpenUtauMobile.ViewModels
                 LeaveStreamOpen = false,
                 ArchiveEncoding = new ArchiveEncoding { Forced = archiveEncoding },
             });
+            Encoding? suggestedEncoding = readEncoding ? ReadConfiguredEncoding(archive, token) : null;
             List<string> items = [];
-            string? suggestedEncoding = null;
             int textSamples = 0;
             foreach (IArchiveEntry entry in archive.Entries)
             {
@@ -240,16 +245,6 @@ namespace OpenUtauMobile.ViewModels
                 if (step == 0)
                 {
                     items.Add(key);
-                    if (readEncoding && suggestedEncoding == null && Path.GetFileName(key) == "character.yaml")
-                    {
-                        // 编码提示仅来自当前样例中的可读配置，不把解析失败变成安装前校验。
-                        try
-                        {
-                            using Stream config = entry.OpenEntryStream();
-                            suggestedEncoding = VoicebankConfig.Load(config)?.TextFileEncoding;
-                        }
-                        catch (Exception exception) when (exception is not OperationCanceledException) { }
-                    }
                 }
                 else if (!entry.IsDirectory && (key.EndsWith("character.txt", StringComparison.OrdinalIgnoreCase) || key.EndsWith("oto.ini", StringComparison.OrdinalIgnoreCase)))
                 {
@@ -267,6 +262,27 @@ namespace OpenUtauMobile.ViewModels
                 }
             }
             return new(items, suggestedEncoding);
+        }
+
+        /// <summary>使用归档中首个可识别的声库编码声明。</summary>
+        private static Encoding? ReadConfiguredEncoding(IArchive archive, CancellationToken token)
+        {
+            foreach (IArchiveEntry entry in archive.Entries)
+            {
+                token.ThrowIfCancellationRequested();
+                if (entry.IsDirectory || Path.GetFileName(entry.Key?.Replace('\\', '/')) != "character.yaml") continue;
+                using Stream config = entry.OpenEntryStream();
+                try
+                {
+                    if (VoicebankConfig.Load(config)?.TextFileEncoding is { Length: > 0 } encoding)
+                        return Encoding.GetEncoding(encoding);
+                }
+                catch (Exception exception) when (exception is YamlException or ArgumentException or NotSupportedException)
+                {
+                    // 无法识别这份声明时，继续查找归档中的其他声库配置。
+                }
+            }
+            return null;
         }
 
         /// <summary>安装取消后等待回滚完成，任何失败均进入结果页；取消失败同时弹窗。</summary>
