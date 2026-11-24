@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Foundation;
@@ -17,6 +18,7 @@ using OpenUtauMobile.Helpers;
 using OpenUtauMobile.iOS.Services.Audio;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.Services.Platform;
 using OpenUtauMobile.iOS.Services.Graphics;
 using OpenUtauMobile.iOS.Services.Platform;
 using Serilog;
@@ -135,7 +137,18 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
 
     private static void InitLogging()
     {
-        AppLogging.Initialize(PathManager.Inst.LogFilePath);
+        AppLogging.Initialize(PathManager.Inst.LogFilePath, logger =>
+        {
+            const string unavailable = "不可用";
+            NSBundle bundle = NSBundle.MainBundle;
+            logger.Information("应用包标识：{BundleIdentifier:l}", bundle.BundleIdentifier ?? unavailable);
+            logger.Information("应用包版本：{BundleVersion:l}",
+                bundle.ObjectForInfoDictionary("CFBundleShortVersionString")?.ToString() ?? unavailable);
+            logger.Information("应用包构建版本：{BundleBuildVersion:l}",
+                bundle.ObjectForInfoDictionary("CFBundleVersion")?.ToString() ?? unavailable);
+            AppLogging.LogOperatingSystem(logger, "iOS", RuntimeInformation.OSArchitecture,
+                Environment.OSVersion.Version.ToString(), AppleSystemInfo.GetKernelVersion(), NSProcessInfo.ProcessInfo.PhysicalMemory);
+        });
         AppDomain.CurrentDomain.UnhandledException += (_, args) => {
             Log.Error((Exception)args.ExceptionObject, "未经处理的异常！"); // 未处理异常
             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification((Exception)args.ExceptionObject));
@@ -145,7 +158,6 @@ public partial class AppDelegate : AvaloniaAppDelegate<App>
             DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(args.Exception));
             args.SetObserved();
         };
-        Log.Information("==========开始记录日志==========");
     }
 
     private static void ProbeOnnxRuntime()

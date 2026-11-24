@@ -63,8 +63,7 @@ sealed class Program
 
     private static void InitLogging()
     {
-        OpenUtauMobile.Services.AppLogging.Initialize(PathManager.Inst.LogFilePath);
-        Log.Information("==========Start logging==========");
+        AppLogging.Initialize(PathManager.Inst.LogFilePath, LinuxStartupInfo.Write);
     }
 
     private static void InitAudioOutput()

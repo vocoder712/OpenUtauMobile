@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reactive;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
@@ -11,6 +12,7 @@ using OpenUtau.Core;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.Services.Platform;
 using OpenUtauMobile.MacOS.Services.Graphics;
 using OpenUtauMobile.MacOS.Services.Platform;
 using OpenUtauMobile.MacOS.Services.Storage;
@@ -62,8 +64,10 @@ sealed class Program
 
     private static void InitLogging()
     {
-        OpenUtauMobile.Services.AppLogging.Initialize(PathManager.Inst.LogFilePath);
-        Log.Information("==========Start logging==========");
+        AppLogging.Initialize(PathManager.Inst.LogFilePath, logger =>
+            AppLogging.LogOperatingSystem(logger, "macOS", RuntimeInformation.OSArchitecture,
+                Environment.OSVersion.Version.ToString(), AppleSystemInfo.GetKernelVersion(),
+                AppleSystemInfo.GetTotalPhysicalMemoryBytes()));
     }
 
     private static void InitAudioOutput()

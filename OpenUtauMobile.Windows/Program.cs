@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reactive;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
@@ -67,8 +68,12 @@ sealed class Program
 
     private static void InitLogging()
     {
-        AppLogging.Initialize(PathManager.Inst.LogFilePath);
-        Log.Information("==========Start logging==========");
+        AppLogging.Initialize(PathManager.Inst.LogFilePath, logger =>
+        {
+            string version = Environment.OSVersion.Version.ToString();
+            AppLogging.LogOperatingSystem(logger, "Windows", RuntimeInformation.OSArchitecture,
+                version, version, WindowsPerformanceProvider.GetTotalPhysicalMemoryBytes());
+        });
     }
 
     private static void InitAudioOutput()
