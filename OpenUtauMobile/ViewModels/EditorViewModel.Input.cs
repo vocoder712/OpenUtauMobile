@@ -52,9 +52,9 @@ public partial class EditorViewModel
     public Task<bool> SaveFromInputAsync(bool saveAs) =>
         RunManualSaveAsync(() => saveAs ? RequestSaveAs() : SaveCore());
 
-    /// <summary>核查编辑器所拥有的文档会话，避免文件选择后保存了另一个工程。</summary>
-    private bool OwnsSaveDocument() => !_disposed && _projectLoaded && _saveOwner != null &&
-        DocManager.Inst.IsSaveCheckpointCurrent(_saveOwner);
+    /// <summary>核查编辑器绑定的工程，工程内重置撤销历史后仍可保存。</summary>
+    private bool OwnsSaveDocument() => !_disposed && _loadedProject != null &&
+        ReferenceEquals(DocManager.Inst.Project, _loadedProject);
 
     /// <summary>所有手动保存入口复用同一个在途任务，包括模板保存和另存为选择器。</summary>
     private Task<bool> RunManualSaveAsync(Func<Task<bool>> operation) =>
@@ -90,7 +90,7 @@ public partial class EditorViewModel
             {
                 Progress<ProjectSaveStage> progress = new(stage => loading.SetIndeterminate(L.S($"ProjectSave.{stage}")));
                 if (OwnsSaveDocument())
-                    saved = await ProjectSaveCoordinator.Inst.SaveManualAsync(_saveOwner!, path, template, progress);
+                    saved = await ProjectSaveCoordinator.Inst.SaveManualAsync(_loadedProject!, path, template, progress);
             });
             if (saved && OwnsSaveDocument()) ToastService.Enqueue(L.S("Editor.Saved"));
             return saved && OwnsSaveDocument();

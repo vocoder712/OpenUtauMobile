@@ -67,8 +67,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
     private readonly ProjectOpenOptions _projectOpenOptions;
     private bool _loadStarted;
-    private bool _projectLoaded;
-    private DocManager.SaveCheckpoint? _saveOwner;
+    private UProject? _loadedProject;
     private PreparedProject? _preparedProject;
     private bool _disposed;
     private readonly TaskCompletionSource<bool> _projectLoadCompletion =
@@ -555,8 +554,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     private async Task AutoSaveProjectAsync()
     {
-        if (!_disposed && _projectLoaded && !IsSavingProject && _saveOwner is { } owner)
-            await ProjectSaveCoordinator.Inst.AutoSaveAsync(owner);
+        if (OwnsSaveDocument() && !IsSavingProject)
+            await ProjectSaveCoordinator.Inst.AutoSaveAsync(_loadedProject!);
     }
 
     /// <summary>
@@ -579,8 +578,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             if (prepared.RepairedPhonemizers) DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
             DocManager.Inst.Recovered = false;
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
-            _projectLoaded = true;
-            _saveOwner = DocManager.Inst.CaptureSaveCheckpoint();
+            _loadedProject = project;
             loadSucceeded = true;
             PlaybackTimer.Start();
             _autoSaveTimer?.Start();
@@ -1000,6 +998,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             {
                 // 当前工程的修改与命令通知保持在 UI 线程。
                 Formats.ImportTracks(project, loadedProjects, viewModel.UseSourceTiming);
+                DocManager.Inst.MarkReloadedProjectDirty();
                 return Task.CompletedTask;
             });
             // 加载弹窗完全关闭后，按桌面顺序检查所有轨道的音色与导入人声模式。
@@ -2414,7 +2413,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     {
         if (_manualSaveTask != null && !await _manualSaveTask) return false;
         // 同步格式读取器会继续运行；离开后丢弃结果，返回操作不等待读取。
-        if (!_projectLoaded) return true;
+        if (_loadedProject == null) return true;
         if (!OwnsSaveDocument()) return false;
         if (DocManager.Inst.ChangesSaved)
         {

@@ -35,21 +35,23 @@ internal sealed class ProjectSaveCoordinator
     }
 
     /// <summary>调用方在模态窗口内等待整个事务；模板保存不会更改活动工程保存点。</summary>
-    public async Task<bool> SaveManualAsync(DocManager.SaveCheckpoint owner, string path, bool template,
+    public async Task<bool> SaveManualAsync(UProject owner, string path, bool template,
         IProgress<ProjectSaveStage>? progress = null)
     {
         Dispatcher.UIThread.VerifyAccess();
+        DocManager doc = DocManager.Inst;
+        if (!ReferenceEquals(doc.Project, owner) || doc.HasOpenUndoGroup || string.IsNullOrWhiteSpace(path)) return false;
         _manualRequests++;
-        try { return await SaveAsync(owner, path, template, autoSave: false, progress); }
+        try { return await SaveAsync(doc.CaptureSaveCheckpoint(), path, template, autoSave: false, progress); }
         finally { _manualRequests--; }
     }
 
     /// <summary>无编辑、开放撤销组、有手动请求或已有自动任务时跳过，不积压快照。</summary>
-    public async Task<bool> AutoSaveAsync(DocManager.SaveCheckpoint owner)
+    public async Task<bool> AutoSaveAsync(UProject owner)
     {
         Dispatcher.UIThread.VerifyAccess();
         DocManager doc = DocManager.Inst;
-        if (_autoSaveRunning || _manualRequests != 0 || !doc.IsSaveCheckpointCurrent(owner) || doc.HasOpenUndoGroup)
+        if (_autoSaveRunning || _manualRequests != 0 || !ReferenceEquals(doc.Project, owner) || doc.HasOpenUndoGroup)
             return false;
         DocManager.SaveCheckpoint point = doc.CaptureSaveCheckpoint();
         if (!doc.NeedsAutoSave(point)) return false;
@@ -59,7 +61,7 @@ internal sealed class ProjectSaveCoordinator
             _backupPath = Path.Combine(PathManager.Inst.BackupsPath, "Mobile-autosave.ustx");
         }
         _autoSaveRunning = true;
-        try { return await SaveAsync(owner, _backupPath, template: false, autoSave: true, progress: null); }
+        try { return await SaveAsync(point, _backupPath, template: false, autoSave: true, progress: null); }
         catch (Exception error)
         {
             // 不推进检查点，下一次定时请求仍能重试；不弹模态打断编辑。
@@ -70,15 +72,13 @@ internal sealed class ProjectSaveCoordinator
     }
 
     /// <summary>捕获开始时版本，后台准备及写入，最后按文档会话确认结果。</summary>
-    private async Task<bool> SaveAsync(DocManager.SaveCheckpoint owner, string path, bool template, bool autoSave,
+    private async Task<bool> SaveAsync(DocManager.SaveCheckpoint point, string path, bool template, bool autoSave,
         IProgress<ProjectSaveStage>? progress)
     {
         DocManager doc = DocManager.Inst;
-        if (!doc.IsSaveCheckpointCurrent(owner) || doc.HasOpenUndoGroup || string.IsNullOrWhiteSpace(path)) return false;
         progress?.Report(ProjectSaveStage.Capturing);
         string previousRecovery = Preferences.Default.RecoveryPath;
         long recoveryGeneration = _recoveryGeneration;
-        DocManager.SaveCheckpoint point = doc.CaptureSaveCheckpoint();
         Stopwatch total = Stopwatch.StartNew();
         UProject snapshot = ProjectSaveSnapshot.Capture(doc.Project, template);
         Log.Information("保存阶段 {Stage}：{Milliseconds:F2} ms，Auto={Auto}，Template={Template}",
