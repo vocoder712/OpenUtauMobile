@@ -1274,9 +1274,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     #region 命中测试
 
     /// <summary>
-    /// 命中已选中分片的顶部移动手柄，包含窄分片向右扩展的完整触摸区域。
+    /// 命中可用于拖动的已选中分片标签，优先匹配绘制在上层的标签。
     /// </summary>
-    public UPart? HitTestMoveHandle(Point canvasPoint)
+    public UPart? HitTestMoveLabel(Point canvasPoint)
     {
         if (canvasPoint.X < 0 || canvasPoint.X >= TrackAreaWidth ||
             canvasPoint.Y < 0 || canvasPoint.Y >= TrackAreaHeight) return null;
@@ -1286,8 +1286,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             UPart part = parts[i];
             if (!SelectedParts.Contains(part)) continue;
             PartLayout layout = PartLayout.Calculate(TickToCanvasX(part.position), TrackNoToCanvasY(part.trackNo),
-                part.Duration * TickWidth, TrackHeight, true, TrackAreaWidth);
-            if (layout.MoveHit.Width > 0 && layout.MoveHit.Contains(canvasPoint)) return part;
+                part.Duration * TickWidth, TrackHeight, true);
+            if (!layout.Frame.Contains(canvasPoint)) continue;
+            Rect tab = layout.GetLabelTab(TrackAreaWidth, PartLayout.GetSelectedLabelText(part.DisplayName));
+            if (tab.Width > 0 && layout.GetLabelMoveHit(tab).Contains(canvasPoint)) return part;
         }
         return null;
     }
@@ -1370,7 +1372,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public void OnGestureTap(Point point)
     {
         InterruptPanMotionIfRunning();
-        UPart? hitTestPart = HitTestMoveHandle(point) ?? HitTestPart(point);
+        UPart? hitTestPart = HitTestMoveLabel(point) ?? HitTestPart(point);
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
@@ -1415,7 +1417,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     public void OnGestureDoubleTap(Point point)
     {
         InterruptPanMotionIfRunning();
-        UPart? hit = HitTestMoveHandle(point) ?? HitTestPart(point);
+        UPart? hit = HitTestMoveLabel(point) ?? HitTestPart(point);
         switch (TrackEditMode)
         {
             case TrackEditMode.Normal:
@@ -1466,8 +1468,8 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
 
         _inputState = TrackInputState.Idle;
-        // 顶部移动区域优先，避免窄分片的时长调整命中区吞掉移动手柄。
-        UPart? moveHit = HitTestMoveHandle(point);
+        // 标签优先，避免宽出的触摸调整区吞掉标签的拖动手势。
+        UPart? moveHit = HitTestMoveLabel(point);
         PartResizeHandleHit? resizeHit = moveHit == null && SelectedParts.Count > 0 ? HitTestResizeHandle(point) : null;
         if (resizeHit.HasValue)
         {
@@ -1483,7 +1485,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             return;
         }
 
-        // 只有从顶部手柄开始的手势才能移动分片。
+        // 从标签开始拖动选中的分片。
         if (moveHit != null)
         {
             _inputState = TrackInputState.MovingParts;

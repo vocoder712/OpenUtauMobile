@@ -96,14 +96,8 @@ public partial class PartsCanvas : Control, ICmdSubscriber
 
     #region 静态绘制资源
 
-    // 名称标签字号（px）
-    private const double LabelFontSize = 11;
-
     private const double PartCornerRadius = 6;
     private const double PhraseProgressHeight = 8;
-
-    private const double LabelHorizontalPadding = 3;
-    private const double LabelVerticalPadding = 2;
 
     #endregion
 
@@ -410,7 +404,7 @@ public partial class PartsCanvas : Control, ICmdSubscriber
             if (y + height < 0 || y > Bounds.Height) continue;
 
             bool selected = SelectedParts != null && SelectedParts.Contains(part); // 是否选中
-            PartLayout layout = PartLayout.Calculate(x, y, width, height, selected, Bounds.Width);
+            PartLayout layout = PartLayout.Calculate(x, y, width, height, selected);
             Rect rect = layout.Body;
             if (rect.Width <= 0 || rect.Height <= 0) continue;
             SolidColorBrush brush = TrackPalette.GetTrackColor(DocManager.Inst.Project.tracks[part.trackNo].TrackColor)
@@ -447,17 +441,16 @@ public partial class PartsCanvas : Control, ICmdSubscriber
                 if (!selected) DrawPartLabel(context, part, rect, brush);
             }
         }
-        // 选中边框附件统一置于分片内容之上；手柄最后绘制，与输入优先级保持一致。
+        // 选中标签和调整手柄统一置于分片内容之上。
         foreach (UPart part in parts)
         {
             if (SelectedParts == null || !SelectedParts.Contains(part)) continue;
             PartLayout layout = PartLayout.Calculate(
                 (part.position - TickOffset) * TickWidth, part.trackNo * TrackHeight - TrackOffset,
-                part.Duration * TickWidth, TrackHeight, true, Bounds.Width);
+                part.Duration * TickWidth, TrackHeight, true);
             if (layout.Body.Width <= 0 || layout.Body.Height <= 0 ||
                 layout.Frame.Bottom <= 0 || layout.Frame.Top >= Bounds.Height) continue;
             DrawSelectedPartLabel(context, part, layout);
-            DrawMoveHandle(context, layout);
             DrawResizeGripLines(context, layout);
         }
         if (_desktopBox is { } box) context.DrawRectangle(null, ThemeResources.GetPen("Sem.Color.Primary", 1), box);
@@ -496,7 +489,7 @@ public partial class PartsCanvas : Control, ICmdSubscriber
 
     /// <summary>
     /// 按实际 dp 尺寸创建左侧页签：左下角为直角，右侧为固定 45° 斜边。
-    /// 斜边宽度仅由高度决定，不再将单位轮廓横向拉伸；右侧 move 仅水平镜像。
+    /// 空间极窄时，斜边与左边缘相接。
     /// </summary>
     /// <param name="width">完整页签宽度，包含斜边占用的宽度。</param>
     /// <param name="height">页签高度，同时决定 45° 斜边的横向宽度。</param>
@@ -506,13 +499,11 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         using StreamGeometryContext path = geometry.Open();
         path.BeginFigure(new Point(0, 0), true);
         path.LineTo(new Point(width, 0));
-        path.LineTo(new Point(width - PartLayout.GetTabSlopeWidth(height), height));
+        path.LineTo(new Point(Math.Max(0, width - height), height));
         path.LineTo(new Point(0, height));
         path.EndFigure(true);
         return geometry;
     }
-
-    private static readonly StreamGeometry MoveTabGeometry = CreateTabGeometry(PartLayout.MoveWidth, PartLayout.MoveHeight);
 
     /// <summary>复用当前分片标签的实际尺寸轮廓，保证标签长度变化时斜率不变。</summary>
     private StreamGeometry GetLabelTabGeometry(UPart part, Size size)
@@ -524,56 +515,18 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         return geometry;
     }
 
-    /// <summary>用给定坐标变换绘制页签轮廓，使用边框的 Primary 色。</summary>
-    private static void DrawBorderHandle(DrawingContext context, StreamGeometry geometry, Matrix transform)
+    /// <summary>在指定范围内绘制两条 OnPrimary 竖向手柄线。</summary>
+    private static void DrawGripLines(DrawingContext context, Rect bounds)
     {
-        using (context.PushTransform(transform))
-            context.DrawGeometry(ThemeResources.GetBrush("Sem.Color.Primary"), null, geometry);
-    }
-
-    /// <summary>
-    /// 裁剪绘制顶部移动手柄，保证窄分片和离屏分片不出现外溢。
-    /// </summary>
-    private void DrawMoveHandle(DrawingContext context, PartLayout layout)
-    {
-        if (layout.MoveClip.Width <= 0 || layout.MoveClip.Height <= 0 ||
-            layout.MoveClip.Bottom <= 0 || layout.MoveClip.Top >= Bounds.Height) return;
-        using (context.PushClip(layout.MoveClip))
-        {
-            // 只镜像和平移完整轮廓，窄分片通过 MoveClip 裁剪，斜边不参与横向拉伸。
-            DrawBorderHandle(context, MoveTabGeometry, new Matrix(-1, 0, 0, 1,
-                layout.MoveHandle.Right, layout.MoveHandle.Top));
-            // 只在斜坡右侧的平直区域居中绘制横线，裁剪仍使用真实可见范围。
-            double slopeWidth = PartLayout.GetTabSlopeWidth(layout.MoveHandle.Height);
-            DrawGripLines(context, new Rect(layout.MoveHandle.Left + slopeWidth, layout.MoveHandle.Top,
-                layout.MoveHandle.Width - slopeWidth, layout.MoveHandle.Height), horizontal: true);
-        }
-    }
-
-    /// <summary>在指定范围内绘制两条 OnPrimary 手柄线；顶部为横线，两侧为竖线。</summary>
-    private static void DrawGripLines(DrawingContext context, Rect bounds, bool horizontal)
-    {
-        double along = horizontal ? bounds.Width : bounds.Height;
-        double across = horizontal ? bounds.Height : bounds.Width;
-        if (along <= 2 || across <= 2) return;
-        double length = Math.Min(24, along * 0.5);
-        double halfGap = Math.Min(2, across / 4);
+        if (bounds.Height <= 2 || bounds.Width <= 2) return;
+        double halfLength = Math.Min(12, bounds.Height / 4);
+        double halfGap = Math.Min(2, bounds.Width / 4);
         Point center = bounds.Center;
         IPen pen = ThemeResources.GetPen("Sem.Color.OnPrimary", 1.5);
-        if (horizontal)
-        {
-            context.DrawLine(pen, new Point(center.X - length / 2, center.Y - halfGap),
-                new Point(center.X + length / 2, center.Y - halfGap));
-            context.DrawLine(pen, new Point(center.X - length / 2, center.Y + halfGap),
-                new Point(center.X + length / 2, center.Y + halfGap));
-        }
-        else
-        {
-            context.DrawLine(pen, new Point(center.X - halfGap, center.Y - length / 2),
-                new Point(center.X - halfGap, center.Y + length / 2));
-            context.DrawLine(pen, new Point(center.X + halfGap, center.Y - length / 2),
-                new Point(center.X + halfGap, center.Y + length / 2));
-        }
+        context.DrawLine(pen, new Point(center.X - halfGap, center.Y - halfLength),
+            new Point(center.X - halfGap, center.Y + halfLength));
+        context.DrawLine(pen, new Point(center.X + halfGap, center.Y - halfLength),
+            new Point(center.X + halfGap, center.Y + halfLength));
     }
 
     /// <summary>在左右宽边框内绘制竖向抓握线，以整个轨道的 Frame 中心为竖直中心。</summary>
@@ -582,9 +535,9 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         using (context.PushClip(new RoundedRect(layout.Frame, PartCornerRadius)))
         {
             DrawGripLines(context, new Rect(layout.Frame.Left, layout.Frame.Top, PartLayout.SideBorder,
-                layout.Frame.Height), horizontal: false);
+                layout.Frame.Height));
             DrawGripLines(context, new Rect(layout.Frame.Right - PartLayout.SideBorder, layout.Frame.Top,
-                PartLayout.SideBorder, layout.Frame.Height), horizontal: false);
+                PartLayout.SideBorder, layout.Frame.Height));
         }
     }
 
@@ -594,9 +547,9 @@ public partial class PartsCanvas : Control, ICmdSubscriber
     private void DrawPartLabel(DrawingContext context, UPart part, Rect rect, IBrush partBrush)
     {
         TextLayout textLayout = TextLayoutCache.Get(part.DisplayName, ThemeResources.GetBrush("Sem.Color.OnSurface"),
-            LabelFontSize);
-        double labelLeft = Math.Max(rect.Left + LabelHorizontalPadding, LabelHorizontalPadding);
-        double labelRight = Math.Min(rect.Right - LabelHorizontalPadding, Bounds.Width - LabelHorizontalPadding);
+            PartLayout.LabelFontSize);
+        double labelLeft = Math.Max(rect.Left + PartLayout.LabelHorizontalPadding, PartLayout.LabelHorizontalPadding);
+        double labelRight = Math.Min(rect.Right - PartLayout.LabelHorizontalPadding, Bounds.Width - PartLayout.LabelHorizontalPadding);
 
         if (labelLeft + textLayout.Width > labelRight)
         {
@@ -604,7 +557,7 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         }
 
         using (context.PushClip(new RoundedRect(rect, PartCornerRadius)))
-        using (context.PushTransform(Matrix.CreateTranslation(labelLeft, rect.Y + LabelVerticalPadding)))
+        using (context.PushTransform(Matrix.CreateTranslation(labelLeft, rect.Y + PartLayout.LabelVerticalPadding)))
         {
             using (context.PushOpacity(0.6))
             {
@@ -619,44 +572,41 @@ public partial class PartsCanvas : Control, ICmdSubscriber
         }
     }
 
-    /// <summary>获取宽度受限的单行页签文本；空间不足使用省略号，不改变字号或手柄位置。</summary>
-    private TextLayout GetSelectedLabelLayout(UPart part, double maxWidth)
+    /// <summary>获取宽度受限的单行页签文本，空间不足时使用省略号。</summary>
+    private TextLayout GetSelectedLabelLayout(UPart part, TextLayout full, double maxWidth)
     {
-        IBrush brush = ThemeResources.GetBrush("Sem.Color.OnPrimary");
-        TextLayout full = TextLayoutCache.Get(part.DisplayName, brush, LabelFontSize);
         if (full.Width <= maxWidth) return full;
+        IBrush brush = ThemeResources.GetBrush("Sem.Color.OnPrimary");
         if (_selectedLabelCache.TryGetValue(part, out SelectedLabelEntry? cached))
         {
             if (cached.Text == part.DisplayName && ReferenceEquals(cached.Brush, brush) && cached.MaxWidth == maxWidth)
                 return cached.Layout;
             cached.Layout.Dispose();
         }
-        TextLayout trimmed = new(part.DisplayName, new Typeface(FontFamily.Default), LabelFontSize, brush,
+        TextLayout trimmed = new(part.DisplayName, new Typeface(FontFamily.Default), PartLayout.LabelFontSize, brush,
             textWrapping: TextWrapping.NoWrap, textTrimming: TextTrimming.CharacterEllipsis,
             maxWidth: maxWidth, maxLines: 1);
         _selectedLabelCache[part] = new SelectedLabelEntry(part.DisplayName, brush, maxWidth, trimmed);
         return trimmed;
     }
 
-    /// <summary>在顶边内侧绘制 Primary 页签，文字使用配套 OnPrimary，标签先于手柄让出横向空间。</summary>
+    /// <summary>在顶边内侧绘制用于拖动分片的标签。</summary>
     private void DrawSelectedPartLabel(DrawingContext context, UPart part, PartLayout layout)
     {
-        if (layout.LabelSlot.Width <= 0 || layout.LabelSlot.Height <= 0) return;
-        // 先根据文字行高确定页签高度，再为固定 45° 斜边预留同等宽度。
-        TextLayout full = TextLayoutCache.Get(part.DisplayName, ThemeResources.GetBrush("Sem.Color.OnPrimary"), LabelFontSize);
-        double tabHeight = Math.Min(layout.LabelSlot.Height, full.Height + LabelVerticalPadding * 2);
-        double slopeWidth = PartLayout.GetTabSlopeWidth(tabHeight);
-        double maxTextWidth = layout.LabelSlot.Width - slopeWidth - LabelHorizontalPadding * 2;
-        if (maxTextWidth < LabelFontSize || layout.LabelSlot.Height <= 0) return;
-        TextLayout text = GetSelectedLabelLayout(part, maxTextWidth);
-        // 左边缘和左下角保持直角；右侧留出斜坡并接回顶边，宽度随实际文字收缩。
-        Rect tab = new(layout.LabelSlot.Left, layout.LabelSlot.Top,
-            Math.Min(layout.LabelSlot.Width, text.Width + LabelHorizontalPadding * 2 + slopeWidth), tabHeight);
+        TextLayout full = PartLayout.GetSelectedLabelText(part.DisplayName);
+        Rect tab = layout.GetLabelTab(Bounds.Width, full);
+        if (tab.Width <= 0) return;
+        double maxTextWidth = tab.Width - tab.Height - PartLayout.LabelHorizontalPadding * 2;
         using (context.PushClip(new RoundedRect(layout.Frame, PartCornerRadius)))
         using (context.PushClip(tab))
+        using (context.PushTransform(Matrix.CreateTranslation(tab.Left, tab.Top)))
         {
-            DrawBorderHandle(context, GetLabelTabGeometry(part, tab.Size), Matrix.CreateTranslation(tab.Left, tab.Top));
-            text.Draw(context, new Point(tab.Left + LabelHorizontalPadding, layout.Body.Top + LabelVerticalPadding));
+            context.DrawGeometry(ThemeResources.GetBrush("Sem.Color.Primary"), null, GetLabelTabGeometry(part, tab.Size));
+            if (maxTextWidth >= PartLayout.LabelFontSize)
+            {
+                TextLayout text = GetSelectedLabelLayout(part, full, maxTextWidth);
+                text.Draw(context, new Point(PartLayout.LabelHorizontalPadding, PartLayout.LabelVerticalPadding));
+            }
         }
     }
 

@@ -10,7 +10,7 @@
     x:Class="OpenUtauMobile.Controls.ExitEditorConfirmPopup"
     d:DataContext="{d:DesignInstance Type=vm:ExitEditorConfirmViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:ExitEditorConfirmViewModel"
-    Classes="PopupDialogRoot DialogHeightCompact">
+    Classes="PopupDialogRoot">
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource Editor.BackConfirm.Title}">
         <dialogs:DialogShell.Footer>
             <dialogs:DialogActionRows Classes="DesktopInline">
