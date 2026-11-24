@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using OpenUtauMobile.Controls;
+using OpenUtauMobile.Themes.OpenUtauMobile.Tokens.Components;
 
 namespace OpenUtauMobile.DesktopUI.Services
 {
-    internal readonly record struct DesktopDialogProfile(double Width, double MinWidth, double MaxHeight, bool Scrolls, bool DenseFields = false, double? PreferredHeight = null)
+    internal readonly record struct DesktopDialogProfile(double Width, double MinWidth, double MaxHeight, bool DenseFields = false)
     {
-        public static DesktopDialogProfile Standard => new(560, 400, 640, false);
+        public static DesktopDialogProfile Standard => new(560, 400, DialogTokens.RegularMaxHeight);
     }
 
     internal static class DesktopDialogCatalog
@@ -42,7 +43,7 @@ namespace OpenUtauMobile.DesktopUI.Services
                 [typeof(GraphItemPickerPopup)] = StandardProfile,
                 [typeof(TextInputPopup)] = StandardProfile,
                 [typeof(VoiceColorMappingPopup)] = StandardProfile,
-                [typeof(SetupWizardPopup)] = _ => new DesktopDialogProfile(800, 560, 720, true, PreferredHeight: 640),
+                [typeof(SetupWizardPopup)] = popup => CreateStandardProfile(popup) with { Width = 800, MinWidth = 560 },
                 [typeof(ProjectTemplatesPopup)] = StandardProfile,
                 [typeof(FilePickerPopup)] = StandardProfile,
             };
@@ -62,9 +63,11 @@ namespace OpenUtauMobile.DesktopUI.Services
                 PopupDialogWidthPreset.Wide => 800,
                 _ => 560
             };
-            bool scrolls = popup.Classes.Contains("DialogHeightExpanded") || popup.Classes.Contains("DialogHeightList") ||
-                popup is ImportTracksPopup or FilePickerPopup or NoteExtractionPopup or VoiceColorMappingPopup or ProjectTemplatesPopup;
-            return new DesktopDialogProfile(width, Math.Min(width, 360), scrolls ? 560 : 640, scrolls, popup is NotePropertiesPopup);
+            bool usesListOrExpandedHeight = popup.Classes.Contains("DialogHeightExpanded") || popup.Classes.Contains("DialogHeightList");
+            double maxHeight = popup.UsesAdaptiveHeight ? double.PositiveInfinity
+                : popup.Classes.Contains("DialogHeightCompact") ? DialogTokens.CompactMaxHeight
+                : usesListOrExpandedHeight ? 560 : DialogTokens.RegularMaxHeight;
+            return new DesktopDialogProfile(width, Math.Min(width, 360), maxHeight, popup is NotePropertiesPopup);
         }
     }
 }

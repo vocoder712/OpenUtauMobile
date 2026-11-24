@@ -26,13 +26,13 @@ in [`../Styles/Components/Dialog.axaml`](../Styles/Components/Dialog.axaml), and
 viewport coercion in `Controls/PopupDialogControl.cs`. These are complementary
 owners, not three places to independently configure the same size.
 
-| Root class (choose at most one height profile) | Min / max height, DIP | Use |
+| Root class (choose at most one height profile) | Embedded target height, DIP | Use |
 | --- | --- | --- |
-| `PopupDialogRoot` only | 0 / 640 | Content-driven dialogs without reserved minimum space |
-| `DialogHeightCompact` | 180 / 320 | Short text-entry forms |
-| `DialogHeightRegular` | 280 / 640 | Regular editing forms |
-| `DialogHeightList` | 280 / 600 | Scrollable selection lists |
-| `DialogHeightExpanded` | 400 / 640 | Multi-action/workspace dialogs |
+| `PopupDialogRoot` only, or `DialogHeightAdaptive` | Content height | Adaptive default |
+| `DialogHeightCompact` | 320 | Short text-entry forms |
+| `DialogHeightRegular` | 480 | Regular editing forms |
+| `DialogHeightList` | 600 | Scrollable selection lists |
+| `DialogHeightExpanded` | 640 | Multi-action/workspace dialogs |
 
 ```xml
 <UserControl ... Classes="PopupDialogRoot DialogHeightExpanded">
@@ -40,9 +40,9 @@ owners, not three places to independently configure the same size.
 </UserControl>
 ```
 
-For example, EditorMore and BatchEdit use Expanded; LyricEdit, PhonemeEdit and
-TrackRename use Compact; BulkLyricEdit uses Regular; Singer, Renderer, Phonemizer
-and TrackColor pickers use List. Unprofiled dialogs retain content-driven sizing.
+EditorMore and BatchEdit use Expanded. PhonemeEdit uses Compact. LyricEdit and
+BulkLyricEdit use Regular. Singer, Phonemizer and TrackColor pickers use List.
+The embedded target height is capped by the available viewport.
 These are application choices, not MD3-prescribed heights. Changing one token
 updates every consumer of the corresponding profile.
 

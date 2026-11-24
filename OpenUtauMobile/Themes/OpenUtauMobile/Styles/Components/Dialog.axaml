@@ -83,23 +83,21 @@
     </Style>
     <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot">
         <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.DefaultMaxHeight}" />
     </Style>
-    <!-- 高度预设只负责根节点尺寸；各弹窗按用途选择其中一个。 -->
+    <!-- 缺省和 DialogHeightAdaptive 随内容测量；固定预设指定目标高度和上限。 -->
     <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightCompact">
-        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.CompactMinHeight}" />
         <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.CompactMaxHeight}" />
     </Style>
     <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightRegular">
-        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.RegularMinHeight}" />
+        <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.RegularMaxHeight}" />
     </Style>
     <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightList">
-        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.ListMinHeight}" />
         <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.ListMaxHeight}" />
     </Style>
     <Style Selector=":is(controls|PopupDialogControl).PopupDialogRoot.DialogHeightExpanded">
-        <Setter Property="MinHeight" Value="{x:Static components:DialogTokens.ExpandedMinHeight}" />
+        <Setter Property="MaxHeight" Value="{x:Static components:DialogTokens.ExpandedMaxHeight}" />
     </Style>
+    
     <Style Selector="TextBlock.PopupTitle">
         <Setter Property="FontSize" Value="{x:Static components:DialogTokens.TitleSize}" />
         <Setter Property="FontWeight" Value="SemiBold" />

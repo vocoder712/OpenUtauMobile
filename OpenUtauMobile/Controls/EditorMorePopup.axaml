@@ -12,7 +12,7 @@
     d:DesignHeight="500"
     x:Class="OpenUtauMobile.Controls.EditorMorePopup"
     x:DataType="vm:EditorMoreViewModel"
-    Classes="PopupDialogRoot DialogHeightExpanded">
+    Classes="PopupDialogRoot DialogHeightRegular">
 
     <dialogs:DialogShell CloseCommand="{Binding CancelCommand}" Header="{DynamicResource EditorMore.Title}">
         <DockPanel>

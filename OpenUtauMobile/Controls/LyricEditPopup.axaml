@@ -11,8 +11,7 @@
     x:Class="OpenUtauMobile.Controls.LyricEditPopup"
     d:DataContext="{d:DesignInstance Type=vm:LyricEditViewModel, IsDesignTimeCreatable=False}"
     x:DataType="vm:LyricEditViewModel"
-    Height="480"
-    Classes="PopupDialogRoot DialogHeightList">
+    Classes="PopupDialogRoot DialogHeightRegular">
     <UserControl.Styles>
         <Style Selector="ListBoxItem">
             <Setter Property="MinHeight" Value="{x:Static semantic:InteractionTokens.TouchTarget}" />
