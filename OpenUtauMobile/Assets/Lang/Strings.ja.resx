@@ -379,6 +379,12 @@
   <data name="Settings.Render.PreRender.Desc" xml:space="preserve">
     <value>バックグラウンドで事前にオーディオをレンダリングし、再生をスムーズにします</value>
   </data>
+  <data name="Settings.Render.TrackProgress" xml:space="preserve">
+    <value>パートにフレーズのレンダリング進捗を表示する</value>
+  </data>
+  <data name="Settings.Render.SineWhenNoSinger" xml:space="preserve">
+    <value>使用できる歌手がいないときにサイン波で再生する</value>
+  </data>
   <data name="Settings.Render.ThreadCount" xml:space="preserve">
     <value>レンダースレッド数</value>
   </data>

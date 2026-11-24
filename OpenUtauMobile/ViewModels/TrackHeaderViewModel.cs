@@ -457,7 +457,7 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             SingerType = singer?.SingerType ?? USingerType.Classic;
             HasSinger = singer != null;
             PhonemizerTag = _track.Phonemizer?.Tag ?? string.Empty;
-            RendererName = _track.RendererSettings.renderer ?? string.Empty;
+            RefreshRendererName();
             RefreshAvatar();
         }
         finally
@@ -465,6 +465,10 @@ public class TrackHeaderViewModel : ViewModelBase, IDisposable
             _isRefreshing = false;
         }
     }
+
+    /// <summary>显示实际启用的正弦后备渲染器，保留正常渲染器的已配置名称。</summary>
+    internal void RefreshRendererName() => RendererName = _track.RendererSettings.Renderer is SineRenderer sine
+        ? sine.ToString() : _track.RendererSettings.renderer ?? string.Empty;
 
     public void Dispose()
     {

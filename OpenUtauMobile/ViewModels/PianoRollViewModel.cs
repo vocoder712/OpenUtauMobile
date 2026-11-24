@@ -3760,6 +3760,7 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
                 break;
             case ConfigureExpressionsCommand:
             case SingersRefreshedNotification:
+            case ValidateProjectNotification:
                 RefreshAvailableExpressions();
                 RequestInvalidateVisual?.Invoke();
                 break;

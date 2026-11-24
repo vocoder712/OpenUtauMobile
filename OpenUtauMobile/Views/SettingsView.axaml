@@ -1038,6 +1038,28 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- 乐句进度显示与无歌手时的旋律试听设置 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                            <TextBlock Classes="SettingItemTitle" TextWrapping="Wrap" VerticalAlignment="Center"
+                                                       Text="{DynamicResource Settings.Render.TrackProgress}" />
+                                            <ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                          AutomationProperties.Name="{DynamicResource Settings.Render.TrackProgress}"
+                                                          IsChecked="{Binding RenderStatusInTrackBar, Mode=TwoWay}"
+                                                          OffContent="" OnContent="" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceSM}">
+                                            <TextBlock Classes="SettingItemTitle" TextWrapping="Wrap" VerticalAlignment="Center"
+                                                       Text="{DynamicResource Settings.Render.SineWhenNoSinger}" />
+                                            <ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                                          AutomationProperties.Name="{DynamicResource Settings.Render.SineWhenNoSinger}"
+                                                          IsChecked="{Binding PlaySineWhenNoSinger, Mode=TwoWay}"
+                                                          OffContent="" OnContent="" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- 音频输出设置 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceM}">

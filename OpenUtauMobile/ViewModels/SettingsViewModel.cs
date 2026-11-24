@@ -590,6 +590,12 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public bool PreRenderEnabled { get; set; }
 
+    /// <summary>在编曲分片内显示乐句渲染进度。</summary>
+    [Reactive] public bool RenderStatusInTrackBar { get; set; }
+
+    /// <summary>歌手不可用时用正弦音播放旋律。</summary>
+    [Reactive] public bool PlaySineWhenNoSinger { get; set; }
+
     /// <summary>预渲染线程数。</summary>
     [Reactive]
     public int NumRenderThreads { get; set; }
@@ -1313,6 +1319,8 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
         DiffSingerStepsVariance = Preferences.Default.DiffSingerStepsVariance;
         DiffSingerStepsPitch = Preferences.Default.DiffSingerStepsPitch;
         PreRenderEnabled = Preferences.Default.PreRender;
+        RenderStatusInTrackBar = Preferences.Default.RenderStatusInTrackBar;
+        PlaySineWhenNoSinger = Preferences.Default.PlaySineWhenNoSinger;
         NumRenderThreads = Preferences.Default.NumRenderThreads;
 
         this.WhenAnyValue(x => x.PerformanceMonitorEnabled)
@@ -1358,6 +1366,24 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
             {
                 Preferences.Default.PreRender = value;
                 Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+        this.WhenAnyValue(x => x.RenderStatusInTrackBar)
+            .Skip(1)
+            .Subscribe(value =>
+            {
+                Preferences.Default.RenderStatusInTrackBar = value;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+        this.WhenAnyValue(x => x.PlaySineWhenNoSinger)
+            .Skip(1)
+            .Subscribe(value =>
+            {
+                Preferences.Default.PlaySineWhenNoSinger = value;
+                Preferences.Save();
+                DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
+                DocManager.Inst.ExecuteCmd(new PreRenderNotification());
             })
             .DisposeWith(_disposables);
         this.WhenAnyValue(x => x.NumRenderThreads)
