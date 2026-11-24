@@ -320,6 +320,12 @@
   <data name="Settings.Render.PreRender.Desc" xml:space="preserve">
     <value>Попередньо рендерить аудіо у фоновому режимі для плавнішого відтворення</value>
   </data>
+  <data name="Settings.Render.TrackProgress" xml:space="preserve">
+    <value>Показувати поступ рендерингу фраз у кліпах</value>
+  </data>
+  <data name="Settings.Render.SineWhenNoSinger" xml:space="preserve">
+    <value>Відтворювати синусоїдальний тон, якщо голос недоступний</value>
+  </data>
   <data name="Settings.Render.ThreadCount" xml:space="preserve">
     <value>Кількість потоків рендерингу</value>
   </data>

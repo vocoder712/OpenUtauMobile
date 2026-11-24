@@ -379,6 +379,12 @@
   <data name="Settings.Render.PreRender.Desc" xml:space="preserve">
     <value>Renders audio ahead of time in the background for smoother playback</value>
   </data>
+  <data name="Settings.Render.TrackProgress" xml:space="preserve">
+    <value>Show phrase render progress in clips</value>
+  </data>
+  <data name="Settings.Render.SineWhenNoSinger" xml:space="preserve">
+    <value>Use sine tones when the singer is unavailable</value>
+  </data>
   <data name="Settings.Render.ThreadCount" xml:space="preserve">
     <value>Render Thread Count</value>
   </data>

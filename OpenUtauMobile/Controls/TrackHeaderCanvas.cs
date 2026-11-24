@@ -168,6 +168,15 @@ public class TrackHeaderCanvas : Panel, ICmdSubscriber
             case LoadProjectNotification:
                 FullUpdate();
                 break;
+            case PackagesChangedNotification:
+            case SingersRefreshedNotification:
+            case ValidateProjectNotification:
+                foreach (TrackHeader header in _trackHeaders.Values) header.ViewModel.Refresh();
+                break;
+            case PreRenderNotification:
+                // 切换歌手和渲染器的命令先发布，预渲染通知到达时校验已经完成。
+                foreach (TrackHeader header in _trackHeaders.Values) header.ViewModel.RefreshRendererName();
+                break;
             case AddTrackCommand addTrackCommand:
                 if (isUndo)
                     Remove(addTrackCommand.track);

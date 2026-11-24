@@ -180,7 +180,8 @@ namespace OpenUtauMobile.DesktopUI.Views
             if (request.Anchor is not { } anchor || TopLevel.GetTopLevel(anchor) == null || request.CancellationToken.IsCancellationRequested)
                 return Task.FromResult<PhonemizerPickerResult?>(null);
             TaskCompletionSource<PhonemizerPickerResult?> result = new(TaskCreationOptions.RunContinuationsAsynchronously);
-            PhonemizerFactory[] factories = PhonemizerFactory.GetAll();
+            PhonemizerFactory[] factories = request.AllowTrackDefault
+                ? NotePhonemizerResolver.GetSelectableFactories() : PhonemizerFactory.GetAll();
             TextBox search = new() { Name = "DesktopPhonemizerSearch", MinWidth = 280 };
             search.Bind(TextBox.PlaceholderTextProperty, search.GetResourceObservable("Desktop.Search"));
             ComboBox language = new() { ItemsSource = new[] { OpenUtauMobile.Helpers.L.S("Desktop.AllLanguages") }.Concat(factories.Select(f => f.language ?? "").Distinct().OrderBy(s => s)).ToArray(), SelectedIndex = 0, HorizontalAlignment = HorizontalAlignment.Stretch };

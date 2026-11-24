@@ -379,6 +379,12 @@
   <data name="Settings.Render.PreRender.Desc" xml:space="preserve">
     <value>启用后将在后台提前渲染音频，提升播放流畅度</value>
   </data>
+  <data name="Settings.Render.TrackProgress" xml:space="preserve">
+    <value>在分片内显示乐句渲染进度</value>
+  </data>
+  <data name="Settings.Render.SineWhenNoSinger" xml:space="preserve">
+    <value>歌手不可用时播放正弦音</value>
+  </data>
   <data name="Settings.Render.ThreadCount" xml:space="preserve">
     <value>渲染线程数</value>
   </data>

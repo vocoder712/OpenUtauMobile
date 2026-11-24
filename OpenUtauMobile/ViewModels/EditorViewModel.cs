@@ -13,6 +13,7 @@ using IconPacks.Avalonia.PhosphorIcons;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using OpenUtauMobile.Controls;
@@ -59,6 +60,8 @@ public readonly record struct PartResizeHandleHit(UPart Part, PartResizeEdge Edg
 public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, IDisposable, IEditorViewport
 {
     private readonly Services.NoteExtraction.NoteExtractionAction noteExtraction = new();
+    // 编辑器存活期间保留渲染状态，编曲画布离开可视树时仍接收通知。
+    private readonly Dictionary<UVoicePart, HashSet<RenderPhrase>> _renderedPhrases = [];
     // ── 内部状态 ────────────────────────────────────────────────────────
     private readonly Action<UVoicePart, int>? _onRequestEditLyric;
     private readonly Action<UVoicePart, UNote, int>? _onRequestEditPhoneme;
@@ -266,6 +269,11 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
     private readonly CompositeDisposable _disposables = [];
 
     public event Action? RequestInvalidateVisual; // 请求视图重绘事件，供 PianoRollViewModel 调用，通知 PartsCanvas 刷新显示
+    internal event Action? PhraseProgressChanged;
+
+    /// <summary>查询当前分片中已完成渲染的乐句。</summary>
+    internal bool IsPhraseRendered(UVoicePart part, RenderPhrase phrase) =>
+        _renderedPhrases.TryGetValue(part, out var phrases) && phrases.Contains(phrase);
 
     public EditorViewModel(MainViewModel navigator, ProjectOpenOptions? projectOpenOptions = null)
         : this(navigator, projectOpenOptions, null)
@@ -611,7 +619,15 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
 
     public void OnNext(UCommand cmd, bool isUndo)
     {
-        if (cmd is PhraseRenderStateNotification or RebuildPhraseBlocksNotification) return;
+        switch (cmd)
+        {
+            case PhraseRenderStateNotification state:
+                UpdatePhraseRenderState(state);
+                return;
+            case RebuildPhraseBlocksNotification rebuild:
+                RebuildPhraseProgress(rebuild.Part);
+                return;
+        }
         if (cmd is not SetPlayPosTickNotification and not SeekPlayPosTickNotification and not ProgressBarNotification)
             RunOnUiThread(RefreshHistoryState);
         // TODO: 一定要发到UI线程吗？:不需要！docman已经做了
@@ -674,6 +690,7 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                 });
                 break;
             case LoadProjectNotification loadProjectNotification:
+                _renderedPhrases.Clear();
                 // 添加最近打开的项目
                 Preferences.AddRecentFileIfEnabled(loadProjectNotification.project.FilePath);
                 RunOnUiThread(() =>
@@ -683,7 +700,21 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
                     RequestInvalidateVisual?.Invoke();
                 });
                 break;
-            case PartCommand:
+            case TrackChangeSingerCommand singer:
+                ResetTrackPhraseProgress(singer.track);
+                break;
+            case TrackChangeRenderSettingCommand renderer:
+                ResetTrackPhraseProgress(renderer.track);
+                break;
+            case RemoveTrackCommand removeTrack when !isUndo:
+                foreach (var removed in removeTrack.removedParts.OfType<UVoicePart>())
+                    _renderedPhrases.Remove(removed);
+                break;
+            case PartCommand partCommand:
+                UPart previousPart = partCommand is ReplacePartCommand replace && isUndo ? replace.newPart : partCommand.part;
+                if (previousPart is UVoicePart voicePart && (partCommand is MovePartCommand or ReplacePartCommand ||
+                    (isUndo ? partCommand is AddPartCommand : partCommand is RemovePartCommand)))
+                    _renderedPhrases.Remove(voicePart);
                 RunOnUiThread(() =>
                 {
                     UPart[] remainingSelection = SelectedParts
@@ -723,6 +754,48 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         {
             RefreshDocumentViewportLimits();
         }
+    }
+
+    /// <summary>分句重建后，按上游规则沿用哈希一致的已渲染状态。</summary>
+    private void RebuildPhraseProgress(UVoicePart part)
+    {
+        if (_renderedPhrases.TryGetValue(part, out var previous) && previous.Count > 0)
+        {
+            HashSet<ulong> hashes = [.. previous.Select(phrase => phrase.hash)];
+            _renderedPhrases[part] = [.. part.renderPhrases.Where(phrase => hashes.Contains(phrase.hash))];
+        }
+        PhraseProgressChanged?.Invoke();
+    }
+
+    /// <summary>忽略过期乐句的完成通知，按当前分句更新显示状态。</summary>
+    private void UpdatePhraseRenderState(PhraseRenderStateNotification state)
+    {
+        if (!DocManager.Inst.Project.parts.Contains(state.Part)) return;
+        if (!_renderedPhrases.TryGetValue(state.Part, out var rendered))
+        {
+            if (!state.Rendered) return;
+            _renderedPhrases[state.Part] = rendered = [];
+        }
+        bool changed = false;
+        foreach (RenderPhrase phrase in state.Part.renderPhrases)
+        {
+            bool matches = state.Phrase is { } exact ? ReferenceEquals(phrase, exact)
+                : phrase.position < state.EndTick && phrase.end > state.StartTick;
+            if (!matches) continue;
+            changed |= state.Rendered ? rendered.Add(phrase) : rendered.Remove(phrase);
+            if (state.Phrase != null) break;
+        }
+        if (changed) PhraseProgressChanged?.Invoke();
+    }
+
+    /// <summary>切换轨道的渲染输入后，清除该轨道各分片的旧渲染状态。</summary>
+    private void ResetTrackPhraseProgress(UTrack track)
+    {
+        foreach (var part in DocManager.Inst.Project.parts.OfType<UVoicePart>())
+        {
+            if (part.trackNo == track.TrackNo) _renderedPhrases.Remove(part);
+        }
+        PhraseProgressChanged?.Invoke();
     }
 
     private static void RunOnUiThread(Action action)

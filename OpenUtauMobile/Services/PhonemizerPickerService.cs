@@ -48,13 +48,18 @@ public static class PhonemizerPickerService
 /// <summary>仅按完整注册名或旧版完整类型名解析，未知值保持原样。</summary>
 public static class NotePhonemizerResolver
 {
+    /// <summary>音符覆盖写入注册名，只提供能按名称唯一还原的音素器。</summary>
+    public static PhonemizerFactory[] GetSelectableFactories() =>
+        [.. PhonemizerFactory.GetAll().GroupBy(factory => factory.name, StringComparer.Ordinal)
+            .Where(group => group.Count() == 1).Select(group => group.Single())];
+
     public static PhonemizerFactory? Resolve(string? identifier)
     {
         if (string.IsNullOrEmpty(identifier)) return null;
         PhonemizerFactory[] factories = PhonemizerFactory.GetAll();
         PhonemizerFactory[] named = factories.Where(f => f.name == identifier).ToArray();
         if (named.Length > 0) return named.Length == 1 ? named[0] : null;
-        PhonemizerFactory[] typed = factories.Where(f => f.type.FullName == identifier).ToArray();
+        PhonemizerFactory[] typed = [.. factories.Where(f => f.Id == identifier && f.type.FullName == identifier)];
         return typed.Length == 1 && factories.Count(f => f.name == typed[0].name) == 1 ? typed[0] : null;
     }
 
@@ -68,8 +73,8 @@ public static class NotePhonemizerResolver
     {
         PhonemizerFactory[] factories = PhonemizerFactory.GetAll();
         ILookup<string, PhonemizerFactory> named = factories.ToLookup(factory => factory.name, StringComparer.Ordinal);
-        Dictionary<string, string> legacyNames = factories.Where(factory => factory.type.FullName != null && named[factory.name].Count() == 1)
-            .GroupBy(factory => factory.type.FullName!, StringComparer.Ordinal)
+        Dictionary<string, string> legacyNames = factories.Where(factory => factory.Id == factory.type.FullName && named[factory.name].Count() == 1)
+            .GroupBy(factory => factory.Id, StringComparer.Ordinal)
             .Where(group => group.Count() == 1)
             .ToDictionary(group => group.Key, group => group.Single().name, StringComparer.Ordinal);
         bool changed = false;

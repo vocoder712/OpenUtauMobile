@@ -38,7 +38,9 @@ public sealed class PhonemizerPickerViewModel : PopupViewModelBase, IDisposable
         {
             if (AllowTrackDefault) RaiseClose(new PhonemizerPickerResult(null));
         });
-        foreach (IGrouping<string, PhonemizerFactory> group in PhonemizerFactory.GetAll()
+        PhonemizerFactory[] factories = AllowTrackDefault
+            ? NotePhonemizerResolver.GetSelectableFactories() : PhonemizerFactory.GetAll();
+        foreach (IGrouping<string, PhonemizerFactory> group in factories
             .GroupBy(f => f.language ?? string.Empty).OrderBy(g => g.Key))
         {
             Groups.Add(new(group, string.IsNullOrEmpty(group.Key) ? "General" : group.Key));
