@@ -1090,6 +1090,9 @@
   <data name="EditorMore.Title" xml:space="preserve">
     <value>更多操作</value>
   </data>
+  <data name="EditorMore.Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
   <data name="EditorMore.SaveAs" xml:space="preserve">
     <value>另存为</value>
   </data>

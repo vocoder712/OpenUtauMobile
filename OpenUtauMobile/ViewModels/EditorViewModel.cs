@@ -918,6 +918,9 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
             case EditorMoreAction.SaveAsTemplate:
                 await SaveAsTemplateAsync();
                 break;
+            case EditorMoreAction.Save:
+                _ = Save();
+                break;
             case EditorMoreAction.SaveAs:
                 _ = SaveFromInputAsync(true);
                 break;
