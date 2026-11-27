@@ -6,11 +6,24 @@
         <Nullable>enable</Nullable>
         <DefineConstants>BROWSER</DefineConstants>
         <WasmEnableThreads>true</WasmEnableThreads>
+        <BlazorCacheBootResources>false</BlazorCacheBootResources>
         <EmccExtraLDFlags>$(EmccExtraLDFlags) -lidbfs.js</EmccExtraLDFlags>
         <!-- 插件发现和现有 JSON 模型依赖反射，浏览器发布时保留其元数据。 -->
-        <PublishTrimmed>false</PublishTrimmed>
+        <PublishTrimmed Condition="'$(RunAOTCompilation)' != 'true'">false</PublishTrimmed>
         <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(RunAOTCompilation)' == 'true'">
+        <PublishTrimmed>true</PublishTrimmed>
+        <TrimMode>partial</TrimMode>
+        <!-- .NET 10 的 WASM 交叉编译器解析 UnmanagedCallConvAttribute 时会崩溃。 -->
+        <_ExtraTrimmerArgs>$(_ExtraTrimmerArgs) --link-attributes &quot;$(MSBuildThisFileDirectory)AotLinkAttributes.xml&quot; --action link OpenUtauMobile --action link SDL3-CS</_ExtraTrimmerArgs>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(Configuration)' == 'Release' and '$(RunAOTCompilation)' == 'true'">
+        <!-- 对这两个程序集运行链接器以移除属性，同时保留其中的类型和成员。 -->
+        <TrimmerRootAssembly Include="OpenUtauMobile;SDL3-CS" RootMode="All" />
+    </ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug' and '$(WasmEnableThreads)' == 'true'">
         <!-- .NET 10 多线程原生运行时在 -O0 下启动崩溃；仅优化原生部分，保留托管调试。 -->
@@ -34,4 +47,12 @@
         <ProjectReference Include="..\OpenUtauMobile\OpenUtauMobile.csproj"/>
     </ItemGroup>
     <Import Project="../native/NativeBuild.targets" />
+
+    <Target Name="ConfigureBrowserDevelopmentCache" AfterTargets="CopyFilesToOutputDirectory">
+        <Exec Command="&quot;$(_NativePython)&quot; &quot;$(MSBuildProjectDirectory)/browser-assets.py&quot; dev &quot;$(TargetDir)$(TargetName).staticwebassets.endpoints.json&quot;" />
+    </Target>
+
+    <Target Name="FingerprintBrowserPublishAssets" AfterTargets="Publish">
+        <Exec Command="&quot;$(_NativePython)&quot; &quot;$(MSBuildProjectDirectory)/browser-assets.py&quot; publish &quot;$(PublishDir).&quot; &quot;$(TargetName)&quot; &quot;$(Version)&quot; &quot;$(SourceCommit)&quot; &quot;$(BuildNumber)&quot;" />
+    </Target>
 </Project>

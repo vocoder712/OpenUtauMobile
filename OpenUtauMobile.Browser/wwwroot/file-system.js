@@ -39,8 +39,14 @@ export async function flush() {
 }
 
 function sync(populate) {
-    return new Promise((resolve, reject) => fs.syncfs(populate, error =>
-        error ? reject(error) : resolve()));
+    return new Promise((resolve, reject) => fs.syncfs(populate, error => {
+        if (!error) {
+            resolve();
+        } else {
+            const message = error.errno === undefined ? error.message : `${error.name} (errno ${error.errno})`;
+            reject(new Error(message, { cause: error }));
+        }
+    }));
 }
 
 function scheduleFlush() {
@@ -159,6 +165,17 @@ export async function initialize(runtime) {
             const node = idbfs.mount(mount);
             trackNode(node);
             return node;
+        },
+        syncfs(mount, populate, callback) {
+            if (populate) return idbfs.syncfs(mount, populate, callback);
+            // 先异步读取索引，再连续扫描和读取内存文件，避免安装在两步之间改名或删除文件。
+            idbfs.getRemoteSet(mount, (error, remote) => {
+                if (error) return callback(error);
+                idbfs.getLocalSet(mount, (error, local) => {
+                    if (error) return callback(error);
+                    idbfs.reconcile(local, remote, callback);
+                });
+            });
         }
     }, {}, root);
     await sync(true);

@@ -91,7 +91,8 @@ namespace OpenUtau.Classic {
                 voicebank.Reload();
                 Load();
                 loaded = true;
-                if (otoWatcher == null) {
+                // 浏览器虚拟文件系统不支持 FileSystemWatcher。
+                if (!OperatingSystem.IsBrowser() && otoWatcher == null) {
                     otoWatcher = new OtoWatcher(this, Location);
                 }
                 OtoDirty = false;
@@ -155,14 +156,19 @@ namespace OpenUtau.Classic {
         }
 
         public override void Save() {
+            var watcher = otoWatcher;
             try {
-                otoWatcher.Paused = true;
+                if (watcher != null) {
+                    watcher.Paused = true;
+                }
                 foreach (var oto in Otos) {
                     oto.WriteBack();
                 }
                 VoicebankLoader.WriteOtoSets(voicebank);
             } finally {
-                otoWatcher.Paused = false;
+                if (watcher != null) {
+                    watcher.Paused = false;
+                }
             }
         }
         
