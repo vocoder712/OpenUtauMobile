@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+    <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(RunAOTCompilation)' == ''">
+        <RunAOTCompilation>true</RunAOTCompilation>
+    </PropertyGroup>
+
     <PropertyGroup>
         <TargetFramework>net10.0-browser</TargetFramework>
         <OutputType>Exe</OutputType>

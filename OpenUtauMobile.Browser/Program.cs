@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Browser;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Threading;
 using ReactiveUI.Avalonia;
@@ -16,6 +17,7 @@ using OpenUtauMobile;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Graphics;
+using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Browser.Services.Graphics;
 using OpenUtauMobile.Browser.Services.Platform;
 using OpenUtauMobile.Browser.Services;
@@ -46,6 +48,14 @@ internal sealed partial class Program
             ServiceHub.GraphicsBackendService = graphicsService;
             await appBuilder.StartBrowserAppAsync("out",
                 BrowserGraphicsBackendProvider.CreatePlatformOptions(graphicsService.StartupFallbackOrder));
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (Application.Current?.ApplicationLifetime is ISingleViewApplicationLifetime
+                    { MainView.DataContext: MainViewModel mainViewModel })
+                {
+                    new BrowserPageLeaveGuard(mainViewModel);
+                }
+            });
         }
         catch (Exception ex)
         {

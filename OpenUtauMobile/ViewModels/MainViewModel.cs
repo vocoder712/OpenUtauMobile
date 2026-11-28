@@ -347,6 +347,11 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    /// <summary>供需要同步决策的平台判断离开页面前是否应提示用户。</summary>
+    public bool RequiresCloseConfirmation => HasActiveSingerInstallation ||
+        (CurrentViewModel is SandboxFileManagerViewModel sandbox && (sandbox.IsBusy || sandbox.NeedsPersistence)) ||
+        ActiveEditor?.RequiresCloseConfirmation == true;
+
     /// <summary>
     /// 确认当前页面和工程是否可以关闭或被替换。
     /// </summary>

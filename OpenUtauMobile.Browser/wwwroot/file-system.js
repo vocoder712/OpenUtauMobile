@@ -6,6 +6,7 @@ let restoring = true;
 let flushing;
 let timer;
 let releaseLock;
+let confirmPageLeave = false;
 let dirtyBytes = 0;
 let firstChangeAt = 0;
 const activeWrites = new Map();
@@ -184,14 +185,17 @@ export async function initialize(runtime) {
     fs.mkdirTree(`${root}/Projects`);
     fs.mkdirTree(`${root}/Data`);
     await flush();
-    runtime.setModuleImports("OpenUtauMobileFileSystem", { flush });
+    runtime.setModuleImports("OpenUtauMobileFileSystem", {
+        flush,
+        async setPageLeaveConfirmation(required) { confirmPageLeave = required; },
+    });
     console.info("Virtual file storage restored from IndexedDB.");
 
-    // 已保存数据无需卸载时补写；仅在仍有未同步修改时提示，避免静默丢失。
+    // 复用同一个离开提示，保护未同步文件和仍留在编辑器中的修改。
     window.addEventListener("beforeunload", event => {
-        if (persistedRevision < revision) {
+        if (persistedRevision < revision || confirmPageLeave) {
             event.preventDefault();
-            event.returnValue = "";
+            event.returnValue = true;
         }
     });
     document.addEventListener("visibilitychange", () => {
