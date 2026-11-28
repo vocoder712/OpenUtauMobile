@@ -88,7 +88,7 @@
                         Canvas.Top="{Binding NoteCreationPreviewRect.Y}"
                         Width="{Binding NoteCreationPreviewRect.Width}"
                         Height="{Binding NoteCreationPreviewRect.Height}"
-                        Padding="0" MinWidth="0" MinHeight="0" CornerRadius="8" ClipToBounds="True"
+                        Padding="0" MinWidth="0" MinHeight="0" CornerRadius="{Binding NoteCornerRadius}" ClipToBounds="True"
                         HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
                         Background="{DynamicResource Sem.Color.PrimaryContainer}"
                         Foreground="{DynamicResource Sem.Color.OnPrimaryContainer}"
@@ -99,7 +99,7 @@
                     <!-- 虚线框作为内容绘制，按钮继续复用基础主题的状态层与点击区域。 -->
                     <Grid>
                         <Rectangle Stroke="{DynamicResource Sem.Color.Primary}" StrokeThickness="1"
-                                   StrokeDashArray="4,3" RadiusX="8" RadiusY="8" Margin="0.5"
+                                   StrokeDashArray="4,3" RadiusX="{Binding NoteCornerRadius.TopLeft}" RadiusY="{Binding NoteCornerRadius.TopLeft}" Margin="0.5"
                                    IsHitTestVisible="False" />
                         <iconPacks:PackIconPhosphorIcons Kind="Plus"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"

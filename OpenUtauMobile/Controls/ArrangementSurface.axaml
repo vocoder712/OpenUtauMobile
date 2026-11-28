@@ -137,7 +137,7 @@
             <!-- 固定轨道头侧栏承载统一阴影，内部裁剪滚动内容。 -->
             <c:EditorRailSurface Grid.Row="1" Grid.Column="0"
                                  ShadowColor="{DynamicResource Sem.Value.Shadow}">
-                <c:TrackHeaderCanvas ClipToBounds="True"
+                <c:TrackHeaderCanvas x:Name="TrackHeaders" ClipToBounds="True"
                                      IsExpanded="{Binding IsTrackHeaderExpanded}"
                                      TrackHeight="{Binding TrackHeight}"
                                      TrackOffset="{Binding TrackOffset}" />

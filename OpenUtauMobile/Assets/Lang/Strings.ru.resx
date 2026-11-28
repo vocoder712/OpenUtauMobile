@@ -2081,6 +2081,10 @@
   <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>Цель рисования: по графу ({0})</value></data>
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Цель рисования: отклонение (PITD)</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Цель рисования: переопределение (PITO)</value></data>
+  <data name="PianoRoll.PitchTarget.Title" xml:space="preserve"><value>Цель кисти высоты тона</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Auto" xml:space="preserve"><value>По графу (G)</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Deviation" xml:space="preserve"><value>Отклонение (PITD)</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Override" xml:space="preserve"><value>Переопределение (PITO)</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>Показывать область кисти высоты тона</value></data>
   <data name="RendererSettings.Title" xml:space="preserve">
     <value>Настройки рендеринга дорожки</value>
@@ -2631,6 +2635,24 @@ Applying replaces the source of this input.</value></data>
   </data>
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>Показывать на фоне пианоролла ноты других дорожек, пересекающихся с текущим фрагментом.</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview" xml:space="preserve">
+    <value>Показывать заготовку перед созданием ноты</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview.Desc" xml:space="preserve">
+    <value>Щелчок по пустому месту показывает заготовку «+», нажмите её, чтобы создать ноту. Если выключено, нота создаётся сразу (на компьютере — двойным щелчком).</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset" xml:space="preserve">
+    <value>Вертикальный отступ нот</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset.Desc" xml:space="preserve">
+    <value>Пустое место над и под каждой нотой в пиано-ролле, в пикселях.</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius" xml:space="preserve">
+    <value>Скругление углов нот</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius.Desc" xml:space="preserve">
+    <value>Радиус скругления углов нот в пиано-ролле, в пикселях.</value>
   </data>
   <data name="Common.More" xml:space="preserve">
     <value>Другие действия</value>

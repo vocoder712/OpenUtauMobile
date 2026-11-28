@@ -2122,6 +2122,10 @@
   <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>編集対象：グラフに従う（{0}）</value></data>
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>編集対象：音高偏差（PITD）</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>編集対象：音高上書き（PITO）</value></data>
+  <data name="PianoRoll.PitchTarget.Title" xml:space="preserve"><value>音高ペンの編集対象</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Auto" xml:space="preserve"><value>グラフに従う（G）</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Deviation" xml:space="preserve"><value>音高偏差（PITD）</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Override" xml:space="preserve"><value>音高上書き（PITO）</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>音高ブラシの範囲を表示</value></data>
   <data name="RendererSettings.Title" xml:space="preserve">
     <value>トラックのレンダリング設定</value>
@@ -2672,6 +2676,24 @@ Applying replaces the source of this input.</value></data>
   </data>
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>現在のパートと重なる他のトラックのノートをピアノロールの背景に表示します。</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview" xml:space="preserve">
+    <value>ノート作成前にプレースホルダーを表示</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview.Desc" xml:space="preserve">
+    <value>空白をクリックすると「+」のプレースホルダーが表示され、それをクリックしてノートを作成します。オフの場合はノートを直接作成します（デスクトップではダブルクリック）。</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset" xml:space="preserve">
+    <value>ノートの上下の間隔</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset.Desc" xml:space="preserve">
+    <value>ピアノロールの各ノートの上下の余白（ピクセル）。</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius" xml:space="preserve">
+    <value>ノートの角の丸み</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius.Desc" xml:space="preserve">
+    <value>ピアノロールのノートの角の丸み（ピクセル）。</value>
   </data>
   <data name="Common.More" xml:space="preserve">
     <value>その他の操作</value>

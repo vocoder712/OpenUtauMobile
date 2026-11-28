@@ -140,6 +140,14 @@ namespace OpenUtauMobile.DesktopUI.Views
             item.PointerEntered += (_, _) => item.IsChecked = _pages.Workspace is { } workspace && visible(workspace);
             return item;
         }
+        /// <summary>带勾选状态的菜单项，展开菜单时同步当前值。</summary>
+        private MenuItem CheckItem(string key, Action toggle, Func<bool> isChecked, Func<bool>? available = null)
+        {
+            MenuItem item = Item(key, toggle, available);
+            item.ToggleType = MenuItemToggleType.CheckBox;
+            _panelChecks.Add(() => item.IsChecked = isChecked());
+            return item;
+        }
         private Task EditorAction(EditorMoreAction action) => _main.ActiveEditor?.ExecuteEditorActionAsync(action) ?? Task.CompletedTask;
         private bool HasEditor => _main.ActiveEditor != null;
         private bool HasNotes => _main.ActiveEditor?.PianoRollViewModel.SelectedNotes.Count > 0;
@@ -197,10 +205,18 @@ namespace OpenUtauMobile.DesktopUI.Views
                     Item("Mixer.Title", () => _pages.Workspace?.ToggleMixer(), () => HasEditor), Item("Desktop.ResetLayout", () => _pages.Workspace?.ResetLayout(), () => HasEditor)),
                 Menu("Desktop.Project", Item("TrackAdder.AddTrack", () => _main.ActiveEditor?.AddTrackCommand.Execute().Subscribe(), () => HasEditor),
                     Item("ExpressionGraph.Title", () => EditorAction(EditorMoreAction.ExpressionGraphs), () => HasEditor && _main.CurrentViewModel == _main.ActiveEditor),
-                    Item("EditorMore.SaveAsTemplate", () => EditorAction(EditorMoreAction.SaveAsTemplate), () => HasEditor)),
+                    Item("EditorMore.SaveAsTemplate", () => EditorAction(EditorMoreAction.SaveAsTemplate), () => HasEditor),
+                    // 复用移动端“更多”面板的设置逻辑：保存偏好后重新分句并预渲染。
+                    CheckItem("EditorMore.MergeNearbyPhrases", () => new EditorMoreViewModel().MergeNearbyPhrases = !Preferences.Default.DiffSingerMergeNearbyPhrases,
+                        () => Preferences.Default.DiffSingerMergeNearbyPhrases, () => HasEditor)),
                 Menu("Desktop.Transport", Item("Editor.PlayPause", () => _main.ActiveEditor?.PlayPauseCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.PlayPauseCommand), new KeyGesture(Key.Space)),
-                    Item("Editor.Stop", () => _main.ActiveEditor?.StopCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.StopCommand))),
+                    Item("Editor.Stop", () => _main.ActiveEditor?.StopCommand.Execute().Subscribe(), () => CommandAvailable(editor => editor.StopCommand)),
+                    CheckItem("Editor.Repeat", () => { if (_main.ActiveEditor is { } editor) editor.IsRepeatEnabled = !editor.IsRepeatEnabled; },
+                        () => _main.ActiveEditor?.IsRepeatEnabled == true, () => HasEditor),
+                    CheckItem("Editor.Metronome", () => { if (_main.ActiveEditor is { } editor) editor.IsMetronomeEnabled = !editor.IsMetronomeEnabled; },
+                        () => _main.ActiveEditor?.IsMetronomeEnabled == true, () => HasEditor)),
                 Menu("Desktop.Tools", Item("SingerManagement.Title", () => Show(new SingerManagementViewModel(_main))), Item("Desktop.Tools", () => Show(new DesktopToolsViewModel(_main))),
+                    Item("PluginManager.Title", () => Show(new PluginManagerViewModel(_main))),
                     Item("DependencyManager.Title", () => Show(new DependencyManagerViewModel(_main))), Item("Settings.Title", () => Show(new SettingsViewModel(_main)))),
                 Menu("Desktop.Help", Item("About.Title", () => Show(new AboutViewModel(_main))), Item("ExportLogs.Title", () => Show(new ExportLogsViewModel(_main))))
             };

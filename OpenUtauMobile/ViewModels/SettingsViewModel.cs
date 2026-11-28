@@ -545,6 +545,24 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
     [Reactive]
     public bool ShowGhostNotes { get; set; }
 
+    /// <summary>单击空白处是否先显示新音符占位框。</summary>
+    [Reactive]
+    public bool NoteCreationPreview { get; set; }
+
+    /// <summary>音符圆角半径（像素）。</summary>
+    [Reactive]
+    public int NoteCornerRadius { get; set; }
+
+    /// <summary>音符上下间距（像素）。</summary>
+    [Reactive]
+    public int NoteVerticalInset { get; set; }
+
+    /// <summary>音符间距滑块的上限。</summary>
+    public const double NoteVerticalInsetSliderMaximum = PianoRollViewModel.NoteVerticalInsetMaximum;
+
+    /// <summary>音符圆角滑块的上限。</summary>
+    public const double NoteCornerRadiusSliderMaximum = PianoRollViewModel.NoteCornerRadiusMaximum;
+
     /// <summary>扩展音符命中范围前后增加的 Tick 数。</summary>
     [Reactive]
     public int PitchPenNoteHitTickExtension { get; set; }
@@ -1144,6 +1162,11 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
         PitchPenCanvasDragEnabled = Preferences.Default.PitchPenCanvasDragEnabled;
         ShowPitchPenHitArea = Preferences.Default.ShowPitchPenHitArea;
         ShowGhostNotes = Preferences.Default.PianoRollShowGhostNotes;
+        NoteCreationPreview = Preferences.Default.PianoRollNoteCreationPreview ?? ServiceHub.DesktopWindowFactory == null;
+        NoteVerticalInset = Math.Clamp(Preferences.Default.PianoRollNoteVerticalInset
+            ?? PianoRollViewModel.DefaultNoteVerticalInset(ServiceHub.DesktopWindowFactory != null), 0, PianoRollViewModel.NoteVerticalInsetMaximum);
+        NoteCornerRadius = Math.Clamp(Preferences.Default.PianoRollNoteCornerRadius
+            ?? PianoRollViewModel.DefaultNoteCornerRadius(ServiceHub.DesktopWindowFactory != null), 0, PianoRollViewModel.NoteCornerRadiusMaximum);
         MagnifierMagnificationFactor = MagnifierSettings.Normalize(Preferences.Default.MagnifierMagnificationFactor);
         MagnifierSliderValue = MagnifierSettings.Snap(MagnifierMagnificationFactor);
         this.WhenAnyValue(x => x.MagnifierSliderValue)
@@ -1239,6 +1262,39 @@ public partial class SettingsViewModel : NavigateViewModelBase, IDisposable
                 Preferences.Default.PianoRollShowGhostNotes = enabled;
                 Preferences.Save();
                 MessageBus.Current.SendMessage(new GhostNotesVisibilityChangedEvent());
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.NoteCreationPreview)
+            .Skip(1)
+            .Subscribe(enabled =>
+            {
+                Preferences.Default.PianoRollNoteCreationPreview = enabled;
+                Preferences.Save();
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.NoteVerticalInset)
+            .Skip(1)
+            .Subscribe(value =>
+            {
+                int clamped = Math.Clamp(value, 0, PianoRollViewModel.NoteVerticalInsetMaximum);
+                if (clamped != value) { NoteVerticalInset = clamped; return; }
+                Preferences.Default.PianoRollNoteVerticalInset = clamped;
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new NoteAppearanceChangedEvent());
+            })
+            .DisposeWith(_disposables);
+
+        this.WhenAnyValue(x => x.NoteCornerRadius)
+            .Skip(1)
+            .Subscribe(value =>
+            {
+                int clamped = Math.Clamp(value, 0, PianoRollViewModel.NoteCornerRadiusMaximum);
+                if (clamped != value) { NoteCornerRadius = clamped; return; }
+                Preferences.Default.PianoRollNoteCornerRadius = clamped;
+                Preferences.Save();
+                MessageBus.Current.SendMessage(new NoteAppearanceChangedEvent());
             })
             .DisposeWith(_disposables);
 

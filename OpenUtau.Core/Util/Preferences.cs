@@ -412,6 +412,18 @@ namespace OpenUtau.Core.Util {
             public bool PianoRollShowGhostNotes = true;
 
             /// <summary>
+            /// 音符模式下单击/轻点空白处先显示新音符占位框；null 表示按界面默认（移动界面开启，桌面界面关闭）。
+            /// 关闭时恢复旧行为：移动端轻点直接创建音符，桌面端双击创建音符。
+            /// </summary>
+            public bool? PianoRollNoteCreationPreview = null;
+
+            /// <summary>钢琴卷帘音符上下各内缩的像素（音符间距）；null 表示按界面默认（移动界面 4，桌面界面 0）。</summary>
+            public int? PianoRollNoteVerticalInset = null;
+
+            /// <summary>钢琴卷帘音符圆角半径（像素）；null 表示按界面默认（移动界面 8，桌面界面 4）。</summary>
+            public int? PianoRollNoteCornerRadius = null;
+
+            /// <summary>
             /// Path to SoundFont (SF2) file for piano key playback.
             /// If empty or file not found, falls back to SineWave.
             /// </summary>

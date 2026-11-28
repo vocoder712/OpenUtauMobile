@@ -23,8 +23,10 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Services.Dialogs;
 using OpenUtauMobile.Controls;
+using OpenUtauMobile.Helpers;
 using OpenUtauMobile.DesktopUI.Services;
 using OpenUtauMobile.Services.Editor;
+using OpenUtauMobile.Themes.OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 
 namespace OpenUtauMobile.DesktopUI.Views
@@ -33,8 +35,6 @@ namespace OpenUtauMobile.DesktopUI.Views
     {
         private readonly EditorViewModel _editor;
         private readonly EditorInputController _input;
-        private NoteSelectionToolbarBinding? _noteToolbarBinding;
-        private PartSelectionToolbarBinding? _partToolbarBinding;
         private readonly DesktopInspector _inspector;
         private readonly DesktopWorkspaceLayoutController _layoutController;
         private readonly DesktopInlineEditor _inline;
@@ -80,7 +80,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             Piano.SetDesktopChrome(parameterGrip);
             parameterGrip.AddHandler(PointerReleasedEvent, (_, _) => SavePanels(), RoutingStrategies.Bubble, true);
             Arrangement.PartsCanvas.ContextMenu = CreateContextMenu(false);
-            TrackHeaderCanvas header = Arrangement.LayoutGrid.Children.OfType<TrackHeaderCanvas>().Single();
+            TrackHeaderCanvas header = Arrangement.TrackHeader;
             UTrack? contextTrack = null;
             header.AddHandler(PointerPressedEvent, (_, e) =>
             {
@@ -139,10 +139,6 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 if (_attached || _disposed) return;
                 _attached = true;
-                _partToolbarBinding = new PartSelectionToolbarBinding(PartToolbar, EditorPageLayer, Arrangement.PartsCanvas,
-                    _editor, () => IsArrangementVisible, () => SetActiveArea(EditorInputController.EditArea.Tracks));
-                _noteToolbarBinding = new NoteSelectionToolbarBinding(NoteToolbar, EditorPageLayer, Piano.NotesCanvas, Piano.NoteCreationPreview,
-                    _editor, () => IsPianoRollVisible, () => SetActiveArea(EditorInputController.EditArea.PianoRoll));
                 PianoRollViewModel.BatchEditRunningChanged += OnBatchEditRunningChanged;
                 OnBatchEditRunningChanged(PianoRollViewModel.IsBatchEditRunning);
                 _editor.PropertyChanged += OnEditorChanged;
@@ -159,10 +155,6 @@ namespace OpenUtauMobile.DesktopUI.Views
             };
             DetachedFromVisualTree += (_, _) =>
             {
-                _partToolbarBinding?.Dispose();
-                _partToolbarBinding = null;
-                _noteToolbarBinding?.Dispose();
-                _noteToolbarBinding = null;
                 SavePanels();
                 PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
                 _editor.PropertyChanged -= OnEditorChanged;
@@ -205,9 +197,46 @@ namespace OpenUtauMobile.DesktopUI.Views
             {
                 ToggleButton button = ModeButton(item.Item2, item.Item1 switch { PianoRollEditMode.Note => "Desktop.NoteTool", PianoRollEditMode.Anchor => "Desktop.TuningTool", _ => "PianoRoll.PitchPen" });
                 button.Click += (_, _) => { SetActiveArea(EditorInputController.EditArea.PianoRoll); _editor.PianoRollViewModel.EditMode = item.Item1; UpdateModes(); };
-                _pianoModes.Add((button, item.Item1)); piano.Children.Add(button);
+                _pianoModes.Add((button, item.Item1));
+                if (item.Item1 == PianoRollEditMode.PitchPen) piano.Children.Add(PitchPenWithTargetMenu(button));
+                else piano.Children.Add(button);
             }
             PianoTools.Content = piano;
+        }
+        /// <summary>音高笔按钮右侧附带下拉箭头，用于选择写入目标（跟随表情图 / PITD / PITO）。</summary>
+        private Control PitchPenWithTargetMenu(ToggleButton pen)
+        {
+            pen.CornerRadius = new CornerRadius(4, 0, 0, 4);
+            Button arrow = new()
+            {
+                Content = new PackIconPhosphorIcons { Kind = PackIconPhosphorIconsKind.CaretDown, Width = 10, Height = 10 },
+                Padding = new Thickness(3, 4), MinWidth = 0, MinHeight = 28, CornerRadius = new CornerRadius(0, 4, 4, 0),
+                VerticalAlignment = VerticalAlignment.Stretch,
+            };
+            ToolTip.SetTip(arrow, DesktopUi.Label("PianoRoll.PitchTarget.Title"));
+            arrow.Click += (_, _) =>
+            {
+                PianoRollViewModel vm = _editor.PianoRollViewModel;
+                ContextMenu menu = new()
+                {
+                    ItemsSource = new[] { (PitchEditTarget.Auto, "PianoRoll.PitchTarget.Option.Auto"), (PitchEditTarget.Deviation, "PianoRoll.PitchTarget.Option.Deviation"), (PitchEditTarget.Override, "PianoRoll.PitchTarget.Option.Override") }
+                        .Select(option =>
+                        {
+                            MenuItem item = new() { Header = L.S(option.Item2), ToggleType = MenuItemToggleType.CheckBox, IsChecked = vm.PitchTarget == option.Item1 };
+                            item.Click += (_, _) =>
+                            {
+                                // 选择目标时同时切到音高笔，避免目标改了却仍在其它工具。
+                                SetActiveArea(EditorInputController.EditArea.PianoRoll);
+                                vm.EditMode = PianoRollEditMode.PitchPen;
+                                vm.SetPitchTarget(option.Item1);
+                                UpdateModes();
+                            };
+                            return item;
+                        }).ToArray(),
+                };
+                menu.Open(arrow);
+            };
+            return new StackPanel { Orientation = Orientation.Horizontal, Spacing = 1, Children = { pen, arrow } };
         }
         private static ToggleButton ModeButton(PackIconPhosphorIconsKind icon, string key)
         {
@@ -342,16 +371,48 @@ namespace OpenUtauMobile.DesktopUI.Views
             menu.Opening += (_, e) =>
             {
                 _input.CancelEditorInput();
+                // 移动端选区浮动工具栏的操作在桌面并入右键菜单，危险操作分隔后置于末尾。
+                IReadOnlyList<FloatingToolbarAction> selection = piano ? _editor.PianoRollViewModel.NoteToolbarActions : _editor.PartToolbarActions;
                 IReadOnlyList<ContextActionItem> actions = piano ? _editor.PianoRollViewModel.PianoRollContextActions : _editor.TrackContextActions;
-                List<MenuItem> items = actions.Where(action => action.Id != "batch-edits")
-                    .Select(action => new MenuItem { Header = action.Tip, Command = action.Command }).ToList();
+                List<Control> items = [];
+                string shapeAction = L.S("PianoRoll.Action.ControlPointShape");
+                if (piano && _editor.PianoRollViewModel.SelectedAnchors.Count > 0)
+                {
+                    // 锚点形状在桌面以子菜单直接列出，不再逐次循环切换。
+                    PianoRollViewModel vm = _editor.PianoRollViewModel;
+                    items.Add(new MenuItem
+                    {
+                        Header = shapeAction,
+                        Icon = new PackIconPhosphorIcons { Kind = PackIconPhosphorIconsKind.BezierCurve, Width = 16, Height = 16 },
+                        ItemsSource = new[] { PitchPointShape.io, PitchPointShape.l, PitchPointShape.i, PitchPointShape.o }.Select(shape =>
+                        {
+                            MenuItem shapeItem = new() { Header = PianoRollViewModel.PitchPointShapeLabel(shape), ToggleType = MenuItemToggleType.CheckBox, IsChecked = vm.SelectedPitchPointShape == shape };
+                            shapeItem.Click += (_, _) => vm.SetSelectedPitchPointShape(shape);
+                            return shapeItem;
+                        }).ToArray(),
+                    });
+                }
+                items.AddRange(selection.Where(action => !action.IsDanger && !(piano && action.Text == shapeAction)).Select(SelectionMenuItem));
+                items.AddRange(actions.Where(action => action.Id != "batch-edits" && selection.All(item => item.Text != action.Tip))
+                    .Select(action => new MenuItem { Header = action.Tip, Command = action.Command }));
                 if (actions.Any(action => action.Id == "batch-edits"))
                     items.Add(DesktopBatchEditMenu.Create(() => _editor.PianoRollViewModel, () => !_editor.IsLoadingProject));
+                List<FloatingToolbarAction> danger = selection.Where(action => action.IsDanger).ToList();
+                if (danger.Count > 0 && items.Count > 0) items.Add(new Separator());
+                items.AddRange(danger.Select(SelectionMenuItem));
                 menu.ItemsSource = items;
                 if (items.Count == 0) e.Cancel = true;
             };
             return menu;
         }
+        /// <summary>将选区操作转换为带现有图标的桌面菜单项。</summary>
+        private static MenuItem SelectionMenuItem(FloatingToolbarAction action) => new()
+        {
+            Header = action.Text,
+            Command = action.Command,
+            CommandParameter = action.CommandParameter,
+            Icon = new PackIconPhosphorIcons { Kind = action.Icon, Width = 16, Height = 16 },
+        };
         private static MenuItem[] CreateClassicToolMenus(UTrack track)
         {
             return new[] { DesktopToolKind.Resampler, DesktopToolKind.Wavtool }.Select(kind =>
@@ -420,10 +481,6 @@ namespace OpenUtauMobile.DesktopUI.Views
         {
             if (_disposed) return;
             _disposed = true;
-            _partToolbarBinding?.Dispose();
-            _partToolbarBinding = null;
-            _noteToolbarBinding?.Dispose();
-            _noteToolbarBinding = null;
             PianoRollViewModel.BatchEditRunningChanged -= OnBatchEditRunningChanged;
             _inspector.RequestShowParameters -= ShowParameters;
             _mixer.Dispose();

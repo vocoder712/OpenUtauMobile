@@ -35,6 +35,9 @@ internal static class PitchEditTargetState
 
     public static PitchEditTarget Read(UProject project, UTrack track) => GetState(project, track).Target;
 
+    /// <summary>直接设置轨道的音高编辑目标。</summary>
+    public static void Set(UProject project, UTrack track, PitchEditTarget target) => GetState(project, track).Target = target;
+
     public static void Cycle(UProject project, UTrack track)
     {
         TrackState state = GetState(project, track);

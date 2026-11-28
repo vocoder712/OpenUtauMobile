@@ -2126,6 +2126,10 @@
   <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>Pitch target: Follow graph ({0})</value></data>
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>Pitch target: Deviation (PITD)</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>Pitch target: Override (PITO)</value></data>
+  <data name="PianoRoll.PitchTarget.Title" xml:space="preserve"><value>Pitch pen target</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Auto" xml:space="preserve"><value>Follow graph (G)</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Deviation" xml:space="preserve"><value>Deviation (PITD)</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Override" xml:space="preserve"><value>Override (PITO)</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>Show pitch brush area</value></data>
   <data name="RendererSettings.Title" xml:space="preserve">
     <value>Track render settings</value>
@@ -2678,6 +2682,24 @@ Applying replaces the source of this input.</value></data>
   </data>
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>Show notes from other tracks overlapping the current part in the piano roll background.</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview" xml:space="preserve">
+    <value>Show placeholder before creating notes</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview.Desc" xml:space="preserve">
+    <value>Click empty space to show a “+” placeholder, then click it to create the note. When off, notes are created directly (double-click on desktop).</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset" xml:space="preserve">
+    <value>Note vertical spacing</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset.Desc" xml:space="preserve">
+    <value>Empty space above and below each note in the piano roll, in pixels.</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius" xml:space="preserve">
+    <value>Note corner radius</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius.Desc" xml:space="preserve">
+    <value>Roundness of note corners in the piano roll, in pixels.</value>
   </data>
   <data name="Common.More" xml:space="preserve">
     <value>More actions</value>

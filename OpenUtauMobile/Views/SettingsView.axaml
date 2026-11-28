@@ -515,6 +515,66 @@
                                     </Grid>
                                 </Border>
 
+                                <!-- 新建音符占位框开关 -->
+                                <Border Classes="SettingCard">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{x:Static foundation:LayoutTokens.SpaceM}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.NoteCreationPreview}" />
+                                            <TextBlock Classes="PlaceholderText"
+                                                       Text="{DynamicResource Settings.Edit.NoteCreationPreview.Desc}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1"
+                                                      IsChecked="{Binding NoteCreationPreview, Mode=TwoWay}"
+                                                      AutomationProperties.Name="{DynamicResource Settings.Edit.NoteCreationPreview}"
+                                                      OffContent="" OnContent="" />
+                                    </Grid>
+                                </Border>
+
+                                <!-- 音符纵向间距 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.NoteVerticalInset}" />
+                                            <TextBlock Text="{Binding NoteVerticalInset}" Classes="SettingValue" />
+                                        </StackPanel>
+                                        <Slider Classes="SettingSlider" Minimum="0"
+                                                Maximum="{x:Static vm:SettingsViewModel.NoteVerticalInsetSliderMaximum}"
+                                                Value="{Binding NoteVerticalInset, Mode=TwoWay}"
+                                                sliderTheme:SliderValueIndicator.ValueText="{Binding NoteVerticalInset}"
+                                                AutomationProperties.Name="{DynamicResource Settings.Edit.NoteVerticalInset}"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.NoteVerticalInset.Desc}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 音符圆角半径 -->
+                                <Border Classes="SettingCard">
+                                    <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceS}">
+                                        <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceXS}">
+                                            <TextBlock Classes="SettingItemTitle"
+                                                       Text="{DynamicResource Settings.Edit.NoteCornerRadius}" />
+                                            <TextBlock Text="{Binding NoteCornerRadius}" Classes="SettingValue" />
+                                        </StackPanel>
+                                        <Slider Classes="SettingSlider" Minimum="0"
+                                                Maximum="{x:Static vm:SettingsViewModel.NoteCornerRadiusSliderMaximum}"
+                                                Value="{Binding NoteCornerRadius, Mode=TwoWay}"
+                                                sliderTheme:SliderValueIndicator.ValueText="{Binding NoteCornerRadius}"
+                                                AutomationProperties.Name="{DynamicResource Settings.Edit.NoteCornerRadius}"
+                                                TickFrequency="1"
+                                                IsSnapToTickEnabled="True" />
+                                        <TextBlock Classes="PlaceholderText"
+                                                   Text="{DynamicResource Settings.Edit.NoteCornerRadius.Desc}"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- 走带自动翻页行为 -->
                                 <Border Classes="SettingCard">
                                     <StackPanel Spacing="{x:Static foundation:LayoutTokens.SpaceSM}">

@@ -110,7 +110,7 @@
     <Style Selector=":is(controls|PopupDialogControl).DesktopPopup Slider">
         <Setter Property="MinHeight" Value="28" />
     </Style>
-    <Style Selector="Button.DesktopAction">
+    <Style Selector="Button.DesktopAction, ToggleButton.DesktopAction">
         <Setter Property="Padding" Value="12,8" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="CornerRadius" Value="8" />
@@ -168,6 +168,12 @@
     <Style Selector=".DesktopRoot .DesktopInspector Button.DesktopTrackChoice, .DesktopRoot .DesktopInspector Button.DesktopPicker">
         <Setter Property="MinHeight" Value="28" />
         <Setter Property="Padding" Value="6,3" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <!-- 检查器内的静音/独奏开关与同栏输入框保持同一紧凑高度。 -->
+    <Style Selector=".DesktopRoot .DesktopInspector ToggleButton">
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="8,4" />
         <Setter Property="CornerRadius" Value="4" />
     </Style>
     <Style Selector=".DesktopRoot .DesktopInspector Button.DesktopInspectorReset">
@@ -273,6 +279,13 @@
     <Style Selector=".DesktopSettings Border.TopBar, .DesktopSettings Button.NavToggle, .DesktopSettings Button.DesktopBack">
         <Setter Property="IsVisible" Value="False" />
     </Style>
+    <!-- 复用的移动端页面（插件、表情图库）在桌面由工具窗口提供标题、返回和操作按钮；移动端顶栏与悬浮按钮不显示。 -->
+    <Style Selector=".DesktopHostedPage Border.TopBar, .DesktopHostedPage Button.FAB">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector=".DesktopHostedPage Button.DetailAction">
+        <Setter Property="MinHeight" Value="48" />
+    </Style>
     <Style Selector=".DesktopSettings Border.SettingCard">
         <Setter Property="Padding" Value="16,12" />
         <Setter Property="CornerRadius" Value="12" />
@@ -347,7 +360,7 @@
     <Style Selector="Border.DesktopSetupStep.active">
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SecondaryContainer}" />
     </Style>
-    <Style Selector=".DesktopRoot Button.DesktopTransportControl, .DesktopRoot ComboBox.DesktopTransportControl, .DesktopRoot TextBox.DesktopTransportControl">
+    <Style Selector=".DesktopRoot Button.DesktopTransportControl, .DesktopRoot ToggleButton.DesktopTransportControl, .DesktopRoot ComboBox.DesktopTransportControl, .DesktopRoot TextBox.DesktopTransportControl">
         <Setter Property="Height" Value="28" />
         <Setter Property="MinHeight" Value="28" />
         <Setter Property="Padding" Value="8,2" />
@@ -357,10 +370,15 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
-    <Style Selector=".DesktopRoot Button.DesktopTransportIcon">
+    <Style Selector=".DesktopRoot Button.DesktopTransportIcon, .DesktopRoot ToggleButton.DesktopTransportIcon">
         <Setter Property="Width" Value="28" />
         <Setter Property="MinWidth" Value="28" />
         <Setter Property="Padding" Value="4" />
+    </Style>
+    <!-- 传输栏开关：桌面样式的背景会覆盖主题的选中色，这里显式恢复选中态。 -->
+    <Style Selector=".DesktopRoot ToggleButton.DesktopTransportControl:checked">
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.PrimaryContainer}" />
+        <Setter Property="Foreground" Value="{DynamicResource Sem.Color.OnPrimaryContainer}" />
     </Style>
     <Style Selector=".DesktopRoot TextBox.DesktopTransportControl">
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -374,5 +392,36 @@
         <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <!-- 表情图编辑器：顶栏与画布工具条改为桌面紧凑样式，标题由窗口提供。 -->
+    <Style Selector=".DesktopGraphEditor Border.TopBar">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector=".DesktopGraphEditor Border#NormalTopBar TextBlock.TopBarTitle">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector=".DesktopGraphEditor TextBlock.TopBarTitle">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Margin" Value="8,0" />
+    </Style>
+    <Style Selector=".DesktopGraphEditor Button.TopBarBtn, .DesktopGraphEditor Button.GraphTool">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="{DynamicResource Sem.Color.SurfaceContainerHigh}" />
+    </Style>
+    <Style Selector=".DesktopGraphEditor Button.GraphTool /template/ Border#PART_Chrome, .DesktopGraphEditor Button.GraphTool /template/ Border#PART_StateLayer">
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+    <Style Selector=".DesktopGraphEditor Border#CanvasToolbar">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Padding" Value="4,6" />
+        <Setter Property="CornerRadius" Value="8" />
     </Style>
 </Styles>
