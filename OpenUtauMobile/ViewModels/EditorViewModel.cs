@@ -2410,6 +2410,10 @@ public partial class EditorViewModel : NavigateViewModelBase, ICmdSubscriber, ID
         }
     }
 
+    /// <summary>工程存在进行中的手动保存或尚未持久化的编辑时提示用户。</summary>
+    internal bool RequiresCloseConfirmation => IsSavingProject ||
+        (OwnsSaveDocument() && (!DocManager.Inst.ChangesSaved || DocManager.Inst.HasOpenUndoGroup));
+
     /// <summary>
     /// 确认是否可以退出当前工程。
     /// </summary>

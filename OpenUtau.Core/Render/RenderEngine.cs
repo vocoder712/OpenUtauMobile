@@ -111,6 +111,14 @@ namespace OpenUtau.Core.Render {
             this.focusTick = focusTick;
         }
 
+        /// <summary>切换渲染任务并请求旧任务取消，取消源由仍在运行的渲染器持有。</summary>
+        private static CancellationTokenSource ReplaceRenderCancellation(ref CancellationTokenSource cancellation) {
+            var next = new CancellationTokenSource();
+            // 旧任务及其渲染器仍可能读取 Token，等它们释放引用后由 GC 回收取消源。
+            Interlocked.Exchange(ref cancellation, next)?.Cancel();
+            return next;
+        }
+
         // for playback or export
         public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait = false) {
             return RenderMixdown(uiScheduler, ref cancellation, wait, applyMixFx: true);
@@ -120,12 +128,7 @@ namespace OpenUtau.Core.Render {
         public Tuple<WaveMix, List<Fader>> RenderMixdown(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait, bool applyMixFx, PlaybackMeters meters = null, PlaybackMixer mixer = null, bool applyMaster = true, MixPlanner planner = null) {
             planner ??= new MixPlanner();
             mixer ??= new PlaybackMixer(project, applyMixFx);
-            var newCancellation = new CancellationTokenSource();
-            var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
-            if (oldCancellation != null) {
-                oldCancellation.Cancel();
-                oldCancellation.Dispose();
-            }
+            var newCancellation = ReplaceRenderCancellation(ref cancellation);
             double startMs = project.timeAxis.TickPosToMsPos(startTick);
             double endMs = endTick == -1 ? double.PositiveInfinity : project.timeAxis.TickPosToMsPos(endTick);
             var faders = new List<Fader>();
@@ -218,12 +221,7 @@ namespace OpenUtau.Core.Render {
 
         // for export
         public List<SlotMixSource> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, MixPlanner planner) {
-            var newCancellation = new CancellationTokenSource();
-            var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
-            if (oldCancellation != null) {
-                oldCancellation.Cancel();
-                oldCancellation.Dispose();
-            }
+            var newCancellation = ReplaceRenderCancellation(ref cancellation);
             var trackMixes = new List<SlotMixSource>();
             var requests = PrepareRequests();
             if (requests.Length == 0) {
@@ -254,12 +252,7 @@ namespace OpenUtau.Core.Render {
 
         // for pre render
         public void PreRenderProject(ref CancellationTokenSource cancellation, MixPlanner planner) {
-            var newCancellation = new CancellationTokenSource();
-            var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
-            if (oldCancellation != null) {
-                oldCancellation.Cancel();
-                oldCancellation.Dispose();
-            }
+            var newCancellation = ReplaceRenderCancellation(ref cancellation);
             Task.Run(() => {
                 try {
                     Thread.Sleep(200);

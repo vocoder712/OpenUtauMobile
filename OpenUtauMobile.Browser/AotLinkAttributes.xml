@@ -1,0 +1,7 @@
+<linker>
+    <assembly fullname="System.Private.CoreLib">
+        <type fullname="System.Runtime.InteropServices.UnmanagedCallConvAttribute">
+            <attribute internal="RemoveAttributeInstances" />
+        </type>
+    </assembly>
+</linker>

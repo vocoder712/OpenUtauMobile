@@ -6,8 +6,11 @@ const is_browser = typeof window != "undefined";
 if (!is_browser) throw new Error(`Expected to be running in a browser`);
 
 try {
+    const build = document.getElementById("opum-build");
+    if (build) console.info("[OPUM] Browser build", JSON.parse(build.textContent));
     const dotnetRuntime = await dotnet
         .withDiagnosticTracing(false)
+        .withConfig({ disableNoCacheFetch: Boolean(build) })
         .withApplicationArgumentsFromQuery()
         .create();
 

@@ -6,6 +6,7 @@ let restoring = true;
 let flushing;
 let timer;
 let releaseLock;
+let confirmPageLeave = false;
 let dirtyBytes = 0;
 let firstChangeAt = 0;
 const activeWrites = new Map();
@@ -39,8 +40,14 @@ export async function flush() {
 }
 
 function sync(populate) {
-    return new Promise((resolve, reject) => fs.syncfs(populate, error =>
-        error ? reject(error) : resolve()));
+    return new Promise((resolve, reject) => fs.syncfs(populate, error => {
+        if (!error) {
+            resolve();
+        } else {
+            const message = error.errno === undefined ? error.message : `${error.name} (errno ${error.errno})`;
+            reject(new Error(message, { cause: error }));
+        }
+    }));
 }
 
 function scheduleFlush() {
@@ -159,6 +166,17 @@ export async function initialize(runtime) {
             const node = idbfs.mount(mount);
             trackNode(node);
             return node;
+        },
+        syncfs(mount, populate, callback) {
+            if (populate) return idbfs.syncfs(mount, populate, callback);
+            // 先异步读取索引，再连续扫描和读取内存文件，避免安装在两步之间改名或删除文件。
+            idbfs.getRemoteSet(mount, (error, remote) => {
+                if (error) return callback(error);
+                idbfs.getLocalSet(mount, (error, local) => {
+                    if (error) return callback(error);
+                    idbfs.reconcile(local, remote, callback);
+                });
+            });
         }
     }, {}, root);
     await sync(true);
@@ -167,14 +185,17 @@ export async function initialize(runtime) {
     fs.mkdirTree(`${root}/Projects`);
     fs.mkdirTree(`${root}/Data`);
     await flush();
-    runtime.setModuleImports("OpenUtauMobileFileSystem", { flush });
+    runtime.setModuleImports("OpenUtauMobileFileSystem", {
+        flush,
+        async setPageLeaveConfirmation(required) { confirmPageLeave = required; },
+    });
     console.info("Virtual file storage restored from IndexedDB.");
 
-    // 已保存数据无需卸载时补写；仅在仍有未同步修改时提示，避免静默丢失。
+    // 复用同一个离开提示，保护未同步文件和仍留在编辑器中的修改。
     window.addEventListener("beforeunload", event => {
-        if (persistedRevision < revision) {
+        if (persistedRevision < revision || confirmPageLeave) {
             event.preventDefault();
-            event.returnValue = "";
+            event.returnValue = true;
         }
     });
     document.addEventListener("visibilitychange", () => {

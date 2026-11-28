@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup>
-        <AvaloniaVersion>12.1.6</AvaloniaVersion>
+        <AvaloniaVersion>12.2.0</AvaloniaVersion>
         <!-- OpenUtau.Core 及附加插件版本号 -->
         <CoreVersion>0.1.577.11-alpha-08222cb7c48c</CoreVersion>
         <!-- CI 传入产品版本和构建号；本地使用明显的非发布版本 -->
