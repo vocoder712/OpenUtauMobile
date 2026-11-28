@@ -19,7 +19,8 @@ namespace OpenUtauMobile.Controls
         private bool _panelClampQueued;
         public void SetDesktopChrome(Control? resizeGrip = null)
         {
-            FloatingActions.IsVisible = false;
+            // 可见性绑定了 IsVoiceMode，直接设为隐藏会在切换人声模式时被绑定恢复；桌面改由右键菜单提供，直接移出视觉树。
+            if (FloatingActions.Parent is Panel host) host.Children.Remove(FloatingActions);
             if (resizeGrip == null) return;
             _desktopResizeGrip = true;
             PhonemeSplitHandle.Height = 6;

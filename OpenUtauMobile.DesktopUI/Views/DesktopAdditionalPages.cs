@@ -179,6 +179,7 @@ namespace OpenUtauMobile.DesktopUI.Views
             StackPanel actions = new() { Spacing = 8, MaxWidth = 560 };
             actions.Children.Add(Command(model, "Options.Settings", nameof(model.OpenSettingsCommand)));
             actions.Children.Add(Command(model, "Options.DependencyManager", nameof(model.OpenDependencyManagerCommand)));
+            actions.Children.Add(Command(model, "PluginManager.Title", nameof(model.OpenPluginManagerCommand)));
             Button help = Command(model, "Options.Help", nameof(model.OpenHelpCommand));
             help.IsEnabled = false;
             ToolTip.SetTip(help, DesktopUi.Label("Options.Toast.HelpNotImpl"));

@@ -1,9 +1,15 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
+using Avalonia.Input;
+using Avalonia.Layout;
+using IconPacks.Avalonia.PhosphorIcons;
 using Avalonia.Markup.Xaml.Styling;
 using System;
 using System.Collections.Generic;
 using OpenUtauMobile.DesktopUI.Services;
+using OpenUtauMobile.Controls;
 using OpenUtauMobile.ViewModels;
 using OpenUtauMobile.Views;
 using Serilog;
@@ -62,7 +68,17 @@ namespace OpenUtauMobile.DesktopUI.Views
                 (singer, _, _) => Utility("SingerDetail.Title", new DesktopSingerDetailPage(singer))),
             [typeof(OptionsViewModel)] = Route<OptionsViewModel>("Options.Title", DesktopWindowProfile.Standard,
                 (options, _, _) => Utility("Options.Title", new DesktopOptionsPage(options))),
-            [typeof(ExpressionGraphLibraryViewModel)] = Route<ExpressionGraphLibraryViewModel>("ExpressionGraph.LibraryTitle", DesktopWindowProfile.Standard,
+            [typeof(PluginManagerViewModel)] = Route<PluginManagerViewModel>("PluginManager.Title", DesktopWindowProfile.Standard,
+                (plugins, _, _) => HostedPage("PluginManager.Title", new PluginManagerView { DataContext = plugins }, plugins,
+                    DesktopUi.Command("Common.Refresh", nameof(PluginManagerViewModel.RefreshCommand)),
+                    PrimaryCommand("PluginManager.Install", nameof(PluginManagerViewModel.InstallCommand)))),
+            [typeof(PluginDetailsViewModel)] = Route<PluginDetailsViewModel>("PluginDetails.Title", DesktopWindowProfile.Standard,
+                (plugin, _, _) => HostedPage("PluginDetails.Title", new PluginDetailsView { DataContext = plugin }, plugin,
+                    DesktopUi.Command("Common.Refresh", nameof(PluginDetailsViewModel.RefreshCommand)))),
+            [typeof(PluginWebSettingsViewModel)] = Route<PluginWebSettingsViewModel>("PluginWebSettings.Title", DesktopWindowProfile.Standard,
+                (settings, _, _) => HostedPage("PluginWebSettings.Title", new PluginWebSettingsView { DataContext = settings }, settings,
+                    DesktopUi.Command("PluginWebSettings.OpenBrowser", nameof(PluginWebSettingsViewModel.OpenBrowserCommand)))),
+            [typeof(ExpressionGraphLibraryViewModel)] =Route<ExpressionGraphLibraryViewModel>("ExpressionGraph.LibraryTitle", DesktopWindowProfile.Standard,
                 (graphs, _, _) => ExpressionGraphLibrary(graphs)),
             [typeof(ExpressionGraphEditorViewModel)] = Route<ExpressionGraphEditorViewModel>("GraphEdit.Title", DesktopWindowProfile.Standard,
                 (graph, _, _) => ExpressionGraphEditor(graph)),
@@ -84,20 +100,96 @@ namespace OpenUtauMobile.DesktopUI.Views
             return null;
         }
 
-        /// <summary>在桌面工具窗口中复用表情图库，不再添加第二层页面标题。</summary>
+        /// <summary>在桌面工具窗口中复用表情图库；页面菜单与悬浮新建菜单改为窗口工具栏按钮。</summary>
         private static Control ExpressionGraphLibrary(ExpressionGraphLibraryViewModel graphs)
         {
             ExpressionGraphLibraryView view = new() { DataContext = graphs };
             view.SetDesktopChrome();
-            return view;
+            Button create = PrimaryButton("ExpressionGraph.Create");
+            create.Click += (_, _) =>
+            {
+                ContextMenu menu = new();
+                foreach (FabMenuAction action in graphs.CreationActions)
+                    menu.Items.Add(new MenuItem
+                    {
+                        Header = action.Label,
+                        Icon = new PackIconPhosphorIcons { Kind = action.Icon, Width = 16, Height = 16 },
+                        Command = graphs.CreateCommand,
+                        CommandParameter = action.Id,
+                    });
+                menu.Open(create);
+            };
+            Button import = DesktopUi.Command("ExpressionGraph.Import", nameof(ExpressionGraphLibraryViewModel.ImportCommand));
+            foreach (Button button in new[] { create, import })
+                button.Bind(InputElement.IsEnabledProperty, new MultiBinding
+                {
+                    Converter = BoolConverters.And,
+                    Bindings = { new Binding(nameof(ExpressionGraphLibraryViewModel.IsCurrentProject)), new Binding(nameof(ExpressionGraphLibraryViewModel.IsBusy)) { Converter = BoolConverters.Not } },
+                });
+            return HostedPage("ExpressionGraph.LibraryTitle", view, graphs,
+                IconCommand(PackIconPhosphorIconsKind.ArrowCounterClockwise, "ExpressionGraph.UndoProject", nameof(ExpressionGraphLibraryViewModel.UndoCommand)),
+                IconCommand(PackIconPhosphorIconsKind.ArrowClockwise, "ExpressionGraph.RedoProject", nameof(ExpressionGraphLibraryViewModel.RedoCommand)),
+                import, create);
         }
 
-        /// <summary>在桌面工具窗口中复用图编辑器及其画布、参数和撤销逻辑。</summary>
+        /// <summary>在桌面工具窗口中复用图编辑器及其画布、参数和撤销逻辑；顶栏和画布工具条按桌面紧凑样式显示。</summary>
         private static Control ExpressionGraphEditor(ExpressionGraphEditorViewModel graph)
         {
             ExpressionGraphEditorView view = new() { DataContext = graph };
             view.SetDesktopChrome();
-            return view;
+            view.Classes.Add("DesktopGraphEditor");
+            return Utility("GraphEdit.Title", view, new Thickness(0));
+        }
+
+        /// <summary>图标按钮：与编辑器传输栏相同的 28px 紧凑样式。</summary>
+        private static Button IconCommand(PackIconPhosphorIconsKind icon, string tipKey, string path)
+        {
+            Button button = new() { Content = new PackIconPhosphorIcons { Kind = icon } };
+            button.Classes.AddRange(["DesktopAction", "DesktopTransportControl", "DesktopTransportIcon"]);
+            button.Bind(Button.CommandProperty, new Binding(path));
+            ToolTip.SetTip(button, DesktopUi.Label(tipKey));
+            return button;
+        }
+
+        /// <summary>
+        /// 在桌面工具窗口中复用插件页面：隐藏移动端顶栏和悬浮按钮（标题由窗口提供，返回由 Esc/关闭窗口完成），
+        /// 其操作改为与歌手管理一致的右对齐桌面按钮。
+        /// </summary>
+        private static Control HostedPage(string titleKey, Control view, object model, params Button[] actions)
+        {
+            view.Classes.Add("DesktopHostedPage");
+            StackPanel toolbar = new() { Orientation = Orientation.Horizontal, Spacing = 12, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(20, 16, 20, 0) };
+            foreach (Button action in actions)
+            {
+                action.DataContext = model;
+                toolbar.Children.Add(action);
+            }
+            Grid page = new() { RowDefinitions = new RowDefinitions("Auto,*") };
+            page.Children.Add(toolbar);
+            Grid.SetRow(view, 1);
+            page.Children.Add(view);
+            return Utility(titleKey, page, new Thickness(0));
+        }
+
+        /// <summary>主要操作按钮：带加号图标的强调样式，与歌手管理的安装按钮一致。</summary>
+        private static Button PrimaryCommand(string key, string path)
+        {
+            Button button = PrimaryButton(key);
+            button.Bind(Button.CommandProperty, new Binding(path));
+            return button;
+        }
+
+        /// <summary>不绑定命令的主要操作按钮，用于需要弹出菜单的入口。</summary>
+        private static Button PrimaryButton(string key)
+        {
+            Button button = new();
+            button.Classes.Add("DesktopAction");
+            StackPanel label = new() { Orientation = Orientation.Horizontal, Spacing = 8 };
+            label.Children.Add(new PackIconPhosphorIcons { Kind = PackIconPhosphorIconsKind.Plus, Width = 16, Height = 16, VerticalAlignment = VerticalAlignment.Center });
+            label.Children.Add(DesktopUi.Label(key));
+            button.Content = label;
+            button.Classes.Add("tonal");
+            return button;
         }
 
         private static Control Settings(SettingsViewModel settings)

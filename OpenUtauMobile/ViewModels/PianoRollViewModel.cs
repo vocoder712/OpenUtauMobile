@@ -1791,7 +1791,10 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             case PianoRollEditMode.Note:
                 if (hit == null) // 空白处点击
                 {
-                    ShowNoteCreationPreview(point);
+                    if (UseNoteCreationPreview) ShowNoteCreationPreview(point);
+                    // 关闭占位框：未选中时直接创建音符，已有选区时仅取消选择。
+                    else if (SelectedNotes.Count == 0) CreateNoteAt(point);
+                    else SelectedNotes.Clear();
                 }
                 else if (!SelectedNotes.Contains(hit))
                 {
@@ -3484,6 +3487,23 @@ public partial class PianoRollViewModel : ViewModelBase, IDisposable, ICmdSubscr
             L.S("PianoRoll.Toast.AnchorShape"),
             GetPitchPointShapeName(displayedShape)));
     }
+
+    /// <summary>选中锚点的共同形状；未选中或形状不一致时为 null。</summary>
+    public PitchPointShape? SelectedPitchPointShape =>
+        SelectedAnchors.Count > 0 && SelectedAnchors.All(point => point.shape == SelectedAnchors[0].shape) ? SelectedAnchors[0].shape : null;
+
+    /// <summary>将所有选中锚点直接设为指定形状，供桌面右键菜单使用。</summary>
+    public void SetSelectedPitchPointShape(PitchPointShape shape)
+    {
+        if (EditingVoicePart == null || SelectedAnchors.Count == 0) return;
+        DocManager.Inst.StartUndoGroup();
+        foreach (PitchPoint point in SelectedAnchors.Where(point => point.shape != shape).ToArray())
+            DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(EditingVoicePart, point, shape));
+        DocManager.Inst.EndUndoGroup();
+    }
+
+    /// <summary>锚点形状的本地化名称。</summary>
+    public static string PitchPointShapeLabel(PitchPointShape shape) => GetPitchPointShapeName(shape);
 
     private static PitchPointShape GetNextPitchPointShape(PitchPointShape shape)
     {

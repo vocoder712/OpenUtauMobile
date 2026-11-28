@@ -2,9 +2,8 @@
              xmlns:vm="using:OpenUtauMobile.ViewModels" xmlns:c="clr-namespace:OpenUtauMobile.Controls;assembly=OpenUtauMobile"
              xmlns:desktop="using:OpenUtauMobile.DesktopUI.Views"
              xmlns:icons="https://github.com/MahApps/IconPacks.Avalonia"
-             xmlns:themeControls="clr-namespace:OpenUtauMobile.Themes.OpenUtauMobile.Controls;assembly=OpenUtauMobile"
              x:Class="OpenUtauMobile.DesktopUI.Views.DesktopWorkspace" x:DataType="vm:EditorViewModel" Classes="DesktopWorkspace">
-    <Grid x:Name="EditorPageLayer" RowDefinitions="Auto,*,Auto" RowSpacing="4" ClipToBounds="True" IsEnabled="{Binding !IsLoadingProject}">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="4" IsEnabled="{Binding !IsLoadingProject}">
         <Border Padding="8,4" Background="Transparent">
             <Grid ColumnDefinitions="*,Auto,*">
                 <StackPanel Orientation="Horizontal" Spacing="4">
@@ -17,12 +16,18 @@
                     <Button Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" Command="{Binding PlayPauseCommand}" ToolTip.Tip="{DynamicResource Editor.PlayPause}">
                         <Panel><icons:PackIconPhosphorIcons Kind="Play" IsVisible="{Binding !IsPlaying}"/><icons:PackIconPhosphorIcons Kind="Pause" IsVisible="{Binding IsPlaying}"/></Panel>
                     </Button>
+                    <ToggleButton Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" IsChecked="{Binding IsRepeatEnabled, Mode=TwoWay}" Content="{icons:PhosphorIcons Repeat}" ToolTip.Tip="{DynamicResource Editor.Repeat}" />
+                    <ToggleButton Classes="DesktopAction DesktopTransportControl DesktopTransportIcon" IsChecked="{Binding IsMetronomeEnabled, Mode=TwoWay}" Content="{icons:PhosphorIcons Metronome}" ToolTip.Tip="{DynamicResource Editor.Metronome}" />
                     <Button Classes="DesktopAction DesktopTransportControl" Command="{Binding EditTimeSignatureCommand}" Content="{Binding ProjectTimeSignature}" />
                     <TextBox x:Name="TempoInput" Classes="DesktopTransportControl" Width="64" TextAlignment="Center" ToolTip.Tip="{DynamicResource ProjectEdit.BpmRange}" />
                     <Border Classes="DesktopTimeDisplay" Padding="8,0" Height="28" CornerRadius="4" Background="{DynamicResource Sem.Color.SurfaceContainerHigh}"><TextBlock x:Name="TimeDisplay" MinWidth="90" VerticalAlignment="Center" FontFamily="monospace" Text="00:00.000" /></Border>
                 </StackPanel>
                 <Grid Grid.Column="2" ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                    <TextBlock Name="RenderProgress" Text="{Binding ProgressMessage}" Margin="12,0" FontSize="11" VerticalAlignment="Center" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" ToolTip.Tip="{Binding ProgressMessage}" />
+                    <StackPanel Orientation="Horizontal" Spacing="6" Margin="12,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <!-- 与移动端一致：音素化进行中显示不确定进度条，文字优先展示音素化状态。 -->
+                        <ProgressBar IsIndeterminate="True" IsVisible="{Binding IsPhonemizing}" Width="48" MinWidth="0" Height="3" MinHeight="0" VerticalAlignment="Center" />
+                        <TextBlock Name="RenderProgress" Text="{Binding DisplayProgressMessage}" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" ToolTip.Tip="{Binding DisplayProgressMessage}" />
+                    </StackPanel>
                     <ContentControl x:Name="TrackTools" Grid.Column="1" VerticalAlignment="Center" />
                 </Grid>
             </Grid>
@@ -48,11 +53,6 @@
         <Border x:Name="StatusHintHost" Grid.Row="2" Padding="8,3" Background="{DynamicResource Sem.Color.SurfaceContainer}">
             <TextBlock x:Name="InputHint" Text="{DynamicResource Desktop.InputHint}" FontSize="11" Foreground="{DynamicResource Sem.Color.OnSurfaceVariant}" />
         </Border>
-        <!-- 页级选区操作跨越卷帘裁剪边界，始终限制在当前编辑页面。 -->
-        <themeControls:FloatingToolbar x:Name="PartToolbar" Grid.Row="0" Grid.RowSpan="3" ZIndex="2000" IconOnly="True"
-                                       AnchorHorizontalAlignment="Left"
-                                       Actions="{Binding PartToolbarActions}" IsVisible="False" />
-        <themeControls:FloatingToolbar x:Name="NoteToolbar" Grid.RowSpan="3" ZIndex="2000" IconOnly="True"
-                                       Actions="{Binding PianoRollViewModel.NoteToolbarActions}" IsVisible="False" />
+        <!-- 选区操作在桌面由右键菜单提供，不挂载移动端浮动工具栏。 -->
     </Grid>
 </UserControl>

@@ -2126,6 +2126,10 @@
   <data name="PianoRoll.PitchTarget.FollowGraph" xml:space="preserve"><value>编辑目标：跟随图（{0}）</value></data>
   <data name="PianoRoll.PitchTarget.Deviation" xml:space="preserve"><value>编辑目标：偏移（PITD）</value></data>
   <data name="PianoRoll.PitchTarget.Override" xml:space="preserve"><value>编辑目标：覆写（PITO）</value></data>
+  <data name="PianoRoll.PitchTarget.Title" xml:space="preserve"><value>音高笔编辑目标</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Auto" xml:space="preserve"><value>跟随图（G）</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Deviation" xml:space="preserve"><value>偏移（PITD）</value></data>
+  <data name="PianoRoll.PitchTarget.Option.Override" xml:space="preserve"><value>覆写（PITO）</value></data>
   <data name="Settings.Edit.ShowPitchPenHitArea" xml:space="preserve"><value>显示音高画笔区域</value></data>
   <data name="RendererSettings.Title" xml:space="preserve">
     <value>轨道渲染设置</value>
@@ -2678,6 +2682,24 @@
   </data>
   <data name="Settings.Edit.ShowGhostNotes.Desc" xml:space="preserve">
     <value>在钢琴卷帘背景显示与当前片段重叠的其它轨道音符。</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview" xml:space="preserve">
+    <value>创建音符前显示占位框</value>
+  </data>
+  <data name="Settings.Edit.NoteCreationPreview.Desc" xml:space="preserve">
+    <value>点击空白处先显示“+”占位框，再点击占位框创建音符。关闭后直接创建音符（桌面端为双击）。</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset" xml:space="preserve">
+    <value>音符纵向间距</value>
+  </data>
+  <data name="Settings.Edit.NoteVerticalInset.Desc" xml:space="preserve">
+    <value>钢琴卷帘中每个音符上下留白的像素数。</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius" xml:space="preserve">
+    <value>音符圆角</value>
+  </data>
+  <data name="Settings.Edit.NoteCornerRadius.Desc" xml:space="preserve">
+    <value>钢琴卷帘中音符的圆角半径（像素）。</value>
   </data>
   <data name="Common.More" xml:space="preserve">
     <value>更多操作</value>

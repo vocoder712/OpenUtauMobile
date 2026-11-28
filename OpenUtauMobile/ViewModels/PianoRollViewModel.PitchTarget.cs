@@ -5,6 +5,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services;
 using OpenUtauMobile.Services.Dialogs;
+using ReactiveUI;
 
 namespace OpenUtauMobile.ViewModels;
 
@@ -45,18 +46,33 @@ public partial class PianoRollViewModel
         _ => "PITO",
     };
 
-    private string PitchTargetDescription => PitchTarget switch
+    private string PitchTargetDescription => DescribePitchTarget(PitchTarget);
+
+    /// <summary>音高编辑目标的说明文字；跟随表情图时附带当前解析出的曲线名。</summary>
+    public string DescribePitchTarget(PitchEditTarget target) => target switch
     {
         PitchEditTarget.Auto => string.Format(L.S("PianoRoll.PitchTarget.FollowGraph"), PitchTargetKey.ToUpperInvariant()),
         PitchEditTarget.Deviation => L.S("PianoRoll.PitchTarget.Deviation"),
         _ => L.S("PianoRoll.PitchTarget.Override"),
     };
 
+    /// <summary>直接切换当前轨道的音高编辑目标，供桌面工具行使用。</summary>
+    public void SetPitchTarget(PitchEditTarget target)
+    {
+        if (EditMode != PianoRollEditMode.PitchPen || PitchEditingTrack is not { } track || PitchTarget == target) return;
+        EndPitchStroke();
+        PitchEditTargetState.Set(DocManager.Inst.Project, track, target);
+        this.RaisePropertyChanged(nameof(PitchTarget));
+        RebuildPianoRollContextActions();
+        RequestInvalidateVisual?.Invoke();
+    }
+
     private void CyclePitchTarget()
     {
         if (EditMode != PianoRollEditMode.PitchPen || PitchEditingTrack is not { } track) return;
         EndPitchStroke();
         PitchEditTargetState.Cycle(DocManager.Inst.Project, track);
+        this.RaisePropertyChanged(nameof(PitchTarget));
         RebuildPianoRollContextActions();
         ToastService.Enqueue(PitchTargetDescription);
         RequestInvalidateVisual?.Invoke();

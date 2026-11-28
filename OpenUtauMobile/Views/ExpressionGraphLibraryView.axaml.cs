@@ -15,8 +15,16 @@ public partial class ExpressionGraphLibraryView : UserControl
 {
     private ExpressionGraphLibraryViewModel? _vm;
 
-    /// <summary>桌面宿主通过窗口关闭返回上一页，隐藏移动端返回按钮。</summary>
-    public void SetDesktopChrome() => BackButton.IsVisible = false;
+    /// <summary>
+    /// 桌面宿主通过窗口关闭返回上一页，并由窗口工具栏提供新建、导入和撤销；
+    /// 隐藏移动端返回按钮与悬浮新建菜单，列表不再为悬浮按钮预留底部空间。
+    /// </summary>
+    public void SetDesktopChrome()
+    {
+        BackButton.IsVisible = false;
+        CreateMenu.IsVisible = false;
+        GraphList.Margin = default;
+    }
 
     public ExpressionGraphLibraryView()
     {

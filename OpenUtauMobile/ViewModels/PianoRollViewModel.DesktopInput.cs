@@ -139,8 +139,10 @@ namespace OpenUtauMobile.ViewModels
                 if (!additive) SelectedNotes.Clear();
                 SelectedAnchors.Clear();
                 _desktopOperation = DesktopOperation.Box;
-                _desktopPreviewClick = EditMode == PianoRollEditMode.Note && !additive;
-                if (clickCount == 2 && EditMode != PianoRollEditMode.Note)
+                // 关闭占位框时单击仅框选/取消选择，双击直接创建音符。
+                bool preview = EditMode == PianoRollEditMode.Note && UseNoteCreationPreview;
+                _desktopPreviewClick = preview && !additive;
+                if (clickCount == 2 && !preview)
                 {
                     int tick = SnapToFloor(PointXToTick(point.X));
                     if (tick >= EditingVoicePart!.position && tick < EditingVoicePart.End)

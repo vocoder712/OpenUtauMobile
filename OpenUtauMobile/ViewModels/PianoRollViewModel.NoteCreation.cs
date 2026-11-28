@@ -3,6 +3,8 @@ using System.Windows.Input;
 using Avalonia;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
+using OpenUtauMobile.Controls;
 using OpenUtauMobile.Helpers;
 using OpenUtauMobile.Services.Dialogs;
 using ReactiveUI;
@@ -12,6 +14,30 @@ namespace OpenUtauMobile.ViewModels;
 public partial class PianoRollViewModel
 {
     private UNote? _pendingNoteCreation;
+
+    /// <summary>当前界面是否使用占位框创建音符；未设置时移动界面开启、桌面界面关闭。</summary>
+    public bool UseNoteCreationPreview => Preferences.Default.PianoRollNoteCreationPreview ?? !UseDesktopMouseInput;
+
+    /// <summary>音符圆角半径设置的上限（像素）。</summary>
+    public const int NoteCornerRadiusMaximum = 12;
+
+    /// <summary>音符间距设置的上限（像素）。</summary>
+    public const int NoteVerticalInsetMaximum = 8;
+
+    /// <summary>未设置音符间距时的界面默认值。</summary>
+    public static int DefaultNoteVerticalInset(bool desktop) => desktop ? 0 : 4;
+
+    /// <summary>音符主体及新建占位框上下各内缩的像素。</summary>
+    public double NoteVerticalInset => Math.Clamp(Preferences.Default.PianoRollNoteVerticalInset ?? DefaultNoteVerticalInset(UseDesktopMouseInput), 0, NoteVerticalInsetMaximum);
+
+    /// <summary>未设置音符圆角时的界面默认值。</summary>
+    public static int DefaultNoteCornerRadius(bool desktop) => desktop ? 4 : 8;
+
+    /// <summary>音符及新建占位框的圆角半径（像素）。</summary>
+    public double NoteCornerRadiusValue => Math.Clamp(Preferences.Default.PianoRollNoteCornerRadius ?? DefaultNoteCornerRadius(UseDesktopMouseInput), 0, NoteCornerRadiusMaximum);
+
+    /// <summary>音符及新建占位框的圆角。</summary>
+    public CornerRadius NoteCornerRadius => new(NoteCornerRadiusValue);
 
     /// <summary>点击空白区域后显示待确认的新音符。</summary>
     public bool IsNoteCreationPreviewVisible => _pendingNoteCreation != null;
@@ -24,7 +50,8 @@ public partial class PianoRollViewModel
             if (_pendingNoteCreation is not { } note || EditingVoicePart == null) return default;
             Point origin = TickPitchToPoint(EditingVoicePart.position + note.position, note.AdjustedTone);
             Size size = TickToneToSize(note.duration, 1);
-            return new Rect(origin.X + 1, origin.Y + 4, Math.Max(1, size.Width - 2), Math.Max(1, size.Height - 8));
+            double inset = NoteVerticalInset;
+            return new Rect(origin.X + 1, origin.Y + inset, Math.Max(1, size.Width - 2), Math.Max(1, size.Height - inset * 2));
         }
     }
 
@@ -35,6 +62,14 @@ public partial class PianoRollViewModel
     private void InitializeNoteCreationPreview()
     {
         ConfirmNoteCreationCommand = ReactiveCommand.Create(ConfirmNoteCreation);
+        MessageBus.Current.Listen<NoteAppearanceChangedEvent>()
+            .Subscribe(_ =>
+            {
+                this.RaisePropertyChanged(nameof(NoteCornerRadius));
+                if (IsNoteCreationPreviewVisible) this.RaisePropertyChanged(nameof(NoteCreationPreviewRect));
+                RequestInvalidateVisual?.Invoke();
+            })
+            .DisposeWith(_disposables);
         this.WhenAnyValue(model => model.TickWidth, model => model.KeyHeight, model => model.TickOffset, model => model.KeyOffset)
             .Subscribe(_ =>
             {
@@ -69,6 +104,13 @@ public partial class PianoRollViewModel
         this.RaisePropertyChanged(nameof(NoteCreationPreviewRect));
         RebuildNoteToolbarActions();
         RequestInvalidateVisual?.Invoke();
+    }
+
+    /// <summary>关闭占位框时的旧行为：在点击位置直接创建音符并选中、试听。</summary>
+    private void CreateNoteAt(Point point)
+    {
+        ShowNoteCreationPreview(point);
+        ConfirmNoteCreation();
     }
 
     /// <summary>确认后才执行原有的新建命令、重叠处理和试听。</summary>
